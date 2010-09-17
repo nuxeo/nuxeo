@@ -64,6 +64,18 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     public static final Log log = LogFactory.getLog(NuxeoQueuePersister.class);
 
+    protected PathRef rootPath() {
+        return new PathRef("/" + QUEUE_ROOT_NAME);
+    }
+
+    protected PathRef queuePath() {
+        return new PathRef("/" + QUEUE_ROOT_NAME + "/" + queueName);
+    }
+
+    protected DocumentModel queue(CoreSession session) throws ClientException {
+        return session.getDocument(queuePath());
+    }
+
     protected abstract class NuxeoQueueRunner extends UnrestrictedSessionRunner {
 
         protected URI name;
@@ -90,6 +102,34 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     protected NuxeoQueuePersister(String queueName, Class<C> contentType) {
         this.queueName = queueName;
         this.contentType = contentType;
+    }
+
+    @Override
+    public void createIfNotExist() {
+        new CreateIfNotExistRunner().runUnrestricted();
+    }
+
+
+    protected class CreateIfNotExistRunner extends NuxeoQueueRunner {
+
+        @Override
+        public void run() throws ClientException {
+            PathRef queuePath = queuePath();
+            if (session.exists(queuePath)) {
+                return;
+            }
+            PathRef rootPath = rootPath();
+            DocumentModel root;
+            if (!session.exists(rootPath)) {
+                root = session.createDocumentModel("/", QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
+                root = session.createDocument(root);
+            } else {
+                root = session.getDocument(rootPath);
+            }
+            DocumentModel queue = session.createDocumentModel(rootPath.toString(), queueName, QUEUE_TYPE);
+            queue = session.createDocument(queue);
+            session.save();
+        }
     }
 
     @Override
@@ -166,7 +206,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queueDoc = getOrCreateQueue(session);
+            DocumentModel queueDoc = queue(session);
             docs = session.getChildren(queueDoc.getRef());
             for (DocumentModel doc:docs) {
                 detachDocument(doc);
@@ -204,7 +244,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
                 throw new QueueError("Already created queue item", name);
             }
 
-             DocumentModel parent = getOrCreateQueue(session);
+             DocumentModel parent = queue(session);
              doc = session.createDocumentModel(parent.getPathAsString(), name.toASCIIString(), QUEUE_ITEM_TYPE);
 
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_OWNER,
@@ -294,7 +334,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queue = getOrCreateQueue(session);
+            DocumentModel queue = queue(session);
             String query = String.format("SELECT * FROM QueueItem WHERE ecm:parentId = '%s' AND  qitm:owner = '%s'",
                     queue.getId(),
                     ownerName.toASCIIString());
@@ -325,7 +365,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queue = getOrCreateQueue(session);
+            DocumentModel queue = queue(session);
             String query = String.format("SELECT * FROM QueueItem WHERE ecm:parentId = '%s' AND  qitm:owner = '%s'",
                     queue.getId(),
                     ownerName.toASCIIString());
@@ -359,7 +399,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
         @Override
         public void run() throws ClientException {
-            DocumentModel queue = getOrCreateQueue(session);
+            DocumentModel queue = queue(session);
             DocumentModel doc = session.getChild(queue.getRef(), name.toASCIIString());
             if (doc == null) {
                 throw new QueueError("no such content", name);
@@ -393,36 +433,8 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     }
 
     protected PathRef newPathRef(CoreSession session, URI name) throws ClientException {
-        DocumentModel queueFolder = getOrCreateQueue(session);
+        DocumentModel queueFolder = queue(session);
         return new PathRef(queueFolder.getPathAsString() + "/" + name.toASCIIString());
-    }
-
-    protected DocumentModel getOrCreateQueue(CoreSession session)
-            throws ClientException {
-        DocumentModel queueroot = getOrCreateRootQueueFolder(session);
-        DocumentRef queueref = new PathRef(queueroot.getPathAsString() + "/" + queueName);
-
-        if (!session.exists(queueref)) {
-            DocumentModel model = session.createDocumentModel(queueroot.getPathAsString(),
-                    queueName, QUEUE_TYPE);
-            model = session.createDocument(model);
-            session.save();
-        }
-
-        return session.getDocument(queueref);
-
-    }
-
-    protected DocumentModel getOrCreateRootQueueFolder(CoreSession session)
-            throws ClientException {
-        DocumentRef queueRootDocRef = new PathRef("/" + QUEUE_ROOT_NAME);
-        if (!session.exists(queueRootDocRef)) {
-            DocumentModel model = session.createDocumentModel("/", QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
-            model = session.createDocument(model);
-            session.save();
-        }
-
-        return session.getDocument(queueRootDocRef);
     }
 
 

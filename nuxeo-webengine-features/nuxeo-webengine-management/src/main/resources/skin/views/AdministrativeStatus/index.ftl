@@ -10,9 +10,9 @@
 <@block name="toolbox">
 <ul><h3>Toolbox</h3>
 <#if administrativeStatus == 'passive'>
-<li><a href="/@activate">Activate</a> this server</li>
+<li><a href="${This.path}/@activate">Activate</a> this server</li>
 <#else>
-<li><a href="/@passivate">Passivate</a> this server</li>
+<li><a href="${This.path}/@passivate">Passivate</a> this server</li>
 </#if>
 </ul>
 </@block>

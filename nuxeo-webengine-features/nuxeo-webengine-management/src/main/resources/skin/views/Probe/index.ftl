@@ -1,20 +1,7 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-<style>
-</style>
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
 <@block name="content">
  
- <form method="POST" action="${This.path}" accept-charset="utf-8">
-        <input type="submit" class="button" value="Run" />
-</form>
-
  <div class="index_probe">
     <#assign probe=This.info/>
     <h2>Probe <a href="${This.path}">${probe.shortcutName}</a></h2>
@@ -23,6 +10,12 @@
     <p>${probe.status.info}</p>
  </div>
  
+</@block>
+
+<@block name="toolbox">
+<ul><h3>Toolbox</h3>
+  <li><a href="${This.path}/@run">Run</a></li>
+</ul>
 </@block>
 
 </@extends>

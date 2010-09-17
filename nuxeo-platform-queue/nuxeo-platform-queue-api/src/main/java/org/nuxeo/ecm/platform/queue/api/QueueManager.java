@@ -81,6 +81,7 @@ public interface QueueManager<C extends Serializable> {
      *
      * @param content the content
      */
+    @Transacted
     void updateInfos(URI name, C content);
 
     /**
@@ -89,6 +90,7 @@ public interface QueueManager<C extends Serializable> {
      * @param owner
      * @return
      */
+    @Transacted
     int removeOwned(URI owner);
 
     /**
@@ -99,5 +101,10 @@ public interface QueueManager<C extends Serializable> {
      * @return
      */
     URI newName(String contentName);
+
+    /**
+     * Initialize the queue
+     */
+    void initialize();
 
 }

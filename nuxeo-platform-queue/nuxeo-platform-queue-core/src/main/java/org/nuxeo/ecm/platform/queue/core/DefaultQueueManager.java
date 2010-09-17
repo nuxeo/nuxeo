@@ -107,4 +107,10 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
         return locator.newContentName(queueName, contentName);
     }
 
+
+    @Override
+    public void initialize() {
+        persister.createIfNotExist();
+    }
+
 }

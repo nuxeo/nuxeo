@@ -48,7 +48,8 @@ public class AdministrativeStatusObject extends ManagementObject {
     @Override
     public void initialize(Object... args) {
         super.initialize(args);
-        administrativeStatus = Framework.getLocalService(AdministrativeStatus.class);
+        AdministrativeStatusManager mgr = Framework.getLocalService(AdministrativeStatusManager.class);
+        administrativeStatus =mgr.getNuxeoInstanceStatus();
     }
 
     @GET
@@ -58,8 +59,8 @@ public class AdministrativeStatusObject extends ManagementObject {
                 arg("administrativeStatus", administrativeStatus.getState());
     }
 
-    @POST
-    @Path("@activate")
+    @GET
+    @Path("/@activate")
     public Object activate() {
         try {
             AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
@@ -70,8 +71,8 @@ public class AdministrativeStatusObject extends ManagementObject {
         }
     }
 
-    @POST
-    @Path("@passivate")
+    @GET
+    @Path("/@passivate")
     public Object passivate() {
         try {
             AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);

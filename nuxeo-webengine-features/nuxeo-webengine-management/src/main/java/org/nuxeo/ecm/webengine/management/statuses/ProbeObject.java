@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.webengine.management.statuses;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -46,7 +46,8 @@ public class ProbeObject extends DefaultObject {
         return getView("index");
     }
 
-    @POST
+    @GET
+    @Path("/@run")
     public Object run() {
         ProbeManager probeMgr = Framework.getLocalService(ProbeManager.class);
         probeMgr.runProbe(info);

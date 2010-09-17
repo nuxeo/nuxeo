@@ -7,8 +7,7 @@
 <#list This.infos as info>
  <span class="listing">
       <dt><a href="${This.name}/${info.name}">${info.name}</a></dt>
-       <dd>with comments "<span class="with comment">${info.handledContent.comments}</span>
-             <#if info.orphaned><span class="is orphaned">is orphaned</span></#if></dd>
+       <dd>was handled at  <span class="was handled">${info.lastHandlingDate?datetime}</span> <#if info.orphaned> and <span class="is orphaned">is orphaned</span></#if></dd>
 </#list>
 </dl>
 

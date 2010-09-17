@@ -24,4 +24,5 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
- org.nuxeo.runtime.transaction
+ org.nuxeo.runtime.transaction,
+ org.osgi.framework

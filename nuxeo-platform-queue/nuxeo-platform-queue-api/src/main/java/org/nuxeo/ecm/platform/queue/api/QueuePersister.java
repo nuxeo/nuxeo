@@ -40,7 +40,6 @@ public interface QueuePersister<C extends Serializable> {
      * @param content the handled content
      * @return the atomic item
      */
-    @Transacted
     QueueInfo<C> addContent(URI name, URI owner, C content);
 
     /**
@@ -56,7 +55,6 @@ public interface QueuePersister<C extends Serializable> {
      *
      * @param name the content name
      */
-    @Transacted
     QueueInfo<C> removeContent(URI name);
 
     /**
@@ -64,7 +62,6 @@ public interface QueuePersister<C extends Serializable> {
      *
      * @param name the content name
      */
-    @Transacted
     void updateContent(URI name, C content);
 
     /**
@@ -103,7 +100,13 @@ public interface QueuePersister<C extends Serializable> {
      * @param the owner name
      * @return the number of contents removed
      */
-    @Transacted
     int removeByOwner(URI name);
+
+    /**
+     * Create the queue if it does not exist already
+     *
+     * @return
+     */
+    void createIfNotExist();
 
 }
