@@ -147,8 +147,8 @@ public class Column implements Serializable {
 
     public String getSqlTypeString(Dialect dialect) {
         if (dialect.getClass().getName().contains("SQLServer")
-                && Types.VARCHAR == sqlType && !"id".equals(name)) {
-            return new StringBuilder("nvarchar(").append(length).append(")").toString();
+                && Types.VARCHAR == sqlType && !primary) {
+            return "nvarchar(" + length + ")";
         }
         return dialect.getTypeName(sqlType, length, precision, scale);
     }
