@@ -43,12 +43,14 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
+import org.nuxeo.ecm.core.api.CallerPrincipalProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.ejb.local.DocumentManagerLocal;
@@ -66,7 +68,7 @@ import org.nuxeo.ecm.core.model.Session;
  * <p>
  * This class and its children are also the points where security is
  * attached/checked.
- *
+ * 
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Stateful
@@ -131,6 +133,24 @@ public class DocumentManagerBean extends AbstractSession implements
         }
     }
 
+    /**
+     * Allays use this method to retrieve the caller principal from the context.
+     * This allows fixing a problem on JBoss5.
+     * 
+     * @see CallerPrincipalProvider
+     * @return
+     */
+    protected Principal getCallerPrincipal() {
+        Principal principal = context.getCallerPrincipal();
+        if (!(principal instanceof NuxeoPrincipal)) {
+            NuxeoPrincipal np = CallerPrincipalProvider.getInstance().getCallerPrincipal();
+            if (np != null) {
+                principal = np;
+            }
+        }
+        return principal;
+    }
+
     @Override
     public Principal getPrincipal() {
         Principal principal;
@@ -144,7 +164,7 @@ public class DocumentManagerBean extends AbstractSession implements
             // id will be within the session context properties.
             principal = (Principal) sessionContext.get(CONTEXT_PRINCIPAL_KEY);
             if (principal == null) {
-                principal = context.getCallerPrincipal();
+                principal = getCallerPrincipal();
                 sessionContext.put(CONTEXT_PRINCIPAL_KEY,
                         (Serializable) principal);
             }
@@ -174,7 +194,7 @@ public class DocumentManagerBean extends AbstractSession implements
             if (!sessionContext.containsKey(CONTEXT_PRINCIPAL_KEY)) {
                 log.debug("Add caller principal to the session context....");
                 sessionContext.put(CONTEXT_PRINCIPAL_KEY,
-                        (Serializable) context.getCallerPrincipal());
+                        (Serializable) getCallerPrincipal());
             } else {
                 log.debug("Principal already within the session context...");
             }
@@ -207,15 +227,16 @@ public class DocumentManagerBean extends AbstractSession implements
             Repository repo = NXCore.getRepository(repositoryName);
             return repo.supportsTags();
         } catch (Exception e) {
-            throw new ClientException("Failed to load repository " + repositoryName, e);
+            throw new ClientException("Failed to load repository "
+                    + repositoryName, e);
         }
     }
 
     public boolean supportsTags() throws ClientException {
-         if (supportsTags!=null) {
-             return supportsTags.booleanValue();
-         }
-         throw new ClientException("Can not query on a closed repository");
+        if (supportsTags != null) {
+            return supportsTags.booleanValue();
+        }
+        throw new ClientException("Can not query on a closed repository");
     }
 
     protected Session createSession(String repoName, String ws,
@@ -552,6 +573,5 @@ public class DocumentManagerBean extends AbstractSession implements
             throw new RollbackClientException(t);
         }
     }
-
 
 }
