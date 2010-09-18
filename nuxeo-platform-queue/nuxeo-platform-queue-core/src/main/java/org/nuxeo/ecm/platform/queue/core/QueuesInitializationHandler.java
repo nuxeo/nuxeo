@@ -16,48 +16,34 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.runtime.api.Framework;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
- * Initialize the contributed queues at startup
+ * Initialize the contributed queues once the repository is first opened
  *
  * @author matic
  *
  */
-public class QueuesInitializer implements FrameworkListener {
+public class QueuesInitializationHandler extends  RepositoryInitializationHandler {
 
     protected final QueueLocator locator;
 
-    protected QueuesInitializer(QueueLocator locator) {
+    protected QueuesInitializationHandler(QueueLocator locator) {
         this.locator = locator;
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.core.repository.RepositoryInitializationHandler#doInitializeRepository(org.nuxeo.ecm.core.api.CoreSession)
+     */
     @Override
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() != FrameworkEvent.STARTED) {
-            return;
-        }
-        event.getBundle().getBundleContext().removeFrameworkListener(this);
-
-        // Replace OSGI class loader by the standard java class loader used for
-        // loading this class
-        Thread currentThread = Thread.currentThread();
-        ClassLoader previous = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(org.nuxeo.runtime.api.Framework.class.getClassLoader());
-        try {
-            doInitialize();
-        } finally {
-            currentThread.setContextClassLoader(previous);
-        }
-    }
-
-    void doInitialize() {
+    public void doInitializeRepository(CoreSession session) throws ClientException {
         for (QueueManager<?> mgr : locator.getManagers()) {
             mgr.initialize();
         }
+
     }
 }

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
@@ -31,18 +32,24 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.BundleContext;
 
 /**
+ * Register queue services in nuxeo framework
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
 public class QueueComponent extends DefaultComponent {
 
-    DefaultQueueHandler handler;
+    protected DefaultQueueHandler handler;
 
-    DefaultQueueRegistry registry;
+    protected DefaultQueueRegistry registry;
 
-    TransactedServiceProvider provider;
+    protected TransactedServiceProvider provider;
+
+    protected QueuesInitializationHandler initializationHandler;
+
 
     @Override
     public void registerContribution(Object contribution,
@@ -77,8 +84,8 @@ public class QueueComponent extends DefaultComponent {
         registry = new DefaultQueueRegistry();
         handler = new DefaultQueueHandler(1000, registry);
         provider = new TransactedServiceProvider(DefaultServiceProvider.getProvider());
-        DefaultServiceProvider.setProvider(provider);
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(new QueuesInitializer(registry));
+        initializationHandler = new QueuesInitializationHandler(registry);
+        initializationHandler.install();
     }
 
     @Override
