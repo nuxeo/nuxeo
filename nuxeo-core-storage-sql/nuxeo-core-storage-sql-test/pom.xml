@@ -39,7 +39,7 @@
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -60,12 +60,6 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope> <!-- override -->
     </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>compile</scope> <!-- override -->
-    </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
