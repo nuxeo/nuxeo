@@ -56,7 +56,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- *
+ * 
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -271,8 +271,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         // TODO: in JBoss there is a deployer that will deploy nuxeo
         // configuration files ..
-        boolean isNotJBoss = env != null
-                && !"JBoss".equals(env.getHostApplicationName());
+        boolean isNotJBoss4 = !isJBoss4(env);
 
         File dir = env.getConfig();
         // File dir = new File(configDir);
@@ -293,7 +292,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     // beginning...
                     // until fixing this we deploy config dir from
                     // NuxeoDeployer
-                    if (isNotJBoss) {
+                    if (isNotJBoss4) {
                         File file = new File(dir, name);
                         log.debug("Configuration: deploy config component: "
                                 + name);
@@ -536,6 +535,18 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     + " cannot bind to nonexistent file: " + file);
             return null;
         }
+    }
+
+    public static final boolean isJBoss4(Environment env) {
+        if (env == null) {
+            return false;
+        }
+        String hn = env.getHostApplicationName();
+        String hv = env.getHostApplicationVersion();
+        if (hn == null || hv == null) {
+            return false;
+        }
+        return "JBoss".equals(hn) && hv.startsWith("4");
     }
 
 }
