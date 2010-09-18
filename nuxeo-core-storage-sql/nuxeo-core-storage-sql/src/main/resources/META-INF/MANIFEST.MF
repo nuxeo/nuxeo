@@ -15,6 +15,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Eclipse-BuddyPolicy: registered, dependent
+Eclipse-RegisterBuddy: org.nuxeo.common
 Nuxeo-Component: OSGI-INF/management-contrib.xml,
   OSGI-INF/listener-contrib.xml,
   OSGI-INF/querymaker-service.xml,
