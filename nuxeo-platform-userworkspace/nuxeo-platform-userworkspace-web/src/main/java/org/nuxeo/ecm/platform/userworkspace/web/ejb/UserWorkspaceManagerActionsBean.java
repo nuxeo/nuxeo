@@ -29,6 +29,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
@@ -52,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("userWorkspaceManagerActions")
 @Scope(SESSION)
+@Install(precedence = Install.FRAMEWORK)
 @Startup
 public class UserWorkspaceManagerActionsBean implements
         UserWorkspaceManagerActions {
@@ -60,23 +62,23 @@ public class UserWorkspaceManagerActionsBean implements
 
     private static final Log log = LogFactory.getLog(UserWorkspaceManagerActions.class);
 
-    private static final String DOCUMENT_VIEW = "view_documents";
+    public static final String DOCUMENT_VIEW = "view_documents";
 
-    private boolean showingPersonalWorkspace;
+    protected boolean showingPersonalWorkspace;
 
-    private boolean initialized;
+    protected boolean initialized;
 
-    private DocumentModel lastAccessedDocument;
+    protected DocumentModel lastAccessedDocument;
 
     // Rux INA-252: very likely cause of passivation error
-    private transient UserWorkspaceService userWorkspaceService;
+    protected transient UserWorkspaceService userWorkspaceService;
 
     // Rux INA-252: another cause of passivation error
     @In(required = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(required = false, create = true)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected DashboardNavigationHelper dashboardNavigationHelper;
