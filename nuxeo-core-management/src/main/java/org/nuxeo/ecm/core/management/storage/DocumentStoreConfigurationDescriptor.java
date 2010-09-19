@@ -31,6 +31,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 public class DocumentStoreConfigurationDescriptor {
 
     @XNode("repository")
-    public final String repositoryName = "default";
+    protected final String repositoryName = "default";
 
 }

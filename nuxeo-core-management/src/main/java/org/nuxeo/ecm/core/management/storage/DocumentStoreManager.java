@@ -34,24 +34,22 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<String, DocumentStoreHandlerDescriptor>();
 
-    protected DocumentStoreConfigurationDescriptor config = new  DocumentStoreConfigurationDescriptor();
-
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
         handlers.put(desc.id, desc);
     }
 
     public void registerConfig(DocumentStoreConfigurationDescriptor config) {
-        this.config = config;
+        DocumentStoreSessionRunner.repositoryName = config.repositoryName;
     }
 
-    public DocumentStoreManager() {
-        super.install();
+    public void setRepositoryName(String name) {
+        DocumentStoreSessionRunner.repositoryName = name;
     }
 
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
 
-        if (!session.getRepositoryName().equals(config.repositoryName)) {
+        if (!session.getRepositoryName().equals(DocumentStoreSessionRunner.repositoryName)) {
             return;
         }
 

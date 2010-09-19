@@ -11,11 +11,9 @@ public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunn
     protected static String repositoryName;
 
     /**
-     *  Invoked by the core management component at startup
-     *
-     * @param name
+     *  Should be Invoked at startup
      */
-    public void setRepositoryName(String name) {
+    public static void setRepositoryName(String name) {
         repositoryName = name;
     }
 
@@ -31,11 +29,13 @@ public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunn
              if (repositoryName != null) {
                  return repositoryName;
              }
-             return repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
+             repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
+             return repositoryName;
          }
     }
 
     public DocumentStoreSessionRunner() {
+
         super(repositoryName());
     }
 
