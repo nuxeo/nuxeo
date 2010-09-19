@@ -19,5 +19,13 @@
   <extension-point name="serviceDefinition">
     <object class="org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor" />
   </extension-point>
+  
+   <extension-point name="storageConfiguration">
+    <object class="org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor" />
+  </extension-point>
+  
+   <extension-point name="storageHandlers">
+    <object class="org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor" />
+   </extension-point>
 
 </component>
