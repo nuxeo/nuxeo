@@ -36,7 +36,7 @@ public class HeartbeatInfo {
         this.updateTime = updateTime;
     }
 
-    public URI getServerId() {
+    public URI getId() {
         return id;
     }
 
