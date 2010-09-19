@@ -31,9 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerInfo;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerNotFoundException;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
@@ -137,17 +136,11 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
 
     @Override
     public boolean isOrphaned() {
-        ServerHeartBeat hb = Framework.getLocalService(ServerHeartBeat.class);
-        ServerInfo hbInfo;
-        try {
-            hbInfo = hb.getInfo(serverURI);
-        } catch (ServerNotFoundException e) {
-            log.warn("Server referred by the queue item couldn't be located, is this server running nuxeo heartbeat service ?", e);
-            return true;
-        }
+        HeartbeatManager hb = Framework.getLocalService(HeartbeatManager.class);
+        HeartbeatInfo hbInfo= hb.getInfo(serverURI);
         final Date now = new Date();
         // is server not alive, isOrphaned (calendar use ?)
-        if (hbInfo.getUpdateTime().getTime() + hb.getHeartBeatDelay() < now.getTime()) {
+        if (hbInfo.getUpdateTime().getTime() + hb.getDelay() < now.getTime()) {
             return true;
         }
         // is execute time before the restart of the server

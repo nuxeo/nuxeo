@@ -35,5 +35,9 @@
 
     <object class="org.nuxeo.ecm.platform.queue.core.QueueDescriptor" />
   </extension-point>
+  
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="storageHandlers">
+    <handler id="queue" class="org.nuxeo.ecm.platform.queue.core.QueuesInitializationHandler"/>
+  </extension>
 
 </component>

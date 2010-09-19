@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
@@ -32,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.BundleContext;
 
 /**
  * Register queue services in nuxeo framework
@@ -41,6 +39,8 @@ import org.osgi.framework.BundleContext;
  *
  */
 public class QueueComponent extends DefaultComponent {
+
+    protected static QueueComponent defaultComponent;
 
     protected DefaultQueueHandler handler;
 
@@ -80,21 +80,19 @@ public class QueueComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
         registry = new DefaultQueueRegistry();
         handler = new DefaultQueueHandler(1000, registry);
         provider = new TransactedServiceProvider(DefaultServiceProvider.getProvider());
-        initializationHandler = new QueuesInitializationHandler(registry);
-        initializationHandler.install();
+        defaultComponent = this;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        defaultComponent = null;
         DefaultServiceProvider.setProvider(provider.nextProvider);
         handler = null;
         registry = null;
         provider = null;
-        super.deactivate(context);
     }
 
     public static URI newName(String queueName, String contentName) {

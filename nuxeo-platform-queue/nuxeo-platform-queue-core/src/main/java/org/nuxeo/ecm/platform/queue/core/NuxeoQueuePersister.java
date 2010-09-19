@@ -44,12 +44,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
@@ -238,7 +237,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         @Override
         public void run() throws ClientException {
 
-            ServerHeartBeat heartbeat = Framework.getLocalService(ServerHeartBeat.class);
+            HeartbeatManager heartbeat = Framework.getLocalService(HeartbeatManager.class);
             PathRef ref = newPathRef(session, name);
             if (session.exists(ref)) {
                 throw new QueueError("Already created queue item", name);
@@ -250,7 +249,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_OWNER,
                     ownerName.toASCIIString());
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID,
-                    heartbeat.getMyURI().toASCIIString());
+                    heartbeat.getInfo().getId().toASCIIString());
 
             injectContent(doc, content);
 
