@@ -68,14 +68,6 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
     /**
      * This constructor is to be called only from the server side from a
      * CoreSession (AbstractSession).
-     *
-     * @param coreSession
-     * @param chunkSize
-     * @param def
-     * @param type
-     * @param perm
-     * @param filter
-     * @throws ClientException
      */
     public DocumentModelIteratorImpl(CoreSession coreSession, int chunkSize,
             DocsQueryProviderDef def, String type, String perm, Filter filter)

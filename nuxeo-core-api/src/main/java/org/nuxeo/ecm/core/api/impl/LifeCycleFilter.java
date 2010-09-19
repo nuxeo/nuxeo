@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.Filter;
  * A filter based on the document's life cycle.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class LifeCycleFilter implements Filter {
 
@@ -42,7 +41,7 @@ public class LifeCycleFilter implements Filter {
 
     /**
      * Generic constructor.
-     *
+     * <p>
      * To be accepted, the document must have its lifecycle state in the {@code
      * required} list and the {@code excluded} list must not contain its
      * lifecycle state.

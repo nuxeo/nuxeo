@@ -51,8 +51,8 @@ public class FacetFilter implements Filter {
     /**
      * Generic constructor.
      *
-     * @param required : list of facets the models must have to pass the filter
-     * @param excluded : list of facets the models must not have to pass the
+     * @param required list of facets the models must have to pass the filter
+     * @param excluded list of facets the models must not have to pass the
      *            filter
      */
     public FacetFilter(List<String> required, List<String> excluded) {

@@ -26,10 +26,11 @@ import java.util.Map;
  * <p>
  * Provides APIs to navigate between result pages
  *
- * @author arussel
- * @author Anahide Tchertchian
  * @param <T> any Serializable item
  * @since 5.4
+ *
+ * @author arussel
+ * @author Anahide Tchertchian
  */
 public interface PageProvider<T> extends Serializable {
 
@@ -82,7 +83,7 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Returns the number of result elements if available or
-     * <code>UNKNOWN_SIZE</code> if it is unknown
+     * <code>UNKNOWN_SIZE</code> if it is unknown.
      */
     long getResultsCount();
 
@@ -116,7 +117,7 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Sets the list of selected entries to take into account in
-     * {@link #getCurrentSelectPage()}
+     * {@link #getCurrentSelectPage()}.
      */
     void setSelectedEntries(List<T> entries);
 
@@ -149,7 +150,7 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Returns the offset (starting from 0) of the first element in the current
-     * page or <code>UNKNOWN_SIZE</code>
+     * page or <code>UNKNOWN_SIZE</code>.
      */
     long getCurrentPageOffset();
 
@@ -184,19 +185,19 @@ public interface PageProvider<T> extends Serializable {
     void lastPage();
 
     /**
-     * Returns the current entry
+     * Returns the current entry.
      */
     T getCurrentEntry();
 
     /**
-     * Sets the current entry
+     * Sets the current entry.
      *
      * @throws ClientException if entry is not found within current page.
      */
     void setCurrentEntry(T entry) throws ClientException;
 
     /**
-     * Sets the current entry index
+     * Sets the current entry index.
      *
      * @throws ClientException if index is not found within current page.
      */
@@ -206,8 +207,7 @@ public interface PageProvider<T> extends Serializable {
      * Tells if there is a next entry.
      * <p>
      * The next entry might be in next page. If no current entry is set, this
-     * returns false
-     * </p>
+     * returns false.
      */
     boolean isNextEntryAvailable();
 
@@ -215,8 +215,7 @@ public interface PageProvider<T> extends Serializable {
      * Tells if there is a previous entry.
      * <p>
      * The next entry might be in next page. If no current entry is set, this
-     * returns false
-     * </p>
+     * returns false.
      */
     boolean isPreviousEntryAvailable();
 
@@ -224,10 +223,7 @@ public interface PageProvider<T> extends Serializable {
      * Move the current entry to the previous one, if applicable
      * <p>
      * No exception: this method is intended to be plugged directly at the UI
-     * layer. In case there's no preivous entry, nothing will happen.
-     * </p>
-     *
-     * @throws DistributionException
+     * layer. In case there's no previous entry, nothing will happen.
      */
     void previousEntry();
 
@@ -237,7 +233,6 @@ public interface PageProvider<T> extends Serializable {
      * If needed and possible, the provider will forward to next page. No
      * special exceptions: this method is intended to be plugged directly at
      * the UI layer. In case there's no next entry, nothing happens.
-     * </p>
      */
     void nextEntry();
 

@@ -37,7 +37,6 @@ import javax.security.auth.spi.LoginModule;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ClientLoginModule implements LoginModule {
 

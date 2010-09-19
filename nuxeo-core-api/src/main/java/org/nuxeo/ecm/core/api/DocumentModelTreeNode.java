@@ -29,24 +29,20 @@ public interface DocumentModelTreeNode {
 
     DocumentModel getDocument();
 
+    /*
+    @Deprecated
     void setDocument(DocumentModel document);
 
+    @Deprecated
     Integer getLevelTree();
 
+    @Deprecated
     void setLevelTree(Integer levelTree);
 
+    @Deprecated
     void setVersion(String version);
 
-    String getVersion();
-
-    /**
-     * Used to display tabbed sections according to the structure
-     * in the repository.
-     *
-     * @return
-     * @deprecated
-     */
     @Deprecated
-    String getTreeLabel();
-
+    String getVersion();
+    */
 }

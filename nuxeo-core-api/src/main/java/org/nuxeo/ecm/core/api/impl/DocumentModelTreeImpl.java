@@ -45,7 +45,6 @@ public class DocumentModelTreeImpl extends ArrayList<DocumentModelTreeNode>
 
     /**
      * Adds a DocumentModel on a certain level.
-     *
      */
     public void add(DocumentModel document, int level) {
         DocumentModelTreeNode node = new DocumentModelTreeNodeImpl(document,

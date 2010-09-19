@@ -65,10 +65,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
 
     /**
      * Constructor taking as argument an iterator. The iterator is considered
-     * unaltered
-     *
-     * @param docsIterator
-     * @param pageSize
+     * unaltered.
      */
     public DocumentsPageProvider(DocumentModelIterator docsIterator,
             int pageSize) {
@@ -134,7 +131,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
 
     /**
      * Creates the DocumentModelList for the next page.
-     * Doesn't put in in the loadedPages cache
+     * Doesn't put it in the loadedPages cache.
      */
     private DocumentModelList loadNextPage() {
         if (!docsIterator.hasNext()) {
@@ -165,7 +162,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
      * Used to update some member fields from the new knowledge that
      * end was reached.
      *
-     * @param posInPage: the position in current page when this happened
+     * @param posInPage the position in current page when this happened
      */
     private void endReached(int posInPage) {
         if (DocumentModelIterator.UNKNOWN_SIZE == totalResultsCount) {
