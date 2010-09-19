@@ -26,7 +26,7 @@ import java.util.Map;
 import org.nuxeo.common.utils.Path;
 
 /**
- * Comparator to sort a document tree using titles
+ * Comparator to sort a document tree using titles.
  *
  * @author bdelbosc
  */

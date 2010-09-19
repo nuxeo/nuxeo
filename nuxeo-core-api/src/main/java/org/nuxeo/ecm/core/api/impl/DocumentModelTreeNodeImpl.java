@@ -35,10 +35,6 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
 
     private static final long serialVersionUID = -1549177060872366505L;
 
-    // XXX NP : to be removed along with getTreeLabel
-    @Deprecated
-    private static final String HTML_TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
-
     private DocumentModel document;
     private Integer levelTree;
     private String version;
@@ -48,26 +44,11 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         levelTree = level;
     }
 
-    // TODO NP : - to be removed asap
-    @Deprecated
-    public String getTreeLabel() {
-        StringBuilder label = new StringBuilder("");
-        for (int i = 0; i < levelTree; i++) {
-            label.append(HTML_TAB);
-        }
-        try {
-            label.append(document.getProperty("dublincore", "title"));
-        } catch (ClientException e) {
-            //don't append anything
-        }
-        return label.toString();
-    }
-
     public DocumentModel getDocument() {
         return document;
     }
 
-    // XXX: remove ?
+    // TODO: remove
     public void setDocument(DocumentModel document) {
         this.document = document;
     }
@@ -76,7 +57,7 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         return levelTree;
     }
 
-    // XXX: remove ?
+    // TODO: remove
     public void setLevelTree(Integer levelTree) {
         this.levelTree = levelTree;
     }
@@ -85,6 +66,7 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         return version;
     }
 
+    // TODO: remove
     public void setVersion(String version) {
         this.version = version;
     }
