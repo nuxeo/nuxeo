@@ -26,14 +26,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  *
  */
-@XObject("service")
+@XObject("handler")
 public class DocumentStoreHandlerDescriptor {
 
     @XNode("@id")
-    protected final String id = "[id]";
+    protected String id = "[id]";
 
     protected DocumentStoreHandler handler;
 
+    @XNode("@class")
     public void setClass(Class<? extends DocumentStoreHandler> clazz) {
         try {
             handler = clazz.newInstance();

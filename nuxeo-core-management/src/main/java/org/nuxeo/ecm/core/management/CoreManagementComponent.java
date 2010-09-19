@@ -51,7 +51,7 @@ public class CoreManagementComponent extends DefaultComponent  {
 
     public static final String SERVICE_DEF_EP = "serviceDefinition";
 
-    public static final String STORAGE_CLIENT_EP = "storageClients";
+    public static final String STORAGE_HANDLERS_EP = "storageHandlers";
 
    public static final String STORAGE_CONFIG_EP = "storageConfiguration";
 
@@ -94,11 +94,13 @@ public class CoreManagementComponent extends DefaultComponent  {
         else if (extensionPoint.equals(SERVICE_DEF_EP)) {
             globalManager.registerService((AdministrableServiceDescriptor) contribution);
         }
-        else if (extensionPoint.equals(STORAGE_CLIENT_EP)) {
+        else if (extensionPoint.equals(STORAGE_HANDLERS_EP)) {
             storageManager.registerHandler((DocumentStoreHandlerDescriptor)contribution);
         }
         else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
             storageManager.registerConfig((DocumentStoreConfigurationDescriptor)contribution);
+        } else {
+            super.registerContribution(contribution, extensionPoint, contributor);
         }
     }
 

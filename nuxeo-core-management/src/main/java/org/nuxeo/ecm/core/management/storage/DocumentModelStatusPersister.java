@@ -171,7 +171,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         @Override
         public void run() throws ClientException {
 
-            boolean onlyFetchIds = false;
+                boolean onlyFetchIds = false;
 
             StringBuffer sb = new StringBuffer("select * from ");
             sb.append(DocumentModelStatusPersister.ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
