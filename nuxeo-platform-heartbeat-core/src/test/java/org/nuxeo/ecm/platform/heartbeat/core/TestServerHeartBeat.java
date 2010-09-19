@@ -16,9 +16,10 @@
  */
 package org.nuxeo.ecm.platform.heartbeat.core;
 
+import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerInfo;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,6 +35,7 @@ public class TestServerHeartBeat extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.management");
         deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
+        DocumentStoreSessionRunner.setRepositoryName(REPOSITORY_NAME);
         fireFrameworkStarted();
         openSession();
     }
@@ -42,15 +44,15 @@ public class TestServerHeartBeat extends SQLRepositoryTestCase {
      * Testing the heart beat service.
      */
     public void testLife() throws Exception {
-        ServerHeartBeat hb = Framework.getLocalService(ServerHeartBeat.class);
+        HeartbeatManager hb = Framework.getLocalService(HeartbeatManager.class);
         assertTrue("server isn't started", hb.isStarted());
 
-        Thread.sleep(hb.getHeartBeatDelay());
-        ServerInfo info1 = hb.getMyInfo();
+        Thread.sleep(hb.getDelay());
+        HeartbeatInfo info1 = hb.getInfo();
         assertNotNull("server info should not be null", info1);
 
-        Thread.sleep(hb.getHeartBeatDelay());
-        ServerInfo info2 = hb.getMyInfo();
+        Thread.sleep(hb.getDelay());
+        HeartbeatInfo info2 = hb.getInfo();
         assertNotSame("The server infos time should had changed",
                 info1.getUpdateTime(), info2.getUpdateTime());
     }

@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentHeartbeatManager implements HeartbeatManager {
 
-    private static final String HEARTBEAT_ID = "id";
+    private static final String HEARTBEAT_ID = "identifier";
 
     private static final String HEARTBEAT_UPDATE_TIME = "updateTime";
 

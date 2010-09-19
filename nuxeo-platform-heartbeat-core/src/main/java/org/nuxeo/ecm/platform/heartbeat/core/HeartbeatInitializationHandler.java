@@ -34,7 +34,7 @@ public class HeartbeatInitializationHandler implements DocumentStoreHandler {
         try {
             mgr.createOrUpdateServer(session, mgr.getMyURI(), new Date(0));
         } catch (ClientException e) {
-            throw new Error("Canot initialize heartbeat");
+           throw new Error("Cannot initialize hearbeat");
         }
     }
 
