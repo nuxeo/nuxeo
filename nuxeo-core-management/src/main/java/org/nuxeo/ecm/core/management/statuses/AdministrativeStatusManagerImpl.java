@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.management.statuses;
 import java.util.Calendar;
 import java.util.List;
 
+import org.nuxeo.ecm.core.management.CoreManagementService;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
@@ -32,7 +33,7 @@ import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
  * @author tiry
  *
  */
-public class AdministrativeStatusManagerImpl implements AdministrativeStatusManager {
+public class AdministrativeStatusManagerImpl implements AdministrativeStatusManager, CoreManagementService {
 
     protected final AdministrativeStatusPersister persister;
 

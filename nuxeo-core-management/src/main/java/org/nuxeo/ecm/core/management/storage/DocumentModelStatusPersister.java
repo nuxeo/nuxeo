@@ -16,18 +16,18 @@
  */
 package org.nuxeo.ecm.core.management.storage;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Used to control the server administrative status: the status of the server
@@ -55,28 +55,23 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
 
     private static final Log log = LogFactory.getLog(DocumentModelStatusPersister.class);
 
-    protected String repositoryName;
 
-    protected String getRepositoryName() {
-        if (repositoryName == null) {
-            repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
-        }
-        return repositoryName;
-    }
-
-
-    private class StatusSaver extends UnrestrictedSessionRunner {
+    private class StatusSaver extends DocumentStoreSessionRunner {
 
         protected AdministrativeStatus status;
 
-        public StatusSaver(String repoName, AdministrativeStatus status) {
-            super(repoName);
+        public StatusSaver(AdministrativeStatus status) {
             this.status = status;
         }
 
         @Override
+        protected String errorMessage() {
+            return "Cannot save  " + status;
+        }
+
+        @Override
         public void run() throws ClientException {
-            DocumentModel doc = doGetOrCreateDoc(status);
+            doGetOrCreateDoc(status);
             session.save();
         }
 
@@ -145,9 +140,91 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         return status.getInstanceIdentifier() + "--" + status.getServiceIdentifier();
     }
 
+    public class StatusFetcher extends DocumentStoreSessionRunner {
+
+        protected String instanceId;
+
+        protected String serviceId;
+
+        protected List<String> allInstanceIds = new ArrayList<String>();
+
+        protected List<AdministrativeStatus> statuses = new ArrayList<AdministrativeStatus>();
+
+        public StatusFetcher(String instanceId, String serviceId) {
+            this.instanceId = instanceId;
+            this.serviceId = serviceId;
+        }
+
+        @Override
+        protected String errorMessage() {
+            StringBuffer sb  = new StringBuffer();
+            sb.append("Cannot fetch statuses ");
+            if (instanceId != null) {
+                sb.append(" for ").append(instanceId);
+            }
+            if (serviceId != null) {
+                sb.append(":").append(serviceId);
+            }
+            return sb.toString();
+        }
+
+        @Override
+        public void run() throws ClientException {
+
+                boolean onlyFetchIds = false;
+
+            StringBuffer sb = new StringBuffer("select * from ");
+            sb.append(DocumentModelStatusPersister.ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+
+            if (instanceId == null) {
+                onlyFetchIds = true;
+            } else {
+                sb.append(" where ");
+                sb.append(DocumentModelStatusPersister.INSTANCE_PROPERTY);
+                sb.append("='");
+                sb.append(instanceId);
+                sb.append("'");
+                if (serviceId != null) {
+                    sb.append(" AND ");
+                    sb.append(DocumentModelStatusPersister.SERVICE_PROPERTY);
+                    sb.append("='");
+                    sb.append(serviceId);
+                    sb.append("'");
+                }
+            }
+
+            DocumentModelList result = session.query(sb.toString());
+
+            for (DocumentModel doc : result) {
+                if (onlyFetchIds) {
+                    String id = (String) doc.getPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY);
+                    if (!allInstanceIds.contains(id)) {
+                        allInstanceIds.add(id);
+                    }
+                } else {
+                    statuses.add(wrap(doc));
+                }
+            }
+        }
+
+        protected AdministrativeStatus wrap(DocumentModel doc) throws ClientException {
+
+            String userLogin = (String) doc.getPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY);
+            String id = (String) doc.getPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY);
+            String service = (String) doc.getPropertyValue(DocumentModelStatusPersister.SERVICE_PROPERTY);
+            String message = (String) doc.getPropertyValue(DocumentModelStatusPersister.MESSAGE_PROPERTY);
+            String state = (String) doc.getPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY);
+            Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
+
+            AdministrativeStatus status = new AdministrativeStatus(state, message, modified, userLogin, id, service);
+
+            return status;
+        }
+    }
+
     @Override
     public List<String> getAllInstanceIds() {
-        StatusFetcher fetcher = new StatusFetcher(getRepositoryName(), null, null);
+        StatusFetcher fetcher = new StatusFetcher(null, null);
         try {
             fetcher.runUnrestricted();
             return fetcher.allInstanceIds;
@@ -158,10 +235,9 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         }
     }
 
-
     @Override
     public List<AdministrativeStatus> getAllStatuses(String instanceId) {
-        StatusFetcher fetcher = new StatusFetcher(getRepositoryName(), instanceId, null);
+        StatusFetcher fetcher = new StatusFetcher(instanceId, null);
         try {
             fetcher.runUnrestricted();
             return fetcher.statuses;
@@ -172,20 +248,18 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         }
     }
 
-
     @Override
-    public AdministrativeStatus getStatus(String instanceId,
-            String serviceIdentifier) {
-        StatusFetcher fetcher = new StatusFetcher(getRepositoryName(), instanceId, serviceIdentifier);
+    public AdministrativeStatus getStatus(String instanceId, String serviceIdentifier) {
+        StatusFetcher fetcher = new StatusFetcher(instanceId, serviceIdentifier);
         try {
-            fetcher.runUnrestricted();
-            if (fetcher.statuses.size()==1) {
-                return fetcher.statuses.get(0);
-            } else {
-                log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
-                return null;
-            }
+        fetcher.runUnrestricted();
+        if (fetcher.statuses.size() == 1) {
+            return fetcher.statuses.get(0);
+        } else {
+            log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
+            return null;
         }
+    }
         catch (ClientException e) {
             log.error("Error while fetching all service status for instance " + instanceId , e);
             return null;
@@ -203,7 +277,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
     public AdministrativeStatus saveStatus(AdministrativeStatus status) {
 
         try {
-            StatusSaver saver = new StatusSaver(getRepositoryName(), status);
+            StatusSaver saver = new StatusSaver(status);
             saver.runUnrestricted();
             return saver.getStatus();
         } catch (Exception e) {

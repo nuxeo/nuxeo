@@ -7,6 +7,8 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -20,6 +22,7 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.management");
         deployBundle("org.nuxeo.ecm.core.management.test");
+        DocumentStoreSessionRunner.setRepositoryName(REPOSITORY_NAME);
         super.fireFrameworkStarted();
         openSession();
     }

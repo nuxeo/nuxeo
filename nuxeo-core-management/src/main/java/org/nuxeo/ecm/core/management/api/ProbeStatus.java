@@ -107,16 +107,16 @@ public class ProbeStatus {
 
     public String getAsXML() {
         StringBuffer sb = new StringBuffer();
-        sb.append("<dl>").append("\n");
+        sb.append("<dl>");
         for (String key : infos.keySet()) {
             sb.append("<dt>");
             sb.append(key);
-            sb.append("</dt><dd class='");
-            sb.append(key);
-            sb.append("'>");
+            sb.append("</dt>");
+            sb.append("<dd class='").append(key).append("'>");
             sb.append(infos.get(key));
-            sb.append("</dd>\n");
+            sb.append("</dd>");
         }
+        sb.append("</dl>");
         return sb.toString();
     }
 
