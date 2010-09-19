@@ -36,29 +36,29 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerInfo;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerNotFoundException;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatNotFoundError;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class NuxeoServerHeartBeat implements ServerHeartBeat {
+public class DocumentHeartbeatManager implements HeartbeatManager {
 
-    private static final String HEARTBEATSERVER_SERVERID = "serverId";
+    private static final String HEARTBEAT_ID = "id";
 
-    private static final String HEARTBEATSERVER_UPDATE_TIME = "updateTime";
+    private static final String HEARTBEAT_UPDATE_TIME = "updateTime";
 
-    private static final String HEARTBEATSERVER_START_TIME = "startTime";
+    private static final String HEARTBEAT_START_TIME = "startTime";
 
-    private static final String HEARTBEATSERVER_SCHEMA = "heartbeatserver";
+    private static final String HEARTBEAT_SCHEMA = "heartbeat";
 
-    public static final String HEARTBEAT_ROOT_NAME = "servers";
+    public static final String HEARTBEAT_ROOT_NAME = "heartbeats";
 
-    public static final String HEARTBEAT_ROOT_TYPE = "ServerRoot";
+    public static final String HEARTBEAT_ROOT_TYPE = "HeartbeatRoot";
 
-    public static final String HEARTBEAT_TYPE = "Server";
+    public static final String HEARTBEAT_TYPE = "Heartbeat";
 
     public static final long DEFAULT_HEARTBEAT_DELAY = 10000;
 
@@ -68,9 +68,9 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
 
     long delay; // TODO to be contributed
 
-    public static final Log log = LogFactory.getLog(NuxeoServerHeartBeat.class);
+    public static final Log log = LogFactory.getLog(DocumentHeartbeatManager.class);
 
-    public long getHeartBeatDelay() {
+    public long getDelay() {
         return delay;
     }
 
@@ -129,8 +129,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
 
         DocumentModel doc;
 
-        public CreateOrUpdateServerInfo(String repository, URI serveruri,
-                Date startTime) {
+        public CreateOrUpdateServerInfo(String repository, URI serveruri, Date startTime) {
             super(repository);
             this.serveruri = serveruri;
             this.startTime = startTime;
@@ -143,35 +142,30 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
     }
 
     public void stop() {
-        if (timer == null) {
-            throw new IllegalStateException("Timer not found");
+        if (timer != null) {
+            timer.cancel();
         }
-        timer.cancel();
         timer = null;
         log.info("Heartbeat scheduler stopped");
     }
 
-    public ServerInfo getInfo(URI serverURI) throws ServerNotFoundException {
-        String defaultRepositoryName = Framework.getLocalService(
-                RepositoryManager.class).getDefaultRepository().getName();
-        GetMyInfo serverinfoRunner = new GetMyInfo(defaultRepositoryName,
-                serverURI);
-        ServerInfo serverinfo;
+    public HeartbeatInfo getInfo(URI serverURI) {
+        String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).
+            getDefaultRepository().getName();
+        GetHeartbeat runner = new GetHeartbeat(defaultRepositoryName,serverURI);
 
         try {
-            serverinfoRunner.runUnrestricted();
-            DocumentModel doc = serverinfoRunner.doc;
-            serverinfo = docToServerInfo(doc);
+            runner.runUnrestricted();
+            return  docToServerInfo(runner.doc);
         } catch (Throwable e) {
-            throw new ServerNotFoundException(
+            throw new HeartbeatNotFoundError(
                     "An error occurred while trying to get the server info", e);
         }
-        return serverinfo;
 
     }
 
-    public List<ServerInfo> getInfos() {
-        List<ServerInfo> serverinfos = new ArrayList<ServerInfo>();
+    public List<HeartbeatInfo> getInfos() {
+        List<HeartbeatInfo> serverinfos = new ArrayList<HeartbeatInfo>();
         try {
             String defaultRepositoryName = Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepository().getName();
@@ -204,7 +198,7 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         }
     }
 
-    public ServerInfo getMyInfo() throws ServerNotFoundException {
+    public HeartbeatInfo getInfo() throws HeartbeatNotFoundError {
         URI serveruri = getMyURI();
         return getInfo(serveruri);
     }
@@ -221,26 +215,26 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
         return serveruri;
     }
 
-    private static ServerInfo docToServerInfo(DocumentModel doc)
+    private static HeartbeatInfo docToServerInfo(DocumentModel doc)
             throws ClientException, URISyntaxException {
-        ServerInfo serverinfo;
-        String serverIdStr = (String) doc.getProperty(HEARTBEATSERVER_SCHEMA,
-                HEARTBEATSERVER_SERVERID);
+        HeartbeatInfo serverinfo;
+        String serverIdStr = (String) doc.getProperty(HEARTBEAT_SCHEMA,
+                HEARTBEAT_ID);
         URI serverId = new URI(serverIdStr);
-        Date startTime = ((Calendar) doc.getProperty(HEARTBEATSERVER_SCHEMA,
-                HEARTBEATSERVER_START_TIME)).getTime();
-        Date updateTime = ((Calendar) doc.getProperty(HEARTBEATSERVER_SCHEMA,
-                HEARTBEATSERVER_UPDATE_TIME)).getTime();
-        serverinfo = new ServerInfo(serverId, startTime, updateTime);
+        Date startTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA,
+                HEARTBEAT_START_TIME)).getTime();
+        Date updateTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA,
+                HEARTBEAT_UPDATE_TIME)).getTime();
+        serverinfo = new HeartbeatInfo(serverId, startTime, updateTime);
         return serverinfo;
     }
 
-    class GetMyInfo extends UnrestrictedSessionRunner {
+    class GetHeartbeat extends UnrestrictedSessionRunner {
         URI serverUri;
 
         DocumentModel doc;
 
-        public GetMyInfo(String repository, URI serverUri) {
+        public GetHeartbeat(String repository, URI serverUri) {
             super(repository);
             this.serverUri = serverUri;
         }
@@ -294,14 +288,14 @@ public class NuxeoServerHeartBeat implements ServerHeartBeat {
     private static void setServerInfo(URI uri, Date starttime, DocumentModel model)
             throws ClientException {
         model.setProperty("dublincore", "title", uri.toString());
-        model.setProperty(HEARTBEATSERVER_SCHEMA, HEARTBEATSERVER_SERVERID,
+        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_ID,
                 uri.toString());
         // don't update start time if not specify
         if (starttime != null) {
-            model.setProperty(HEARTBEATSERVER_SCHEMA,
-                    HEARTBEATSERVER_START_TIME, starttime);
+            model.setProperty(HEARTBEAT_SCHEMA,
+                    HEARTBEAT_START_TIME, starttime);
         }
-        model.setProperty(HEARTBEATSERVER_SCHEMA, HEARTBEATSERVER_UPDATE_TIME,
+        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_UPDATE_TIME,
                 new Date());
     }
 

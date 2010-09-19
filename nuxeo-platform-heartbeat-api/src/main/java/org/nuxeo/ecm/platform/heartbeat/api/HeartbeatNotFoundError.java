@@ -16,36 +16,28 @@
  */
 package org.nuxeo.ecm.platform.heartbeat.api;
 
-import java.net.URI;
-import java.util.Date;
-
 /**
+ * Error thrown when no server are found.
+ *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class ServerInfo {
+public class HeartbeatNotFoundError extends Error {
 
-    URI serverId;
+    private static final long serialVersionUID = 1L;
 
-    Date startTime;
-
-    Date updateTime;
-
-    public ServerInfo(URI serverId, Date startTime, Date updateTime) {
-        this.serverId = serverId;
-        this.startTime = startTime;
-        this.updateTime = updateTime;
+    public HeartbeatNotFoundError() {
     }
 
-    public URI getServerId() {
-        return serverId;
+    public HeartbeatNotFoundError(String arg0, Throwable arg1) {
+        super(arg0, arg1);
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public HeartbeatNotFoundError(String arg0) {
+        super(arg0);
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public HeartbeatNotFoundError(Throwable arg0) {
+        super(arg0);
     }
 
 }

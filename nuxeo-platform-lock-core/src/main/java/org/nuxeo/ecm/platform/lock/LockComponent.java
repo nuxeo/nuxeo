@@ -47,7 +47,6 @@ public class LockComponent extends DefaultComponent {
                 if (FrameworkEvent.STARTED != event.getType()) {
                     return;
                 }
-                event.getBundle().getBundleContext().removeFrameworkListener(this);
                 bundleContext.removeFrameworkListener(this);
                 provider = new ThreadedLockRecordProvider();
                 coordinator = new LockCoordinatorImpl();
@@ -61,8 +60,12 @@ public class LockComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        coordinator.deactivate();
-        provider.deactivate();
+        if (coordinator != null) {
+            coordinator.deactivate();
+        }
+        if (provider != null) {
+            provider.deactivate();
+        }
         coordinator = null;
         provider = null;
         super.deactivate(context);

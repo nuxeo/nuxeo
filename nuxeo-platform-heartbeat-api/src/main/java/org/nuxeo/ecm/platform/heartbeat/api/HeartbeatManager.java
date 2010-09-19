@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.heartbeat.api;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * The server heart beat service is updating a shared keep alive table. Looking
@@ -26,7 +25,7 @@ import java.util.List;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public interface ServerHeartBeat {
+public interface HeartbeatManager {
 
     /**
      * Stop and restart.
@@ -36,14 +35,14 @@ public interface ServerHeartBeat {
     void reset(long delay);
 
     /**
-     * Stopping the heart beat updates.
+     * Stop the heart beat updates.
      *
      * @throws IllegalStateException
      */
     void stop();
 
     /**
-     * Starting the heat beat updates.
+     * Start the heart beat updates.
      *
      * @throws IllegalStateException
      */
@@ -54,26 +53,20 @@ public interface ServerHeartBeat {
      */
     boolean isStarted();
 
-    long getHeartBeatDelay();
 
     /**
-     * Returns the list of server running.
+     * Get delay
      */
-    List<ServerInfo> getInfos();
+    long getDelay();
 
     /**
-     * Get the running server information.
+     * Get this running server information.
      */
-    ServerInfo getMyInfo() throws ServerNotFoundException;
+    HeartbeatInfo getInfo();
 
     /**
-     * Get the running server information.
+     * Get other running server information.
      */
-    ServerInfo getInfo(URI serverURI) throws ServerNotFoundException;
-
-    /**
-     * Get the running server URI.
-     */
-    URI getMyURI();
+    HeartbeatInfo getInfo(URI id);
 
 }

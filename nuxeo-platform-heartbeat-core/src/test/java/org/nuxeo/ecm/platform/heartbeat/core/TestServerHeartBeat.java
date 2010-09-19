@@ -31,6 +31,7 @@ public class TestServerHeartBeat extends SQLRepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.management");
         deployBundle("org.nuxeo.ecm.platform.heartbeat.api");
         deployBundle("org.nuxeo.ecm.platform.heartbeat");
         fireFrameworkStarted();

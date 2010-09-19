@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.heartbeat.core;
 
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.FrameworkEvent;
@@ -27,14 +27,16 @@ import org.osgi.framework.FrameworkListener;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class ServerHeartBeatComponent extends DefaultComponent {
+public class HeartbeatComponent extends DefaultComponent {
 
-    ServerHeartBeat heartbeat;
+    protected static HeartbeatComponent defaultComponent;
+
+    protected DocumentHeartbeatManager manager;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
-        heartbeat = new NuxeoServerHeartBeat();
+        defaultComponent = this;
+        manager = new DocumentHeartbeatManager();
 
         context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
                 new FrameworkListener() {
@@ -45,22 +47,22 @@ public class ServerHeartBeatComponent extends DefaultComponent {
                         }
                         event.getBundle().getBundleContext().removeFrameworkListener(
                                 this);
-                        heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);
+                        manager.start(DocumentHeartbeatManager.DEFAULT_HEARTBEAT_DELAY);
                     }
                 });
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        heartbeat.stop();
-        heartbeat = null;
-        super.deactivate(context);
+        manager.stop();
+        manager = null;
+        defaultComponent = null;
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (ServerHeartBeat.class.isAssignableFrom(adapter)) {
-            return adapter.cast(heartbeat);
+        if (HeartbeatManager.class.isAssignableFrom(adapter)) {
+            return adapter.cast(manager);
         }
         return super.getAdapter(adapter);
     }
