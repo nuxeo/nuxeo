@@ -4,6 +4,8 @@
   <implementation
     class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
 
+ <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+ 
   <service>
     <provide interface="org.nuxeo.ecm.core.management.api.ProbeManager" />
     <provide interface="org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager"/>

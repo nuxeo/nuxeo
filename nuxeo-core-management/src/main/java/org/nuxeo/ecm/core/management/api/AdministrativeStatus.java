@@ -104,4 +104,9 @@ public class AdministrativeStatus implements Serializable {
         return description;
     }
 
+    @Override
+    public String toString() {
+        return String.format("administrativeStatus(%s,%s)", instanceIdentifier, state);
+    }
+
 }

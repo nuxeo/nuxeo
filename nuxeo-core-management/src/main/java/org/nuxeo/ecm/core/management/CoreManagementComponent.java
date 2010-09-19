@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.core.management;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -24,6 +28,9 @@ import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerImpl;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -44,15 +51,21 @@ public class CoreManagementComponent extends DefaultComponent  {
 
     public static final String SERVICE_DEF_EP = "serviceDefinition";
 
+    public static final String STORAGE_CLIENT_EP = "storageClients";
+
+   public static final String STORAGE_CONFIG_EP = "storageConfiguration";
+
 
     public CoreManagementComponent() {
         super(); // enables breaking
     }
+    protected static CoreManagementComponent defaultComponent;
 
-    protected GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
-    protected ProbeManagerImpl probeRunner = new ProbeManagerImpl();
+    protected final GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
+    protected final ProbeManagerImpl probeRunner = new ProbeManagerImpl();
+    protected final DocumentStoreManager storageManager = new DocumentStoreManager();
 
-    protected AdministrativeStatusManagerImpl getLocalManager() {
+    public AdministrativeStatusManagerImpl getLocalManager() {
         return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
     }
 
@@ -81,6 +94,12 @@ public class CoreManagementComponent extends DefaultComponent  {
         else if (extensionPoint.equals(SERVICE_DEF_EP)) {
             globalManager.registerService((AdministrableServiceDescriptor) contribution);
         }
+        else if (extensionPoint.equals(STORAGE_CLIENT_EP)) {
+            storageManager.registerHandler((DocumentStoreHandlerDescriptor)contribution);
+        }
+        else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
+            storageManager.registerConfig((DocumentStoreConfigurationDescriptor)contribution);
+        }
     }
 
     @Override
@@ -92,8 +111,15 @@ public class CoreManagementComponent extends DefaultComponent  {
         }
     }
 
+    public static CoreManagementComponent getDefault() {
+        return defaultComponent;
+    }
+
+
     @Override
     public void activate(ComponentContext context) throws Exception {
+        defaultComponent = this;
+        storageManager.install();
         context.getRuntimeContext().getBundle().getBundleContext()
                 .addFrameworkListener(new FrameworkListener() {
                     public void frameworkEvent(FrameworkEvent event) {
@@ -101,15 +127,14 @@ public class CoreManagementComponent extends DefaultComponent  {
                             return;
                         }
                         event.getBundle().getBundleContext().removeFrameworkListener(this);
-                        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-                        ClassLoader nuxeoCL = Framework.class.getClassLoader();
+                        ClassLoader jarCL = Thread.currentThread().getContextClassLoader();
+                        ClassLoader bundleCL = Framework.class.getClassLoader();
                         try{
-                            Thread.currentThread().setContextClassLoader(nuxeoCL);
-                            getLocalManager().onNuxeoServerStartup();
+                            Thread.currentThread().setContextClassLoader(bundleCL);
                             probeRunner.runAllProbes();
                         }
                         finally{
-                            Thread.currentThread().setContextClassLoader(jbossCL);
+                            Thread.currentThread().setContextClassLoader(jarCL);
                         }// contributed
                     }
                 });
@@ -117,6 +142,7 @@ public class CoreManagementComponent extends DefaultComponent  {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        defaultComponent = null;
         getLocalManager().onNuxeoServerShutdown();
     }
 
