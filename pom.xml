@@ -42,6 +42,11 @@
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+	<groupId>org.nuxeo.ecm.automation</groupId>
+	<artifactId>nuxeo-automation-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
     </dependencies>  
   </dependencyManagement>
 

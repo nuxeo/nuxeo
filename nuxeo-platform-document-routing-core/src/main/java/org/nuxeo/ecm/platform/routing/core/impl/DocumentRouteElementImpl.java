@@ -16,12 +16,24 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.operation.DocumentRouteOperationContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
@@ -32,6 +44,39 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     public DocumentRouteElementImpl(DocumentModel doc) {
         this.document = doc;
+    }
+
+    public DocumentModelList getAttachedDocuments(CoreSession session) {
+        DocumentModel parent = document;
+        while (true) {
+            try {
+                parent = session.getParentDocument(document.getRef());
+                if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(parent.getType())) {
+                    break;
+                }
+            } catch (ClientException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        DocumentRoute route = parent.getAdapter(DocumentRoute.class);
+        List<String> docIds = route.getAttachedDocuments();
+        List<DocumentRef> refs = new ArrayList<DocumentRef>();
+        for (String id : docIds) {
+            refs.add(new IdRef(id));
+        }
+        try {
+            return session.getDocuments(refs.toArray(new DocumentRef[] {}));
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public AutomationService getAutomationService() {
+        try {
+            return Framework.getService(AutomationService.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public DocumentModel getDocument() {
@@ -73,7 +118,21 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     @Override
     public void run(CoreSession session) {
         setRunning(session);
-        setDone(session);
+        if (!(this instanceof DocumentRouteStep)) {
+            throw new RuntimeException(
+                    "Method run should be overriden in parent class.");
+        }
+        DocumentRouteOperationContext context = new DocumentRouteOperationContext(
+                (DocumentRouteStep) this, session);
+        context.setInput(getAttachedDocuments(session));
+        try {
+            // will use a service to match chain name and doc type
+            getAutomationService().run(context, "setDone");
+        } catch (InvalidChainException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -86,7 +145,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
         followTransition(ElementLifeCycleTransistion.toRunning, session);
     }
 
-    protected void followTransition(ElementLifeCycleTransistion transition, CoreSession session) {
+    protected void followTransition(ElementLifeCycleTransistion transition,
+            CoreSession session) {
         try {
             document.followTransition(transition.name());
             document = session.getDocument(document.getRef());
