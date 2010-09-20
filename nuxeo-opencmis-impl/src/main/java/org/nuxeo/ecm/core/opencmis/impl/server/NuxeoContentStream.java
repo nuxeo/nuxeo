@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.Blob;
@@ -67,12 +68,12 @@ public class NuxeoContentStream implements ContentStream {
     }
 
     @Override
-    public List<Object> getExtensions() {
+    public List<CmisExtensionElement> getExtensions() {
         return null;
     }
 
     @Override
-    public void setExtensions(List<Object> extensions) {
+    public void setExtensions(List<CmisExtensionElement> extensions) {
         throw new UnsupportedOperationException();
     }
 

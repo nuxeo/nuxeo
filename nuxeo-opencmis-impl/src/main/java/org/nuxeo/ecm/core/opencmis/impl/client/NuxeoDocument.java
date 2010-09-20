@@ -53,6 +53,13 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ObjectId checkIn(boolean major, Map<String, ?> properties,
+            ContentStream contentStream, String checkinComment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectId checkIn(boolean major, Map<String, ?> properties,
             ContentStream contentStream, String checkinComment,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
@@ -61,6 +68,13 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ObjectId checkOut() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Document copy(List<Property<?>> properties,
+            VersioningState versioningState) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

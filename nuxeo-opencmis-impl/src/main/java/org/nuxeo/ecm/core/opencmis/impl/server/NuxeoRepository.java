@@ -30,6 +30,7 @@ import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
@@ -46,6 +47,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -154,6 +156,9 @@ public class NuxeoRepository {
         }
         done.add(name);
         DocumentType dt = schemaManager.getDocumentType(name);
+        if (dt.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
+            return;
+        }
         typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt));
         // recurse in children
         List<String> children = typesChildren.get(name);
@@ -186,5 +191,12 @@ public class NuxeoRepository {
         initializeTypes();
         return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
                 maxItems, skipCount);
+    }
+
+    public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
+            int depth, Boolean includePropertyDefinitions) {
+        initializeTypes();
+        return typeManager.getTypeDescendants(typeId, depth,
+                includePropertyDefinitions);
     }
 }

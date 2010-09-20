@@ -23,6 +23,7 @@ import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
@@ -53,7 +54,8 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
             if (parent == null || service.isFilteredOut(parent)) {
                 return Collections.emptyList();
             }
-            Folder folder = (Folder) session.getObject(parent, session.getDefaultContext());
+            Folder folder = (Folder) session.getObject(parent,
+                    session.getDefaultContext());
             return Collections.singletonList(folder);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -91,7 +93,7 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
     }
 
     @Override
-    public List<Object> getExtensions(ExtensionLevel level) {
+    public List<CmisExtensionElement> getExtensions(ExtensionLevel level) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

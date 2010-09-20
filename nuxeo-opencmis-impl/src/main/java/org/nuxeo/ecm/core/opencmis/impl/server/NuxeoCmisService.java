@@ -66,6 +66,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderCont
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
+import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
@@ -196,6 +197,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public TypeDefinition getTypeDefinition(String repositoryId, String typeId,
             ExtensionsData extension) {
+        // TODO copy only when local binding
         TypeDefinition type = repository.getTypeDefinition(typeId);
         // clone
         return Converter.convert(Converter.convert(type));
@@ -206,18 +208,26 @@ public class NuxeoCmisService extends AbstractCmisService {
     public TypeDefinitionList getTypeChildren(String repositoryId,
             String typeId, Boolean includePropertyDefinitions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        TypeDefinitionList children = repository.getTypeChildren(typeId,
+        // TODO copy only when local binding
+        TypeDefinitionList types = repository.getTypeChildren(typeId,
                 includePropertyDefinitions, maxItems, skipCount);
         // clone
-        return Converter.convert(Converter.convert(children));
+        return Converter.convert(Converter.convert(types));
     }
 
     @Override
     public List<TypeDefinitionContainer> getTypeDescendants(
             String repositoryId, String typeId, BigInteger depth,
             Boolean includePropertyDefinitions, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        int d = depth == null ? 2 : depth.intValue(); // default 2
+        List<TypeDefinitionContainer> types = repository.getTypeDescendants(
+                typeId, d, includePropertyDefinitions);
+        // clone
+        // TODO copy only when local binding
+        List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(
+                types.size());
+        Converter.convertTypeContainerList(types, tmp);
+        return Converter.convertTypeContainerList(tmp);
     }
 
     protected DocumentModel getDocumentModel(DocumentRef docRef) {

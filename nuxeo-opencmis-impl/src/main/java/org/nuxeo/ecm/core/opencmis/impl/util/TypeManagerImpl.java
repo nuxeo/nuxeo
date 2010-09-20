@@ -35,8 +35,10 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyDefinition;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractTypeDefinition;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionListImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
@@ -79,7 +81,8 @@ public class TypeManagerImpl implements TypeManager {
         } else {
             typec = typesMap.get(typeId);
             if (typec == null) {
-                throw new RuntimeException("No such type: " + typeId);
+                throw new CmisInvalidArgumentException("No such type: "
+                        + typeId);
             }
         }
         List<TypeDefinitionContainer> types;
@@ -105,6 +108,46 @@ public class TypeManagerImpl implements TypeManager {
             list.add(type);
         }
         return new TypeDefinitionListImpl(list);
+    }
+
+    public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
+            int depth, Boolean includePropertyDefinitions) {
+        List<TypeDefinitionContainer> types;
+        boolean includeProps = Boolean.TRUE.equals(includePropertyDefinitions);
+        if (typeId == null) {
+            // return all types, unlimited depth
+            types = new ArrayList<TypeDefinitionContainer>(4);
+            for (TypeDefinitionContainer tc : typesMap.values()) {
+                if (tc.getTypeDefinition().getParentTypeId() == null)
+                    types.add(tc);
+            }
+            if (!includeProps) {
+                // remove props
+                types = cloneTypes(types, -1, false);
+            }
+        } else {
+            TypeDefinitionContainer typec = typesMap.get(typeId);
+            if (typec == null) {
+                throw new CmisInvalidArgumentException("No such type: "
+                        + typeId);
+            }
+            if (depth == 0 || depth < -1) {
+                throw new CmisInvalidArgumentException("Invalid depth: "
+                        + depth);
+            }
+            if (depth == -1) {
+                types = typec.getChildren();
+                if (!includeProps) {
+                    // remove props
+                    types = cloneTypes(types, -1, false);
+                }
+            } else {
+                types = typec.getChildren();
+                // truncate tree
+                types = cloneTypes(types, depth - 1, includeProps);
+            }
+        }
+        return types;
     }
 
     @Override
@@ -197,6 +240,33 @@ public class TypeManagerImpl implements TypeManager {
             ((AbstractPropertyDefinition<?>) clone).setIsInherited(Boolean.TRUE);
             propDefs.put(superPropDef.getId(), clone);
         }
+    }
+
+    /**
+     * Returns a clone of a types tree.
+     * <p>
+     * Removes properties on the clone if requested, cuts the children of the
+     * clone if the depth is exceeded.
+     */
+    protected static List<TypeDefinitionContainer> cloneTypes(
+            List<TypeDefinitionContainer> types, int depth,
+            boolean includePropertyDefinitions) {
+        List<TypeDefinitionContainer> res = new ArrayList<TypeDefinitionContainer>(
+                types.size());
+        for (TypeDefinitionContainer tc : types) {
+            AbstractTypeDefinition td = ((AbstractTypeDefinition) tc.getTypeDefinition()).clone();
+            if (!includePropertyDefinitions) {
+                td.setPropertyDefinitions(null);
+            }
+            TypeDefinitionContainerImpl clone = new TypeDefinitionContainerImpl(
+                    td);
+            if (depth != 0) {
+                clone.setChildren(cloneTypes(tc.getChildren(), depth - 1,
+                        includePropertyDefinitions));
+            }
+            res.add(clone);
+        }
+        return res;
     }
 
 }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.PropertyBoolean;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyId;
@@ -95,12 +96,12 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
     }
 
     @Override
-    public List<Object> getExtensions() {
+    public List<CmisExtensionElement> getExtensions() {
         return null;
     }
 
     @Override
-    public void setExtensions(List<Object> extensions) {
+    public void setExtensions(List<CmisExtensionElement> extensions) {
         throw new UnsupportedOperationException();
     }
 

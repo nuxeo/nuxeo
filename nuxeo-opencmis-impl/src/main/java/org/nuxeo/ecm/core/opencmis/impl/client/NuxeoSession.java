@@ -143,10 +143,23 @@ public class NuxeoSession implements Session {
     @Override
     public ObjectId createDocument(Map<String, ?> properties,
             ObjectId folderId, ContentStream contentStream,
+            VersioningState versioningState) {
+        return createDocument(properties, folderId, contentStream,
+                versioningState, null, null, null);
+    }
+
+    @Override
+    public ObjectId createDocument(Map<String, ?> properties,
+            ObjectId folderId, ContentStream contentStream,
             VersioningState versioningState, List<Policy> policies,
             List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectId createFolder(Map<String, ?> properties, ObjectId folderId) {
+        return createFolder(properties, folderId, null, null, null);
     }
 
     @Override
@@ -173,6 +186,11 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public ObjectId createPolicy(Map<String, ?> properties, ObjectId folderId) {
+        return createPolicy(properties, folderId, null, null, null);
+    }
+
+    @Override
     public ObjectId createPolicy(Map<String, ?> properties, ObjectId folderId,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
@@ -180,10 +198,23 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public ObjectId createRelationship(Map<String, ?> properties) {
+        return createRelationship(properties, null, null, null);
+    }
+
+    @Override
     public ObjectId createRelationship(Map<String, ?> properties,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectId createDocumentFromSource(ObjectId source,
+            Map<String, ?> properties, ObjectId folderId,
+            VersioningState versioningState) {
+        return createDocumentFromSource(source, properties, folderId,
+                versioningState, null, null, null);
     }
 
     @Override

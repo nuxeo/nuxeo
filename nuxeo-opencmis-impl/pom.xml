@@ -18,7 +18,7 @@
   <description>Nuxeo Core: OpenCMIS Implementation</description>
 
   <properties>
-    <chemistry.opencmis.version>0.1.0-incubating</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.2.0-incubating-SNAPSHOT</chemistry.opencmis.version>
   </properties>
 
   <build>

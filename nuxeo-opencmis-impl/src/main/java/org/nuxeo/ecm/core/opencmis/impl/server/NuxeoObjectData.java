@@ -30,6 +30,7 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ChangeEventInfo;
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.PolicyIdList;
@@ -271,12 +272,12 @@ public class NuxeoObjectData implements ObjectData {
     }
 
     @Override
-    public List<Object> getExtensions() {
+    public List<CmisExtensionElement> getExtensions() {
         return Collections.emptyList();
     }
 
     @Override
-    public void setExtensions(List<Object> extensions) {
+    public void setExtensions(List<CmisExtensionElement> extensions) {
     }
 
 }

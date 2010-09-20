@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
@@ -104,13 +105,13 @@ public class NuxeoProperty<T> implements Property<T> {
     }
 
     @Override
-    public List<Object> getExtensions() {
+    public List<CmisExtensionElement> getExtensions() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setExtensions(List<Object> extensions) {
+    public void setExtensions(List<CmisExtensionElement> extensions) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

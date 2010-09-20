@@ -82,6 +82,14 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     @Override
     public Document createDocument(Map<String, ?> properties,
             ContentStream contentStream, VersioningState versioningState,
+            OperationContext context) {
+        return createDocument(properties, contentStream, versioningState, null,
+                null, null, context);
+    }
+
+    @Override
+    public Document createDocument(Map<String, ?> properties,
+            ContentStream contentStream, VersioningState versioningState,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
         Properties props;
@@ -208,6 +216,14 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     @Override
     public Document createDocumentFromSource(ObjectId source,
             Map<String, ?> properties, VersioningState versioningState,
+            OperationContext context) {
+        return createDocumentFromSource(source, properties, versioningState,
+                null, null, null, context);
+    }
+
+    @Override
+    public Document createDocumentFromSource(ObjectId source,
+            Map<String, ?> properties, VersioningState versioningState,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
         // TODO Auto-generated method stub
@@ -216,10 +232,22 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public Folder createFolder(Map<String, ?> properties,
+            OperationContext context) {
+        return createFolder(properties, null, null, null, context);
+    }
+
+    @Override
+    public Folder createFolder(Map<String, ?> properties,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Policy createPolicy(Map<String, ?> properties,
+            OperationContext context) {
+        return createPolicy(properties, null, null, null, context);
     }
 
     @Override
