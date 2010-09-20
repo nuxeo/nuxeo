@@ -197,8 +197,11 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public TypeDefinition getTypeDefinition(String repositoryId, String typeId,
             ExtensionsData extension) {
-        // TODO copy only when local binding
         TypeDefinition type = repository.getTypeDefinition(typeId);
+        if (type == null) {
+            throw new CmisInvalidArgumentException("No such type: " + typeId);
+        }
+        // TODO copy only when local binding
         // clone
         return Converter.convert(Converter.convert(type));
 
@@ -208,9 +211,9 @@ public class NuxeoCmisService extends AbstractCmisService {
     public TypeDefinitionList getTypeChildren(String repositoryId,
             String typeId, Boolean includePropertyDefinitions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        // TODO copy only when local binding
         TypeDefinitionList types = repository.getTypeChildren(typeId,
                 includePropertyDefinitions, maxItems, skipCount);
+        // TODO copy only when local binding
         // clone
         return Converter.convert(Converter.convert(types));
     }

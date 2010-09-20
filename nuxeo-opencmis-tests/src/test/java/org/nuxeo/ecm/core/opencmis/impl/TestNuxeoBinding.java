@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -42,6 +44,10 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.data.RepositoryCapabilities;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
@@ -193,6 +199,100 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Collections.emptyList(), aclCaps.getPermissions());
         assertEquals(SupportedPermissions.BASIC,
                 aclCaps.getSupportedPermissions());
+    }
+
+    @Test
+    public void testGetTypeDefinition() {
+        TypeDefinition type;
+
+        type = repoService.getTypeDefinition(repositoryId, "cmis:folder", null);
+        assertEquals(Boolean.FALSE, type.isCreatable());
+        assertNull(type.getParentTypeId());
+        assertEquals("cmis:folder", type.getLocalName());
+        type = repoService.getTypeDefinition(repositoryId, "Folder", null);
+        assertEquals(Boolean.TRUE, type.isCreatable());
+        assertEquals("cmis:folder", type.getParentTypeId());
+        assertEquals("Folder", type.getLocalName());
+
+        type = repoService.getTypeDefinition(repositoryId, "cmis:document",
+                null);
+        assertEquals(Boolean.TRUE, type.isCreatable());
+        assertNull(type.getParentTypeId());
+        assertEquals("Document", type.getLocalName());
+        try {
+            // nosuchtype, Document is mapped to cmis:document
+            repoService.getTypeDefinition(repositoryId, "Document", null);
+            fail();
+        } catch (CmisInvalidArgumentException e) {
+            // ok
+        }
+
+        type = repoService.getTypeDefinition(repositoryId, "Note", null);
+        assertEquals(Boolean.TRUE, type.isCreatable());
+        assertEquals("cmis:document", type.getParentTypeId());
+        assertEquals("Note", type.getLocalName());
+    }
+
+    @Test
+    public void testGetTypeChildren() {
+        TypeDefinitionList types = repoService.getTypeChildren(repositoryId,
+                "cmis:folder", Boolean.FALSE, null, null, null);
+        BigInteger numItems = types.getNumItems();
+        assertTrue(numItems.intValue() > 2);
+        TypeDefinition t = null;
+        for (TypeDefinition type : types.getList()) {
+            if (type.getId().equals("OrderedFolder")) {
+                t = type;
+            }
+        }
+        assertNotNull(t);
+        assertNull(t.getPropertyDefinitions());
+
+        // check property definition inclusion
+        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
+                Boolean.TRUE, null, null, null);
+        t = null;
+        for (TypeDefinition type : types.getList()) {
+            if (type.getId().equals("OrderedFolder")) {
+                t = type;
+            }
+        }
+        Map<String, PropertyDefinition<?>> propDefs = t.getPropertyDefinitions();
+        assertNotNull(propDefs);
+        assertTrue(propDefs.keySet().contains("dc:title"));
+
+        // nonexistent type
+        try {
+            repoService.getTypeChildren(repositoryId, "nosuchtype",
+                    Boolean.TRUE, null, null, null);
+            fail();
+        } catch (CmisInvalidArgumentException e) {
+            // ok
+        }
+    }
+
+    @Test
+    public void testGetTypeDescendants() {
+        List<TypeDefinitionContainer> desc = repoService.getTypeDescendants(
+                repositoryId, "cmis:folder", null, Boolean.FALSE, null);
+        assertTrue(desc.size() > 2);
+        TypeDefinition t = null;
+        for (TypeDefinitionContainer tc : desc) {
+            TypeDefinition type = tc.getTypeDefinition();
+            if (type.getId().equals("OrderedFolder")) {
+                t = type;
+            }
+        }
+        assertNotNull(t);
+
+        // nonexistent type
+        try {
+            repoService.getTypeDescendants(repositoryId, "nosuchtype", null,
+                    Boolean.FALSE, null);
+            fail();
+        } catch (CmisInvalidArgumentException e) {
+            // ok
+        }
     }
 
     @Test
