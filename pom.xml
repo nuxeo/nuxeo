@@ -28,7 +28,6 @@
     <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>
-    <module>nuxeo-runtime-test</module>
     <module>nuxeo-runtime-jetty-adapter</module>
     <module>nuxeo-runtime-gf3-adapter</module>
     <module>nuxeo-runtime-tomcat-adapter</module>
@@ -38,6 +37,16 @@
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
   </modules>
+
+
+  <profiles>
+    <profile>
+      <id>no-osgi</id>
+      <modules>
+        <module>nuxeo-runtime-test</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
