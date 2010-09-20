@@ -46,6 +46,9 @@ public class Repository implements Serializable {
     @XNode("@repositoryUri")
     private String repositoryUri;
 
+    @XNode("@isDefault")
+    private boolean isDefault;
+
     @XNode("@name")
     private String name;
 
@@ -139,6 +142,14 @@ public class Repository implements Serializable {
             unconnectedSession.destroy();
         }
         return supportsTags;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean value) {
+        this.isDefault = value;
     }
 
     public CoreSession open(Map<String, Serializable> context) throws Exception {

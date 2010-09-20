@@ -1,11 +1,35 @@
+/*
+ * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
 package org.nuxeo.ecm.core.management.storage;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.management.api.StorageError;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Runner dedicated to mgmt doc operations
+ *
+ * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
+ */
 public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunner {
 
     protected static String repositoryName;
@@ -17,42 +41,29 @@ public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunn
         repositoryName = name;
     }
 
-    /**
-     * TODO remove lazy logic once the contribution will be in place
-     * @return
-     */
-    protected static String repositoryName() {
-         if (repositoryName != null) {
-             return repositoryName;
-         }
-         synchronized (DocumentStoreSessionRunner.class) {
-             if (repositoryName != null) {
-                 return repositoryName;
-             }
-             repositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
-             return repositoryName;
-         }
-    }
 
     public DocumentStoreSessionRunner() {
-
-        super(repositoryName());
+        super(repositoryName);
     }
 
-    public void runProtected() {
-        try {
-            super.runUnrestricted();
-        } catch (ClientException e) {
-            throw new StorageError("Storage error :  " + errorMessage(), e);
+   public DocumentStoreSessionRunner(CoreSession session) {
+        super(session);
+        if (!repositoryName.equals(session.getRepositoryName())) {
+            throw new IllegalArgumentException("Session is not attached to " + repositoryName);
         }
     }
 
-    protected void runInNuxeoCL() {
+    /**
+     * Run with the nuxeo class loader, wrap client exception into errors
+     */
+    public void runSafe() {
         ClassLoader jarCL = Thread.currentThread().getContextClassLoader();
         ClassLoader bundleCL = Framework.class.getClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(bundleCL);
-            runProtected();
+            runUnrestricted();
+        } catch (ClientException e) {
+            throw new StorageError("Storage error :  " + errorMessage(), e);
         } finally {
             Thread.currentThread().setContextClassLoader(jarCL);
         }
