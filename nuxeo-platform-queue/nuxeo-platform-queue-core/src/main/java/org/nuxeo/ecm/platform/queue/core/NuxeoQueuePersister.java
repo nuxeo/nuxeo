@@ -75,21 +75,6 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         return session.getDocument(queuePath());
     }
 
-    protected abstract class NuxeoQueueRunner extends DocumentStoreSessionRunner {
-
-        protected URI name;
-
-        @Override
-        public void runUnrestricted()  {
-            try {
-                super.runUnrestricted();
-            } catch (ClientException e) {
-                throw new QueueError("Error while executing " + getClass().getCanonicalName(), e, name);
-            }
-        }
-
-    }
-
     protected final String queueName;
 
     protected final Class<C> contentType;
@@ -101,11 +86,11 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     @Override
     public void createIfNotExist() {
-        new CreateIfNotExistRunner().runUnrestricted();
+        new CreateIfNotExistRunner().runSafe();
     }
 
 
-    protected class CreateIfNotExistRunner extends NuxeoQueueRunner {
+    protected class CreateIfNotExistRunner extends DocumentStoreSessionRunner {
 
         @Override
         public void run() throws ClientException {
@@ -130,21 +115,23 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public QueueInfo<C> removeContent(URI contentName) {
             RemoveRunner runner = new RemoveRunner(contentName);
-            runner.runUnrestricted();
+            runner.runSafe();
             return new NuxeoQueueAdapter<C>(runner.doc);
     }
 
-    protected class RemoveRunner extends NuxeoQueueRunner {
+    protected class RemoveRunner extends DocumentStoreSessionRunner {
+
+        protected URI contentName;
 
         protected DocumentModel doc;
 
         RemoveRunner(URI contentName) {
-            this.name = contentName;
+            this.contentName = contentName;
         }
 
         @Override
         public void run() throws ClientException {
-            PathRef ref= newPathRef(session, name);
+            PathRef ref= newPathRef(session, contentName);
             doc = session.getDocument(ref);
             detachDocument(doc);
             session.removeDocument(ref);
@@ -156,21 +143,23 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public boolean hasContent(URI name) {
             HasContentRunner runner = new HasContentRunner(name);
-            runner.runUnrestricted();
+            runner.runSafe();
             return runner.hasContent;
     }
 
-    protected class HasContentRunner extends NuxeoQueueRunner {
+    protected class HasContentRunner extends DocumentStoreSessionRunner {
+
+        protected URI contentName;
 
         protected boolean hasContent = false;
 
         protected HasContentRunner(URI contentName) {
-            this.name =contentName;
+            this.contentName =contentName;
         }
 
         @Override
         public void run() throws ClientException {
-            PathRef ref = newPathRef(session,  name);
+            PathRef ref = newPathRef(session,  contentName);
             hasContent = session.exists(ref);
         }
     }
@@ -178,7 +167,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public List<QueueInfo<C>> listKnownItems() {
         ListKnownContentRunner runner = new ListKnownContentRunner();
-        runner.runUnrestricted();
+        runner.runSafe();
         return adapt(runner.docs);
     }
 
@@ -191,7 +180,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         return queueItemList;
     }
 
-    protected class ListKnownContentRunner extends NuxeoQueueRunner {
+    protected class ListKnownContentRunner extends DocumentStoreSessionRunner {
 
         protected DocumentModelList docs;
 
@@ -212,20 +201,22 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public QueueInfo<C> addContent(URI ownerName, URI name,  C content)  {
         SaveContentRunner runner = new SaveContentRunner(ownerName, name, content);
-        runner.runUnrestricted();
+        runner.runSafe();
         return new NuxeoQueueAdapter<C>(runner.doc);
     }
 
-    protected  class SaveContentRunner extends NuxeoQueueRunner {
+    protected  class SaveContentRunner extends DocumentStoreSessionRunner {
 
         protected DocumentModel doc;
+
+        protected final URI contentName;
 
         protected final URI ownerName;
 
         protected final C content;
 
         protected SaveContentRunner(URI ownerName, URI name, C content) {
-            this.name = name;
+            this.contentName = name;
             this.ownerName = ownerName;
             this.content = content;
         }
@@ -234,13 +225,13 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         public void run() throws ClientException {
 
             HeartbeatManager heartbeat = Framework.getLocalService(HeartbeatManager.class);
-            PathRef ref = newPathRef(session, name);
+            PathRef ref = newPathRef(session, contentName);
             if (session.exists(ref)) {
-                throw new QueueError("Already created queue item", name);
+                throw new QueueError("Already created queue item", contentName);
             }
 
              DocumentModel parent = queue(session);
-             doc = session.createDocumentModel(parent.getPathAsString(), name.toASCIIString(), QUEUE_ITEM_TYPE);
+             doc = session.createDocumentModel(parent.getPathAsString(), contentName.toASCIIString(), QUEUE_ITEM_TYPE);
 
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_OWNER,
                     ownerName.toASCIIString());
@@ -258,21 +249,23 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public void setExecuteTime(URI contentName, Date date) {
         SetExecutionInfoRunner runner = new SetExecutionInfoRunner(contentName, date);
-        runner.runUnrestricted();
+        runner.runSafe();
     }
 
-    protected class SetExecutionInfoRunner extends NuxeoQueueRunner {
+    protected class SetExecutionInfoRunner extends DocumentStoreSessionRunner {
+
+        protected final URI contentName;
 
         protected final Date executeTime;
 
         protected  SetExecutionInfoRunner(URI contentName, Date executeTime) {
-            this.name = contentName;
+            this.contentName = contentName;
             this.executeTime = executeTime;
         }
 
         @Override
         public void run() throws ClientException {
-            PathRef ref = newPathRef(session, name);
+            PathRef ref = newPathRef(session, contentName);
             DocumentModel model = session.getDocument(ref);
             Long executionCount = (Long) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
             if (executionCount == null) {
@@ -290,18 +283,20 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     }
 
-    protected  class UpdateAdditionalInfosRunner extends NuxeoQueueRunner {
+    protected  class UpdateAdditionalInfosRunner extends DocumentStoreSessionRunner {
+
+        protected final URI contentName;
 
         protected final C content;
 
         protected UpdateAdditionalInfosRunner(URI contentName, C content) {
-            this.name = contentName;
+            this.contentName = contentName;
             this.content = content;
         }
 
         @Override
         public void run() throws ClientException {
-            PathRef ref = newPathRef(session, name);
+            PathRef ref = newPathRef(session, contentName);
             DocumentModel doc = session.getDocument(ref);
             injectContent(doc, content);
             doc = session.saveDocument(doc);
@@ -313,11 +308,10 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     @Override
     public void updateContent(URI contentName, C content) {
-        UpdateAdditionalInfosRunner runner = new UpdateAdditionalInfosRunner(contentName, content);
-        runner.runUnrestricted();
+        new UpdateAdditionalInfosRunner(contentName, content).runSafe();
     }
 
-    protected class ListByOwnerRunner extends NuxeoQueueRunner {
+    protected class ListByOwnerRunner extends DocumentStoreSessionRunner {
 
         protected URI ownerName;
 
@@ -344,11 +338,11 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public List<QueueInfo<C>> listByOwner(URI ownerName) {
         ListByOwnerRunner runner = new ListByOwnerRunner(ownerName);
-        runner.runUnrestricted();
+        runner.runSafe();
         return adapt(runner.docs);
     }
 
-    protected  class RemoveByOwnerRunner extends NuxeoQueueRunner {
+    protected  class RemoveByOwnerRunner extends DocumentStoreSessionRunner {
 
         protected int count;
 
@@ -378,26 +372,28 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public int removeByOwner(URI ownerName) {
         RemoveByOwnerRunner runner = new RemoveByOwnerRunner(ownerName);
-        runner.runUnrestricted();
+        runner.runSafe();
         return runner.count;
     }
 
 
 
-    protected class GetInfoRunner extends NuxeoQueueRunner {
+    protected class GetInfoRunner extends DocumentStoreSessionRunner {
+
+        protected URI contentName;
 
         protected DocumentModel doc;
 
        protected  GetInfoRunner(URI contentName) {
-            this.name = contentName;
+            this.contentName = contentName;
         }
 
         @Override
         public void run() throws ClientException {
             DocumentModel queue = queue(session);
-            DocumentModel doc = session.getChild(queue.getRef(), name.toASCIIString());
+            DocumentModel doc = session.getChild(queue.getRef(), contentName.toASCIIString());
             if (doc == null) {
-                throw new QueueError("no such content", name);
+                throw new QueueError("no such content", contentName);
             }
             detachDocument(doc);
         }
@@ -407,7 +403,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     @Override
     public QueueInfo<C> getInfo(URI contentName) {
         GetInfoRunner runner = new GetInfoRunner(contentName);;
-        runner.runUnrestricted();
+        runner.runSafe();
         return new NuxeoQueueAdapter<C>(runner.doc);
     }
 
@@ -427,7 +423,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_CONTENT, blob);
     }
 
-    protected PathRef newPathRef(CoreSession session, URI name) throws ClientException {
+    protected  PathRef newPathRef(CoreSession session, URI name) throws ClientException {
         DocumentModel queueFolder = queue(session);
         return new PathRef(queueFolder.getPathAsString() + "/" + name.toASCIIString());
     }
