@@ -61,7 +61,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.startElement("script", dateTimeComp);
         writer.writeAttribute("type", "text/javascript", null);
         writer.writeAttribute("src", String.format(
-                "jscalendar/lang/calendar-%s.js", localeString), null);
+                "/jscalendar/lang/calendar-%s.js", localeString), null);
         // force the script tag to be opened and then closed to avoid IE bug.
         writer.write(" ");
         writer.endElement("script");
