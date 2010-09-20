@@ -34,13 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatError;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
@@ -138,8 +135,7 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
     }
 
     public HeartbeatInfo getInfo(URI serverURI) {
-        String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
-        GetHeartbeat runner = new GetHeartbeat(defaultRepositoryName, serverURI);
+        GetHeartbeat runner = new GetHeartbeat(serverURI);
 
         try {
             runner.runUnrestricted();
@@ -198,13 +194,12 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         return serverinfo;
     }
 
-    class GetHeartbeat extends UnrestrictedSessionRunner {
+    class GetHeartbeat extends DocumentStoreSessionRunner {
         URI serverUri;
 
         DocumentModel doc;
 
-        public GetHeartbeat(String repository, URI serverUri) {
-            super(repository);
+        public GetHeartbeat(URI serverUri) {
             this.serverUri = serverUri;
         }
 
