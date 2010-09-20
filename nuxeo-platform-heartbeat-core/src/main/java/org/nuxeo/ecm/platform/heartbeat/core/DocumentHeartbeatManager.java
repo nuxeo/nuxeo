@@ -36,9 +36,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatError;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
-import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatNotFoundError;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -92,36 +93,19 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
 
         this.delay = delay;
 
-        try {
-            new CreateOrUpdateServerInfo(Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName(),
-                    getMyURI(), new Date()).runUnrestricted();
-        } catch (ClientException e) {
-            throw new Error(
-                    "An error occurred while starting creating/updating the server start",
-                    e);
-        }
+        new CreateOrUpdateServerInfo(getMyURI(), new Date()).runSafe();
         // start a schedule that regularly updates the current server start
         timer = new Timer("Server heart beat scheduler");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    new CreateOrUpdateServerInfo(
-                            Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName(),
-                            getMyURI(), null).runUnrestricted();
-                } catch (ClientException e) {
-                    log.error(
-                            "An error occurred while trying to update the server keep alive",
-                            e);
-                }
-
+                    new CreateOrUpdateServerInfo(getMyURI(), null).runSafe();
             }
         }, delay, delay);
         log.info("Heartbeat scheduler started");
     }
 
-    class CreateOrUpdateServerInfo extends SafeUnrestrictedSessionRunner {
+    protected static class CreateOrUpdateServerInfo extends DocumentStoreSessionRunner {
 
         URI serveruri;
 
@@ -129,8 +113,14 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
 
         DocumentModel doc;
 
-        public CreateOrUpdateServerInfo(String repository, URI serveruri, Date startTime) {
-            super(repository);
+        public CreateOrUpdateServerInfo(URI serveruri, Date startTime) {
+            super();
+            this.serveruri = serveruri;
+            this.startTime = startTime;
+        }
+
+        public CreateOrUpdateServerInfo(CoreSession session, URI serveruri, Date startTime) {
+            super(session);
             this.serveruri = serveruri;
             this.startTime = startTime;
         }
@@ -150,47 +140,34 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
     }
 
     public HeartbeatInfo getInfo(URI serverURI) {
-        String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).
-            getDefaultRepository().getName();
-        GetHeartbeat runner = new GetHeartbeat(defaultRepositoryName,serverURI);
+        String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
+        GetHeartbeat runner = new GetHeartbeat(defaultRepositoryName, serverURI);
 
         try {
             runner.runUnrestricted();
-            return  docToServerInfo(runner.doc);
+            return docToServerInfo(runner.doc);
         } catch (Throwable e) {
-            throw new HeartbeatNotFoundError(
-                    "An error occurred while trying to get the server info", e);
+            throw new HeartbeatError("An error occurred while trying to get the server info", e);
         }
 
     }
 
     public List<HeartbeatInfo> getInfos() {
         List<HeartbeatInfo> serverinfos = new ArrayList<HeartbeatInfo>();
-        try {
-            String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName();
-            GetInfo serverinfoRunner = new GetInfo(defaultRepositoryName);
-            DocumentModelList doclist = serverinfoRunner.doclist;
-
-            for (DocumentModel documentModel : doclist) {
+        GetInfo serverinfoRunner = new GetInfo();
+        DocumentModelList doclist = serverinfoRunner.doclist;
+        for (DocumentModel documentModel : doclist) {
+            try {
                 serverinfos.add(docToServerInfo(documentModel));
+            } catch (Exception e) {
+                throw new HeartbeatError("Cannot load document infos", e);
             }
-        } catch (ClientException e) {
-            throw new Error(
-                    "An unexpected error occurred while trying to get infos", e);
-        } catch (URISyntaxException e) {
-            throw new Error(
-                    "An unexpected error occurred while trying to get infos", e);
         }
         return serverinfos;
     }
 
-    class GetInfo extends UnrestrictedSessionRunner {
+    class GetInfo extends DocumentStoreSessionRunner {
         DocumentModelList doclist;
-
-        public GetInfo(String repository) {
-            super(repository);
-        }
 
         @Override
         public void run() throws ClientException {
@@ -198,7 +175,7 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         }
     }
 
-    public HeartbeatInfo getInfo() throws HeartbeatNotFoundError {
+    public HeartbeatInfo getInfo()  {
         URI serveruri = getMyURI();
         return getInfo(serveruri);
     }
@@ -206,25 +183,19 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
     public URI getMyURI() {
         URI serveruri;
         try {
-            serveruri = new URI("serverid:" + vmid.toString());
+            serveruri = new URI("nxhearbeat", vmid.toString(), null);
         } catch (URISyntaxException e) {
-            throw new Error(
-                    "An unexpected error occured when building the serveruri",
-                    e);
+            throw new Error("An unexpected error occured when building the serveruri", e);
         }
         return serveruri;
     }
 
-    private static HeartbeatInfo docToServerInfo(DocumentModel doc)
-            throws ClientException, URISyntaxException {
+    private static HeartbeatInfo docToServerInfo(DocumentModel doc) throws ClientException, URISyntaxException {
         HeartbeatInfo serverinfo;
-        String serverIdStr = (String) doc.getProperty(HEARTBEAT_SCHEMA,
-                HEARTBEAT_ID);
+        String serverIdStr = (String) doc.getProperty(HEARTBEAT_SCHEMA, HEARTBEAT_ID);
         URI serverId = new URI(serverIdStr);
-        Date startTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA,
-                HEARTBEAT_START_TIME)).getTime();
-        Date updateTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA,
-                HEARTBEAT_UPDATE_TIME)).getTime();
+        Date startTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA, HEARTBEAT_START_TIME)).getTime();
+        Date updateTime = ((Calendar) doc.getProperty(HEARTBEAT_SCHEMA, HEARTBEAT_UPDATE_TIME)).getTime();
         serverinfo = new HeartbeatInfo(serverId, startTime, updateTime);
         return serverinfo;
     }
@@ -245,34 +216,26 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         }
     }
 
-    public DocumentModel getServerInfo(CoreSession session, URI uri)
-            throws ClientException {
+    public DocumentModel getServerInfo(CoreSession session, URI uri) throws ClientException {
         DocumentModel serverroot = getOrCreateHeartbeatRootFolder(session);
-        String docname = uri.getHost() + uri.getPort();
-        DocumentRef serverref = new PathRef(serverroot.getPathAsString() + "/"
-                + docname);
+        String docname = uri.toASCIIString();
+        DocumentRef serverref = new PathRef(serverroot.getPathAsString() + "/" + docname);
         return session.getDocument(serverref);
     }
 
-    public DocumentModelList getServerInfos(CoreSession session)
-            throws ClientException {
+    public DocumentModelList getServerInfos(CoreSession session) throws ClientException {
         DocumentModel serverroot = getOrCreateHeartbeatRootFolder(session);
         return session.getChildren(serverroot.getRef());
     }
 
-    public DocumentModel createOrUpdateServer(CoreSession session, URI uri,
-            Date starttime) throws ClientException {
+    protected static DocumentModel createOrUpdateServer(CoreSession session, URI uri, Date starttime) throws ClientException {
         DocumentModel serverroot = getOrCreateHeartbeatRootFolder(session);
-
-        String docname = uri.getHost() + uri.getPort();
-
-        DocumentRef serverref = new PathRef(serverroot.getPathAsString() + "/"
-                + docname);
+        String docname = uri.toASCIIString();
+        DocumentRef serverref = new PathRef(serverroot.getPathAsString() + "/" + docname);
 
         DocumentModel model = null;
         if (!session.exists(serverref)) {
-            model = session.createDocumentModel(serverroot.getPathAsString(),
-                    docname, HEARTBEAT_TYPE);
+            model = session.createDocumentModel(serverroot.getPathAsString(), docname, HEARTBEAT_TYPE);
             setServerInfo(uri, starttime, model);
             model = session.createDocument(model);
         } else {
@@ -285,30 +248,23 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         return model;
     }
 
-    private static void setServerInfo(URI uri, Date starttime, DocumentModel model)
-            throws ClientException {
+    protected static void setServerInfo(URI uri, Date starttime, DocumentModel model) throws ClientException {
         model.setProperty("dublincore", "title", uri.toString());
-        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_ID,
-                uri.toString());
+        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_ID, uri.toString());
         // don't update start time if not specify
         if (starttime != null) {
-            model.setProperty(HEARTBEAT_SCHEMA,
-                    HEARTBEAT_START_TIME, starttime);
+            model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_START_TIME, starttime);
         }
-        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_UPDATE_TIME,
-                new Date());
+        model.setProperty(HEARTBEAT_SCHEMA, HEARTBEAT_UPDATE_TIME, new Date());
     }
 
-    public DocumentModel getOrCreateHeartbeatRootFolder(CoreSession session)
-            throws ClientException {
+    protected static DocumentModel getOrCreateHeartbeatRootFolder(CoreSession session) throws ClientException {
         DocumentRef heartbeatRootDocRef = new PathRef("/" + HEARTBEAT_ROOT_NAME);
         if (!session.exists(heartbeatRootDocRef)) {
-            DocumentModel model = session.createDocumentModel("/",
-                    HEARTBEAT_ROOT_NAME, HEARTBEAT_ROOT_TYPE);
+            DocumentModel model = session.createDocumentModel("/", HEARTBEAT_ROOT_NAME, HEARTBEAT_ROOT_TYPE);
             model = session.createDocument(model);
             session.save();
         }
-
         return session.getDocument(heartbeatRootDocRef);
     }
 

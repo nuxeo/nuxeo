@@ -14,23 +14,37 @@
  * Contributors:
  *     "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
-package org.nuxeo.ecm.platform.heartbeat.core;
+package org.nuxeo.ecm.platform.heartbeat.api;
 
-import java.util.Date;
-
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 /**
+ *  Package error for heartbeat system
+ *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  *
  */
-public class HeartbeatInitializationHandler implements DocumentStoreHandler {
+public class HeartbeatError extends Error {
+
+    private static final long serialVersionUID = 1L;
 
 
-    @Override
-    public void onStorageInitialization(CoreSession session) {
-        DocumentHeartbeatManager mgr = HeartbeatComponent.defaultComponent.manager;
-        new DocumentHeartbeatManager.CreateOrUpdateServerInfo(session, mgr.getMyURI(), new Date(0)).runSafe();
+    public HeartbeatError() {
+        super();
+        throw new UnsupportedOperationException();
+    }
+
+    public HeartbeatError(String message, Throwable cause) {
+        super(message, cause);
+        throw new UnsupportedOperationException();
+    }
+
+    public HeartbeatError(String message) {
+        super(message);
+        throw new UnsupportedOperationException();
+    }
+
+    public HeartbeatError(Throwable cause) {
+        super(cause);
+        throw new UnsupportedOperationException();
     }
 
 }

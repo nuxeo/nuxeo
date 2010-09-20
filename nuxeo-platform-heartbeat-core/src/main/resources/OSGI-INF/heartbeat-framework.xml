@@ -22,6 +22,12 @@
       <facet name="HiddenInNavigation" />
     </doctype>
 
+    <doctype name="ServerRoot" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+    
     <doctype name="Heartbeat" extends="Document">
       <schema name="heartbeat" />
       <schema name="common" />
