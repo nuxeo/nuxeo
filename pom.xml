@@ -27,6 +27,7 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-faceted-search</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
     <module>nuxeo-platform-dynsearch</module>
