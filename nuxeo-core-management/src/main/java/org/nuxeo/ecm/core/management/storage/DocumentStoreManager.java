@@ -21,8 +21,10 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.management.CoreManagementComponent;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Initialize document store by invoking registered handlers
@@ -46,8 +48,16 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         DocumentStoreSessionRunner.repositoryName = name;
     }
 
+    public void setRepositoryName() {
+    }
+
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
+
+        if (DocumentStoreSessionRunner.repositoryName == null) {
+            RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+            DocumentStoreSessionRunner.repositoryName  = mgr.getDefaultRepository().getName();
+        }
 
         if (!session.getRepositoryName().equals(DocumentStoreSessionRunner.repositoryName)) {
             return;
