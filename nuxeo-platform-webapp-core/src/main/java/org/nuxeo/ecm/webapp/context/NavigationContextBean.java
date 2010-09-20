@@ -391,6 +391,8 @@ public class NavigationContextBean implements NavigationContextLocal,
      * Switches to a new server location by updating the context and updating to
      * the CoreSession (DocumentManager).
      */
+    // start a new conversation if needed, join main if possible
+    @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
         if (serverLocation == null) {
