@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
 @Stateless
-@Local(TrashService.class)
 @Remote(TrashService.class)
-public class TrashServiceBean implements TrashService {
+@Local(TrashServiceLocal.class)
+public class TrashServiceBean implements TrashServiceLocal {
 
     protected final TrashService service;
 

@@ -31,13 +31,13 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Exposes a local repository manager as an stateless session bean.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Stateless
 @Remote(RepositoryManager.class)
-@Local(RepositoryManager.class)
-public class RepositoryManagerBean implements RepositoryManager {
+@Local(RepositoryManagerLocal.class)
+public class RepositoryManagerBean implements RepositoryManagerLocal {
 
     private final RepositoryManager mgr;
 

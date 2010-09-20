@@ -17,17 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.api.ejb.local;
-
-import javax.ejb.Local;
+package org.nuxeo.ecm.core.api.ejb;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author Razvan Caraghin
- *
+ * 
  */
-@Local
 public interface DocumentManagerLocal extends CoreSession {
 
 }
