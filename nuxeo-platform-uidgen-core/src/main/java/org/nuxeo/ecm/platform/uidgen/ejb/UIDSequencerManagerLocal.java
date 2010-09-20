@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     bstefanescu
  */
-
 package org.nuxeo.ecm.platform.uidgen.ejb;
 
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
-
-public interface UIDSequencerManager extends UIDSequencer {
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
+ */
+public interface UIDSequencerManagerLocal extends UIDSequencerManager {
 
 }

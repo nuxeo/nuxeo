@@ -22,9 +22,6 @@ package org.nuxeo.ecm.platform.actions.ejb;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ActionFilter;
@@ -32,8 +29,6 @@ import org.nuxeo.ecm.platform.actions.ActionFilter;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Local
-@Remote
 public interface ActionManager extends Serializable {
 
     boolean isEnabled(String actionId, ActionContext context);
@@ -50,9 +45,8 @@ public interface ActionManager extends Serializable {
     /**
      * Gets actions for a category (filters are evaluated).
      * <p>
-     * If hideUnavailableActions, all actions of the category are returned
-     * but actions are flagged with a enable flag depending on filters
-     * evaluation.
+     * If hideUnavailableActions, all actions of the category are returned but
+     * actions are flagged with a enable flag depending on filters evaluation.
      */
     List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions);

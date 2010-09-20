@@ -36,8 +36,8 @@ import org.nuxeo.runtime.api.Framework;
 @Stateless
 @Local(TypeManagerLocal.class)
 @Remote(TypeManager.class)
-//@SerializedConcurrentAccess
-public class TypeManagerBean implements TypeManager {
+// @SerializedConcurrentAccess
+public class TypeManagerBean implements TypeManagerLocal {
 
     private static final Log log = LogFactory.getLog(TypeManagerBean.class);
 

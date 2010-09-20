@@ -40,13 +40,13 @@ import org.nuxeo.runtime.api.Framework;
  * MimetypeEntry registry bean.
  * <p>
  * EJB Facade on the mimetype registry service.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Stateless
 @Local(MimetypeRegistryLocal.class)
 @Remote(MimetypeRegistry.class)
-public class MimetypeRegistryBean implements MimetypeRegistry {
+public class MimetypeRegistryBean implements MimetypeRegistryLocal {
 
     private MimetypeRegistry service;
 

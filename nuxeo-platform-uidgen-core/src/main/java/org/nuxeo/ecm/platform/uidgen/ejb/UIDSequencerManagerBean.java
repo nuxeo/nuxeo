@@ -31,14 +31,14 @@ import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
 
 /**
  * The UID sequence manager implementation as a stateless session bean.
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author Bogdan Stefanescu
  */
 @Stateless
-@Local(UIDSequencerManager.class)
+@Local(UIDSequencerManagerLocal.class)
 @Remote(UIDSequencerManager.class)
-public class UIDSequencerManagerBean implements UIDSequencerManager {
+public class UIDSequencerManagerBean implements UIDSequencerManagerLocal {
 
     @PersistenceContext(unitName = "NXUIDSequencer")
     private EntityManager em;

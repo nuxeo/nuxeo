@@ -35,19 +35,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Web service remote session bean.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * 
  */
 @Stateless
-@Local(WSRemotingSessionManager.class)
+@Local(WSRemotingSessionManagerLocal.class)
 @Remote(WSRemotingSessionManager.class)
-public class WSRemotingSessionBean implements WSRemotingSessionManager {
+public class WSRemotingSessionBean implements WSRemotingSessionManagerLocal {
 
     private static final Log log = LogFactory.getLog(WSRemotingSessionBean.class);
 
     private WSRemotingSessionManager manager;
-
 
     private WSRemotingSessionManager getManager() {
         if (manager == null) {
