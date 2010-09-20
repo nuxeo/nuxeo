@@ -18,7 +18,9 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -43,6 +46,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
             "Select * from %s",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
+
+    public static final String CHAINS_TO_TYPE_XP = "chainsToType";
+
+    protected Map<String, String> typeToChain = new HashMap<String, String>();
 
     protected DocumentRoutingPersistenceService getPersistenceService() {
         try {
@@ -61,15 +68,24 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
+            ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
+            typeToChain.put(desc.getDocumentType(), desc.getChainId());
+        }
+    }
+
+    @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
-            List<String> docIds, CoreSession session,
-            boolean startInstance) {
+            List<String> docIds, CoreSession session, boolean startInstance) {
         DocumentModel routeInstanceDoc = getPersistenceService().createDocumentRouteInstanceFromDocumentRouteModel(
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
         routeInstance.save(session);
-        if(startInstance) {
+        if (startInstance) {
             getEngineService().start(routeInstance, session);
         }
         return routeInstance;
@@ -109,6 +125,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             routes.add(model.getAdapter(DocumentRoute.class));
         }
         return routes;
+    }
+
+    @Override
+    public String getOperationChainId(String documentType) {
+        return typeToChain.get(documentType);
     }
 
 }

@@ -39,15 +39,14 @@ public interface DocumentRoutingService {
      * @return the created {@link DocumentRoute} instance.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            List<String> documentIds, CoreSession session,
-            boolean startInstance);
+            List<String> documentIds, CoreSession session, boolean startInstance);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      only one document attached.
      */
-    DocumentRoute createNewInstance(DocumentRoute model,
-            String documentId, CoreSession session, boolean startInstance);
+    DocumentRoute createNewInstance(DocumentRoute model, String documentId,
+            CoreSession session, boolean startInstance);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
@@ -60,8 +59,8 @@ public interface DocumentRoutingService {
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      startInstance <code>true</code> and only one document attached.
      */
-    DocumentRoute createNewInstance(DocumentRoute model,
-            String documentId, CoreSession session);
+    DocumentRoute createNewInstance(DocumentRoute model, String documentId,
+            CoreSession session);
 
     /**
      * Return the list of available {@link DocumentRoute} model for this
@@ -71,4 +70,14 @@ public interface DocumentRoutingService {
      * @return A list of available {@link DocumentRoute}
      */
     List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session);
+
+    /**
+     * Return the operation chain to run for a documentType. The document type
+     * should extend the DocumentRouteStep. Use the <code>chainsToType</code>
+     * extension point to contribute new mapping.
+     *
+     * @param documentType The document type
+     * @return The operation chain id.
+     */
+    String getOperationChainId(String documentType);
 }

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.operation.DocumentRouteOperationContext;
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,6 +75,14 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     public AutomationService getAutomationService() {
         try {
             return Framework.getService(AutomationService.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public DocumentRoutingService getDocumentRoutingService() {
+        try {
+            return Framework.getService(DocumentRoutingService.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -126,8 +135,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
                 (DocumentRouteStep) this, session);
         context.setInput(getAttachedDocuments(session));
         try {
-            // will use a service to match chain name and doc type
-            getAutomationService().run(context, "setDone");
+            String chainId = getDocumentRoutingService().getOperationChainId(
+                    document.getType());
+            getAutomationService().run(context, chainId);
         } catch (InvalidChainException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
