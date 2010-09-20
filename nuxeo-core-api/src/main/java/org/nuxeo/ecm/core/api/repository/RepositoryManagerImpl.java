@@ -66,11 +66,32 @@ public class RepositoryManagerImpl extends DefaultComponent implements
     }
 
     public Repository getDefaultRepository() {
-        // TODO: add a "isDefault" flag to repository object and use it
         Iterator<Repository> it = repositories.values().iterator();
-        if (it.hasNext()) {
-            return it.next();
+
+        Repository defaultRepo = null;
+
+        // search for user defined
+        while (it.hasNext()) {
+            Repository repo = it.next();
+            if (repo.isDefault()) {
+                return repo;
+            }
+            if ("default".equals(repo.getName())) {
+                defaultRepo = repo;
+            }
         }
+
+        // "default" fallback
+        if (defaultRepo != null) {
+            return defaultRepo;
+        }
+
+        // first in list "fallback"
+        if (!repositories.isEmpty()) {
+            return repositories.values().iterator().next();
+        }
+
+        // no repository at all
         return null;
     }
 

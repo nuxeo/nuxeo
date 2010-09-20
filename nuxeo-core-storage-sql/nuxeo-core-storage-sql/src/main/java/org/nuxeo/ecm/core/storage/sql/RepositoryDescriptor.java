@@ -42,6 +42,10 @@ public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
+    public RepositoryDescriptor() {
+        super();
+    }
+
     @XObject(value = "index")
     public static class FulltextIndexDescriptor {
         @XNode("@name")
