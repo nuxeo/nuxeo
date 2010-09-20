@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.ejb.local.DocumentManagerLocal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.model.Document;
@@ -76,7 +75,7 @@ import org.nuxeo.ecm.core.model.Session;
 @Remote(CoreSession.class)
 @SerializedConcurrentAccess
 public class DocumentManagerBean extends AbstractSession implements
-        SessionSynchronization {
+        DocumentManagerLocal, SessionSynchronization {
 
     private static final long serialVersionUID = 6781675353273516393L;
 

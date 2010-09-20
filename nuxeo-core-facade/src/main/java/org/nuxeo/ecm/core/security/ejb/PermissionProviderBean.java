@@ -33,19 +33,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
+ * 
  */
 @Stateless
-@Local(PermissionProvider.class)
 @Remote(PermissionProvider.class)
-public class PermissionProviderBean implements PermissionProvider {
+@Local(PermissionProviderLocal.class)
+public class PermissionProviderBean implements PermissionProviderLocal {
 
     private final PermissionProvider permissionProvider;
 
     public PermissionProviderBean() {
         // use the local runtime service as the backend
-        SecurityService sservice = Framework.getLocalService(
-                SecurityService.class);
+        SecurityService sservice = Framework.getLocalService(SecurityService.class);
         permissionProvider = sservice.getPermissionProvider();
     }
 

@@ -127,8 +127,14 @@ public class LocalSession extends AbstractSession {
             return (Repository) new InitialContext().lookup("NXRepository/"
                     + name);
         } catch (NamingException e) {
-            return NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                    name);
+            try {
+                // needed by jboss
+                return (Repository) new InitialContext().lookup("java:NXRepository/"
+                        + name);
+            } catch (NamingException ee) {
+                return NXCore.getRepositoryService().getRepositoryManager().getRepository(
+                        name);
+            }
         }
     }
 

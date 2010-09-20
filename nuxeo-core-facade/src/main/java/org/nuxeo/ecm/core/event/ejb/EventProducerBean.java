@@ -28,12 +28,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @Stateless
-@Local(EventProducer.class)
+@Local(EventProducerLocal.class)
 @Remote(EventProducer.class)
-public class EventProducerBean implements  EventProducer {
+public class EventProducerBean implements EventProducerLocal {
 
     protected final EventProducer service = Framework.getLocalService(EventProducer.class);
 
