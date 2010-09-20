@@ -24,6 +24,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
+ *
+ * List the statuses
+ *
  * @author matic
  *
  */

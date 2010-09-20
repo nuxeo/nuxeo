@@ -27,13 +27,11 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat;
-import org.nuxeo.ecm.platform.heartbeat.core.NuxeoServerHeartBeat;
+import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
-import org.nuxeo.ecm.platform.queue.api.QueueRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -97,18 +95,18 @@ public class TestQueue extends QueueTestCase {
      *
      */
     public void testOrphans() throws Exception {
-        ServerHeartBeat heartbeat = Framework.getLocalService(ServerHeartBeat.class);
+        HeartbeatManager mgr = Framework.getLocalService(HeartbeatManager.class);
         QueueHandler qh = Framework.getLocalService(QueueHandler.class);
         URI owner = new URI("queueowner:owner1");
         URI name = qh.newName("orphan", "myContent");
         qh.newContentIfUnknown(owner, name,  new OrphanContent());
 
-        heartbeat.stop();
+        mgr.stop();
 
         // sleep 2 times the defaultheartbeattime to be sure that it is detected
         // as orphan by the queueManager
 
-        long delay = heartbeat.getHeartBeatDelay() * 2;
+        long delay = mgr.getDelay() * 2;
         log.info("Sleeping for " + delay);
         Thread.sleep(delay);
 
@@ -122,7 +120,7 @@ public class TestQueue extends QueueTestCase {
         assertEquals("The orphan name is", "nxqueue:orphan#myContent",
                 orphans.get(0).getName().toASCIIString());
 
-        heartbeat.start(NuxeoServerHeartBeat.DEFAULT_HEARTBEAT_DELAY);
+        mgr.start(mgr.getDelay());
         orphans = queueManager.listOrphanedContent();
 
         assertEquals("An orphaned item should be listed", 1, orphans.size());

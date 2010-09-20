@@ -16,9 +16,8 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
 
@@ -28,22 +27,13 @@ import org.nuxeo.ecm.platform.queue.api.QueueManager;
  * @author matic
  *
  */
-public class QueuesInitializationHandler extends  RepositoryInitializationHandler {
+public class QueuesInitializationHandler implements  DocumentStoreHandler {
 
-    protected final QueueLocator locator;
-
-    protected QueuesInitializationHandler(QueueLocator locator) {
-        this.locator = locator;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.repository.RepositoryInitializationHandler#doInitializeRepository(org.nuxeo.ecm.core.api.CoreSession)
-     */
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void onStorageInitialization(CoreSession session) {
+        QueueLocator locator =  QueueComponent.defaultComponent.registry;
         for (QueueManager<?> mgr : locator.getManagers()) {
             mgr.initialize();
         }
-
     }
 }

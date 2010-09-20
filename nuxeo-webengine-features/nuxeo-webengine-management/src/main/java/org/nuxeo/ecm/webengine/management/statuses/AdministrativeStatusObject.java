@@ -16,14 +16,16 @@
  */
 package org.nuxeo.ecm.webengine.management.statuses;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -52,6 +54,18 @@ public class AdministrativeStatusObject extends ManagementObject {
         administrativeStatus =mgr.getNuxeoInstanceStatus();
     }
 
+    @PUT
+    public Object doPut() {
+        FormData form = ctx.getForm();
+        try {
+            AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
+            manager.setNuxeoInstanceStatus(form.getString("status"), "assigned from rest interface", ctx.getPrincipal().getName());
+            return redirect(getPath());
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+    }
+
     @GET
     public Object doGet() {
             return getView("index").
@@ -61,7 +75,7 @@ public class AdministrativeStatusObject extends ManagementObject {
 
     @GET
     @Path("/@activate")
-    public Object activate() {
+    public Object doActivate() {
         try {
             AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
             manager.setNuxeoInstanceStatus(AdministrativeStatus.ACTIVE, "", ctx.getPrincipal().getName());

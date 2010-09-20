@@ -11,7 +11,7 @@
     <dd>
     <p>last execution was a <span class="last status"><#if probe.inError>failure</span><#else>success</#if></span></p>
     <p>probes was executed  ${probe.runnedCount} times with a last duration of ${probe.lastDuration} milliseconds.</p>
-    <p><span class="last info">${status.info}</span></p>
+    <p><span class="last info">${status.asXML}</span></p>
     </dd>
   </span>
 </#list> 

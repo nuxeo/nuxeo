@@ -3,7 +3,7 @@
 <component name="org.nuxeo.ecm.platform.heartbeat">
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.heartbeat.api.ServerHeartBeat" />
+    <provide interface="org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager" />
   </service>
 
   <documentation>
