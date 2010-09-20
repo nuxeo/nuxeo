@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,6 +34,12 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 
+/**
+ * List and run probes
+ *
+ * @author matic
+ *
+ */
 @WebObject(type = "Probes")
 @Produces("text/html; charset=UTF-8")
 public class ProbesObject extends ManagementObject {
@@ -78,6 +85,11 @@ public class ProbesObject extends ManagementObject {
             }
         }
         throw new WebResourceNotFoundException("No such probe " + name);
+    }
+
+    @PUT
+    public Object doPut() {
+        return doRun();
     }
 
     @GET
