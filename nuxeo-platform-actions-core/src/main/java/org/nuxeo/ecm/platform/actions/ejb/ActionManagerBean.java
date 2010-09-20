@@ -41,9 +41,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 @Stateless
-@Local(ActionManager.class)
+@Local(ActionManagerLocal.class)
 @Remote(ActionManager.class)
-public class ActionManagerBean implements ActionManager {
+public class ActionManagerBean implements ActionManagerLocal {
 
     private static final long serialVersionUID = 8398790411119200730L;
 
@@ -64,8 +64,10 @@ public class ActionManagerBean implements ActionManager {
         return getActions(category, context, true);
     }
 
-    public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
-        return actionService.getActions(category, context, hideUnavailableActions);
+    public List<Action> getActions(String category, ActionContext context,
+            boolean hideUnavailableActions) {
+        return actionService.getActions(category, context,
+                hideUnavailableActions);
     }
 
     public boolean isEnabled(String actionId, ActionContext context) {

@@ -35,6 +35,4 @@ public interface UserManagerLocal extends UserManager {
     @PostConstruct
     void initialize();
 
-    void remove();
-
 }

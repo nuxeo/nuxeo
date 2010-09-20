@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 @Stateless
 @Remote(UserManager.class)
 @Local(UserManagerLocal.class)
-public class UserManagerBean implements UserManager {
+public class UserManagerBean implements UserManagerLocal {
 
     private static final long serialVersionUID = 1L;
 

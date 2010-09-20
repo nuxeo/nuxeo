@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 @Stateless
 @Local(DirectoryUIManagerLocal.class)
 @Remote(DirectoryUIManager.class)
-public class DirectoryUIManagerBean implements DirectoryUIManager {
+public class DirectoryUIManagerBean implements DirectoryUIManagerLocal {
 
     private static final long serialVersionUID = 1L;
 

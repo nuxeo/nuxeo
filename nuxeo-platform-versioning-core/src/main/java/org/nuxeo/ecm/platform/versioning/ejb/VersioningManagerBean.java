@@ -45,11 +45,11 @@ import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 
 /**
  * This is a versioning EJB facade.
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Stateless
-@Local(VersioningManager.class)
+@Local(VersioningManagerLocal.class)
 @Remote(VersioningManager.class)
 public class VersioningManagerBean implements VersioningManager {
 
@@ -117,7 +117,8 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getMinorVersionPropertyName(documentType);
     }
 
-    public String getVersionLabel(DocumentModel document) throws ClientException {
+    public String getVersionLabel(DocumentModel document)
+            throws ClientException {
         return service.getVersionLabel(document);
     }
 

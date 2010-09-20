@@ -45,14 +45,14 @@ import org.nuxeo.runtime.api.Framework;
  * File Manager bean.
  * <p>
  * EJB Facade on the file manager service.
- *
+ * 
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
 @Stateless
 @Local(FileManagerLocal.class)
 @Remote(FileManager.class)
-public class FileManagerBean implements FileManager {
+public class FileManagerBean implements FileManagerLocal {
 
     private static final Log log = LogFactory.getLog(FileManagerBean.class);
 

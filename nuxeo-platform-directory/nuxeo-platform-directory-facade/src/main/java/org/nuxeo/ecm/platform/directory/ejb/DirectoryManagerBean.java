@@ -44,14 +44,14 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Facade Bean provide Remoting API for DirectoryService
- *
+ * 
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
 @Stateless
 @Remote(DirectoryManager.class)
-@Local(DirectoryManager.class)
-public class DirectoryManagerBean implements DirectoryManager {
+@Local(DirectoryManagerLocal.class)
+public class DirectoryManagerBean implements DirectoryManagerLocal {
 
     private static final Map<Long, Session> sessionMap = new ConcurrentHashMap<Long, Session>();
 
@@ -204,8 +204,8 @@ public class DirectoryManagerBean implements DirectoryManager {
     }
 
     public List<String> getProjection(long sessionId,
-            Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws DirectoryException {
+            Map<String, Serializable> filter, Set<String> fulltext,
+            String columnName) throws DirectoryException {
         try {
             return getSession(sessionId).getProjection(filter, fulltext,
                     columnName);
@@ -230,8 +230,8 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Serializable> filter)
-            throws DirectoryException {
+    public DocumentModelList query(long sessionId,
+            Map<String, Serializable> filter) throws DirectoryException {
         try {
             return getSession(sessionId).query(filter);
         } catch (Throwable e) {
@@ -239,8 +239,9 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
-            Set<String> fulltext) throws DirectoryException {
+    public DocumentModelList query(long sessionId,
+            Map<String, Serializable> filter, Set<String> fulltext)
+            throws DirectoryException {
         try {
             return getSession(sessionId).query(filter, fulltext);
         } catch (Throwable e) {
@@ -248,9 +249,9 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy)
-            throws DirectoryException {
+    public DocumentModelList query(long sessionId,
+            Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy) throws DirectoryException {
         try {
             return getSession(sessionId).query(filter, fulltext, orderBy);
         } catch (Throwable e) {
@@ -258,9 +259,10 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList query(long sessionId, Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws DirectoryException {
+    public DocumentModelList query(long sessionId,
+            Map<String, Serializable> filter, Set<String> fulltext,
+            Map<String, String> orderBy, boolean fetchReferences)
+            throws DirectoryException {
         try {
             return getSession(sessionId).query(filter, fulltext, orderBy,
                     fetchReferences);
