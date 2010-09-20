@@ -29,22 +29,18 @@ public class HeartbeatError extends Error {
 
     public HeartbeatError() {
         super();
-        throw new UnsupportedOperationException();
     }
 
     public HeartbeatError(String message, Throwable cause) {
         super(message, cause);
-        throw new UnsupportedOperationException();
     }
 
     public HeartbeatError(String message) {
         super(message);
-        throw new UnsupportedOperationException();
     }
 
     public HeartbeatError(Throwable cause) {
         super(cause);
-        throw new UnsupportedOperationException();
     }
 
 }
