@@ -27,6 +27,8 @@ import java.net.URI;
  */
 public interface HeartbeatManager {
 
+    static final long DEFAULT_HEARTBEAT_DELAY = 10000;
+
     /**
      * Stop and restart.
      *

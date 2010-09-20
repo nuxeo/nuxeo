@@ -61,8 +61,6 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
 
     public static final String HEARTBEAT_TYPE = "Heartbeat";
 
-    public static final long DEFAULT_HEARTBEAT_DELAY = 10000;
-
     VMID vmid = new VMID();
 
     Timer timer;

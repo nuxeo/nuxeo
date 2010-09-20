@@ -37,19 +37,7 @@ public class HeartbeatComponent extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         defaultComponent = this;
         manager = new DocumentHeartbeatManager();
-
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                new FrameworkListener() {
-
-                    public void frameworkEvent(FrameworkEvent event) {
-                        if (event.getType() != FrameworkEvent.STARTED) {
-                            return;
-                        }
-                        event.getBundle().getBundleContext().removeFrameworkListener(
-                                this);
-                        manager.start(DocumentHeartbeatManager.DEFAULT_HEARTBEAT_DELAY);
-                    }
-                });
+        // heart-beat is started once the document store is initialized (HeartbeatInitializationHandler)
     }
 
     @Override
