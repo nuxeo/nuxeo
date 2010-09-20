@@ -27,7 +27,7 @@
     </extension>
 
     <servlet>
-      <servlet-name>nuxeo-webdav</servlet-name>
+      <servlet-name>nuxeo-dav</servlet-name>
       <!--
         Doesn't currently work (but should) with:
       
@@ -45,8 +45,8 @@
       </init-param>
     </servlet>
     <servlet-mapping>
-      <servlet-name>nuxeo-rest</servlet-name>
-      <url-pattern>/webdav/*</url-pattern>
+      <servlet-name>nuxeo-dav</servlet-name>
+      <url-pattern>/dav/*</url-pattern>
     </servlet-mapping>
   </extension>
 

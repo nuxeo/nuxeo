@@ -43,7 +43,7 @@ public class LitmusTest extends AbstractServerTest {
             System.out.println(s);
             System.out.flush();
         }
-        assertEquals(0, p.waitFor());
+        assertEquals(0L, (long) p.waitFor());
     }
 
 }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webdav;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.ws.rs.core.UriBuilder;
 

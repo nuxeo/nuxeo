@@ -32,7 +32,7 @@ import java.io.StringWriter;
 /**
  * Simple error handler to give back a user-readable status, and log it to the console.
  * <p>
- * This is a convenience for troubleshouting.
+ * This is a convenience for trouble-shouting.
  */
 @Provider
 public class ExceptionHandler implements ExceptionMapper<Exception> {

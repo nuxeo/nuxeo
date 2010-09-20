@@ -1,6 +1,11 @@
 package org.nuxeo.ecm.webdav;
 
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.jackrabbit.webdav.DavConstants;
@@ -13,9 +18,7 @@ import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
@@ -98,7 +101,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
-        assertEquals(1, responses.length);
+        assertEquals(1L, (long) responses.length);
         MultiStatusResponse response = responses[0];
         assertEquals("123631", response.getProperties(200).get("getcontentlength").getValue());
     }

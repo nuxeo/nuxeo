@@ -27,7 +27,7 @@ public class JaxbTest extends Assert {
         assertNotNull(is);
         Object o = u.unmarshal(is);
         //System.out.println(o);
-        assertEquals(o.getClass(), class_);        
+        assertSame(o.getClass(), class_);        
     }
 
 }

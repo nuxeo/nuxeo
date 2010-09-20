@@ -1,7 +1,10 @@
-	APPS=/Users/fermigier/apps
-	EAR=$(APPS)/nuxeo-distribution-jboss-5.3.0/server/default/deploy/nuxeo.ear
-	TOMCAT=$(APPS)/nuxeo-distribution-tomcat
-	JETTY=$(APPS)/nuxeo-distribution-jetty-5.3.0
+	APPS=$(HOME)/apps
+	EAR=$(APPS)/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear
+	TOMCAT=$(APPS)/nuxeo-dm-tomcat
+	JETTY=$(APPS)/nuxeo-dm-jetty
+
+	VERSION=0.0.1-SNAPSHOT
+	JAR=nuxeo-webdav-$(VERSION).jar
 
 .PHONY: all check deploy clean start build deploy test
 
@@ -16,15 +19,15 @@ superclean: clean
 	mvn dependency:purge-local-repository
 
 deploy-jboss: build
-	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(EAR)/plugins
+	cp target/$(JAR) $(EAR)/plugins
 	cp target/classes/lib/*.jar $(EAR)/lib
 
 deploy-tomcat: build
-	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(TOMCAT)/nxserver/bundles
+	cp target/$(JAR) $(TOMCAT)/nxserver/bundles
 	cp target/classes/lib/*.jar $(TOMCAT)/nxserver/lib
 
 deploy-jetty: build
-	cp target/nuxeo-rest-0.0.1-SNAPSHOT.jar $(JETTY)/bundles
+	cp target/$(JAR) $(JETTY)/bundles
 	cp target/classes/lib/*.jar $(JETTY)/lib
 
 build:

@@ -12,12 +12,13 @@ import javax.xml.bind.JAXBException;
 @Produces("application/xml")
 public class WebDavContextResolver implements ContextResolver<JAXBContext> {
 
-    private JAXBContext ctx;
+    private final JAXBContext ctx;
 
     public WebDavContextResolver() throws JAXBException {
         ctx = Util.getJaxbContext();
     }
 
+    @Override
     public JAXBContext getContext(Class<?> type) {
         if (type.getPackage().getName().startsWith("net.java.dev.webdav.jaxrs.xml.elements")) {
             return ctx;
