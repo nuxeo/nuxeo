@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.heartbeat.core;
 
 import java.util.Date;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 /**
@@ -31,11 +30,7 @@ public class HeartbeatInitializationHandler implements DocumentStoreHandler {
     @Override
     public void onStorageInitialization(CoreSession session) {
         DocumentHeartbeatManager mgr = HeartbeatComponent.defaultComponent.manager;
-        try {
-            mgr.createOrUpdateServer(session, mgr.getMyURI(), new Date(0));
-        } catch (ClientException e) {
-           throw new Error("Cannot initialize hearbeat");
-        }
+        new DocumentHeartbeatManager.CreateOrUpdateServerInfo(session, mgr.getMyURI(), new Date(0)).runSafe();
     }
 
 }

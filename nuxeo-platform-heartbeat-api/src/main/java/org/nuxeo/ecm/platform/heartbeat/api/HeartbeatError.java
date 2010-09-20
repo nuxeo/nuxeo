@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,32 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
+ *     "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
 package org.nuxeo.ecm.platform.heartbeat.api;
 
 /**
- * Error thrown when no server are found.
+ *  Package error for heartbeat system
  *
- * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
+ * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
  */
-public class HeartbeatNotFoundError extends Error {
+public class HeartbeatError extends Error {
 
     private static final long serialVersionUID = 1L;
 
-    public HeartbeatNotFoundError() {
+
+    public HeartbeatError() {
+        super();
     }
 
-    public HeartbeatNotFoundError(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public HeartbeatError(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public HeartbeatNotFoundError(String arg0) {
-        super(arg0);
+    public HeartbeatError(String message) {
+        super(message);
     }
 
-    public HeartbeatNotFoundError(Throwable arg0) {
-        super(arg0);
+    public HeartbeatError(Throwable cause) {
+        super(cause);
     }
 
 }
