@@ -69,6 +69,12 @@ public class RestHelper implements Serializable {
 
     private String baseURL = "";
 
+    /**
+     * Sets current server location (core repository) and core document as
+     * provided by the document view.
+     * <p>
+     * Only sets current server location if the document reference is null.
+     */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String initContextFromRestRequest(DocumentView docView)
             throws ClientException {
