@@ -989,8 +989,7 @@ public class NuxeoCmisService extends AbstractCmisService {
     public List<ObjectData> getAllVersions(String repositoryId,
             String objectId, String versionSeriesId, String filter,
             Boolean includeAllowableActions, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.emptyList();
     }
 
     @Override
