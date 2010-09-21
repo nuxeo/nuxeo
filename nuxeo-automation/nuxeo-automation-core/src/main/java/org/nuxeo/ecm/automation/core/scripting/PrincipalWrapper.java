@@ -31,7 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings("serial")
 public class PrincipalWrapper extends HashMap<String, Serializable> {
@@ -108,8 +107,8 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath has
-     * a value attached.
+     * The behavior of this method was changed -> it is checking if an xpath
+     * has a value attached.
      */
     @Override
     public boolean containsValue(Object value) {

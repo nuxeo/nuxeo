@@ -42,12 +42,11 @@ public interface AutomationService {
      * <code>replace</code> argument is true then any existing operation
      * having the same ID will replaced with this one.
      */
-    void putOperation(Class<?> type, boolean replace)
-            throws OperationException;
+    void putOperation(Class<?> type, boolean replace) throws OperationException;
 
     /**
-     * Removes an operation given its class. If the operation was not registered
-     * does nothing.
+     * Removes an operation given its class. If the operation was not
+     * registered does nothing.
      */
     void removeOperation(Class<?> key);
 
@@ -57,11 +56,10 @@ public interface AutomationService {
     OperationType[] getOperations();
 
     /**
-     * Gets an operation type given its ID. Throws an exception if the operation
-     * is not found.
+     * Gets an operation type given its ID. Throws an exception if the
+     * operation is not found.
      */
-    OperationType getOperation(String id)
-            throws OperationNotFoundException;
+    OperationType getOperation(String id) throws OperationNotFoundException;
 
     /**
      * Builds the operation chain given a context. If the context input object
@@ -75,18 +73,17 @@ public interface AutomationService {
     /**
      * Same as previous but takes an array of operation parameters
      */
-    CompiledChain compileChain(Class<?> inputType,
-            OperationParameters... chain) throws Exception,
-            InvalidChainException;
+    CompiledChain compileChain(Class<?> inputType, OperationParameters... chain)
+            throws Exception, InvalidChainException;
 
     /**
-     * Builds and runs the operation chain given a context. If the context input
-     * object or the chain cannot be resolved (no path can be found through all
-     * the operation in the chain) then {@link InvalidChainException} is
-     * thrown.
+     * Builds and runs the operation chain given a context. If the context
+     * input object or the chain cannot be resolved (no path can be found
+     * through all the operation in the chain) then
+     * {@link InvalidChainException} is thrown.
      */
-    Object run(OperationContext ctx, OperationChain chain)
-            throws Exception, InvalidChainException;
+    Object run(OperationContext ctx, OperationChain chain) throws Exception,
+            InvalidChainException;
 
     /**
      * Same as previous but for managed chains identified by an ID. For managed
@@ -101,8 +98,7 @@ public interface AutomationService {
      * later by calling <code>run</code> and passing the chain ID. If a chain
      * having the same ID exists an exception is thrown
      */
-    void putOperationChain(OperationChain chain)
-            throws OperationException;
+    void putOperationChain(OperationChain chain) throws OperationException;
 
     /**
      * Registers a parametrized operation chain. This chain can be executed
@@ -136,8 +132,7 @@ public interface AutomationService {
      * Registers a new type adapter that can adapt an instance of the accepted
      * type into one of the produced type.
      */
-    void putTypeAdapter(Class<?> accept, Class<?> produce,
-            TypeAdapter adapter);
+    void putTypeAdapter(Class<?> accept, Class<?> produce, TypeAdapter adapter);
 
     /**
      * Removes a type adapter

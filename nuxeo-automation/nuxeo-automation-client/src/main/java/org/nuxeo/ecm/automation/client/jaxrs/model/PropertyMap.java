@@ -21,18 +21,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-
-
 /**
- * A flat representation of a document properties.
- * Dates are in YYYY-MM-DDThh:mm:ssZ (UTC) format
+ * A flat representation of a document properties. Dates are in
+ * YYYY-MM-DDThh:mm:ssZ (UTC) format
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertyMap {
 
-    protected LinkedHashMap<String,Object> map;
+    protected LinkedHashMap<String, Object> map;
 
     public PropertyMap() {
         map = new LinkedHashMap<String, Object>();
@@ -167,20 +164,23 @@ public class PropertyMap {
         map.put(key, value);
     }
 
-    public Map<String,Object> map() {
+    public Map<String, Object> map() {
         return map;
     }
 
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        for (Map.Entry<String,Object> entry : map.entrySet()) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object v = entry.getValue();
             if (v != null) {
                 if (v.getClass() == String.class) {
-                    buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n"); //TODO escape \n in value
+                    buf.append(entry.getKey()).append("=").append(
+                            entry.getValue()).append("\n"); // TODO escape \n
+                                                            // in value
                 } else {
-                    //TODO - use full xpath
-                    //buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n"); //TODO escape \n in value
+                    // TODO - use full xpath
+                    // buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                    // //TODO escape \n in value
                 }
             } else {
                 buf.append(entry.getKey()).append("=").append("\n");

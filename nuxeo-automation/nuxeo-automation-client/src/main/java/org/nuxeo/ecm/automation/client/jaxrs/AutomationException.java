@@ -16,10 +16,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AutomationException extends RuntimeException {
 
@@ -29,15 +27,15 @@ public class AutomationException extends RuntimeException {
     }
 
     public AutomationException(String message) {
-        super (message);
+        super(message);
     }
 
     public AutomationException(Throwable cause) {
-        super ("", cause);
+        super("", cause);
     }
 
     public AutomationException(String message, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
     }
 
 }

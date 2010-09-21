@@ -26,12 +26,13 @@ import java.io.Reader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class IOUtils {
 
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
+
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
+
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
     private IOUtils() {
@@ -49,7 +50,8 @@ public class IOUtils {
         return new byte[preferredSize];
     }
 
-    public static void copy(InputStream in, OutputStream out) throws IOException {
+    public static void copy(InputStream in, OutputStream out)
+            throws IOException {
         byte[] buffer = createBuffer(in.available());
         int read;
         while ((read = in.read(buffer)) != -1) {

@@ -16,8 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +34,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.assertNotNull;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -72,8 +70,7 @@ public class ScriptingTest {
 
     @Test
     public void testPrincipalWrapper() throws Exception {
-        assertNotNull(Scripting.newExpression("CurrentUser.name").eval(
-                ctx));
+        assertNotNull(Scripting.newExpression("CurrentUser.name").eval(ctx));
     }
 
 }

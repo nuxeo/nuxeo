@@ -19,15 +19,14 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 import java.util.Date;
 
 /**
- * Parse and encode W3c dates. Only UTC dates are supported (ending in Z): YYYY-MM-DDThh:mm:ssZ (without milliseconds)
- * We use a custom parser since it should work on GWT too.
+ * Parse and encode W3c dates. Only UTC dates are supported (ending in Z):
+ * YYYY-MM-DDThh:mm:ssZ (without milliseconds) We use a custom parser since it
+ * should work on GWT too.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @SuppressWarnings("deprecation")
 public class DateUtils {
-
 
     public static Date parseDate(String date) {
         int t = date.indexOf('T');
@@ -36,15 +35,15 @@ public class DateUtils {
             fillDate(date, result);
         } else {
             fillDate(date.substring(0, t), result);
-            fillTime(date.substring(t+1), result);
+            fillTime(date.substring(t + 1), result);
         }
         return result;
     }
 
     public static String formatDate(Date date) {
         StringBuilder buf = new StringBuilder();
-        int y = date.getYear()+1900;
-        int m = date.getMonth()+1;
+        int y = date.getYear() + 1900;
+        int m = date.getMonth() + 1;
         int d = date.getDate();
         buf.append(y).append('-');
         if (m < 10) {
@@ -75,21 +74,20 @@ public class DateUtils {
         return buf.toString();
     }
 
-
     protected static void fillDate(String text, Date date) {
         int p = text.indexOf('-');
         if (p == -1) {
-            throw new IllegalArgumentException("Invalid date format: "+text);
+            throw new IllegalArgumentException("Invalid date format: " + text);
         }
         String y = text.substring(0, p);
-        int q = text.indexOf('-', p+1);
+        int q = text.indexOf('-', p + 1);
         if (q == -1) {
-            throw new IllegalArgumentException("Invalid date format: "+text);
+            throw new IllegalArgumentException("Invalid date format: " + text);
         }
-        String m = text.substring(p+1, q);
-        String d = text.substring(q+1);
-        int year = Integer.parseInt(y)-1900;
-        int month = Integer.parseInt(m)-1;
+        String m = text.substring(p + 1, q);
+        String d = text.substring(q + 1);
+        int year = Integer.parseInt(y) - 1900;
+        int month = Integer.parseInt(m) - 1;
         int day = Integer.parseInt(d);
         date.setYear(year);
         date.setMonth(month);
@@ -99,15 +97,16 @@ public class DateUtils {
     protected static void fillTime(String text, Date date) {
         int p = text.indexOf(':');
         if (p == -1) {
-            throw new IllegalArgumentException("Invalid time format: "+text);
+            throw new IllegalArgumentException("Invalid time format: " + text);
         }
         String h = text.substring(0, p);
-        int q = text.indexOf(':', p+1);
+        int q = text.indexOf(':', p + 1);
         if (q == -1) {
-            throw new IllegalArgumentException("Invalid time format: "+text);
+            throw new IllegalArgumentException("Invalid time format: " + text);
         }
-        String m = text.substring(p+1, q);
-        String s = text.substring(q+1, text.length()-1); // remove the trailing Z
+        String m = text.substring(p + 1, q);
+        String s = text.substring(q + 1, text.length() - 1); // remove the
+                                                                // trailing Z
         int hour = Integer.parseInt(h);
         int minute = Integer.parseInt(m);
         int second = Integer.parseInt(s);
@@ -116,12 +115,11 @@ public class DateUtils {
         date.setSeconds(second);
     }
 
-
     public static void main(String[] args) {
         Date d = new Date();
         String s = formatDate(d);
         System.out.println(s);
         Date d2 = parseDate(s);
-        System.out.println(d +" = "+ d2);
+        System.out.println(d + " = " + d2);
     }
 }

@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class ExecutableResource {
 
@@ -48,8 +47,8 @@ public abstract class ExecutableResource {
     }
 
     @POST
-    public Object doPost(@Context HttpServletRequest request,
-            ExecutionRequest xreq) {
+    public Object doPost(@Context
+    HttpServletRequest request, ExecutionRequest xreq) {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);

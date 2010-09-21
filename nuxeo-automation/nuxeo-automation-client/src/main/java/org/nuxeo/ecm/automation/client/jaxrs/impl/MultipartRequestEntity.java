@@ -34,24 +34,23 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.BlobDataSource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MultipartRequestEntity extends AbstractHttpEntity {
 
     protected MimeMultipart mp;
 
-
     public MultipartRequestEntity() {
-        this (new MimeMultipart("related"));
+        this(new MimeMultipart("related"));
     }
 
     public MultipartRequestEntity(String subType) {
-        this (new MimeMultipart(subType));
+        this(new MimeMultipart(subType));
     }
 
     public MultipartRequestEntity(MimeMultipart mp) {
         this.mp = mp;
-        setContentType(mp.getContentType()+"; type=\""+Constants.CTYPE_REQUEST_NOCHARSET+"\"; start=\"request\"");
+        setContentType(mp.getContentType() + "; type=\""
+                + Constants.CTYPE_REQUEST_NOCHARSET + "\"; start=\"request\"");
     }
 
     public void setRequest(String content) throws Exception {
@@ -71,7 +70,7 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
     protected void setBlob(Blob blob, String id) throws Exception {
         MimeBodyPart part = new MimeBodyPart();
         if (blob instanceof HasFile) {
-            part.attachFile(((HasFile)blob).getFile());
+            part.attachFile(((HasFile) blob).getFile());
         } else {
             part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
         }
@@ -86,8 +85,8 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
     }
 
     public void setBlobs(List<Blob> blobs) throws Exception {
-        for (int i=0, size=blobs.size(); i<size; i++) {
-            setBlob(blobs.get(i), "input#"+i);
+        for (int i = 0, size = blobs.size(); i < size; i++) {
+            setBlob(blobs.get(i), "input#" + i);
         }
     }
 

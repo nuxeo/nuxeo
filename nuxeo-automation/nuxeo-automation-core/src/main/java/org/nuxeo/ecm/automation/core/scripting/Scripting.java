@@ -85,8 +85,8 @@ public class Scripting {
         map.put("Context", ctx);
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        map.put("CurrentUser",
-                new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
+        map.put("CurrentUser", new PrincipalWrapper(
+                (NuxeoPrincipal) ctx.getPrincipal()));
         map.put("Env", Framework.getProperties());
         map.put("Fn", Functions.INSTANCE);
         if (input instanceof DocumentModel) {

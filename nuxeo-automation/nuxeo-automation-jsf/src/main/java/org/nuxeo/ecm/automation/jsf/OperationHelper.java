@@ -22,16 +22,17 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class OperationHelper {
 
     public static NavigationContext getNavigationContext() {
-        return (NavigationContext) Contexts.getConversationContext().get("navigationContext");
+        return (NavigationContext) Contexts.getConversationContext().get(
+                "navigationContext");
     }
 
     public static DocumentsListsManager getDocumentListManager() {
-        return (DocumentsListsManager) Contexts.getSessionContext().get("documentsListsManager");
+        return (DocumentsListsManager) Contexts.getSessionContext().get(
+                "documentsListsManager");
     }
 
     public static WebActions getWebActions() {

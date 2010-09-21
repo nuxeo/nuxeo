@@ -21,20 +21,19 @@ import java.util.Date;
 /**
  * A immutable document. You cannot modify documents. Documents are as they are
  * returned by the server. To modify documents use operations.
- * 
+ * <p>
  * You need to create your own wrapper if you need to access the document
  * properties in a multi-level way. This is a flat representation of the
  * document.
- * 
+ * <p>
  * Possible property value types:
  * <ul>
  * <li>String
  * <li>Number
  * <li>Date
  * <ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class Document extends DocRef {
 

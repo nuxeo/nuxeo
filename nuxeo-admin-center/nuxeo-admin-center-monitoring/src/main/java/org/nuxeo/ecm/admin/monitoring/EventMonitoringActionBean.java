@@ -30,13 +30,11 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.event.jmx.EventMonitoring;
 
-
 /**
- *
- * Simple Seam Bean that wraps {@link EventMonitoring} to expose it to JSF/Seam layer
+ * Simple Seam Bean that wraps {@link EventMonitoring} to expose it to JSF/Seam
+ * layer
  *
  * @author tiry
- *
  */
 @Name("eventMonitoringAction")
 @Scope(ScopeType.EVENT)
@@ -44,10 +42,10 @@ public class EventMonitoringActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected EventMonitoring monitor=null;
+    protected EventMonitoring monitor = null;
 
     protected EventMonitoring getEventMonitoring() {
-        if (monitor==null) {
+        if (monitor == null) {
             monitor = new EventMonitoring();
         }
         return monitor;
@@ -61,13 +59,13 @@ public class EventMonitoringActionBean implements Serializable {
         return getEventMonitoring().getEventsInQueueCount();
     }
 
-    @Factory(value="eventSyncStats", scope=ScopeType.EVENT)
+    @Factory(value = "eventSyncStats", scope = ScopeType.EVENT)
     public List<List<String>> getSyncStats() {
         String stats = getEventMonitoring().getSyncHandlersExecTime();
         return formatStats(stats);
     }
 
-    @Factory(value="eventAsyncStats", scope=ScopeType.EVENT)
+    @Factory(value = "eventAsyncStats", scope = ScopeType.EVENT)
     public List<List<String>> getAsyncStats() {
         String stats = getEventMonitoring().getAsyncHandlersExecTime();
         return formatStats(stats);
@@ -76,14 +74,14 @@ public class EventMonitoringActionBean implements Serializable {
     protected List<List<String>> formatStats(String stats) {
 
         List<List<String>> result = new ArrayList<List<String>>();
-        if (stats==null || stats.length()==0) {
+        if (stats == null || stats.length() == 0) {
             return result;
         }
 
         String[] lines = stats.split("\n");
         for (String line : lines) {
             line = line.trim();
-            if (line.length()==0) {
+            if (line.length() == 0) {
                 continue;
             }
             String parts[] = line.split(" - ");
@@ -147,12 +145,12 @@ public class EventMonitoringActionBean implements Serializable {
         cleanSeamEventCache();
     }
 
-    @Factory(value="eventSyncTrackingEnabled", scope=ScopeType.EVENT)
+    @Factory(value = "eventSyncTrackingEnabled", scope = ScopeType.EVENT)
     public boolean isSyncTrackingEnabled() {
         return getEventMonitoring().isSyncHandlersTrackingEnabled();
     }
 
-    @Factory(value="eventAsyncTrackingEnabled", scope=ScopeType.EVENT)
+    @Factory(value = "eventAsyncTrackingEnabled", scope = ScopeType.EVENT)
     public boolean isAsyncTrackingEnabled() {
         return getEventMonitoring().isAsyncHandlersTrackingEnabled();
     }

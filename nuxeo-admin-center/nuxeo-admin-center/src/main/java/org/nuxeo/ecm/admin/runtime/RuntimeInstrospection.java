@@ -43,17 +43,16 @@ import org.osgi.framework.Bundle;
  * Extracts information about the Bundles currently deployed in Nuxeo Runtime
  *
  * @author tiry
- *
  */
 public class RuntimeInstrospection {
 
     protected static SimplifiedServerInfo info;
 
     public static synchronized SimplifiedServerInfo getInfo() {
-        if (info ==null) {
+        if (info == null) {
 
             RuntimeService runtime = Framework.getRuntime();
-            Collection<RegistrationInfo> registrations  = runtime.getComponentManager().getRegistrations();
+            Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
 
             List<String> bundleIds = new ArrayList<String>();
 
@@ -61,10 +60,11 @@ public class RuntimeInstrospection {
 
             for (RegistrationInfo ri : registrations) {
                 Bundle bundle = ri.getContext().getBundle();
-                if (bundle!=null && !bundleIds.contains(bundle.getSymbolicName())) {
+                if (bundle != null
+                        && !bundleIds.contains(bundle.getSymbolicName())) {
                     SimplifiedBundleInfo bi = getBundleSimplifiedInfo(bundle);
                     bundleIds.add(bundle.getSymbolicName());
-                    if (bi!=null) {
+                    if (bi != null) {
                         bundles.add(bi);
                     }
                 }
@@ -73,8 +73,10 @@ public class RuntimeInstrospection {
             Collections.sort(bundles);
             info = new SimplifiedServerInfo();
             info.setBundleInfos(bundles);
-            info.setPlatformName(Framework.getProperty("org.nuxeo.ecm.product.name", "Unknown"));
-            info.setPlatformVersion(Framework.getProperty("org.nuxeo.ecm.product.version", "Unknown"));
+            info.setPlatformName(Framework.getProperty(
+                    "org.nuxeo.ecm.product.name", "Unknown"));
+            info.setPlatformVersion(Framework.getProperty(
+                    "org.nuxeo.ecm.product.version", "Unknown"));
             info.setRuntimeVersion(runtime.getVersion().toString());
             info.setWarnings(runtime.getWarnings());
 
@@ -82,48 +84,47 @@ public class RuntimeInstrospection {
         return info;
     }
 
-
     @SuppressWarnings("unchecked")
     protected static SimplifiedBundleInfo getBundleSimplifiedInfo(Bundle bundle) {
         SimplifiedBundleInfo result = null;
-         if (bundle instanceof BundleImpl) {
-             BundleImpl nxBundle = (BundleImpl) bundle;
-             BundleFile file = nxBundle.getBundleFile();
-             File jarFile=null;
-             if (file instanceof JarBundleFile) {
-                 JarBundleFile jar = (JarBundleFile) file;
-                 jarFile = jar.getFile();
-             } else if (file instanceof JBossBundleFile) {
-                 JBossBundleFile jar = (JBossBundleFile) file;
-                 jarFile = jar.getFile();
-             }
-             if (jarFile!=null) {
-                 if (jarFile.isDirectory()) {
-                     // XXX
-                 }
-                 else {
-                     try {
-                         ZipFile zFile = new ZipFile(jarFile);
-                         Enumeration<ZipEntry> entries =(Enumeration<ZipEntry>) zFile.entries();
-                         while (entries.hasMoreElements()) {
-                             ZipEntry entry = entries.nextElement();
-                             if (entry.getName().endsWith("pom.properties")) {
-                                 InputStream pomStream = zFile.getInputStream(entry);
-                                 PropertyResourceBundle prb = new PropertyResourceBundle(pomStream);
-                                 String version = prb.getString("version");
-                                 result = new SimplifiedBundleInfo(bundle.getSymbolicName(), version);
-                                 pomStream.close();
-                                 break;
-                             }
-                         }
-                     }
-                     catch (Exception e) {
-                         // NOP
-                     }
+        if (bundle instanceof BundleImpl) {
+            BundleImpl nxBundle = (BundleImpl) bundle;
+            BundleFile file = nxBundle.getBundleFile();
+            File jarFile = null;
+            if (file instanceof JarBundleFile) {
+                JarBundleFile jar = (JarBundleFile) file;
+                jarFile = jar.getFile();
+            } else if (file instanceof JBossBundleFile) {
+                JBossBundleFile jar = (JBossBundleFile) file;
+                jarFile = jar.getFile();
+            }
+            if (jarFile != null) {
+                if (jarFile.isDirectory()) {
+                    // XXX
+                } else {
+                    try {
+                        ZipFile zFile = new ZipFile(jarFile);
+                        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zFile.entries();
+                        while (entries.hasMoreElements()) {
+                            ZipEntry entry = entries.nextElement();
+                            if (entry.getName().endsWith("pom.properties")) {
+                                InputStream pomStream = zFile.getInputStream(entry);
+                                PropertyResourceBundle prb = new PropertyResourceBundle(
+                                        pomStream);
+                                String version = prb.getString("version");
+                                result = new SimplifiedBundleInfo(
+                                        bundle.getSymbolicName(), version);
+                                pomStream.close();
+                                break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        // NOP
+                    }
 
-                 }
-             }
-         }
-         return result;
+                }
+            }
+        }
+        return result;
     }
 }

@@ -18,10 +18,10 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 
 /**
  * The connection to the automation service is done the first time you create a
- * session. To create a session you need to pass the authentication information.
- * If null is passed as the user name an anonymous session will be created. Note
- * that anonymous sessions are not always accepted by a Nuxeo Server (it depends
- * on the server configuration).
+ * session. To create a session you need to pass the authentication
+ * information. If null is passed as the user name an anonymous session will be
+ * created. Note that anonymous sessions are not always accepted by a Nuxeo
+ * Server (it depends on the server configuration).
  * <p>
  * When you attempt to create a new session using the same authentication info
  * as an already created session the session will be reused (TODO this is
@@ -51,8 +51,8 @@ public interface AutomationClient {
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
-     * Adapts the given object to the given type. Return the adapter instance if
-     * any, otherwise null.
+     * Adapts the given object to the given type. Return the adapter instance
+     * if any, otherwise null.
      * <p>
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
@@ -71,8 +71,8 @@ public interface AutomationClient {
     void registerAdapter(AdapterFactory<?> factory);
 
     /**
-     * Cleanup any resources held by this client. After a shutdown the client is
-     * no more usable.
+     * Cleanup any resources held by this client. After a shutdown the client
+     * is no more usable.
      */
     void shutdown();
 

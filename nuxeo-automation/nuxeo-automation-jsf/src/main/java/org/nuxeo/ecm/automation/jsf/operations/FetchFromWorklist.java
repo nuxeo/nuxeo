@@ -30,10 +30,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = FetchFromWorklist.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Worklist", description = "Get worklist content from the UI context.")
+@Operation(id = FetchFromWorklist.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Worklist", description = "Get worklist content from the UI context.")
 public class FetchFromWorklist {
 
     public static final String ID = "Seam.FetchFromWorklist";
@@ -43,7 +41,8 @@ public class FetchFromWorklist {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST);
+        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
+                DocumentsListsManager.DEFAULT_WORKING_LIST);
         return new DocumentModelListImpl(res);
     }
 

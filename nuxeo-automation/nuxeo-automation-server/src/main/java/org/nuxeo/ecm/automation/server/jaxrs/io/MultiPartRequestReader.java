@@ -48,7 +48,6 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Consumes("multipart/related")
@@ -80,7 +79,8 @@ public class MultiPartRequestReader implements
             // perhaps the stream is no more available when javax.mail need it?
             File tmp = File.createTempFile("nx-automation-mp-upload-", ".tmp");
             FileUtils.copyToFile(in, tmp);
-            in = new FileInputStream(tmp); // get the input from the saved file
+            in = new FileInputStream(tmp); // get the input from the saved
+                                            // file
             try {
                 MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(
                         in, ctype));

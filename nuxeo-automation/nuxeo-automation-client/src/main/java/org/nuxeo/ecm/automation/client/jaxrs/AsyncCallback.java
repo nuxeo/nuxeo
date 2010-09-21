@@ -16,10 +16,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface AsyncCallback<T> {
 

@@ -37,11 +37,11 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces({"application/json+nxentity", "application/json"})
-public class JsonDocumentListWriter implements MessageBodyWriter<DocumentModelList> {
+@Produces( { "application/json+nxentity", "application/json" })
+public class JsonDocumentListWriter implements
+        MessageBodyWriter<DocumentModelList> {
 
     public long getSize(DocumentModelList arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {

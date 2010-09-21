@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocResource {
 
@@ -76,7 +75,8 @@ public class DocResource {
     }
 
     @GET
-    public Object doGet(@QueryParam("id") String id) {
+    public Object doGet(@QueryParam("id")
+    String id) {
         if (id == null) {
             return getTemplate();
         } else {

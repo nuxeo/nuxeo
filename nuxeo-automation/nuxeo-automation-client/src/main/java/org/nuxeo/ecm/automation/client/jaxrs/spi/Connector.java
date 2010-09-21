@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Connector {
 

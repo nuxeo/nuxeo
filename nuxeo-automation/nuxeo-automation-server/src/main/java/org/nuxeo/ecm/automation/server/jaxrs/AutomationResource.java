@@ -71,8 +71,10 @@ public class AutomationResource {
     @SuppressWarnings("unchecked")
     @GET
     @Path("files/{uid}")
-    public Object getFile(@Context HttpServletRequest request,
-            @PathParam("uid") String uid, @QueryParam("path") String path) {
+    public Object getFile(@Context
+    HttpServletRequest request, @PathParam("uid")
+    String uid, @QueryParam("path")
+    String path) {
         try {
             CoreSession session = UserSession.getCurrentSession(request).getCoreSession();
             DocumentModel doc = session.getDocument(new IdRef(uid));
@@ -110,7 +112,8 @@ public class AutomationResource {
 
     @POST
     @Path("login")
-    public Object login(@Context HttpServletRequest request) {
+    public Object login(@Context
+    HttpServletRequest request) {
         Principal p = request.getUserPrincipal();
         if (p instanceof NuxeoPrincipal) {
             NuxeoPrincipal np = (NuxeoPrincipal) p;
@@ -123,7 +126,8 @@ public class AutomationResource {
     }
 
     @Path("{oid}")
-    public Object getExecutable(@PathParam("oid") String oid) {
+    public Object getExecutable(@PathParam("oid")
+    String oid) {
         if (oid.startsWith("Chain.")) {
             oid = oid.substring(6);
             return new ChainResource(service, oid);

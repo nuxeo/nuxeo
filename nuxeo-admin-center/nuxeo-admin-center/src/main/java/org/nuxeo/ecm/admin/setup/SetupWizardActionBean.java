@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.admin.setup;
 
 import java.io.Serializable;
@@ -25,16 +42,16 @@ public class SetupWizardActionBean implements Serializable {
 
     protected Map<String, String> parameters = null;
 
-    protected static boolean needsRestart=false;
+    protected static boolean needsRestart = false;
 
-    @Factory(value="setupRequiresRestart", scope = ScopeType.EVENT)
+    @Factory(value = "setupRequiresRestart", scope = ScopeType.EVENT)
     public boolean isNeedsRestart() {
         return needsRestart;
     }
 
-    @Factory(value="setupParams", scope=ScopeType.PAGE)
+    @Factory(value = "setupParams", scope = ScopeType.PAGE)
     public Map<String, String> getParameters() {
-        if (parameters==null) {
+        if (parameters == null) {
             readParameters();
         }
         return parameters;
@@ -47,7 +64,7 @@ public class SetupWizardActionBean implements Serializable {
 
         parameters.put("nuxeo.template", "default");
         parameters.put("nuxeo.bind.address", "0.0.0.0");
-        parameters.put("nuxeo.url","http://localhost:8080/nuxeo");
+        parameters.put("nuxeo.url", "http://localhost:8080/nuxeo");
     }
 
     public void saveParameters() {
@@ -55,7 +72,7 @@ public class SetupWizardActionBean implements Serializable {
         // TODO : save back in properties
 
         facesMessages.add(FacesMessage.SEVERITY_INFO, "label.parameters.saved");
-        needsRestart=true;
+        needsRestart = true;
         resetParameters();
     }
 

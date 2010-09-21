@@ -25,7 +25,6 @@ import java.util.List;
  * in sync
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class OperationDocumentation implements
         Comparable<OperationDocumentation>, Serializable {

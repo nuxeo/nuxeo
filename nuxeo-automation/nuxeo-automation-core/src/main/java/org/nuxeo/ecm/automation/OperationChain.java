@@ -34,7 +34,8 @@ public class OperationChain implements Serializable {
     protected String description;
 
     protected boolean isPublic; // whether this chain is visible to clients
-                                // (via REST for example)
+
+    // (via REST for example)
 
     protected final List<OperationParameters> ops;
 

@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- *
- * Runnable Class that is executed in the ThreadPool of {@link RepoStat} to gather statistics.
+ * Runnable Class that is executed in the ThreadPool of {@link RepoStat} to
+ * gather statistics.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -36,7 +36,7 @@ public class StatsTask implements Runnable {
 
     protected static final Log log = LogFactory.getLog(StatsTask.class);
 
-    private DocumentRef rootDocRef;
+    private final DocumentRef rootDocRef;
 
     protected boolean includeBlob;
 
@@ -44,7 +44,8 @@ public class StatsTask implements Runnable {
 
     protected String repositoryName;
 
-    public StatsTask(String repoName, DocumentRef rootDocRef, boolean includeBlob, RepoStat instance) throws Exception {
+    public StatsTask(String repoName, DocumentRef rootDocRef,
+            boolean includeBlob, RepoStat instance) throws Exception {
         this.repositoryName = repoName;
         this.rootDocRef = rootDocRef;
         this.includeBlob = includeBlob;
@@ -52,7 +53,8 @@ public class StatsTask implements Runnable {
     }
 
     public synchronized void run() {
-        StatsTaskRunner runner = new StatsTaskRunner(repositoryName, includeBlob, rootDocRef, this);
+        StatsTaskRunner runner = new StatsTaskRunner(repositoryName,
+                includeBlob, rootDocRef, this);
 
         try {
             TransactionHelper.startTransaction();
@@ -74,7 +76,8 @@ public class StatsTask implements Runnable {
         }
         StatsTask newTask;
         try {
-            newTask = new StatsTask(repositoryName, root.getRef(), includeBlob, cmdInstance);
+            newTask = new StatsTask(repositoryName, root.getRef(), includeBlob,
+                    cmdInstance);
         } catch (Exception e) {
             log.error("Unable to start new task", e);
             return null;

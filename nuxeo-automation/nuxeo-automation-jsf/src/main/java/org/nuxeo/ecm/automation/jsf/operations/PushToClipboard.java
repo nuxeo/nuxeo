@@ -27,10 +27,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = PushToClipboard.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Push to Clipboard", description = "Add a input document(s) to clipboard. Returns back the document(s)")
+@Operation(id = PushToClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Clipboard", description = "Add a input document(s) to clipboard. Returns back the document(s)")
 public class PushToClipboard {
 
     public static final String ID = "Seam.AddToClipboard";
@@ -40,13 +38,15 @@ public class PushToClipboard {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.CLIPBOARD,doc);
+        OperationHelper.getDocumentListManager().addToWorkingList(
+                DocumentsListsManager.CLIPBOARD, doc);
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.CLIPBOARD,docs);
+        OperationHelper.getDocumentListManager().addToWorkingList(
+                DocumentsListsManager.CLIPBOARD, docs);
         return docs;
     }
 

@@ -26,10 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = FetchDocumentFromSeamContext.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Document From Seam", description = "Fetch a document from the Seam context given its Seam name.")
+@Operation(id = FetchDocumentFromSeamContext.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Document From Seam", description = "Fetch a document from the Seam context given its Seam name.")
 public class FetchDocumentFromSeamContext {
 
     public static final String ID = "Seam.FetchDocument";

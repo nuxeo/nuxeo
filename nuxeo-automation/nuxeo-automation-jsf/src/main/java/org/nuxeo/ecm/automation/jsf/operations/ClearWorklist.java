@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 @Operation(id = ClearWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Worklist", description = "Clear the worklist content.")
 public class ClearWorklist {

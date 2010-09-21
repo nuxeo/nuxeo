@@ -38,9 +38,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
 import org.nuxeo.connect.connector.ConnectServerError;
-import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.data.SubscriptionStatus;
@@ -92,8 +92,7 @@ public class ConnectStatusActionBean implements Serializable {
     public String getRegistredCLID() throws Exception {
         if (isRegistred()) {
             return LogicalInstanceIdentifier.instance().getCLID();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -111,13 +110,14 @@ public class ConnectStatusActionBean implements Serializable {
         List<SelectItem> types = new ArrayList<SelectItem>();
 
         for (NuxeoClientInstanceType itype : NuxeoClientInstanceType.values()) {
-            SelectItem item = new SelectItem(itype.getValue(), "label.instancetype." + itype.getValue());
+            SelectItem item = new SelectItem(itype.getValue(),
+                    "label.instancetype." + itype.getValue());
             types.add(item);
         }
         return types;
     }
 
-    @Factory(scope=ScopeType.EVENT, value="connectLoginValidated")
+    @Factory(scope = ScopeType.EVENT, value = "connectLoginValidated")
     public boolean isLoginValidated() {
         return loginValidated;
     }
@@ -150,7 +150,7 @@ public class ConnectStatusActionBean implements Serializable {
         this.password = password;
     }
 
-    @Factory(scope=ScopeType.EVENT, value="registredConnectInstance")
+    @Factory(scope = ScopeType.EVENT, value = "registredConnectInstance")
     public boolean isRegistred() {
         return getService().isInstanceRegistred();
     }
@@ -163,52 +163,54 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public void validateLogin() {
-        if (login==null || password==null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "label.empty.loginpassword");
-            loginValidated=false;
+        if (login == null || password == null) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    "label.empty.loginpassword");
+            loginValidated = false;
             flushEventCache();
             return;
         }
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
-        if (prjs==null || prjs.size()==0) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "label.bad.loginpassword.or.noproject");
-            loginValidated=false;
+        if (prjs == null || prjs.size() == 0) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    "label.bad.loginpassword.or.noproject");
+            loginValidated = false;
             flushEventCache();
             return;
         }
         flushEventCache();
-        loginValidated=true;
+        loginValidated = true;
     }
 
-    @Factory(value="connectServerReachable", scope=ScopeType.EVENT)
+    @Factory(value = "connectServerReachable", scope = ScopeType.EVENT)
     public boolean isConnectServerReachable() {
         return !canNotReachConnectServer;
     }
 
     public SubscriptionStatusWrapper getStatus() {
-        if (instanceStatus==null) {
+        if (instanceStatus == null) {
             if (isRegistred()) {
                 try {
                     instanceStatus = getService().getConnector().getConnectStatus();
                     instanceType = instanceStatus.getInstanceType().toString();
                     instanceDescription = instanceStatus.getDescription();
-                }
-                catch (CanNotReachConnectServer e) {
-                    canNotReachConnectServer=true;
+                } catch (CanNotReachConnectServer e) {
+                    canNotReachConnectServer = true;
                     log.warn("can not reach connect server", e);
-                    return new SubscriptionStatusWrapper("Nuxeo Connect Server is not reachable");
-                }
-                catch (ConnectClientVersionMismatchError e) {
-                    log.warn("Connect Client does not have the required version to communicate with Nuxeo Connect Server", e);
+                    return new SubscriptionStatusWrapper(
+                            "Nuxeo Connect Server is not reachable");
+                } catch (ConnectClientVersionMismatchError e) {
+                    log.warn(
+                            "Connect Client does not have the required version to communicate with Nuxeo Connect Server",
+                            e);
                     return new SubscriptionStatusWrapper(e.getMessage());
-                }
-                catch (ConnectServerError e) {
+                } catch (ConnectServerError e) {
                     log.error("Error while calling connect server", e);
                     return new SubscriptionStatusWrapper(e.getMessage());
                 }
             }
         }
-        if (instanceStatus!=null) {
+        if (instanceStatus != null) {
             return new SubscriptionStatusWrapper(instanceStatus);
         } else {
             return null;
@@ -233,19 +235,20 @@ public class ConnectStatusActionBean implements Serializable {
 
     public String enterConnectCredentials() {
         // XXX security checks
-        if (login==null) {
+        if (login == null) {
             return "connectCredential";
         }
         return "projectListing";
     }
 
-    @Factory(scope=ScopeType.EVENT, value="projectsForRegistration")
+    @Factory(scope = ScopeType.EVENT, value = "projectsForRegistration")
     public List<ConnectProject> getProjectsAvailableForRegistration() {
-        if (login==null) {
+        if (login == null) {
             return new ArrayList<ConnectProject>();
         }
         try {
-            return getService().getAvailableProjectsForRegistration(login, password);
+            return getService().getAvailableProjectsForRegistration(login,
+                    password);
         } catch (Exception e) {
             log.error("Error while getting remote project", e);
             return new ArrayList<ConnectProject>();
@@ -253,14 +256,18 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public String register() {
-        if (registredProject==null) {
+        if (registredProject == null) {
             facesMessages.add(FacesMessage.SEVERITY_WARN, "label.empty.project");
             return null;
         }
         try {
-            getService().remoteRegisterInstance(login, password, registredProject, NuxeoClientInstanceType.fromString(instanceType), instanceDescription);
+            getService().remoteRegisterInstance(login, password,
+                    registredProject,
+                    NuxeoClientInstanceType.fromString(instanceType),
+                    instanceDescription);
         } catch (Exception e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR, "label.connect.registrationError");
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "label.connect.registrationError");
             log.error("Error while registring instance", e);
         }
 
@@ -276,9 +283,11 @@ public class ConnectStatusActionBean implements Serializable {
         try {
             getService().localRegisterInstance(CLID, instanceDescription);
         } catch (InvalidCLID e) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "label.connect.wrongCLID");
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+                    "label.connect.wrongCLID");
         } catch (IOException e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR, "label.connect.registrationError");
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "label.connect.registrationError");
             log.error("Error while registring instance locally", e);
         }
 

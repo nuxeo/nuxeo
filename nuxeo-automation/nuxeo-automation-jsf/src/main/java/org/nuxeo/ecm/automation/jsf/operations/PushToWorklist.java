@@ -27,10 +27,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)")
+@Operation(id = PushToWorklist.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Worklist", description = "Add the input document(s) to worklist. Returns back the document(s)")
 public class PushToWorklist {
 
     public static final String ID = "Seam.AddToWorklist";
@@ -40,13 +38,15 @@ public class PushToWorklist {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST,doc);
+        OperationHelper.getDocumentListManager().addToWorkingList(
+                DocumentsListsManager.DEFAULT_WORKING_LIST, doc);
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) throws Exception {
-        OperationHelper.getDocumentListManager().addToWorkingList(DocumentsListsManager.DEFAULT_WORKING_LIST,docs);
+        OperationHelper.getDocumentListManager().addToWorkingList(
+                DocumentsListsManager.DEFAULT_WORKING_LIST, docs);
         return docs;
     }
 

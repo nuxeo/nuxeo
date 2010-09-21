@@ -26,16 +26,21 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="o4")
+@Operation(id = "o4")
 public class Operation4 {
 
-    @Param(name="message") protected String message;
-    @Param(name="doc") protected DocumentModel doc;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Param(name = "doc")
+    protected DocumentModel doc;
+
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public DocumentModel printInfo() throws Exception {

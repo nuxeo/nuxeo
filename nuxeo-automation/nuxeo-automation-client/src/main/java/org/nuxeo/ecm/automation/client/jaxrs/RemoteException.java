@@ -18,18 +18,20 @@ package org.nuxeo.ecm.automation.client.jaxrs;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RemoteException extends AutomationException {
 
     private static final long serialVersionUID = 1L;
 
     protected final int status;
+
     protected final String type;
+
     protected final String stackTrace;
 
-    public RemoteException(int status, String type, String message, String stackTrace) {
-        super (message);
+    public RemoteException(int status, String type, String message,
+            String stackTrace) {
+        super(message);
         this.status = status;
         this.type = type;
         this.stackTrace = stackTrace;
