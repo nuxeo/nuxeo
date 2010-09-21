@@ -224,7 +224,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return versions;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
@@ -255,7 +255,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     /**
      * For documents about to be created there should be no versioning options.
      */
-    @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false, inject = false)
+    @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false)
     @BypassInterceptors
     public void resetRenderingStatus() {
         rendered = false;

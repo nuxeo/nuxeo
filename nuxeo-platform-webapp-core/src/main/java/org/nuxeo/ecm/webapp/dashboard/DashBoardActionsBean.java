@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -164,7 +165,8 @@ public class DashBoardActionsBean implements DashboardActions {
         return dashboardNavigationHelper.navigateToDashboard();
     }
 
-    @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
     public void invalidateDomainBoundInfo() throws ClientException {
         selectedDomain = null;
         invalidateDomainResultProviders();

@@ -68,7 +68,7 @@ public class UserServicesContext implements Serializable {
         return repoLocation != null;
     }
 
-    @Observer(value={EventNames.LOCATION_SELECTION_CHANGED}, create=false, inject=false)
+    @Observer(value={EventNames.LOCATION_SELECTION_CHANGED}, create=false)
     @BypassInterceptors
     public void invalidate() {
         repoLocation = null;

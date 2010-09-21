@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
@@ -353,7 +354,7 @@ public class LockActionsBean implements LockActions {
         return isLiveEditable;
     }
 
-    //@Observer( value={ EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create=false, inject=false)
+    @BypassInterceptors
     public void resetLockState() {
         lockDetails = null;
         canLock = null;

@@ -45,6 +45,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
@@ -135,7 +136,8 @@ public class SecurityActionsBean extends InputController implements
 
     protected List<String> selectedEntries;
 
-    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
+    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
+    @BypassInterceptors
     public void resetSecurityData() {
         obsoleteSecurityData = true;
         blockRightInheritance = null;

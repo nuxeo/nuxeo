@@ -112,7 +112,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
     }
 
     @Observer( value= { LOCATION_SELECTION_CHANGED, NEW_DOCUMENT_CREATED, DOCUMENT_CHANGED },
-            create=false, inject=false)
+            create=false)
     @BypassInterceptors
     public void invalidateDomainList() {
         domains = null;

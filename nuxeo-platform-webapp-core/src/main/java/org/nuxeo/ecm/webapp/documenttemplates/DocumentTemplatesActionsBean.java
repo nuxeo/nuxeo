@@ -226,7 +226,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         this.targetType = targetType;
     }
 
-    @Observer(value = { DOCUMENT_CHILDREN_CHANGED }, create = false, inject = false)
+    @Observer(value = { DOCUMENT_CHILDREN_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChildrenChanged(DocumentModel targetDoc) {
         // refresh if a child was added to template root
@@ -236,7 +236,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
         }
     }
 
-    @Observer(value = { DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { DOMAIN_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void domainChanged(DocumentModel targetDoc) {
         if (templates != null) {
