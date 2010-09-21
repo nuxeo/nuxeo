@@ -229,7 +229,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
     }
 
     @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED, EventNames.LOCATION_SELECTION_CHANGED },
-            create=false, inject=false)
+            create=false)
     @BypassInterceptors
     public void invalidateChildrenProvider() {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);

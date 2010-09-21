@@ -142,7 +142,7 @@ public class DocumentListingActionsBean implements Serializable {
         return currentAvailableListingLayoutNames;
     }
 
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
         currentListingLayoutName = null;
