@@ -37,6 +37,9 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<String, DocumentStoreHandlerDescriptor>();
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
+        if (desc.handler == null) {
+            throw new Error("Class wasn't resolved or new instance failed, check logs");
+        }
         handlers.put(desc.id, desc);
     }
 

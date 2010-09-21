@@ -23,7 +23,7 @@
   </extension>
   
   <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="storageHandlers">
-    <handler id="test" class="org.nuxeo.ecm.core.management.test.storage.FakeDocumentStoreHandler"/>
+    <handler id="test" class="org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler"/>
   </extension>
 
 </component>

@@ -1,8 +1,9 @@
 package org.nuxeo.ecm.core.management.test.storage;
 
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.management.test.CoreManagementTestCase;
+import org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler;
 
-public class TestStorage extends SQLRepositoryTestCase {
+public class TestStorage extends CoreManagementTestCase {
 
     @Override
     public void setUp() throws Exception {
