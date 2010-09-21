@@ -46,7 +46,7 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DeploymentPreprocessor {
 
@@ -81,8 +81,21 @@ public class DeploymentPreprocessor {
     }
 
     public void init() throws Exception {
-        root = getContainer(dir);
+        root = getDefaultContainer(dir);
         if (root != null) {
+            // run container commands
+            init(root);
+        }
+    }
+
+    public void init(File metadata, File[] files) throws Exception {
+        if (metadata == null) {
+            root = getDefaultContainer(dir);
+        } else {
+            root = getContainer(dir, metadata);
+        }
+        if (root != null) {
+            root.files = files;
             // run container commands
             init(root);
         }
@@ -98,13 +111,57 @@ public class DeploymentPreprocessor {
             log.info("Running custom installation for container: " + cd.name);
             cd.install.exec(cd.context);
         }
-        // scan directories
-        if (cd.directories == null || cd.directories.isEmpty()) {
-            init(cd, dir);
+        if (cd.files != null) {
+            init(cd, cd.files);
         } else {
-            for (String dirPath : cd.directories) {
-                init(cd, new File(dir, dirPath));
+            // scan directories
+            if (cd.directories == null || cd.directories.isEmpty()) {
+                init(cd, dir);
+            } else {
+                for (String dirPath : cd.directories) {
+                    init(cd, new File(dir, dirPath));
+                }
             }
+        }
+    }
+
+    protected void processFile(ContainerDescriptor cd, File file)
+            throws Exception {
+        String fileName = file.getName();
+        FragmentDescriptor fd = null;
+        if (fileName.endsWith("-fragment.xml")) {
+            fd = getXMLFragment(file);
+        } else if (fileName.endsWith("-fragments.xml")) {
+            // we allow declaring multiple fragments in the same file
+            // this is useful to deploy libraries
+            collectXMLFragments(cd, file);
+            return;
+        } else if (fileName.endsWith(".jar") || fileName.endsWith(".war")
+                || fileName.endsWith(".sar") || fileName.endsWith(".rar")) {
+            if (file.isDirectory()) {
+                fd = getDirectoryFragment(file);
+            } else {
+                fd = getJARFragment(file);
+            }
+        }
+        // register the fragment if any was found
+        if (fd != null) {
+            cd.fragments.add(fd);
+            fd.fileName = fileName;
+            fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(),
+                    file.getAbsolutePath());
+            if (fd.templates != null) {
+                for (TemplateDescriptor td : fd.templates.values()) {
+                    td.baseDir = file;
+                    cd.templates.put(td.name, td);
+                }
+            }
+        }
+    }
+
+    protected void init(ContainerDescriptor cd, File[] files) throws Exception {
+        for (File file : files) {
+            processFile(cd, file);
         }
     }
 
@@ -118,38 +175,7 @@ public class DeploymentPreprocessor {
         // the same deploying order on all machines.
         File[] files = dir.listFiles();
         Arrays.sort(files);
-        for (File file : files) {
-            String fileName = file.getName();
-            FragmentDescriptor fd = null;
-            if (fileName.endsWith("-fragment.xml")) {
-                fd = getXMLFragment(file);
-            } else if (fileName.endsWith("-fragments.xml")) {
-                // we allow declaring multiple fragments in the same file
-                // this is useful to deploy libraries
-                collectXMLFragments(cd, file);
-                continue;
-            } else if (fileName.endsWith(".jar") || fileName.endsWith(".war")
-                    || fileName.endsWith(".sar") || fileName.endsWith(".rar")) {
-                if (file.isDirectory()) {
-                    fd = getDirectoryFragment(file);
-                } else {
-                    fd = getJARFragment(file);
-                }
-            }
-            // register the fragment if any was found
-            if (fd != null) {
-                cd.fragments.add(fd);
-                fd.fileName = fileName;
-                fd.filePath = getRelativeChildPath(
-                        cd.directory.getAbsolutePath(), file.getAbsolutePath());
-                if (fd.templates != null) {
-                    for (TemplateDescriptor td : fd.templates.values()) {
-                        td.baseDir = file;
-                        cd.templates.put(td.name, td);
-                    }
-                }
-            }
-        }
+        init(cd, files);
     }
 
     public void predeploy() throws Exception {
@@ -370,17 +396,32 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected ContainerDescriptor getContainer(File directory) throws Exception {
+    /**
+     * Read a container fragment metadata file and return the container
+     * descriptor.
+     * 
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    protected ContainerDescriptor getContainer(File home, File file)
+            throws Exception {
+        ContainerDescriptor cd = (ContainerDescriptor) xmap.load(file.toURI().toURL());
+        if (cd != null) {
+            cd.directory = home;
+            if (cd.name == null) {
+                cd.name = home.getName();
+            }
+        }
+        return cd;
+    }
+
+    protected ContainerDescriptor getDefaultContainer(File directory)
+            throws Exception {
         ContainerDescriptor cd = null;
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
         if (file.isFile()) {
-            cd = (ContainerDescriptor) xmap.load(file.toURI().toURL());
-            if (cd != null) {
-                cd.directory = directory;
-                if (cd.name == null) {
-                    cd.name = directory.getName();
-                }
-            }
+            cd = getContainer(directory, file);
         }
         return cd;
     }
@@ -400,6 +441,28 @@ public class DeploymentPreprocessor {
             return childPath.removeFirstSegments(parentPath.segmentCount()).makeRelative().toString();
         }
         return null;
+    }
+
+    /**
+     * Run preprocessing in the given home directory and using the given list of
+     * bundles. Bundles must be ordered by the caller to have same deployment
+     * order on all computers.
+     * 
+     * The metadata file is the metadat file to be used to configure the
+     * processor. If null the default location will be used (relative to home):
+     * {@link #CONTAINER_FILE}
+     * 
+     * @param home
+     * @param metadata
+     * @param files
+     */
+    public static void process(File home, File metadata, File[] files)
+            throws Exception {
+        DeploymentPreprocessor processor = new DeploymentPreprocessor(home);
+        // initialize
+        processor.init(metadata, files);
+        // run preprocessor
+        processor.predeploy();
     }
 
     public static void main(String[] args) {

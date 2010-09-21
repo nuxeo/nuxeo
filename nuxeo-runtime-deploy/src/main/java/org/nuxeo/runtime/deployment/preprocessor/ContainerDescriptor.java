@@ -38,8 +38,8 @@ import org.nuxeo.runtime.deployment.preprocessor.install.DOMCommandsParser;
 import org.w3c.dom.DocumentFragment;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 @XObject("container")
 public class ContainerDescriptor {
@@ -69,6 +69,12 @@ public class ContainerDescriptor {
     public CommandProcessor uninstall;
 
     public CommandContext context;
+
+    /**
+     * The files to process. If this is not null, directories specified in the
+     * configuration are ignored.
+     */
+    public File[] files;
 
     @XContent("install")
     public void setInstallCommands(DocumentFragment df) {
