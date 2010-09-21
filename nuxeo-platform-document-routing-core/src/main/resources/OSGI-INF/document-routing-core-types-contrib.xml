@@ -51,7 +51,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="Step" extends="Document">
+    <doctype name="DocumentRouteStep" extends="Document">
       <schema name="dublincore" />
       <schema name="uid" />
       <schema name="step_instance" />

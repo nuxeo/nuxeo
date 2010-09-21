@@ -37,7 +37,7 @@
     <types>
       <type name="DocumentRoute">documentRouteElement</type>
       <type name="StepFolder">documentRouteElement</type>
-      <type name="Step">documentRouteElement</type>
+      <type name="DocumentRouteStep">documentRouteElement</type>
     </types>
   </extension>
 

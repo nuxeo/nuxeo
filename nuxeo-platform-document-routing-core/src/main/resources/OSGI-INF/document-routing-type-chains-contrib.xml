@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.platform.routing.service"
     point="chainsToType">
-    <mapping documentType="Step" chainId="setDone" />
+    <mapping documentType="DocumentRouteStep" chainId="setDone" />
   </extension>
 
 </component>

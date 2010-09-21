@@ -29,7 +29,7 @@ public interface DocumentRoutingConstants {
 
     String DOCUMENT_ROUTE_DOCUMENT_TYPE = "DocumentRoute";
 
-    String STEP_DOCUMENT_TYPE = "Step";
+    String STEP_DOCUMENT_TYPE = "DocumentRouteStep";
 
     String STEP_FOLDER_DOCUMENT_TYPE = "StepFolder";
 
