@@ -9,7 +9,7 @@
 
     <doctype name="AdministrativeStatusContainer" extends="Folder">
       <schema name="dublincore" />
-      <facet name="HiddenInNavigation"/>
+      <facet name="HiddenInNavigation" />
     </doctype>
 
     <doctype name="AdministrativeStatus" extends="Document">

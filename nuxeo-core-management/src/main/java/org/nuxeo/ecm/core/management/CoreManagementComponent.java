@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.core.management;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -28,8 +24,8 @@ import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerImpl;
-import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -42,7 +38,7 @@ import org.osgi.framework.FrameworkListener;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class CoreManagementComponent extends DefaultComponent  {
+public class CoreManagementComponent extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName(
             CoreManagementComponent.class.getCanonicalName());
@@ -53,16 +49,18 @@ public class CoreManagementComponent extends DefaultComponent  {
 
     public static final String STORAGE_HANDLERS_EP = "storageHandlers";
 
-   public static final String STORAGE_CONFIG_EP = "storageConfiguration";
-
+    public static final String STORAGE_CONFIG_EP = "storageConfiguration";
 
     public CoreManagementComponent() {
         super(); // enables breaking
     }
+
     protected static CoreManagementComponent defaultComponent;
 
     protected final GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
+
     protected final ProbeManagerImpl probeRunner = new ProbeManagerImpl();
+
     protected final DocumentStoreManager storageManager = new DocumentStoreManager();
 
     public AdministrativeStatusManagerImpl getLocalManager() {
@@ -83,24 +81,21 @@ public class CoreManagementComponent extends DefaultComponent  {
         return super.getAdapter(adapter);
     }
 
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (extensionPoint.equals(PROBES_EP)) {
             probeRunner.registerProbe((ProbeDescriptor) contribution);
-        }
-        else if (extensionPoint.equals(SERVICE_DEF_EP)) {
+        } else if (extensionPoint.equals(SERVICE_DEF_EP)) {
             globalManager.registerService((AdministrableServiceDescriptor) contribution);
-        }
-        else if (extensionPoint.equals(STORAGE_HANDLERS_EP)) {
-            storageManager.registerHandler((DocumentStoreHandlerDescriptor)contribution);
-        }
-        else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
-            storageManager.registerConfig((DocumentStoreConfigurationDescriptor)contribution);
+        } else if (extensionPoint.equals(STORAGE_HANDLERS_EP)) {
+            storageManager.registerHandler((DocumentStoreHandlerDescriptor) contribution);
+        } else if (extensionPoint.equals(STORAGE_CONFIG_EP)) {
+            storageManager.registerConfig((DocumentStoreConfigurationDescriptor) contribution);
         } else {
-            super.registerContribution(contribution, extensionPoint, contributor);
+            super.registerContribution(contribution, extensionPoint,
+                    contributor);
         }
     }
 
@@ -117,25 +112,25 @@ public class CoreManagementComponent extends DefaultComponent  {
         return defaultComponent;
     }
 
-
     @Override
     public void activate(ComponentContext context) throws Exception {
         defaultComponent = this;
         storageManager.install();
-        context.getRuntimeContext().getBundle().getBundleContext()
-                .addFrameworkListener(new FrameworkListener() {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
+                new FrameworkListener() {
                     public void frameworkEvent(FrameworkEvent event) {
                         if (event.getType() != FrameworkEvent.STARTED) {
                             return;
                         }
-                        event.getBundle().getBundleContext().removeFrameworkListener(this);
+                        event.getBundle().getBundleContext().removeFrameworkListener(
+                                this);
                         ClassLoader jarCL = Thread.currentThread().getContextClassLoader();
                         ClassLoader bundleCL = Framework.class.getClassLoader();
-                        try{
-                            Thread.currentThread().setContextClassLoader(bundleCL);
+                        try {
+                            Thread.currentThread().setContextClassLoader(
+                                    bundleCL);
                             probeRunner.runAllProbes();
-                        }
-                        finally{
+                        } finally {
                             Thread.currentThread().setContextClassLoader(jarCL);
                         }// contributed
                     }

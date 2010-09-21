@@ -24,7 +24,6 @@ import java.util.Calendar;
  * Representation of the Administrative Status of a service or server
  *
  * @author tiry
- *
  */
 public class AdministrativeStatus implements Serializable {
 
@@ -50,18 +49,20 @@ public class AdministrativeStatus implements Serializable {
 
     protected String description;
 
-    public AdministrativeStatus(String state,String message,Calendar modificationDate, String userLogin, String instanceIdentifier, String serviceIdentifier) {
-        this.state=state;
-        this.message=message;
-        this.modificationDate=modificationDate;
-        this.userLogin=userLogin;
-        this.instanceIdentifier=instanceIdentifier;
-        this.serviceIdentifier=serviceIdentifier;
+    public AdministrativeStatus(String state, String message,
+            Calendar modificationDate, String userLogin,
+            String instanceIdentifier, String serviceIdentifier) {
+        this.state = state;
+        this.message = message;
+        this.modificationDate = modificationDate;
+        this.userLogin = userLogin;
+        this.instanceIdentifier = instanceIdentifier;
+        this.serviceIdentifier = serviceIdentifier;
     }
 
     public void setLabelAndDescription(String label, String description) {
-        this.label=label;
-        this.description=description;
+        this.label = label;
+        this.description = description;
     }
 
     public String getInstanceIdentifier() {
@@ -106,7 +107,8 @@ public class AdministrativeStatus implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("administrativeStatus(%s,%s)", instanceIdentifier, state);
+        return String.format("administrativeStatus(%s,%s)", instanceIdentifier,
+                state);
     }
 
 }
