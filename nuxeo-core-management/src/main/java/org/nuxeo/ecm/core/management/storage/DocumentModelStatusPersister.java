@@ -35,7 +35,9 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
  *
  * @author Mariana Cedica
  */
-public class DocumentModelStatusPersister implements AdministrativeStatusPersister {
+
+public class DocumentModelStatusPersister implements
+        AdministrativeStatusPersister {
 
     public static final String ADMINISTRATIVE_INFO_CONTAINER = "administrative-infos";
 
@@ -54,7 +56,6 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
     public static final String LOGIN_PROPERTY = "status:userLogin";
 
     private static final Log log = LogFactory.getLog(DocumentModelStatusPersister.class);
-
 
     private class StatusSaver extends DocumentStoreSessionRunner {
 
@@ -81,7 +82,8 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
 
         protected DocumentModel doGetOrCreateContainer() throws ClientException {
 
-            DocumentRef admRootDocRef = new PathRef("/" + ADMINISTRATIVE_INFO_CONTAINER);
+            DocumentRef admRootDocRef = new PathRef("/"
+                    + ADMINISTRATIVE_INFO_CONTAINER);
 
             if (!session.exists(admRootDocRef)) {
                 DocumentModel doc = session.createDocumentModel("/",
@@ -95,17 +97,18 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             return session.getDocument(admRootDocRef);
         }
 
-        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status) throws ClientException {
+        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status)
+                throws ClientException {
             DocumentModel administrativeContainer = doGetOrCreateContainer();
 
             DocumentRef statusDocRef = new PathRef(
                     administrativeContainer.getPathAsString() + "/"
-                    + getAdministrativeStatusDocName(status));
+                            + getAdministrativeStatusDocName(status));
 
             DocumentModel doc = null;
-            boolean create=false;
+            boolean create = false;
             if (!session.exists(statusDocRef)) {
-                create=true;
+                create = true;
                 doc = session.createDocumentModel(
                         administrativeContainer.getPathAsString(),
                         getAdministrativeStatusDocName(status),
@@ -114,18 +117,24 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
                 doc = session.getDocument(statusDocRef);
             }
 
-            doc.setPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY, status.getUserLogin());
-            doc.setPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY, status.getInstanceIdentifier());
-            doc.setPropertyValue(DocumentModelStatusPersister.SERVICE_PROPERTY, status.getServiceIdentifier());
-            doc.setPropertyValue(DocumentModelStatusPersister.MESSAGE_PROPERTY, status.getMessage());
-            doc.setPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY, status.getState());
+            doc.setPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY,
+                    status.getUserLogin());
+            doc.setPropertyValue(
+                    DocumentModelStatusPersister.INSTANCE_PROPERTY,
+                    status.getInstanceIdentifier());
+            doc.setPropertyValue(DocumentModelStatusPersister.SERVICE_PROPERTY,
+                    status.getServiceIdentifier());
+            doc.setPropertyValue(DocumentModelStatusPersister.MESSAGE_PROPERTY,
+                    status.getMessage());
+            doc.setPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY,
+                    status.getState());
 
-            doc.setPropertyValue("dc:title", getAdministrativeStatusDocName(status));
+            doc.setPropertyValue("dc:title",
+                    getAdministrativeStatusDocName(status));
 
             if (create) {
                 doc = session.createDocument(doc);
-            }
-            else {
+            } else {
                 doc = session.saveDocument(doc);
             }
             session.save();
@@ -135,9 +144,9 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
 
     }
 
-
     protected String getAdministrativeStatusDocName(AdministrativeStatus status) {
-        return status.getInstanceIdentifier() + "--" + status.getServiceIdentifier();
+        return status.getInstanceIdentifier() + "--"
+                + status.getServiceIdentifier();
     }
 
     public class StatusFetcher extends DocumentStoreSessionRunner {
@@ -157,7 +166,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
 
         @Override
         protected String errorMessage() {
-            StringBuffer sb  = new StringBuffer();
+            StringBuffer sb = new StringBuffer();
             sb.append("Cannot fetch statuses ");
             if (instanceId != null) {
                 sb.append(" for ").append(instanceId);
@@ -171,7 +180,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         @Override
         public void run() throws ClientException {
 
-                boolean onlyFetchIds = false;
+            boolean onlyFetchIds = false;
 
             StringBuffer sb = new StringBuffer("select * from ");
             sb.append(DocumentModelStatusPersister.ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
@@ -207,7 +216,8 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             }
         }
 
-        protected AdministrativeStatus wrap(DocumentModel doc) throws ClientException {
+        protected AdministrativeStatus wrap(DocumentModel doc)
+                throws ClientException {
 
             String userLogin = (String) doc.getPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY);
             String id = (String) doc.getPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY);
@@ -216,7 +226,8 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             String state = (String) doc.getPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY);
             Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
 
-            AdministrativeStatus status = new AdministrativeStatus(state, message, modified, userLogin, id, service);
+            AdministrativeStatus status = new AdministrativeStatus(state,
+                    message, modified, userLogin, id, service);
 
             return status;
         }
@@ -228,8 +239,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         try {
             fetcher.runUnrestricted();
             return fetcher.allInstanceIds;
-        }
-        catch (ClientException e) {
+        } catch (ClientException e) {
             log.error("Error while fetching all instance Ids", e);
             return null;
         }
@@ -241,37 +251,37 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         try {
             fetcher.runUnrestricted();
             return fetcher.statuses;
-        }
-        catch (ClientException e) {
-            log.error("Error while fetching all service status for instance " + instanceId , e);
+        } catch (ClientException e) {
+            log.error("Error while fetching all service status for instance "
+                    + instanceId, e);
             return null;
         }
     }
 
     @Override
-    public AdministrativeStatus getStatus(String instanceId, String serviceIdentifier) {
+    public AdministrativeStatus getStatus(String instanceId,
+            String serviceIdentifier) {
         StatusFetcher fetcher = new StatusFetcher(instanceId, serviceIdentifier);
         try {
-        fetcher.runUnrestricted();
-        if (fetcher.statuses.size() == 1) {
-            return fetcher.statuses.get(0);
-        } else {
-            log.warn("Unable to fetch status for service " + serviceIdentifier + " in instance " + instanceId);
+            fetcher.runUnrestricted();
+            if (fetcher.statuses.size() == 1) {
+                return fetcher.statuses.get(0);
+            } else {
+                log.warn("Unable to fetch status for service "
+                        + serviceIdentifier + " in instance " + instanceId);
+                return null;
+            }
+        } catch (ClientException e) {
+            log.error("Error while fetching all service status for instance "
+                    + instanceId, e);
             return null;
         }
     }
-        catch (ClientException e) {
-            log.error("Error while fetching all service status for instance " + instanceId , e);
-            return null;
-        }
-    }
-
 
     @Override
     public void remove(String instanceId) {
         throw new UnsupportedOperationException("Not implemented for now");
     }
-
 
     @Override
     public AdministrativeStatus saveStatus(AdministrativeStatus status) {
@@ -286,6 +296,5 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         }
 
     }
-
 
 }

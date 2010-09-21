@@ -30,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * Initialize document store by invoking registered handlers
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
- *
  */
 public class DocumentStoreManager extends RepositoryInitializationHandler {
 
@@ -52,21 +51,23 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     }
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session)
+            throws ClientException {
 
         if (DocumentStoreSessionRunner.repositoryName == null) {
             RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-            DocumentStoreSessionRunner.repositoryName  = mgr.getDefaultRepository().getName();
+            DocumentStoreSessionRunner.repositoryName = mgr.getDefaultRepository().getName();
         }
 
-        if (!session.getRepositoryName().equals(DocumentStoreSessionRunner.repositoryName)) {
+        if (!session.getRepositoryName().equals(
+                DocumentStoreSessionRunner.repositoryName)) {
             return;
         }
 
-        for (DocumentStoreHandlerDescriptor desc:handlers.values()) {
+        for (DocumentStoreHandlerDescriptor desc : handlers.values()) {
             desc.handler.onStorageInitialization(session);
         }
-        CoreManagementComponent.getDefault().getLocalManager().onNuxeoServerStartup(); // TODO should status manager be registered as a storage c ?
+        // TODO should status manager be registered as a storage c ?
+        CoreManagementComponent.getDefault().getLocalManager().onNuxeoServerStartup();
     }
-
 }
