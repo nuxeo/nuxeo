@@ -64,33 +64,35 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <file>
+          <exists>pom.xml</exists>
+        </file>
       </activation>
       <modules>
-	<module>nuxeo-platform-api-test</module>
+        <module>nuxeo-platform-api-test</module>
         <module>nuxeo-platform-search-api</module>
         <module>nuxeo-platform-search-core</module>
-	<module>nuxeo-platform-search-facade</module>
-	<module>nuxeo-platform-search-backend-core</module>
-	<module>nuxeo-platform-search-test</module>
-	<module>nuxeo-platform-filemanager-facade</module>
-	<module>nuxeo-platform-login-jboss</module>
-	<module>nuxeo-platform-auth-web-jboss</module>
-	<module>nuxeo-platform-mimetype-facade</module>
-	<module>nuxeo-platform-placeful-api</module>
-	<module>nuxeo-platform-placeful-core</module>
-	<module>nuxeo-platform-placeful-facade</module>
-	<module>nuxeo-platform-placeful-theme</module>
-	<module>nuxeo-platform-types-facade</module>
-	<module>nuxeo-platform-uidgen-core</module>
-	<module>nuxeo-platform-url-facade</module>
-	<module>nuxeo-platform-usermanager-facade</module>
-	<module>nuxeo-platform-ws</module>
-	<module>nuxeo-platform-htmlsanitizer</module>
-	<module>nuxeo-shell-core</module>
-	<module>nuxeo-platform-test</module>
+        <module>nuxeo-platform-search-facade</module>
+        <module>nuxeo-platform-search-backend-core</module>
+        <module>nuxeo-platform-search-test</module>
+        <module>nuxeo-platform-filemanager-facade</module>
+        <module>nuxeo-platform-login-jboss</module>
+        <module>nuxeo-platform-auth-web-jboss</module>
+        <module>nuxeo-platform-mimetype-facade</module>
+        <module>nuxeo-platform-placeful-api</module>
+        <module>nuxeo-platform-placeful-core</module>
+        <module>nuxeo-platform-placeful-facade</module>
+        <module>nuxeo-platform-placeful-theme</module>
+        <module>nuxeo-platform-types-facade</module>
+        <module>nuxeo-platform-uidgen-core</module>
+        <module>nuxeo-platform-url-facade</module>
+        <module>nuxeo-platform-usermanager-facade</module>
+        <module>nuxeo-platform-ws</module>
+        <module>nuxeo-platform-htmlsanitizer</module>
+        <module>nuxeo-shell-core</module>
+        <module>nuxeo-platform-test</module>
       </modules>
-    </profile>	
+    </profile>
   </profiles>
 
   <dependencyManagement>
