@@ -103,7 +103,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Observer(value = {DOCUMENT_SELECTION_CHANGED, DOCUMENT_CHANGED,
-            DOCUMENT_SUBMITED_FOR_PUBLICATION, DOCUMENT_PUBLISHED}, create = false, inject = false)
+            DOCUMENT_SUBMITED_FOR_PUBLICATION, DOCUMENT_PUBLISHED}, create = false)
     @BypassInterceptors
     public void resetVersions() {
         versionModelList = null;
