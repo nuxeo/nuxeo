@@ -28,13 +28,12 @@ import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
 
 /**
  * Implementation class for the {@link AdministrativeStatusManager} service.
- * For each Nuxeo Instance in the cluster one instance of this class is
- * created.
+ * For each Nuxeo Instance in the cluster one instance of this class is created.
  *
  * @author tiry
+ *
  */
-public class AdministrativeStatusManagerImpl implements
-        AdministrativeStatusManager, CoreManagementService {
+public class AdministrativeStatusManagerImpl implements AdministrativeStatusManager, CoreManagementService {
 
     protected final AdministrativeStatusPersister persister;
 
@@ -42,34 +41,27 @@ public class AdministrativeStatusManagerImpl implements
 
     protected final String serverInstanceName;
 
-    protected Notifier[] notifiers = { new CoreEventNotifier(),
-            new RuntimeEventNotifier() };
+    protected Notifier[] notifiers = {new CoreEventNotifier(), new RuntimeEventNotifier()};
 
-    public AdministrativeStatusManagerImpl(
-            GlobalAdministrativeStatusManager globalManager,
-            AdministrativeStatusPersister persister) {
-        this.globalManager = globalManager;
-        this.persister = persister;
+    public AdministrativeStatusManagerImpl(GlobalAdministrativeStatusManager globalManager,AdministrativeStatusPersister persister) {
+        this.globalManager=globalManager;
+        this.persister=persister;
         this.serverInstanceName = NuxeoInstanceIdentifierHelper.getServerInstanceName();
     }
 
-    public AdministrativeStatusManagerImpl(
-            GlobalAdministrativeStatusManager globalManager,
-            AdministrativeStatusPersister persister, String instanceIdentifier) {
-        this.globalManager = globalManager;
-        this.persister = persister;
+    public AdministrativeStatusManagerImpl(GlobalAdministrativeStatusManager globalManager, AdministrativeStatusPersister persister, String instanceIdentifier) {
+        this.globalManager=globalManager;
+        this.persister=persister;
         this.serverInstanceName = instanceIdentifier;
     }
 
     protected String getServerInstanceName() {
-        return serverInstanceName;
+       return serverInstanceName;
     }
 
-    protected void notifyEvent(String eventName, String instanceIdentifier,
-            String serviceIdentifier) {
+    protected void notifyEvent(String eventName, String instanceIdentifier, String serviceIdentifier) {
         for (Notifier notifier : notifiers) {
-            notifier.notifyEvent(eventName, instanceIdentifier,
-                    serviceIdentifier);
+            notifier.notifyEvent(eventName, instanceIdentifier, serviceIdentifier);
         }
     }
 
@@ -81,17 +73,15 @@ public class AdministrativeStatusManagerImpl implements
         List<AdministrableServiceDescriptor> descs = globalManager.listRegistredServices();
 
         for (AdministrableServiceDescriptor desc : descs) {
-            boolean serviceExist = false;
+            boolean serviceExist=false;
             for (AdministrativeStatus status : savedSatuses) {
                 if (desc.getId().equals(status.getServiceIdentifier())) {
-                    serviceExist = true;
+                    serviceExist=true;
                     break;
                 }
             }
             if (!serviceExist) {
-                AdministrativeStatus newStatus = new AdministrativeStatus(
-                        desc.getInitialState(), "", Calendar.getInstance(),
-                        "system", getServerInstanceName(), desc.getId());
+                AdministrativeStatus newStatus = new AdministrativeStatus(desc.getInitialState(), "",Calendar.getInstance(), "system", getServerInstanceName(),desc.getId());
                 persister.saveStatus(newStatus);
             }
         }
@@ -107,31 +97,21 @@ public class AdministrativeStatusManagerImpl implements
     }
 
     protected void notifyOnStatus(AdministrativeStatus status) {
-        if (status.isActive()) {
-            notifyEvent(AdministrativeStatusManager.ACTIVATED_EVENT,
-                    status.getInstanceIdentifier(),
-                    status.getServiceIdentifier());
-        } else if (status.isPassive()) {
-            notifyEvent(AdministrativeStatusManager.PASSIVATED_EVENT,
-                    status.getInstanceIdentifier(),
-                    status.getServiceIdentifier());
-        }
+           if (status.isActive()) {
+               notifyEvent(AdministrativeStatusManager.ACTIVATED_EVENT, status.getInstanceIdentifier(), status.getServiceIdentifier());
+           } else if (status.isPassive()) {
+                notifyEvent(AdministrativeStatusManager.PASSIVATED_EVENT, status.getInstanceIdentifier(), status.getServiceIdentifier());
+           }
     }
 
     @Override
-    public AdministrativeStatus activateNuxeoInstance(String message,
-            String login) {
-        return activate(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
-                message, login);
+    public AdministrativeStatus activateNuxeoInstance(String message,String login) {
+        return activate(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY, message, login);
     }
 
     @Override
-    public AdministrativeStatus deactivateNuxeoInstance(String message,
-            String login) {
-        return deactivate(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
-                message, login);
+    public AdministrativeStatus deactivateNuxeoInstance(String message, String login) {
+        return deactivate(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY, message, login);
     }
 
     @Override
@@ -140,34 +120,24 @@ public class AdministrativeStatusManagerImpl implements
     }
 
     @Override
-    public AdministrativeStatus setNuxeoInstanceStatus(String state,
-            String message, String login) {
-        return setStatus(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
-                state, message, login);
+    public AdministrativeStatus setNuxeoInstanceStatus(String state,String message, String login) {
+        return setStatus(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY, state, message, login);
     }
 
     @Override
-    public AdministrativeStatus activate(String serviceIdentifier,
-            String message, String login) {
-        return setStatus(serviceIdentifier, AdministrativeStatus.ACTIVE,
-                message, login);
+    public AdministrativeStatus activate(String serviceIdentifier,String message,String login) {
+        return setStatus(serviceIdentifier, AdministrativeStatus.ACTIVE, message, login);
     }
 
     @Override
-    public AdministrativeStatus deactivate(String serviceIdentifier,
-            String message, String login) {
-        return setStatus(serviceIdentifier, AdministrativeStatus.PASSIVE,
-                message, login);
+    public AdministrativeStatus deactivate(String serviceIdentifier, String message, String login) {
+        return setStatus(serviceIdentifier, AdministrativeStatus.PASSIVE, message, login);
     }
 
     @Override
-    public AdministrativeStatus setStatus(String serviceIdentifier,
-            String state, String message, String login) {
-        AdministrativeStatus status = new AdministrativeStatus(state, message,
-                Calendar.getInstance(), login, serverInstanceName,
-                serviceIdentifier);
-        status = persister.saveStatus(status);
+    public AdministrativeStatus setStatus(String serviceIdentifier, String state, String message, String login) {
+        AdministrativeStatus status = new AdministrativeStatus(state, message, Calendar.getInstance(), login, serverInstanceName, serviceIdentifier);
+        status= persister.saveStatus(status);
         notifyOnStatus(status);
         return addLabelAndDescription(status);
     }
@@ -181,24 +151,21 @@ public class AdministrativeStatusManagerImpl implements
         return statuses;
     }
 
-    protected AdministrativeStatus addLabelAndDescription(
-            AdministrativeStatus status) {
-        if (status == null) {
+    protected AdministrativeStatus addLabelAndDescription(AdministrativeStatus status) {
+        if (status==null) {
             return null;
         }
         String id = status.getServiceIdentifier();
         AdministrableServiceDescriptor desc = globalManager.getServiceDescriptor(id);
-        if (desc != null) {
-            status.setLabelAndDescription(desc.getLabel(),
-                    desc.getDescription());
+        if (desc!=null) {
+            status.setLabelAndDescription(desc.getLabel(), desc.getDescription());
         }
         return status;
     }
 
     @Override
     public AdministrativeStatus getStatus(String serviceIdentifier) {
-        AdministrativeStatus status = persister.getStatus(serverInstanceName,
-                serviceIdentifier);
+        AdministrativeStatus status =  persister.getStatus(serverInstanceName, serviceIdentifier);
         addLabelAndDescription(status);
         return status;
     }

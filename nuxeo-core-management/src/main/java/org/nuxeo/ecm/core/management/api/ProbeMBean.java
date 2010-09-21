@@ -18,8 +18,10 @@ package org.nuxeo.ecm.core.management.api;
 
 import java.util.Date;
 
+
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
  */
 public interface ProbeMBean {
 

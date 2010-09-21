@@ -19,9 +19,11 @@ package org.nuxeo.ecm.core.management.storage;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
+ *
  * Handle document store initialization
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
  */
 public interface DocumentStoreHandler {
 

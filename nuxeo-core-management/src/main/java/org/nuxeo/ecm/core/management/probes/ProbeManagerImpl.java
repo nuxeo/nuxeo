@@ -38,9 +38,9 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
 
-    protected final Map<String, ProbeInfo> infosByShortcuts = new HashMap<String, ProbeInfo>();
+    protected final Map<String, ProbeInfo> infosByShortcuts =  new HashMap<String, ProbeInfo>();
 
-    protected final Map<String, Probe> probesByShortcuts = new HashMap<String, Probe>();
+    protected final Map<String, Probe> probesByShortcuts =  new HashMap<String, Probe>();
 
     protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
 
@@ -111,7 +111,7 @@ public class ProbeManagerImpl implements ProbeManager {
 
     public ProbeInfo runProbe(String name) {
         ProbeInfo probeInfo = getProbeInfo(name);
-        if (probeInfo == null) {
+        if (probeInfo==null) {
             log.warn("Probe " + name + " can not be found");
             return null;
         }
@@ -182,8 +182,7 @@ public class ProbeManagerImpl implements ProbeManager {
                 probeInfoImpl.lastFailureDate = new Date();
                 probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);
             } finally {
-                probeInfoImpl.lastDuration = doGetDuration(
-                        probeInfoImpl.lastRunnedDate, new Date());
+                probeInfoImpl.lastDuration = doGetDuration(probeInfoImpl.lastRunnedDate, new Date());
                 currentThread.setContextClassLoader(lastLoader);
             }
 

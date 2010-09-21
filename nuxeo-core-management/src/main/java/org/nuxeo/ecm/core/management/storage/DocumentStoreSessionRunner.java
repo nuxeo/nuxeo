@@ -28,28 +28,28 @@ import org.nuxeo.runtime.api.Framework;
  * Runner dedicated to mgmt doc operations
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
  */
-public abstract class DocumentStoreSessionRunner extends
-        UnrestrictedSessionRunner {
+public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunner {
 
     protected static String repositoryName;
 
     /**
-     * Should be Invoked at startup
+     *  Should be Invoked at startup
      */
     public static void setRepositoryName(String name) {
         repositoryName = name;
     }
 
+
     public DocumentStoreSessionRunner() {
         super(repositoryName);
     }
 
-    public DocumentStoreSessionRunner(CoreSession session) {
+   public DocumentStoreSessionRunner(CoreSession session) {
         super(session);
         if (!repositoryName.equals(session.getRepositoryName())) {
-            throw new IllegalArgumentException("Session is not attached to "
-                    + repositoryName);
+            throw new IllegalArgumentException("Session is not attached to " + repositoryName);
         }
     }
 
@@ -70,8 +70,7 @@ public abstract class DocumentStoreSessionRunner extends
     }
 
     protected String errorMessage() {
-        return String.format("%s:%s", getClass().getCanonicalName(),
-                this.toString());
+        return String.format("%s:%s", getClass().getCanonicalName(),this.toString());
     }
 
 }

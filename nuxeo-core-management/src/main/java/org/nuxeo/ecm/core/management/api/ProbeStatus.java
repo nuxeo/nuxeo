@@ -31,19 +31,19 @@ public class ProbeStatus {
 
     public static final String ERROR_FIELD = "error";
 
-    protected ProbeStatus(String info, Boolean success) {
+    protected ProbeStatus(String info, Boolean success){
         this.infos.put(DEFAULT_INFO_FIELD, info);
         this.success = success;
     }
 
-    protected ProbeStatus(Map<String, String> infos, Boolean success) {
+    protected ProbeStatus(Map<String, String> infos, Boolean success){
         this.infos.putAll(infos);
         this.success = success;
     }
 
     public static ProbeStatus newBlankProbStatus() {
         ProbeStatus status = new ProbeStatus("[unavailable]", false);
-        status.neverExecuted = true;
+        status.neverExecuted=true;
         return status;
     }
 
@@ -83,10 +83,10 @@ public class ProbeStatus {
     }
 
     public String getAsString() {
-        if (infos == null || infos.isEmpty()) {
+        if (infos==null || infos.isEmpty()) {
             return Boolean.toString(success);
         }
-        if (infos.size() == 1) {
+        if (infos.size()==1) {
             return infos.values().iterator().next();
         }
 

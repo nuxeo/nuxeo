@@ -20,9 +20,11 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ *
  * For registering a document store handler
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
  */
 @XObject("handler")
 public class DocumentStoreHandlerDescriptor {
@@ -40,5 +42,6 @@ public class DocumentStoreHandlerDescriptor {
             throw new Error("Cannot instantiate " + clazz.getCanonicalName(), e);
         }
     }
+
 
 }

@@ -42,14 +42,14 @@ public class ProbeDescriptor {
     private String description;
 
     public String getLabel() {
-        if (label == null) {
+        if (label==null) {
             return "label." + shortcutName;
         }
         return label;
     }
 
     public String getDescription() {
-        if (description == null) {
+        if (description==null) {
             return "decription." + shortcutName;
         }
         return description;

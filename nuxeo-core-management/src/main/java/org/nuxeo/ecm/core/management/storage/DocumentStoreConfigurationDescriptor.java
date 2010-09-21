@@ -16,13 +16,16 @@
  */
 package org.nuxeo.ecm.core.management.storage;
 
-import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.common.xmap.annotation.XNode;
+
 
 /**
+ *
  * Configure the repository to be used
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *
  */
 @XObject("configuration")
 public class DocumentStoreConfigurationDescriptor {

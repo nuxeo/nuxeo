@@ -19,10 +19,10 @@ package org.nuxeo.ecm.core.management.api;
 import java.util.List;
 
 /**
- * Service interface used to manage AdministrativeStatus of Nuxeo's services on
- * a given Nuxeo Instance (node)
+ * Service interface used to manage AdministrativeStatus of Nuxeo's services on a given Nuxeo Instance (node)
  *
  * @author tiry
+ *
  */
 public interface AdministrativeStatusManager {
 
@@ -41,12 +41,11 @@ public interface AdministrativeStatusManager {
     public static final String PASSIVATED_EVENT = "servicePassivated";
 
     /**
-     * List {@link AdministrativeStatus} for all tracked resources (Servers or
-     * Services)
+     * List {@link AdministrativeStatus} for all tracked resources (Servers or Services)
      *
      * @return
      */
-    List<AdministrativeStatus> getAllStatuses();
+    List<AdministrativeStatus> getAllStatuses() ;
 
     /**
      * Get the {@link AdministrativeStatus} of a given resource
@@ -57,11 +56,13 @@ public interface AdministrativeStatusManager {
     AdministrativeStatus getStatus(String serviceIdentifier);
 
     /**
+     *
      * Get the {@link AdministrativeStatus} of a the local Nuxeo Instance
      *
      * @return
      */
     AdministrativeStatus getNuxeoInstanceStatus();
+
 
     /**
      * Sets the {@link AdministrativeStatus} of a given resource
@@ -72,10 +73,11 @@ public interface AdministrativeStatusManager {
      * @param login
      * @return
      */
-    AdministrativeStatus setStatus(String serviceIdentifier, String state,
-            String message, String login);
+    AdministrativeStatus setStatus(String serviceIdentifier, String state, String message, String login);
+
 
     /**
+     *
      * Sets the {@link AdministrativeStatus} of the Local Nuxeo Instance
      *
      * @param state
@@ -83,8 +85,8 @@ public interface AdministrativeStatusManager {
      * @param login
      * @return
      */
-    AdministrativeStatus setNuxeoInstanceStatus(String state, String message,
-            String login);
+    AdministrativeStatus setNuxeoInstanceStatus(String state, String message, String login);
+
 
     /**
      * Mark a given resource as active
@@ -93,8 +95,7 @@ public interface AdministrativeStatusManager {
      * @param login
      * @return
      */
-    AdministrativeStatus activate(String serviceIdentifier, String message,
-            String login);
+    AdministrativeStatus activate(String serviceIdentifier,String message,String login);
 
     /**
      * Mark local Nuxeo instance as active
@@ -102,9 +103,10 @@ public interface AdministrativeStatusManager {
      * @param login
      * @return
      */
-    AdministrativeStatus activateNuxeoInstance(String message, String login);
+    AdministrativeStatus activateNuxeoInstance(String message,String login);
 
     /**
+     *
      * Mark a given resource as non active
      *
      * @param serviceIdentifier
@@ -112,8 +114,7 @@ public interface AdministrativeStatusManager {
      * @param login
      * @return
      */
-    AdministrativeStatus deactivate(String serviceIdentifier, String message,
-            String login);
+    AdministrativeStatus deactivate(String serviceIdentifier,String message, String login);
 
     /**
      * Mark local Nuxeo instance as non active

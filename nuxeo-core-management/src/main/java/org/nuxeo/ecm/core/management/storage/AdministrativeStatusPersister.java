@@ -41,17 +41,17 @@ public interface AdministrativeStatusPersister {
     AdministrativeStatus saveStatus(AdministrativeStatus status);
 
     /**
+     *
      * Reads the {@link AdministrativeStatus} of a service for a given instance
      *
      * @param instanceId
      * @param serviceIdentifier
      * @return
      */
-    AdministrativeStatus getStatus(String instanceId, String serviceIdentifier);
+    AdministrativeStatus getStatus(String instanceId,String serviceIdentifier);
 
     /**
-     * Retrieves the {@link AdministrativeStatus} for all services of a given
-     * instance
+     * Retrieves the {@link AdministrativeStatus} for all services of a given instance
      *
      * @param instanceId
      * @return
