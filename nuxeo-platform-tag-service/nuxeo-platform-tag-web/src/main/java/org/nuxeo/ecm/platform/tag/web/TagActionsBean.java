@@ -275,7 +275,7 @@ public class TagActionsBean implements Serializable {
         return label;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
         addTag = false;
