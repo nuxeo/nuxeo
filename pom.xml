@@ -17,7 +17,7 @@
     Nuxeo WebEngine is the lightweight content-centric web framework.
   </description>
 
-   <modules>
+  <modules>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-ui</module>
   </modules>
@@ -26,13 +26,15 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <file>
+          <exists>pom.xml</exists>
+        </file>
       </activation>
       <modules>
-	<module>nuxeo-webengine-gwt</module>
-	<module>nuxeo-theme-webengine</module>
+        <module>nuxeo-webengine-gwt</module>
+        <module>nuxeo-theme-webengine</module>
       </modules>
-    </profile>	
+    </profile>
   </profiles>
 
   <properties>
