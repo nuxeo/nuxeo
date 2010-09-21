@@ -49,7 +49,7 @@
     <profile>
       <id>no-osgi</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <file><exists>pom.xml</exists></file>
       </activation>
       <modules>
         <module>nuxeo-core-facade</module>
