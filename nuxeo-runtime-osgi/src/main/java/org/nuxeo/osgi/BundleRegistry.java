@@ -31,7 +31,6 @@ import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class BundleRegistry {
 
@@ -97,7 +96,8 @@ public class BundleRegistry {
     }
 
     private void register(BundleRegistration reg) throws BundleException {
-        String str = null; // (FIXME) disable MANIFEST requirements temporarily
+        String str = null;
+        // (FIXME) disable MANIFEST requirements temporarily
         // String str = (String)
         // reg.bundle.getHeaders().get(Constants.REQUIRE_BUNDLE);
         if (str != null) {
@@ -188,9 +188,8 @@ public class BundleRegistry {
             try {
                 reg.bundle.shutdown();
             } catch (BundleException e) {
-                log.error(
-                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
-                        e);
+                log.error("Failed to stop bundle "
+                        + reg.bundle.getSymbolicName(), e);
             }
         }
     }
