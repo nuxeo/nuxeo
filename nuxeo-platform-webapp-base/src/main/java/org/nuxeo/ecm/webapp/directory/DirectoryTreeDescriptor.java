@@ -43,6 +43,9 @@ public class DirectoryTreeDescriptor {
     @XNode("@enabled")
     protected Boolean enabled = true;
 
+    @XNode("@isNavigationTree")
+    protected boolean isNavigationTree = true;
+
     /**
      * Label to be displayed as the root of the tree (description field).
      */
@@ -178,6 +181,10 @@ public class DirectoryTreeDescriptor {
         return enabled;
     }
 
+    public boolean isNavigationTree() {
+        return isNavigationTree;
+    }
+
     public boolean hasContentViewSupport() {
         return contentView != null;
     }
@@ -209,6 +216,7 @@ public class DirectoryTreeDescriptor {
             this.fieldName = other.fieldName;
         }
         this.enabled = other.enabled;
+        this.isNavigationTree = other.isNavigationTree;
     }
 
 }

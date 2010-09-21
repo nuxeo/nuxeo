@@ -103,4 +103,21 @@ public class DirectoryTreeService extends DefaultComponent {
         return directoryTrees;
     }
 
+    /**
+     * Returns only the enabled Directory Trees marked
+     * as being also Navigation Trees.
+     *
+     * @since 5.4
+     */
+    public List<String> getNavigationDirectoryTrees() {
+        List<String> directoryTrees = new ArrayList<String>();
+        for (DirectoryTreeDescriptor desc : registry.values()) {
+            if (desc.getEnabled() && desc.isNavigationTree()) {
+                directoryTrees.add(desc.getName());
+            }
+        }
+        Collections.sort(directoryTrees);
+        return directoryTrees;
+    }
+
 }
