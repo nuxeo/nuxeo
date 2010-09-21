@@ -150,7 +150,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         tabsActionsList = null;
