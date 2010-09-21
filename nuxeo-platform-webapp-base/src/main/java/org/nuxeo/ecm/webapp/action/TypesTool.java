@@ -77,7 +77,7 @@ public class TypesTool implements Serializable {
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
