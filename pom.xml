@@ -33,39 +33,42 @@
     <module>nuxeo-platform-tag-service</module>
     <module>nuxeo-webengine-features</module>
     <module>nuxeo-platform-queue</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-platform-annotations</module>
+    <module>nuxeo-platform-imaging-tiling</module>
+    <module>nuxeo-platform-syndication</module>
+    <module>nuxeo-platform-jbpm</module>
+    <module>nuxeo-platform-lang</module>
+    <module>nuxeo-platform-mail</module>
+    <module>nuxeo-platform-notification</module>
+    <module>nuxeo-platform-preview</module>
+    <module>nuxeo-platform-publisher</module>
+    <module>nuxeo-platform-forum</module>
+    <module>nuxeo-theme-editor</module>
+    <module>nuxeo-platform-webwidgets</module>
+    <module>nuxeo-platform-userworkspace</module>
+    <module>nuxeo-platform-virtualnavigation</module>
+    <module>nuxeo-opensocial</module>
+    <module>nuxeo-generic-wss-handler</module>
+    <module>nuxeo-platform-wss-backend</module>
+    <module>nuxeo-automation</module>
+    <module>nuxeo-features-test</module>
+    <module>nuxeo-platform-jboss-interceptors</module>
+    <module>nuxeo-admin-center</module>
   </modules>
 
   <profiles>
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <file><exists>pom.xml</exists></file>
-      </activation>
-      <modules>
-        <module>nuxeo-platform-annotations</module>
-        <module>nuxeo-platform-imaging-tiling</module>
-        <module>nuxeo-platform-syndication</module>
-        <module>nuxeo-platform-jbpm</module>
-        <module>nuxeo-platform-lang</module>
-        <module>nuxeo-platform-mail</module>
-        <module>nuxeo-platform-notification</module>
-        <module>nuxeo-platform-preview</module>
-        <module>nuxeo-platform-publisher</module>
-        <module>nuxeo-platform-forum</module>
-        <!--<module>nuxeo-platform-wiki</module> -->
-        <module>nuxeo-theme-editor</module>
-        <module>nuxeo-platform-webwidgets</module>
-        <module>nuxeo-platform-userworkspace</module>
-        <module>nuxeo-platform-virtualnavigation</module>
-        <module>nuxeo-opensocial</module>
-        <module>nuxeo-generic-wss-handler</module>
-        <module>nuxeo-platform-wss-backend</module>
-        <module>nuxeo-automation</module>
-        <module>nuxeo-features-test</module>
-        <module>nuxeo-platform-jboss-interceptors</module>
-        <module>nuxeo-admin-center</module>
-      </modules>
-    </profile>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+      <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-platform-annotations</module> 
+      <module>nuxeo-platform-imaging-tiling</module> <module>nuxeo-platform-syndication</module> 
+      <module>nuxeo-platform-jbpm</module> <module>nuxeo-platform-lang</module> <module>nuxeo-platform-mail</module> 
+      <module>nuxeo-platform-notification</module> <module>nuxeo-platform-preview</module> 
+      <module>nuxeo-platform-publisher</module> <module>nuxeo-platform-forum</module> <module>nuxeo-theme-editor</module> 
+      <module>nuxeo-platform-webwidgets</module> <module>nuxeo-platform-userworkspace</module> 
+      <module>nuxeo-platform-virtualnavigation</module> <module>nuxeo-opensocial</module> 
+      <module>nuxeo-generic-wss-handler</module> <module>nuxeo-platform-wss-backend</module> 
+      <module>nuxeo-automation</module> <module>nuxeo-features-test</module> <module>nuxeo-platform-jboss-interceptors</module> 
+      <module>nuxeo-admin-center</module> </modules> </profile> -->
   </profiles>
 
   <dependencyManagement>
