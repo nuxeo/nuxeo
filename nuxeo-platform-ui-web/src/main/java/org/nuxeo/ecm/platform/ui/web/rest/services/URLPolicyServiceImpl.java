@@ -214,7 +214,13 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         }
 
         // try to build it from the request
-        String url = new String(request.getRequestURL());
+        String url;
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            url = new String(request.getRequestURL() + "?" + queryString);
+        } else {
+            url = new String(request.getRequestURL());
+        }
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
         String codecName = desc.getDocumentViewCodecName();
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
@@ -223,16 +229,19 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         if (docView != null) {
             // set pattern name
             docView.setPatternName(patternName);
-            // set other parameters as set in the url pattern
-            String queryString = request.getQueryString();
+            // set other parameters as set in the url pattern if docView does
+            // not hold them already
+            Map<String, String> docViewParameters = docView.getParameters();
             Map<String, String> requestParameters = URIUtils.getRequestParameters(queryString);
             if (requestParameters != null) {
                 ValueBindingDescriptor[] bindings = desc.getValueBindings();
                 for (ValueBindingDescriptor binding : bindings) {
                     String paramName = binding.getName();
-                    Object paramValue = requestParameters.get(paramName);
-                    if (paramValue == null || paramValue instanceof String) {
-                        docView.addParameter(paramName, (String) paramValue);
+                    if (!docViewParameters.containsKey(paramName)) {
+                        Object paramValue = requestParameters.get(paramName);
+                        if (paramValue == null || paramValue instanceof String) {
+                            docView.addParameter(paramName, (String) paramValue);
+                        }
                     }
                 }
             }
@@ -304,14 +313,22 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             }
         }
 
+        Map<String, String> docViewParameters = null;
+        if (docView != null) {
+            docViewParameters = docView.getParameters();
+        }
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
         if (bindings != null) {
             for (ValueBindingDescriptor binding : bindings) {
                 String paramName = binding.getName();
-                Object value = httpRequest.getAttribute(paramName);
-                if (value == null && docView != null) {
-                    // try doc view parameters
+                // try doc view parameters
+                Object value = null;
+                if (docViewParameters != null
+                        && docViewParameters.containsKey(paramName)) {
                     value = docView.getParameter(paramName);
+                } else {
+                    // try request attributes
+                    value = httpRequest.getAttribute(paramName);
                 }
                 String expr = binding.getExpression();
                 if (ComponentTagUtils.isValueReference(expr)) {

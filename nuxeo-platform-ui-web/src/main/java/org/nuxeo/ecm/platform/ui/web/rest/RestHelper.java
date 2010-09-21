@@ -36,6 +36,7 @@ import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -68,6 +69,12 @@ public class RestHelper implements Serializable {
 
     private String baseURL = "";
 
+    /**
+     * Sets current server location (core repository) and core document as
+     * provided by the document view.
+     * <p>
+     * Only sets current server location if the document reference is null.
+     */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
     public String initContextFromRestRequest(DocumentView docView)
             throws ClientException {
@@ -75,8 +82,16 @@ public class RestHelper implements Serializable {
 
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
-            outcome = navigationContext.navigateTo(new RepositoryLocation(
-                    docLoc.getServerName()), docLoc.getDocRef());
+            String serverName = docLoc.getServerName();
+            if (serverName != null) {
+                DocumentRef docRef = docLoc.getDocRef();
+                RepositoryLocation repoLoc = new RepositoryLocation(serverName);
+                if (docRef != null) {
+                    outcome = navigationContext.navigateTo(repoLoc, docRef);
+                } else {
+                    navigationContext.setCurrentServerLocation(repoLoc);
+                }
+            }
         }
 
         return outcome;
@@ -125,11 +140,6 @@ public class RestHelper implements Serializable {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(conversationManager.getConversationIdParameter(),
                 conversationId);
-        /* Not needed anymore ????
-        if (conversationManager.isLongRunningConversation()) {
-            params.put(conversationManager.getConversationIsLongRunningParameter(),
-                "true");
-        }*/
         return conversationManager.encodeParameters(url, params);
     }
 

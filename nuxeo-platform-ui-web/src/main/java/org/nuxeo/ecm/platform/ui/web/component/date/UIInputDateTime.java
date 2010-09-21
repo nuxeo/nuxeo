@@ -215,7 +215,7 @@ public class UIInputDateTime extends UIInput {
     }
 
     public String getDefaultTriggerImg() {
-        return "jscalendar/calendar.png";
+        return "/jscalendar/calendar.png";
     }
 
     public void setTriggerImg(String triggerImg) {

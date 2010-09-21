@@ -60,8 +60,9 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         // localization script
         writer.startElement("script", dateTimeComp);
         writer.writeAttribute("type", "text/javascript", null);
-        writer.writeAttribute("src", String.format(
-                "jscalendar/lang/calendar-%s.js", localeString), null);
+        String scriptUrl = generateResourceUrl(context, String.format(
+                "/jscalendar/lang/calendar-%s.js", localeString), null);
+        writer.writeAttribute("src", scriptUrl, null);
         // force the script tag to be opened and then closed to avoid IE bug.
         writer.write(" ");
         writer.endElement("script");
@@ -99,7 +100,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.startElement("img", dateTimeComp);
         writer.writeAttribute("id", triggerButtonId, null);
         writer.writeAttribute("name", triggerButtonId, null);
-        String imgUrl = generateTriggerImageUrl(context,
+        String imgUrl = generateResourceUrl(context,
                 dateTimeComp.getTriggerImg(),
                 dateTimeComp.getDefaultTriggerImg());
         writer.writeAttribute("src", imgUrl, null);
@@ -196,15 +197,15 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         return res.toString();
     }
 
-    protected static String generateTriggerImageUrl(FacesContext context,
-            String triggerImg, String defaultImg) {
-        // avoid empty image
-        if (triggerImg == null || "".equals(triggerImg.trim())) {
-            return defaultImg;
+    protected static String generateResourceUrl(FacesContext context,
+            String resource, String defaultResource) {
+        // avoid empty url
+        if (resource == null || "".equals(resource.trim())) {
+            return defaultResource;
         }
-        triggerImg = context.getApplication().getViewHandler().getResourceURL(
-                context, triggerImg);
-        return (context.getExternalContext().encodeResourceURL(triggerImg));
+        resource = context.getApplication().getViewHandler().getResourceURL(
+                context, resource);
+        return (context.getExternalContext().encodeResourceURL(resource));
     }
 
 }
