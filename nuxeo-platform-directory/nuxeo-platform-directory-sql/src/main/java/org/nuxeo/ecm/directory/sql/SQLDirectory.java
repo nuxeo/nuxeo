@@ -256,11 +256,13 @@ public class SQLDirectory extends AbstractDirectory {
 
     public void shutdown() {
         try {
-            // use toArray to avoid concurrent modification of list
-            for (Object session : sessions.toArray()) {
-                ((Session) session).close();
+            if (sessions != null) {
+                // use toArray to avoid concurrent modification of list
+                for (Object session : sessions.toArray()) {
+                    ((Session) session).close();
+                }
+                sessions = null;
             }
-            sessions = null;
         } catch (ClientException e) {
             log.error("exception during shutdown", e);
         }
