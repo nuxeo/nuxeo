@@ -9,6 +9,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
+/**
+ * Tests that some sample files are properly parsed by JAXB.
+ */
 public class JaxbTest extends Assert {
 
     @Test
@@ -27,7 +30,7 @@ public class JaxbTest extends Assert {
         assertNotNull(is);
         Object o = u.unmarshal(is);
         //System.out.println(o);
-        assertSame(o.getClass(), class_);        
+        assertSame(o.getClass(), class_);
     }
 
 }

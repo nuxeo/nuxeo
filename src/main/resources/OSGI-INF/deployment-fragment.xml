@@ -20,7 +20,7 @@
       </filter>
       <filter-mapping>
         <filter-name>NuxeoAuthenticationFilter</filter-name>
-        <url-pattern>/webdav/*</url-pattern>
+        <url-pattern>/dav/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
       </filter-mapping>

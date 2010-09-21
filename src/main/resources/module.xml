@@ -1,1 +1,0 @@
-<module name="jaxrs" root-type="JaxrsApiRoot" path="/jaxrs" extends="base"/>

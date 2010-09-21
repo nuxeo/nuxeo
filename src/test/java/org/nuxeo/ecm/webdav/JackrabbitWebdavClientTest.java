@@ -84,6 +84,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
         assertTrue(responses.length >= 4);
+
         boolean found = false;
         for (MultiStatusResponse response : responses) {
             if (response.getHref().endsWith("quality.jpg")) {
@@ -102,6 +103,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
         assertEquals(1L, (long) responses.length);
+
         MultiStatusResponse response = responses[0];
         assertEquals("123631", response.getProperties(200).get("getcontentlength").getValue());
     }

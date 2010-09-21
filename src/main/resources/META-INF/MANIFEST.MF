@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: Rest demo projects for Nuxeo
+Bundle-Name: JAX-RS based WebDAV server for Nuxeo
 Bundle-SymbolicName: org.nuxeo.ecm.webdav;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.webdav
-Require-Bundle: org.nuxeo.ecm.core.api
-Nuxeo-Require: org.nuxeo.runtime,
- org.nuxeo.ecm.core.api
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.webengine.core
+Nuxeo-WebModule: org.nuxeo.ecm.webdav.Application

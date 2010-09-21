@@ -1,13 +1,15 @@
 About
 =====
 
-This is a prototype WebDAV extension to Nuxeo using JAX-RS and de webdav-jaxrs
+This is a prototype WebDAV extension to Nuxeo using JAX-RS and the webdav-jaxrs
 extension.
 
 Building / Running
 ------------------
 
 Type: "make run". This starts an embedded server with a demo repository.
+
+Deploying to a Tomcat or JBoss Nuxeo distribution doesn't work yet.
 
 Testing
 -------
@@ -18,7 +20,7 @@ Type: "cadaver http://localhost:9998/dav/workspaces"
 
 2. Using Litmus:
 
-Type: "litmus cadaver http://localhost:9998/dav/workspaces"
+Type: "litmus http://localhost:9998/dav/workspaces"
 
 3. Using the Mac
 

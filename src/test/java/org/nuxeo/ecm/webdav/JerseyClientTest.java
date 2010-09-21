@@ -6,18 +6,11 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 
-
+/**
+ * Simple test using the Jersey HTTP client.
+ * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.
+ */
 public class JerseyClientTest extends AbstractServerTest {
-
-    /**
-     * Simple test using the Jersey HTTP client.
-     * Only standard HTTP methods are supported, so we're only testing GET, PUT and DELETE.
-     */
-    // XXX: deactivated for some reason
-
-    @Test
-    public void dummy() {
-    }
 
     @Test
     public void simpleTest() {
@@ -46,8 +39,7 @@ public class JerseyClientTest extends AbstractServerTest {
         }
     }
 
-    // XXX: deactivated for some reason
-    //@Test
+    @Test
     public void multipleTest() {
         for (int i = 0; i < 100; i++) {
             simpleTest();
