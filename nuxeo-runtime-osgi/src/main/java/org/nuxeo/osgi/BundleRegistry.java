@@ -186,7 +186,9 @@ public class BundleRegistry {
                 new BundleRegistration[bundles.size()]);
         for (BundleRegistration reg : regs) {
             try {
-                reg.bundle.shutdown();
+                if (reg.bundle != null) {
+                    reg.bundle.shutdown();
+                }
             } catch (BundleException e) {
                 log.error("Failed to stop bundle "
                         + reg.bundle.getSymbolicName(), e);
