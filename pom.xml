@@ -58,41 +58,45 @@
     <module>nuxeo-platform-web-common</module>
     <module>nuxeo-platform-url-api</module>
     <module>nuxeo-platform-url-core</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-platform-api-test</module>
+    <module>nuxeo-platform-search-api</module>
+    <module>nuxeo-platform-search-core</module>
+    <module>nuxeo-platform-search-facade</module>
+    <module>nuxeo-platform-search-backend-core</module>
+    <module>nuxeo-platform-search-test</module>
+    <module>nuxeo-platform-filemanager-facade</module>
+    <module>nuxeo-platform-login-jboss</module>
+    <module>nuxeo-platform-auth-web-jboss</module>
+    <module>nuxeo-platform-mimetype-facade</module>
+    <module>nuxeo-platform-placeful-api</module>
+    <module>nuxeo-platform-placeful-core</module>
+    <module>nuxeo-platform-placeful-facade</module>
+    <module>nuxeo-platform-placeful-theme</module>
+    <module>nuxeo-platform-types-facade</module>
+    <module>nuxeo-platform-uidgen-core</module>
+    <module>nuxeo-platform-url-facade</module>
+    <module>nuxeo-platform-usermanager-facade</module>
+    <module>nuxeo-platform-ws</module>
+    <module>nuxeo-platform-htmlsanitizer</module>
+    <module>nuxeo-shell-core</module>
+    <module>nuxeo-platform-test</module>
   </modules>
 
   <profiles>
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <file>
-          <exists>pom.xml</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>nuxeo-platform-api-test</module>
-        <module>nuxeo-platform-search-api</module>
-        <module>nuxeo-platform-search-core</module>
-        <module>nuxeo-platform-search-facade</module>
-        <module>nuxeo-platform-search-backend-core</module>
-        <module>nuxeo-platform-search-test</module>
-        <module>nuxeo-platform-filemanager-facade</module>
-        <module>nuxeo-platform-login-jboss</module>
-        <module>nuxeo-platform-auth-web-jboss</module>
-        <module>nuxeo-platform-mimetype-facade</module>
-        <module>nuxeo-platform-placeful-api</module>
-        <module>nuxeo-platform-placeful-core</module>
-        <module>nuxeo-platform-placeful-facade</module>
-        <module>nuxeo-platform-placeful-theme</module>
-        <module>nuxeo-platform-types-facade</module>
-        <module>nuxeo-platform-uidgen-core</module>
-        <module>nuxeo-platform-url-facade</module>
-        <module>nuxeo-platform-usermanager-facade</module>
-        <module>nuxeo-platform-ws</module>
-        <module>nuxeo-platform-htmlsanitizer</module>
-        <module>nuxeo-shell-core</module>
-        <module>nuxeo-platform-test</module>
-      </modules>
-    </profile>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-platform-api-test</module> 
+      <module>nuxeo-platform-search-api</module> <module>nuxeo-platform-search-core</module> 
+      <module>nuxeo-platform-search-facade</module> <module>nuxeo-platform-search-backend-core</module> 
+      <module>nuxeo-platform-search-test</module> <module>nuxeo-platform-filemanager-facade</module> 
+      <module>nuxeo-platform-login-jboss</module> <module>nuxeo-platform-auth-web-jboss</module> 
+      <module>nuxeo-platform-mimetype-facade</module> <module>nuxeo-platform-placeful-api</module> 
+      <module>nuxeo-platform-placeful-core</module> <module>nuxeo-platform-placeful-facade</module> 
+      <module>nuxeo-platform-placeful-theme</module> <module>nuxeo-platform-types-facade</module> 
+      <module>nuxeo-platform-uidgen-core</module> <module>nuxeo-platform-url-facade</module> 
+      <module>nuxeo-platform-usermanager-facade</module> <module>nuxeo-platform-ws</module> 
+      <module>nuxeo-platform-htmlsanitizer</module> <module>nuxeo-shell-core</module> <module>nuxeo-platform-test</module> 
+      </modules> </profile> -->
   </profiles>
 
   <dependencyManagement>
