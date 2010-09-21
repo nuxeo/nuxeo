@@ -93,8 +93,7 @@ public class SQLDirectory extends AbstractDirectory {
         if (config.initDependencies != null) {
             // initialize dependent directories first
             final RuntimeService runtime = Framework.getRuntime();
-            DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(
-                    DirectoryService.NAME);
+            DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(DirectoryService.NAME);
             for (String dependency : config.initDependencies) {
                 log.debug("initializing dependencies first: " + dependency);
                 Directory dir = directoryService.getDirectory(dependency);
@@ -196,8 +195,9 @@ public class SQLDirectory extends AbstractDirectory {
             if (config.dataSourceName != null) {
                 managedSQLSession = true;
                 dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
-                //InitialContext context = new InitialContext();
-                //dataSource = (DataSource) context.lookup(config.dataSourceName);
+                // InitialContext context = new InitialContext();
+                // dataSource = (DataSource)
+                // context.lookup(config.dataSourceName);
             } else {
                 managedSQLSession = false;
                 dataSource = new SimpleDataSource(config.dbUrl,
@@ -283,8 +283,8 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     /**
-     * Gets the dialect, by connecting to the datasource if needed to check what
-     * database is used.
+     * Gets the dialect, by connecting to the datasource if needed to check
+     * what database is used.
      *
      * @throws DirectoryException if a SQL connection problem occurs.
      */
