@@ -41,7 +41,7 @@ public class AdministrableServiceDescriptor implements Serializable {
     private String label;
 
     @XNode("initialState")
-    private final String initialState = AdministrativeStatus.ACTIVE;
+    private String initialState = AdministrativeStatus.ACTIVE;
 
     public String getInitialState() {
         return initialState;
