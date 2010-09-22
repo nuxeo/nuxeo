@@ -39,6 +39,7 @@ import org.apache.chemistry.opencmis.commons.data.AclCapabilities;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
+import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
@@ -64,6 +65,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
+import org.apache.chemistry.opencmis.commons.spi.DiscoveryService;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
@@ -72,6 +74,7 @@ import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -92,6 +95,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected MultiFilingService filingService;
 
+    protected DiscoveryService discService;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -103,6 +108,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
         filingService = binding.getMultiFilingService();
+        discService = binding.getDiscoveryService();
     }
 
     @Override
@@ -226,11 +232,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
+        assertTrue(type.getPropertyDefinitions().containsKey(
+                "cmis:contentStreamFileName"));
 
         type = repoService.getTypeDefinition(repositoryId, "Note", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertEquals("cmis:document", type.getParentTypeId());
         assertEquals("Note", type.getLocalName());
+        assertTrue(type.getPropertyDefinitions().containsKey("note"));
     }
 
     @Test
@@ -568,6 +577,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         }
         ObjectData ob2 = getObjectByPath("/testfolder1/testfile4");
         assertEquals(ob.getId(), ob2.getId());
+    }
+
+    @Ignore
+    @Test
+    public void testQuery() throws Exception {
+        String statement = "SELECT cmis:objectId, SCORE() FROM cmis:document WHERE cmis:name <> 'abc'";
+        ObjectList res = discService.query(repositoryId, statement, null, null,
+                null, null, null, null, null);
+        assertEquals(123, res.getNumItems().intValue());
     }
 
 }

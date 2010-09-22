@@ -139,7 +139,7 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public Properties getProperties() {
-        return getProperties(propertyIds);
+        return getProperties(propertyIds); // TODO expensive, cache this!
     }
 
     protected Properties getProperties(List<String> propertyIds) {

@@ -21,28 +21,6 @@
     <chemistry.opencmis.version>0.2.0-incubating-SNAPSHOT</chemistry.opencmis.version>
   </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr3-maven-plugin</artifactId>
-        <version>3.1.3-1</version>
-        <executions>
-          <execution>
-            <!-- default phase: process-sources -->
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>antlr</goal>
-            </goals>
-            <configuration>
-              <libDirectory>src/main/antlr3/org/apache/chemistry/cmissql</libDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>

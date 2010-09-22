@@ -53,6 +53,8 @@ public class NuxeoBindingTestCase {
     public void setUp() throws Exception {
         nuxeotc = new NuxeoTestCase();
         nuxeotc.setUp();
+        // QueryMaker registration
+        nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
 
         Map<String, String> params = new HashMap<String, String>();
         params.put(SessionParameter.BINDING_SPI_CLASS,

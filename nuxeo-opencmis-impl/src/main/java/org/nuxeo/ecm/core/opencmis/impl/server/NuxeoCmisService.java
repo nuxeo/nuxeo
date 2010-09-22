@@ -79,6 +79,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
@@ -88,6 +89,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -706,6 +708,20 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean searchAllVersions, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+
+        IterableQueryResult res;
+        try {
+            res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
+                    (Object) null);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+        try {
+
+        } finally {
+            res.close();
+        }
+
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
