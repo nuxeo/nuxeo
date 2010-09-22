@@ -19,9 +19,6 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,18 +26,28 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRouteElementImpl implements DocumentRouteElement {
+
     protected DocumentModel document;
 
     public DocumentRouteElementImpl(DocumentModel doc) {
@@ -106,6 +113,16 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     }
 
     @Override
+    public boolean isValidated() {
+        return checkLifeCycleState(ElementLifeCycleState.validated);
+    }
+
+    @Override
+    public boolean isReady() {
+        return checkLifeCycleState(ElementLifeCycleState.ready);
+    }
+
+    @Override
     public boolean isDone() {
         return checkLifeCycleState(ElementLifeCycleState.done);
     }
@@ -126,7 +143,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void run(CoreSession session) {
-        setRunning(session);
+        // setting the state on teh parent changes the states of all children
+        // so if this is a step or a stepFolder its state was already changed
+        if (!isRunning()) {
+            setRunning(session);
+        }
         if (!(this instanceof DocumentRouteStep)) {
             throw new RuntimeException(
                     "Method run should be overriden in parent class.");
@@ -152,7 +173,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setRunning(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toRunning, session);
+       followTransition(ElementLifeCycleTransistion.toRunning, session);
     }
 
     protected void followTransition(ElementLifeCycleTransistion transition,
@@ -178,5 +199,62 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     @Override
     public void setDone(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toDone, session);
+    }
+
+    @Override
+    public void setValidated(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toValidated, session);
+    }
+
+    @Override
+    public void setReady(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toReady, session);
+    }
+
+    @Override
+    public void setReadOnly(CoreSession session) throws ClientException {
+        SetDocumentOnReadOnlyUnrestrictedSessionRunner readOnlySetter = new SetDocumentOnReadOnlyUnrestrictedSessionRunner(
+                session, document);
+        readOnlySetter.runUnrestricted();
+    }
+
+    @Override
+    public void validate(CoreSession session) throws ClientException {
+        setValidated(session);
+        setReadOnly(session);
+    }
+
+    protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends
+            UnrestrictedSessionRunner {
+
+        public SetDocumentOnReadOnlyUnrestrictedSessionRunner(
+                CoreSession session, DocumentModel document) {
+            super(session);
+            this.document = document;
+        }
+
+        protected DocumentModel document;
+
+        @Override
+        public void run() throws ClientException {
+            ACP acp = new ACPImpl();
+            // add new ACL to set READ permission to everyone
+            ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+            routingACL.add(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.READ, true));
+
+            // block rights inheritance
+            ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
+            inheritedACL.add(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+
+            ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+            localACL.add(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+
+            document.setACP(acp, true);
+            session.saveDocument(document);
+            session.save();
+        }
     }
 }

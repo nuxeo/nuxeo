@@ -31,6 +31,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
@@ -89,10 +90,13 @@ public class DocumentRoutingRelationActionsBean extends
         return docs;
     }
 
+    //TODO need to change this after is decided where we create routeModels
     protected String computePathWorkspaceRoot() throws ClientException {
         DocumentModel doc = documentManager.getRootDocument();
         doc = documentManager.getChildren(doc.getRef(), "Domain").get(0);
-        doc = documentManager.getChildren(doc.getRef(), "WorkspaceRoot").get(0);
+        DocumentModelList workspaces = documentManager.getChildren(doc.getRef(), "WorkspaceRoot"); 
+        workspaces.addAll(documentManager.getChildren(doc.getRef(), "UserWorkspacesRoot"));
+        doc = workspaces.get(0);
         return doc.getPathAsString();
     }
 

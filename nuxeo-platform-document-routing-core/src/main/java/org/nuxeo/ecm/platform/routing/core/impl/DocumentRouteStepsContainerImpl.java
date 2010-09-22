@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.field.OffsetDateTimeField;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -70,5 +71,12 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+    
+    @Override
+    public void validate(CoreSession session) throws ClientException {
+        // validate this routeModel
+        setValidated(session);
+        setReadOnly(session);
     }
 }

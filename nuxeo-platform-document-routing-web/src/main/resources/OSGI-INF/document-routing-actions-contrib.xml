@@ -20,7 +20,14 @@
       enabled="true" label="action.start.document.routing" icon="/icons/action_add.gif"
       order="110">
       <category>SUBVIEW_UPPER_LIST</category>
-      <filter-id>isRoute</filter-id>
+      <filter-id>isValidatedRouteModel</filter-id>
+    </action>
+    
+    <action id="validateRouteModel" link="#{routingActions.validateRouteModel()}"
+      enabled="true" label="action.validate.document.routing.model" icon="/icons/action_add.gif"
+      order="110">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>isUnvalidatedRouteModel</filter-id>
     </action>
 
   </extension>
@@ -46,6 +53,25 @@
         <type>DocumentRoute</type>
       </rule>
     </filter>
+    
+    <filter id="isUnvalidatedRouteModel">
+       <rule grant="true">
+         <condition>
+          document.getCurrentLifeCycleState().equals("draft")
+        </condition>
+       <type>DocumentRoute</type>
+      </rule>
+    </filter>
+    
+    <filter id="isValidatedRouteModel">
+       <rule grant="true">
+         <condition>
+          document.getCurrentLifeCycleState().equals("validated")
+        </condition>
+       <type>DocumentRoute</type>
+       </rule>
+    </filter>
+    
   </extension>
 
 </component>

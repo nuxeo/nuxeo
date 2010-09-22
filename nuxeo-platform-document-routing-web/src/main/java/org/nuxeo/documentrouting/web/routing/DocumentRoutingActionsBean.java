@@ -30,7 +30,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
@@ -51,21 +53,43 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
+    private DocumentRoutingService documentRoutingService;
+    
     public DocumentRoutingService getDocumentRoutingService() {
         try {
-            return Framework.getService(DocumentRoutingService.class);
+            if(documentRoutingService == null){
+                documentRoutingService =  Framework.getService(DocumentRoutingService.class);
+            }
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
+        return documentRoutingService;
     }
 
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        setPropertisOnDocumentBeforeExecution(currentDocument);
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         DocumentRoute routeInstance = getDocumentRoutingService().createNewInstance(
                 currentRoute, currentRoute.getAttachedDocuments(),
                 documentManager);
         return navigationContext.navigateToDocument(routeInstance.getDocument());
     }
-
+    
+    public String validateRouteModel() throws ClientException{
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
+        getDocumentRoutingService().validateRouteModel(currentRouteModel, documentManager);
+        return navigationContext.navigateToDocument(currentDocument);
+    }
+    
+    private void setPropertisOnDocumentBeforeExecution(DocumentModel doc)
+            throws PropertyException, ClientException {
+        doc.setPropertyValue(
+                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                navigationContext.getChangeableDocument().getPropertyValue(
+                        DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
+        documentManager.saveDocument(doc);
+        documentManager.save();
+    }
 }

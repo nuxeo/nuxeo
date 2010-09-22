@@ -27,9 +27,11 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
@@ -38,7 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
@@ -67,7 +69,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
-    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -84,7 +85,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
+        routeInstance.setReady(session);
         routeInstance.save(session);
+        if (Framework.isTestModeSet()){
+            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        }
         if (startInstance) {
             getEngineService().start(routeInstance, session);
         }
@@ -130,6 +135,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public String getOperationChainId(String documentType) {
         return typeToChain.get(documentType);
+    }
+
+    @Override
+    public void validateRouteModel(DocumentRoute routeModel, CoreSession session)
+            throws ClientException {
+        routeModel.validate(session);
     }
 
 }

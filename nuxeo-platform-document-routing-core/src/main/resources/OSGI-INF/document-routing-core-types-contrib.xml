@@ -56,6 +56,7 @@
       <schema name="uid" />
       <schema name="step_instance" />
       <schema name="step_document" />
+      <facet name ="RouteStep"/>
     </doctype>
 
   </extension>

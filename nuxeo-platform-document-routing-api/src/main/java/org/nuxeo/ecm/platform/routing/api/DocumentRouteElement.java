@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -26,13 +27,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface DocumentRouteElement {
     enum ElementLifeCycleState {
-        draft, running, done
+        draft, validated, ready, running, done
     }
 
     enum ElementLifeCycleTransistion {
-        toRunning, toDone
+      toValidated, toReady, toRunning, toDone
     }
 
+    boolean isValidated();
+    
+    boolean isReady();
+    
     boolean isDone();
 
     boolean isRunning();
@@ -48,6 +53,8 @@ public interface DocumentRouteElement {
      */
     void run(CoreSession session);
 
+    void validate(CoreSession session) throws ClientException;
+    
     DocumentModel getDocument();
 
     /**
@@ -57,7 +64,16 @@ public interface DocumentRouteElement {
      */
     void save(CoreSession session);
 
+    void setValidated(CoreSession session);
+    
+    void setReady(CoreSession session);
+    
     void setRunning(CoreSession session);
 
     void setDone(CoreSession session);
+    
+    void setReadOnly(CoreSession session) throws ClientException;
+    
 }
+
+

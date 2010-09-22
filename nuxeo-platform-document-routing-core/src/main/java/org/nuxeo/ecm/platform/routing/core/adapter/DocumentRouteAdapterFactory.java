@@ -46,7 +46,7 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
             case parallel:
                 return new DocumentRouteParallelImpl(doc);
             }
-        } else if (DocumentRoutingConstants.STEP_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
+        } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return new DocumentRouteStepImpl(doc);
         } else if (DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
