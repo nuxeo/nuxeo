@@ -84,7 +84,7 @@ public class UploadItemHolder implements Serializable {
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+            EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
         uploadedFiles = new ArrayList<UploadItem>();
