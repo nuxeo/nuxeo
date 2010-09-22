@@ -41,7 +41,10 @@ public interface DocumentRoutingConstants {
 
     String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
 
+    //operation constant
     String OPERATION_CATEGORY_ROUTING_NAME = "Routing";
+
+    String OPERATION_STEP_DOCUMENT_KEY = "document.routing.step";
 
     enum ExecutionTypeValues {
         serial, parallel

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,7 +34,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.operation.DocumentRouteOperationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -131,8 +131,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             throw new RuntimeException(
                     "Method run should be overriden in parent class.");
         }
-        DocumentRouteOperationContext context = new DocumentRouteOperationContext(
-                (DocumentRouteStep) this, session);
+        OperationContext context = new OperationContext(session);
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, this);
         context.setInput(getAttachedDocuments(session));
         try {
             String chainId = getDocumentRoutingService().getOperationChainId(

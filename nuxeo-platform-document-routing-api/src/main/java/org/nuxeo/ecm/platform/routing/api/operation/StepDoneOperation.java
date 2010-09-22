@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.api.operation;
 
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -31,11 +32,11 @@ public class StepDoneOperation {
     public final static String ID = "Document.Routing.Step.Done";
 
     @Context
-    protected DocumentRouteOperationContext context;
+    protected OperationContext context;
 
     @OperationMethod
     public void setStepDone() {
-        DocumentRouteStep step = context.getStep();
+        DocumentRouteStep step = (DocumentRouteStep) context.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         step.setDone(context.getCoreSession());
     }
 }

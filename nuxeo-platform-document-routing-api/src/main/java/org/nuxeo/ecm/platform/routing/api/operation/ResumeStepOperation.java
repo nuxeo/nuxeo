@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.api.operation;
 
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
@@ -33,10 +34,10 @@ public class ResumeStepOperation {
     public final static String ID = "Document.Routing.Resume.Step";
 
     @Context
-    protected DocumentRouteOperationContext context;
+    protected OperationContext context;
 
     public void resume() {
-        DocumentRouteStep step = context.getStep();
+        DocumentRouteStep step = (DocumentRouteStep) context.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         StepResumeRunner runner = new StepResumeRunner(
                 step.getDocument().getId());
         runner.resumeStep(context.getCoreSession());
