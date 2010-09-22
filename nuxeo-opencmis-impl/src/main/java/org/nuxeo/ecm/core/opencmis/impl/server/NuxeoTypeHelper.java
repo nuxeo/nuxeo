@@ -210,13 +210,8 @@ public class NuxeoTypeHelper {
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
             dt.setIsVersionable(Boolean.FALSE);
-            ContentStreamAllowed csa;
-            if (documentType == null) {
-                csa = ContentStreamAllowed.NOTALLOWED;
-            } else {
-                csa = supportsBlobHolder(documentType) ? ContentStreamAllowed.ALLOWED
-                        : ContentStreamAllowed.NOTALLOWED;
-            }
+            ContentStreamAllowed csa = supportsBlobHolder(documentType) ? ContentStreamAllowed.ALLOWED
+                    : ContentStreamAllowed.NOTALLOWED;
             dt.setContentStreamAllowed(csa);
             addDocumentPropertyDefinitions(dt);
         }
@@ -308,24 +303,23 @@ public class NuxeoTypeHelper {
                 PropertyIds.CHECKIN_COMMENT, "Checkin Comment",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
                 false, false, false));
-        if (t.getContentStreamAllowed() != ContentStreamAllowed.NOTALLOWED) {
-            t.addPropertyDefinition(newPropertyDefinition(
-                    PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length",
-                    PropertyType.INTEGER, Cardinality.SINGLE,
-                    Updatability.READONLY, false, false, false));
-            t.addPropertyDefinition(newPropertyDefinition(
-                    PropertyIds.CONTENT_STREAM_MIME_TYPE, "MIME Type",
-                    PropertyType.STRING, Cardinality.SINGLE,
-                    Updatability.READONLY, false, false, false));
-            t.addPropertyDefinition(newPropertyDefinition(
-                    PropertyIds.CONTENT_STREAM_FILE_NAME, "Filename",
-                    PropertyType.STRING, Cardinality.SINGLE,
-                    Updatability.READONLY, false, false, false));
-            t.addPropertyDefinition(newPropertyDefinition(
-                    PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
-                    PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
-                    false, false, false));
-        }
+        // mandatory properties even when content stream not allowed
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length",
+                PropertyType.INTEGER, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.CONTENT_STREAM_MIME_TYPE, "MIME Type",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
+                false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.CONTENT_STREAM_FILE_NAME, "Filename",
+                PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
+                false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
+                PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
+                false, false, false));
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id,
