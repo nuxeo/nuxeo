@@ -54,8 +54,8 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
 
     protected ProbeInfoImpl(ProbeDescriptor descriptor) {
         this.descriptor = descriptor;
-        this.shortcutName=descriptor.getShortcut();
-        this.qualifiedName=descriptor.getQualifiedName();
+        this.shortcutName = descriptor.getShortcut();
+        this.qualifiedName = descriptor.getQualifiedName();
     }
 
     @Override

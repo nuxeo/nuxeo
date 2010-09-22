@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -43,21 +42,18 @@
     <module>nuxeo-core-persistence</module>
     <module>nuxeo-core-management</module>
     <module>nuxeo-core-management-test</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-core-facade</module>
+    <module>nuxeo-core-query-test</module>
+    <module>nuxeo-core-storage-jcr</module>
+    <module>nuxeo-core-test</module>
   </modules>
 
   <profiles>
-    <profile>
-      <id>no-osgi</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-core-facade</module>
-        <module>nuxeo-core-query-test</module>
-        <module>nuxeo-core-storage-jcr</module>
-        <module>nuxeo-core-test</module>
-      </modules>
-    </profile>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+      <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-core-facade</module> 
+      <module>nuxeo-core-query-test</module> <module>nuxeo-core-storage-jcr</module> <module>nuxeo-core-test</module> 
+      </modules> </profile> -->
   </profiles>
 
   <scm>

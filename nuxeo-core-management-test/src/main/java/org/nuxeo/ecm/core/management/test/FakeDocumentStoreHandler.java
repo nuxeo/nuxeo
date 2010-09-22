@@ -15,23 +15,24 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.core.management.api;
+package org.nuxeo.ecm.core.management.test;
 
-import java.util.Collection;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 
-public interface ProbeManager extends ProbeRunnerMBean {
+public class FakeDocumentStoreHandler implements DocumentStoreHandler {
 
-    Collection<ProbeInfo> getAllProbeInfos();
+    public String repositoryName;
 
-    Collection<ProbeInfo> getInSuccessProbeInfos();
+    public static FakeDocumentStoreHandler testInstance;
 
-    Collection<ProbeInfo> getInFailureProbeInfos();
+    public FakeDocumentStoreHandler() {
+        testInstance = this;
+    }
 
-    ProbeInfo runProbe(ProbeInfo probe);
+    @Override
+    public void onStorageInitialization(CoreSession session) {
+        repositoryName = session.getRepositoryName();
+    }
 
-    ProbeInfo runProbe(String name);
-
-    ProbeInfo getProbeInfo(String name);
-
-    ProbeInfo getProbeInfo(Class<? extends Probe> probeClass);
 }
