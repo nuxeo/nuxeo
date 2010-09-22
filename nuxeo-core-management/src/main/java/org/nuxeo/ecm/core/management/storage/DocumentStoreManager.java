@@ -46,32 +46,20 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         DocumentStoreSessionRunner.repositoryName = config.repositoryName;
     }
 
-    public void setRepositoryName(String name) {
-        DocumentStoreSessionRunner.repositoryName = name;
-    }
-
-    public void setRepositoryName() {
-    }
-
-
     protected String defaultRepositoryName = null;
-
-    @Override
-    public void install() {
-        RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-        defaultRepositoryName  = mgr.getDefaultRepository().getName();
-        if (DocumentStoreSessionRunner.repositoryName == null) {
-            DocumentStoreSessionRunner.repositoryName = defaultRepositoryName;
-        }
-        super.install();
-    }
 
     protected boolean mgmtInitialized = false;
     protected boolean defaultInitialized = false;
 
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
-
+        if (defaultRepositoryName == null) {
+            RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+            defaultRepositoryName = mgr.getDefaultRepository().getName();
+            if (DocumentStoreSessionRunner.repositoryName == null) {
+                DocumentStoreSessionRunner.repositoryName = defaultRepositoryName;
+            }
+        }
         String repositoryName = session.getRepositoryName();
 
         if (repositoryName.equals(DocumentStoreSessionRunner.repositoryName)) {
