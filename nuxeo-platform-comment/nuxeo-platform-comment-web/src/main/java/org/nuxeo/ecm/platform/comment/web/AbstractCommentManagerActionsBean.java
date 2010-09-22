@@ -250,7 +250,7 @@ public abstract class AbstractCommentManagerActionsBean implements
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+            EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
         cleanContextVariable();

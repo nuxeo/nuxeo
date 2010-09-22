@@ -154,7 +154,7 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
             JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
             JbpmEventNames.WORKFLOW_ABANDONED,
             JbpmEventNames.WORKFLOW_CANCELED,
-            EventNames.DOMAIN_SELECTION_CHANGED }, create = false, inject = false)
+            EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void invalidateDocumentProcessItems() {
         currentUserProcesses = null;
@@ -174,7 +174,7 @@ public class WorkflowDashBoardActions implements Serializable, WorkflowDashBoard
             JbpmEventNames.WORKFLOW_ABANDONED,
             JbpmEventNames.WORKFLOW_CANCELED,
             EventNames.DOMAIN_SELECTION_CHANGED, "documentPublicationRejected",
-            "documentPublished" }, create = false, inject = false)
+            "documentPublished" }, create = false)
     @BypassInterceptors
     public void invalidateDashboardItems() {
         currentUserTasks = null;

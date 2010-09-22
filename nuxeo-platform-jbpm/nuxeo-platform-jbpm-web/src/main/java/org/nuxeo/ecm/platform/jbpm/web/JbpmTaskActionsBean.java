@@ -121,7 +121,7 @@ public class JbpmTaskActionsBean extends DocumentContextBoundActionBean {
             JbpmEventNames.WORKFLOW_ABANDONED,
             JbpmEventNames.WORKFLOW_CANCELED,
             EventNames.DOMAIN_SELECTION_CHANGED, "documentPublicationRejected",
-            "documentPublished" }, create = false, inject = false)
+            "documentPublished" }, create = false)
     @BypassInterceptors
     public void resetCache() {
         tasks = null;

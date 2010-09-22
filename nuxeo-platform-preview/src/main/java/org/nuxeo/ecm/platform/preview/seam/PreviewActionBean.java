@@ -27,6 +27,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -98,7 +99,8 @@ public class PreviewActionBean implements Serializable {
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
+            EventNames.DOCUMENT_CHANGED }, create = false)
+    @BypassInterceptors
     public void resetFields() {
         fieldXPathValue = null;
     }
