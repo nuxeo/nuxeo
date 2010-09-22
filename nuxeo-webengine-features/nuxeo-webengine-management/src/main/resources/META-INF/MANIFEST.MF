@@ -28,6 +28,5 @@ Provide-Package: org.nuxeo.ecm.webengine.management,
  org.nuxeo.ecm.webengine.management.statuses
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.management;singleton=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Nuxeo-Components: OSGI-INF/auth-contrib.xml
 Nuxeo-Require: org.nuxeo.ecm.platform.management,
  org.nuxeo.ecm.webengine.core
