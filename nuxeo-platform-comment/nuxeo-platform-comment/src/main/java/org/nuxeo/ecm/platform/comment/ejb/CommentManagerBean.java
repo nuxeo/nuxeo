@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 @Stateless
 @Remote(CommentManager.class)
 @Local(CommentManagerLocal.class)
-public class CommentManagerBean implements CommentManager {
+public class CommentManagerBean implements CommentManagerLocal {
 
     @Resource
     EJBContext context;
@@ -54,12 +54,14 @@ public class CommentManagerBean implements CommentManager {
         commentManager = commentService.getCommentManager();
     }
 
-    public void cleanup() {}
+    public void cleanup() {
+    }
 
-    public void remove() {}
+    public void remove() {
+    }
 
-    public DocumentModel createComment(DocumentModel docModel,
-            String comment) throws ClientException {
+    public DocumentModel createComment(DocumentModel docModel, String comment)
+            throws ClientException {
         try {
             String author = context.getCallerPrincipal().getName();
             return commentManager.createComment(docModel, comment, author);
@@ -68,8 +70,8 @@ public class CommentManagerBean implements CommentManager {
         }
     }
 
-    public DocumentModel createComment(DocumentModel docModel,
-            String comment, String author) throws ClientException {
+    public DocumentModel createComment(DocumentModel docModel, String comment,
+            String author) throws ClientException {
         try {
             return commentManager.createComment(docModel, comment, author);
         } catch (Throwable e) {
@@ -143,7 +145,7 @@ public class CommentManagerBean implements CommentManager {
     }
 
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
-            throws ClientException{
+            throws ClientException {
         try {
             return commentManager.getDocumentsForComment(comment);
         } catch (Throwable e) {

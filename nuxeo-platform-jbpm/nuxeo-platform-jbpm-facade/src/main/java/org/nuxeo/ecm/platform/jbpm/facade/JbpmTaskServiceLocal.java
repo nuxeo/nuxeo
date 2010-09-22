@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,19 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: PlacefulServiceLocal.java 13110 2007-03-01 17:25:47Z rspivak $
+ *     bstefanescu
  */
-package org.nuxeo.ecm.platform.ec.notification.ejb.facade;
+package org.nuxeo.ecm.platform.jbpm.facade;
 
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 
 /**
- * 
- * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
- * 
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public interface NotificationServiceLocal extends NotificationManager {
+public interface JbpmTaskServiceLocal extends JbpmTaskService {
 
 }

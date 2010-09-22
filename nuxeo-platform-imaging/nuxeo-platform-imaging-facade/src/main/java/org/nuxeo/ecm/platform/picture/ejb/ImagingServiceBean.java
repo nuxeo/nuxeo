@@ -36,13 +36,13 @@ import org.nuxeo.runtime.api.Framework;
  * Session bean wrapper for the local ImagingService
  * <p>
  * Enable EJB remoting for the local nuxeo-runtime service
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Stateless
 @Remote(ImagingService.class)
-@Local(ImagingService.class)
-public class ImagingServiceBean implements ImagingService {
+@Local(ImagingServiceLocal.class)
+public class ImagingServiceBean implements ImagingServiceLocal {
 
     private final ImagingService service;
 
