@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.core.management;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -28,8 +24,8 @@ import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.statuses.AdministrativeStatusManagerImpl;
 import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerImpl;
-import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -68,6 +64,7 @@ public class CoreManagementComponent extends DefaultComponent  {
     public AdministrativeStatusManagerImpl getLocalManager() {
         return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
     }
+
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -122,30 +119,19 @@ public class CoreManagementComponent extends DefaultComponent  {
     public void activate(ComponentContext context) throws Exception {
         defaultComponent = this;
         storageManager.install();
-        context.getRuntimeContext().getBundle().getBundleContext()
-                .addFrameworkListener(new FrameworkListener() {
-                    public void frameworkEvent(FrameworkEvent event) {
-                        if (event.getType() != FrameworkEvent.STARTED) {
-                            return;
-                        }
-                        event.getBundle().getBundleContext().removeFrameworkListener(this);
-                        ClassLoader jarCL = Thread.currentThread().getContextClassLoader();
-                        ClassLoader bundleCL = Framework.class.getClassLoader();
-                        try{
-                            Thread.currentThread().setContextClassLoader(bundleCL);
-                            probeRunner.runAllProbes();
-                        }
-                        finally{
-                            Thread.currentThread().setContextClassLoader(jarCL);
-                        }// contributed
-                    }
-                });
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         defaultComponent = null;
+        storageManager.uninstall();
         getLocalManager().onNuxeoServerShutdown();
+    }
+
+
+    public void onNuxeoServerStartup() {
+        getLocalManager().onNuxeoServerStartup();
+        probeRunner.runAllProbes();
     }
 
 }

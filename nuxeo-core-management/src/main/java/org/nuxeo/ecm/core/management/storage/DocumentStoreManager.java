@@ -51,22 +51,41 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     public void setRepositoryName() {
     }
 
+
+    protected String defaultRepositoryName = null;
+
+    @Override
+    public void install() {
+        RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+        defaultRepositoryName  = mgr.getDefaultRepository().getName();
+        if (DocumentStoreSessionRunner.repositoryName == null) {
+            DocumentStoreSessionRunner.repositoryName = defaultRepositoryName;
+        }
+        super.install();
+    }
+
+    protected boolean mgmtInitialized = false;
+    protected boolean defaultInitialized = false;
+
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
 
-        if (DocumentStoreSessionRunner.repositoryName == null) {
-            RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-            DocumentStoreSessionRunner.repositoryName  = mgr.getDefaultRepository().getName();
+        String repositoryName = session.getRepositoryName();
+
+        if (repositoryName.equals(DocumentStoreSessionRunner.repositoryName)) {
+            mgmtInitialized = true;
+            for (DocumentStoreHandlerDescriptor desc:handlers.values()) {
+                desc.handler.onStorageInitialization(session);
+            }
         }
 
-        if (!session.getRepositoryName().equals(DocumentStoreSessionRunner.repositoryName)) {
-            return;
+        if (repositoryName.equals(defaultRepositoryName)) {
+            defaultInitialized = true;
         }
 
-        for (DocumentStoreHandlerDescriptor desc:handlers.values()) {
-            desc.handler.onStorageInitialization(session);
+        if (defaultInitialized && mgmtInitialized) {
+            CoreManagementComponent.getDefault().onNuxeoServerStartup();
         }
-        CoreManagementComponent.getDefault().getLocalManager().onNuxeoServerStartup(); // TODO should status manager be registered as a storage c ?
     }
 
 }
