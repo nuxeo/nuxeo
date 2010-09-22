@@ -662,7 +662,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void documentChanged() {
         currentPublicationTreeNameForPublishing = null;

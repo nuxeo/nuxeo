@@ -23,12 +23,11 @@ import org.nuxeo.connect.data.SubscriptionStatus;
  * Simple Wrapper to add label computation to the {@link SubscriptionStatus}
  *
  * @author tiry
- *
  */
 public class SubscriptionStatusWrapper extends SubscriptionStatus {
 
     public SubscriptionStatusWrapper(String errorMessage) {
-        this.errorMessage=errorMessage;
+        this.errorMessage = errorMessage;
     }
 
     public SubscriptionStatusWrapper(SubscriptionStatus status) {

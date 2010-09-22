@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Consumes("application/json+nxrequest")
@@ -50,8 +49,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return ExecutionRequest.class.isAssignableFrom(arg0); // TODO check
-        // media type too
+        // TODO check media type too
+        return ExecutionRequest.class.isAssignableFrom(arg0);
     }
 
     public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
@@ -87,7 +86,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         ExecutionRequest req = new ExecutionRequest(inObj);
 
         if (jsonParams != null) {
-            Iterator<String> it = (Iterator<String>) jsonParams.keys();
+            Iterator<String> it = jsonParams.keys();
             while (it.hasNext()) {
                 String key = it.next();
                 String value = jsonParams.getString(key);
@@ -96,7 +95,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
 
         if (jsonContext != null) {
-            Iterator<String> it = (Iterator<String>) jsonContext.keys();
+            Iterator<String> it = jsonContext.keys();
             while (it.hasNext()) {
                 String key = it.next();
                 String value = jsonParams.getString(key);

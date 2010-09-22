@@ -54,8 +54,8 @@ public interface Session {
      * context map.
      *
      * @param id the operation id
-     * @param ctx the context map to be used when executing the operation on the
-     *            server.
+     * @param ctx the context map to be used when executing the operation on
+     *            the server.
      * @return the operation request
      */
     OperationRequest newRequest(String id, Map<String, String> ctx)

@@ -82,7 +82,7 @@ public class RemoveDocumentACL {
         ACP acp = session.getACP(ref);
         acp.removeACL(aclName);
         acp.removeACL("inherited"); // make sure to not save the inherited acl
-                                    // which is dynamically computed
+        // which is dynamically computed
         session.setACP(ref, acp, true);
     }
 

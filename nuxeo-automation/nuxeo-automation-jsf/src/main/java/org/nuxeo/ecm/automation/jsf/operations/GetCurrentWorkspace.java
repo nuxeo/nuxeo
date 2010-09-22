@@ -23,10 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = GetCurrentWorkspace.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Current Workspace", description = "Get the current Workspace from the UI context.")
+@Operation(id = GetCurrentWorkspace.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Current Workspace", description = "Get the current Workspace from the UI context.")
 public class GetCurrentWorkspace {
 
     public static final String ID = "Seam.GetCurrentWorkspace";

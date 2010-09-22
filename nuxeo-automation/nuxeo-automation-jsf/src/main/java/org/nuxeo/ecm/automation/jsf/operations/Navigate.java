@@ -26,10 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = Navigate.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Navigate to Document", description = "Navigate to the input document. The outcome of the UI action will be stored in the operation chain context as the 'Outcome' variable. Returns back the document.")
+@Operation(id = Navigate.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Navigate to Document", description = "Navigate to the input document. The outcome of the UI action will be stored in the operation chain context as the 'Outcome' variable. Returns back the document.")
 public class Navigate {
 
     public static final String ID = "Seam.NavigateTo";
@@ -42,12 +40,14 @@ public class Navigate {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        String outcome=null;
+        String outcome = null;
 
-        if (view==null) {
-            outcome = OperationHelper.getNavigationContext().navigateToDocument(doc);
+        if (view == null) {
+            outcome = OperationHelper.getNavigationContext().navigateToDocument(
+                    doc);
         } else {
-            outcome = OperationHelper.getNavigationContext().navigateToDocument(doc, view);
+            outcome = OperationHelper.getNavigationContext().navigateToDocument(
+                    doc, view);
         }
 
         ctx.put(SeamOperation.OUTCOME, outcome);

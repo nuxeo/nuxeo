@@ -25,8 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
-@Operation(id = ChangeTab.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Change Tab", description = "Change the selected tab for the current document. Preserve the current input.")
+@Operation(id = ChangeTab.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Change Tab", description = "Change the selected tab for the current document. Preserve the current input.")
 public class ChangeTab {
 
     public static final String ID = "Seam.ChangeTab";

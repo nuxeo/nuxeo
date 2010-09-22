@@ -30,10 +30,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = GetSelectedDocuments.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Selected documents", description = "Fetch the documents selected in the current folder listing")
+@Operation(id = GetSelectedDocuments.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Selected documents", description = "Fetch the documents selected in the current folder listing")
 public class GetSelectedDocuments {
 
     public static final String ID = "Seam.GetSelectedDocuments";
@@ -43,7 +41,8 @@ public class GetSelectedDocuments {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         return new DocumentModelListImpl(res);
     }
 

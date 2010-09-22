@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +31,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractAutomationClient implements AutomationClient {
 

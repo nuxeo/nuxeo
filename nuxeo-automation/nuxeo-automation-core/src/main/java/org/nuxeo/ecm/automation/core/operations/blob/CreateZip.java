@@ -104,9 +104,8 @@ public class CreateZip {
     }
 
     protected void zip(BlobList blobs, ZipOutputStream out) throws Exception {
-        Collection<String> names = new HashSet<String>(); // use a set to avoid
-                                                     // zipping entries with
-                                                     // same names
+        // use a set to avoid zipping entries with same names
+        Collection<String> names = new HashSet<String>();
         int cnt = 1;
         for (Blob blob : blobs) {
             String entry = getFileName(blob);

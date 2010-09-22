@@ -24,17 +24,17 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="GetVar")
+@Operation(id = "GetVar")
 public class GetVarOperation {
 
-    @Context OperationContext ctx;
+    @Context
+    OperationContext ctx;
 
-    @Param(name="name")
+    @Param(name = "name")
     protected String name;
 
-    @Param(name="flag")
+    @Param(name = "flag")
     protected boolean flag;
 
     @OperationMethod
@@ -42,7 +42,7 @@ public class GetVarOperation {
         if (!flag) {
             throw new IllegalArgumentException("flag not set");
         }
-        return (String)ctx.get(name);
+        return (String) ctx.get(name);
     }
 
 }

@@ -27,26 +27,31 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="a2")
+@Operation(id = "a2")
 public class AdaptableOperation2 {
 
-    @Param(name="message") protected String message;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public DocumentRef printInfo(DocumentRef ref) throws Exception {
-        Helper.updateContext(ctx, "A2:docref:docref", message, session.getDocument(ref).getPathAsString());
+        Helper.updateContext(ctx, "A2:docref:docref", message,
+                session.getDocument(ref).getPathAsString());
         return ref;
     }
 
     @OperationMethod
     public DocumentRef noInput() throws Exception {
         DocumentModel doc = session.getRootDocument();
-        Helper.updateContext(ctx, "A2:void:docref", message, doc.getPathAsString());
+        Helper.updateContext(ctx, "A2:void:docref", message,
+                doc.getPathAsString());
         return doc.getRef();
     }
 

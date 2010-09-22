@@ -41,11 +41,10 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam Bean used to build/restore a JSF/Seam contexte from a REST call.
- * This bean is called when a user clicks on an installation link from MarketPlace.
+ * Seam Bean used to build/restore a JSF/Seam contexte from a REST call. This
+ * bean is called when a user clicks on an installation link from MarketPlace.
  *
  * @author tiry
- *
  */
 @Name("externalLinkManager")
 @Scope(SESSION)
@@ -58,7 +57,7 @@ public class ExternalLinkManager implements Serializable {
 
     protected DownloadablePackage pkg;
 
-    @In(create=true,required=false)
+    @In(create = true, required = false)
     protected AdminViewManager adminViews;
 
     @In
@@ -85,9 +84,9 @@ public class ExternalLinkManager implements Serializable {
         }
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-        pkg= pm.getPackage(packageId);
+        pkg = pm.getPackage(packageId);
 
-        if (getUser().isAdministrator() && pkg!=null) {
+        if (getUser().isAdministrator() && pkg != null) {
             return "confirm_download";
         } else {
             return "can_not_download";

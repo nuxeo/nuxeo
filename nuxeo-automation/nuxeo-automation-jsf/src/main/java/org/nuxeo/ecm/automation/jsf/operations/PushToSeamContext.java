@@ -26,10 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = PushToSeamContext.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Push to Seam Context", description = "Push the current input document into Seam context. Returns back the document.")
+@Operation(id = PushToSeamContext.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Push to Seam Context", description = "Push the current input document into Seam context. Returns back the document.")
 public class PushToSeamContext {
 
     public static final String ID = "Seam.PushDocument";
@@ -40,7 +38,8 @@ public class PushToSeamContext {
     @Param(name = "name")
     protected String name;
 
-    @Param(name = "scope", widget = Constants.W_OPTION, values = {"session", "conversation", "page", "event"})
+    @Param(name = "scope", widget = Constants.W_OPTION, values = { "session",
+            "conversation", "page", "event" })
     protected String scope;
 
     @OperationMethod
@@ -48,19 +47,15 @@ public class PushToSeamContext {
 
         if ("session".equalsIgnoreCase(scope)) {
             Contexts.getSessionContext().set(name, value);
-        }
-        else if ("conversation".equalsIgnoreCase(scope)) {
+        } else if ("conversation".equalsIgnoreCase(scope)) {
             Contexts.getConversationContext().set(name, value);
-        }
-        else if ("page".equalsIgnoreCase(scope)) {
+        } else if ("page".equalsIgnoreCase(scope)) {
             Contexts.getPageContext().set(name, value);
-        }
-        else if ("event".equalsIgnoreCase(scope)) {
+        } else if ("event".equalsIgnoreCase(scope)) {
             Contexts.getEventContext().set(name, value);
         }
 
         return value;
     }
-
 
 }

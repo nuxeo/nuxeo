@@ -23,12 +23,12 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="slo")
+@Operation(id = "slo")
 public class StringListOperation {
 
-    @Param(name="emails") protected StringList emails;
+    @Param(name = "emails")
+    protected StringList emails;
 
     @OperationMethod
     public StringList getEmails() throws Exception {

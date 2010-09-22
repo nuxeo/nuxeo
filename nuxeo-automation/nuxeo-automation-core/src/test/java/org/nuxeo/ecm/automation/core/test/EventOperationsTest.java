@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,17 +48,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning"}) // For version label info
+@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
+// For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-enc.xml")
-//@RepositoryConfig(cleanup=Granularity.METHOD)
+// @RepositoryConfig(cleanup=Granularity.METHOD)
 public class EventOperationsTest {
 
     protected DocumentModel src;
@@ -90,32 +90,36 @@ public class EventOperationsTest {
         dst = session.getDocument(dst.getRef());
     }
 
-
     // ------ Tests comes here --------
 
     /**
-     * Create | Copy | Set Property
-     * This is also testing {@link StringToProperties} adapter
+     * Create | Copy | Set Property This is also testing
+     * {@link StringToProperties} adapter
+     *
      * @throws Exception
      */
-    @Test public void testCreateNoteWhenFolderCreated() throws Exception {
+    @Test
+    public void testCreateNoteWhenFolderCreated() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
         OperationChain chain = new OperationChain("createNoteWhenFolderCreated");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note")
-            .set("properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
+                "properties", "dc:title=MyDoc");
         service.putOperationChain(chain);
 
-        EventHandler handler = new EventHandler(DocumentEventTypes.DOCUMENT_CREATED, "createNoteWhenFolderCreated");
+        EventHandler handler = new EventHandler(
+                DocumentEventTypes.DOCUMENT_CREATED,
+                "createNoteWhenFolderCreated");
         Set<String> set = new HashSet<String>();
         set.add("Folder");
         handler.setDoctypes(set);
         reg.putEventHandler(handler);
 
         // now create a new folder inside src
-        DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/src", "myfolder",
+                "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
         folder = session.createDocument(folder);
         session.save();
@@ -127,28 +131,34 @@ public class EventOperationsTest {
     }
 
     /**
-     * Create | Copy | Set Property in a post commit listener
-     * This is also testing {@link StringToProperties} adapter
+     * Create | Copy | Set Property in a post commit listener This is also
+     * testing {@link StringToProperties} adapter
+     *
      * @throws Exception
      */
-    @Test public void testCreateNoteWhenFolderCreatedInPostCommit() throws Exception {
+    @Test
+    public void testCreateNoteWhenFolderCreatedInPostCommit() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
-        OperationChain chain = new OperationChain("createNoteWhenFolderCreatedPc");
+        OperationChain chain = new OperationChain(
+                "createNoteWhenFolderCreatedPc");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note_pc")
-            .set("properties", "dc:title=MyDocPc");
+        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note_pc").set(
+                "properties", "dc:title=MyDocPc");
         service.putOperationChain(chain);
 
-        EventHandler handler = new EventHandler(DocumentEventTypes.DOCUMENT_CREATED, "createNoteWhenFolderCreatedPc");
+        EventHandler handler = new EventHandler(
+                DocumentEventTypes.DOCUMENT_CREATED,
+                "createNoteWhenFolderCreatedPc");
         Set<String> set = new HashSet<String>();
         set.add("Folder");
         handler.setDoctypes(set);
         reg.putPostCommitEventHandler(handler);
 
         // now create a new folder inside src
-        DocumentModel folder = session.createDocumentModel("/src", "myfolder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/src", "myfolder",
+                "Folder");
         folder.setPropertyValue("dc:title", "MyFolder");
         folder = session.createDocument(folder);
         session.save();
@@ -156,7 +166,8 @@ public class EventOperationsTest {
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        // reopen session since the modification occurred in another session in another thread
+        // reopen session since the modification occurred in another session in
+        // another thread
         CoreSession session2 = Framework.getService(RepositoryManager.class).getDefaultRepository().open();
 
         DocumentModel doc = session2.getChild(folder.getRef(), "note_pc");
@@ -165,7 +176,8 @@ public class EventOperationsTest {
         CoreInstance.getInstance().close(session2);
     }
 
-    @Test public void testXmlEncoding() throws Exception {
+    @Test
+    public void testXmlEncoding() throws Exception {
         EventHandlerRegistry reg = Framework.getLocalService(EventHandlerRegistry.class);
         List<EventHandler> eh = reg.getEventHandlers("aboutToCreate");
         assertEquals("a < b & b > c", eh.get(0).getExpression());

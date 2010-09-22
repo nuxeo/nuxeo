@@ -24,12 +24,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- * @deprecated Not used for now. To enable it add the operation to the XML contribution file.
+ * @deprecated Not used for now. To enable it add the operation to the XML
+ *             contribution file.
  */
 @Deprecated
-@Operation(id = SetOutcome.ID, category = Constants.CAT_UI, requires=Constants.SEAM_CONTEXT,
-        label = "Set JSF Outcome", description = "Set the 'Outcome' context variable that represent a JSF outcome string. This outcome can be used by the next operations that need an outcome. Preserve the current input (return back the same input).")
+@Operation(id = SetOutcome.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Set JSF Outcome", description = "Set the 'Outcome' context variable that represent a JSF outcome string. This outcome can be used by the next operations that need an outcome. Preserve the current input (return back the same input).")
 public class SetOutcome {
 
     public static final String ID = "Seam.SetOutcome";

@@ -17,7 +17,6 @@
  * $Id$
  */
 
-
 package org.nuxeo.ecm.admin.url;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  * Should provide a url binding for admin screens
  *
  * @author tiry
- *
  */
 public class AdminViewCodec extends AbstractDocumentViewCodec implements
         DocumentViewCodec {
@@ -43,10 +41,8 @@ public class AdminViewCodec extends AbstractDocumentViewCodec implements
     public AdminViewCodec() {
     }
 
-
-
     public AdminViewCodec(String prefix) {
-        this.prefix=prefix;
+        this.prefix = prefix;
     }
 
     @Override
@@ -74,6 +70,5 @@ public class AdminViewCodec extends AbstractDocumentViewCodec implements
 
         return null;
     }
-
 
 }

@@ -37,11 +37,9 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
- *
  * Seam Bean used to manage navigation inside the Admin Center.
  *
  * @author tiry
- *
  */
 @Name("adminViews")
 @Scope(CONVERSATION)
@@ -57,11 +55,12 @@ public class AdminViewManager implements Serializable {
 
     public static final String ADMIN_ACTION_CATEGORY = "NUXEO_ADMIN";
 
-    @In(create=true, required=false)
+    @In(create = true, required = false)
     protected WebActions webActions;
 
     public String exit() throws ClientException {
-        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get("navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
+                "navigationContext");
 
         DocumentModel doc = navigationContext.getCurrentDocument();
 
@@ -72,9 +71,9 @@ public class AdminViewManager implements Serializable {
         }
     }
 
-    @Factory(value="currentAdminView", scope=ScopeType.EVENT)
+    @Factory(value = "currentAdminView", scope = ScopeType.EVENT)
     public Action getCurrentView() {
-        if (currentView==null) {
+        if (currentView == null) {
             currentView = getAvailableActions().get(0);
         }
         return currentView;
@@ -97,10 +96,11 @@ public class AdminViewManager implements Serializable {
         }
     }
 
-    @Factory(value="currentAdminSubView", scope=ScopeType.EVENT)
+    @Factory(value = "currentAdminSubView", scope = ScopeType.EVENT)
     public Action getCurrentSubView() {
         if (currentSubViews.get(getCurrentViewId()) == null) {
-            currentSubViews.put(getCurrentViewId(), getAvailableSubActions().get(0));
+            currentSubViews.put(getCurrentViewId(),
+                    getAvailableSubActions().get(0));
         }
         return currentSubViews.get(getCurrentViewId());
     }
@@ -109,7 +109,7 @@ public class AdminViewManager implements Serializable {
         currentSubViews.put(getCurrentViewId(), currentSubView);
     }
 
-    @Factory(value="currentAdminSubViewId", scope=ScopeType.EVENT)
+    @Factory(value = "currentAdminSubViewId", scope = ScopeType.EVENT)
     public String getCurrentSubViewId() {
         return getCurrentSubView().getId();
     }
@@ -128,21 +128,21 @@ public class AdminViewManager implements Serializable {
     }
 
     public List<Action> getAvailableSubActions() {
-        return webActions.getActionsList(ADMIN_ACTION_CATEGORY + "_" + getCurrentViewId());
+        return webActions.getActionsList(ADMIN_ACTION_CATEGORY + "_"
+                + getCurrentViewId());
     }
 
     public boolean hasExternalPackageDownloadRequest() {
-        return externalPackageDownloadRequest!=null;
+        return externalPackageDownloadRequest != null;
     }
 
     public void addExternalPackageDownloadRequest(String pkgId) {
         this.externalPackageDownloadRequest = pkgId;
     }
 
-
-    public String getExternalPackageDownloadRequest(){
+    public String getExternalPackageDownloadRequest() {
         String id = externalPackageDownloadRequest;
-        externalPackageDownloadRequest=null;
+        externalPackageDownloadRequest = null;
         return id;
     }
 

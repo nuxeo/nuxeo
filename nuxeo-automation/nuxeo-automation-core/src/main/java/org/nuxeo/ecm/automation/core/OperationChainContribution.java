@@ -16,6 +16,16 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
+import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
+import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
+import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
+import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
+import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
+import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
+
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -32,8 +42,6 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
-
-import static org.nuxeo.ecm.automation.core.Constants.*;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

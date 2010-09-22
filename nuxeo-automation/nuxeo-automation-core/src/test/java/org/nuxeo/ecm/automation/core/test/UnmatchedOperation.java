@@ -23,9 +23,8 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="unmatched")
+@Operation(id = "unmatched")
 public class UnmatchedOperation {
 
     @OperationMethod

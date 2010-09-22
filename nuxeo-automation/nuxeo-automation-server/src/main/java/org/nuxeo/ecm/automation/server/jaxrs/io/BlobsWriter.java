@@ -34,7 +34,6 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Produces("multipart/mixed")
@@ -52,8 +51,8 @@ public class BlobsWriter implements MessageBodyWriter<MultipartBlobs> {
         }
     }
 
-    public long getSize(MultipartBlobs arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
-            MediaType arg4) {
+    public long getSize(MultipartBlobs arg0, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 

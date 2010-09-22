@@ -23,14 +23,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = GetCurrentDocument.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Current Document", description = "Get the current Document from the UI context.")
+@Operation(id = GetCurrentDocument.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Current Document", description = "Get the current Document from the UI context.")
 public class GetCurrentDocument {
 
     public static final String ID = "Seam.GetCurrentDocument";
-
 
     @OperationMethod
     public DocumentModel run() throws Exception {

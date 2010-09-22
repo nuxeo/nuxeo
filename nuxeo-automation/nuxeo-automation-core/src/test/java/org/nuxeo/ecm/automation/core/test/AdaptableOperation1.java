@@ -27,15 +27,18 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="a1")
+@Operation(id = "a1")
 public class AdaptableOperation1 {
 
-    @Param(name="message") protected String message;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public DocumentModel printInfo(DocumentModel doc) throws Exception {
@@ -46,7 +49,8 @@ public class AdaptableOperation1 {
     @OperationMethod
     public DocumentRef noInput() throws Exception {
         DocumentModel doc = session.getRootDocument();
-        Helper.updateContext(ctx, "A1:void:docref", message, doc.getPathAsString());
+        Helper.updateContext(ctx, "A1:void:docref", message,
+                doc.getPathAsString());
         return doc.getRef();
     }
 

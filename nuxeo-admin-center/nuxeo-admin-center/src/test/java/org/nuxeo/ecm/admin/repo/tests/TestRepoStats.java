@@ -21,8 +21,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.admin.repo.RepoStat;
 import org.nuxeo.ecm.admin.repo.RepoStatInfo;
@@ -35,6 +33,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
@@ -47,7 +47,8 @@ public class TestRepoStats {
 
     protected RepoStatInfo runRepoStatSync() throws Exception {
 
-        RepoStat runningStat = new RepoStat(session.getRepositoryName(), 5, true);
+        RepoStat runningStat = new RepoStat(session.getRepositoryName(), 5,
+                true);
         runningStat.run(new PathRef("/"));
         Thread.sleep(400);
         while (runningStat.isRunning()) {
@@ -73,7 +74,6 @@ public class TestRepoStats {
         Assert.assertEquals(0, stat1.getTotalBlobNumber());
         Assert.assertEquals(0, stat1.getVersions());
 
-
         DocumentModel blobDoc = session.createDocumentModel("File");
         blobDoc.setPathInfo("/default-domain/workspaces/", "blobDoc");
         blobDoc.setPropertyValue("dc:title", "blobDoc");
@@ -96,7 +96,8 @@ public class TestRepoStats {
 
         // Add a version
 
-        blobDoc.getContextData().putScopedValue(ScopeType.REQUEST,VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+        blobDoc.getContextData().putScopedValue(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         blobDoc = session.saveDocument(blobDoc);
 
         session.save();
@@ -137,7 +138,6 @@ public class TestRepoStats {
         SimplifiedServerInfo info = RuntimeInstrospection.getInfo();
         Assert.assertNotNull(info);
         System.out.print(info.toString());
-
 
     }
 }

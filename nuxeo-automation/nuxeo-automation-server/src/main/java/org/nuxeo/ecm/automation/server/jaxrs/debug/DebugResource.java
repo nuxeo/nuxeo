@@ -78,8 +78,9 @@ public class DebugResource {
     }
 
     @POST
-    public Response doPost(@FormParam("input") String input,
-            @FormParam("chain") String chainXml) throws Exception {
+    public Response doPost(@FormParam("input")
+    String input, @FormParam("chain")
+    String chainXml) throws Exception {
         CoreSession session = WebEngine.getActiveContext().getCoreSession();
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
             return Response.status(403).build();
@@ -101,8 +102,9 @@ public class DebugResource {
 
     @POST
     @Path("{chainId}")
-    public Response doChainIdPost(@FormParam("input") String input,
-            @FormParam("chainId") String chainId) throws Exception {
+    public Response doChainIdPost(@FormParam("input")
+    String input, @FormParam("chainId")
+    String chainId) throws Exception {
         try {
             OperationContext ctx = new OperationContext(
                     WebEngine.getActiveContext().getCoreSession());

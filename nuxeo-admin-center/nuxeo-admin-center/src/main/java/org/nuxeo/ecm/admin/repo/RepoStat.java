@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * This class holds and manage the threads used to compute stats on the document repository
+ * This class holds and manage the threads used to compute stats on the
+ * document repository
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -43,9 +44,9 @@ public class RepoStat {
     protected RepoStatInfo info;
 
     public RepoStat(String repoName, int nbThreads, boolean includeBlob) {
-        this.nbThreads=nbThreads;
-        this.repoName=repoName;
-        this.includeBlob=includeBlob;
+        this.nbThreads = nbThreads;
+        this.repoName = repoName;
+        this.includeBlob = includeBlob;
         pool = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
     }
@@ -69,7 +70,7 @@ public class RepoStat {
     }
 
     public boolean isRunning() {
-        return pool.getActiveCount()>0;
+        return pool.getActiveCount() > 0;
     }
 
 }
