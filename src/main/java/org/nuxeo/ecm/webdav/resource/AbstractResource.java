@@ -70,8 +70,13 @@ public class AbstractResource {
     static String getParentPath(String path) {
         Path p = new Path(path);
         path = p.removeLastSegments(1).toString();
+
+        // Ensures that path starts with a "/" and doesn't end with a "/".
         if (path.endsWith("/")) {
-            return path.substring(0, path.length()-1);
+            path = path.substring(0, path.length()-1);
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
         }
         return path;
     }

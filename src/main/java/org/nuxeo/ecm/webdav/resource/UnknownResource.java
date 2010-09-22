@@ -19,7 +19,14 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.methods.*;
+import net.java.dev.webdav.jaxrs.methods.COPY;
+import net.java.dev.webdav.jaxrs.methods.MKCOL;
+import net.java.dev.webdav.jaxrs.methods.MOVE;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -39,6 +46,9 @@ import java.net.URI;
  * Resource for an unknown (ie non-existing) object.
  */
 public class UnknownResource extends AbstractResource {
+
+    private static final Log log = LogFactory.getLog(UnknownResource.class);
+
 
     public UnknownResource(String path, HttpServletRequest request) throws Exception {
         super(path, request);

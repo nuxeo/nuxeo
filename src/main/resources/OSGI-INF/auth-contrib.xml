@@ -5,6 +5,7 @@ Setup a Basic Auth plugin for /automation paths that will always send 401 on aut
 -->
 
   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="authenticators">
