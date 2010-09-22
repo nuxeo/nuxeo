@@ -66,6 +66,7 @@ public class UnknownResource extends AbstractResource {
         content.setFilename(name);
 
         DocumentModel newdoc = session.createDocumentModel(parentPath, name, "File");
+        newdoc.setPropertyValue("dc:title", name);
 
         newdoc.getProperty("file:content").setValue(content);
         session.createDocument(newdoc);
@@ -87,6 +88,7 @@ public class UnknownResource extends AbstractResource {
         }
 
         DocumentModel folder = new DocumentModelImpl(parentPath, name, "Folder");
+        folder.setPropertyValue("dc:title", name);
         session.createDocument(folder);
         session.save();
 

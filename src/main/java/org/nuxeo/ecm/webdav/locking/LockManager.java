@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.webdav.locking;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Simple singleton class to manage locks.

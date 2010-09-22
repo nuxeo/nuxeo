@@ -19,8 +19,24 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.methods.*;
-import net.java.dev.webdav.jaxrs.xml.elements.*;
+import net.java.dev.webdav.jaxrs.methods.COPY;
+import net.java.dev.webdav.jaxrs.methods.LOCK;
+import net.java.dev.webdav.jaxrs.methods.MKCOL;
+import net.java.dev.webdav.jaxrs.methods.MOVE;
+import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
+import net.java.dev.webdav.jaxrs.methods.UNLOCK;
+import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
+import net.java.dev.webdav.jaxrs.xml.elements.Depth;
+import net.java.dev.webdav.jaxrs.xml.elements.HRef;
+import net.java.dev.webdav.jaxrs.xml.elements.LockInfo;
+import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
+import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
+import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
+import net.java.dev.webdav.jaxrs.xml.elements.LockType;
+import net.java.dev.webdav.jaxrs.xml.elements.Owner;
+import net.java.dev.webdav.jaxrs.xml.elements.Prop;
+import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
+import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,6 +114,8 @@ public class ExistingResource extends AbstractResource {
         while (destPath.endsWith("/")) {
             destPath = destPath.substring(0, destPath.length() - 1);
         }
+
+        // FIXME: needs more attention
         destPath = destPath.substring(Constants.DAV_HOME.length(), destPath.length());
         log.info("to " + destPath);
 
