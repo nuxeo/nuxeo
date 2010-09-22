@@ -80,18 +80,27 @@ public class QueueComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        defaultComponent = this;
         registry = new DefaultQueueRegistry();
         handler = new DefaultQueueHandler(1000, registry);
-        provider = new TransactedServiceProvider(DefaultServiceProvider.getProvider());
-        defaultComponent = this;
+        installServiceProvider();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         defaultComponent = null;
-        DefaultServiceProvider.setProvider(provider.nextProvider);
         handler = null;
         registry = null;
+        uninstallServiceProvider();
+    }
+
+    protected void installServiceProvider() {
+        provider = new TransactedServiceProvider(DefaultServiceProvider.getProvider());
+        DefaultServiceProvider.setProvider(provider);
+    }
+
+    protected void uninstallServiceProvider() {
+        DefaultServiceProvider.setProvider(provider.nextProvider);
         provider = null;
     }
 
