@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JBossConfiguratorTest {
 
@@ -71,8 +71,6 @@ public class JBossConfiguratorTest {
                 + "testinclude;AUTO_SERVER=true</config-property>";
         System.setProperty(Environment.NUXEO_LOG_DIR,
                 new File(nuxeoHome, "log").getPath());
-        System.setProperty(ConfigurationGenerator.NUXEO_HOME,
-                nuxeoHome.getPath());
 
         // Windows path
         propertyToGenerate2 = "<config-property name=\""
@@ -94,7 +92,7 @@ public class JBossConfiguratorTest {
 
     @Test
     public void testConfiguration() throws Exception {
-        configGenerator.browseTemplates();
+        configGenerator.init();
         log.debug(configGenerator.getIncludedTemplates());
         Properties config = configGenerator.getUserConfig();
         assertEquals("default,testinclude",

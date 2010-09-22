@@ -19,12 +19,17 @@
 
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -35,7 +40,7 @@ import org.nuxeo.common.Environment;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- *
+ * 
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -52,7 +57,7 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     *
+     * 
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
@@ -71,6 +76,10 @@ public class ConfigurationGenerator {
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
     protected static final String PARAM_FORCE_GENERATION = "nuxeo.force.generation";
+
+    public static final String BOUNDARY_BEGIN = "### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ###";
+
+    public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
     private final File nuxeoHome;
 
@@ -97,14 +106,20 @@ public class ConfigurationGenerator {
 
     private Properties userConfig;
 
+    private boolean configurable = false;
+
+    public boolean isConfigurable() {
+        return configurable;
+    }
+
     public ConfigurationGenerator() {
         String nuxeoHomePath = System.getProperty(NUXEO_HOME);
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoHomePath != null && nuxeoConfPath != null) {
             nuxeoHome = new File(nuxeoHomePath);
             nuxeoConf = new File(nuxeoConfPath);
-            nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES
-                    + File.separator + NUXEO_DEFAULT_CONF);
+            nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
+                    + NUXEO_DEFAULT_CONF);
         } else {
             nuxeoHome = new File(System.getProperty("user.dir")).getParentFile();
             nuxeoConf = new File(nuxeoHome, "bin" + File.separator
@@ -149,29 +164,45 @@ public class ConfigurationGenerator {
      * Runs the configuration files generation.
      */
     public void run() throws ConfigurationException {
-        if (userConfig == null) {
-            try {
-                setBasicConfiguration();
-            } catch (ConfigurationException e) {
-                log.warn(
-                        "Error reading basic configuration. Server is considered as already configured.",
-                        e);
-                return;
+        if (init()) {
+            if (!serverConfigurator.isConfigured()) {
+                log.info("No current configuration, generating files...");
+                generateFiles();
+            } else if (forceGeneration) {
+                log.info("Configuration files generation (nuxeo.force.generation=true)...");
+                generateFiles();
+            } else {
+                log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
             }
         }
+    }
+
+    /**
+     * Initialize configurator, check requirements and load current
+     * configuration
+     * 
+     * @return returns true if current install is configurable, else returns
+     *         false
+     */
+    public boolean init() {
         if (serverConfigurator == null) {
             log.warn("Unrecognized server. Considered as already configured.");
+            configurable = false;
         } else if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
-        } else if (!serverConfigurator.isConfigured()) {
-            log.info("No current configuration, generating files...");
-            generateFiles();
-        } else if (forceGeneration) {
-            log.info("Configuration files generation (nuxeo.force.generation=true)...");
-            generateFiles();
+            configurable = false;
+        } else if (userConfig == null) {
+            try {
+                setBasicConfiguration();
+                configurable = true;
+            } catch (ConfigurationException e) {
+                log.warn("Error reading basic configuration.", e);
+                configurable = false;
+            }
         } else {
-            log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
+            configurable = true;
         }
+        return configurable;
     }
 
     private void setBasicConfiguration() throws ConfigurationException {
@@ -202,17 +233,25 @@ public class ConfigurationGenerator {
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
-    }
 
-    protected void generateFiles() throws ConfigurationException {
+        // Override default configuration with specific configuration(s) of
+        // the chosen template(s) which can be outside of server filesystem
         try {
-            browseTemplates();
+            String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+            if (userTemplatesList == null) {
+                // backward compliance: manage parameter for a single template
+                userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
+            }
+            includeTemplates(userTemplatesList);
             log.debug("Loaded configuration: " + userConfig);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
+    }
+
+    protected void generateFiles() throws ConfigurationException {
         try {
             serverConfigurator.parseAndCopy(userConfig);
             log.info("Configuration files generated.");
@@ -223,28 +262,14 @@ public class ConfigurationGenerator {
         }
     }
 
-    protected void browseTemplates() throws IOException,
-            ConfigurationException {
-        if (userConfig == null) {
-            setBasicConfiguration();
-        }
-        // Override default configuration with specific configuration(s) of the
-        // chosen template(s) which can be outside of server filesystem
-        String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        if (userTemplatesList == null) {
-            // backward compliance: manage parameter for a single template
-            userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
-        }
-        includeTemplates(userTemplatesList);
-    }
-
     private void includeTemplates(String templatesList) throws IOException {
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
             File chosenTemplate = new File(nextToken);
             if (!chosenTemplate.exists()) {
-                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(), nextToken);
+                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(),
+                        nextToken);
             }
             if (includedTemplates.contains(chosenTemplate)) {
                 log.debug("Already included " + nextToken);
@@ -293,4 +318,76 @@ public class ConfigurationGenerator {
         new ConfigurationGenerator().run();
     }
 
+    public void saveConfiguration(Map<String, String> parameters)
+            throws ConfigurationException {
+        BufferedReader reader = null;
+        StringBuffer newContent = new StringBuffer();
+        try {
+            reader = new BufferedReader(new FileReader(nuxeoConf));
+            String line;
+            boolean onConfiguratorContent = false;
+            while ((line = reader.readLine()) != null) {
+                if (!onConfiguratorContent) {
+                    if (!line.startsWith(BOUNDARY_BEGIN)) {
+                        newContent.append(line
+                                + System.getProperty("line.separator"));
+                    } else {
+                        onConfiguratorContent = true;
+                    }
+                } else {
+                    if (!line.startsWith(BOUNDARY_END)) {
+                        // do not copy configurator content
+                        continue;
+                    } else {
+                        onConfiguratorContent = false;
+                    }
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            throw new ConfigurationException("Error reading " + nuxeoConf, e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(nuxeoConf, false);
+            // Copy back file content
+            writer.append(newContent.toString());
+            // Write new configurator content
+            writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
+                    + System.getProperty("line.separator"));
+            for (String key : parameters.keySet()) {
+                writer.write("#" + key.trim() + "=" + userConfig.getProperty(key).trim()
+                        + System.getProperty("line.separator"));
+                writer.write(key.trim() + "=" + parameters.get(key).trim()
+                        + System.getProperty("line.separator"));
+            }
+            writer.write(BOUNDARY_END + System.getProperty("line.separator"));
+        } catch (IOException e) {
+            throw new ConfigurationException("Error writing in " + nuxeoConf, e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 }

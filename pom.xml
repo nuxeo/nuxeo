@@ -36,16 +36,14 @@
     <module>nuxeo-runtime-management-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-runtime-test</module>
   </modules>
 
 
   <profiles>
-    <profile>
-      <id>no-osgi</id>
-      <modules>
-        <module>nuxeo-runtime-test</module>
-      </modules>
-    </profile>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+      <modules> <module>nuxeo-runtime-test</module> </modules> </profile> -->
   </profiles>
 
   <dependencyManagement>
