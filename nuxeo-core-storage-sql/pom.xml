@@ -18,9 +18,12 @@
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-storage-sql-extensions</module>
     <module>nuxeo-core-storage-sql-ra</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-core-storage-sql-test</module>
   </modules>
 
   <profiles>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue
     <profile>
       <id>no-osgi</id>
       <activation>
@@ -29,7 +32,8 @@
       <modules>
         <module>nuxeo-core-storage-sql-test</module>
       </modules>
-    </profile>	
+    </profile>
+    -->
   </profiles>
 
 </project>
