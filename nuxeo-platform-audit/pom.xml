@@ -18,21 +18,28 @@
   <modules>
     <module>nuxeo-platform-audit-api</module>
     <module>nuxeo-platform-audit-core</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-platform-audit-client</module>
+    <module>nuxeo-platform-audit-facade</module>
+    <module>nuxeo-platform-audit-io</module>
+    <module>nuxeo-platform-audit-search</module>
   </modules>
 
   <profiles>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-	<module>nuxeo-platform-audit-client</module>
-	<module>nuxeo-platform-audit-facade</module>
-	<module>nuxeo-platform-audit-io</module>
-	<module>nuxeo-platform-audit-search</module>
+        <module>nuxeo-platform-audit-client</module>
+        <module>nuxeo-platform-audit-facade</module>
+        <module>nuxeo-platform-audit-io</module>
+        <module>nuxeo-platform-audit-search</module>
       </modules>
-    </profile>	
+    </profile>
+    -->
   </profiles>
 
 </project>

@@ -24,20 +24,26 @@
     <module>nuxeo-webengine-sites-api</module>
     <module>nuxeo-webengine-sites-core-contrib</module>
     <module>nuxeo-webengine-management</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-webengine-blogs</module>
+    <module>nuxeo-webengine-blogs-api</module>
+    <module>nuxeo-webengine-blogs-core</module>
   </modules>
-  
+
   <profiles>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue
     <profile>
       <id>no-osgi</id>
       <activation>
-	<activeByDefault>true</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-	<module>nuxeo-webengine-blogs</module>
-	<module>nuxeo-webengine-blogs-api</module>
-	<module>nuxeo-webengine-blogs-core</module>
+        <module>nuxeo-webengine-blogs</module>
+        <module>nuxeo-webengine-blogs-api</module>
+        <module>nuxeo-webengine-blogs-core</module>
       </modules>
-    </profile>	
+    </profile>
+    -->
   </profiles>
 
 </project>

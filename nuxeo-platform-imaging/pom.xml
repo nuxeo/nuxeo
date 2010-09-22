@@ -19,9 +19,15 @@
     <module>nuxeo-platform-imaging-api</module>
     <module>nuxeo-platform-imaging-core</module>
     <module>nuxeo-platform-imaging-convert</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-platform-imaging-facade</module>
+    <module>nuxeo-platform-imaging-jsf</module>
+    <module>nuxeo-platform-imaging-dm</module>
+    <module>nuxeo-platform-imaging-preview</module>
   </modules>
 
   <profiles>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue
     <profile>
       <id>no-osgi</id>
       <activation>
@@ -34,6 +40,7 @@
         <module>nuxeo-platform-imaging-preview</module>
       </modules>
     </profile>
+    -->
   </profiles>
 
   <developers>
