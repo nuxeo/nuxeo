@@ -21,7 +21,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.Session;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DocumentServiceFactory implements AdapterFactory<DocumentService> {
 
@@ -34,7 +33,7 @@ public class DocumentServiceFactory implements AdapterFactory<DocumentService> {
     }
 
     public DocumentService getAdapter(Object toAdapt) {
-        return new DocumentService((Session)toAdapt);
+        return new DocumentService((Session) toAdapt);
     }
 
 }

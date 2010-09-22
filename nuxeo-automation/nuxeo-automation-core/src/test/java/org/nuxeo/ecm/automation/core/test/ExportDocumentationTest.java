@@ -27,14 +27,15 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 public class ExportDocumentationTest {
 
-     @Ignore @Test public void generateDoc() throws Exception {
-         System.out.println(JSONExporter.toJSON());
+    @Ignore
+    @Test
+    public void generateDoc() throws Exception {
+        System.out.println(JSONExporter.toJSON());
     }
 }

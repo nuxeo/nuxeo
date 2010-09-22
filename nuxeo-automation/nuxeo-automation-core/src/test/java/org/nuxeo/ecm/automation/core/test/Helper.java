@@ -20,22 +20,23 @@ import org.nuxeo.ecm.automation.OperationContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Helper {
 
-    public static void updateContext(OperationContext ctx, String id, String message, String title) {
+    public static void updateContext(OperationContext ctx, String id,
+            String message, String title) {
         updateTestParam(ctx, "chain", id);
         updateTestParam(ctx, "message", message);
         updateTestParam(ctx, "title", title);
     }
 
-    protected static void updateTestParam(OperationContext ctx, String param, String value) {
-        String v = (String)ctx.get(param);
+    protected static void updateTestParam(OperationContext ctx, String param,
+            String value) {
+        String v = (String) ctx.get(param);
         if (v == null) {
             v = value;
         } else {
-            v+=","+value;
+            v += "," + value;
         }
         ctx.put(param, v);
     }

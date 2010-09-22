@@ -39,10 +39,10 @@ import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam Bean that wraps {@link AdministrativeStatusManager} and {@link ProbeManager} services to provide a JSF UI.
+ * Seam Bean that wraps {@link AdministrativeStatusManager} and
+ * {@link ProbeManager} services to provide a JSF UI.
  *
  * @author tiry
- *
  */
 @Name("monitoringAction")
 @Scope(ScopeType.PAGE)
@@ -56,7 +56,7 @@ public class MonitoringActionBean implements Serializable {
 
     public static final String NUXEO_SERVER_MESSAGE = "org.nuxeo.ecm.deactivatedServerMessage";
 
-    @In(create=true)
+    @In(create = true)
     protected NuxeoPrincipal currentNuxeoPrincipal;
 
     @RequestParameter("serviceIdentifier")
@@ -80,12 +80,13 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public List<String> listNuxeoInstances() {
-        return Framework.getLocalService(GlobalAdministrativeStatusManager.class).listInstanceIds();
+        return Framework.getLocalService(
+                GlobalAdministrativeStatusManager.class).listInstanceIds();
     }
 
-    @Factory(value="isMultiServerInstallation", scope=ScopeType.EVENT)
+    @Factory(value = "isMultiServerInstallation", scope = ScopeType.EVENT)
     public boolean isMultiServerInstallation() {
-        return listNuxeoInstances().size()>1;
+        return listNuxeoInstances().size() > 1;
     }
 
     public List<AdministrativeStatus> getAdministrativeStatuses() {
@@ -107,7 +108,7 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public void saveStatus() {
-        if (editableStatus!=null) {
+        if (editableStatus != null) {
             String serviceId = editableStatus.getServiceIdentifier();
             changeStatus(serviceId, newStatusMessage, newStatusValue);
             resetEdit();
@@ -119,13 +120,14 @@ public class MonitoringActionBean implements Serializable {
     }
 
     public void resetEdit() {
-        editableStatus=null;
-        newStatusMessage=null;
-        newStatusValue=null;
+        editableStatus = null;
+        newStatusMessage = null;
+        newStatusValue = null;
     }
 
     public void changeStatus(String serviceId, String message, String state) {
-        getStatusManager().setStatus(serviceId, state, message, currentNuxeoPrincipal.getName());
+        getStatusManager().setStatus(serviceId, state, message,
+                currentNuxeoPrincipal.getName());
     }
 
     public List<ProbeInfo> getProbeInfos() {

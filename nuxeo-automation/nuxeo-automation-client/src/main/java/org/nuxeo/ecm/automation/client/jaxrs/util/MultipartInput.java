@@ -28,7 +28,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.HasFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MultipartInput extends MimeMultipart {
 
@@ -68,8 +67,8 @@ public class MultipartInput extends MimeMultipart {
     }
 
     public void setBlobs(List<Blob> blobs) throws Exception {
-        for (int i=0, size=blobs.size(); i<size; i++) {
-            setBlob(blobs.get(i), "input#"+i);
+        for (int i = 0, size = blobs.size(); i < size; i++) {
+            setBlob(blobs.get(i), "input#" + i);
         }
     }
 

@@ -29,23 +29,24 @@ import org.nuxeo.ecm.automation.OperationParameters;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AutomationInfo {
 
     protected final List<OperationDocumentation> ops;
+
     protected final List<OperationDocumentation> chains;
 
     public AutomationInfo(AutomationService service) {
         ops = service.getDocumentation();
         // build a map for easy lookup
-        Map<String,OperationDocumentation> map = new HashMap<String, OperationDocumentation>();
+        Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>();
         for (OperationDocumentation doc : ops) {
             map.put(doc.id, doc);
         }
         chains = new ArrayList<OperationDocumentation>();
         for (OperationChain chain : service.getOperationChains()) {
-            OperationDocumentation doc = new OperationDocumentation(chain.getId());
+            OperationDocumentation doc = new OperationDocumentation(
+                    chain.getId());
             doc.description = chain.getDescription();
             doc.category = "Chain";
             doc.label = doc.id;
@@ -53,20 +54,20 @@ public class AutomationInfo {
             // compute chain signature
             List<OperationParameters> ops = chain.getOperations();
             if (ops.isEmpty()) {
-              doc.signature = new String[] {"void", "void"};
+                doc.signature = new String[] { "void", "void" };
             } else if (ops.size() == 1) {
                 OperationDocumentation opdoc = map.get(ops.get(0).id());
                 doc.signature = opdoc.signature;
             } else {
                 ArrayList<String[]> sigs = new ArrayList<String[]>();
-                for (OperationParameters o :ops) {
+                for (OperationParameters o : ops) {
                     sigs.add(map.get(o.id()).signature);
                 }
                 String[] head = sigs.get(0);
                 ArrayList<String> rs = new ArrayList<String>();
-                for (int i=0; i<head.length; i+=2) {
+                for (int i = 0; i < head.length; i += 2) {
                     String in = head[i];
-                    String out = head[i+1];
+                    String out = head[i + 1];
                     List<String> result = new ArrayList<String>();
                     checkPath(out, sigs, 1, result);
                     for (String r : result) {
@@ -80,15 +81,16 @@ public class AutomationInfo {
         }
     }
 
-    protected void checkPath(String in, List<String[]> sigs, int offset, List<String> result) {
-        boolean last = sigs.size()-1 == offset;
+    protected void checkPath(String in, List<String[]> sigs, int offset,
+            List<String> result) {
+        boolean last = sigs.size() - 1 == offset;
         String[] sig = sigs.get(offset);
-        for (int i=0; i<sig.length; i+=2) {
+        for (int i = 0; i < sig.length; i += 2) {
             if ("void".equals(in) || "void".equals(sig[i]) || in.equals(sig[i])) {
                 if (last) {
-                    result.add(sig[i+1]);
+                    result.add(sig[i + 1]);
                 } else {
-                    checkPath(sig[i+1], sigs, offset+1, result);
+                    checkPath(sig[i + 1], sigs, offset + 1, result);
                 }
             }
         }

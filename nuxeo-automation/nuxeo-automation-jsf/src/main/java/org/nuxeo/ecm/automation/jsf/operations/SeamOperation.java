@@ -17,7 +17,6 @@ package org.nuxeo.ecm.automation.jsf.operations;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public interface SeamOperation {
 

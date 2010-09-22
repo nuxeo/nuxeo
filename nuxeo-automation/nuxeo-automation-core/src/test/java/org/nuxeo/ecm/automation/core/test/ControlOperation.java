@@ -26,19 +26,23 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="ctrl")
+@Operation(id = "ctrl")
 public class ControlOperation {
 
-    @Param(name="message") protected String message;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public void printInfo() throws Exception {
-        Helper.updateContext(ctx, "ctrl:void:void", message, ((DocumentModel)ctx.getInput()).getTitle());
+        Helper.updateContext(ctx, "ctrl:void:void", message,
+                ((DocumentModel) ctx.getInput()).getTitle());
     }
 
 }

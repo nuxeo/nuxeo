@@ -32,7 +32,6 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AutomationModule extends Application {
 
@@ -40,7 +39,9 @@ public class AutomationModule extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> result = new HashSet<Class<?>>();
         result.add(AutomationResource.class);
-        result.add(MultiPartRequestReader.class); // need to be stateless since it needs the request member to be injected
+        // need to be stateless since it needs the request member to be
+        // injected
+        result.add(MultiPartRequestReader.class);
         return result;
     }
 

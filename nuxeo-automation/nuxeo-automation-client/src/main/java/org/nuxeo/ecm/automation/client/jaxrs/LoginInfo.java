@@ -21,25 +21,27 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginInfo {
 
     public static final LoginInfo ANONYNMOUS = new LoginInfo("Anonymous");
 
     protected String username;
+
     protected Set<String> groups;
+
     protected boolean isAdministrator;
 
     public LoginInfo(String username) {
-        this (username, null);
+        this(username, null);
     }
 
     public LoginInfo(String username, Set<String> groups) {
-        this (username, groups, false);
+        this(username, groups, false);
     }
 
-    public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
+    public LoginInfo(String username, Set<String> groups,
+            boolean isAdministrator) {
         this.username = username;
         this.isAdministrator = isAdministrator;
         if (groups == null) {

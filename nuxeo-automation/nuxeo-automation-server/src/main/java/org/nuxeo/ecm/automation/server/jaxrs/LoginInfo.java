@@ -20,15 +20,17 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LoginInfo {
 
     protected String username;
+
     protected Set<String> groups;
+
     protected boolean isAdministrator;
 
-    public LoginInfo(String username, Set<String> groups, boolean isAdministrator) {
+    public LoginInfo(String username, Set<String> groups,
+            boolean isAdministrator) {
         this.username = username;
         this.groups = groups;
         this.isAdministrator = isAdministrator;

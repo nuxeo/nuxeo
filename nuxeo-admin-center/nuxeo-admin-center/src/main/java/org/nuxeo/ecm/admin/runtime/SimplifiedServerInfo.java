@@ -17,7 +17,6 @@
  * $Id$
  */
 
-
 package org.nuxeo.ecm.admin.runtime;
 
 import java.util.List;
@@ -26,97 +25,95 @@ import java.util.List;
  * Holds information about current deployed Nuxeo Platform
  *
  * @author tiry
- *
  */
 public class SimplifiedServerInfo {
 
-       public List<SimplifiedBundleInfo> getBundleInfos() {
-           return bundleInfos;
-       }
+    public List<SimplifiedBundleInfo> getBundleInfos() {
+        return bundleInfos;
+    }
 
-       public void setBundleInfos(List<SimplifiedBundleInfo> bundleInfos) {
-           this.bundleInfos = bundleInfos;
-       }
+    public void setBundleInfos(List<SimplifiedBundleInfo> bundleInfos) {
+        this.bundleInfos = bundleInfos;
+    }
 
-       public String getPlatformName() {
-           return platformName;
-       }
+    public String getPlatformName() {
+        return platformName;
+    }
 
-       public void setPlatformName(String platformName) {
-           this.platformName = platformName;
-       }
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
 
-       public String getPlatformVersion() {
-           return platformVersion;
-       }
+    public String getPlatformVersion() {
+        return platformVersion;
+    }
 
-       public void setPlatformVersion(String platformVersion) {
-           this.platformVersion = platformVersion;
-       }
+    public void setPlatformVersion(String platformVersion) {
+        this.platformVersion = platformVersion;
+    }
 
-       public String getRuntimeVersion() {
-           return runtimeVersion;
-       }
+    public String getRuntimeVersion() {
+        return runtimeVersion;
+    }
 
-       public void setRuntimeVersion(String runtimeVersion) {
-           this.runtimeVersion = runtimeVersion;
-       }
+    public void setRuntimeVersion(String runtimeVersion) {
+        this.runtimeVersion = runtimeVersion;
+    }
 
-       public List<String> getWarnings() {
-           return warnings;
-       }
+    public List<String> getWarnings() {
+        return warnings;
+    }
 
-       public void setWarnings(List<String> warnings) {
-           this.warnings = warnings;
-       }
+    public void setWarnings(List<String> warnings) {
+        this.warnings = warnings;
+    }
 
-       protected List<SimplifiedBundleInfo> bundleInfos;
+    protected List<SimplifiedBundleInfo> bundleInfos;
 
-       protected String platformName;
+    protected String platformName;
 
-       protected String platformVersion;
+    protected String platformVersion;
 
-       protected String runtimeVersion;
+    protected String runtimeVersion;
 
-       protected List<String> warnings;
+    protected List<String> warnings;
 
-       public boolean hasWarnings() {
-           return (warnings!=null && warnings.size()>0);
-       }
+    public boolean hasWarnings() {
+        return (warnings != null && warnings.size() > 0);
+    }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
 
-       @Override
-       public String toString() {
-           StringBuffer sb = new StringBuffer();
+        sb.append(platformName);
+        sb.append("  ");
+        sb.append(platformVersion);
+        sb.append("\n");
 
-           sb.append(platformName);
-           sb.append("  ");
-           sb.append(platformVersion);
-           sb.append("\n");
+        sb.append("runtime :  ");
+        sb.append(runtimeVersion);
+        sb.append("\n");
 
-           sb.append("runtime :  ");
-           sb.append(runtimeVersion);
-           sb.append("\n");
+        sb.append("warnings :  ");
+        if (warnings == null | warnings.size() == 0) {
+            sb.append("none");
+        } else {
+            for (String warn : warnings) {
+                sb.append("\n  ");
+                sb.append(warn);
+            }
+        }
 
-           sb.append("warnings :  ");
-           if (warnings==null | warnings.size()==0) {
-               sb.append("none");
-           } else {
-               for (String warn : warnings) {
-                   sb.append("\n  ");
-                   sb.append(warn);
-               }
-           }
+        sb.append("\nbundles :  ");
+        for (SimplifiedBundleInfo bi : bundleInfos) {
+            sb.append("\n  ");
+            sb.append(bi.getName());
+            sb.append("    (");
+            sb.append(bi.getVersion());
+            sb.append(")");
+        }
 
-           sb.append("\nbundles :  ");
-           for (SimplifiedBundleInfo bi : bundleInfos) {
-               sb.append("\n  ");
-               sb.append(bi.getName());
-               sb.append("    (");
-               sb.append(bi.getVersion());
-               sb.append(")");
-           }
-
-           return sb.toString();
-       }
+        return sb.toString();
+    }
 }

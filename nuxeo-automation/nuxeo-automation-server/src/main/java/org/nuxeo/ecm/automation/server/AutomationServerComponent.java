@@ -29,7 +29,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class AutomationServerComponent extends DefaultComponent implements
         AutomationServer {
@@ -39,7 +38,6 @@ public class AutomationServerComponent extends DefaultComponent implements
     protected Map<String, RestBinding> bindings;
 
     protected volatile Map<String, RestBinding> lookup;
-
 
     @Override
     public void activate(ComponentContext context) throws Exception {

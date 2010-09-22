@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MultipartBlobs extends MimeMultipart {
 
@@ -91,7 +90,6 @@ public class MultipartBlobs extends MimeMultipart {
      * hack to be able to output boundary with quotes if needed.
      *
      * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
-     *
      */
     static class BoundaryMediaType extends MediaType {
         private final String ctype;

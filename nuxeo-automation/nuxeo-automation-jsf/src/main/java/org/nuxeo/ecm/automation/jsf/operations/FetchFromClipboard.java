@@ -30,10 +30,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = FetchFromClipboard.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Clipboard", description = "Get clipboard content from the UI context.")
+@Operation(id = FetchFromClipboard.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Clipboard", description = "Get clipboard content from the UI context.")
 public class FetchFromClipboard {
 
     public static final String ID = "Seam.FetchFromClipboard";
@@ -43,10 +41,9 @@ public class FetchFromClipboard {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
-        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(DocumentsListsManager.CLIPBOARD);
+        List<DocumentModel> res = OperationHelper.getDocumentListManager().getWorkingList(
+                DocumentsListsManager.CLIPBOARD);
         return new DocumentModelListImpl(res);
     }
-
-
 
 }

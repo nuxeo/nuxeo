@@ -35,10 +35,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.LoginInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces({"application/json+nxentity", "application/json"})
+@Produces( { "application/json+nxentity", "application/json" })
 public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
 
     public long getSize(LoginInfo arg0, Class<?> arg1, Type arg2,
@@ -55,16 +54,16 @@ public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-            JSONObject json = new JSONObject();
-            json.element("entity-type", "login");
-            json.element("username", login.getUsername());
-            json.element("isAdministrator", login.isAdministrator());
-            JSONArray g = new JSONArray();
-            for (String group : login.getGroups()) {
-                g.add(group);
-            }
-            json.element("groups", g);
-            arg6.write(json.toString().getBytes("UTF-8"));
+        JSONObject json = new JSONObject();
+        json.element("entity-type", "login");
+        json.element("username", login.getUsername());
+        json.element("isAdministrator", login.isAdministrator());
+        JSONArray g = new JSONArray();
+        for (String group : login.getGroups()) {
+            g.add(group);
+        }
+        json.element("groups", g);
+        arg6.write(json.toString().getBytes("UTF-8"));
     }
 
 }

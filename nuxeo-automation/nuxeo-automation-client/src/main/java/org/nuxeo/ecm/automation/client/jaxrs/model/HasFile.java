@@ -20,7 +20,6 @@ import java.io.File;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface HasFile {
 

@@ -22,7 +22,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("binding")
 public class RestBinding {
@@ -46,7 +45,6 @@ public class RestBinding {
     protected boolean isAdministrator;
 
     protected String[] groups;
-
 
     public void setName(String name) {
         this.name = name;

@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_MULTIPART_MIXED;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -33,17 +37,13 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.util.IOUtils;
 import org.nuxeo.ecm.automation.client.jaxrs.util.InputStreamDataSource;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_AUTOMATION;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_ENTITY;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_MULTIPART_MIXED;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Request extends HashMap<String, String> {
 
     public static final int GET = 0;
+
     public static final int POST = 1;
 
     private static final long serialVersionUID = 1L;
@@ -124,7 +124,8 @@ public class Request extends HashMap<String, String> {
             return JsonMarshalling.readEntity(IOUtils.read(stream));
         } else if (ctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
-        } else if (ctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of blobs
+        } else if (ctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of
+                                                                // blobs
             return readBlobs(ctype, stream);
         } else { // a blob?
             String fname = null;

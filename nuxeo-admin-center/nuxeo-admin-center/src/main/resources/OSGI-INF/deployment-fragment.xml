@@ -24,7 +24,7 @@
 
   </install>
 
-   <extension target="pages#PAGES">
+  <extension target="pages#PAGES">
     <!-- Bind url to start the download -->
     <page view-id="/nxconnectDownload.xhtml"
       action="#{externalLinkManager.startDownload()}" />
@@ -49,16 +49,16 @@
       <redirect />
     </navigation-case>
 
-   <!--  <navigation-case>
+    <!--  <navigation-case>
       <from-outcome>view_connect</from-outcome>
       <to-view-id>/view_connect.xhtml</to-view-id>
       <redirect />
-    </navigation-case>
-    <navigation-case>
+      </navigation-case>
+      <navigation-case>
       <from-outcome>view_appcenter</from-outcome>
       <to-view-id>/view_appcenter.xhtml</to-view-id>
       <redirect />
-    </navigation-case> -->
+      </navigation-case> -->
   </extension>
 
 </fragment>

@@ -24,7 +24,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class HttpAutomationClient extends AsyncAutomationClient {
 

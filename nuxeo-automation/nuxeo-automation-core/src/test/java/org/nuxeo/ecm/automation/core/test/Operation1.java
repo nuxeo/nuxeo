@@ -27,26 +27,31 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="o1")
+@Operation(id = "o1")
 public class Operation1 {
 
-    @Param(name="message") protected String message;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public DocumentModel printInfo1(DocumentModel doc) throws Exception {
-        //System.out.println("O1:doc:doc: "+doc.getId()+". Session: "+session+". message: "+message);
+        // System.out.println("O1:doc:doc: "+doc.getId()+". Session:
+        // "+session+". message: "+message);
         Helper.updateContext(ctx, "O1:doc:doc", message, doc.getTitle());
         return doc;
     }
 
     @OperationMethod
     public DocumentModel printInfo3(DocumentRef ref) throws Exception {
-        //System.out.println("O1:ref:doc: "+ref+". Session: "+session+". message: "+message);
+        // System.out.println("O1:ref:doc: "+ref+". Session: "+session+".
+        // message: "+message);
         DocumentModel doc = session.getDocument(ref);
         Helper.updateContext(ctx, "O1:ref:doc", message, doc.getTitle());
         return doc;

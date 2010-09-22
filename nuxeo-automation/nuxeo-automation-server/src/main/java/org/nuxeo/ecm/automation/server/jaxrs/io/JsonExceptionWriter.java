@@ -34,10 +34,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
-@Produces({"application/json+nxentity", "application/json"})
+@Produces( { "application/json+nxentity", "application/json" })
 public class JsonExceptionWriter implements MessageBodyWriter<ExceptionHandler> {
 
     public long getSize(ExceptionHandler arg0, Class<?> arg1, Type arg2,
@@ -54,13 +53,13 @@ public class JsonExceptionWriter implements MessageBodyWriter<ExceptionHandler> 
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
-            JSONObject json = new JSONObject();
-            json.element("entity-type", "exception");
-            json.element("type", ee.getType());
-            json.element("status", ee.getStatus());
-            json.element("message", ee.getMessage());
-            json.element("stack", ee.getSerializedStackTrace());
-            arg6.write(json.toString(2).getBytes("UTF-8"));
+        JSONObject json = new JSONObject();
+        json.element("entity-type", "exception");
+        json.element("type", ee.getType());
+        json.element("status", ee.getStatus());
+        json.element("message", ee.getMessage());
+        json.element("stack", ee.getSerializedStackTrace());
+        arg6.write(json.toString(2).getBytes("UTF-8"));
     }
 
 }

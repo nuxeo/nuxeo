@@ -104,13 +104,9 @@ public class EventHandlerRegistry {
                 Iterator<EventHandler> it = handlers.iterator();
                 while (it.hasNext()) {
                     EventHandler h = it.next();
-                    if (h.chainId.equals(handler.chainId)) { // TODO chainId
-                                                                // is not
-                                                                // really an
-                                                                // unique ID
-                                                                // for the
-                                                                // event
-                                                                // handler ...
+                    // TODO chainId is not really an unique ID for the event
+                    // handler...
+                    if (h.chainId.equals(handler.chainId)) {
                         it.remove();
                         break;
                     }
@@ -127,13 +123,9 @@ public class EventHandlerRegistry {
                 Iterator<EventHandler> it = handlers.iterator();
                 while (it.hasNext()) {
                     EventHandler h = it.next();
-                    if (h.chainId.equals(handler.chainId)) { // TODO chainId
-                                                                // is not
-                                                                // really an
-                                                                // unique ID
-                                                                // for the
-                                                                // event
-                                                                // handler ...
+                    // TODO chainId is not really an unique ID for the event
+                    // handler...
+                    if (h.chainId.equals(handler.chainId)) {
                         it.remove();
                         break;
                     }
@@ -192,7 +184,7 @@ public class EventHandlerRegistry {
             ctx = new OperationContext(ectx.getCoreSession());
             ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
         } else { // not a document event .. the chain must begin with void
-                    // operation - session is not available.
+            // operation - session is not available.
             ctx = new OperationContext();
         }
         ctx.put("Event", event);
@@ -201,8 +193,8 @@ public class EventHandlerRegistry {
         for (EventHandler handler : handlers) {
             try {
                 if (handler.isEnabled(ctx, ectx)) { // TODO this will save the
-                                                    // session at each
-                                                    // iteration!
+                    // session at each
+                    // iteration!
                     svc.run(ctx, handler.getChainId());
                 }
             } catch (Exception e) {

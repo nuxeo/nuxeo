@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
  * Marks a class as being an operation. An operation may provide an ID as the
  * annotation value. If no id is specified the class name will be used as the
  * ID. The ID is the key used to register the operation. Make sure you choose a
- * proper ID name to avoid collisions. (using the default: ID the class name can
- * be a solution).
+ * proper ID name to avoid collisions. (using the default: ID the class name
+ * can be a solution).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

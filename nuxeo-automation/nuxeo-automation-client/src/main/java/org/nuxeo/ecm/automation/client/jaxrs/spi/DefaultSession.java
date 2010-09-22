@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_REQUEST_NOCHARSET;
+import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEADER;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,12 +33,8 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.jaxrs.model.OperationInput;
 import org.nuxeo.ecm.automation.client.jaxrs.util.MultipartInput;
 
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.CTYPE_REQUEST_NOCHARSET;
-import static org.nuxeo.ecm.automation.client.jaxrs.Constants.REQUEST_ACCEPT_HEADER;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class DefaultSession implements Session {
 

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
  * @author Anahide Tchertchian
- *
  */
 @Operation(id = ClearClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Clipboard", description = "Clear the clipboard content.")
 public class ClearClipboard {

@@ -23,10 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
-@Operation(id = GetCurrentDomain.ID, category = Constants.CAT_FETCH, requires=Constants.SEAM_CONTEXT,
-        label = "UI Current Domain", description = "Get the current Domain from the UI context.")
+@Operation(id = GetCurrentDomain.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Current Domain", description = "Get the current Domain from the UI context.")
 public class GetCurrentDomain {
 
     public static final String ID = "Seam.GetCurrentDomain";

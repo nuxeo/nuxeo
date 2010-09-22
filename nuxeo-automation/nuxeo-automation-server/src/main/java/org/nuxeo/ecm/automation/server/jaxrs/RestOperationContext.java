@@ -36,7 +36,6 @@ public class RestOperationContext extends OperationContext {
 
     private static final long serialVersionUID = 1L;
 
-
     /**
      * Must be called before context execution
      */

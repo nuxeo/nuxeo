@@ -39,7 +39,6 @@ public class PropertyList {
         this.list = new ArrayList<Object>(list);
     }
 
-
     public int size() {
         return list.size();
     }

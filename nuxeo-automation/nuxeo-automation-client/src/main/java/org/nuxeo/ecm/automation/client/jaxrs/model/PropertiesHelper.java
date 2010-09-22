@@ -18,10 +18,8 @@ package org.nuxeo.ecm.automation.client.jaxrs.model;
 
 import java.util.Date;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PropertiesHelper {
 
@@ -80,7 +78,7 @@ public class PropertiesHelper {
             return defValue;
         }
         if (v instanceof PropertyList) {
-            return (PropertyList)v;
+            return (PropertyList) v;
         }
         throw new IllegalArgumentException("Property is not a list");
     }
@@ -90,7 +88,7 @@ public class PropertiesHelper {
             return defValue;
         }
         if (v instanceof PropertyMap) {
-            return (PropertyMap)v;
+            return (PropertyMap) v;
         }
         throw new IllegalArgumentException("Property is not a list");
     }

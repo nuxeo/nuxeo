@@ -82,17 +82,18 @@
                 <!-- external link-->
                 <nxd:restDocumentLink document="#{row.data}" newConversation="true"
                   target="_tab">
-                  <img src="icons/external.gif" style="vertical-align: middle"
+                  <nxu:graphicImage value="/icons/external.gif"
+                    style="vertical-align:middle"
                     alt="#{messages['permalink.newTab']}"
                     title="#{messages['permalink.newTab']}" />
                 </nxd:restDocumentLink>
                 <!-- download-->
-        <f:subview rendered="#{row.data.type eq 'Picture'}">
+                <f:subview rendered="#{row.data.type eq 'Picture'}">
                   <img id="#{row.data.ref}_imgref" class="#{row.data.ref}_popupTarget" src="icons/icone_download.gif" style="vertical-align: middle; cursor:pointer;"
                     alt="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"
                     title="#{messages['label.outputFile.download']} #{row.data.dublincore.title}"  />
                   <ui:include  src="/incl/picturebookPopupMenu.xhtml"/>
-        </f:subview>
+                </f:subview>
               </div>
             </div>
           </c:forEach>

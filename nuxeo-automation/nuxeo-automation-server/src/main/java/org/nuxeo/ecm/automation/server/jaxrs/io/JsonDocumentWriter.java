@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
@@ -53,7 +52,7 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces({"application/json+nxentity", "application/json"})
+@Produces( { "application/json+nxentity", "application/json" })
 public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     @Context
@@ -74,7 +73,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
         try {
-            List<String> props = headers.getRequestHeader("X-NXDocumentProperties"); // schema names: dublincore, file, ... or *
+            // schema names: dublincore, file, ... or *
+            List<String> props = headers.getRequestHeader("X-NXDocumentProperties");
             JSONObject obj = null;
             if (props == null || props.isEmpty()) {
                 obj = getJSON(doc, null);
@@ -87,8 +87,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-
-    public static JSONObject getJSON(DocumentModel doc, List<String> schemas) throws Exception {
+    public static JSONObject getJSON(DocumentModel doc, List<String> schemas)
+            throws Exception {
         JSONObject json = new JSONObject();
         json.element("entity-type", "document");
         json.element("uid", doc.getId());
@@ -97,9 +97,10 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         json.element("state", doc.getCurrentLifeCycleState());
         json.element("lock", doc.getLock());
         json.element("title", doc.getTitle());
-        Calendar cal = (Calendar)doc.getPart("dublincore").getValue("modified");
+        Calendar cal = (Calendar) doc.getPart("dublincore").getValue("modified");
         if (cal != null) {
-            json.element("lastModified", DateParser.formatW3CDateTime(cal.getTime()));
+            json.element("lastModified",
+                    DateParser.formatW3CDateTime(cal.getTime()));
         }
 
         if (schemas == null || schemas.isEmpty()) {
@@ -107,7 +108,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
 
         JSONObject props = new JSONObject();
-        if (schemas.size() == 1 && "*".equals(schemas.get(0))) { // full document
+        if (schemas.size() == 1 && "*".equals(schemas.get(0))) { // full
+            // document
             for (String schema : doc.getDeclaredSchemas()) {
                 addSchema(props, doc, schema);
             }
@@ -121,26 +123,28 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         return json;
     }
 
-    protected static void addSchema(JSONObject json, DocumentModel doc, String schema) throws Exception {
+    protected static void addSchema(JSONObject json, DocumentModel doc,
+            String schema) throws Exception {
         DocumentPart part = doc.getPart(schema);
         String prefix = part.getSchema().getNamespace().prefix;
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
         }
-        prefix+=':';
-        String filesBaseUrl = "files/"+doc.getId()+"?path=";
+        prefix += ':';
+        String filesBaseUrl = "files/" + doc.getId() + "?path=";
         for (Property p : part.getChildren()) {
-            json.element(prefix+p.getField().getName().getLocalName(), propertyToJsonValue(filesBaseUrl, p));
+            json.element(prefix + p.getField().getName().getLocalName(),
+                    propertyToJsonValue(filesBaseUrl, p));
         }
     }
 
-
     /**
-     * Converts the given core property to JSON format.
-     * The given filesBaseUrl is the baseUrl that can be used to locate blob content
-     * and is useful to generate blob urls.
+     * Converts the given core property to JSON format. The given filesBaseUrl
+     * is the baseUrl that can be used to locate blob content and is useful to
+     * generate blob urls.
      */
-    protected static Object propertyToJsonValue(final String filesBaseUrl, Property prop) throws Exception {
+    protected static Object propertyToJsonValue(final String filesBaseUrl,
+            Property prop) throws Exception {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         if (prop.isScalar()) {
             Object v = prop.getValue();
@@ -150,17 +154,17 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             return type.encode(v);
         } else if (prop.isList()) {
             if (prop instanceof ArrayProperty) {
-                Object[] ar = (Object[])prop.getValue();
+                Object[] ar = (Object[]) prop.getValue();
                 if (ar == null) {
                     return new JSONArray();
                 }
                 JSONArray jsar = new JSONArray();
-                for (int i=0; i<ar.length; i++) {
+                for (int i = 0; i < ar.length; i++) {
                     jsar.add(type.encode(ar[i]));
                 }
                 return jsar;
             } else {
-                ListProperty listp = (ListProperty)prop;
+                ListProperty listp = (ListProperty) prop;
                 JSONArray jsar = new JSONArray();
                 for (Property p : listp.getChildren()) {
                     jsar.add(propertyToJsonValue(filesBaseUrl, p));
@@ -172,22 +176,24 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                 return JSONNull.getInstance();
             }
             if (prop instanceof BlobProperty) { // a blob
-                Blob blob = (Blob)((BlobProperty)prop).getValue();
+                Blob blob = (Blob) ((BlobProperty) prop).getValue();
                 JSONObject jsob = new JSONObject();
                 String v = blob.getFilename();
                 jsob.element("name", v == null ? JSONNull.getInstance() : v);
                 v = blob.getMimeType();
-                jsob.element("mime-type", v == null ? JSONNull.getInstance() : v);
+                jsob.element("mime-type", v == null ? JSONNull.getInstance()
+                        : v);
                 v = blob.getEncoding();
                 jsob.element("encoding", v == null ? JSONNull.getInstance() : v);
                 v = blob.getDigest();
                 jsob.element("digest", v == null ? JSONNull.getInstance() : v);
                 v = Long.toString(blob.getLength());
                 jsob.element("length", v);
-                jsob.element("data", filesBaseUrl+URLEncoder.encode(prop.getPath(), "UTF-8"));
+                jsob.element("data", filesBaseUrl
+                        + URLEncoder.encode(prop.getPath(), "UTF-8"));
                 return jsob;
             } else { // a complex property
-                ComplexProperty cp = (ComplexProperty)prop;
+                ComplexProperty cp = (ComplexProperty) prop;
                 if (prop.isPhantom()) {
                     return JSONNull.getInstance();
                 }

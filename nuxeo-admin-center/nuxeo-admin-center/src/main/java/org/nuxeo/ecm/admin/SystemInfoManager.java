@@ -58,9 +58,9 @@ public class SystemInfoManager implements Serializable {
 
     protected String selectedTimeRange;
 
-    protected int currentAuditPage=1;
+    protected int currentAuditPage = 1;
 
-    protected static int pageSize=25;
+    protected static int pageSize = 25;
 
     protected List<Repository> repositories;
 
@@ -109,22 +109,23 @@ public class SystemInfoManager implements Serializable {
 
         sb.append("\nJava Memory:");
         sb.append("\n  Heap size  : ");
-        sb.append(Runtime.getRuntime().totalMemory()/(1024*1024));
+        sb.append(Runtime.getRuntime().totalMemory() / (1024 * 1024));
         sb.append(" MB");
         sb.append("\n  Used       : ");
-        sb.append((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/(1024*1024));
+        sb.append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+                / (1024 * 1024));
         sb.append(" MB");
         sb.append("\n  Free       : ");
-        sb.append(Runtime.getRuntime().freeMemory()/(1024*1024));
+        sb.append(Runtime.getRuntime().freeMemory() / (1024 * 1024));
         sb.append(" MB");
         sb.append("\n  Max size   : ");
-        sb.append(Runtime.getRuntime().maxMemory()/(1024*1024));
+        sb.append(Runtime.getRuntime().maxMemory() / (1024 * 1024));
         sb.append(" MB");
 
         return sb.toString();
     }
 
-    @Factory(value="nuxeoServerInfo", scope = ScopeType.EVENT)
+    @Factory(value = "nuxeoServerInfo", scope = ScopeType.EVENT)
     public SimplifiedServerInfo getNuxeoServerInfo() {
         return RuntimeInstrospection.getInfo();
     }
@@ -133,7 +134,7 @@ public class SystemInfoManager implements Serializable {
     // Repo settings Management
 
     public boolean isMultiRepo() throws Exception {
-        return listAvailableRepositories().size()>1;
+        return listAvailableRepositories().size() > 1;
     }
 
     public List<Repository> listAvailableRepositories() throws Exception {
@@ -148,14 +149,14 @@ public class SystemInfoManager implements Serializable {
     }
 
     public String getCurrentRepositoryName() throws Exception {
-        if (currentRepositoryName==null) {
+        if (currentRepositoryName == null) {
             listAvailableRepositories();
         }
         return currentRepositoryName;
     }
 
     public void setCurrentRepositoryName(String name) throws Exception {
-        currentRepositoryName=name;
+        currentRepositoryName = name;
     }
 
     public int getOpenSessionNumber() {
@@ -166,12 +167,12 @@ public class SystemInfoManager implements Serializable {
     // Repo stats Management
 
     public void startRepoStats() throws Exception {
-        if (runningStat!=null) {
+        if (runningStat != null) {
             return;
         }
 
-        statResult=null;
-        runningStat= new RepoStat(getCurrentRepositoryName(), 5, true);
+        statResult = null;
+        runningStat = new RepoStat(getCurrentRepositoryName(), 5, true);
         runningStat.run(new PathRef("/"));
     }
 
@@ -183,28 +184,28 @@ public class SystemInfoManager implements Serializable {
         if (isStatInfoAvailable()) {
             return false;
         }
-        if (runningStat==null) {
+        if (runningStat == null) {
             return false;
         }
         return true;
     }
 
     public boolean isStatInfoAvailable() {
-        if (statResult!=null) {
+        if (statResult != null) {
             return true;
         }
-        if (runningStat!=null) {
+        if (runningStat != null) {
             if (!runningStat.isRunning()) {
                 statResult = runningStat.getInfo();
                 Contexts.getEventContext().remove("repoStatResult");
-                runningStat=null;
+                runningStat = null;
                 return true;
             }
         }
         return false;
     }
 
-    @Factory(value="repoStatResult", scope = ScopeType.EVENT)
+    @Factory(value = "repoStatResult", scope = ScopeType.EVENT)
     public RepoStatInfo getStatInfo() {
         return statResult;
     }
@@ -225,7 +226,6 @@ public class SystemInfoManager implements Serializable {
             Thread.sleep(1000);
         } while (stat.isRunning());
 
-
         sb.append(stat.getInfo().toString());
 
         return sb.toString();
@@ -237,14 +237,16 @@ public class SystemInfoManager implements Serializable {
     public List<SelectItem> getTimeRanges() {
         List<SelectItem> ranges = new ArrayList<SelectItem>();
 
-        for (int i =1;i<13; i++ ) {
-            ranges.add(new SelectItem(i+"h", "label.timerange." + i + "h"));
+        for (int i = 1; i < 13; i++) {
+            ranges.add(new SelectItem(i + "h", "label.timerange." + i + "h"));
         }
-        for (int i =1;i<8; i++ ) {
-            ranges.add(new SelectItem((i*24)+"h", "label.timerange." + i + "d"));
+        for (int i = 1; i < 8; i++) {
+            ranges.add(new SelectItem((i * 24) + "h", "label.timerange." + i
+                    + "d"));
         }
-        for (int i =2;i<6; i++ ) {
-            ranges.add(new SelectItem((24*7)*i+"h", "label.timerange." + i + "w"));
+        for (int i = 2; i < 6; i++) {
+            ranges.add(new SelectItem((24 * 7) * i + "h", "label.timerange."
+                    + i + "w"));
         }
         return ranges;
     }
@@ -258,7 +260,7 @@ public class SystemInfoManager implements Serializable {
 
     public void setSelectedTimeRange(String dateRange) {
         selectedTimeRange = dateRange;
-        currentAuditPage=1;
+        currentAuditPage = 1;
         Contexts.getEventContext().remove("userLoginEvents");
     }
 
@@ -267,7 +269,7 @@ public class SystemInfoManager implements Serializable {
     }
 
     public void nextPage() {
-        currentAuditPage+=1;
+        currentAuditPage += 1;
         Contexts.getEventContext().remove("userLoginEvents");
     }
 
@@ -279,13 +281,14 @@ public class SystemInfoManager implements Serializable {
         Contexts.getEventContext().remove("userLoginEvents");
     }
 
-    @Factory(value="userLoginEvents", scope=ScopeType.EVENT)
+    @Factory(value = "userLoginEvents", scope = ScopeType.EVENT)
     public List<LogEntry> getLoginInfo() throws Exception {
-        String[] events = { "loginSuccess", "loginFailed", "logout"};
+        String[] events = { "loginSuccess", "loginFailed", "logout" };
 
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        return reader.queryLogsByPage(events, selectedTimeRange, "NuxeoAuthentication", null, currentAuditPage, pageSize);
+        return reader.queryLogsByPage(events, selectedTimeRange,
+                "NuxeoAuthentication", null, currentAuditPage, pageSize);
     }
 
 }

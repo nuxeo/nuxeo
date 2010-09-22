@@ -20,27 +20,29 @@
 package org.nuxeo.ecm.admin.runtime;
 
 /**
- * Very simplified representation of a Nuxeo Bundle used for displaying in the admin screens
+ * Very simplified representation of a Nuxeo Bundle used for displaying in the
+ * admin screens
  *
  * @author tiry
- *
  */
-public class SimplifiedBundleInfo implements Comparable<SimplifiedBundleInfo>{
+public class SimplifiedBundleInfo implements Comparable<SimplifiedBundleInfo> {
 
-      protected String name;
-      protected String version;
+    protected String name;
 
-      public SimplifiedBundleInfo(String name,String version) {
-          this.name=name;
-          this.version=version;
-      }
+    protected String version;
 
-      public String getName() {
-          return name;
-      }
-      public String getVersion() {
-          return version;
-      }
+    public SimplifiedBundleInfo(String name, String version) {
+        this.name = name;
+        this.version = version;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 
     @Override
     public int compareTo(SimplifiedBundleInfo other) {

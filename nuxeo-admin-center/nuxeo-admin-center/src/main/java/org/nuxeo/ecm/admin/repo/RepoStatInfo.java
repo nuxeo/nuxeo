@@ -17,7 +17,6 @@
  * $Id$
  */
 
-
 package org.nuxeo.ecm.admin.repo;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class RepoStatInfo {
 
     private long versions = 0;
 
-    private long t1;
+    private final long t1;
 
     protected float speed;
 

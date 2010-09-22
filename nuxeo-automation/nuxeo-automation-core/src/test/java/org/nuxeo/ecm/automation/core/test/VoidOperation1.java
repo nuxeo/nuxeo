@@ -26,26 +26,31 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@Operation(id="v1")
+@Operation(id = "v1")
 public class VoidOperation1 {
 
-    @Param(name="message") protected String message;
+    @Param(name = "message")
+    protected String message;
 
-    @Context OperationContext ctx;
-    @Context CoreSession session;
+    @Context
+    OperationContext ctx;
+
+    @Context
+    CoreSession session;
 
     @OperationMethod
     public DocumentModel printInfo1() throws Exception {
-        //System.out.println("O1:doc:doc: "+doc.getId()+". Session: "+session+". message: "+message);
+        // System.out.println("O1:doc:doc: "+doc.getId()+". Session:
+        // "+session+". message: "+message);
         Helper.updateContext(ctx, "V1:void:doc", message, "");
         return session.getRootDocument();
     }
 
     @OperationMethod
     public DocumentModel printInfo3(DocumentModel doc) throws Exception {
-        //System.out.println("O1:ref:doc: "+ref+". Session: "+session+". message: "+message);
+        // System.out.println("O1:ref:doc: "+ref+". Session: "+session+".
+        // message: "+message);
         Helper.updateContext(ctx, "V1:doc:doc", message, doc.getPathAsString());
         return doc;
     }

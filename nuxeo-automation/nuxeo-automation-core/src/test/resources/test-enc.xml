@@ -1,6 +1,7 @@
 <component name="org.nuxeo.ecm.core.rules.test-operations" version="1.0">
 
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="event-handlers">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="event-handlers">
     <handler>
       <event>aboutToCreate</event>
       <filters>

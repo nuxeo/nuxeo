@@ -54,7 +54,7 @@ public class NavTreeService extends DefaultComponent {
         if (directoryTreeService == null) {
             return;
         }
-        List<String> treeNames = directoryTreeService.getDirectoryTrees();
+        List<String> treeNames = directoryTreeService.getNavigationDirectoryTrees();
         for (String dTreeName : treeNames) {
             descriptors.add(new NavTreeDescriptor(dTreeName, "label."
                     + dTreeName, true));

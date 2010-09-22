@@ -28,7 +28,9 @@ import javax.activation.DataSource;
 public class InputStreamDataSource implements DataSource {
 
     protected final InputStream in;
+
     protected final String ctype;
+
     protected final String name;
 
     public InputStreamDataSource(InputStream in, String ctype) {
