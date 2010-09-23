@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TestNuxeoQueuePersister extends QueueTestCase {
 
     public void testNuxeoQueuePersister() throws Exception {
-        NuxeoQueuePersister<FakeContent> persister = new NuxeoQueuePersister<FakeContent>("fake", FakeContent.class);
+        DocumentQueuePersister<FakeContent> persister = new DocumentQueuePersister<FakeContent>("fake", FakeContent.class);
         persister.addContent(new URI("test"), new URI("test"), new FakeContent());
 
         // Testing the document is in the nuxeo repo
@@ -73,8 +73,8 @@ public class TestNuxeoQueuePersister extends QueueTestCase {
             DocumentModel contentDoc = session.getChild(queueRef, "test");
             assertNotNull(contentDoc);
             assertNotNull("server id is not there", contentDoc.getProperty(
-                    NuxeoQueueConstants.QUEUEITEM_SCHEMA,
-                    NuxeoQueueConstants.QUEUEITEM_SERVERID));
+                    DocumentQueueConstants.QUEUEITEM_SCHEMA,
+                    DocumentQueueConstants.QUEUEITEM_SERVERID));
         }
     }
 

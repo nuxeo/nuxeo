@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.queue.core;
 
 
-public class NuxeoQueueConstants {
+public class DocumentQueueConstants {
 
     public static final String QUEUE_ROOT_NAME = "queues";
 
@@ -36,11 +36,13 @@ public class NuxeoQueueConstants {
 
     public static final String QUEUEITEM_EXECUTE_TIME = "executeTime";
 
+    public static final String QUEUEITEM_BLACKLIST_TIME = "blacklistTime";
+
     public static final String QUEUEITEM_CONTENT = "content";
 
     public static final String QUEUEITEM_EXECUTION_COUNT_PROPERTY = "queueitem:executionCount";
 
-    private NuxeoQueueConstants() {
+    private DocumentQueueConstants() {
     }
 
 }

@@ -28,12 +28,12 @@ import org.nuxeo.ecm.platform.queue.api.QueueInfo;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-public class NuxeoQueueAdapterFactory implements DocumentAdapterFactory {
+public class DocumentQueueAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class itf) {
         if (QueueInfo.class.isAssignableFrom(itf)) {
-            return new NuxeoQueueAdapter<Serializable>(doc);
+            return new DocumentQueueAdapter<Serializable>(doc);
         }
         return null;
     }

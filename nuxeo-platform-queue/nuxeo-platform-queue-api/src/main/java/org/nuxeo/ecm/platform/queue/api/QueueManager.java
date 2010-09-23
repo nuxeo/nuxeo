@@ -49,7 +49,7 @@ public interface QueueManager<C extends Serializable> {
      *
      * @return the list
      */
-    List<QueueInfo<C>> listHandledContent();
+    List<QueueInfo<C>> listKnownContent();
 
     /**
      * List infos owned by the provided owner
@@ -65,6 +65,20 @@ public interface QueueManager<C extends Serializable> {
      * @return the list
      */
     List<QueueInfo<C>> listOrphanedContent();
+
+    /**
+     * List infos about content currently handled by system
+     *
+     * @return
+     */
+    List<QueueInfo<C>> listHandledContent();
+
+   /**
+     * List infos about content that is blacklisted.
+     *
+     * @return the list
+     */
+    List<QueueInfo<C>> listBlacklistedContent();
 
 
     /**
@@ -106,5 +120,6 @@ public interface QueueManager<C extends Serializable> {
      * Initialize the queue
      */
     void initialize();
+
 
 }

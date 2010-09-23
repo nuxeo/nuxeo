@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.queue.core;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +31,6 @@ import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
 import org.nuxeo.ecm.platform.queue.api.QueuePersister;
 import org.nuxeo.ecm.platform.queue.api.QueueProcessor;
-import org.nuxeo.ecm.platform.queue.api.Transacted;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,7 +69,7 @@ public class DefaultQueueHandler implements QueueHandler {
             // process content
             log.debug("Processing " + name);
             QueueProcessor<C> executor = registry.getProcessor(name);
-            persister.setExecuteTime(name, new Date());
+            persister.setLaunched(name);
             executor.process(info);
     }
 
@@ -116,7 +114,7 @@ public class DefaultQueueHandler implements QueueHandler {
 
         log.debug("Processing " + name);
         QueueProcessor<C> executor = registry.getProcessor(name);
-        persister.setExecuteTime(name, new Date());
+        persister.setLaunched(name);
         try {
             executor.process(info);
         } catch (Throwable e) {
@@ -135,9 +133,10 @@ public class DefaultQueueHandler implements QueueHandler {
     }
 
     @Override
-    public <C extends Serializable> QueueInfo<C> cancel(URI name) {
+    public <C extends Serializable> QueueInfo<C> blacklist(URI name) {
         QueuePersister<C> persister = registry.getPersister(name);
-        return persister.removeContent(name);
+        QueueInfo<C> info = persister.setBlacklisted(name);
+        return info;
     }
 
     @Override
