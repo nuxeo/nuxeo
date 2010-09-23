@@ -42,13 +42,12 @@
             </tr>
             <tr>
               <td colspan="2">
-                <h:commandButton type="submit"
+                <h:commandButton
                                  value="#{messages['label.publishing.accept']}"
                                  styleClass="button"
                                  rendered="#{canManagePublishing}"
                                  action="#{publishActions.approveDocument}"/>
                 <h:commandButton
-                        type="submit"
                         value="#{messages['label.publishing.reject']}"
                         styleClass="button"
                         rendered="#{canManagePublishing}"

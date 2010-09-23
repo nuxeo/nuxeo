@@ -94,7 +94,7 @@
             </f:facet>
 
             <f:facet name="footer">
-              <a4j:commandButton type="submit" styleClass="button"
+              <a4j:commandButton styleClass="button"
                 value="#{messages['action.picturebook.addview']}"
                 reRender="dataTable" action="#{pictureBookManager.addView}" />
             </f:facet>
@@ -105,7 +105,7 @@
 
 
       </a4j:region>
-      <h:commandButton type="submit" class="button"
+      <h:commandButton class="button"
         value="#{messages['command.create']}"
         action="#{pictureBookManager.createPictureBook}" />
       <h:commandButton class="button" value="#{messages['command.cancel']}"
