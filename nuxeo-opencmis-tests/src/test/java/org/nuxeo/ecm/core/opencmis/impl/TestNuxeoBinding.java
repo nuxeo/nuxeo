@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,9 +152,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected ObjectData getObjectByPath(String path) {
-        return objService.getObjectByPath(repositoryId, path, null,
-                Boolean.FALSE, IncludeRelationships.NONE, null, Boolean.FALSE,
-                Boolean.FALSE, null);
+        return objService.getObjectByPath(repositoryId, path, null, null, null,
+                null, null, null, null);
     }
 
     protected static String getString(ObjectData data, String key) {
@@ -305,6 +305,26 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testGetObjectByPath() {
+        ObjectData ob;
+
+        ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        // works by cmis:name too, needed for Adobe Drive 2
+        ob = getObjectByPath("/testfolder1_Title/testfile1_Title");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        // cannot mix both
+        try {
+            getObjectByPath("/testfolder1/testfile1_Title");
+            fail();
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testCreateDocument() {
         String id = createDocument("doc1", rootFolderId, "File");
         assertNotNull(id);
@@ -314,10 +334,31 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
-    public void testUpdateProperties() throws Exception {
-        ObjectData ob = objService.getObjectByPath(repositoryId,
-                "/testfolder1/testfile1", null, null, null, null, null, null,
+    public void testCreateDocumentWithContentStream() throws Exception {
+        InputStream stream = new ByteArrayInputStream(
+                Helper.FILE1_CONTENT.getBytes("UTF-8"));
+        // null filename passed on purpose, size ignored by Nuxeo
+        ContentStream cs = new ContentStreamImpl(null, null, "text/plain",
+                stream);
+        String id = objService.createDocument(repositoryId,
+                createBaseDocumentProperties("doc1.txt", "File"), rootFolderId,
+                cs, VersioningState.NONE, null, null, null, null);
+        assertNotNull(id);
+        ObjectData data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("doc1.txt", getString(data, PropertyIds.NAME));
+        cs = objService.getContentStream(repositoryId, id, null, null, null,
                 null);
+        assertNotNull(cs);
+        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("doc1.txt", cs.getFileName());
+        assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
+        assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
+    }
+
+    @Test
+    public void testUpdateProperties() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
         Properties props = createProperties("dc:title", "new title");

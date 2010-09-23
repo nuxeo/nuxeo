@@ -406,7 +406,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             throws CmisRuntimeException {
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
         if (blobHolder == null) {
-            throw new CmisStreamNotSupportedException();
+            return null;
         }
         try {
             return blobHolder.getBlob();

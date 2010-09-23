@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
@@ -61,6 +62,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
@@ -72,6 +74,9 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfoHandler;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -89,13 +94,14 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
 public class NuxeoCmisService extends AbstractCmisService {
+
+    private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
     protected final NuxeoRepository repository;
 
@@ -235,7 +241,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         return Converter.convertTypeContainerList(tmp);
     }
 
-    protected DocumentModel getDocumentModel(DocumentRef docRef) {
+    protected DocumentModel getDocumentModel(String id) {
+        DocumentRef docRef = new IdRef(id);
         try {
             if (!coreSession.exists(docRef)) {
                 throw new CmisObjectNotFoundException(docRef.toString());
@@ -256,7 +263,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
             ExtensionsData extension) {
-        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        DocumentModel doc = getDocumentModel(objectId);
         ObjectData data = new NuxeoObjectData(repository, doc, filter,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 includePolicyIds, includeAcl, extension);
@@ -349,6 +356,18 @@ public class NuxeoCmisService extends AbstractCmisService {
         updateProperties(object, null, properties, true);
         try {
             if (contentStream != null) {
+                if (contentStream.getFileName() == null) {
+                    // infer filename from properties
+                    PropertyData<?> pd = properties.getProperties().get(
+                            PropertyIds.NAME);
+                    if (pd != null) {
+                        String filename = (String) pd.getFirstValue();
+                        contentStream = new ContentStreamImpl(filename,
+                                contentStream.getBigLength(),
+                                contentStream.getMimeType(),
+                                contentStream.getStream());
+                    }
+                }
                 try {
                     NuxeoPropertyData.setContentStream(doc, contentStream, true);
                 } catch (CmisContentAlreadyExistsException e) {
@@ -465,8 +484,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             // no unfileable objects for now
             throw new CmisInvalidArgumentException("Invalid null folder ID");
         }
-        DocumentModel doc = getDocumentModel(new IdRef(sourceId));
-        DocumentModel folder = getDocumentModel(new IdRef(folderId));
+        DocumentModel doc = getDocumentModel(sourceId);
+        DocumentModel folder = getDocumentModel(folderId);
         try {
             DocumentModel copyDoc = coreSession.copy(doc.getRef(),
                     folder.getRef(), null);
@@ -503,13 +522,12 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Cannot delete root");
         }
         try {
-            IdRef docRef = new IdRef(folderId);
-            DocumentModel doc = getDocumentModel(docRef);
+            DocumentModel doc = getDocumentModel(folderId);
             if (!doc.isFolder()) {
                 throw new CmisInvalidArgumentException("Not a folder: "
                         + folderId);
             }
-            coreSession.removeDocument(docRef);
+            coreSession.removeDocument(new IdRef(folderId));
             coreSession.save();
             // TODO returning null fails in opencmis 0.1.0 due to
             // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
@@ -535,7 +553,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Invalid stream id: "
                     + streamId);
         }
-        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        DocumentModel doc = getDocumentModel(objectId);
         ContentStream cs = NuxeoPropertyData.getContentStream(doc);
         if (cs != null) {
             return cs;
@@ -549,8 +567,22 @@ public class NuxeoCmisService extends AbstractCmisService {
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
             ExtensionsData extension) {
-
-        DocumentModel doc = getDocumentModel(new PathRef(path));
+        DocumentModel doc;
+        try {
+            DocumentRef pathRef = new PathRef(path);
+            if (coreSession.exists(pathRef)) {
+                doc = coreSession.getDocument(pathRef);
+                if (isFilteredOut(doc)) {
+                    throw new CmisObjectNotFoundException(path);
+                }
+            } else {
+                // Adobe Drive 2 confuses cmis:name and path segment
+                // try using sequence of titles
+                doc = getObjectByPathOfNames(path);
+            }
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
         ObjectData data = new NuxeoObjectData(repository, doc, filter,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 includePolicyIds, includeAcl, extension);
@@ -558,6 +590,49 @@ public class NuxeoCmisService extends AbstractCmisService {
             addObjectInfo(getObjectInfo(repositoryId, data));
         }
         return data;
+    }
+
+    /**
+     * Gets a document given a path built out of dc:title components.
+     * <p>
+     * Filtered out docs are ignored.
+     */
+    protected DocumentModel getObjectByPathOfNames(String path)
+            throws ClientException, CmisObjectNotFoundException {
+        DocumentModel doc = coreSession.getRootDocument();
+        for (String name : new Path(path).segments()) {
+            String query = String.format(
+                    "SELECT * FROM Document WHERE ecm:parentId = %s AND dc:title = %s",
+                    escapeStringForNXQL(doc.getId()), escapeStringForNXQL(name));
+            DocumentModelList docs = coreSession.query(query);
+            if (docs.isEmpty()) {
+                throw new CmisObjectNotFoundException(path);
+            }
+            doc = null;
+            for (DocumentModel d : docs) {
+                if (isFilteredOut(d)) {
+                    continue;
+                }
+                if (doc == null) {
+                    doc = d;
+                } else {
+                    log.warn(String.format(
+                            "Path '%s' returns several documents for '%s'",
+                            path, name));
+                    break;
+                }
+            }
+            if (doc == null) {
+                throw new CmisObjectNotFoundException(path);
+            }
+        }
+        return doc;
+    }
+
+    protected static String REPLACE_QUOTE = Matcher.quoteReplacement("\\'");
+
+    protected static String escapeStringForNXQL(String s) {
+        return "'" + s.replaceAll("'", REPLACE_QUOTE) + "'";
     }
 
     @Override
@@ -596,8 +671,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Missing target folder ID");
         }
         try {
+            getDocumentModel(objectId); // check exists and not deleted
             DocumentRef docRef = new IdRef(objectId);
-            getDocumentModel(docRef); // check exists and not deleted
             DocumentModel parent = coreSession.getParentDocument(docRef);
             if (isFilteredOut(parent)) {
                 throw new CmisObjectNotFoundException("No parent: " + objectId);
@@ -611,13 +686,12 @@ public class NuxeoCmisService extends AbstractCmisService {
                             + " is not filed in " + sourceFolderId);
                 }
             }
-            IdRef targetRef = new IdRef(targetFolderId);
-            DocumentModel target = getDocumentModel(targetRef);
+            DocumentModel target = getDocumentModel(targetFolderId);
             if (!target.isFolder()) {
                 throw new CmisInvalidArgumentException(
                         "Target is not a folder: " + targetFolderId);
             }
-            coreSession.move(docRef, targetRef, null);
+            coreSession.move(docRef, new IdRef(targetFolderId), null);
             coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -635,7 +709,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
 
-        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        DocumentModel doc = getDocumentModel(objectId);
         // TODO test doc checkout state
         try {
             NuxeoPropertyData.setContentStream(doc, contentStream,
@@ -658,7 +732,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
-        DocumentModel doc = getDocumentModel(new IdRef(objectId));
+        DocumentModel doc = getDocumentModel(objectId);
         NuxeoObjectData object = new NuxeoObjectData(repository, doc, null,
                 null, null, null, null, null, null);
         String changeToken = changeTokenHolder == null ? null
@@ -739,7 +813,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         if (folderId != null) {
             // check it's the actual parent
             try {
-                DocumentModel folder = getDocumentModel(new IdRef(folderId));
+                DocumentModel folder = getDocumentModel(folderId);
                 DocumentModel parent = coreSession.getParentDocument(new IdRef(
                         objectId));
                 if (!parent.getId().equals(folder.getId())) {
@@ -787,7 +861,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             boolean folderOnly, ObjectInfoHandler objectInfos) {
         ObjectInFolderListImpl result = new ObjectInFolderListImpl();
         List<ObjectInFolderData> list = new ArrayList<ObjectInFolderData>();
-        DocumentModel folder = getDocumentModel(new IdRef(folderId));
+        DocumentModel folder = getDocumentModel(folderId);
         if (!folder.isFolder()) {
             return null;
         }
@@ -1034,12 +1108,11 @@ public class NuxeoCmisService extends AbstractCmisService {
     public void deleteObject(String repositoryId, String objectId,
             Boolean allVersions, ExtensionsData extension) {
         try {
-            DocumentRef docRef = new IdRef(objectId);
-            DocumentModel doc = getDocumentModel(docRef);
+            DocumentModel doc = getDocumentModel(objectId);
             if (doc.isFolder()) {
                 // check that there are no children left
-                DocumentModelList docs = coreSession.getChildren(docRef, null,
-                        documentFilter, null);
+                DocumentModelList docs = coreSession.getChildren(new IdRef(
+                        objectId), null, documentFilter, null);
                 if (docs.size() > 0) {
                     throw new CmisConstraintException(
                             "Cannot delete non-empty folder: " + objectId);
