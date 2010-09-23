@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
@@ -50,6 +49,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -269,20 +269,12 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         if (context == null) {
             return expression;
         }
-        ExpressionFactory eFactory = context.getExpressionFactory();
-        ELContext elContext = context.getFacesContext().getELContext();
-        ValueExpression expr = eFactory.createValueExpression(context,
-                expression, Object.class);
-        Object value = expr.getValue(elContext);
+        Object value = ComponentTagUtils.resolveElExpression(
+                context.getFacesContext(), expression);
         if (value != null && value instanceof String) {
-            String strValue = (String) value;
-            if (strValue.contains("#{")
-                    && (strValue.indexOf("#{") < strValue.indexOf('}'))) {
-                // evaluate again
-                expr = eFactory.createValueExpression(context, strValue,
-                        Object.class);
-                value = expr.getValue(elContext);
-            }
+            // evaluate a second time in case it's another EL expression
+            value = ComponentTagUtils.resolveElExpression(
+                    context.getFacesContext(), (String) value);
         }
         return value;
     }

@@ -52,7 +52,8 @@ public interface WebLayoutManager extends LayoutManager {
             throws WidgetException;
 
     /**
-     * Returns the computed layout for this name and mode in given context.
+     * Returns the computed layout for this name and mode in given context, or
+     * null if no layout with this name is found.
      * <p>
      * When a widget is configured not to be rendered in this mode, the layout
      * will hold a null value instead. As well, when a row does not hold any
