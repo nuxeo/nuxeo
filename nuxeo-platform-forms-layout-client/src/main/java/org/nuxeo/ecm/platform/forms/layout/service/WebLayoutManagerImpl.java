@@ -80,11 +80,11 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(WebLayoutManagerImpl.class);
 
-    private final Map<String, WidgetType> widgetTypeRegistry;
+    protected final Map<String, WidgetType> widgetTypeRegistry;
 
-    private final Map<String, LayoutDefinition> layoutRegistry;
+    protected final Map<String, LayoutDefinition> layoutRegistry;
 
-    private final Map<String, WidgetDefinition> widgetRegistry;
+    protected final Map<String, WidgetDefinition> widgetRegistry;
 
     public WebLayoutManagerImpl() {
         widgetTypeRegistry = new HashMap<String, WidgetType>();
@@ -135,7 +135,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     // widget types
 
-    private void registerWidgetType(Object contribution) {
+    protected void registerWidgetType(Object contribution) {
         WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
@@ -163,7 +163,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         log.info("Registered widget type: " + name);
     }
 
-    private void unregisterWidgetType(Object contribution) {
+    protected void unregisterWidgetType(Object contribution) {
         WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
@@ -174,7 +174,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     // layouts
 
-    private void registerLayout(Object contribution) {
+    protected void registerLayout(Object contribution) {
         LayoutDefinition layoutDef = (LayoutDefinition) contribution;
         String name = layoutDef.getName();
         if (layoutRegistry.containsKey(name)) {
@@ -185,7 +185,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         log.info("Registered layout: " + name);
     }
 
-    private void unregisterLayout(Object contribution) {
+    protected void unregisterLayout(Object contribution) {
         LayoutDefinition layoutDef = (LayoutDefinition) contribution;
         String name = layoutDef.getName();
         if (layoutRegistry.containsKey(name)) {
@@ -196,7 +196,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     // widgets
 
-    private void registerWidget(Object contribution) {
+    protected void registerWidget(Object contribution) {
         WidgetDefinition widgetDef = (WidgetDefinition) contribution;
         String name = widgetDef.getName();
         if (widgetRegistry.containsKey(name)) {
@@ -207,7 +207,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         log.info("Registered widget: " + name);
     }
 
-    private void unregisterWidget(Object contribution) {
+    protected void unregisterWidget(Object contribution) {
         WidgetDefinition widgetDef = (WidgetDefinition) contribution;
         String name = widgetDef.getName();
         if (widgetRegistry.containsKey(name)) {
@@ -261,7 +261,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * @param context the facelet context.
      * @param expression the string expression.
      */
-    private static Object evaluateExpression(FaceletContext context,
+    protected static Object evaluateExpression(FaceletContext context,
             String expression) {
         if (expression == null) {
             return null;
@@ -290,7 +290,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a boolean value.
      */
-    private static Boolean getBooleanValue(FaceletContext context,
+    protected static Boolean getBooleanValue(FaceletContext context,
             String expression) {
         Object value = evaluateExpression(context, expression);
         if (value instanceof Boolean) {
@@ -306,7 +306,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a string value.
      */
-    private static String getStringValue(FaceletContext context,
+    protected static String getStringValue(FaceletContext context,
             String expression) {
         Object value = evaluateExpression(context, expression);
         if (value == null || value instanceof String) {
@@ -317,7 +317,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
     }
 
-    private static String getModeFromLayoutMode(FaceletContext context,
+    protected static String getModeFromLayoutMode(FaceletContext context,
             WidgetDefinition wDef, String layoutMode) {
         String wMode = getStringValue(context, wDef.getMode(layoutMode));
         if (wMode == null) {
@@ -341,7 +341,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * <p>
      * Sub widgets are also computed recursively.
      */
-    private Widget getWidget(FaceletContext context, LayoutDefinition lDef,
+    protected Widget getWidget(FaceletContext context, LayoutDefinition lDef,
             WidgetDefinition wDef, String layoutMode, String valueName,
             int level) {
         VariableMapper orig = null;
