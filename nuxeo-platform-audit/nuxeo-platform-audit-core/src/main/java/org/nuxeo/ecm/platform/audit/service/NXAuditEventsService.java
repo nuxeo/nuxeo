@@ -748,7 +748,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             }
         } catch (UnsupportedOperationException uoe) {
             entry.setComment("Document does not exist anymore!");
-            log.warn("Document associated to event does not exists anymore");
+            log.debug("Document associated to event does not exists anymore");
         } catch (ClientException e1) {
             throw new AuditRuntimeException(
                     "Cannot fetch life cycle state from " + document, e1);
