@@ -14,8 +14,7 @@
     </div>
   </c:if>
 
-  <h:form id="userServicesForm">
-
+  <h:form id="userServicesSearchForm">
     <div class="searchService">
 
       <c:if test="#{userServicesContext.searchEnabled}">
@@ -23,6 +22,7 @@
           class="directoryFilter"
           onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;"
           id="simpleSearchKeywordsInput"
+          required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
           validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
         <h:message styleClass="errorMessage" for="simpleSearchKeywordsInput" />
         <h:commandButton action="search_results_simple"
@@ -36,7 +36,12 @@
             id="advancedSearchButton" />
         </span>
       </c:if>
-
+    </div>
+  </h:form>
+      
+  <h:form id="userServicesForm">
+    <div class="searchService">
+  
       <nxu:set var="actions"
         value="#{webActions.getActionsList('SEARCH_LINKS')}"
         cache="true">
