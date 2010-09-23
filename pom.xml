@@ -315,8 +315,10 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
         <scope>provided</scope>
+        <!-- JBoss 4.2.3 provides 1.3 actually -->
+        <!-- dependency added by hand in final assemblies -->
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
