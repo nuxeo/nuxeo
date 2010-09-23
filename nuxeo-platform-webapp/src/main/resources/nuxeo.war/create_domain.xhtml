@@ -26,7 +26,7 @@
         <nxl:documentLayout mode="create" value="#{changeableDocument}" />
       </c:if>
       <p class="buttonsGadget">
-        <h:commandButton type="submit" class="button" value="#{messages['command.create']}"
+        <h:commandButton class="button" value="#{messages['command.create']}"
           action="#{documentActions.saveDocument}" />
         <h:commandButton class="button" value="#{messages['command.cancel']}"
           action="#{navigationContext.goBack()}" immediate="true" />

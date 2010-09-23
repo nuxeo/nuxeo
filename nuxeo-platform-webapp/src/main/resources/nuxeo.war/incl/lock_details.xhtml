@@ -14,12 +14,12 @@
   <tbody>
     <tr>
       <td class="labelColumn"></td>
-      <td class="fieldColumn"><h:commandButton type="submit"
+      <td class="fieldColumn"><h:commandButton
         value="#{messages['command.lock']}" styleClass="button"
         action="#{lockActions.lockCurrentDocument}"
         rendered="#{lockActions.canLockCurrentDoc}" /></td>
 
-      <td class="fieldColumn"><h:commandButton type="submit"
+      <td class="fieldColumn"><h:commandButton
         value="#{messages['command.unlock']}" styleClass="button"
         action="#{lockActions.unlockCurrentDocument}"
         rendered="#{lockActions.canUnlockCurrentDoc}" /></td>

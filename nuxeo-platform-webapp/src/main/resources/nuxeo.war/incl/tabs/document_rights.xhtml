@@ -153,7 +153,7 @@
     <p><h:outputText
       rendered="${empty securityActions.currentDocumentUsers}"
       value="#{messages['label.security.noLocalRights']}" /> <h:commandButton
-      type="submit" id="security_button_remove"
+      id="security_button_remove"
       value="#{messages['command.security.delPerm']}" class="button"
       rendered="${not empty securityActions.currentDocumentUsers}"
       action="#{securityActions.removePermissions}"
@@ -181,7 +181,7 @@
 </a4j:region>
 
 <h:form id="validate_rights">
-<h:commandButton type="submit"
+<h:commandButton
       value="#{messages['label.security.save']}"
       class="button rightsAddButton"
       action="#{securityActions.saveSecurityUpdates}"
