@@ -25,6 +25,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Reflection;
 using NuxeoProcess;
+using System.Threading;
 
 namespace NuxeoService
 {
@@ -36,6 +37,7 @@ namespace NuxeoService
 		public NuxeoService()
 		{
 			InitializeComponent();
+            CanPauseAndContinue = false;
 		}
 		
 		private void InitializeComponent()
@@ -95,8 +97,7 @@ namespace NuxeoService
 		/// </summary>
 		protected override void OnStart(string[] args)
 		{
-			//log.Source=MyServiceName;
-			if (nxControl==null) nxControl=new NuxeoProcess.NuxeoController();
+			nxControl = new NuxeoProcess.NuxeoController();
 			nxControl.ProcessStarted += new ProcessStartedHandler(nxControl_ProcessStarted);
 			if (!nxControl.IsLogDelegated()) {
 				nxControl.DelegatedLog+=new LogEventHandler(nxControllerLog);
@@ -121,31 +122,44 @@ namespace NuxeoService
 				Log("Could not start the application","ERROR");
 				throw new PlatformNotSupportedException("Could not start Nuxeo");
 			}
-			Process nxProcess=nxControl.getProcess();
+            Process nxProcess = nxControl.getProcess();
 			nxProcess.OutputDataReceived+=new DataReceivedEventHandler(OutputLog);
 			nxProcess.BeginOutputReadLine();
 			nxProcess.ErrorDataReceived+=new DataReceivedEventHandler(ErrorLog);
 			nxProcess.BeginErrorReadLine();
+
+            waitStartingComplete();
 		}
 
 		void nxControl_ProcessStarted(object sender, EventArgs e)
 		{
 			EventLog.WriteEntry(NuxeoController.ProductName, "Nuxeo started", EventLogEntryType.Information);
-		}
+        }
 		
 		/// <summary>
 		/// Stop this service.
 		/// </summary>
 		protected override void OnStop()
 		{
-			if (nxControl!=null) {
-				nxControl.Stop();
-				EventLog.WriteEntry(NuxeoController.ProductName, "Nuxeo stopped", EventLogEntryType.Information);
-			}
+            if (nxControl != null)
+            {
+                waitStartingComplete();
+                nxControl.Stop();
+                EventLog.WriteEntry(NuxeoController.ProductName, "Nuxeo stopped", EventLogEntryType.Information);
+            }
 		}
 		
 		public void Start(params String[] args) {
 			OnStart(args);
 		}
+
+        protected void waitStartingComplete()
+        {
+            while (!nxControl.Stoppable)
+            {
+                RequestAdditionalTime(10000);
+                Thread.Sleep(10000);
+            }
+        }
 	}
 }
