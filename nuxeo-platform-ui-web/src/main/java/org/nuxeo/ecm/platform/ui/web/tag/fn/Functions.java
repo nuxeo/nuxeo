@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
+import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -210,7 +211,10 @@ public final class Functions {
 
         // empty user name is current user
         if (username == null || username.length() == 0) {
-            username = externalContext.getUserPrincipal().getName();
+            Principal pal = externalContext.getUserPrincipal();
+            if (pal != null) {
+                username = pal.getName();
+            }
         }
         // check cache
         Map<String, Object> session = externalContext.getSessionMap();
