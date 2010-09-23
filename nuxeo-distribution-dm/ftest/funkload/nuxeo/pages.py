@@ -249,11 +249,9 @@ class BasePage:
         fl = self.fl
         server_url = fl.server_url
         fl.post(server_url + "/view_documents.faces", params=[
-            ['userServicesForm:simpleSearchKeywordsInput', ''],
             ['userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm_SUBMIT', '1'],
-            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+            ['userServicesForm_SUBMIT', '1']],
                 description="Dashboard opensocial")
 
         ts = str(time.time())
@@ -334,11 +332,9 @@ class BasePage:
     def personalWorkspace(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['userServicesForm:simpleSearchKeywordsInput', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['userServicesForm_SUBMIT', '1'],
-            ['userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink'],
-            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+            ['userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:1:userServicesActionCommandLink']],
             description="View personal workspace")
         # XXX: not working: post initializes personal workspace if it does
         # not exist...
@@ -355,11 +351,10 @@ class BasePage:
         else:
             action = '/view_documents.faces'
         fl.post(fl.server_url + action, params=[
-            ['userServicesForm:simpleSearchKeywordsInput', query],
+            ['userServicesSearchForm:simpleSearchKeywordsInput', query],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm:simpleSearchSubmitButton', 'Search'],
-            ['userServicesForm_SUBMIT', '1'],
-            ['userServicesForm:simpleSearchKeywordsInputHidden', 'KEYWORDS']],
+            ['userServicesSearchForm:simpleSearchSubmitButton', 'Search'],
+            ['userServicesSearchForm_SUBMIT', '1']],
             description=description)
         fl.assert_('simple_search' in fl.getBody(),
                      'Not a search result page')
