@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -42,6 +43,7 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.DefineHandler;
@@ -60,6 +62,8 @@ public final class CompositionHandler extends TagHandler implements
     public static final String Name = "theme";
 
     protected final Map<String, DefineHandler> handlers;
+
+    protected final TagAttribute strategyAttribute;
 
     protected final ParamHandler[] params;
 
@@ -95,6 +99,7 @@ public final class CompositionHandler extends TagHandler implements
             this.params = null;
         }
 
+        strategyAttribute = getAttribute("strategy");
     }
 
     /*
@@ -132,31 +137,37 @@ public final class CompositionHandler extends TagHandler implements
             if (application != null) {
                 final NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
-                    requestMap.put("nxthemesDefaultTheme",
+                    requestMap.put("org.nuxeo.theme.default.theme",
                             negotiation.getDefaultTheme());
-                    requestMap.put("nxthemesDefaultEngine",
+                    requestMap.put("org.nuxeo.theme.default.engine",
                             negotiation.getDefaultEngine());
-                    requestMap.put("nxthemesDefaultPerspective",
+                    requestMap.put("org.nuxeo.theme.default.perspective",
                             negotiation.getDefaultPerspective());
                     strategy = negotiation.getStrategy();
                 }
             }
-
+            // override startegy if defined
+            if (strategyAttribute != null) {
+                strategy = strategyAttribute.getValue(ctx);
+            }
+            String contextPath = BaseURL.getContextPath() + "/site";
             if (strategy == null) {
                 log.error("Could not obtain the negotiation strategy for "
                         + root);
-                external.redirect("/nuxeo/nxthemes/error/negotiationStrategyNotSet.faces");
+                external.redirect(contextPath
+                        + "/nxthemes/error/negotiationStrategyNotSet.faces");
 
             } else {
                 try {
                     final String spec = new JSFNegotiator(strategy,
                             facesContext).getSpec();
                     final URL themeUrl = new URL(spec);
-                    requestMap.put("nxthemesThemeUrl", themeUrl);
+                    requestMap.put("org.nuxeo.theme.url", themeUrl);
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);
-                    external.redirect("/nuxeo/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                    external.redirect(contextPath
+                            + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
                 }
             }
 
