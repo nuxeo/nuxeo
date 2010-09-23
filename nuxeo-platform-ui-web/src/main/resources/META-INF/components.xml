@@ -14,21 +14,21 @@
          <value>org.jboss.seam.ejb.RemoveInterceptor</value>
 
          <value>org.jboss.seam.persistence.HibernateSessionProxyInterceptor</value>
-         <value>org.jboss.seam.persistence.EntityManagerProxyInterceptor</value>
+         <!-- <value>org.jboss.seam.persistence.EntityManagerProxyInterceptor</value>  -->
 
          <value>org.jboss.seam.core.MethodContextInterceptor</value>
          <value>org.jboss.seam.core.EventInterceptor</value>
          <value>org.jboss.seam.core.ConversationalInterceptor</value>
 
-         <value>org.jboss.seam.bpm.BusinessProcessInterceptor</value>
+         <!-- <value>org.jboss.seam.bpm.BusinessProcessInterceptor</value> -->
          <value>org.jboss.seam.core.ConversationInterceptor</value>
 
          <value>org.jboss.seam.core.BijectionInterceptor</value>
          <value>org.jboss.seam.transaction.RollbackInterceptor</value>
          <value>org.jboss.seam.transaction.TransactionInterceptor</value>
 
-         <value>org.jboss.seam.webservice.WSSecurityInterceptor</value>
-         <value>org.jboss.seam.security.SecurityInterceptor</value>
+         <!-- <value>org.jboss.seam.webservice.WSSecurityInterceptor</value> -->
+         <!-- <value>org.jboss.seam.security.SecurityInterceptor</value> -->
 
      </core:interceptors>
     </core:init>
