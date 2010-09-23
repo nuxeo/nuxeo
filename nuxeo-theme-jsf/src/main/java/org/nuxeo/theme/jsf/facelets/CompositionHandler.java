@@ -1,180 +1,153 @@
-/*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Contributors:
- *     Jean-Marc Orliaguet, Chalmers
- *
- * $Id$
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.nuxeo.theme.jsf.facelets;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.theme.ApplicationType;
-import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.NegotiationDef;
-import org.nuxeo.theme.jsf.negotiation.JSFNegotiator;
-import org.nuxeo.theme.negotiation.NegotiationException;
-import org.nuxeo.theme.types.TypeFamily;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.FaceletException;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
+import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.DefineHandler;
 import com.sun.facelets.tag.ui.ParamHandler;
 
+/**
+ * @author Jacob Hookom
+ * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll Exp
+ *          $
+ */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
 
-    private static final Log log = LogFactory.getLog(CompositionHandler.class);
+    private static final Logger log = Logger.getLogger("facelets.tag.ui.composition");
 
-    public static final String Name = "theme";
+    public final static String Name = "composition";
 
-    protected final Map<String, DefineHandler> handlers;
+    protected final TagAttribute template;
+
+    protected final Map handlers;
 
     protected final ParamHandler[] params;
-
-    protected final TagAttribute strategyAttribute;
-
-    static {
-        Manager.initializeProtocols();
-    }
 
     /**
      * @param config
      */
-    @SuppressWarnings("unchecked")
     public CompositionHandler(TagConfig config) {
-
         super(config);
-
-        handlers = new HashMap<String, DefineHandler>();
-        Iterator itr = findNextByType(DefineHandler.class);
-        while (itr.hasNext()) {
-            DefineHandler d = (DefineHandler) itr.next();
-            handlers.put(d.getName(), d);
-            log.debug(tag + " found Define[" + d.getName() + ']');
-        }
-        final List paramC = new ArrayList();
-        itr = findNextByType(ParamHandler.class);
-        while (itr.hasNext()) {
-            paramC.add(itr.next());
-        }
-        if (!paramC.isEmpty()) {
-            params = new ParamHandler[paramC.size()];
-            for (int i = 0; i < params.length; i++) {
-                params[i] = (ParamHandler) paramC.get(i);
+        this.template = this.getAttribute("template");
+        if (this.template != null) {
+            this.handlers = new HashMap();
+            Iterator itr = this.findNextByType(DefineHandler.class);
+            DefineHandler d = null;
+            while (itr.hasNext()) {
+                d = (DefineHandler) itr.next();
+                this.handlers.put(d.getName(), d);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine(tag + " found Define[" + d.getName() + "]");
+                }
+            }
+            List paramC = new ArrayList();
+            itr = this.findNextByType(ParamHandler.class);
+            while (itr.hasNext()) {
+                paramC.add(itr.next());
+            }
+            if (paramC.size() > 0) {
+                this.params = new ParamHandler[paramC.size()];
+                for (int i = 0; i < this.params.length; i++) {
+                    this.params[i] = (ParamHandler) paramC.get(i);
+                }
+            } else {
+                this.params = null;
             }
         } else {
-            params = null;
+            this.params = null;
+            this.handlers = null;
         }
-
-        strategyAttribute = getAttribute("strategy");
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
+     * javax.faces.component.UIComponent)
+     */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
-        final VariableMapper orig = ctx.getVariableMapper();
-        if (params != null) {
-            VariableMapper vm = new VariableMapperWrapper(orig);
-            ctx.setVariableMapper(vm);
-            for (ParamHandler element : params) {
-                element.apply(ctx, parent);
-            }
-        }
-        ctx.extendClient(this);
-
-        try {
-            final FacesContext facesContext = ctx.getFacesContext();
-
-            // Get the negotiation strategy
-            final ExternalContext external = facesContext.getExternalContext();
-            final Map<String, Object> requestMap = external.getRequestMap();
-            final String root = external.getRequestContextPath();
-            final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.APPLICATION, root);
-            String strategy = null;
-            if (application != null) {
-                final NegotiationDef negotiation = application.getNegotiation();
-                if (negotiation != null) {
-                    requestMap.put("org.nuxeo.theme.default.theme",
-                            negotiation.getDefaultTheme());
-                    requestMap.put("org.nuxeo.theme.default.engine",
-                            negotiation.getDefaultEngine());
-                    requestMap.put("org.nuxeo.theme.default.perspective",
-                            negotiation.getDefaultPerspective());
-                    strategy = negotiation.getStrategy();
-                }
-            }
-            // override startegy if defined
-            if (strategyAttribute != null) {
-                strategy = strategyAttribute.getValue(ctx);
-            }
-
-            String contextPath =  BaseURL.getContextPath()
-                + "/site";
-            if (strategy == null) {
-                log.error("Could not obtain the negotiation strategy for "
-                        + root);
-                external.redirect(contextPath + "/nxthemes/error/negotiationStrategyNotSet.faces");
-
-            } else {
-                try {
-                    final String spec = new JSFNegotiator(strategy,
-                            facesContext).getSpec();
-                    final URL themeUrl = new URL(spec);
-                    requestMap.put("org.nuxeo.theme.url", themeUrl);
-                    ctx.includeFacelet(parent, themeUrl);
-                } catch (NegotiationException e) {
-                    log.error("Could not get default negotiation settings.", e);
-                    external.redirect(contextPath + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+            throws IOException, FacesException, FaceletException, ELException {
+        if (this.template != null) {
+            VariableMapper orig = ctx.getVariableMapper();
+            if (this.params != null) {
+                VariableMapper vm = new VariableMapperWrapper(orig);
+                ctx.setVariableMapper(vm);
+                for (int i = 0; i < this.params.length; i++) {
+                    this.params[i].apply(ctx, parent);
                 }
             }
 
-        } finally {
-            ctx.popClient(this);
-            ctx.setVariableMapper(orig);
+            ctx.extendClient(this);
+            String path = null;
+            try {
+                path = this.template.getValue(ctx);
+                ctx.includeFacelet(parent, path);
+            } catch (IOException e) {
+                throw new TagAttributeException(this.tag, this.template,
+                        "Invalid path : " + path);
+            } finally {
+                ctx.popClient(this);
+                ctx.setVariableMapper(orig);
+            }
+        } else {
+            this.nextHandler.apply(ctx, parent);
         }
     }
 
+    @Override
     public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, ELException {
+            throws IOException, FacesException, FaceletException, ELException {
         if (name != null) {
-            final FaceletHandler handler = handlers.get(name);
-            if (handler != null) {
-                handler.apply(ctx, parent);
-                return true;
+            if (this.handlers == null) {
+                return false;
             }
-            return false;
+            DefineHandler handler = (DefineHandler) this.handlers.get(name);
+            if (handler != null) {
+                handler.applyDefinition(ctx, parent);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            this.nextHandler.apply(ctx, parent);
+            return true;
         }
-        nextHandler.apply(ctx, parent);
-        return true;
     }
 
 }
