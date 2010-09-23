@@ -84,13 +84,16 @@ public class SetupWizardActionBean implements Serializable {
 
     protected static boolean needsRestart = false;
 
-    protected static boolean configurable = false;
+    protected boolean configurable = false;
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    @Factory(value = "configurable", scope = ScopeType.EVENT)
-    public static boolean isConfigurable() {
+    @Factory(value = "configurable", scope = ScopeType.PAGE)
+    public boolean isConfigurable() {
+        if (configGenerator==null) {
+            readParameters();
+        }
         return configurable;
     }
 

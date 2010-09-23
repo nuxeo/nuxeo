@@ -6,14 +6,15 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:f="http://java.sun.com/jsf/core">
     
-    <span><h:outputText value="DEBUG: Configurable: #{configurable}" /></span> <br />
-    <span><h:outputText value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" /></span><br /> 
+<a4j:outputPanel id="setupPanel" ajaxRendered="true">
+    <span><h:outputText value="DEBUG: Configurable: #{configurable}" /></span>
+    <br />
+    <span><h:outputText
+        value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" /></span>
+    <br />
     <h:messages />
     <br />
-
-<h2><h:outputText styleClass="label" value="#{messages['adminsubtab.sysinfo.setup']}" /></h2>
-<a4j:outputPanel id="setupPanel" ajaxRendered="true">
-
+    
     <ui:include src="/incl/message_banner.xhtml" />
 
     <h:panelGroup rendered="#{setupRequiresRestart}">
@@ -27,11 +28,13 @@
         <br />
     </h:panelGroup>
 
+    <h2><h:outputText styleClass="label"
+        value="#{messages['adminsubtab.sysinfo.setup']}" /></h2>
     <c:if test="#{configurable}">
         <a4j:form>
             <table>
                 <tr>
-                    <td><h:outputText styleClass="label" 
+                    <td><h:outputText styleClass="label"
                         value="#{messages['label.setup.database.templates']}" /></td>
                     <td><h:selectOneMenu class="dataInputText"
                         value="#{setupParams['nuxeo.dbtemplate']}">
@@ -45,7 +48,8 @@
                             itemLabel="#{messages['label.setup.nuxeo.template.mysql']}" />
                         <f:selectItem itemValue="mssql"
                             itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
-                        <a4j:support event="onchange" reRender="setupPanel" ajaxSingle="true"
+                        <a4j:support event="onchange" reRender="setupPanel"
+                            ajaxSingle="true"
                             actionListener="#{setupWizardAction.templateChange}">
                         </a4j:support>
                     </h:selectOneMenu></td>
@@ -211,26 +215,30 @@
                 </tr>
             </table>
             <a4j:commandButton value="#{messages['action.setup.save']}"
-                action="#{setupWizardAction.save()}" reRender="setupPanel" styleClass="button" />
+                action="#{setupWizardAction.save()}" reRender="setupPanel"
+                styleClass="button" />
             <a4j:commandButton value="#{messages['action.setup.cancel']}"
                 action="#{setupWizardAction.resetParameters()}"
                 reRender="setupPanel" styleClass="button" />
 
-            <br /><br />
+            <br />
+            <br />
             <h2><h:outputText styleClass="label"
                 value="#{messages['adminsubtab.sysinfo.advancedsetup']}" /></h2>
             <table>
                 <c:forEach var="advancedParamKey"
                     items="#{advancedParams.keySet().toArray()}">
                     <tr>
-                        <td><h:outputText styleClass="label" value="#{advancedParamKey}" /></td>
+                        <td><h:outputText styleClass="label"
+                            value="#{advancedParamKey}" /></td>
                         <td><h:inputText class="dataInputText" size="100"
                             value="#{advancedParams[advancedParamKey]}" /></td>
                     </tr>
                 </c:forEach>
             </table>
             <a4j:commandButton value="#{messages['action.setup.save']}"
-                action="#{setupWizardAction.save()}" reRender="setupPanel" styleClass="button" />
+                action="#{setupWizardAction.save()}" reRender="setupPanel"
+                styleClass="button" />
             <a4j:commandButton value="#{messages['action.setup.cancel']}"
                 action="#{setupWizardAction.resetParameters()}"
                 reRender="setupPanel" styleClass="button" />
