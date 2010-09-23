@@ -75,7 +75,7 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
     @Override
     public void validate(CoreSession session) throws ClientException {
         // validate this routeModel
-        setValidated(session);
+        setValidated(session, true);
         setReadOnly(session);
     }
 }

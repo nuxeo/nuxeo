@@ -26,6 +26,7 @@ import java.io.Serializable;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,7 +55,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     protected CoreSession documentManager;
 
     private DocumentRoutingService documentRoutingService;
-    
+
     public DocumentRoutingService getDocumentRoutingService() {
         try {
             if(documentRoutingService == null){
@@ -75,14 +76,15 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager);
         return navigationContext.navigateToDocument(routeInstance.getDocument());
     }
-    
+
     public String validateRouteModel() throws ClientException{
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
         getDocumentRoutingService().validateRouteModel(currentRouteModel, documentManager);
+        Events.instance().raiseEvent("documentChildrenChanged");
         return navigationContext.navigateToDocument(currentDocument);
     }
-    
+
     private void setPropertisOnDocumentBeforeExecution(DocumentModel doc)
             throws PropertyException, ClientException {
         doc.setPropertyValue(

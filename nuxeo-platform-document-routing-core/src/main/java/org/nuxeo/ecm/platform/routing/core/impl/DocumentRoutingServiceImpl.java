@@ -84,7 +84,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
-        routeInstance.setReady(session);
+        routeInstance.setReady(session, true);
         routeInstance.save(session);
         if (Framework.isTestModeSet()){
             Framework.getLocalService(EventService.class).waitForAsyncCompletion();

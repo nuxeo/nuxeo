@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRouteElementImpl implements DocumentRouteElement {
 
@@ -173,14 +173,23 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setRunning(CoreSession session) {
-       followTransition(ElementLifeCycleTransistion.toRunning, session);
+        followTransition(ElementLifeCycleTransistion.toRunning, session, false);
     }
 
-    protected void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session) {
+    @Override
+    public void followTransition(ElementLifeCycleTransistion transition,
+            CoreSession session, boolean recursively) {
         try {
             document.followTransition(transition.name());
             document = session.getDocument(document.getRef());
+            if (recursively && document.isFolder()) {
+                DocumentModelList list = session.getChildren(document.getRef());
+                for (DocumentModel child : list) {
+                    DocumentRouteElement childElement = child.getAdapter(DocumentRouteElement.class);
+                    childElement.followTransition(transition, session,
+                            recursively);
+                }
+            }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -198,17 +207,44 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setDone(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toDone, session);
+        followTransition(ElementLifeCycleTransistion.toDone, session, false);
     }
 
     @Override
     public void setValidated(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session);
+        followTransition(ElementLifeCycleTransistion.toValidated, session,
+                false);
     }
 
     @Override
     public void setReady(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toReady, session);
+        followTransition(ElementLifeCycleTransistion.toReady, session, false);
+    }
+
+    @Override
+    public void setValidated(CoreSession session, boolean recursively) {
+        followTransition(ElementLifeCycleTransistion.toValidated, session,
+                recursively);
+    }
+
+    @Override
+    public void setReady(CoreSession session, boolean recursively) {
+        followTransition(ElementLifeCycleTransistion.toReady, session, recursively);
+    }
+
+    @Override
+    public void setRunning(CoreSession session, boolean recursively) {
+        followTransition(ElementLifeCycleTransistion.toRunning, session, recursively);
+    }
+
+    @Override
+    public void setDone(CoreSession session, boolean recursively) {
+        followTransition(ElementLifeCycleTransistion.toDone, session, recursively);
+    }
+
+    public void validate(CoreSession session) throws ClientException {
+        setValidated(session);
+        setReadOnly(session);
     }
 
     @Override
@@ -216,12 +252,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
         SetDocumentOnReadOnlyUnrestrictedSessionRunner readOnlySetter = new SetDocumentOnReadOnlyUnrestrictedSessionRunner(
                 session, document);
         readOnlySetter.runUnrestricted();
-    }
-
-    @Override
-    public void validate(CoreSession session) throws ClientException {
-        setValidated(session);
-        setReadOnly(session);
     }
 
     protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends
