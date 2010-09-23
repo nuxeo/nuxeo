@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,13 +62,17 @@ public class ConfigurationGenerator {
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
-    protected static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
+    public static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     /**
      * Absolute or relative PATH to the user chosen templates (comma separated
      * list)
      */
-    protected static final String PARAM_TEMPLATES_NAME = "nuxeo.templates";
+    public static final String PARAM_TEMPLATES_NAME = "nuxeo.templates";
+
+    public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
+
+    public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
     /**
      * Absolute or relative PATH to the included templates (comma separated
@@ -80,6 +85,9 @@ public class ConfigurationGenerator {
     public static final String BOUNDARY_BEGIN = "### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
+
+    public static final List<String> DB_LIST = Arrays.asList("default",
+            "postgresql", "oracle", "mysql", "mssql");
 
     private final File nuxeoHome;
 
@@ -107,6 +115,16 @@ public class ConfigurationGenerator {
     private Properties userConfig;
 
     private boolean configurable = false;
+
+    private boolean onceGeneration = false;
+
+    private String templates = null;
+
+    // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
+    private boolean setOnceToFalse = true;
+
+    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
+    private boolean setFalseToOnce = false;
 
     public boolean isConfigurable() {
         return configurable;
@@ -205,6 +223,18 @@ public class ConfigurationGenerator {
         return configurable;
     }
 
+    public void changeTemplates(String newTemplates) {
+        try {
+            includedTemplates.clear();
+            templates = newTemplates;
+            setBasicConfiguration();
+            configurable = true;
+        } catch (ConfigurationException e) {
+            log.warn("Error reading basic configuration.", e);
+            configurable = false;
+        }
+    }
+
     private void setBasicConfiguration() throws ConfigurationException {
         try {
             // Load default configuration
@@ -217,8 +247,10 @@ public class ConfigurationGenerator {
 
             // Load user configuration
             userConfig.load(new FileInputStream(nuxeoConf));
-            forceGeneration = Boolean.parseBoolean(userConfig.getProperty(
-                    PARAM_FORCE_GENERATION, "false"));
+            onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
+            forceGeneration = onceGeneration
+                    || Boolean.parseBoolean(userConfig.getProperty(
+                            PARAM_FORCE_GENERATION, "false"));
 
             // Add data and log system properties
             userConfig.put(Environment.NUXEO_DATA_DIR,
@@ -237,12 +269,11 @@ public class ConfigurationGenerator {
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
         try {
-            String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-            if (userTemplatesList == null) {
-                // backward compliance: manage parameter for a single template
-                userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
+            if (templates == null) {
+                templates = getUserTemplates();
             }
-            includeTemplates(userTemplatesList);
+            extractDatabaseTemplateName();
+            includeTemplates(templates);
             log.debug("Loaded configuration: " + userConfig);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
@@ -251,15 +282,39 @@ public class ConfigurationGenerator {
         }
     }
 
+    private String getUserTemplates() {
+        String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
+        if (userTemplatesList == null) {
+            // backward compliance: manage parameter for a single
+            // template
+            userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
+        }
+        return userTemplatesList;
+    }
+
     protected void generateFiles() throws ConfigurationException {
         try {
             serverConfigurator.parseAndCopy(userConfig);
             log.info("Configuration files generated.");
+            // keep true or false, switch once to false
+            if (onceGeneration) {
+                setOnceToFalse = true;
+                writeConfiguration(loadConfiguration());
+            }
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
             throw new ConfigurationException("Configuration failure", e);
         }
+    }
+
+    /**
+     * @param loadConfiguration
+     * @throws ConfigurationException
+     */
+    private void writeConfiguration(StringBuffer configuration)
+            throws ConfigurationException {
+        writeConfiguration(configuration, null);
     }
 
     private void includeTemplates(String templatesList) throws IOException {
@@ -318,10 +373,66 @@ public class ConfigurationGenerator {
         new ConfigurationGenerator().run();
     }
 
-    public void saveConfiguration(Map<String, String> parameters)
+    /**
+     * Save changed parameters in nuxeo.conf
+     * 
+     * @param changedParameters Map of modified parameters
+     * @throws ConfigurationException
+     */
+    public void saveConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
-        BufferedReader reader = null;
+        // Keep true or once; switch false to once
+        setOnceToFalse = false;
+        setFalseToOnce = true;
+        writeConfiguration(loadConfiguration(), changedParameters);
+    }
+
+    /**
+     * @param changedParameters
+     * @param newContent
+     * @throws ConfigurationException
+     */
+    private void writeConfiguration(StringBuffer newContent,
+            Map<String, String> changedParameters)
+            throws ConfigurationException {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(nuxeoConf, false);
+            // Copy back file content
+            writer.append(newContent.toString());
+            if (changedParameters != null && !changedParameters.isEmpty()) {
+                // Write changed parameters
+                writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
+                        + System.getProperty("line.separator"));
+                for (String key : changedParameters.keySet()) {
+                    writer.write("#" + key + "=" + userConfig.getProperty(key)
+                            + System.getProperty("line.separator"));
+                    writer.write(key + "=" + changedParameters.get(key)
+                            + System.getProperty("line.separator"));
+                }
+                writer.write(BOUNDARY_END
+                        + System.getProperty("line.separator"));
+            }
+        } catch (IOException e) {
+            throw new ConfigurationException("Error writing in " + nuxeoConf, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ConfigurationException(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param newContent
+     * @throws ConfigurationException
+     */
+    private StringBuffer loadConfiguration() throws ConfigurationException {
         StringBuffer newContent = new StringBuffer();
+        BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(nuxeoConf));
             String line;
@@ -329,6 +440,14 @@ public class ConfigurationGenerator {
             while ((line = reader.readLine()) != null) {
                 if (!onConfiguratorContent) {
                     if (!line.startsWith(BOUNDARY_BEGIN)) {
+                        if (line.startsWith(PARAM_FORCE_GENERATION)) {
+                            if (setOnceToFalse && onceGeneration) {
+                                line = PARAM_FORCE_GENERATION + "=false";
+                            }
+                            if (setFalseToOnce && !forceGeneration) {
+                                line = PARAM_FORCE_GENERATION + "=once";
+                            }
+                        }
                         newContent.append(line
                                 + System.getProperty("line.separator"));
                     } else {
@@ -336,7 +455,7 @@ public class ConfigurationGenerator {
                     }
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
-                        // do not copy configurator content
+                        // ignore previously generated content
                         continue;
                     } else {
                         onConfiguratorContent = false;
@@ -351,43 +470,31 @@ public class ConfigurationGenerator {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new ConfigurationException(e);
                 }
             }
         }
+        return newContent;
+    }
 
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(nuxeoConf, false);
-            // Copy back file content
-            writer.append(newContent.toString());
-            // Write new configurator content
-            writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
-                    + System.getProperty("line.separator"));
-            for (String key : parameters.keySet()) {
-                writer.write("#" + key.trim() + "=" + userConfig.getProperty(key).trim()
-                        + System.getProperty("line.separator"));
-                writer.write(key.trim() + "=" + parameters.get(key).trim()
-                        + System.getProperty("line.separator"));
-            }
-            writer.write(BOUNDARY_END + System.getProperty("line.separator"));
-        } catch (IOException e) {
-            throw new ConfigurationException("Error writing in " + nuxeoConf, e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+    /**
+     * Extract a database template from a list of templates.
+     * Return the last one if there are multiples
+     */
+    public String extractDatabaseTemplateName() {
+        String dbTemplate = "unknown";
+        String nodbTemplates = "";
+        StringTokenizer st = new StringTokenizer(templates, ",");
+        while (st.hasMoreTokens()) {
+            String template = st.nextToken();
+            if (DB_LIST.contains(template)) {
+                dbTemplate = template;
+            } else {
+                nodbTemplates += template;
             }
         }
+        userConfig.put(PARAM_TEMPLATES_NODB, nodbTemplates);
+        userConfig.put(PARAM_TEMPLATE_DBNAME, dbTemplate);
+        return dbTemplate;
     }
 }

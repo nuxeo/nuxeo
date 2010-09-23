@@ -30,4 +30,8 @@ public class ConfigurationException extends Exception {
         super(message, throwable);
     }
 
+    public ConfigurationException(Throwable throwable) {
+        super(throwable);
+    }
+
 }
