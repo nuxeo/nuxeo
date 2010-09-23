@@ -66,13 +66,13 @@ public class DocumentSearchActions implements Serializable {
 
     public void validateSimpleSearchKeywords(FacesContext context,
             UIComponent component, Object value) {
-        if (!(value instanceof String) || StringUtils.isEmpty((String) value)) {
+        if (!(value instanceof String) || StringUtils.isEmpty(((String) value).trim())) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "feedback.search.noKeywords"), null);
             throw new ValidatorException(message);
         }
-        String[] keywords = ((String) value).split(" ");
+        String[] keywords = ((String) value).trim().split(" ");
         for (String keyword : keywords) {
             if (keyword.startsWith("*")) {
                 // Can't begin search with * character
