@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.url.codec.api;
 
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 
 public interface DocumentViewCodec {
 
@@ -27,8 +28,22 @@ public interface DocumentViewCodec {
 
     void setPrefix(String prefix);
 
+    /**
+     * Returns true if this codec should apply when iterating over codecs to
+     * find a matching one.
+     *
+     * @see DocumentViewCodecManager#getUrlFromDocumentView(DocumentView,
+     *      boolean, String)
+     */
     boolean handleDocumentView(DocumentView docView);
 
+    /**
+     * Returns true if this codec should apply when iterating over codecs to
+     * find a matching one.
+     *
+     * @see DocumentViewCodecManager#getDocumentViewFromUrl(String, boolean,
+     *      String)
+     */
     boolean handleUrl(String url);
 
     /**

@@ -160,16 +160,21 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public String getUrlFromDocumentView(DocumentView docView,
             boolean needBaseUrl, String baseUrl) {
-        String defaultCodecName = getDefaultCodecName();
-        String url = getUrlFromDocumentView(defaultCodecName, docView,
-                needBaseUrl, baseUrl);
+        String url = null;
+        DocumentViewCodec codec = getCodec(getDefaultCodecName());
+        if (codec != null && codec.handleDocumentView(docView)) {
+            url = getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
+        }
         if (url == null) {
             for (String codecName : descriptors.keySet()) {
                 if (!codecName.equals(defaultCodecName)) {
-                    url = getUrlFromDocumentView(codecName, docView,
-                            needBaseUrl, baseUrl);
-                    if (url != null) {
-                        break;
+                    codec = getCodec(codecName);
+                    if (codec != null && codec.handleDocumentView(docView)) {
+                        url = getUrlFromDocumentView(codec, docView,
+                                needBaseUrl, baseUrl);
+                        if (url != null) {
+                            break;
+                        }
                     }
                 }
             }
@@ -180,12 +185,19 @@ public class DocumentViewCodecService extends DefaultComponent implements
     public String getUrlFromDocumentView(String codecName,
             DocumentView docView, boolean needBaseUrl, String baseUrl) {
         DocumentViewCodec codec = getCodec(codecName);
-        if (codec.handleDocumentView(docView)) {
+        return getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
+    }
+
+    protected String getUrlFromDocumentView(DocumentViewCodec codec,
+            DocumentView docView, boolean needBaseUrl, String baseUrl) {
+        if (codec != null) {
             String partialUrl = codec.getUrlFromDocumentView(docView);
-            if (needBaseUrl && baseUrl != null) {
-                return baseUrl + partialUrl;
-            } else {
-                return partialUrl;
+            if (partialUrl != null) {
+                if (needBaseUrl && baseUrl != null) {
+                    return baseUrl + partialUrl;
+                } else {
+                    return partialUrl;
+                }
             }
         }
         return null;
@@ -193,16 +205,21 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl,
             String baseUrl) {
-        String defaultCodecName = getDefaultCodecName();
-        DocumentView docView = getDocumentViewFromUrl(defaultCodecName, url,
-                hasBaseUrl, baseUrl);
+        DocumentView docView = null;
+        String finalUrl = getUrlWithoutBase(url, hasBaseUrl, baseUrl);
+        DocumentViewCodec codec = getCodec(getDefaultCodecName());
+        if (codec != null && codec.handleUrl(finalUrl)) {
+            docView = getDocumentViewFromUrl(codec, finalUrl);
+        }
         if (docView == null) {
             for (String codecName : descriptors.keySet()) {
                 if (!codecName.equals(defaultCodecName)) {
-                    docView = getDocumentViewFromUrl(codecName, url,
-                            hasBaseUrl, baseUrl);
-                    if (docView != null) {
-                        break;
+                    codec = getCodec(codecName);
+                    if (codec != null && codec.handleUrl(finalUrl)) {
+                        docView = getDocumentViewFromUrl(codec, finalUrl);
+                        if (docView != null) {
+                            break;
+                        }
                     }
                 }
             }
@@ -212,17 +229,28 @@ public class DocumentViewCodecService extends DefaultComponent implements
 
     public DocumentView getDocumentViewFromUrl(String codecName, String url,
             boolean hasBaseUrl, String baseUrl) {
+        DocumentViewCodec codec = getCodec(codecName);
+        String finalUrl = getUrlWithoutBase(url, hasBaseUrl, baseUrl);
+        return getDocumentViewFromUrl(codec, finalUrl);
+    }
+
+    protected String getUrlWithoutBase(String url, boolean hasBaseUrl,
+            String baseUrl) {
         if (hasBaseUrl && baseUrl != null) {
             if (url.startsWith(baseUrl)) {
                 url = url.substring(baseUrl.length());
             }
         }
-        DocumentViewCodec codec = getCodec(codecName);
-        DocumentView docView = null;
-        if (codec.handleUrl(url)) {
-            docView = codec.getDocumentViewFromUrl(url);
+        return url;
+    }
+
+    protected DocumentView getDocumentViewFromUrl(DocumentViewCodec codec,
+            String finalUrl) {
+        if (codec != null) {
+            DocumentView docView = codec.getDocumentViewFromUrl(finalUrl);
+            return docView;
         }
-        return docView;
+        return null;
     }
 
 }
