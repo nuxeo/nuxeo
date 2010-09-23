@@ -117,7 +117,11 @@ public class DefaultQueueHandler implements QueueHandler {
         log.debug("Processing " + name);
         QueueProcessor<C> executor = registry.getProcessor(name);
         persister.setExecuteTime(name, new Date());
-        executor.process(info);
+        try {
+            executor.process(info);
+        } catch (Throwable e) {
+            log.error("Processor throwed an error while processing "+ name);
+        }
     }
 
     protected boolean isServerActive()  {
