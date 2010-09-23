@@ -20,7 +20,7 @@
           place below and then keep the same path part ... some providers (like Atlassian)
           allow you to supply this on their config panel as well but it appears that
           the value here overrides the value there... this value must NOT end in slash!-->
-      <oauthCallbackUrl>${nuxeo.url}/opensocial/gadgets/oauthcallback</oauthCallbackUrl>
+      <oauthCallbackUrl>${shindig.signing.global-callback-url}</oauthCallbackUrl>
 
       <!--very few folks need to use this, it's only needed if you want to use
           different servers than the "all in one shindig + nuxeo" configuration -->
@@ -107,43 +107,23 @@ rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
    nuxeo being a consumer... and thus nuxeo can run their
    gadgets that need oauth -->
   <oauthservices>
+    <!-- 
     <oauthservice>
-      <!--these are gadgets that are displayed on the nuxeo dashboard that need oauth-->
-      <gadgetUrl>http://marge:8080/nuxeo/site/gadgets/confluencefeed/confluencefeed.xml</gadgetUrl>
-      <!--this must match the service name in the gadget's oauth service section.. if you don't see
-          such a service name, leave this blank and the service name will default to "" -->
+      these are gadgets that are displayed on the nuxeo dashboard that need oauth
+      <gadgetUrl>http://hostname:port/nuxeo/site/gadgets/confluencefeed/confluencefeed.xml</gadgetUrl>
+      
+      this must match the service name in the gadget's oauth service section.. if you don't see
+          such a service name, leave this blank and the service name will default to ""
       <serviceName></serviceName>
-      <!--this is something you supply to the service provider... it's just a string -->
+      
+      this is something you supply to the service provider... it's just a string
       <consumerKey>nuxeo-opensocial</consumerKey>
-      <!--if you leave this blank, we will use the RSA key defined above as the externalPrivateKey... this
-      is only needed if you want to use a special, different key for this service provider -->
+
+      if you leave this blank, we will use the RSA key defined above as the externalPrivateKey... this
+      is only needed if you want to use a special, different key for this service provider
       <consumerSecret></consumerSecret>
     </oauthservice>
-    <oauthservice>
-      <gadgetUrl>http://marge:7070/rest/gadgets/1.0/g/com.atlassian.streams.confluence:activitystream-gadget/gadgets/conf-activitystream-gadget.xml</gadgetUrl>
-      <serviceName></serviceName>
-      <consumerKey>nuxeo-opensocial</consumerKey>
-      <consumerSecret></consumerSecret>
-    </oauthservice>
-    <oauthservice>
-      <gadgetUrl>http://marge:7070/rest/gadgets/1.0/g/com.atlassian.confluence.plugins.gadgets:gadget-search/gadgets/gadget-search.xml
-      </gadgetUrl>
-      <serviceName></serviceName>
-      <consumerKey>nuxeo-opensocial</consumerKey>
-      <consumerSecret></consumerSecret>
-    </oauthservice>
-    <oauthservice>
-      <gadgetUrl>http://atlas.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:assigned-to-me-gadget/gadgets/assigned-to-me-gadget.xml</gadgetUrl>
-      <serviceName></serviceName>
-      <consumerKey>nuxeo-opensocial</consumerKey>
-      <consumerSecret></consumerSecret>
-    </oauthservice>
-    <oauthservice>
-      <gadgetUrl>http://lisa.in.nuxeo.com/jira4/rest/gadgets/1.0/g/com.atlassian.jira.gadgets:road-map-gadget/gadgets/roadmap-gadget.xml</gadgetUrl>
-      <serviceName></serviceName>
-      <consumerKey>nuxeo-opensocial</consumerKey>
-      <consumerSecret></consumerSecret>
-    </oauthservice>
+     -->
   </oauthservices>
   
   
@@ -154,7 +134,7 @@ rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
       to access the dashboard. List should be colon separated.
      -->
      <trustedHosts>
-      localhost:127.0.0.1:lisa
+      localhost:127.0.0.1
      </trustedHosts>
 
   </opensocial>
