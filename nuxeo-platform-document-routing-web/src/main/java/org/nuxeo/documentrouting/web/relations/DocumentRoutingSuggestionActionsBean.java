@@ -55,7 +55,7 @@ public class DocumentRoutingSuggestionActionsBean extends
      */
     private static final long serialVersionUID = 1L;
 
-    public static final String CURRENT_DOC_ROUTING_RELATION_SEARCH = "CURRENT_DOC_ROUTING_RELATION_SEARCH";
+    public static final String CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC = "CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -64,7 +64,7 @@ public class DocumentRoutingSuggestionActionsBean extends
         return documentManager.getDocument(new IdRef(id));
     }
 
-    public List<DocumentModel> getDocumentRelationSuggestions(Object input)
+    public List<DocumentModel> getDocumentSuggestions(Object input)
             throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         try {
@@ -73,7 +73,7 @@ public class DocumentRoutingSuggestionActionsBean extends
                 return docs;
             }
 
-            QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(CURRENT_DOC_ROUTING_RELATION_SEARCH);
+            QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC);
             if (qmDescriptor == null) {
                 return docs;
             }

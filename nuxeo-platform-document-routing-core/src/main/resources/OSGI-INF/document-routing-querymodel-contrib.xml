@@ -6,7 +6,7 @@
     target="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService"
     point="model">
 
-    <queryModel name="CURRENT_DOC_ROUTING_RELATION_SEARCH">
+    <queryModel name="CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType != 'Folderish'
         AND ecm:currentLifeCycleState = 'deleted' AND dc:title LIKE ?
