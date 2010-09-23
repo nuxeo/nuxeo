@@ -115,7 +115,7 @@ def randomBinary(n):
 
 
 def main():
-    N = 100
+    N = 20
     
     print "Test folders"
     testFolders(N)
@@ -126,11 +126,14 @@ def main():
     print "Test binary files, serial"
     testBinary(N)
 
-    print "Test existing files, serial"
+    print "Test simple text files, parallel (x2)"
+    testSimpleTextMultiProcess(N, 2)
+
+    print "Test simple text files, parallel (x10)"
+    testSimpleTextMultiProcess(N, 10)
+
+    print "Test existing (big) files, serial"
     testWithExistingContent(STUFF, N)
     
-    #print "Test simple text files, parallel"
-    #testSimpleTextMultiProcess(N, 2)
-
 if __name__ == "__main__":
     main()
