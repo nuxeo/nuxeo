@@ -40,8 +40,18 @@ public class DocumentLocationImpl implements DocumentLocation {
     public DocumentLocationImpl(DocumentModel doc) {
         serverName = doc.getRepositoryName();
         docRef = doc.getRef();
-        docIdRef = new IdRef(doc.getId());
-        docPathRef = new PathRef(doc.getPathAsString());
+        String id = doc.getId();
+        if (id != null) {
+            docIdRef = new IdRef(id);
+        } else {
+            docIdRef = null;
+        }
+        String path = doc.getPathAsString();
+        if (path != null) {
+            docPathRef = new PathRef(path);
+        } else {
+            docPathRef = null;
+        }
     }
 
     public DocumentLocationImpl(final String serverName, final IdRef idRef,
