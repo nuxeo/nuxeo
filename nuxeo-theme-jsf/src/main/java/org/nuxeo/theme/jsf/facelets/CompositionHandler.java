@@ -15,25 +15,33 @@
 package org.nuxeo.theme.jsf.facelets;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.ApplicationType;
+import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.jsf.negotiation.JSFNegotiator;
+import org.nuxeo.theme.negotiation.NegotiationException;
+import org.nuxeo.theme.types.TypeFamily;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.DefineHandler;
@@ -47,50 +55,46 @@ import com.sun.facelets.tag.ui.ParamHandler;
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
 
-    private static final Logger log = Logger.getLogger("facelets.tag.ui.composition");
+    private static final Log log = LogFactory.getLog(CompositionHandler.class);
 
-    public final static String Name = "composition";
+    public static final String Name = "theme";
 
-    protected final TagAttribute template;
-
-    protected final Map handlers;
+    protected final Map<String, DefineHandler> handlers;
 
     protected final ParamHandler[] params;
+
+    static {
+        Manager.initializeProtocols();
+    }
 
     /**
      * @param config
      */
     public CompositionHandler(TagConfig config) {
         super(config);
-        this.template = this.getAttribute("template");
-        if (this.template != null) {
-            this.handlers = new HashMap();
-            Iterator itr = this.findNextByType(DefineHandler.class);
-            DefineHandler d = null;
-            while (itr.hasNext()) {
-                d = (DefineHandler) itr.next();
-                this.handlers.put(d.getName(), d);
-                if (log.isLoggable(Level.FINE)) {
-                    log.fine(tag + " found Define[" + d.getName() + "]");
-                }
-            }
-            List paramC = new ArrayList();
-            itr = this.findNextByType(ParamHandler.class);
-            while (itr.hasNext()) {
-                paramC.add(itr.next());
-            }
-            if (paramC.size() > 0) {
-                this.params = new ParamHandler[paramC.size()];
-                for (int i = 0; i < this.params.length; i++) {
-                    this.params[i] = (ParamHandler) paramC.get(i);
-                }
-            } else {
-                this.params = null;
+
+        handlers = new HashMap<String, DefineHandler>();
+        Iterator<DefineHandler> itr = this.findNextByType(DefineHandler.class);
+        DefineHandler d = null;
+        while (itr.hasNext()) {
+            d = itr.next();
+            this.handlers.put(d.getName(), d);
+            log.debug(tag + " found Define[" + d.getName() + "]");
+        }
+        final List paramC = new ArrayList();
+        itr = this.findNextByType(ParamHandler.class);
+        while (itr.hasNext()) {
+            paramC.add(itr.next());
+        }
+        if (paramC.size() > 0) {
+            this.params = new ParamHandler[paramC.size()];
+            for (int i = 0; i < this.params.length; i++) {
+                this.params[i] = (ParamHandler) paramC.get(i);
             }
         } else {
             this.params = null;
-            this.handlers = null;
         }
+
     }
 
     /*
@@ -103,31 +107,64 @@ public final class CompositionHandler extends TagHandler implements
     @Override
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        if (this.template != null) {
-            VariableMapper orig = ctx.getVariableMapper();
-            if (this.params != null) {
-                VariableMapper vm = new VariableMapperWrapper(orig);
-                ctx.setVariableMapper(vm);
-                for (int i = 0; i < this.params.length; i++) {
-                    this.params[i].apply(ctx, parent);
+
+        VariableMapper orig = ctx.getVariableMapper();
+        if (this.params != null) {
+            VariableMapper vm = new VariableMapperWrapper(orig);
+            ctx.setVariableMapper(vm);
+            for (int i = 0; i < this.params.length; i++) {
+                this.params[i].apply(ctx, parent);
+            }
+        }
+
+        ctx.extendClient(this);
+
+        try {
+            final FacesContext facesContext = ctx.getFacesContext();
+
+            // Get the negotiation strategy
+            final ExternalContext external = facesContext.getExternalContext();
+            final Map<String, Object> requestMap = external.getRequestMap();
+            final String root = external.getRequestContextPath();
+            final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.APPLICATION, root);
+            String strategy = null;
+            if (application != null) {
+                final NegotiationDef negotiation = application.getNegotiation();
+                if (negotiation != null) {
+                    requestMap.put("nxthemesDefaultTheme",
+                            negotiation.getDefaultTheme());
+                    requestMap.put("nxthemesDefaultEngine",
+                            negotiation.getDefaultEngine());
+                    requestMap.put("nxthemesDefaultPerspective",
+                            negotiation.getDefaultPerspective());
+                    strategy = negotiation.getStrategy();
                 }
             }
 
-            ctx.extendClient(this);
-            String path = null;
-            try {
-                path = this.template.getValue(ctx);
-                ctx.includeFacelet(parent, path);
-            } catch (IOException e) {
-                throw new TagAttributeException(this.tag, this.template,
-                        "Invalid path : " + path);
-            } finally {
-                ctx.popClient(this);
-                ctx.setVariableMapper(orig);
+            if (strategy == null) {
+                log.error("Could not obtain the negotiation strategy for "
+                        + root);
+                external.redirect("/nuxeo/nxthemes/error/negotiationStrategyNotSet.faces");
+
+            } else {
+                try {
+                    final String spec = new JSFNegotiator(strategy,
+                            facesContext).getSpec();
+                    final URL themeUrl = new URL(spec);
+                    requestMap.put("nxthemesThemeUrl", themeUrl);
+                    ctx.includeFacelet(parent, themeUrl);
+                } catch (NegotiationException e) {
+                    log.error("Could not get default negotiation settings.", e);
+                    external.redirect("/nuxeo/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                }
             }
-        } else {
-            this.nextHandler.apply(ctx, parent);
+
+        } finally {
+            ctx.popClient(this);
+            ctx.setVariableMapper(orig);
         }
+
     }
 
     @Override
@@ -137,7 +174,7 @@ public final class CompositionHandler extends TagHandler implements
             if (this.handlers == null) {
                 return false;
             }
-            DefineHandler handler = (DefineHandler) this.handlers.get(name);
+            DefineHandler handler = this.handlers.get(name);
             if (handler != null) {
                 handler.applyDefinition(ctx, parent);
                 return true;
