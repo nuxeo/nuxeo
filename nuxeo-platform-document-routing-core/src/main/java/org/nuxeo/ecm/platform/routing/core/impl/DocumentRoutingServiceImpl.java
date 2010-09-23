@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {

@@ -16,14 +16,9 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -51,7 +46,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         service.validateRouteModel(route, session);
         session.save();
-        waitForAsyncExec();        
+        waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
@@ -65,7 +60,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
         assertEquals(1, routes.size());
     }
-    
+
     public void testRouteModel() throws ClientException{
         DocumentModel folder = createDocumentModel(session, "TestFolder", "Folder", "/");
         session.save();
@@ -82,7 +77,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertFalse(session.hasPermission(route.getRef(), SecurityConstants.WRITE));
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
     }
-    
+
     private void setPermissionToUser(DocumentModel doc, String username, String... perms)
             throws ClientException {
         ACP acp = doc.getACP();
@@ -97,7 +92,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         doc.setACP(acp, true);
         session.save();
     }
-    
+
     protected void waitForAsyncExec() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
