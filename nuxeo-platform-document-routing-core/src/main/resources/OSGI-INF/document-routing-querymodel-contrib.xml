@@ -9,7 +9,7 @@
     <queryModel name="CURRENT_DOC_ROUTING_RELATION_SEARCH">
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType != 'Folderish'
-        AND ecm:currentLifeCycleState = 'validated' AND dc:title LIKE ?
+        AND ecm:currentLifeCycleState = 'deleted' AND dc:title LIKE ?
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />
