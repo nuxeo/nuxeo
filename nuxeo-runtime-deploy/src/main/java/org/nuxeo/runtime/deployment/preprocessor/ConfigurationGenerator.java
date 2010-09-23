@@ -187,7 +187,9 @@ public class ConfigurationGenerator {
                 log.info("No current configuration, generating files...");
                 generateFiles();
             } else if (forceGeneration) {
-                log.info("Configuration files generation (nuxeo.force.generation=true)...");
+                log.info("Configuration files generation (nuxeo.force.generation="
+                        + userConfig.getProperty(PARAM_FORCE_GENERATION,
+                                "false") + ")...");
                 generateFiles();
             } else {
                 log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
