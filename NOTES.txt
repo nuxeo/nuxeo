@@ -1,0 +1,119 @@
+Specific
+========
+
+Embedded server: 1m08
+Tomcat: 2m39
+
+PostMark benchmark results
+==========================
+
+All tests run on the samemachine (my Macbook).
+
+In the Tomcat server
+--------------------
+
+Time:
+        325 seconds total
+        139 seconds of transactions (3 per second)
+
+Files:
+        748 created (2 per second)
+                Creation alone: 500 files (4 per second)
+                Mixed with transactions: 248 files (1 per second)
+        232 read (1 per second)
+        268 appended (1 per second)
+        748 deleted (2 per second)
+                Deletion alone: 496 files (6 per second)
+                Mixed with transactions: 252 files (1 per second)
+
+Data:
+        1.21 megabytes read (3.80 kilobytes per second)
+        4.26 megabytes written (13.41 kilobytes per second)
+
+Using the embedded server
+-------------------------
+
+Time:
+        45 seconds total
+        17 seconds of transactions (29 per second)
+
+Files:
+        748 created (16 per second)
+                Creation alone: 500 files (20 per second)
+                Mixed with transactions: 248 files (14 per second)
+        232 read (13 per second)
+        268 appended (15 per second)
+        748 deleted (16 per second)
+                Deletion alone: 496 files (165 per second)
+                Mixed with transactions: 252 files (14 per second)
+
+Data:
+        1.21 megabytes read (27.44 kilobytes per second)
+        4.26 megabytes written (96.86 kilobytes per second)
+
+Baseline: on a SMB-mounted NAS
+------------------------------
+
+Time:
+        277 seconds total
+        63 seconds of transactions (7 per second)
+
+Files:
+        748 created (2 per second)
+                Creation alone: 500 files (2 per second)
+                Mixed with transactions: 248 files (3 per second)
+        232 read (3 per second)
+        268 appended (4 per second)
+        748 deleted (2 per second)
+                Deletion alone: 496 files (17 per second)
+                Mixed with transactions: 252 files (4 per second)
+
+Data:
+        1.21 megabytes read (4.46 kilobytes per second)
+        4.26 megabytes written (15.73 kilobytes per second)
+
+
+Baseline: HD Filesystem on the Mac
+----------------------------------
+
+Time:
+        1 seconds total
+        1 seconds of transactions (500 per second)
+
+Files:
+        748 created (748 per second)
+                Creation alone: 500 files (500 per second)
+                Mixed with transactions: 248 files (248 per second)
+        232 read (232 per second)
+        268 appended (268 per second)
+        748 deleted (748 per second)
+                Deletion alone: 496 files (496 per second)
+                Mixed with transactions: 252 files (252 per second)
+
+Data:
+        1.21 megabytes read (1.21 megabytes per second)
+        4.26 megabytes written (4.26 megabytes per second)
+
+
+Baseline: Zope
+--------------
+
+Time:
+        66 seconds total
+        26 seconds of transactions (19 per second)
+
+Files:
+        748 created (11 per second)
+                Creation alone: 500 files (15 per second)
+                Mixed with transactions: 248 files (9 per second)
+        232 read (8 per second)
+        268 appended (10 per second)
+        748 deleted (11 per second)
+                Deletion alone: 496 files (70 per second)
+                Mixed with transactions: 252 files (9 per second)
+
+Data:
+        1.21 megabytes read (18.71 kilobytes per second)
+        4.26 megabytes written (66.04 kilobytes per second)
+
+

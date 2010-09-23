@@ -22,20 +22,18 @@ package org.nuxeo.ecm.webdav;
 import net.java.dev.webdav.jaxrs.xml.conditions.*;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringWriter;
 
 /**
  * Utility functions.
@@ -45,7 +43,6 @@ public class Util {
     private static final Log log = LogFactory.getLog(Util.class);
 
     private static CoreSession session;
-    private static Unmarshaller unmarshaller;
 
     // Utility class.
     private Util() {
@@ -85,10 +82,7 @@ public class Util {
     }
 
     public static Unmarshaller getUnmarshaller() throws JAXBException {
-        if (unmarshaller == null) {
-            unmarshaller = getJaxbContext().createUnmarshaller();
-        }
-        return unmarshaller;
+        return getJaxbContext().createUnmarshaller();
     }
 
     // For debugging.

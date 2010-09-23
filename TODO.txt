@@ -1,0 +1,5 @@
+TODO
+====
+
+- Objects without a "file" property should be mapped to a file of zero length.
+
