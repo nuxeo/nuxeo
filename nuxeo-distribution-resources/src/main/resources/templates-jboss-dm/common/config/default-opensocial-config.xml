@@ -20,7 +20,7 @@
           place below and then keep the same path part ... some providers (like Atlassian)
           allow you to supply this on their config panel as well but it appears that
           the value here overrides the value there... this value must NOT end in slash!-->
-      <oauthCallbackUrl>http://192.168.2.203:8080/nuxeo/opensocial/gadgets/oauthcallback</oauthCallbackUrl>
+      <oauthCallbackUrl>${nuxeo.url}/opensocial/gadgets/oauthcallback</oauthCallbackUrl>
 
       <!--very few folks need to use this, it's only needed if you want to use
           different servers than the "all in one shindig + nuxeo" configuration -->
