@@ -24,8 +24,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.component.ValueHolder;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ActionEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +41,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.deployment.preprocessor.ConfigurationException;
 import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
 
@@ -46,6 +52,20 @@ public class SetupWizardActionBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected static final Log log = LogFactory.getLog(SetupWizardActionBean.class);
+
+    private final static String[] managedKeyParameters = new String[] {
+            "nuxeo.bind.address", "nuxeo.url", "org.nuxeo.ecm.instance.name",
+            "org.nuxeo.ecm.instance.description",
+            ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "nuxeo.db.name",
+            "nuxeo.db.user", "nuxeo.db.password", "nuxeo.db.host",
+            "nuxeo.db.port", "nuxeo.db.min-pool-size",
+            "nuxeo.db.min-pool-size", "nuxeo.db.max-pool-size",
+            "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
+            "nuxeo.notification.eMailSubjectPrefix", "mailservice.user",
+            "mailservice.password", "mail.store.protocol",
+            "mail.transport.protocol", "mail.pop3.host", "mail.debug",
+            "mail.smtp.host", "mail.smtp.port", "mail.smtp.auth",
+            "mail.smtp.username", "mail.smtp.password", "mail.from" };
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -63,6 +83,19 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     protected static boolean needsRestart = false;
+
+    protected boolean configurable = false;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    @Factory(value = "configurable", scope = ScopeType.PAGE)
+    public boolean isConfigurable() {
+        if (configGenerator==null) {
+            readParameters();
+        }
+        return configurable;
+    }
 
     private ConfigurationGenerator configGenerator;
 
@@ -84,77 +117,72 @@ public class SetupWizardActionBean implements Serializable {
     protected void readParameters() {
         configGenerator = new ConfigurationGenerator();
         configGenerator.init();
-        userConfig = configGenerator.getUserConfig();
+        configurable = configGenerator.isConfigurable();
+        if (configurable) {
+            setParameters();
+        } else {
+            log.debug("Server not configurable !");
+        }
+    }
 
+    private void setParameters() {
+        userConfig = configGenerator.getUserConfig();
         parameters = new HashMap<String, String>();
-        advancedParameters = new HashMap<String, String>();
+        advancedParameters = new TreeMap<String, String>();
         // will remove managed parameters later, let only advanced parameters
         for (String key : userConfig.stringPropertyNames()) {
             advancedParameters.put(key, userConfig.getProperty(key).trim());
         }
-
-        setParamater("nuxeo.bind.address");
-        setParamater("nuxeo.url");
-        setParamater("org.nuxeo.ecm.instance.name");
-        setParamater("org.nuxeo.ecm.instance.description");
-
-        setParamater("nuxeo.notification.eMailSubjectPrefix");
-        setParamater("mailservice.user");
-        setParamater("mailservice.password");
-        setParamater("mail.store.protocol");
-        setParamater("mail.transport.protocol");
-        setParamater("mail.pop3.host");
-        setParamater("mail.debug");
-        setParamater("mail.smtp.host");
-        setParamater("mail.smtp.port");
-        setParamater("mail.smtp.auth");
-        setParamater("mail.smtp.username");
-        setParamater("mail.smtp.password");
-        setParamater("mail.from");
-
-        setParamater("nuxeo.db.name");
-        setParamater("nuxeo.db.user");
-        setParamater("nuxeo.db.password");
-        setParamater("nuxeo.db.host");
-        setParamater("nuxeo.db.port");
-        setParamater("nuxeo.db.min-pool-size");
-        setParamater("nuxeo.db.max-pool-size");
-        setParamater("nuxeo.vcs.min-pool-size");
-        setParamater("nuxeo.vcs.max-pool-size");
+        for (String keyParam : managedKeyParameters) {
+            setParameter(keyParam);
+        }
+        Contexts.getPageContext().remove("setupParams");
+        Contexts.getPageContext().remove("advancedParams");
     }
 
     /**
      * @param key parameter key such as used in templates and nuxeo.conf
      */
-    private void setParamater(String key) {
-        parameters.put(key, userConfig.getProperty(key).trim());
-        advancedParameters.remove(key);
+    private void setParameter(String key) {
+        String parameter = userConfig.getProperty(key);
+        if (parameter != null) {
+            parameters.put(key, parameter.trim());
+            advancedParameters.remove(key);
+        }
     }
 
     public void save() {
         saveParameters();
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "label.parameters.saved");
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("label.parameters.saved"));
         needsRestart = true;
         resetParameters();
     }
 
     protected void saveParameters() {
+        // Calculates new templates string
+        String currentDB = parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
+        advancedParameters.put(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
+                rebuildTemplatesStr(currentDB));
+
+        // Build a Map of changed parameters for ConfigurationGenerator
         Map<String, String> changedParameters = new HashMap<String, String>();
         for (String key : parameters.keySet()) {
-            if (userConfig.getProperty(key) == null
-                    || !userConfig.getProperty(key).trim().equals(
-                            parameters.get(key).trim())) {
+            String oldParam = userConfig.getProperty(key);
+            String newParam = parameters.get(key).trim();
+            if (oldParam == null && !newParam.isEmpty() || oldParam != null
+                    && !oldParam.trim().equals(newParam)) {
                 changedParameters.put(key, parameters.get(key).trim());
             }
         }
         for (String key : advancedParameters.keySet()) {
-            if (userConfig.getProperty(key) == null
-                    || !userConfig.getProperty(key).trim().equals(
-                            advancedParameters.get(key).trim())) {
+            String oldParam = userConfig.getProperty(key);
+            String newParam = advancedParameters.get(key).trim();
+            if (oldParam == null && !newParam.isEmpty() || oldParam != null
+                    && !oldParam.trim().equals(newParam)) {
                 changedParameters.put(key, advancedParameters.get(key).trim());
             }
         }
-
         try {
             configGenerator.saveConfiguration(changedParameters);
         } catch (ConfigurationException e) {
@@ -162,11 +190,30 @@ public class SetupWizardActionBean implements Serializable {
         }
     }
 
-    protected void resetParameters() {
+    public void resetParameters() {
         readParameters();
-        Contexts.getPageContext().remove("setupParams");
-        Contexts.getPageContext().remove("advancedParams");
         Contexts.getEventContext().remove("setupRequiresRestart");
+    }
+
+    public void templateChange(ActionEvent event) {
+        String dbTemplate;
+        UIComponent select = event.getComponent().getParent();
+        if (select instanceof ValueHolder) {
+            dbTemplate = (String) ((ValueHolder) select).getValue();
+        } else {
+            log.error("Bad component returned " + select);
+            throw new AbortProcessingException("Bad component returned "
+                    + select);
+        }
+        configGenerator.changeTemplates(rebuildTemplatesStr(dbTemplate));
+        setParameters();
+    }
+
+    private String rebuildTemplatesStr(String dbTemplate) {
+        String nodbTemplates = advancedParameters.get(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
+        String templates = nodbTemplates.isEmpty() ? dbTemplate : dbTemplate
+                + "," + nodbTemplates;
+        return templates;
     }
 
 }
