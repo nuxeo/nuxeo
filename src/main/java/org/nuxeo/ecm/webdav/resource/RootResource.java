@@ -38,10 +38,16 @@ import java.security.Principal;
 @Path("dav")
 public class RootResource {
 
+    static String rootPath;
+
     private static final Log log = LogFactory.getLog(RootResource.class);
 
     public RootResource(@Context HttpServletRequest request) {
         log.info(request.getMethod() + " " + request.getRequestURI());
+        if (rootPath == null) {
+            rootPath = request.getContextPath() + request.getServletPath();
+            log.info(rootPath);
+        }
     }
 
     @GET

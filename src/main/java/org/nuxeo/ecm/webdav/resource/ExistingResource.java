@@ -115,8 +115,8 @@ public class ExistingResource extends AbstractResource {
             destPath = destPath.substring(0, destPath.length() - 1);
         }
 
-        // FIXME: needs more attention
-        destPath = destPath.substring(Constants.DAV_HOME.length(), destPath.length());
+        destPath = destPath.substring(
+                RootResource.rootPath.length() + Constants.DAV_HOME.length(), destPath.length());
         log.info("to " + destPath);
 
         if (lockManager.isLocked(destPath)) {
