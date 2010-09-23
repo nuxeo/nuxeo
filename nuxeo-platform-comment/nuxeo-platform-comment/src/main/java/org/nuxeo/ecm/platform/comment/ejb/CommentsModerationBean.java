@@ -33,8 +33,8 @@ import org.nuxeo.runtime.api.Framework;
 
 @Stateless
 @Remote(CommentsModerationService.class)
-@Local(CommentsModerationService.class)
-public class CommentsModerationBean implements CommentsModerationService {
+@Local(CommentsModerationLocal.class)
+public class CommentsModerationBean implements CommentsModerationLocal {
 
     protected CommentsModerationService getCommentsModerationService() {
         return Framework.getLocalService(CommentsModerationService.class);
@@ -42,7 +42,8 @@ public class CommentsModerationBean implements CommentsModerationService {
 
     public void approveComent(CoreSession session, DocumentModel document,
             String commentId) throws ClientException {
-        getCommentsModerationService().approveComent(session, document, commentId);
+        getCommentsModerationService().approveComent(session, document,
+                commentId);
     }
 
     public void publishComment(CoreSession session, DocumentModel comment)
@@ -52,13 +53,15 @@ public class CommentsModerationBean implements CommentsModerationService {
 
     public void rejectComment(CoreSession session, DocumentModel document,
             String commentId) throws ClientException {
-        getCommentsModerationService().rejectComment(session, document, commentId);
+        getCommentsModerationService().rejectComment(session, document,
+                commentId);
     }
 
     public void startModeration(CoreSession session, DocumentModel document,
             String commentId, ArrayList<String> moderators)
             throws ClientException {
-        getCommentsModerationService().startModeration(session, document, commentId, moderators);
+        getCommentsModerationService().startModeration(session, document,
+                commentId, moderators);
     }
 
 }

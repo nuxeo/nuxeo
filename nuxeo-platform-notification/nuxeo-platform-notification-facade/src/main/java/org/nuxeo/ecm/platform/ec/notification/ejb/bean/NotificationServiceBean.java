@@ -43,12 +43,12 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- *
+ * 
  */
 @Stateless
 @Local(NotificationServiceLocal.class)
 @Remote(NotificationManager.class)
-public class NotificationServiceBean implements NotificationManager {
+public class NotificationServiceBean implements NotificationServiceLocal {
 
     // @PersistenceContext(unitName="nxplacefulservice")
     // EntityManager em;
@@ -125,9 +125,7 @@ public class NotificationServiceBean implements NotificationManager {
         service.sendNotification(notificationName, infoMap, userPrincipal);
     }
 
-
-    public List<Notification> getNotificationsForEvents(String eventId)
-    {
+    public List<Notification> getNotificationsForEvents(String eventId) {
         return service.getNotificationsForEvents(eventId);
     }
 }

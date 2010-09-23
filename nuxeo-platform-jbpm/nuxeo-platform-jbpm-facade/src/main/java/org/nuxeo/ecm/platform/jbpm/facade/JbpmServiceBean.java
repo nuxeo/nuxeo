@@ -36,20 +36,20 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.jbpm.JbpmActorsListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmOperation;
+import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy.Action;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmRuntimeException;
-import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy.Action;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 @Stateless
-@Local(JbpmService.class)
+@Local(JbpmServiceLocal.class)
 @Remote(JbpmService.class)
-public class JbpmServiceBean implements JbpmService {
+public class JbpmServiceBean implements JbpmServiceLocal {
 
     private JbpmService service;
 

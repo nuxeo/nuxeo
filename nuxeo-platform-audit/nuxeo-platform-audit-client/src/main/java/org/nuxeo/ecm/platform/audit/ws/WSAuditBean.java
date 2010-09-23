@@ -49,17 +49,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audit Web Service bean.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Stateless
 @SerializedConcurrentAccess
-@Local(WSAudit.class)
+@Local(WSAuditLocal.class)
 @Remote(WSAudit.class)
 @WebService(name = "WSAuditInterface", serviceName = "WSAuditService")
 @SOAPBinding(style = Style.DOCUMENT)
-public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
+public class WSAuditBean extends AbstractNuxeoWebService implements
+        WSAuditLocal {
 
     private static final long serialVersionUID = 1L;
 
@@ -80,7 +81,8 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     @WebMethod
     public ModifiedDocumentDescriptor[] listModifiedDocuments(
             @WebParam(name = "sessionId") String sessionId,
-            @WebParam(name = "dataRangeQuery") String dateRangeQuery) throws AuditException {
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery)
+            throws AuditException {
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
@@ -167,7 +169,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             throw new AuditException(ce.getMessage(), ce);
         }
 
-        String[] eventIds = {"documentRemoved"};
+        String[] eventIds = { "documentRemoved" };
 
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
                 dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
@@ -235,7 +237,8 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         } catch (ClientException ce) {
             throw new AuditException(ce.getMessage(), ce);
         }
-        String[] docCategories = {EVENT_DOCUMENT_CATEGORY, EVENT_LIFE_CYCLE_CATEGORY};
+        String[] docCategories = { EVENT_DOCUMENT_CATEGORY,
+                EVENT_LIFE_CYCLE_CATEGORY };
 
         List<LogEntry> logEntries;
         if (dateRangeQuery != null && dateRangeQuery.length() > 0) {

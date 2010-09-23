@@ -19,15 +19,12 @@
 
 package org.nuxeo.ecm.platform.comment.ejb;
 
-import javax.ejb.Local;
-
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * 
  */
-@Local
 public interface CommentManagerLocal extends CommentManager {
 
 }

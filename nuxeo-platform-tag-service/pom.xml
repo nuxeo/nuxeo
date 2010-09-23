@@ -18,9 +18,13 @@
   <modules>
     <module>nuxeo-platform-tag-api</module>
     <module>nuxeo-platform-tag-core</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue -->
+    <module>nuxeo-platform-tag-facade</module>
+    <module>nuxeo-platform-tag-web</module>
   </modules>
 
   <profiles>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue
     <profile>
       <id>no-osgi</id>
       <activation>
@@ -31,6 +35,7 @@
         <module>nuxeo-platform-tag-web</module>
       </modules>
     </profile>
+    -->
   </profiles>
 
   <!-- Deps -->

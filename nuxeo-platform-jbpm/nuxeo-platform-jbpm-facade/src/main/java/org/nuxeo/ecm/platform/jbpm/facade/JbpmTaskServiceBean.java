@@ -37,13 +37,13 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * EJB facade for the {@link JbpmTaskService}
- *
+ * 
  * @author Anahide Tchertchian
  */
 @Stateless
-@Local(JbpmTaskService.class)
+@Local(JbpmTaskServiceLocal.class)
 @Remote(JbpmTaskService.class)
-public class JbpmTaskServiceBean implements JbpmTaskService {
+public class JbpmTaskServiceBean implements JbpmTaskServiceLocal {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,8 +63,8 @@ public class JbpmTaskServiceBean implements JbpmTaskService {
         service.acceptTask(coreSession, principal, task, comment);
     }
 
-    public boolean canEndTask(NuxeoPrincipal principal,
-            TaskInstance task) throws NuxeoJbpmException {
+    public boolean canEndTask(NuxeoPrincipal principal, TaskInstance task)
+            throws NuxeoJbpmException {
         return service.canEndTask(principal, task);
     }
 
