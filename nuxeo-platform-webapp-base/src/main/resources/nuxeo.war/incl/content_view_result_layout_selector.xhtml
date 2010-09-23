@@ -30,6 +30,16 @@ Needed parameters:
         </c:forEach>
       </ul>
     </c:if>
+    <ul class="layoutViewMode" style="display:inline;">
+      <li>
+        <h:commandLink action="#{contentView.refreshPageProvider()}"
+          reRender="contentViewAjaxRegion_#{contentViewListIndex}">
+          <h:graphicImage value="/img/refresh.png"
+            alt="#{messages['label.refresh']}"
+            title="#{messages['label.refresh']}" />
+        </h:commandLink>
+      </li>
+    </ul>
 
   </h:form>
 </div>
@@ -38,7 +48,9 @@ Needed parameters:
   <c:if test="#{contentView.useGlobalPageSize}">
     <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}">
 
-      <p class="contentViewPageSelectorDesc"><h:outputText value="#{messages['label.content.view.page.selector.description']}" /></p>
+      <p class="contentViewPageSelectorDesc">
+        <h:outputText value="#{messages['label.content.view.page.selector.description']}" />
+      </p>
       <h:selectOneMenu value="#{contentViewActions.currentGlobalPageSize}"
         id="contentViewPageSizeSelector"
         styleClass="langSelect"
