@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
@@ -45,10 +44,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Mariana Cedica
  */
-@Name("docRoutingRelationActions")
+@Name("docRoutingSuggestionActions")
 @Scope(CONVERSATION)
 @AutomaticDocumentBasedInvalidation
-public class DocumentRoutingRelationActionsBean extends
+public class DocumentRoutingSuggestionActionsBean extends
         DocumentContextBoundActionBean implements Serializable {
 
     /**
@@ -80,8 +79,7 @@ public class DocumentRoutingRelationActionsBean extends
             }
 
             List<Object> queryParams = new ArrayList<Object>();
-            queryParams.add(0, computePathWorkspaceRoot());
-            queryParams.add(1, String.format("%s%%", input));
+            queryParams.add(0, String.format("%s%%", input));
             QueryModel qm = new QueryModel(qmDescriptor);
             docs = qm.getDocuments(documentManager, queryParams.toArray());
         } catch (Exception e) {
@@ -90,19 +88,8 @@ public class DocumentRoutingRelationActionsBean extends
         return docs;
     }
 
-    //TODO need to change this after is decided where we create routeModels
-    protected String computePathWorkspaceRoot() throws ClientException {
-        DocumentModel doc = documentManager.getRootDocument();
-        doc = documentManager.getChildren(doc.getRef(), "Domain").get(0);
-        DocumentModelList workspaces = documentManager.getChildren(doc.getRef(), "WorkspaceRoot"); 
-        workspaces.addAll(documentManager.getChildren(doc.getRef(), "UserWorkspacesRoot"));
-        doc = workspaces.get(0);
-        return doc.getPathAsString();
-    }
-
     @Override
     protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
-        // TODO Auto-generated method stub
     }
 
 }

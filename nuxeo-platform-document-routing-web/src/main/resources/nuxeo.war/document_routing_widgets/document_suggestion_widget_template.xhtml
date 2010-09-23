@@ -11,7 +11,7 @@
     <h:dataTable value="#{field_0}"
       var="docid" rendered="#{not empty field_0}">
       <h:column>
-        <nxu:methodResult name="doc" value="#{docRoutingRelationActions.getDocumentModel(docid)}">
+        <nxu:methodResult name="doc" value="#{docRoutingSuggestionActions.getDocumentModel(docid)}">
           <h:outputText value="#{doc.dublincore.title}" />
         </nxu:methodResult>
       </h:column>
@@ -40,7 +40,7 @@
           </a4j:status>
           <rich:suggestionbox id="#{widget.id}_suggestionBox"
             for="#{widget.id}_suggest" tokens=""
-            suggestionAction="#{docRoutingRelationActions.getDocumentRelationSuggestions}"
+            suggestionAction="#{docRoutingSuggestionActions.getDocumentRelationSuggestions}"
             var="result"
             fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
@@ -87,7 +87,7 @@
                     <f:param name="index" value="#{model.rowIndex}" />
                     <f:param name="type" value="remove" />
                   </a4j:commandLink>
-                  <nxu:methodResult name="doc" value="#{docRoutingRelationActions.getDocumentModel(model.rowData)}">
+                  <nxu:methodResult name="doc" value="#{docRoutingSuggestionActions.getDocumentModel(model.rowData)}">
                     <h:outputText value="#{doc.dublincore.title}" />
                   </nxu:methodResult>
                 </h:panelGrid>
