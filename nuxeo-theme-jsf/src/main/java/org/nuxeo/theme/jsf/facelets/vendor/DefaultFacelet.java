@@ -44,10 +44,10 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Default Facelet implementation.
- * 
+ *
  * Modified from facelets-1.1.15 by Jean-Marc Orliaguet <jmo@chalmers.se> made
  * the class public - 2010/10/23
- * 
+ *
  * @author Jacob Hookom
  * @version $Id: DefaultFacelet.java,v 1.11 2008/07/13 19:01:52 rlubke Exp $
  */
@@ -178,7 +178,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * Return the alias name for error messages and logging
-     * 
+     *
      * @return alias name
      */
     public String getAlias() {
@@ -187,7 +187,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * Return this Facelet's ExpressionFactory instance
-     * 
+     *
      * @return internal ExpressionFactory instance
      */
     public ExpressionFactory getExpressionFactory() {
@@ -196,7 +196,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * The time when this Facelet was created, NOT the URL source code
-     * 
+     *
      * @return final timestamp of when this Facelet was created
      */
     public long getCreateTime() {
@@ -206,7 +206,7 @@ public final class DefaultFacelet extends Facelet {
     /**
      * Delegates resolution to DefaultFaceletFactory reference. Also, caches
      * URLs for relative paths.
-     * 
+     *
      * @param path a relative url path
      * @return URL pointing to destination
      * @throws IOException if there is a problem creating the URL for the path
@@ -223,7 +223,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * The URL this Facelet was created from.
-     * 
+     *
      * @return the URL this Facelet was created from
      */
     public URL getSource() {
@@ -233,7 +233,7 @@ public final class DefaultFacelet extends Facelet {
     /**
      * Given the passed FaceletContext, apply our child FaceletHandlers to the
      * passed parent
-     * 
+     *
      * @see FaceletHandler#apply(FaceletContext, UIComponent)
      * @param ctx the FaceletContext to use for applying our FaceletHandlers
      * @param parent the parent component to apply changes to
@@ -254,7 +254,7 @@ public final class DefaultFacelet extends Facelet {
      * from {@link #getRelativePath(String) getRelativePath(String)}, then calls
      * {@link #include(FaceletContext, UIComponent, URL) include(FaceletContext,
      * UIComponent, URL)}.
-     * 
+     *
      * @see FaceletContext#includeFacelet(UIComponent, String)
      * @param ctx FaceletContext to pass to the included Facelet
      * @param parent UIComponent to apply changes to
@@ -273,7 +273,7 @@ public final class DefaultFacelet extends Facelet {
 
     /**
      * Grabs a DefaultFacelet from referenced DefaultFaceletFacotry
-     * 
+     *
      * @see DefaultFaceletFactory#getFacelet(URL)
      * @param ctx FaceletContext to pass to the included Facelet
      * @param parent UIComponent to apply changes to
