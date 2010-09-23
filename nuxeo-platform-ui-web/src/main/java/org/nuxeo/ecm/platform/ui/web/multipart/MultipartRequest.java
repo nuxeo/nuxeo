@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -49,7 +48,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
  *
  * @author Shane Bryzak
  */
-public class MultipartRequest extends org.jboss.seam.web.MultipartRequest {
+public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
 
     private static final String PARAM_NAME = "name";
 

@@ -86,4 +86,9 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
         return navigationContext.getCurrentDocument();
     }
 
+    @Override
+    public boolean isInterceptorEnabled() {
+        return true;
+    }
+
 }
