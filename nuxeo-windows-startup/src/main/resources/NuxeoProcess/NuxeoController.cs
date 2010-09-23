@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 
 // Debugging note :
@@ -66,6 +67,7 @@ namespace NuxeoProcess
 	public partial class NuxeoController
 	{
         public bool Initialized { get; private set; }
+        public bool Stoppable { get; set; }
 
         private String platform = null;
         private String productName ="nuxeo";
@@ -179,29 +181,37 @@ namespace NuxeoProcess
 		// ********** STARTUP **********
 		
 		public bool SetupEnv() {
-			// Parse Nuxeo configuration file
-            Dictionary<String, String> nxConfig = new Dictionary<string,string>();
-            if ((nxConfig = ParseConfig()) == null)
+            try
             {
-                Log("Could not parse nuxeo.conf", "ERROR");
-                return false;
-            }
+                // Parse Nuxeo configuration file
+                Dictionary<String, String> nxConfig = new Dictionary<string, string>();
+                if ((nxConfig = ParseConfig()) == null)
+                {
+                    Log("Could not parse nuxeo.conf", "ERROR");
+                    return false;
+                }
 
-            // Set up environment (nxEnv)
-            if (SetupEnv(nxConfig) == false)
-            {
-                Log("Could not set up environment", "ERROR");
-                return false;
-            }
+                // Set up environment (nxEnv)
+                if (SetupEnv(nxConfig) == false)
+                {
+                    Log("Could not set up environment", "ERROR");
+                    return false;
+                }
 
-            // Setup up application server paths
-            if (SetupApplicationServer() == false)
+                // Setup up application server paths
+                if (SetupApplicationServer() == false)
+                {
+                    Log("Could not set up the application server", "ERROR");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception e)
             {
-                Log("Could not set up the application server", "ERROR");
+                Log(String.Format("{0} : {1}", e.Message, e.StackTrace), "ERROR");
                 return false;
             }
-            
-            return true;
 		}
 		
 		public bool Configure() {
@@ -245,6 +255,7 @@ namespace NuxeoProcess
 			nxProcess.OutputDataReceived += new DataReceivedEventHandler(nxProcess_OutputDataReceived);
 			
 			running=true;
+            Stoppable = false;
 			return true;
 		}
 
@@ -264,6 +275,7 @@ namespace NuxeoProcess
 				}
 				
 				if (countStatus >= 3) {
+                    Stoppable = true;
 					ProcessStarted(sender, new EventArgs());
 					nxProcess.OutputDataReceived -= new DataReceivedEventHandler(nxProcess_OutputDataReceived);
 				}
@@ -284,6 +296,8 @@ namespace NuxeoProcess
 			stopProcess.StartInfo.RedirectStandardOutput=true;
 			stopProcess.EnableRaisingEvents=true;
 			stopProcess.Start();
+
+            Thread.Sleep(7000);
 			return true;
 		}
 		
