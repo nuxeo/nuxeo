@@ -30,4 +30,22 @@
       factory="org.nuxeo.ecm.platform.queue.core.DocumentQueueAdapterFactory" />
   </extension>
   
+    <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+    <schedule id="queue-reaper-schedule">
+          <username>system</username>
+          <password></password>
+          <eventId>queue-reaper-schedule</eventId>
+          <eventCategory>default</eventCategory>
+          <cronExpression>0 0/5 * * * ?</cronExpression>
+     </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="queue-reaper" class="org.nuxeo.ecm.platform.queue.core.DocumentQueueReaper">
+        <event>queue-reaper-schedule</event>
+    </listener>
+  </extension>
+
 </component>
