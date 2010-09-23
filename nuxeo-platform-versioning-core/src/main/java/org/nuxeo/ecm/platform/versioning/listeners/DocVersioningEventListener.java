@@ -184,7 +184,7 @@ public class DocVersioningEventListener implements EventListener {
         return new BasicVersionChangeRequest(
                 VersionChangeRequest.RequestSource.AUTO, doc) {
             public VersioningActions getVersioningAction() {
-                log.warn("Rule for AUTO not correctly defined");
+                log.debug("Rule for AUTO not correctly defined");
                 return null;
             }
         };
