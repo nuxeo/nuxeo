@@ -324,7 +324,10 @@ public class ConfigurationGenerator {
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
             File chosenTemplate = new File(nextToken);
-            if (!chosenTemplate.exists()) {
+            // is it absolute and existing or relative path ?
+            if (!chosenTemplate.exists()
+                    || !chosenTemplate.getPath().equals(
+                            chosenTemplate.getAbsolutePath())) {
                 chosenTemplate = new File(nuxeoDefaultConf.getParentFile(),
                         nextToken);
             }
