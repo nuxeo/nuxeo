@@ -16,8 +16,10 @@
  */
 package org.nuxeo.ecm.platform.heartbeat.core;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatError;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatInfo;
@@ -66,20 +69,24 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
 
     public static final Log log = LogFactory.getLog(DocumentHeartbeatManager.class);
 
+    @Override
     public long getDelay() {
         return delay;
     }
 
+    @Override
     public boolean isStarted() {
         return timer != null;
     }
 
+    @Override
     public void reset(long delay) {
         stop();
         this.delay = delay;
         start(delay);
     }
 
+    @Override
     public void start(long delay) {
         log.info("Starting heartbeat scheduler ...");
         if (timer != null) {
@@ -126,6 +133,7 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         }
     }
 
+    @Override
     public void stop() {
         if (timer != null) {
             timer.cancel();
@@ -134,6 +142,7 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         log.info("Heartbeat scheduler stopped");
     }
 
+    @Override
     public HeartbeatInfo getInfo(URI serverURI) {
         GetHeartbeat runner = new GetHeartbeat(serverURI);
 
@@ -169,19 +178,32 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
         }
     }
 
+    @Override
     public HeartbeatInfo getInfo()  {
         URI serveruri = getMyURI();
         return getInfo(serveruri);
     }
 
+    protected URI myURI;
+
+    protected static String getMyName() {
+         try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            throw new HeartbeatError("Cannot get my name", e);
+        }
+    }
+
     public URI getMyURI() {
-        URI serveruri;
+        if (myURI != null) {
+            return myURI;
+        }
         try {
-            serveruri = new URI("nxhearbeat", vmid.toString(), null);
+            myURI = new URI("nxhearbeat", getMyName(), vmid.toString());
         } catch (URISyntaxException e) {
             throw new Error("An unexpected error occured when building the serveruri", e);
         }
-        return serveruri;
+        return myURI;
     }
 
     private static HeartbeatInfo docToServerInfo(DocumentModel doc) throws ClientException, URISyntaxException {
@@ -252,9 +274,9 @@ public class DocumentHeartbeatManager implements HeartbeatManager {
     }
 
     protected static DocumentModel getOrCreateHeartbeatRootFolder(CoreSession session) throws ClientException {
-        DocumentRef heartbeatRootDocRef = new PathRef("/" + HEARTBEAT_ROOT_NAME);
+        DocumentRef heartbeatRootDocRef = DocumentStoreManager.newPath(HEARTBEAT_ROOT_NAME);
         if (!session.exists(heartbeatRootDocRef)) {
-            DocumentModel model = session.createDocumentModel("/", HEARTBEAT_ROOT_NAME, HEARTBEAT_ROOT_TYPE);
+            DocumentModel model = session.createDocumentModel(DocumentStoreManager.newPath().toString(), HEARTBEAT_ROOT_NAME, HEARTBEAT_ROOT_TYPE);
             model = session.createDocument(model);
             session.save();
         }

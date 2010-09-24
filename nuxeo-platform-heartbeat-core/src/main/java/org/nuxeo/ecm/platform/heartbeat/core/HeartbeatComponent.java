@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.heartbeat.core;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * Framework for accessing to running nuxeo server in a cluster using heartbeat

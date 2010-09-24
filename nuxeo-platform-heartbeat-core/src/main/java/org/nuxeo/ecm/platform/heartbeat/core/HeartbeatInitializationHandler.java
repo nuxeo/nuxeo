@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.heartbeat.core;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 /**
@@ -27,7 +28,7 @@ public class HeartbeatInitializationHandler implements DocumentStoreHandler {
 
 
     @Override
-    public void onStorageInitialization(CoreSession session) {
+    public void onStorageInitialization(CoreSession session, DocumentRef rootletRef) {
         DocumentHeartbeatManager mgr = HeartbeatComponent.defaultComponent.manager;
         mgr.start(HeartbeatManager.DEFAULT_HEARTBEAT_DELAY);
     }
