@@ -27,6 +27,8 @@ Target profiles:
 The nuxeo-jboss-deployer.jar will be put in deployers/ folder.
 This is the default profile - and should be used in development too.
 
+For this profile we need to deploy nuxeo-common and nuxeo-runtime-deployment in jboss lib (since the preprocessor depends on)
+
 - PACKED: nuxeo.ear already preprocessed
 This is requiring all nuxeo bundles that are not EAR modules (etc. listed in application.xml) in lib directory.
 In this case nuxeo-jboss-deployer.jar can be put directly in nuxeo.ear/lib
