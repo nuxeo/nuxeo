@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 @XObject(value = "field")
 public class FieldDescriptor {
 
-    final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+    final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @XNode("@name")
     protected String name;
@@ -143,10 +143,10 @@ public class FieldDescriptor {
         String value;
         if (rawValue instanceof GregorianCalendar) {
             GregorianCalendar gc = (GregorianCalendar) rawValue;
-            value = "DATE '" + sf.format(gc.getTime()) + "'";
+            value = "TIMESTAMP '" + sf.format(gc.getTime()) + "'";
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
-            value = "DATE '" + sf.format(date) + "'";
+            value = "TIMESTAMP '" + sf.format(date) + "'";
         } else if (rawValue instanceof Integer || rawValue instanceof Long || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
         } else if (rawValue instanceof Boolean) {
