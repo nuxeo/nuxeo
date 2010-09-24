@@ -34,7 +34,7 @@ class OrphanProcessor implements QueueProcessor<FakeContent> {
         // do nothing
 
         if (shouldHandleEndOfProcessing) {
-            info.cancel();
+            info.blacklist();
         }
     }
 }

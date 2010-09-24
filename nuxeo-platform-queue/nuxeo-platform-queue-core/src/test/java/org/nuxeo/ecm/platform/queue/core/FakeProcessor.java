@@ -33,6 +33,6 @@ public class FakeProcessor implements QueueProcessor<FakeContent> {
     @Override
     public void process(QueueInfo<FakeContent> info) {
         executed++;
-        info.cancel();
+        info.blacklist();
     }
 }

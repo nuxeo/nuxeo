@@ -94,6 +94,12 @@ public interface QueueInfo<C extends Serializable> {
     boolean isOrphaned();
 
     /**
+     * Checks if is handled
+     *
+     * @return true, if is handled
+     */
+    boolean isHandled();
+    /**
      * Gets the first handling date.
      *
      * @return the first handling date
@@ -127,8 +133,10 @@ public interface QueueInfo<C extends Serializable> {
     QueueInfo<C> retry();
 
     /**
-     * Cancel handling content
+     * Blacklist  content
      */
-    QueueInfo<C> cancel();
+    QueueInfo<C> blacklist();
+
+
 
 }

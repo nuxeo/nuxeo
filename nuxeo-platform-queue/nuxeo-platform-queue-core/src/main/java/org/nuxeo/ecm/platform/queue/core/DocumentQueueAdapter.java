@@ -191,7 +191,7 @@ public class DocumentQueueAdapter<C extends Serializable> implements QueueInfo<C
     }
 
     @Override
-    public QueueInfo<C> cancel() {
+    public QueueInfo<C> blacklist() {
         QueueHandler qh = Framework.getLocalService(QueueHandler.class);
         return qh.blacklist(name);
     }
@@ -209,6 +209,11 @@ public class DocumentQueueAdapter<C extends Serializable> implements QueueInfo<C
     @Override
     public String toString() {
         return getName().toASCIIString();
+    }
+
+    @Override
+    public boolean isHandled() {
+        return State.Handled.equals(getState());
     }
 
 }
