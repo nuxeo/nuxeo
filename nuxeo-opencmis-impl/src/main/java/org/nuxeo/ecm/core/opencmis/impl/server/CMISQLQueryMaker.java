@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +40,6 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.apache.chemistry.opencmis.server.support.query.AbstractQueryConditionProcessor;
 import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
 import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
@@ -55,6 +53,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.opencmis.impl.server.CMISQLQueryMaker.NamedColumn;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -144,14 +143,6 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
         String on1;
 
         String on2;
-    }
-
-    protected static class QueryMakerException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public QueryMakerException(String message) {
-            super(message);
-        }
     }
 
     @Override
@@ -320,22 +311,18 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
 
-        TypeManager tm = null;
-        QueryObject query = new QueryObject(tm, this);
+        QueryObject query = new QueryObject(typeManager, this);
         CmisQueryWalker walker;
         try {
             walker = AbstractQueryConditionProcessor.getWalker(statement);
             walker.query(query);
-        } catch (CmisRuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            throw new CmisRuntimeException("Cannot parse query (" + statement
-                    + "): " + e.toString(), e);
+            throw new QueryMakerException("Cannot parse query: "
+                    + e.getMessage(), e);
         }
         String err = walker.getErrorMessageString();
         if (err != null) {
-            throw new CmisRuntimeException("Cannot parse query (" + statement
-                    + "): " + err);
+            throw new QueryMakerException("Cannot parse query: " + err);
         }
 
         boolean distinct = false; // walker.select_distinct;
@@ -346,12 +333,26 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
         /** The columns we'll return. */
         List<SelectedColumn> columnsWhat = new ArrayList<SelectedColumn>();
 
+        // prepare data from the QueryObject
+
+        Map<String, String> froms = query.getTypes();
+        if (froms.size() > 1) {
+            throw new UnsupportedOperationException("JOIN not yet supported");
+        }
+        Join jj = new Join();
+        Entry<String, String> ee = froms.entrySet().iterator().next();
+        jj.table = ee.getValue();
+        jj.corr = ee.getKey();
+        if (jj.table.equals(jj.corr)) {
+            jj.corr = null;
+        }
+        List<Join> walker_from_joins = Collections.singletonList(jj);
+
         /*
          * Interpret * in SELECT now that tables are known.
          */
 
         VirtualColumn sampleVirtualColumn = null;
-        List<Join> walker_from_joins = Collections.singletonList(null);
 
         // for (SelectedColumn sc : walker_select_what) {
         for (CmisSelector sel : query.getSelectReferences()) {
@@ -366,16 +367,15 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
             }
             ColumnReference col = (ColumnReference) sel;
             if (!"*".equals(col.getName())) {
-                SelectedColumn sc = getSpecialColumn(
-                        col.getPropertyQueryName(), col.getTypeQueryName());
-                columnsWhat.add(sc);
-                if (sc instanceof VirtualColumn) {
-                    sampleVirtualColumn = (VirtualColumn) sc;
+                NamedColumn nc = recordColumnReference(col);
+                columnsWhat.add(nc);
+                if (nc instanceof VirtualColumn) {
+                    sampleVirtualColumn = (VirtualColumn) nc;
                 }
                 continue;
             }
 
-            // star
+            // STAR
 
             String qual = col.getTypeQueryName();
             // find the joined table with this correlation qualifier and add all
@@ -418,22 +418,31 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
          * Find info about fragments needed.
          */
 
+        // find all columns mentioned for each type
+        for (CmisSelector sel : query.getSelectReferences()) {
+            recordCmisSelector(sel, false);
+        }
+        for (CmisSelector sel : query.getWhereReferences()) {
+            recordCmisSelector(sel, true);
+        }
+        // TODO join
+        // TODO order by
+
         // add main id to all qualifiers if
-        // - we have no distinct (in which case more columns don't matter), or
+        // - we have no DISTINCT (in which case more columns don't matter), or
         // - we have virtual columns, or
         // - system columns are requested
         // check no added columns would bias the DISTINCT
         List<DirectColumn> addedSystemColumns = new ArrayList<DirectColumn>(0);
-        for (Entry<String, Set<String>> entry : columnsPerQual.entrySet()) {
-            String qual = entry.getKey();
-            Set<String> fqns = new HashSet<String>(entry.getValue());
-            // TODO do we need Property.TYPE_ID here?
+
+        for (String qual : allQualifiers) {
+            // TODO do we need PropertyIds.OBJECT_TYPE_ID here?
             for (String propertyId : Arrays.asList(PropertyIds.OBJECT_ID)) {
-                DirectColumn sc = (DirectColumn) referToColumnInSelect(
-                        propertyId, qual);
-                String fqn = sc.column.getFullQuotedName();
-                if (!fqns.contains(fqn)) {
-                    addedSystemColumns.add(sc);
+                ColumnReference col = new ColumnReference(qual, propertyId);
+                col.setTypeDefinition(propertyId, null);
+                DirectColumn dc = recordCmisSelector(col, false);
+                if (dc != null) {
+                    addedSystemColumns.add(dc);
                 }
             }
             if (skipHidden) {
@@ -441,10 +450,16 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
                 Table table = getTable(
                         database.getTable(model.MISC_TABLE_NAME), qual);
                 Column col = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
-                recordCol(col, qual);
+                DirectColumn dc = new DirectColumn("ECM:LIFECYCLESTATE", qual,
+                        col);
+                recordDirectColumn(qual, dc);
             }
         }
-        if (distinct) {
+
+        // additional columns to select on
+        if (!distinct) {
+            columnsWhat.addAll(addedSystemColumns);
+        } else {
             if (!addedSystemColumns.isEmpty()) {
                 if (sampleVirtualColumn != null) {
                     throw new QueryMakerException(
@@ -459,34 +474,24 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
                 // don't add system columns as it would prevent DISTINCT from
                 // working
             }
-        } else {
-            columnsWhat.addAll(addedSystemColumns);
         }
 
-        // per qualifier, find all tables (fragments)
-        Map<String, Map<String, Table>> tablesPerQual = new HashMap<String, Map<String, Table>>();
-        for (Entry<String, Set<String>> entry : columnsPerQual.entrySet()) {
-            String qual = entry.getKey();
-            Map<String, Table> tables = tablesPerQual.get(qual);
-            if (tables == null) {
-                tablesPerQual.put(qual,
-                        tables = new LinkedHashMap<String, Table>());
-            }
-            for (String fqn : entry.getValue()) {
-                Column col = columns.get(fqn);
-                tables.put(col.getTable().getName(), col.getTable());
-            }
-        }
         // per qualifier, include hier in fragments
-        Map<String, List<Table>> qualTables = new LinkedHashMap<String, List<Table>>();
-        for (Entry<String, Map<String, Table>> entry : tablesPerQual.entrySet()) {
-            String qual = entry.getKey();
-            Map<String, Table> tableMap = entry.getValue();
-            // add hier as well in fragments
-            tableMap.remove(getTableAlias(hierTable, qual));
-            List<Table> tables = new LinkedList<Table>(tableMap.values());
-            tables.add(getTable(hierTable, qual));
-            qualTables.put(qual, tables);
+        for (String qual : allQualifiers) {
+            Table table = getTable(hierTable, qual);
+            String fragment = table.getName();
+            // Map<String, Map<String, DirectColumn>> colsByFragment =
+            // allColumns.get(qual);
+            // if (!colsByFragment.containsKey(fragment)) {
+            // // add empty map to be sure the hier table is seen
+            // Map<String, DirectColumn> colsByKey = new HashMap<String,
+            // DirectColumn>();
+            // colsByFragment.put(fragment, colsByKey);
+            // }
+            Map<String, Table> tablesByFragment = allTables.get(qual);
+            if (!tablesByFragment.containsKey(fragment)) {
+                tablesByFragment.put(fragment, table);
+            }
         }
 
         List<String> whereClauses = new LinkedList<String>();
@@ -555,7 +560,7 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
 
             // join other fragments for qualifier
 
-            for (Table t : qualTables.get(qual)) {
+            for (Table t : allTables.get(qual).values()) {
                 if (t.getName().equals(table.getName())) {
                     // this one was the first, already done
                     continue;
@@ -575,7 +580,7 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
                 from.append(tableMainId);
             }
 
-            // restrict to relevant primary types
+            // restrict to relevant primary types TODO XXX XXXXXXXXXXX
 
             String nuxeoType;
             boolean skipFolderish;
@@ -732,6 +737,77 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
         return q;
     }
 
+    protected Set<String> allQualifiers = new HashSet<String>();
+
+    /** Map of qualifier -> fragment -> table */
+    protected Map<String, Map<String, Table>> allTables = new HashMap<String, Map<String, Table>>();
+
+    /** Map of qualifier -> fragment -> column key -> column */
+    protected Map<String, Map<String, Map<String, DirectColumn>>> allColumns = new HashMap<String, Map<String, Map<String, DirectColumn>>>();
+
+    /** Records and returns direct column if added. */
+    protected DirectColumn recordCmisSelector(CmisSelector sel, boolean inWhere) {
+        if (!(sel instanceof ColumnReference)) {
+            return null;
+        }
+        ColumnReference col = (ColumnReference) sel;
+        String qual = col.getTypeQueryName();
+        String id = col.getPropertyId();
+        NamedColumn nc = findColumn(id, qual, false);
+        if (nc instanceof DirectColumn) {
+            DirectColumn dc = (DirectColumn) nc;
+            return recordDirectColumn(qual, dc);
+        } else if (inWhere) {
+            throw new QueryMakerException("Column " + id + " is not queryable");
+        } else {
+            // virtual column
+            return null;
+        }
+    }
+
+    /** Records direct column. */
+    protected NamedColumn recordColumnReference(ColumnReference col) {
+        String qual = col.getTypeQueryName();
+        String id = col.getPropertyId();
+        NamedColumn nc = findColumn(id, qual, false);
+        if (nc instanceof DirectColumn) {
+            recordDirectColumn(qual, (DirectColumn) nc);
+        }
+        // else virtual column
+        return nc;
+    }
+
+    /** Records and returns if added (not already there). */
+    protected DirectColumn recordDirectColumn(String qual, DirectColumn dc) {
+        Table table = dc.column.getTable();
+        String fragment = table.getName();
+
+        allQualifiers.add(qual);
+
+        // put in allTables multi-level map
+        Map<String, Table> tablesByFragment = allTables.get(qual);
+        if (tablesByFragment == null) {
+            tablesByFragment = new HashMap<String, Table>();
+            allTables.put(qual, tablesByFragment);
+        }
+        tablesByFragment.put(fragment, table);
+
+        // put in allColumns multi-level map
+        Map<String, Map<String, DirectColumn>> colsByFragment = allColumns.get(qual);
+        if (colsByFragment == null) {
+            colsByFragment = new HashMap<String, Map<String, DirectColumn>>();
+            allColumns.put(qual, colsByFragment);
+        }
+        Map<String, DirectColumn> colsByKey = colsByFragment.get(fragment);
+        if (colsByKey == null) {
+            colsByKey = new HashMap<String, DirectColumn>();
+            colsByFragment.put(fragment, colsByKey);
+        }
+        DirectColumn prev = colsByKey.put(dc.column.getKey(), dc);
+
+        return prev == null ? dc : null;
+    }
+
     /**
      * Map maker that can deal with aliased column names and computed values.
      */
@@ -771,6 +847,10 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
                 } else if (sc instanceof VirtualColumn) {
                     virtual.add((VirtualColumn) sc);
                 } else if (sc instanceof ScoreColumn) {
+                    if (fulltextMatchInfo == null) {
+                        throw new QueryMakerException(
+                                "Cannot use SCORE() without CONTAINS()");
+                    }
                     columns.add(fulltextMatchInfo.scoreCol);
                     selectWhat.add(fulltextMatchInfo.scoreExpr);
                     if (fulltextMatchInfo.scoreExprParam != null) {

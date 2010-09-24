@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +68,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteData
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
@@ -788,15 +790,17 @@ public class NuxeoCmisService extends AbstractCmisService {
             res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
                     this);
         } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+            throw new CmisRuntimeException(e.getMessage(), e);
         }
         try {
-
+            for (Map<String, Serializable> map : res) {
+            }
         } finally {
             res.close();
         }
 
-        // TODO Auto-generated method stub
+        ObjectList list = new ObjectListImpl();
+        // return list;
         throw new UnsupportedOperationException();
     }
 

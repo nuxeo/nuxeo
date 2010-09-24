@@ -616,7 +616,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Ignore
     @Test
     public void testQuery() throws Exception {
-        String statement = "SELECT cmis:objectId, SCORE() FROM cmis:document WHERE cmis:name <> 'abc'";
+        String statement = "SELECT cmis:objectId, dc:title FROM File WHERE cmis:name <> 'abc'";
         ObjectList res = discService.query(repositoryId, statement, null, null,
                 null, null, null, null, null);
         assertEquals(123, res.getNumItems().intValue());
