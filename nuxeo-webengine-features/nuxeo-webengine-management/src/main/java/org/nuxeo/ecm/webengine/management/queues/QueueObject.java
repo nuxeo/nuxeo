@@ -55,7 +55,7 @@ public class QueueObject<C extends Serializable> extends ManagementObject {
     protected void initialize(Object... args) {
         super.initialize(args);
         manager = (QueueManager<C>) args[0];
-        infos = manager.listHandledContent();
+        infos = manager.listKnownContent();
     }
 
     @GET
@@ -64,16 +64,18 @@ public class QueueObject<C extends Serializable> extends ManagementObject {
     }
 
     @GET
-    @Path("/@cancel")
+    @Path("@blacklist")
     public Object doGetCancel() {
         for (QueueInfo<C> info : infos) {
-            info.cancel();
+            if (!info.isBlacklisted()) {
+                info.blacklist();
+            }
         }
         return redirect(getPath());
     }
 
     @GET
-    @Path("/@retry")
+    @Path("@retry")
     public Object doGetRetry() {
         for (QueueInfo<C> info : infos) {
             info.retry();
@@ -89,7 +91,7 @@ public class QueueObject<C extends Serializable> extends ManagementObject {
         return manager;
     }
 
-    @Path("/{content}")
+    @Path("{content}")
     public Object doDispatch(@PathParam("content") String name) {
         for (QueueInfo<C> info : infos) {
             if (info.getName().getFragment().equals(name)) {

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * @author matic
  *
  */
-@WebObject(type="QueueItem")
+@WebObject(type="QueueInfo")
 public class QueueInfoObject<C extends Serializable> extends ManagementObject {
 
     protected QueueManager<C> manager;
@@ -60,9 +60,9 @@ public class QueueInfoObject<C extends Serializable> extends ManagementObject {
     }
 
     @GET
-    @Path("@cancel")
-    public Object doCancel() {
-        info.cancel();
+    @Path("@blacklist")
+    public Object doBlacklist() {
+        info.blacklist();
         return redirect(getPrevious().getPath());
     }
 
