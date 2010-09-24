@@ -10,4 +10,6 @@ Require-Bundle: org.nuxeo.ecm.platform.ui,
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-Component: OSGI-INF/document-routing-ecm-types-contrib.xml,
  OSGI-INF/document-routing-layouts-contrib.xml,
- OSGI-INF/document-routing-actions-contrib.xml
+ OSGI-INF/document-routing-actions-contrib.xml,
+ OSGI-INF/document-routing-table-widgets-contrib.xml,
+ OSGI-INF/document-routing-table-layouts-contrib.xml

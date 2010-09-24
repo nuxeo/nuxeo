@@ -20,27 +20,33 @@
 package org.nuxeo.documentrouting.web.routing;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
+import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Actions for current document route
- *
+ * 
  * @author Mariana Cedica
  */
 @Scope(CONVERSATION)
@@ -58,8 +64,8 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public DocumentRoutingService getDocumentRoutingService() {
         try {
-            if(documentRoutingService == null){
-                documentRoutingService =  Framework.getService(DocumentRoutingService.class);
+            if (documentRoutingService == null) {
+                documentRoutingService = Framework.getService(DocumentRoutingService.class);
             }
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
@@ -77,10 +83,11 @@ public class DocumentRoutingActionsBean implements Serializable {
         return navigationContext.navigateToDocument(routeInstance.getDocument());
     }
 
-    public String validateRouteModel() throws ClientException{
+    public String validateRouteModel() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
-        getDocumentRoutingService().validateRouteModel(currentRouteModel, documentManager);
+        getDocumentRoutingService().validateRouteModel(currentRouteModel,
+                documentManager);
         Events.instance().raiseEvent("documentChildrenChanged");
         return navigationContext.navigateToDocument(currentDocument);
     }
@@ -93,5 +100,38 @@ public class DocumentRoutingActionsBean implements Serializable {
                         DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
         documentManager.saveDocument(doc);
         documentManager.save();
+    }
+
+    protected ArrayList<LocalizableDocumentRouteElement> computeRouteElements()
+            throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentRouteElement currentRouteModelElement = currentDocument.getAdapter(DocumentRouteElement.class);
+        ArrayList<LocalizableDocumentRouteElement> routeElements = new ArrayList<LocalizableDocumentRouteElement>();
+        getDocumentRoutingService().getRouteElements(currentRouteModelElement,
+                documentManager, routeElements, 0);
+        return routeElements;
+    }
+
+    @Factory(value = "routeElementsSelectModel", scope = EVENT)
+    public SelectDataModel computeSelectDataModelRouteElements()
+            throws ClientException {
+        return new SelectDataModelImpl("dm_route_elements",
+                computeRouteElements(), null);
+    }
+
+    public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
+        return depthFormatter(localizable.getDepth() ,localizable.getElement().getTypeDescription());
+    }
+
+    private String depthFormatter(int depth, String type) {
+        StringBuilder depthFormatter = new StringBuilder();
+        for (int i = 0; i < depth - 1; i++) {
+            depthFormatter.append("__");
+        }
+        depthFormatter.append(type);
+        depthFormatter.append(" (");
+        depthFormatter.append(depth -1);
+        depthFormatter.append(")");
+        return depthFormatter.toString();
     }
 }
