@@ -33,14 +33,10 @@
     <module>nuxeo-platform-filemanager-core</module>
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
-    <module>nuxeo-platform-lock-api</module>
-    <module>nuxeo-platform-lock-core</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-management</module>
     <module>nuxeo-platform-mimetype-api</module>
     <module>nuxeo-platform-mimetype-core</module>
-    <module>nuxeo-platform-heartbeat-api</module>
-    <module>nuxeo-platform-heartbeat-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
     <module>nuxeo-platform-usermanager-core</module>
@@ -306,16 +302,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-lock-api</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-lock-core</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -377,16 +363,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-placeful-theme</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-heartbeat-api</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-heartbeat-core</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
