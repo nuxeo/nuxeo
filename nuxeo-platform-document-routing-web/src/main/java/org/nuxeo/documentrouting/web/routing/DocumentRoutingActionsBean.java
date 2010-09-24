@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
@@ -134,5 +135,12 @@ public class DocumentRoutingActionsBean implements Serializable {
         depthFormatter.append(depth -1);
         depthFormatter.append(")");
         return depthFormatter.toString();
+    }
+    
+    public boolean isStep(DocumentModel doc) {
+        if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
+            return true;
+        }
+        return false;
     }
 }
