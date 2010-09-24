@@ -61,8 +61,7 @@ public class UnknownResource extends AbstractResource {
     @PUT
     public Response put() throws Exception {
 
-        // Special case: ignore special MacOS files.
-        //String name = Util.getNameFromPath(path);
+        // Special case: ignore magic MacOS files.
         if (name.startsWith("._")) {
             // Not sure if it's the right error code.
             throw new WebApplicationException(409);

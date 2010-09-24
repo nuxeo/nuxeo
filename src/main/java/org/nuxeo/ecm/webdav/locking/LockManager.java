@@ -3,6 +3,7 @@ package org.nuxeo.ecm.webdav.locking;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Simple singleton class to manage locks.
@@ -16,6 +17,8 @@ public class LockManager {
     private static LockManager instance;
 
     private final Map<String, LockInfo> lockedResources = new HashMap<String, LockInfo>();
+
+    private final Random random = new Random();
 
     private LockManager() {
     }
@@ -71,7 +74,7 @@ public class LockManager {
         Date lockDate;
 
         LockInfo() {
-            token = Long.toHexString(System.currentTimeMillis());
+            token = Long.toHexString(System.currentTimeMillis()) + "-" + random.nextInt();
         }
     }
 

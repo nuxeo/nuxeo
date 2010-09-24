@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -154,7 +155,7 @@ public class Server {
                 GrizzlyResponse grizzlyResponse) {
             try {
                 grizzlyResponse.setStatus(404);
-                grizzlyResponse.getWriter().print("Resoure can not be found");
+                grizzlyResponse.getWriter().print("Resource can not be found");
             } catch (IOException e) {
             }
         }
@@ -186,7 +187,7 @@ public class Server {
         DocumentModel file = session.createDocumentModel("/workspaces", name, "File");
         file.setProperty("dublincore", "title", name);
         String testDocsPath = Thread.currentThread().getContextClassLoader().getResource("testdocs").getPath();
-        FileBlob fb = new FileBlob(new File(testDocsPath + "/" + name));
+        Blob fb = new FileBlob(new File(testDocsPath + "/" + name));
         fb.setMimeType(mimeType);
         file.setProperty("file", "content", fb);
         session.createDocument(file);

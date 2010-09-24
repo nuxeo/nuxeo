@@ -115,6 +115,8 @@ def randomBinary(n):
 
 
 def main():
+    testFolders(10000)
+
     N = 20
     
     print "Test folders"
