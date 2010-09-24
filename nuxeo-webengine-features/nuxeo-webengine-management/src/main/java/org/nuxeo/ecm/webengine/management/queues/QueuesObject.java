@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.webengine.management.queues;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

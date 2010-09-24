@@ -37,10 +37,12 @@ public class QueueInfoObject<C extends Serializable> extends ManagementObject {
     protected QueueManager<C> manager;
     protected QueueInfo<?> info;
 
+    @SuppressWarnings("unchecked")
     public static <C extends Serializable> QueueInfoObject<C> newObject(DefaultObject from, QueueManager<C> manager, QueueInfo<C> info) {
         return (QueueInfoObject<C>)from.newObject("QueueItem", manager, info);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);

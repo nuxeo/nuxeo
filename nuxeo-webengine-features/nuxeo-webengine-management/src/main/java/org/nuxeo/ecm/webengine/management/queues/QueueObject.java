@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.webengine.management.queues;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -46,10 +45,12 @@ public class QueueObject<C extends Serializable> extends ManagementObject {
 
     protected List<QueueInfo<C>> infos;
 
+    @SuppressWarnings("unchecked")
     public static <C extends Serializable> QueueObject<C> newObject(DefaultObject from, QueueManager<C> manager) {
         return (QueueObject<C>) from.newObject("Queue", manager);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
