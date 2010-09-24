@@ -27,6 +27,11 @@
     </dependency>
 
     <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-security</artifactId>
+    </dependency>
+
+    <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-security-spi</artifactId>
     </dependency>
