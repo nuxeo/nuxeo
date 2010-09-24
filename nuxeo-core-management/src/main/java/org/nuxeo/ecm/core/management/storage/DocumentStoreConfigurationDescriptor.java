@@ -30,4 +30,7 @@ public class DocumentStoreConfigurationDescriptor {
     @XNode("@repository")
     protected String repositoryName = "default";
 
+    @XNode("@group")
+    protected String groupName = "Administrators";
+
 }

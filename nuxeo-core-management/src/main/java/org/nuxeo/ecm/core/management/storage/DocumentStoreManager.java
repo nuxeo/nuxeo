@@ -25,6 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.CoreManagementComponent;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -56,7 +60,10 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         handlers.put(desc.id, desc);
     }
 
+    protected DocumentStoreConfigurationDescriptor config = new DocumentStoreConfigurationDescriptor();
+
     public void registerConfig(DocumentStoreConfigurationDescriptor config) {
+        this.config = config;
         DocumentStoreSessionRunner.repositoryName = config.repositoryName;
     }
 
@@ -95,13 +102,32 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
     }
 
+    protected DocumentModel createRootlet(CoreSession session) throws ClientException {
+        DocumentModel rootlet;
+        rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
+        rootlet = session.createDocument(rootlet);
+
+        ACP acp = rootlet.getACP();
+        ACL acl = acp.getOrCreateACL();
+
+        for (ACE ace : acl.getACEs()) {
+            acl.remove(ace);
+        }
+
+        acl.add(new ACE(config.groupName, SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
+        rootlet.setACP(acp, true);
+
+        session.save();
+
+        return rootlet;
+    }
+
     protected DocumentRef setupRootlet(CoreSession session) throws ClientException {
         DocumentModel rootlet;
            if (!session.exists(new PathRef("/management"))) {
-                rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
-                rootlet = session.createDocument(rootlet);
-                session.save();
-            } else {
+               rootlet = createRootlet(session);
+           } else {
                 rootlet = session.getDocument(new PathRef("/management"));
             }
            return rootlet.getRef();
