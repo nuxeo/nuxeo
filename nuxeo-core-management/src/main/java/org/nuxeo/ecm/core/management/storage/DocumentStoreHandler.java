@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.management.storage;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * Handle document store initialization
@@ -25,6 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface DocumentStoreHandler {
 
-    void onStorageInitialization(CoreSession session);
+    void onStorageInitialization(CoreSession session, DocumentRef rootletRef );
 
 }

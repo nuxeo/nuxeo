@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.management.CoreManagementComponent;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
@@ -32,6 +35,17 @@ import org.nuxeo.runtime.api.Framework;
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  */
 public class DocumentStoreManager extends RepositoryInitializationHandler {
+
+    public static final String MANAGEMENT_ROOT_NAME = "management";
+
+    public static PathRef newPath(String ...components) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("/management");
+        for (String component:components) {
+            sb.append("/").append(component);
+        }
+        return new PathRef(sb.toString());
+     }
 
     protected final Map<String, DocumentStoreHandlerDescriptor> handlers = new HashMap<String, DocumentStoreHandlerDescriptor>();
 
@@ -46,10 +60,12 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         DocumentStoreSessionRunner.repositoryName = config.repositoryName;
     }
 
-    protected String defaultRepositoryName = null;
+    protected String defaultRepositoryName;
 
-    protected boolean mgmtInitialized = false;
-    protected boolean defaultInitialized = false;
+    protected boolean mgmtInitialized ;
+    protected boolean defaultInitialized ;
+
+    protected DocumentRef rootletRef;
 
     @Override
     public void doInitializeRepository(CoreSession session) throws ClientException {
@@ -64,8 +80,9 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
         if (repositoryName.equals(DocumentStoreSessionRunner.repositoryName)) {
             mgmtInitialized = true;
+            rootletRef = setupRootlet(session);
             for (DocumentStoreHandlerDescriptor desc:handlers.values()) {
-                desc.handler.onStorageInitialization(session);
+                desc.handler.onStorageInitialization(session, rootletRef);
             }
         }
 
@@ -77,4 +94,17 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
             CoreManagementComponent.getDefault().onNuxeoServerStartup();
         }
     }
+
+    protected DocumentRef setupRootlet(CoreSession session) throws ClientException {
+        DocumentModel rootlet;
+           if (!session.exists(new PathRef("/management"))) {
+                rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
+                rootlet = session.createDocument(rootlet);
+                session.save();
+            } else {
+                rootlet = session.getDocument(new PathRef("/management"));
+            }
+           return rootlet.getRef();
+    }
+
 }

@@ -82,11 +82,10 @@ public class DocumentModelStatusPersister implements
 
         protected DocumentModel doGetOrCreateContainer() throws ClientException {
 
-            DocumentRef admRootDocRef = new PathRef("/"
-                    + ADMINISTRATIVE_INFO_CONTAINER);
+            DocumentRef admRootDocRef = DocumentStoreManager.newPath(ADMINISTRATIVE_INFO_CONTAINER);
 
             if (!session.exists(admRootDocRef)) {
-                DocumentModel doc = session.createDocumentModel("/",
+                DocumentModel doc = session.createDocumentModel(DocumentStoreManager.newPath().toString(),
                         ADMINISTRATIVE_INFO_CONTAINER,
                         ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
                 doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);

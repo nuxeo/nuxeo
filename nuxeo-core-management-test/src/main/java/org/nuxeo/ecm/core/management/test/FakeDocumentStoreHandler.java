@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.management.test;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 
 public class FakeDocumentStoreHandler implements DocumentStoreHandler {
@@ -31,7 +32,7 @@ public class FakeDocumentStoreHandler implements DocumentStoreHandler {
     }
 
     @Override
-    public void onStorageInitialization(CoreSession session) {
+    public void onStorageInitialization(CoreSession session, DocumentRef rootletRef) {
         repositoryName = session.getRepositoryName();
     }
 
