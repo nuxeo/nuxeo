@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NXQLQueryBuilder {
 
-    public static final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private NXQLQueryBuilder() {
     }
@@ -484,10 +484,10 @@ public class NXQLQueryBuilder {
         String value;
         if (rawValue instanceof GregorianCalendar) {
             GregorianCalendar gc = (GregorianCalendar) rawValue;
-            value = "DATE '" + sf.format(gc.getTime()) + "'";
+            value = "TIMESTAMP '" + sf.format(gc.getTime()) + "'";
         } else if (rawValue instanceof Date) {
             Date date = (Date) rawValue;
-            value = "DATE '" + sf.format(date) + "'";
+            value = "TIMESTAMP '" + sf.format(date) + "'";
         } else if (rawValue instanceof Integer || rawValue instanceof Long
                 || rawValue instanceof Double) {
             value = rawValue.toString(); // no quotes
