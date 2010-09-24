@@ -258,7 +258,7 @@ if [ "$jboss" = "true" ]; then
   JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
   NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
   NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
-  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib/*"
+  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
   LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #

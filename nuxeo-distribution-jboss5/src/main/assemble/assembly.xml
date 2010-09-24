@@ -78,6 +78,9 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="doc" />
     </unzip>
+    <copy todir="${jboss}">
+      <fileset dir="src/main/resources" />
+    </copy>
     <unzip dest="${jboss}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />
