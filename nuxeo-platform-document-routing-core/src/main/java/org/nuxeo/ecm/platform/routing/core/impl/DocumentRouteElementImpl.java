@@ -287,4 +287,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             session.save();
         }
     }
+
+    @Override
+    public String getTypeDescription() {
+      return document.getType();
+    }
 }

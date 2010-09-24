@@ -50,6 +50,12 @@ public interface DocumentRoutingConstants {
     
     String DOCUMENT_ROUTING_ACL = "routing";
     
+    String STEP_DOCUMENT_DESCRIPTION_TYPE = "Step";
+    
+    String PARALLEL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE = "Parallel";
+    
+    String SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE = "Serial";
+    
     enum ExecutionTypeValues {
         serial, parallel
     }

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.STEP_DOCUMENT_DESCRIPTION_TYPE;
 
 /**
  * @author arussel
@@ -27,5 +28,10 @@ public class DocumentRouteStepImpl extends DocumentRouteElementImpl implements
         DocumentRouteStep {
     public DocumentRouteStepImpl(DocumentModel doc) {
         super(doc);
+    }
+    
+    @Override
+    public String getTypeDescription(){
+        return STEP_DOCUMENT_DESCRIPTION_TYPE;
     }
 }

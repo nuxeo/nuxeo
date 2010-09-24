@@ -32,13 +32,13 @@ public interface DocumentRouteElement {
     }
 
     enum ElementLifeCycleTransistion {
-        toValidated, toReady, toRunning, toDone
+      toValidated, toReady, toRunning, toDone
     }
 
     boolean isValidated();
-
+    
     boolean isReady();
-
+    
     boolean isDone();
 
     boolean isRunning();
@@ -55,7 +55,7 @@ public interface DocumentRouteElement {
     void run(CoreSession session);
 
     void validate(CoreSession session) throws ClientException;
-
+    
     DocumentModel getDocument();
 
     /**
@@ -66,21 +66,21 @@ public interface DocumentRouteElement {
     void save(CoreSession session);
 
     void setValidated(CoreSession session);
-
+    
     void setReady(CoreSession session);
-
+    
     void setRunning(CoreSession session);
 
     void setDone(CoreSession session);
 
     void setValidated(CoreSession session, boolean recursively);
-
+    
     void setReady(CoreSession session, boolean recursively);
-
+    
     void setRunning(CoreSession session, boolean recursively);
-
+    
     void setDone(CoreSession session, boolean recursively);
-
+    
     void setReadOnly(CoreSession session) throws ClientException;
 
     /**
@@ -91,4 +91,5 @@ public interface DocumentRouteElement {
     void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursively);
 
+    String getTypeDescription();
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
 
 /**
  * @author arussel
@@ -55,5 +56,10 @@ public class DocumentRouteSerialStepsContainer extends
         // all child ran, we're done
         setDone(session);
         return;
+    }
+    
+    @Override
+    public String getTypeDescription(){
+        return SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
     }
 }

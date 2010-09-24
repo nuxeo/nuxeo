@@ -89,4 +89,16 @@ public interface DocumentRoutingService {
      * */
     void validateRouteModel(DocumentRoute routeModel, CoreSession session) throws 
            ClientException;
+    
+    /**
+     * Computes the list of elements {@link LocalizableDocumentRouteElement} for this
+     * {@link DocumentRoute}.
+     *
+     * @param routeDocument {@link DocumentRoute}.
+     * @param session The session used to query the {@link DocumentRoute}.
+     * @param A list of  {@link DocumentRouteElement}
+     */
+    void getRouteElements(DocumentRouteElement routeElementDocument,
+            CoreSession session, List<LocalizableDocumentRouteElement> routeElements,
+            int depth) throws ClientException;
 }

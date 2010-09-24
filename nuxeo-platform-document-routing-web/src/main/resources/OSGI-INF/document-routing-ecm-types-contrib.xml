@@ -30,7 +30,7 @@
       <default-view>view_documents</default-view>
    	  <subtypes>
         <type>StepFolder</type>
-        <type>Step</type>
+        <type>DocumentRouteStep</type>
       </subtypes>
    	  <layouts mode="any">
         <layout>heading</layout>
@@ -86,7 +86,7 @@
       </contentViews>
    </type>
      
-   <type id="Step" coreType="Step">
+   <type id="DocumentRouteStep" coreType="DocumentRouteStep">
       <label>Step</label>
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.png</bigIcon>

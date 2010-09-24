@@ -22,6 +22,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.PARALLEL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
+
 /**
  * @author arussel
  *
@@ -67,5 +69,9 @@ public class DocumentRouteParallelStepsContainer extends
             return;
         }
 
+    }
+    
+    public String getTypeDescription(){
+        return PARALLEL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
     }
 }

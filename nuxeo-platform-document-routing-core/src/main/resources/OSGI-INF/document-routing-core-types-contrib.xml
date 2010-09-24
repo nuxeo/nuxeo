@@ -33,7 +33,6 @@
     </doctype>
 
     <doctype name="DocumentRoute" extends="StepFolder">
-      <schema name="uid" />
       <schema name="document_route_instance" />
       <schema name="document_route_model" />
       <subtypes>
@@ -44,7 +43,6 @@
 
     <doctype name="StepFolder" extends="OrderedFolder">
       <schema name="step_folder" />
-      <schema name="uid" />
       <subtypes>
         <type>StepFolder</type>
         <type>Step</type>
@@ -53,7 +51,6 @@
 
     <doctype name="DocumentRouteStep" extends="Document">
       <schema name="dublincore" />
-      <schema name="uid" />
       <schema name="step_instance" />
       <schema name="step_document" />
       <facet name ="RouteStep"/>

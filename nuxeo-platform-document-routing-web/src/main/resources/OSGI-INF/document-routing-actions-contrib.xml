@@ -29,6 +29,12 @@
       <category>SUBVIEW_UPPER_LIST</category>
       <filter-id>isUnvalidatedRouteModel</filter-id>
     </action>
+    
+    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml" order="100"
+      label="action.view.document.routing.elements" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoute</filter-id>
+    </action>
 
   </extension>
 

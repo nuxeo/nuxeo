@@ -29,8 +29,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
@@ -39,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
@@ -141,5 +143,24 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throws ClientException {
         routeModel.validate(session);
     }
-
+    
+    @Override
+    public void getRouteElements(DocumentRouteElement routeElementDocument,
+            CoreSession session,
+            List<LocalizableDocumentRouteElement> routeElements, int depth)
+            throws ClientException {
+        if (depth > 0) {
+            routeElements.add(new LocalizableDocumentRouteElement(
+                    routeElementDocument, depth));
+        }
+        DocumentModelList children = session.getChildren(routeElementDocument.getDocument().getRef());
+        if (children.size() > 0) {
+            depth = depth + 1;
+            for (DocumentModel documentModel : children) {
+                getRouteElements(
+                        documentModel.getAdapter(DocumentRouteElement.class),
+                        session, routeElements, depth);
+            }
+        }
+    }
 }
