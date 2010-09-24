@@ -786,7 +786,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         IterableQueryResult res;
         try {
             res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    (Object) null);
+                    this);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }

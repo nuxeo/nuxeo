@@ -37,6 +37,8 @@ import java.util.Set;
 
 import org.antlr.runtime.tree.Tree;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
@@ -53,6 +55,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -274,27 +277,46 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
         }
     }
 
+    private void computeAllPropNames(TypeManagerImpl typeManager) {
+        propertyInfoNames = new HashMap<String, String>();
+        for (String name : model.getPropertyInfoNames()) {
+            propertyInfoNames.put(name.toUpperCase(), name);
+        }
+        allPropNames = new HashMap<String, String>(propertyInfoNames);
+        for (TypeDefinitionContainer tc : typeManager.getTypeDescendants(null,
+                -1, Boolean.TRUE)) {
+            computeAllPropNames(tc);
+        }
+    }
+
+    private void computeAllPropNames(TypeDefinitionContainer tc) {
+        for (PropertyDefinition<?> pd : tc.getTypeDefinition().getPropertyDefinitions().values()) {
+            String name = pd.getId();
+            allPropNames.put(name.toUpperCase(), name);
+        }
+        List<TypeDefinitionContainer> types = tc.getChildren();
+        if (types != null) {
+            for (TypeDefinitionContainer type : types) {
+                computeAllPropNames(type);
+            }
+        }
+    }
+
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model,
             PathResolver pathResolver, String statement,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        // NuxeoConnection conn = (NuxeoConnection) params[0];
+        NuxeoCmisService service = (NuxeoCmisService) params[0];
+        TypeManagerImpl typeManager = service.repository.getTypeManager();
 
         boolean addSystemColumns = params.length >= 2
                 && Boolean.TRUE.equals(params[1]);
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
+
         // TODO precompute this only once
-        propertyInfoNames = new HashMap<String, String>();
-        for (String name : model.getPropertyInfoNames()) {
-            propertyInfoNames.put(name.toUpperCase(), name);
-        }
-        allPropNames = new HashMap<String, String>(propertyInfoNames);
-        // for (PropertyDefinition pd : SimpleType.PROPS_MAP.values()) {
-        // String name = pd.getId();
-        // allPropNames.put(name.toUpperCase(), name);
-        // }
+        computeAllPropNames(typeManager);
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
 
@@ -479,13 +501,14 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
         int njoin = 0;
         for (Join j : walker_from_joins) {
             njoin++;
+            boolean firstJoin = njoin == 1;
 
             // table this join is about
 
             String qual = j.corr;
             Table qualHierTable = getTable(hierTable, qual);
             Table table = null;
-            if (njoin == 1) {
+            if (firstJoin) {
                 // start with hier
                 table = qualHierTable;
             } else {
@@ -522,7 +545,7 @@ public class CMISQLQueryMaker extends AbstractQueryConditionProcessor implements
             }
             from.append(name);
 
-            if (njoin != 1) {
+            if (!firstJoin) {
                 // emit actual join requested
                 from.append(" ON ");
                 from.append(j.on1);

@@ -113,10 +113,14 @@ public class NuxeoRepository {
         return repositoryId;
     }
 
-    protected void initializeTypes() {
-        if (typeManager != null) {
-            return;
+    public TypeManagerImpl getTypeManager() {
+        if (typeManager == null) {
+            initializeTypes();
         }
+        return typeManager;
+    }
+
+    protected void initializeTypes() {
         SchemaManager schemaManager;
         try {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -162,7 +166,7 @@ public class NuxeoRepository {
         if (dt.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
             return;
         }
-        typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt));
+        getTypeManager().addTypeDefinition(NuxeoTypeHelper.construct(dt));
         // recurse in children
         List<String> children = typesChildren.get(name);
         if (children == null) {
@@ -184,7 +188,7 @@ public class NuxeoRepository {
     // Structures are not copied when returned
     public TypeDefinition getTypeDefinition(String typeId) {
         initializeTypes();
-        TypeDefinitionContainer typec = typeManager.getTypeById(typeId);
+        TypeDefinitionContainer typec = getTypeManager().getTypeById(typeId);
         return typec == null ? null : typec.getTypeDefinition();
     }
 
@@ -193,14 +197,14 @@ public class NuxeoRepository {
             Boolean includePropertyDefinitions, BigInteger maxItems,
             BigInteger skipCount) {
         initializeTypes();
-        return typeManager.getTypeChildren(typeId, includePropertyDefinitions,
-                maxItems, skipCount);
+        return getTypeManager().getTypeChildren(typeId,
+                includePropertyDefinitions, maxItems, skipCount);
     }
 
     public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
             int depth, Boolean includePropertyDefinitions) {
         initializeTypes();
-        return typeManager.getTypeDescendants(typeId, depth,
+        return getTypeManager().getTypeDescendants(typeId, depth,
                 includePropertyDefinitions);
     }
 }
