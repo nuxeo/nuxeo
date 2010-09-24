@@ -46,8 +46,10 @@
   </target>
 
   <target name="prepare-jboss">
-    <unzip dest="${jboss}">
-      <artifact:resolveFile key="org.jboss:jboss-as:4.2.3.GA:zip"
+    <unzip dest="${outdir}">
+      <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip" />
+      <!--
+      <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip"
                             classifier="light" />
       <patternset>
         <exclude name="**/bin/classpath.sh" />
@@ -67,63 +69,32 @@
         <exclude name="**/bin/wstools.bat" />
         <exclude name="**/bin/wstools.sh" />
       </patternset>
+      -->
     </unzip>
+    <move todir="${jboss}">
+      <fileset dir="${outdir}/jboss-5.1.0.GA" />
+    </move>
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="doc" />
     </unzip>
-    <copy todir="${jboss}">
-      <fileset dir="src/main/resources/jboss" />
-    </copy>
     <unzip dest="${jboss}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="bin" />
     </unzip>
     <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
-    <!-- Remove non-nuxeo information files from root -->
-    <mkdir dir="${jboss}/doc-jboss" />
-    <move todir="${jboss}/doc-jboss">
-      <fileset dir="${jboss}">
-        <include name="lgpl.html" />
-        <include name="JBossORG-EULA.txt" />
-        <include name="jar-versions.xml" />
-        <include name="derby.log" />
-        <include name="copyright.txt" />
-      </fileset>
-    </move>
-
     <unzip dest="${jboss}/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss" />
+                            classifier="templates-jboss5" />
     </unzip>
 
-    <ant antfile="build.xml" target="patch">
-      <property name="jboss.dir" value="${jboss}" />
-    </ant>
-    <ant antfile="build.xml" target="copy-lib">
-      <property name="jboss.dir" value="${jboss}" />
-    </ant>
     <copy todir="${jboss}/server/default/lib">
-      <!-- Required by rich faces -->
-      <artifact:resolveFile key="commons-digester:commons-digester" />
-      <!-- Required by rich faces -->
-      <artifact:resolveFile key="commons-beanutils:commons-beanutils" />
-      <!-- Required by tomahawk -->
-      <artifact:resolveFile key="commons-el:commons-el" />
-      <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
-      <artifact:resolveFile key="metro.webservices:webservices-api" />
-      <artifact:resolveFile key="metro.webservices:webservices-rt" />
-      <artifact:resolveFile key="metro.webservices:webservices-tools" />
-      <artifact:resolveFile key="org.hibernate:hibernate:3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604" />
-      <!-- copy jdbc drivers -->
-      <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
-      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
-      <!-- copy logging monitor -->
-      <artifact:resolveFile key="org.jboss.services:logging-monitor" />
+      <artifact:resolveFile key="org.nuxeo.common:nuxeo-common" />
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
     </copy>
-    <copy todir="${jboss}/server/default/deploy">
-      <artifact:resolveFile key="org.nuxeo:nuxeo-jboss-interceptors:4.2.3.GA.2" />
+    <copy todir="${jboss}/server/default/deployers">
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:5.1.0.GA" />
     </copy>
   </target>
 
@@ -172,7 +143,7 @@
     <!-- Complementary JBoss templates for DM -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss-dm" />
+                            classifier="templates-jboss5" />
     </unzip>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"

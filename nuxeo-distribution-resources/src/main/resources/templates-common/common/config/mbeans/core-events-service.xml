@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<server>
+
+  <!-- JMS topic/NuxeoMessages -->
+  <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=NuxeoMessages">
+    <attribute name="JNDIName">topic/NuxeoMessages</attribute>
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+
+  <!-- JMS topic/NXPMessages for compatibility -->
+  <mbean code="org.jboss.mq.server.jmx.Topic" name="jboss.mq.destination:service=Topic,name=NXPMessages">
+    <attribute name="JNDIName">topic/NXPMessages</attribute>
+    <depends optional-attribute-name="DestinationManager">jboss.mq:service=DestinationManager</depends>
+  </mbean>
+
+</server>

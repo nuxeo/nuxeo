@@ -15,11 +15,11 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <!--
     <antcall target="build-resources">
       <param name="distribution" value="jetty-base" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    -->
     <antcall target="build-resources">
       <param name="distribution" value="doc" />
     </antcall>
@@ -30,27 +30,44 @@
     <antcall target="build-resources">
       <param name="distribution" value="bin" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources-jboss5">
+    </antcall>
+    <!--
     <antcall target="build-resources">
       <param name="distribution" value="templates-jboss" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <antcall target="build-resources">
       <param name="distribution" value="templates-jboss-dm" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-jetty" />
     </antcall>
+    -->
   </target>
 
+  <target name="build-resources-jboss5"
+          depends="init"
+          description="Build resources package for ${distribution}"
+          unless="no.alternate.build">
+    <copy todir="${outdir}/templates-jboss5" overwrite="true">
+      <fileset dir="src/main/resources/templates-common" />
+      <fileset dir="src/main/resources/templates-jboss5" />
+    </copy>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
+         basedir="${outdir}/templates-jboss5" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
+                     classifier="templates-jboss5"
+                     type="zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
   <target name="build-resources"
           depends="init"
           description="Build resources package for ${distribution}"
           unless="no.alternate.build">
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <copy todir="${outdir}/${distribution}" overwrite="true">
       <fileset dir="src/main/resources/${distribution}" />
     </copy>

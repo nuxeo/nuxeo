@@ -73,13 +73,22 @@
     <profile>
       <!-- Build all JBoss distributions -->
       <id>jboss</id>
+      <modules>
+        <module>nuxeo-platform-ear</module>
+        <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-distribution-jboss</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Build all JBoss 5 distributions -->
+      <id>jboss5</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-distribution-jboss</module>
+        <module>nuxeo-distribution-jboss5</module>
       </modules>
     </profile>
     <profile>

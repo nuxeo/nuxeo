@@ -39,3 +39,8 @@ Depending on the profile you may need different cnfiguration files:
 
 PACKED:
 nuxeo-structure-zip.xml -> rename it to nuxeo-structure.xml
+
+
+TODO :
+- deploy       <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip"
+                            classifier="light" />
