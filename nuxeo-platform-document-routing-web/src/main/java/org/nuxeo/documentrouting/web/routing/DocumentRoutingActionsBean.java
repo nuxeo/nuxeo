@@ -43,6 +43,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.jboss.seam.core.Events;
 
 /**
  * Actions for current document route
