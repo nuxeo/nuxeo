@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -47,6 +47,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsIm
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -76,6 +77,11 @@ public class NuxeoObjectData implements ObjectData {
     private static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     private TypeDefinition type;
+
+    private static final int CACHE_MAX_SIZE = 10;
+
+    /** Cache for Properties objects, which are expensive to create. */
+    private Map<String, Properties> propertiesCache = new HashMap<String, Properties>();
 
     public NuxeoObjectData(NuxeoRepository repository, DocumentModel doc,
             String filter, Boolean includeAllowableActions,
@@ -139,27 +145,46 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public Properties getProperties() {
-        return getProperties(propertyIds); // TODO expensive, cache this!
+        return getProperties(propertyIds);
     }
 
     protected Properties getProperties(List<String> propertyIds) {
-        Map<String, PropertyDefinition<?>> propertyDefinitions = type.getPropertyDefinitions();
-        int len = propertyIds == STAR_FILTER ? propertyDefinitions.size()
-                : propertyIds.size();
-        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>(len);
-        for (Entry<String, PropertyDefinition<?>> es : propertyDefinitions.entrySet()) {
-            String key = es.getKey();
-            if (propertyIds == STAR_FILTER || propertyIds.contains(key)) {
-                props.add((PropertyData<?>) NuxeoPropertyData.construct(this,
-                        es.getValue()));
+        // for STAR_FILTER the key is equal to STAR (see limitCacheSize)
+        String key = StringUtils.join(propertyIds, ',');
+        Properties properties = propertiesCache.get(key);
+        if (properties == null) {
+            Map<String, PropertyDefinition<?>> propertyDefinitions = type.getPropertyDefinitions();
+            int len = propertyIds == STAR_FILTER ? propertyDefinitions.size()
+                    : propertyIds.size();
+            List<PropertyData<?>> props = new ArrayList<PropertyData<?>>(len);
+            for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
+                if (propertyIds == STAR_FILTER
+                        || propertyIds.contains(pd.getId())) {
+                    props.add((PropertyData<?>) NuxeoPropertyData.construct(
+                            this, pd));
+                }
+            }
+            properties = objectFactory.createPropertiesData(props);
+            limitCacheSize();
+            propertiesCache.put(key, properties);
+        }
+        return properties;
+    }
+
+    /** Limits cache size, always keeps STAR filter. */
+    protected void limitCacheSize() {
+        if (propertiesCache.size() >= CACHE_MAX_SIZE) {
+            Properties sf = propertiesCache.get(STAR);
+            propertiesCache.clear();
+            if (sf != null) {
+                propertiesCache.put(STAR, sf);
             }
         }
-        return objectFactory.createPropertiesData(props);
     }
 
     public PropertyData<?> getProperty(String id) {
-        PropertyDefinition<?> pd = type.getPropertyDefinitions().get(id);
-        return NuxeoPropertyData.construct(this, pd);
+        // make use of cache
+        return getProperties(STAR_FILTER).getProperties().get(id);
     }
 
     @Override
