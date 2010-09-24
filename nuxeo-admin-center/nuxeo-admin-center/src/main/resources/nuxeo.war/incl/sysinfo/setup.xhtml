@@ -4,17 +4,15 @@
     xmlns:nxd="http://nuxeo.org/nxweb/document"
     xmlns:c="http://java.sun.com/jstl/core"
     xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:f="http://java.sun.com/jsf/core">
-    
-<a4j:outputPanel id="setupPanel" ajaxRendered="true">
+    xmlns:f="http://java.sun.com/jsf/core"><a4j:outputPanel
+    id="setupPanel" ajaxRendered="true">
+    <!-- 
     <span><h:outputText value="DEBUG: Configurable: #{configurable}" /></span>
     <br />
     <span><h:outputText
         value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" /></span>
-    <br />
-    <h:messages />
-    <br />
-    
+    <br /> -->
+
     <ui:include src="/incl/message_banner.xhtml" />
 
     <h:panelGroup rendered="#{setupRequiresRestart}">
@@ -37,6 +35,7 @@
                     <td><h:outputText styleClass="label"
                         value="#{messages['label.setup.database.templates']}" /></td>
                     <td><h:selectOneMenu class="dataInputText"
+                        immediate="true"
                         value="#{setupParams['nuxeo.dbtemplate']}">
                         <f:selectItem itemValue="default"
                             itemLabel="#{messages['label.setup.nuxeo.template.default']}" />
@@ -49,7 +48,6 @@
                         <f:selectItem itemValue="mssql"
                             itemLabel="#{messages['label.setup.nuxeo.template.mssql']}" />
                         <a4j:support event="onchange" reRender="setupPanel"
-                            ajaxSingle="true"
                             actionListener="#{setupWizardAction.templateChange}">
                         </a4j:support>
                     </h:selectOneMenu></td>
