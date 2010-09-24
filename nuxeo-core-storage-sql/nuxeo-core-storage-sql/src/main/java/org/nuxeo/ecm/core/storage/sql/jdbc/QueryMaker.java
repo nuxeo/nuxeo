@@ -83,6 +83,10 @@ public interface QueryMaker {
             super(message);
         }
 
+        public QueryMakerException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
         public QueryMakerException(Throwable cause) {
             super(cause);
         }
