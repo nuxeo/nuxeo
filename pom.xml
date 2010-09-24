@@ -21,6 +21,7 @@
     <module>nuxeo-chemistry</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
+    <module>nuxeo-platform-high-availability</module>
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
       <module>nuxeo-correspondence-marianne</module>
