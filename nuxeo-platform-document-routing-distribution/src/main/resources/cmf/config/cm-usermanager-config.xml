@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="com.nuxeo.case-management.usermanager.config">
+
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+
+    <userManager>
+
+      <defaultAdministratorId>Administrator</defaultAdministratorId>
+
+      <users>
+        <virtualUser id="Administrator" searchable="false">
+          <password>Administrator</password>
+          <property name="lastName">System Administrator</property>
+          <group>administrators</group>
+        </virtualUser>
+      </users>
+
+    </userManager>
+
+  </extension>
+
+</component>
