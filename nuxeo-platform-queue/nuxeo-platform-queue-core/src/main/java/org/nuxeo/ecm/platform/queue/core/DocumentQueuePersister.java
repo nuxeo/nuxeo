@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
@@ -66,11 +67,11 @@ public class DocumentQueuePersister<C extends Serializable> implements QueuePers
     public static final Log log = LogFactory.getLog(DocumentQueuePersister.class);
 
     protected PathRef rootPath() {
-        return new PathRef("/" + QUEUE_ROOT_NAME);
+        return DocumentStoreManager.newPath(QUEUE_ROOT_NAME);
     }
 
     protected PathRef queuePath() {
-        return new PathRef("/" + QUEUE_ROOT_NAME + "/" + queueName);
+        return DocumentStoreManager.newPath(QUEUE_ROOT_NAME, queueName);
     }
 
     protected DocumentModel queue(CoreSession session) throws ClientException {
@@ -103,7 +104,7 @@ public class DocumentQueuePersister<C extends Serializable> implements QueuePers
             PathRef rootPath = rootPath();
             DocumentModel root;
             if (!session.exists(rootPath)) {
-                root = session.createDocumentModel("/", QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
+                root = session.createDocumentModel(DocumentStoreManager.newPath().toString(), QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
                 root = session.createDocument(root);
             } else {
                 root = session.getDocument(rootPath);

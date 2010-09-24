@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
@@ -94,7 +95,7 @@ public class TestQueue extends QueueTestCase {
 
         @Override
         public void run() throws ClientException {
-            DocumentRef queueRef = new PathRef("/queues/fake");
+            DocumentRef queueRef = DocumentStoreManager.newPath("queues", "fake");
             DocumentModel queueDoc = session.getDocument(queueRef);
             assertNotNull(queueDoc);
             DocumentModel contentDoc = session.getChild(queueRef, "test:test1");

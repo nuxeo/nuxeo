@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.queue.core;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueLocator;
 import org.nuxeo.ecm.platform.queue.api.QueueManager;
@@ -30,7 +31,7 @@ import org.nuxeo.ecm.platform.queue.api.QueueManager;
 public class QueuesInitializationHandler implements  DocumentStoreHandler {
 
     @Override
-    public void onStorageInitialization(CoreSession session) {
+    public void onStorageInitialization(CoreSession session, DocumentRef rootletRef) {
         QueueLocator locator =  QueueComponent.defaultComponent.registry;
         for (QueueManager<?> mgr : locator.getManagers()) {
             mgr.initialize();
