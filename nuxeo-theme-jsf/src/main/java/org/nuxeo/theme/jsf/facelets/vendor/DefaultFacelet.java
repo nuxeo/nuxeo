@@ -45,6 +45,9 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 /**
  * Default Facelet implementation.
  * 
+ * Copied from facelets-1.1.15.B1 by Jean-Marc Orliaguet <jmo@chalmers.se> -
+ * class made public 2010/10/24.
+ * 
  * @author Jacob Hookom
  * @version $Id: DefaultFacelet.java,v 1.9 2006/04/03 05:10:38 jhook Exp $
  */
