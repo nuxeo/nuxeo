@@ -24,8 +24,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.management.locks.LocksObject;
-import org.nuxeo.ecm.webengine.management.queues.QueuesObject;
 import org.nuxeo.ecm.webengine.management.statuses.StatusesObject;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -49,19 +47,9 @@ public class ManagementModule extends ModuleRoot {
         return getView("index");
     }
 
-    @Path("locks")
-    public Object dispatchLock() {
-        return LocksObject.newObject(this);
-    }
-
     @Path("statuses")
     public Object dispatchStatuses() {
         return StatusesObject.newObject(this);
-    }
-
-    @Path("queues")
-    public Object dispatchQueues() {
-        return QueuesObject.newObject(this);
     }
 
     @Override

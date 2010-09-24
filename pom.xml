@@ -32,7 +32,6 @@
     <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-tag-service</module>
     <module>nuxeo-webengine-features</module>
-    <module>nuxeo-platform-queue</module>
     <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-imaging-tiling</module>
@@ -432,16 +431,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-preview</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-queue-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-queue-core</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
