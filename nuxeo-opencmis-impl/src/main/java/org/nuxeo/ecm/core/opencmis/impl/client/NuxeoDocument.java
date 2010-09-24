@@ -32,6 +32,7 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -131,8 +132,12 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ContentStream getContentStream(String streamId) {
-        return service.getContentStream(getRepositoryId(), getId(), streamId,
-                null, null, null);
+        try {
+            return service.getContentStream(getRepositoryId(), getId(),
+                    streamId, null, null, null);
+        } catch (CmisConstraintException e) {
+            return null;
+        }
     }
 
     @Override

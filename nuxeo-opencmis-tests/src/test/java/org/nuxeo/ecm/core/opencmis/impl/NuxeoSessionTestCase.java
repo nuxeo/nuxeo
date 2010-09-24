@@ -37,7 +37,6 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -281,15 +280,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // delete
         file.deleteContentStream();
         file.refresh();
-        try {
-            cs = file.getContentStream();
-            fail("Should have no content stream");
-        } catch (CmisConstraintException e) {
-            // ok
-            // TODO check we get CmisConstraintException
-        } catch (CmisNotSupportedException e) {
-            // TODO AtomPub incorrectly throws this
-        }
+        assertEquals(null, file.getContentStream());
     }
 
     public void testDeletedInTrash() throws Exception {

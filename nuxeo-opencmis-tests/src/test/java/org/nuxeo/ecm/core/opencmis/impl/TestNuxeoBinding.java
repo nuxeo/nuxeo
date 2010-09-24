@@ -23,8 +23,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -335,11 +333,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testCreateDocumentWithContentStream() throws Exception {
-        InputStream stream = new ByteArrayInputStream(
-                Helper.FILE1_CONTENT.getBytes("UTF-8"));
         // null filename passed on purpose, size ignored by Nuxeo
-        ContentStream cs = new ContentStreamImpl(null, null, "text/plain",
-                stream);
+        ContentStream cs = new ContentStreamImpl(null, "text/plain",
+                Helper.FILE1_CONTENT);
         String id = objService.createDocument(repositoryId,
                 createBaseDocumentProperties("doc1.txt", "File"), rootFolderId,
                 cs, VersioningState.NONE, null, null, null, null);
@@ -385,12 +381,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
 
         // set stream
-        // TODO convenience constructors for ContentStreamImpl
-        byte[] streamBytes = STREAM_CONTENT.getBytes("UTF-8");
-        ByteArrayInputStream stream = new ByteArrayInputStream(streamBytes);
-        cs = new ContentStreamImpl("foo.txt",
-                BigInteger.valueOf(streamBytes.length),
-                "text/plain; charset=UTF-8", stream);
+
+        cs = new ContentStreamImpl("foo.txt", "text/plain; charset=UTF-8",
+                STREAM_CONTENT);
         Holder<String> objectIdHolder = new Holder<String>(ob.getId());
         objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
                 null, cs, null);
@@ -402,7 +395,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertNotNull(cs);
         assertEquals("text/plain; charset=UTF-8", cs.getMimeType());
         assertEquals("foo.txt", cs.getFileName());
-        assertEquals(streamBytes.length, cs.getLength());
+        assertEquals(STREAM_CONTENT.getBytes("UTF-8").length, cs.getLength());
         assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
 
         // delete
