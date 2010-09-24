@@ -1,15 +1,15 @@
 /**
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.sun.com/cddl/
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 
 package org.nuxeo.theme.jsf.facelets.vendor;
@@ -37,10 +37,6 @@ import com.sun.facelets.util.ParameterCheck;
 
 /**
  * Default FaceletFactory implementation.
- * 
- * Modified from facelets-1.1.15 by Jean-Marc Orliaguet <jmo@chalmers.se> made
- * the DefaultFaceletFactory class non-final and made the refreshPeriod variable
- * protected - 2010/10/23.
  * 
  * @author Jacob Hookom
  * @version $Id: DefaultFaceletFactory.java,v 1.10 2007/04/09 01:13:17 youngm
@@ -179,7 +175,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
                 URLConnection conn = url.openConnection();
                 is = conn.getInputStream();
                 long atl = conn.getLastModified();
-                return atl > ttl;
+                return atl == 0 || atl > ttl;
             } catch (Exception e) {
                 throw new FaceletException("Error Checking Last Modified for "
                         + facelet.getAlias(), e);
@@ -220,8 +216,11 @@ public class DefaultFaceletFactory extends FaceletFactory {
                     this.compiler.createExpressionFactory(), url, alias, h);
             return f;
         } catch (FileNotFoundException fnfe) {
-            throw new FileNotFoundException("Facelet " + alias
-                    + " not found at: " + url.toExternalForm());
+            if (log.isLoggable(Level.WARNING)) {
+                log.warning(alias + " not found at " + url.toExternalForm());
+            }
+            throw new FileNotFoundException("Facelet Not Found: "
+                    + url.toExternalForm());
         }
     }
 
