@@ -110,6 +110,14 @@ public interface QueuePersister<C extends Serializable> {
     int removeByOwner(URI name);
 
     /**
+     * Remote out-dated black-listed content from a specified date
+     *
+     * @param the date from where the content should be removed
+     * @return the number of content removed
+     */
+    int removeBlacklisted(Date from);
+
+    /**
      * Create the queue if it does not exist already
      *
      * @return

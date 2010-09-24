@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_BLACKLIST_TIME;
 import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_CONTENT;
 import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_EXECUTE_TIME;
-import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_BLACKLIST_TIME;
 import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
 import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_OWNER;
 import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_SCHEMA;
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -306,7 +307,7 @@ public class DocumentQueuePersister<C extends Serializable> implements QueuePers
         @Override
         public void run() throws ClientException {
             PathRef ref = newPathRef(session, contentName);
-            DocumentModel doc = session.getDocument(ref);
+            doc = session.getDocument(ref);
             doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_BLACKLIST_TIME, new Date());
             doc = session.saveDocument(doc);
             detachDocument(doc);
@@ -437,6 +438,43 @@ public class DocumentQueuePersister<C extends Serializable> implements QueuePers
         GetInfoRunner runner = new GetInfoRunner(contentName);;
         runner.runSafe();
         return new DocumentQueueAdapter<C>(runner.doc);
+    }
+
+    protected static String formatTimestamp(Date date) {
+        return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(date);
+    }
+
+    protected class RemoveBlacklistedRunner extends DocumentStoreSessionRunner {
+
+         final Date from;
+
+         int removedCount;
+
+         protected RemoveBlacklistedRunner(Date from) {
+             this.from = from;
+         }
+
+        @Override
+        public void run() throws ClientException {
+            String ts = formatTimestamp(from);
+            log.debug("Removing blacklisted doc oldest than " + ts);
+            String req = String.format("SELECT * from QueueItem where qitm:blacklistTime < %s and ecm:isProxy = 0", ts);
+            DocumentModelList docs = session.query(req);
+            removedCount = docs.size();
+            for (DocumentModel doc : docs) {
+                log.debug("Removing blacklisted doc " + doc.getPathAsString());
+                session.removeDocument(doc.getRef());
+            }
+            session.save();
+        }
+
+    }
+
+    @Override
+    public int removeBlacklisted(Date from) {
+        RemoveBlacklistedRunner runner =new RemoveBlacklistedRunner(from);
+        runner.runSafe();
+        return runner.removedCount;
     }
 
     protected void injectContent(DocumentModel doc, Serializable content) throws ClientException {

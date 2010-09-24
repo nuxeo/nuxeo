@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.queue.core;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
@@ -122,6 +124,14 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
     @Override
     public void initialize() {
         persister.createIfNotExist();
+    }
+
+    @Override
+    public int purgeBlacklisted() {
+        Calendar cal = Calendar.getInstance();
+        cal.roll(Calendar.MINUTE, -10);
+        Date from = cal.getTime();
+        return persister.removeBlacklisted(from);
     }
 
 }

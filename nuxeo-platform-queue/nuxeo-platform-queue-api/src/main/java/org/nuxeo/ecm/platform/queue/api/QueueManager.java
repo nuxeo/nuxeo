@@ -108,6 +108,14 @@ public interface QueueManager<C extends Serializable> {
     int removeOwned(URI owner);
 
     /**
+     * Purge blacklisted content
+     *
+     *@return the number of content removed
+     */
+    @Transacted
+    int purgeBlacklisted();
+
+    /**
      * Generate a name referencing an unique content
      *
      * @param queueName
