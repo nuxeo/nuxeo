@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +60,14 @@ public class UnknownResource extends AbstractResource {
      */
     @PUT
     public Response put() throws Exception {
+
+        // Special case: ignore special MacOS files.
+        //String name = Util.getNameFromPath(path);
+        if (name.startsWith("._")) {
+            // Not sure if it's the right error code.
+            throw new WebApplicationException(409);
+        }
+        
         ensureParentExists();
 
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));

@@ -129,7 +129,7 @@ public class ExistingResource extends AbstractResource {
         DocumentRef sourceRef = new PathRef(path);
         DocumentRef destRef = new PathRef(destPath);
 
-        String destParentPath = getParentPath(destPath);
+        String destParentPath = Util.getParentPath(destPath);
         PathRef destParentRef = new PathRef(destParentPath);
         if (!session.exists(destParentRef)) {
             return Response.status(409).build();
@@ -145,7 +145,7 @@ public class ExistingResource extends AbstractResource {
             status = 204;
         }
 
-        session.copy(sourceRef, destParentRef, getName(destPath));
+        session.copy(sourceRef, destParentRef, Util.getNameFromPath(destPath));
         if ("MOVE".equals(method)) {
             session.removeDocument(sourceRef);
         }

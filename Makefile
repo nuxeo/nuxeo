@@ -19,8 +19,9 @@ superclean: clean
 	mvn dependency:purge-local-repository
 
 deploy-jboss: build
-	cp target/$(JAR) $(EAR)/plugins
-	cp target/classes/lib/*.jar $(EAR)/lib
+	mkdir -p $(EAR)/plugins
+	cp target/$(JAR) $(EAR)/plugins/
+	cp target/classes/lib/*.jar $(EAR)/lib/
 
 deploy-tomcat: build
 	cp target/$(JAR) $(TOMCAT)/nxserver/bundles
@@ -35,3 +36,15 @@ build:
 
 run:
 	mvn clean test-compile ; ./run.sh
+
+zip: build
+	mkdir -p zip/nuxeo-webdav/addons
+	mkdir -p zip/nuxeo-webdav/lib
+	cp README.txt zip/nuxeo-webdav
+	cp target/nuxeo-webdav-0.0.1-SNAPSHOT.jar zip/nuxeo-webdav/addons
+	cp target/classes/lib/asm-3.1.jar zip/nuxeo-webdav/lib
+	cp target/classes/lib/webdav-jaxrs-1.1.jar zip/nuxeo-webdav/lib
+	cd zip ; zip -r nuxeo-webdav.zip nuxeo-webdav
+	cp zip/nuxeo-webdav.zip $(HOME)/Dropbox/Public/
+	
+

@@ -19,14 +19,12 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.locking.LockManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.OPTIONS;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -47,8 +45,8 @@ public class AbstractResource {
         assert request != null;
         this.request = request;
         this.path = path;
-        parentPath = getParentPath(path);
-        name = getName(path);
+        parentPath = Util.getParentPath(path);
+        name = Util.getNameFromPath(path);
         session = Util.getSession(request);
     }
 
@@ -62,45 +60,8 @@ public class AbstractResource {
 
     // Util methods.
 
-    static String normalize(String path) {
-        Path p = new Path(path);
-        return p.toString();
-    }
-
-    static String getParentPath(String path) {
-        Path p = new Path(path);
-        path = p.removeLastSegments(1).toString();
-
-        // Ensures that path starts with a "/" and doesn't end with a "/".
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length()-1);
-        }
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        return path;
-    }
-
-    static String getName(String path) {
-        Path p = new Path(path);
-        return p.lastSegment();
-    }
-
     String getTokenFromHeaders(String headerName) {
-        return getTokenFromHeaders(headerName, request);
-    }
-
-    static String getTokenFromHeaders(String headerName, HttpServletRequest request) {
-        String header = request.getHeader(headerName);
-        if (header == null) {
-            return null;
-        }
-        String token = header.trim();
-        int tokenStart = token.indexOf("<urn:uuid:");
-        token = token.substring(tokenStart + "<urn:uuid:".length(), token.length());
-        int tokenEnd = token.indexOf(">");
-        token = token.substring(0, tokenEnd);
-        return token;
+        return Util.getTokenFromHeaders(headerName, request);
     }
 
 }

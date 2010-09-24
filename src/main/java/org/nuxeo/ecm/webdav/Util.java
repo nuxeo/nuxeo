@@ -25,6 +25,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -95,6 +96,43 @@ public class Util {
         marshaller.marshal(o, sw);
         System.out.println(sw);
 */
+    }
+
+    public static String normalizePath(String path) {
+        Path p = new Path(path);
+        return p.toString();
+    }
+
+    public static String getParentPath(String path) {
+        Path p = new Path(path);
+        path = p.removeLastSegments(1).toString();
+
+        // Ensures that path starts with a "/" and doesn't end with a "/".
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length()-1);
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        return path;
+    }
+
+    public static String getNameFromPath(String path) {
+        Path p = new Path(path);
+        return p.lastSegment();
+    }
+
+    public static String getTokenFromHeaders(String headerName, HttpServletRequest request) {
+        String header = request.getHeader(headerName);
+        if (header == null) {
+            return null;
+        }
+        String token = header.trim();
+        int tokenStart = token.indexOf("<urn:uuid:");
+        token = token.substring(tokenStart + "<urn:uuid:".length(), token.length());
+        int tokenEnd = token.indexOf(">");
+        token = token.substring(0, tokenEnd);
+        return token;
     }
 
 }

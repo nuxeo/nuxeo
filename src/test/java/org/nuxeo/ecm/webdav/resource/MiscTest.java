@@ -2,6 +2,7 @@ package org.nuxeo.ecm.webdav.resource;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,15 +22,15 @@ public class MiscTest extends Assert {
 
         when(request.getHeader("if")).thenReturn("<urn:uuid:tototiti>");
         assertEquals("tototiti",
-                AbstractResource.getTokenFromHeaders("if", request));
+                Util.getTokenFromHeaders("if", request));
 
         when(request.getHeader("if")).thenReturn(" (<urn:uuid:tototiti>) ");
         assertEquals("tototiti",
-                AbstractResource.getTokenFromHeaders("if", request));
+                Util.getTokenFromHeaders("if", request));
 
         when(request.getHeader("lock-token")).thenReturn(" (<urn:uuid:tototiti>) ");
         assertEquals("tototiti",
-                AbstractResource.getTokenFromHeaders("lock-token", request));
+                Util.getTokenFromHeaders("lock-token", request));
     }
 
     @Test
