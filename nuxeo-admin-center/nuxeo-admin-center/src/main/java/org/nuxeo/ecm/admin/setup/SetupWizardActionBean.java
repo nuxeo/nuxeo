@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
+import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 
@@ -74,13 +75,33 @@ public class SetupWizardActionBean implements Serializable {
 
     protected Map<String, String> advancedParameters = null;
 
-    @Factory(value = "advancedParams", scope = ScopeType.PAGE)
+    @Factory(value = "advancedParams", scope = ScopeType.STATELESS)
     public Map<String, String> getAdvancedParameters() {
         if (advancedParameters == null) {
             readParameters();
         }
         return advancedParameters;
     }
+
+    // @Factory(value = "dbtemplates", scope = ScopeType.APPLICATION)
+    // public List<String> getDBTemplates() {
+    // return ConfigurationGenerator.DB_LIST;
+    // }
+
+    // protected List<String> dbTemplatesLabels = null;
+
+    // @Factory(value = "dbtemplatesLabels", scope = ScopeType.APPLICATION)
+    // public List<String> getDBTemplatesLabels() {
+    // if (dbTemplatesLabels == null) {
+    // dbTemplatesLabels = new ArrayList<String>(
+    // ConfigurationGenerator.DB_LIST.size());
+    // for (String templateName : ConfigurationGenerator.DB_LIST) {
+    // dbTemplatesLabels.add(resourcesAccessor.getMessages().get(
+    // "label.setup.nuxeo.template." + templateName));
+    // }
+    // }
+    // return dbTemplatesLabels;
+    // }
 
     protected static boolean needsRestart = false;
 
@@ -89,9 +110,9 @@ public class SetupWizardActionBean implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    @Factory(value = "configurable", scope = ScopeType.PAGE)
+    @Factory(value = "configurable", scope = ScopeType.SESSION)
     public boolean isConfigurable() {
-        if (configGenerator==null) {
+        if (configGenerator == null) {
             readParameters();
         }
         return configurable;
@@ -106,7 +127,7 @@ public class SetupWizardActionBean implements Serializable {
         return needsRestart;
     }
 
-    @Factory(value = "setupParams", scope = ScopeType.PAGE)
+    @Factory(value = "setupParams", scope = ScopeType.STATELESS)
     public Map<String, String> getParameters() {
         if (parameters == null) {
             readParameters();
@@ -136,8 +157,6 @@ public class SetupWizardActionBean implements Serializable {
         for (String keyParam : managedKeyParameters) {
             setParameter(keyParam);
         }
-        Contexts.getPageContext().remove("setupParams");
-        Contexts.getPageContext().remove("advancedParams");
     }
 
     /**
@@ -192,6 +211,8 @@ public class SetupWizardActionBean implements Serializable {
 
     public void resetParameters() {
         readParameters();
+        Contexts.getPageContext().remove("setupParams");
+        Contexts.getPageContext().remove("advancedParams");
         Contexts.getEventContext().remove("setupRequiresRestart");
     }
 
@@ -207,6 +228,10 @@ public class SetupWizardActionBean implements Serializable {
         }
         configGenerator.changeTemplates(rebuildTemplatesStr(dbTemplate));
         setParameters();
+        Contexts.getPageContext().remove("setupParams");
+        Contexts.getPageContext().remove("advancedParams");
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.renderResponse();
     }
 
     private String rebuildTemplatesStr(String dbTemplate) {
