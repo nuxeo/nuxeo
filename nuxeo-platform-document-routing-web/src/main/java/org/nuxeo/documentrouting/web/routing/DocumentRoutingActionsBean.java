@@ -43,12 +43,13 @@ import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.jboss.seam.core.Events;
 
 /**
  * Actions for current document route
- * 
+ *
  * @author Mariana Cedica
  */
 @Scope(CONVERSATION)
@@ -90,7 +91,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
         getDocumentRoutingService().validateRouteModel(currentRouteModel,
                 documentManager);
-        Events.instance().raiseEvent("documentChildrenChanged");
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         return navigationContext.navigateToDocument(currentDocument);
     }
 
@@ -136,7 +137,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         depthFormatter.append(")");
         return depthFormatter.toString();
     }
-    
+
     public boolean isStep(DocumentModel doc) {
         if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return true;
