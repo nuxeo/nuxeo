@@ -347,13 +347,13 @@ public class VersioningService extends DefaultComponent implements
             if (!handled) {
                 final VersioningActions action = req.getVersioningAction();
                 if (action == null) {
-                    log.warn("versioning action is null, inc version aborted.");
+                    log.debug("versioning action is null, inc version aborted.");
                     return;
                 }
                 performRuleAction(action, req.getDocument());
             }
         } else {
-            log.warn("Not handled: " + req);
+            log.debug("Not handled: " + req);
         }
     }
 
