@@ -43,11 +43,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jbosssx</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>javax.persistence</groupId>
