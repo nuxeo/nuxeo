@@ -60,10 +60,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="OrderedFolder" extends="Document">
-      <schema name="common"/>
-      <schema name="dublincore"/>
-      <facet name="Folderish"/>
+    <doctype name="OrderedFolder" extends="Folder">
       <facet name="Orderable"/>
     </doctype>
 
