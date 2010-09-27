@@ -121,9 +121,6 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
                 "JBossLoginConfig.xml");
         // donnot : deployContrib("StreamingServer.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
-                "DemoRepository.xml");
-
         deployContrib("org.nuxeo.ecm.platform.io.core.tests", "nxrelations.xml");
         deployContrib("org.nuxeo.ecm.platform.io.core.tests",
                 "nxrelations-default-jena-bundle.xml");

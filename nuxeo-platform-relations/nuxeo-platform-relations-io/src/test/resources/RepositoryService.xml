@@ -17,20 +17,6 @@
   </service>
 
   <extension-point name="repository">
-    <documentation>
-      Extension point to register new repositories. The extension should use the
-      format:
-      <repository name="demo"
-        factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory"
-        securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager">
-        ... random XML content ...
-      </repository>
-      The repository tag may contains any valid XML content that can be used by
-      to specify repository implementation specific configuration data.
-      <p />
-      The name of the repository must be unique in the application
-    </documentation>
-
     <object class="org.nuxeo.ecm.core.repository.RepositoryDescriptor" />
   </extension-point>
 

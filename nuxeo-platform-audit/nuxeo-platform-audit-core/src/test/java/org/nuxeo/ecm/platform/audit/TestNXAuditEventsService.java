@@ -181,7 +181,8 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         doCreateDocument();
         DocumentModel rootDocument = coreSession.getRootDocument();
         long count = serviceUnderTest.syncLogCreationEntries(
-                getRepository().getName(), rootDocument.getPathAsString(), true);
+                coreSession.getRepositoryName(),
+                rootDocument.getPathAsString(), true);
         assertEquals(2, count);
 
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(rootDocument.getId());

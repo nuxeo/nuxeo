@@ -67,7 +67,7 @@
     <!-- Testing -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
