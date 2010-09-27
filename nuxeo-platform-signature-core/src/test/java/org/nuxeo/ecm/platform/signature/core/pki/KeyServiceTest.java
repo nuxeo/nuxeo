@@ -17,23 +17,22 @@
 
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-
-import static org.junit.Assert.assertNotNull;
-
 import java.security.KeyPair;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
@@ -42,26 +41,26 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
-@Deploy( { "org.nuxeo.ecm.core.api" })
-public class KeyServiceTest {
+@Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
+        "org.nuxeo.runtime.management", "org.nuxeo.ecm.platform.signature.core" })
+public class KeyServiceTest extends SQLRepositoryTestCase {
 
-    protected static KeyService service;
-
-    protected static Session session;
-
-    @Before
-    public void setUp() throws Exception {
-        service = new KeyServiceImpl();
-    }
+    @Inject
+    protected KeyService keyService;
 
     @Test
     public void testCreateKeys() throws Exception {
         CertInfo certInfo = new CertInfo();
         certInfo.setKeyAlgorithm("RSA");
         certInfo.setNumBits(1024);
-        certInfo.setSecurityProviderName("BC");
-        KeyPair keyPair = service.createKeys(certInfo);
+        KeyPair keyPair = getKeyService().getKeys(certInfo);
         assertNotNull(keyPair.getPrivate());
     }
 
+    public KeyService getKeyService() throws Exception {
+        if (keyService == null) {
+            keyService = Framework.getService(KeyService.class);
+        }
+        return keyService;
+    }
 }

@@ -16,7 +16,7 @@
  */
 
 
-package org.nuxeo.ecm.platform.signature.core.sign;
+package org.nuxeo.ecm.platform.signature.core.pki;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -27,17 +27,17 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 
 @XObject("configuration")
-public class SignatureDescriptor {
+public class CADescriptor {
 
-    @XNode("reason")
-    protected String reason;
+    @XNode("rootCertificateFilePath")
+    protected String rootCertificateFilePath;
 
-    public String getReason() {
-        return reason;
+    public String getRootCertificateFilePath() {
+        return rootCertificateFilePath;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setRootCertificateFilePath(String rootCertificateFilePath) {
+        this.rootCertificateFilePath = rootCertificateFilePath;
     }
 
     private boolean remove;

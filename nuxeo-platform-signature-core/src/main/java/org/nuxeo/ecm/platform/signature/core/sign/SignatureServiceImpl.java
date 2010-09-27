@@ -25,20 +25,24 @@ import java.io.InputStream;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
+import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
-import org.nuxeo.ecm.platform.signature.core.pki.CertServiceImpl;
-import org.nuxeo.ecm.platform.signature.core.pki.KeyServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -49,7 +53,7 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 
 /**
- *  @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
+ * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
 public class SignatureServiceImpl extends DefaultComponent implements
@@ -58,10 +62,12 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     private List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
 
+    protected KeyService keyService;
+
+    protected CertService certService;
+
     public File signPDF(CertInfo certInfo, InputStream origPdfStream)
-            throws Exception {
-        KeyService keyService = new KeyServiceImpl();
-        CertService certService = new CertServiceImpl();
+            throws SignException {
         File outputFile = null;
         try {
             outputFile = File.createTempFile("signed-", ".pdf");
@@ -70,8 +76,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper stp = PdfStamper.createSignature(reader,
                     new FileOutputStream(outputFile), '\0');
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
-            KeyPair keyPair = keyService.getKeys(certInfo);
-            Certificate certificate = certService.createCertificate(keyPair,
+            KeyPair keyPair = getKeyService().getKeys(certInfo);
+            Certificate certificate = getCertService().getCertificate(
                     certInfo);
             List<Certificate> certificates = new ArrayList<Certificate>();
             certificates.add(certificate);
@@ -79,35 +85,65 @@ public class SignatureServiceImpl extends DefaultComponent implements
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
             sap.setCrypto(keyPair.getPrivate(), certChain, null,
                     PdfSignatureAppearance.SELF_SIGNED);
-
-            sap.setReason(certInfo.getSigningReason());
-
+            if (certInfo.getSigningReason() == null) {
+                sap.setReason(certInfo.getSigningReason());
+            } else {
+                sap.setReason(getReason());
+            }
             sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1, null);
-
             stp.close();
         } catch (UnrecoverableKeyException e) {
-            // TODO handling
-            log.error(e);
+            throw new CertException(e);
         } catch (KeyStoreException e) {
-            // TODO handling
-            log.error(e);
+            throw new CertException(e);
         } catch (NoSuchAlgorithmException e) {
-            // TODO handling
-            log.error(e);
+            throw new SignException(e);
         } catch (CertificateException e) {
-            // TODO handling
-            log.error(e);
+            throw new SignException(e);
         } catch (FileNotFoundException e) {
-            // TODO handling
-            log.error(e);
+            throw new SignException(e);
         } catch (IOException e) {
-            // TODO handling
-            log.error(e);
+            throw new SignException(e);
+        } catch (SignatureException e) {
+            throw new SignException(e);
         } catch (DocumentException e) {
-            // TODO handling
-            log.error(e);
+            throw new SignException(e);
+        } catch (Exception e){
+            throw new SignException(e);
         }
         return outputFile;
+    }
+
+    protected KeyService getKeyService() throws Exception {
+        if (keyService == null) {
+            keyService = Framework.getService(KeyService.class);
+        }
+        return keyService;
+    }
+
+    protected CertService getCertService() throws Exception {
+        if (certService == null) {
+            certService = Framework.getService(CertService.class);
+        }
+        return certService;
+    }
+
+    private DateFormat getFormatter() {
+        DateFormat formatter = new SimpleDateFormat("MM/dd/yy");
+        return formatter;
+    }
+
+    String getReason() throws SignatureException{
+        String reason=null;
+        for (SignatureDescriptor sd : config) {
+            if (sd.getReason() != null){
+                reason=sd.getReason();
+            }
+        }
+        if(reason==null){
+            throw new SignatureException("You have to provide a default reason in the extension point");
+        }
+        return reason;
     }
 
     @Override
@@ -121,5 +157,4 @@ public class SignatureServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
         config.remove(contribution);
     }
-
 }

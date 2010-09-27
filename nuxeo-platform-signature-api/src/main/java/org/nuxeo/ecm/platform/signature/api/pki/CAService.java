@@ -15,19 +15,64 @@
  *     Wojciech Sulejman
  */
 
-
 package org.nuxeo.ecm.platform.signature.api.pki;
+
+import java.io.File;
+import java.security.cert.X509Certificate;
+
+import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
  *
- * Basic Certificate Authority services
+ * Certificate Authority services that allows processing of certificates
+ *
+ * The primary functionality of this entity is signing CSRs (Certificate Signing
+ * Requests) with the root certificate
+ *
+ * This entity also handles CRLs (certificate revocation lists)
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
 public interface CAService {
+
+    /**
+     * Retrieves the root certificate
+     *
+     * @return
+     * @throws CertException
+     */
+    public X509Certificate getRootCertificate() throws CertException;
+
     /**
      * Signs a submitted Certificate Signing Request
-     * @param csrAlias
+     *
+     * @param csr
+     * @param certInfo
+     * @return
+     * @throws CertException
      */
-    public void signCSR(String csrAlias);
+    public X509Certificate createCertificateFromCSR(
+            PKCS10CertificationRequest csr, CertInfo certInfo)
+            throws CertException;
+
+    /**
+     * Retrieves a certificate from file
+     *
+     * @param certFile
+     * @return
+     * @throws CertException
+     */
+    public X509Certificate getCertificate(File certFile) throws CertException;
+
+    /**
+     * Sets up a root certificate to be used for CA Services
+     *
+     * @param rootCertificate
+     * @throws CertException
+     */
+    public void setRootCertificate(X509Certificate rootCertificate)
+            throws CertException;
+
 }

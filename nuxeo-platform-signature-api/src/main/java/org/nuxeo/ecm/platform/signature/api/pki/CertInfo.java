@@ -17,13 +17,24 @@
 
 package org.nuxeo.ecm.platform.signature.api.pki;
 
+import java.util.Date;
+
 /**
- * Holds parameters for certificate configuration
+ * Holds certificate configuration parameters
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
 public class CertInfo {
+
+    // algorithm info
+    private String keyAlgorithm;
+
+    private String certSignatureAlgorithm;
+
+    private int numBits;
+
+    // user info
 
     private String userID;
 
@@ -31,19 +42,30 @@ public class CertInfo {
 
     private String userName;
 
-    private int validMillisBefore;
+    private String userEmail;
 
-    private int validMillisAfter;
+    // cert info
+    private Date validFrom;
 
-    private String keyAlgorithm;
-
-    private String certSignatureAlgorithm;
-
-    private String securityProviderName;
+    private Date validTo;
 
     private String signingReason;
 
-    private int numBits;
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 
     public int getNumBits() {
         return numBits;
@@ -61,20 +83,28 @@ public class CertInfo {
         this.signingReason = signingReason;
     }
 
-    public String getSecurityProviderName() {
-        return securityProviderName;
-    }
-
-    public void setSecurityProviderName(String securityProviderName) {
-        this.securityProviderName = securityProviderName;
-    }
-
     public String getKeyAlgorithm() {
         return keyAlgorithm;
     }
 
     public void setKeyAlgorithm(String keyAlgorithm) {
         this.keyAlgorithm = keyAlgorithm;
+    }
+
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public Date getValidTo() {
+        return validTo;
+    }
+
+    public void setValidTo(Date validTo) {
+        this.validTo = validTo;
     }
 
     public String getCertSignatureAlgorithm() {
@@ -85,28 +115,12 @@ public class CertInfo {
         this.certSignatureAlgorithm = certSignatureAlgorithm;
     }
 
-    public int getValidMillisBefore() {
-        return validMillisBefore;
-    }
-
-    public void setValidMillisBefore(int validMillisBefore) {
-        this.validMillisBefore = validMillisBefore;
-    }
-
-    public int getValidMillisAfter() {
-        return validMillisAfter;
-    }
-
-    public void setValidMillisAfter(int validMillisAfter) {
-        this.validMillisAfter = validMillisAfter;
-    }
-
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String userProvidedName) {
+        this.userName = "CN=" + userProvidedName;
     }
 
     public String getUserDN() {
@@ -117,11 +131,4 @@ public class CertInfo {
         this.userDN = userDN;
     }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
 }

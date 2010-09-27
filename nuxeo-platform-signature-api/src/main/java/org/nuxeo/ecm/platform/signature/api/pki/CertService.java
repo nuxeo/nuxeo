@@ -17,33 +17,37 @@
 
 package org.nuxeo.ecm.platform.signature.api.pki;
 
-import java.security.KeyPair;
+import java.io.File;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+
+import org.bouncycastle.asn1.pkcs.CertificationRequest;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
+ * Provides certificate retrieval and CSR (Certificate Signing Requests)
+ * generation functionality
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
 public interface CertService {
-    /**
-     * Creates a new certificate
-     *
-     * @param privateKey
-     * @param userInfo
-     */
-    public Certificate createCertificate(KeyPair keyPair, CertInfo userInfo)
-            throws Exception;
 
     /**
      * Retrieves an existing certificate from storage
      *
      * @return
      */
-    Certificate retrieveCertificate(String userId);
+    public Certificate getCertificate(CertInfo certInfo) throws CertException;
+
+    public CertificationRequest generateCSR(CertInfo certInfo)
+            throws CertException;
 
     /**
      * Stores a certificate via a storage mechanism
      */
     void storeCertificate(Certificate cert, StoreService store);
+
+    public X509Certificate getCertificate(File certFile) throws CertException;
 
 }

@@ -18,9 +18,11 @@
 package org.nuxeo.ecm.platform.signature.api.pki;
 
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
+
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
+ * Handles PKI key generation, retrieval and storage
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
@@ -32,16 +34,7 @@ public interface KeyService {
      * @param userId
      * @return
      */
-    public KeyPair getKeys(CertInfo certInfo) throws Exception;
-
-    /**
-     * Creates a new key-pair
-     * @param certInfo
-     * @return
-     * @throws NoSuchAlgorithmException
-     */
-    public KeyPair createKeys(CertInfo certInfo)
-            throws NoSuchAlgorithmException;
+    public KeyPair getKeys(CertInfo certInfo) throws CertException;
 
 
     /**

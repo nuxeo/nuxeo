@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.pki.KeyService">
+
+ <documentation>
+    The key service is a key generation/retrieval utility
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.pki.KeyServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.pki.KeyService" />
+  </service>
+
+</component>

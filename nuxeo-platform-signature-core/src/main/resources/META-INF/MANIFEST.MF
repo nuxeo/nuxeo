@@ -4,9 +4,12 @@ Bundle-Name: Digital Signature Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.signature.core;singleton:=true
 Bundle-Version: 1.0.0
 Require-Bundle:  org.nuxeo.ecm.core,
- org.nuxeo.runtime,
- org.nuxeo.ecm.core.api
+ org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.signature.api
 Nuxeo-Component: 
- OSGI-INF/schema-contrib.xml,
- OSGI-INF/service-contrib.xml,
- OSGI-INF/directories-contrib.xml
+ OSGI-INF/key-service-contrib.xml,
+ OSGI-INF/ca-contrib.xml,
+ OSGI-INF/ca-service-contrib.xml,
+ OSGI-INF/cert-service-contrib.xml,
+ OSGI-INF/signature-contrib.xml,
+ OSGI-INF/signature-service-contrib.xml

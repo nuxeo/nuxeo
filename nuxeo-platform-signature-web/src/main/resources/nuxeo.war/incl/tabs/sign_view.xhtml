@@ -17,8 +17,9 @@
   <a4j:region>
   <a4j:outputPanel id="signPanel">
   <a4j:form id="sign_form" ajaxSingle="true" enctype="multipart/form-data">
-  <h:outputText value=""/>
-  <a4j:commandButton id="SignPDF" styleClass="button" value="#{messages['label.sign.submit']}" action="#{signActions.signCurrentDoc}"
+  <h:outputText value="#{messages['label.sign.reason.prompt']}"/>
+  <h:inputText id="signingReason" value="#{signingReason}" required="true" />
+  <a4j:commandButton id="SignPDF" styleClass="button" value="#{messages['label.sign.submit']}" action="#{signActions.signCurrentDoc(signingReason)}"
         onclick="" data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (data) { hideWaiter() } else { processFinished() };"
         reRender="signPanel" />

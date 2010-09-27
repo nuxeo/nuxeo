@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.signature.web.sign;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,7 +59,7 @@ public class SignActions implements Serializable {
     @In(create = true)
     private transient VersioningManager versioningManager;
 
-    public void signCurrentDoc() throws Exception {
+    public void signCurrentDoc(String signingReason) throws Exception {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             throw new ClientException(
@@ -71,12 +72,12 @@ public class SignActions implements Serializable {
                     "The current document does not contain an attachment: "
                             + currentDoc.getName());
         }
-        // sign only if it is a PDF
+
         if (!blob.getMimeType().equals("application/pdf")) {
             throw new ClientException("The attachment must be a PDF");
         }
 
-        File signedPdf = signatureService.signPDF(getCertInfo(),
+        File signedPdf = signatureService.signPDF(getCertInfo(signingReason),
                 blob.getStream());
         FileBlob outputBlob = new FileBlob(signedPdf);
         outputBlob.setFilename(blob.getFilename());
@@ -91,19 +92,18 @@ public class SignActions implements Serializable {
         log.info("Document has been signed: " + outputBlob.getFilename());
     }
 
-    protected CertInfo getCertInfo() {
+    protected CertInfo getCertInfo(String signingReason) {
         // TODO Hardcoded for NXP-5532
         CertInfo certInfo = new CertInfo();
-        certInfo.setSecurityProviderName("BC");// BouncyCastle
         certInfo.setUserID("100");
         certInfo.setUserName("Wojciech Sulejman");
         certInfo.setUserDN("User DN");
         certInfo.setKeyAlgorithm("RSA");
         certInfo.setNumBits(1024);
-        certInfo.setSigningReason("Test from SignActions");
+        certInfo.setSigningReason(signingReason);
         certInfo.setCertSignatureAlgorithm("SHA256WithRSAEncryption");
-        certInfo.setValidMillisBefore(0);
-        certInfo.setValidMillisAfter(1000000);
+        certInfo.setValidFrom(new Date());
+        certInfo.setValidTo(new Date());
         return certInfo;
     }
 

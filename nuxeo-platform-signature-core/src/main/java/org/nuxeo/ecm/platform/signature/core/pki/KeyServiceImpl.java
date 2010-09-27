@@ -21,51 +21,65 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
 import org.nuxeo.ecm.platform.signature.api.pki.StoreService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
-public class KeyServiceImpl implements KeyService {
+public class KeyServiceImpl extends DefaultComponent implements KeyService {
 
-    public KeyPair createKeys(CertInfo certInfo)
-            throws NoSuchAlgorithmException {
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(certInfo.getKeyAlgorithm());
-        keyGen.initialize(certInfo.getNumBits());
-        KeyPair keyPair = keyGen.genKeyPair();
+    String dirName = "";
+
+    String schemaName = "";
+
+    String fieldName = "";
+
+    private KeyPair createKeys(CertInfo certInfo) throws CertException {
+        KeyPair keyPair = null;
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(certInfo.getKeyAlgorithm());
+            keyGen.initialize(certInfo.getNumBits());
+            keyPair = keyGen.genKeyPair();
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new CertException(nsae);
+        }
         return keyPair;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see store.StoreService#retrieveKey(java.lang.String)
-     */
     @Override
-    public KeyPair getKeys(CertInfo certInfo) throws Exception {
-        // TODO implement
+    public KeyPair getKeys(CertInfo certInfo) throws CertException {
         KeyPair value = null;
         boolean keysExist = false;
-        if (keysExist) {
-            DirectoryService dm = Framework.getService(DirectoryService.class);
-            Session session = dm.open(KeyDirConfigDescriptor.getDirectoryName());
-            try {
-                DocumentModel entry = session.getEntry(certInfo.getUserID());
-                value = (KeyPair) entry.getProperty(
-                        KeyDirConfigDescriptor.getSchemaName(),
-                        KeyDirConfigDescriptor.getFieldName());
-            } finally {
-                session.close();
+        try {
+            if (keysExist) {
+                DirectoryService dm = Framework.getService(DirectoryService.class);
+                Session session = dm.open(dirName);
+                try {
+                    DocumentModel entry = session.getEntry(certInfo.getUserID());
+                    value = (KeyPair) entry.getProperty(schemaName, fieldName);
+                } finally {
+                    session.close();
+                }
+            } else {
+                value = createKeys(certInfo);
             }
-        } else {
-            value = createKeys(certInfo);
+        } catch (DirectoryException e) {
+            throw new CertException(e);
+        } catch (ClientException e) {
+            throw new CertException(e);
+        } catch (Exception e) {
+            throw new CertException(e);
         }
         return value;
     }
@@ -73,5 +87,4 @@ public class KeyServiceImpl implements KeyService {
     public void storeKeys(StoreService store) {
 
     }
-
 }

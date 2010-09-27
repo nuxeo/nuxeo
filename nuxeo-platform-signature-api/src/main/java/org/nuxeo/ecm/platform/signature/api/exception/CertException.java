@@ -12,22 +12,35 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Wojciech Sulejman
+ *    Wojciech Sulejman
  */
-
-package org.nuxeo.ecm.platform.signature.api.pki;
-
+package org.nuxeo.ecm.platform.signature.api.exception;
 
 /**
- * Provides storage services for PKI related data:
- * keys & certificates
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
-public interface StoreService {
 
-    /**
-     * Provides access to a store
-     */
+/**
+ * An exception indicating certificate generation related problems
+ * Provides error messages of security-administration-level profile.
+ *
+ * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
+ */
+public class CertException extends SignException {
+    private static final long serialVersionUID = 1L;
+
+    public CertException(String message, Throwable e) {
+        super(message, e);
+    }
+
+    public CertException(String message) {
+        super(message);
+    }
+
+    public CertException(Throwable e) {
+        super(e);
+    }
+
 
 }
