@@ -1,7 +1,9 @@
 	APPS=$(HOME)/apps
-	EAR=$(APPS)/nuxeo-dm-jboss/server/default/deploy/nuxeo.ear
-	TOMCAT=$(APPS)/nuxeo-dm-tomcat
+	JBOSS=$(APPS)/nuxeo-dm-jboss-pg-dav
+	TOMCAT=$(APPS)/nuxeo-dm-tomcat-pg-dav
 	JETTY=$(APPS)/nuxeo-dm-jetty
+
+	EAR=$(JBOSS)/server/default/deploy/nuxeo.ear
 
 	VERSION=0.0.1-SNAPSHOT
 	JAR=nuxeo-webdav-$(VERSION).jar
@@ -11,7 +13,7 @@
 all: build
 
 clean:
-	rm -rf .clover bin target data data-bt *.log projectFilesBackup
+	rm -rf .clover bin target data data-bt *.log projectFilesBackup zip
 	find . -name "*~" | xargs rm -f
 	#mvn $(MVN_OPT) clean
 

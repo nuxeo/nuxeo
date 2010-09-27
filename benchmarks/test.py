@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-#ROOT = "/Volumes/default-domain/workspaces/"
 ROOT = "/Volumes/workspaces/"
-STUFF = "/Users/fermigier/Music/"
+MY_STUFF = "/Users/fermigier/Music/"
 
 import random, time, os, string, threading
 
@@ -70,8 +69,6 @@ def testSimpleTextParallel(n, p):
         t.join()
 
 def testSimpleTextMultiProcess(n, p):
-    def slave():
-        testSimpleText(n)
     processes = []
     for i in range(0, p):
         t = Process(target=testSimpleText, args=(n,))
@@ -102,6 +99,15 @@ def testWithExistingContent(source, max):
         i += 1
     os.rmdir(test_folder)
 
+def testWithExistingContentMultiProcess(source, max, p):
+    processes = []
+    for i in range(0, p):
+        t = Process(target=testWithExistingContent, args=(source, max))
+        t.start()
+        processes.append(t)
+    for t in processes:
+        t.join()
+
 def randomText(n):
     chars = string.letters + string.digits + string.punctuation + " "
     l = [ random.choice(chars) for i in range(0, n) ]
@@ -115,9 +121,7 @@ def randomBinary(n):
 
 
 def main():
-    testFolders(10000)
-
-    N = 20
+    N = 500
     
     print "Test folders"
     testFolders(N)
@@ -132,10 +136,16 @@ def main():
     testSimpleTextMultiProcess(N, 2)
 
     print "Test simple text files, parallel (x10)"
-    testSimpleTextMultiProcess(N, 10)
+    testSimpleTextMultiProcess(N/10, 10)
+
+    print "Test simple text files, parallel (x100)"
+    testSimpleTextMultiProcess(N/100, 100)
 
     print "Test existing (big) files, serial"
-    testWithExistingContent(STUFF, N)
+    testWithExistingContent(MY_STUFF, N)
+    
+    print "Test existing (big) files, parellel (x10)"
+    testWithExistingContentMultiProcess(MY_STUFF, N, 10)
     
 if __name__ == "__main__":
     main()
