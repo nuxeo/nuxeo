@@ -45,14 +45,13 @@
     <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-core-facade</module>
     <module>nuxeo-core-query-test</module>
-    <module>nuxeo-core-storage-jcr</module>
     <module>nuxeo-core-test</module>
   </modules>
 
   <profiles>
     <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
       <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-core-facade</module> 
-      <module>nuxeo-core-query-test</module> <module>nuxeo-core-storage-jcr</module> <module>nuxeo-core-test</module> 
+      <module>nuxeo-core-query-test</module> <module>nuxeo-core-test</module> 
       </modules> </profile> -->
   </profiles>
 
@@ -134,11 +133,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-facade</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
@@ -234,17 +228,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jca</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jca</artifactId>
-        <version>${nuxeo.core.version}</version>
-        <type>rar</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-persistence</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
@@ -264,57 +247,6 @@
         <version>${nuxeo.core.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
-      </dependency>
-
-      <!-- scope: provided -->
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-api</artifactId>
-        <version>${jackrabbit.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>${jackrabbit.core.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-text-extractors</artifactId>
-        <version>${jackrabbit.version}</version>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>poi</groupId>
-            <artifactId>poi</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-jcr-commons</artifactId>
-        <version>${jackrabbit.jcr-commons.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-spi</artifactId>
-        <version>${jackrabbit.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-spi-commons</artifactId>
-        <version>${jackrabbit.version}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-        <scope>test</scope>
-        <version>${nuxeo.core.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -85,11 +85,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
@@ -111,21 +106,21 @@
     <profile>
       <id>bundlor</id>
       <build>
-	<plugins>
-	  <plugin>
-	    <groupId>com.springsource.bundlor</groupId>
-	    <artifactId>com.springsource.bundlor.maven</artifactId>
-	    <version>1.0.0.RELEASE</version>
-	    <executions>
-	      <execution>
-		<id>bundlor</id>
-		<goals>
-		  <goal>transform</goal>
-		</goals>
-	      </execution>
-	    </executions>
-	  </plugin>
-	</plugins>
+    <plugins>
+      <plugin>
+        <groupId>com.springsource.bundlor</groupId>
+        <artifactId>com.springsource.bundlor.maven</artifactId>
+        <version>1.0.0.RELEASE</version>
+        <executions>
+          <execution>
+        <id>bundlor</id>
+        <goals>
+          <goal>transform</goal>
+        </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
       </build>
     </profile>
   </profiles>

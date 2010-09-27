@@ -98,6 +98,7 @@ public class TestTrashService extends RepositoryOSGITestCase {
         createDocuments();
         trashService.trashDocuments(Arrays.asList(fold, doc1));
         waitForEventsDispatched();
+        coreSession.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
         fold = coreSession.getDocument(new IdRef(fold.getId()));
@@ -129,6 +130,7 @@ public class TestTrashService extends RepositoryOSGITestCase {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));
         waitForEventsDispatched();
+        coreSession.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
         fold = coreSession.getDocument(new IdRef(fold.getId()));
@@ -142,6 +144,7 @@ public class TestTrashService extends RepositoryOSGITestCase {
         // undelete fold
         trashService.undeleteDocuments(Collections.singletonList(fold));
         waitForEventsDispatched();
+        coreSession.save(); // fetch invalidations from async sessions
         fold = coreSession.getDocument(new IdRef(fold.getId()));
         doc1 = coreSession.getDocument(new IdRef(doc1.getId()));
         doc2 = coreSession.getDocument(new IdRef(doc2.getId()));
