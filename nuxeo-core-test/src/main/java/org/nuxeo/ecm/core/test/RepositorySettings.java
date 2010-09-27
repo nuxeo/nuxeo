@@ -144,14 +144,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             BackendType repoType = getBackendType();
-            if (repoType == BackendType.JCR) {
-                log.info("Deploying a JCR repo implementation");
-                harness.deployBundle("org.nuxeo.ecm.core.jcr");
-                harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr-connector");
-
-            } else {
+            {
                 log.info("Deploying a VCS repo implementation");
                 harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
 //                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
@@ -205,12 +198,7 @@ public class RepositorySettings implements Provider<CoreSession> {
     }
 
     private String getRepoName() {
-        // Small hacks since test repo name differs between implementation
-        if (getBackendType() == BackendType.JCR) {
-            return "demo";
-        } else {
-            return "test";
-        }
+        return "test";
     }
 
     public TestRepositoryHandler getRepositoryHandler() {

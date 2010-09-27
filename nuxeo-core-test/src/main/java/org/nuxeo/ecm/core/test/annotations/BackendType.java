@@ -20,5 +20,5 @@ package org.nuxeo.ecm.core.test.annotations;
  * Repository backend types with which the tests can be run.
  */
 public enum BackendType {
-    JCR, H2, POSTGRES
+    H2, POSTGRES
 }

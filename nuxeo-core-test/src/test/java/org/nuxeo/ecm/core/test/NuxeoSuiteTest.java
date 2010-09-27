@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 @SuiteClasses( { SimpleSession.class })
 @RepositoryConfigs( {
     @RepositoryConfig(type=BackendType.H2),
-    @RepositoryConfig(type=BackendType.JCR),
     @RepositoryConfig(type=BackendType.POSTGRES)
 })
 public class NuxeoSuiteTest {

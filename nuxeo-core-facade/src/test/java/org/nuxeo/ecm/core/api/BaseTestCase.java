@@ -17,63 +17,35 @@
 
 package org.nuxeo.ecm.core.api;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public abstract class BaseTestCase extends Assert {
+public abstract class BaseTestCase extends SQLRepositoryTestCase {
 
     protected static NXRuntimeTestCase runtime;
 
-    protected static boolean usingCustomVersioning = false;
-
     protected final Random random = new Random(new Date().getTime());
-
-    protected CoreSession rootSession;
-    protected CoreSession session;
 
     protected DocumentModel root;
 
-    @AfterClass
-    public static void stopRuntime() throws Exception {
-        runtime.tearDown();
-    }
-
-    @Before
+    @Override
     public void setUp() throws Exception {
-        session = getRootSession();
+        super.setUp();
+        openSession();
         root = getRootDocument();
     }
 
-    @After
+    @Override
     public void tearDown() throws Exception {
         cleanUp(getRootDocument().getRef());
         closeSession();
-    }
-
-    public CoreSession getRootSession() throws ClientException {
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        CoreSession session = CoreInstance.getInstance().open("default", ctx);
-        assertNotNull(session);
-        return session;
-    }
-
-    public void closeSession() {
-        CoreInstance.getInstance().close(session);
+        super.tearDown();
     }
 
     // Convenience methods
@@ -129,7 +101,6 @@ public abstract class BaseTestCase extends Assert {
     }
 
     protected void cleanUp(DocumentRef ref) throws ClientException {
-        CoreSession session = getRootSession();
         session.removeChildren(ref);
         session.save();
     }
