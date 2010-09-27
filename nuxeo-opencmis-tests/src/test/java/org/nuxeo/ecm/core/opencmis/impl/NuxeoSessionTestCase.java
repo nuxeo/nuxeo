@@ -32,6 +32,7 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
@@ -135,13 +136,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testRoot() {
         Folder root = session.getRootFolder();
         assertNotNull(root);
-        assertNotNull(root.getName());
         assertNotNull(root.getId());
         assertNotNull(root.getType());
         assertEquals(NUXEO_ROOT_TYPE, root.getType().getId());
-        assertEquals(rootFolderId, root.getPropertyValue("cmis:objectId"));
+        assertEquals(rootFolderId, root.getPropertyValue(PropertyIds.OBJECT_ID));
         assertEquals(NUXEO_ROOT_TYPE,
-                root.getPropertyValue("cmis:objectTypeId"));
+                root.getPropertyValue(PropertyIds.OBJECT_TYPE_ID));
         assertEquals(NUXEO_ROOT_NAME, root.getName());
         List<Property<?>> props = root.getProperties();
         assertNotNull(props);
@@ -149,10 +149,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("/", root.getPath());
         assertEquals(Collections.singletonList("/"), root.getPaths());
         assertNull(root.getFolderParent());
-        if (!isAtomPub) {
-            // TODO fix AtomPub bindings bug
-            assertEquals(Collections.emptyList(), root.getParents());
-        }
+        assertEquals(Collections.emptyList(), root.getParents());
     }
 
     public void testDefaultProperties() throws Exception {
@@ -195,8 +192,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         List<Ace> removeAces = null;
         OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("cmis:objectTypeId", "Note");
-        properties.put("cmis:name", "mynote");
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "Note");
+        properties.put(PropertyIds.NAME, "mynote");
         properties.put("note", "bla bla");
         Document doc = root.createDocument(properties, contentStream,
                 versioningState, policies, addAces, removeAces, context);

@@ -39,6 +39,7 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
+import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
@@ -82,6 +83,10 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
  * Tests that hit directly the server APIs.
  */
 public class TestNuxeoBinding extends NuxeoBindingTestCase {
+
+    public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo
+
+    public static final String NUXEO_ROOT_NAME = ""; // NuxeoPropertyDataName;
 
     // stream content with non-ASCII characters
     public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
@@ -300,6 +305,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testRoot() {
+        ObjectData root = getObject(rootFolderId);
+        assertNotNull(root.getId());
+        assertEquals(NUXEO_ROOT_TYPE,
+                getString(root, PropertyIds.OBJECT_TYPE_ID));
+        assertEquals(NUXEO_ROOT_NAME, getString(root, PropertyIds.NAME));
+        assertEquals("/", getString(root, PropertyIds.PATH));
+
+        // root parent
+        ObjectData parent = navService.getFolderParent(repositoryId,
+                rootFolderId, null, null);
+        assertNull(parent);
+        List<ObjectParentData> parents = navService.getObjectParents(
+                repositoryId, rootFolderId, null, null, null, null, null, null);
+        assertEquals(0, parents.size());
     }
 
     @Test
