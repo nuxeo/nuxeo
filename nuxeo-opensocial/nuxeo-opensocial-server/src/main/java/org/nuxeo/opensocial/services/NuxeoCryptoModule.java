@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
+ *     Julien Carsique
  */
 
 package org.nuxeo.opensocial.services;
@@ -67,61 +68,47 @@ public class NuxeoCryptoModule extends AbstractModule {
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.global-callback-url")).toInstance(
                     callbackUrl);
-
         } catch (Exception e) {
-            LOG.error("Unable to bind Shindig services to Nuxeo components");
-            LOG.error(e.getMessage());
+            LOG.error("Unable to bind Shindig services to Nuxeo components", e);
         }
     }
-
 }
 
-// for the provider side, which we dont deal with right now
+// for the provider side, which we do not deal with right now
 
 class FakeNuxeoDataStore implements OAuthDataStore {
 
     public void authorizeToken(OAuthEntry arg0, String arg1)
             throws OAuthProblemException {
-        // TODO Auto-generated method stub
-
     }
 
     public OAuthEntry convertToAccessToken(OAuthEntry arg0)
             throws OAuthProblemException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void disableToken(OAuthEntry arg0) {
-        // TODO Auto-generated method stub
-
     }
 
     public OAuthEntry generateRequestToken(String arg0, String arg1, String arg2)
             throws OAuthProblemException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public OAuthConsumer getConsumer(String arg0) throws OAuthProblemException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public OAuthEntry getEntry(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public SecurityToken getSecurityTokenForConsumerRequest(String arg0,
             String arg1) throws OAuthProblemException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void removeToken(OAuthEntry arg0) {
-        // TODO Auto-generated method stub
-
     }
 
 }
