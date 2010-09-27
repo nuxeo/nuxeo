@@ -111,7 +111,7 @@
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
