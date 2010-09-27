@@ -19,20 +19,13 @@
 
 package org.nuxeo.ecm.core.search;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.DocumentIndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -40,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestDocumentIndexableResources extends RepositoryTestCase {
+public class TestDocumentIndexableResources extends SQLRepositoryTestCase {
 
     protected CoreSession remote;
 
@@ -49,23 +42,6 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "LoginComponent.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "RepositoryManager.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "CoreTestExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "LifeCycleService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "LifeCycleServiceExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "PlatformService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "DefaultPlatform.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "nxsearch-test-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
@@ -74,10 +50,8 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
         service = Framework.getLocalService(SearchService.class);
         assertNotNull(service);
 
-        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-        remote = mgr.getDefaultRepository().open();
-
-        assertNotNull(remote);
+        openSession();
+        remote = session;
     }
 
     public void testGetValue() throws Exception {
@@ -91,16 +65,14 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
 
         dm.setProperty("dublincore", "title", "Indexable data");
         remote.saveDocument(dm);
+        remote.save();
 
         assertEquals("Indexable data", (String) dm.getProperty("dublincore",
                 "title"));
 
-        remote.disconnect();
-
-        // :XXX: refactor test
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        remote = CoreInstance.getInstance().open("demo", ctx);
+        closeSession();
+        openSession();
+        remote = session;
 
         dm = remote.getDocument(dm.getRef());
 

@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.search.api.backend.SearchEngineBackend;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.I
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
 import org.nuxeo.ecm.core.search.blobs.NXTransformBlobExtractor;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestSearchEngine extends RepositoryTestCase {
+public class TestSearchEngine extends SQLRepositoryTestCase {
 
     private static final String BACKEND_NAME = "fake";
     private static final String CONF_NAME = "fake.xml";
@@ -59,12 +59,6 @@ public class TestSearchEngine extends RepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreTestExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleServiceExtensions.xml");
-
         deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-contrib.xml");
 

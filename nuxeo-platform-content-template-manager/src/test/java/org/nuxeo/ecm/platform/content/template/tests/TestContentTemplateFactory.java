@@ -50,8 +50,6 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "DemoRepository.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "DefaultPlatform.xml");
 
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
