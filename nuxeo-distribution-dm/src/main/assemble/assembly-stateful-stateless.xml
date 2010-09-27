@@ -151,9 +151,6 @@
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
-          <!-- exclude JCR storage -->
-          <artifact artifactId="nuxeo-core-jca" />
-          <artifact artifactId="nuxeo-core-jcr-connector" />
         </excludes>
       </artifact:set>
     </copy>
@@ -218,9 +215,6 @@
           <artifact artifactId="nuxeo-platform-webapp-core" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
-          <!-- exclude JCR storage -->
-          <artifact artifactId="nuxeo-core-jca" />
-          <artifact artifactId="nuxeo-core-jcr-connector" />
         </excludes>
       </artifact:set>
     </copy>

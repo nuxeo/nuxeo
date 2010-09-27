@@ -60,14 +60,6 @@
     <antcall target="build-distribution">
       <param name="distribution" value="h2" />
     </antcall>
-    <antcall target="build-distribution">
-      <param name="distribution" value="jcr" />
-      <param name="storage.jcr" value="true" />
-    </antcall>
-    <antcall target="build-distribution">
-      <param name="distribution" value="jcr-postgresql" />
-      <param name="storage.jcr" value="true" />
-    </antcall>
     <antcall target="clean" />
   </target>
 
@@ -79,7 +71,6 @@
     <copy todir="${stagedir}/nuxeo-${distribution}.ear" overwrite="true">
       <fileset dir="${nuxeo.ear}" />
     </copy>
-    <antcall target="use-jcr-storage" />
     <nx:profile name="${distribution}">
       <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
       <copy todir="${outdir}/nuxeo.ear">
@@ -113,27 +104,6 @@
                      target="${maven.project.groupId}:${maven.project.artifactId}" />
   </target>
 
-  <target name="use-jcr-storage"
-          description="Replace VCS with JCR storage"
-          if="storage.jcr">
-    <delete failonerror="false">
-      <fileset dir="${stagedir}/nuxeo-${distribution}.ear/system">
-        <include name="nuxeo-core-storage-sql*" />
-      </fileset>
-    </delete>
-    <copy todir="${stagedir}/nuxeo-${distribution}.ear/system" overwrite="true">
-      <artifact:file groupId="org.nuxeo.ecm.core" artifactId="nuxeo-core-jca" />
-      <artifact:file groupId="org.nuxeo.ecm.core"
-                     artifactId="nuxeo-core-jcr-connector" />
-    </copy>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-         basedir="${stagedir}/nuxeo-${distribution}.ear" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
-                     classifier="${distribution}"
-                     type="zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
-  </target>
-
   <target name="build-standard"
           description="Build default distribution"
           depends="init">
@@ -159,9 +129,6 @@
           <artifact artifactId="nuxeo-platform-webapp-core" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
-          <!-- exclude JCR storage -->
-          <artifact artifactId="nuxeo-core-jca" />
-          <artifact artifactId="nuxeo-core-jcr-connector" />
         </excludes>
       </artifact:set>
     </copy>

@@ -6,7 +6,7 @@ shift;
 case "$ASSEMBLY" in
     help)
         echo "Usage: $0 [help] [-Pmaven_profile]"
-        echo "maven_profile can be : derby, mysql, postgresql, oracle, h2, jcr, jcr-pgsql"
+        echo "maven_profile can be : derby, mysql, postgresql, oracle, h2"
         exit 1
         ;;
     nuxeo-2parts)

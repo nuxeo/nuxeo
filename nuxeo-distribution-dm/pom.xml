@@ -241,17 +241,6 @@
       <type>rar</type>
     </dependency>
 
-    <!-- JCR Storage -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jca</artifactId>
-      <type>rar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector</artifactId>
-    </dependency>
-    
     <!-- CMIS -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -301,22 +290,6 @@
     </profile>
     <profile>
       <id>h2</id>
-    </profile>
-    <profile>
-      <id>jcr</id>
-      <activation>
-        <property>
-          <name>jcr</name>
-        </property>
-      </activation>
-    </profile>
-    <profile>
-      <id>jcr-postgresql</id>
-      <activation>
-        <property>
-          <name>jcr-pgsql</name>
-        </property>
-      </activation>
     </profile>
     <profile>
       <id>nuxeo-2parts</id>
