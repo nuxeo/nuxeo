@@ -28,7 +28,7 @@
     <queryModel name="SEARCH_ROUTE_BY_ATTACHED_DOC">
       <pattern>
         SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running' OR
-        ecm:currentLifeCycleState = 'ready' OR ecm:currentLifeCycleState = 'done') AND docri:participatingDocuments IN (?)
+        ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments IN (?)
       </pattern>
       <sortable value="true" defaultSortColumn="dc:title"
         defaultSortAscending="true" />

@@ -88,7 +88,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         routeInstance.setAttachedDocuments(docIds);
         routeInstance.setReady(session, true);
         routeInstance.save(session);
-        if (Framework.isTestModeSet()){
+        if (Framework.isTestModeSet()) {
             Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         }
         if (startInstance) {
@@ -143,7 +143,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throws ClientException {
         routeModel.validate(session);
     }
-    
+
     @Override
     public void getRouteElements(DocumentRouteElement routeElementDocument,
             CoreSession session,
@@ -162,5 +162,24 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         session, routeElements, depth);
             }
         }
+    }
+
+    public List<DocumentRoute> getRelatedDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId) {
+        DocumentModelList list = null;
+        String RELATED_TOUTES_QUERY = String.format(
+                " SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running' OR "
+                        + " ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments IN ('%s') ",
+                attachedDocId);
+        try {
+            list = session.query(RELATED_TOUTES_QUERY);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        for (DocumentModel model : list) {
+            routes.add(model.getAdapter(DocumentRoute.class));
+        }
+        return routes;
     }
 }

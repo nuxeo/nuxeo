@@ -101,4 +101,13 @@ public interface DocumentRoutingService {
     void getRouteElements(DocumentRouteElement routeElementDocument,
             CoreSession session, List<LocalizableDocumentRouteElement> routeElements,
             int depth) throws ClientException;
+    
+    /**
+     * Return the list of related {@link DocumentRoute} for a given attached document.
+     * Returns only ready or running {@link DocumentRoute}s.
+     *
+     * @param session The session used to query the {@link DocumentRoute}.
+     * @return A list of available {@link DocumentRoute}
+     */
+    List<DocumentRoute> getRelatedDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId);
 }
