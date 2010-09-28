@@ -80,6 +80,17 @@ public final class ComponentTagUtils {
         return false;
     }
 
+    /**
+     * Resolves an expression from a given faces context.
+     * <p>
+     * Resolves the expression a second time when first resolution gives a
+     * String value using the EL Expression syntax.
+     * <p>
+     * Does not throw any error when resolution fails (only logs an error
+     * message).
+     *
+     * @see #resolveElExpression(FaceletContext, String)
+     */
     public static Object resolveElExpression(FacesContext context,
             String elExpression) {
         if (!isValueReference(elExpression)) {
@@ -106,6 +117,17 @@ public final class ComponentTagUtils {
         }
     }
 
+    /**
+     * Resolves an expression from a given facelet context, using its
+     * {@link ExpressionFactory} that can hold a wider context than the faces
+     * context behind it.
+     * <p>
+     * Resolves the expression a second time when first resolution gives a
+     * String value using the EL Expression syntax.
+     * <p>
+     * Does not throw any error when resolution fails (only logs an error
+     * message).
+     */
     public static Object resolveElExpression(FaceletContext faceletContext,
             String elExpression) {
         if (!isValueReference(elExpression)) {
