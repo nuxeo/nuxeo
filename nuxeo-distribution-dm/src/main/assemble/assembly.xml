@@ -40,10 +40,9 @@
 
     <antcall target="build-standard" />
     <delete failonerror="false" dir="${outdir}/nuxeo.ear" />
-    <copy todir="${outdir}/nuxeo.ear">
+    <move todir="${outdir}/nuxeo.ear">
       <fileset dir="${nuxeo.ear}" />
-      <fileset dir="${nuxeo.ear.resources}" />
-    </copy>
+    </move>
     <!-- DEPRECATED distributions -->
     <antcall target="build-distribution">
       <param name="distribution" value="derby" />
