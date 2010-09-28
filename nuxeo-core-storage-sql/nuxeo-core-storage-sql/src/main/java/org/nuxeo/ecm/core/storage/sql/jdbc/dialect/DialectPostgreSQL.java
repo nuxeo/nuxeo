@@ -30,7 +30,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -304,16 +303,21 @@ public class DialectPostgreSQL extends Dialect {
         String queryAlias = "_nxquery" + nthSuffix;
         String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = Arrays.asList( //
+        info.joins = new ArrayList<Join>();
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins.add(
                 new Join(Join.INNER, ft.getQuotedName(), null, null,
                         ftMain.getFullQuotedName(),
-                        mainColumn.getFullQuotedName()), //
-                new Join(
-                        Join.IMPLICIT, //
-                        String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
-                        queryAlias, // alias
-                        fulltextQuery, // param
-                        null, null));
+                        mainColumn.getFullQuotedName()));
+        }
+        info.joins.add(
+            new Join(
+                    Join.IMPLICIT, //
+                    String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
+                    queryAlias, // alias
+                    fulltextQuery, // param
+                    null, null));
         info.whereExpr = String.format("(%s @@ %s)", queryAlias,
                 ftColumn.getFullQuotedName());
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32) AS %s",

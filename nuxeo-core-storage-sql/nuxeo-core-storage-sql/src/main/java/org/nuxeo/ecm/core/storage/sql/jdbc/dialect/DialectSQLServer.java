@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -314,20 +314,24 @@ public class DialectSQLServer extends Dialect {
         String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         // there are two left joins here
-        info.joins = Arrays.asList(
-                //
+        info.joins = new ArrayList<Join>();
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins.add(
                 new Join(Join.LEFT, ft.getQuotedName(), null, null,
                         ftMain.getFullQuotedName(),
-                        mainColumn.getFullQuotedName()), //
-                new Join(
-                        Join.LEFT, //
-                        String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
-                                ft.getQuotedName(), getQuotedFulltextAnalyzer()),
-                        tableAlias, // alias
-                        fulltextQuery, // param
-                        ftMain.getFullQuotedName(), // on1
-                        String.format("%s.[KEY]", tableAlias) // on2
-                ));
+                        mainColumn.getFullQuotedName()));
+        }
+        info.joins.add(
+            new Join(
+                    Join.LEFT, //
+                    String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
+                            ft.getQuotedName(), getQuotedFulltextAnalyzer()),
+                    tableAlias, // alias
+                    fulltextQuery, // param
+                    ftMain.getFullQuotedName(), // on1
+                    String.format("%s.[KEY]", tableAlias) // on2
+            ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("%s.RANK / 1000.0 AS %s", tableAlias,
                 scoreAlias);
