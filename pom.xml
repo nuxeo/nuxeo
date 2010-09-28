@@ -44,6 +44,7 @@
     <module>nuxeo-platform-webdav-server</module>
     <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-samples</module>
+    <module>nuxeo-sample-project</module>
  </modules>
 
 </project>
