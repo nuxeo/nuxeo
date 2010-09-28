@@ -190,8 +190,8 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                 }
                 return new ResultSetImpl(query, session, offset, range,
                         resultItems, (int) list.totalSize(), list.size());
-            } catch (ClientException e1) {
-                throw new SearchException("QueryException for: " + query);
+            } catch (ClientException e) {
+                throw new SearchException("QueryException for: " + query, e);
             }
         }
 
