@@ -16,8 +16,14 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
@@ -41,24 +47,34 @@ public class TestDocumentRoutingPersistenceService extends
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
     }
 
+    @SuppressWarnings("unchecked")
     public void testCreateDocumentRouteInstanceFromDocumentRouteModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
+        DocumentModel model = createDocumentRouteModel(session,
+                DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
+        List<String> docsId = new ArrayList<String>();
+        docsId.add("1");
+        model.setPropertyValue(
+                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                (Serializable) docsId);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
         assertNotNull(instance);
         assertTrue(instance.getPathAsString().startsWith(
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
+        docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
+        assertEquals("1", docsId.get(0));
         assertEquals(2, session.getChildren(instance.getRef()).size());
     }
 
     public void testSaveDocumentRouteInstanceAsNewModel()
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
+        DocumentModel model = createDocumentRouteModel(session,
+                DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         DocumentModel instance = persistenceService.createDocumentRouteInstanceFromDocumentRouteModel(
                 model, session);
-        DocumentModel newModel = persistenceService.saveDocumentRouteInstanceAsNewModel(instance,
-                session.getRootDocument(), session);
+        DocumentModel newModel = persistenceService.saveDocumentRouteInstanceAsNewModel(
+                instance, session.getRootDocument(), session);
         assertNotNull(newModel);
     }
 }

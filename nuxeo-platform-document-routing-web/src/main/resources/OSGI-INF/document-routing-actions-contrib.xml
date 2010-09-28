@@ -16,20 +16,6 @@
       <filter-id>isRoute</filter-id>
     </action>
 
-    <action id="executeRoute" link="#{routingActions.startRoute()}"
-      enabled="true" label="action.start.document.routing" icon="/icons/action_add.gif"
-      order="110">
-      <category>SUBVIEW_UPPER_LIST</category>
-      <filter-id>isValidatedRouteModel</filter-id>
-    </action>
-    
-    <action id="validateRouteModel" link="#{routingActions.validateRouteModel()}"
-      enabled="true" label="action.validate.document.routing.model" icon="/icons/action_add.gif"
-      order="110">
-      <category>SUBVIEW_UPPER_LIST</category>
-      <filter-id>isUnvalidatedRouteModel</filter-id>
-    </action>
-    
     <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml" order="100"
       label="action.view.document.routing.elements" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>

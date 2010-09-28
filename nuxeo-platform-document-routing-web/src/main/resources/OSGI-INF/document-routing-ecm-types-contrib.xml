@@ -34,20 +34,15 @@
       </subtypes>
    	  <layouts mode="any">
         <layout>heading</layout>
-        <layout>document_routing_model</layout>
         <layout>step_folder</layout>
-        <layout>document_routing_instance</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
-        <layout>document_routing_model</layout>
         <layout>step_folder</layout>
-        <layout>document_routing_instance</layout>
       </layouts>
       <layouts mode="summary">
         <layout>summary_document_route_layout</layout>
-        <layout>document_routing_instance</layout>
       </layouts> 
       <contentViews category="content">
         <contentView>document_content</contentView>

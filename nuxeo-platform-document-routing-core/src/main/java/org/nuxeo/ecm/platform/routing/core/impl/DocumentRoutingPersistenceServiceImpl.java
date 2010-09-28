@@ -61,6 +61,12 @@ public class DocumentRoutingPersistenceServiceImpl extends DefaultComponent
         DocumentModel result = null;
         try {
             result = session.copy(model.getRef(), parent.getRef(), null);
+            // using the ref, the value of the attached document might not been
+            // saved on the model
+            result.setPropertyValue(
+                    DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                    model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
+            session.saveDocument(result);
             session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

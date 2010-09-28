@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -77,7 +76,10 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        setPropertisOnDocumentBeforeExecution(currentDocument);
+        currentDocument.setPropertyValue(
+                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                navigationContext.getChangeableDocument().getPropertyValue(
+                        DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         DocumentRoute routeInstance = getDocumentRoutingService().createNewInstance(
                 currentRoute, currentRoute.getAttachedDocuments(),
@@ -92,16 +94,6 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
         return navigationContext.navigateToDocument(currentDocument);
-    }
-
-    private void setPropertisOnDocumentBeforeExecution(DocumentModel doc)
-            throws PropertyException, ClientException {
-        doc.setPropertyValue(
-                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                navigationContext.getChangeableDocument().getPropertyValue(
-                        DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
-        documentManager.saveDocument(doc);
-        documentManager.save();
     }
 
     protected ArrayList<LocalizableDocumentRouteElement> computeRouteElements()

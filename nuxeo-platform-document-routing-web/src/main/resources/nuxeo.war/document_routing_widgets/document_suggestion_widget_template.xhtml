@@ -2,6 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
@@ -12,7 +13,9 @@
       var="docid" rendered="#{not empty field_0}">
       <h:column>
         <nxu:methodResult name="doc" value="#{docRoutingSuggestionActions.getDocumentModel(docid)}">
-          <h:outputText value="#{doc.dublincore.title}" />
+          <nxd:restDocumentLink document="#{doc}">
+          	<h:outputText value="#{doc.dublincore.title}" />
+          </nxd:restDocumentLink>
         </nxu:methodResult>
       </h:column>
     </h:dataTable>
