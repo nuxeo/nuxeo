@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +64,8 @@ public final class FaceletHandlerHelper {
 
     public static final String MESSAGE_ID_SUFFIX = "_message";
 
+    private static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
+
     final FaceletContext context;
 
     final TagConfig tagConfig;
@@ -89,8 +92,25 @@ public final class FaceletHandlerHelper {
     /**
      * Returns a id unique within the facelet context using given id as base.
      */
+    @SuppressWarnings("unchecked")
     public String generateUniqueId(String base) {
-        return context.generateUniqueId(base);
+        Map<String, Object> requestMap = context.getFacesContext().getExternalContext().getRequestMap();
+        Map<String, Integer> counters = (Map) requestMap.get(LAYOUT_ID_COUNTERS);
+        if (counters == null) {
+            counters = new HashMap<String, Integer>();
+        }
+        String generatedId;
+        Integer cnt = counters.get(base);
+        if (cnt == null) {
+            counters.put(base, new Integer(0));
+            generatedId = base;
+        } else {
+            int i = cnt.intValue() + 1;
+            counters.put(base, new Integer(i));
+            generatedId = base + "_" + i;
+        }
+        requestMap.put(LAYOUT_ID_COUNTERS, counters);
+        return generatedId;
     }
 
     public String generateValidIdString(String base) {
