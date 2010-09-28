@@ -29,7 +29,9 @@
       <table class="dataOutput">
         <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus">
           <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
-          <nxl:layout name="#{layoutName}" value="#{row}" mode="view" />
+          <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+            selectedColumns="#{selectedResultLayoutColumns}"
+            selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
         </c:forEach>
       </table>
     </c:when>
@@ -42,7 +44,9 @@
               <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus"
                 end="#{(documents.size-1)/2}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
-                <nxl:layout name="#{layoutName}" value="#{row}" mode="view" />
+                <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+                  selectedColumns="#{selectedResultLayoutColumns}"
+                  selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
               </c:forEach>
             </table>
           </td>
@@ -51,7 +55,9 @@
               <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus"
                 begin="#{(documents.size-1)/2 + 1}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == documents.size/2+1}" />
-                <nxl:layout name="#{layoutName}" value="#{row}" mode="view" />
+                <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+                  selectedColumns="#{selectedResultLayoutColumns}"
+                  selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
               </c:forEach>
             </table>
           </td>

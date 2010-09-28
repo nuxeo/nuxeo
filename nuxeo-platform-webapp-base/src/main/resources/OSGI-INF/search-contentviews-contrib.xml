@@ -28,9 +28,8 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="document_virtual_navigation_listing_ajax"
-          title="document_listing" translateTitle="true"
-          iconPath="/icons/document_listing_icon.png" />
+        <layout name="search_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
@@ -139,9 +138,8 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="document_virtual_navigation_listing_ajax"
-          title="document_listing" translateTitle="true"
-          iconPath="/icons/document_listing_icon.png" />
+        <layout name="search_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"
@@ -175,9 +173,8 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="document_virtual_navigation_listing_ajax"
-          title="document_listing" translateTitle="true"
-          iconPath="/icons/document_listing_icon.png" />
+        <layout name="search_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png" />
         <layout
           name="document_virtual_navigation_listing_ajax_compact_2_columns"
           title="document_listing_compact_2_columns" translateTitle="true"

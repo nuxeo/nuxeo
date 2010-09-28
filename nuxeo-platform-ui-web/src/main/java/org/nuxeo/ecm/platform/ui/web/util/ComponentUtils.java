@@ -21,6 +21,9 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,8 +31,11 @@ import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UISelectItems;
+import javax.faces.component.UISelectMany;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 
 /**
  * Generic component helper methods.
@@ -211,9 +218,9 @@ public final class ComponentUtils {
 
     /*
      * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers See http://support.microsoft.com/kb/323308/ What is
-     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
-     * breaks download in MSIE over SSL
+     * cache control headers See http://support.microsoft.com/kb/323308/ What
+     * is not mentioned in the above Knowledge Base is that "Pragma: no-cache"
+     * also breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -297,8 +304,8 @@ public final class ComponentUtils {
      * Returns the component specified by the {@code componentId} parameter
      * from the {@code base} component.
      * <p>
-     * Does not throw any exception if the component is not found,
-     * returns {@code null} instead.
+     * Does not throw any exception if the component is not found, returns
+     * {@code null} instead.
      *
      * @since 5.4
      */
@@ -328,6 +335,301 @@ public final class ComponentUtils {
                     + componentId, e);
         }
         return null;
+    }
+
+    static void clearTargetList(UIEditableList targetList) {
+        int rc = targetList.getRowCount();
+        for (int i = 0; i < rc; i++) {
+            targetList.removeValue(0);
+        }
+    }
+
+    static void addToTargetList(UIEditableList targetList, SelectItem[] items) {
+        for (int i = 0; i < items.length; i++) {
+            targetList.addValue(items[i].getValue());
+        }
+    }
+
+    /**
+     * Move items up inside the target select
+     */
+    public static void shiftItemsUp(UISelectMany targetSelect,
+            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+        String[] selected = (String[]) targetSelect.getSelectedValues();
+        SelectItem[] all = (SelectItem[]) targetItems.getValue();
+        if (selected == null) {
+            // nothing to do
+            return;
+        }
+        shiftUp(selected, all);
+        targetItems.setValue(all);
+        clearTargetList(hiddenTargetList);
+        addToTargetList(hiddenTargetList, all);
+    }
+
+    public static void shiftItemsDown(UISelectMany targetSelect,
+            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+        String[] selected = (String[]) targetSelect.getSelectedValues();
+        SelectItem[] all = (SelectItem[]) targetItems.getValue();
+        if (selected == null) {
+            // nothing to do
+            return;
+        }
+        shiftDown(selected, all);
+        targetItems.setValue(all);
+        clearTargetList(hiddenTargetList);
+        addToTargetList(hiddenTargetList, all);
+    }
+
+    public static void shiftItemsFirst(UISelectMany targetSelect,
+            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+        String[] selected = (String[]) targetSelect.getSelectedValues();
+        SelectItem[] all = (SelectItem[]) targetItems.getValue();
+        if (selected == null) {
+            // nothing to do
+            return;
+        }
+        all = shiftFirst(selected, all);
+        targetItems.setValue(all);
+        clearTargetList(hiddenTargetList);
+        addToTargetList(hiddenTargetList, all);
+    }
+
+    public static void shiftItemsLast(UISelectMany targetSelect,
+            UISelectItems targetItems, UIEditableList hiddenTargetList) {
+        String[] selected = (String[]) targetSelect.getSelectedValues();
+        SelectItem[] all = (SelectItem[]) targetItems.getValue();
+        if (selected == null) {
+            // nothing to do
+            return;
+        }
+        all = shiftLast(selected, all);
+        targetItems.setValue(all);
+        clearTargetList(hiddenTargetList);
+        addToTargetList(hiddenTargetList, all);
+    }
+
+    /**
+     * Make a new SelectItem[] with items whose ids belong to selected first,
+     * preserving inner ordering of selected and its complement in all.
+     * <p>
+     * Again this assumes that selected is an ordered sub-list of all
+     * </p>
+     *
+     * @param selected ids of selected items
+     * @param all
+     * @return
+     */
+    static SelectItem[] shiftFirst(String[] selected, SelectItem[] all) {
+        SelectItem[] res = new SelectItem[all.length];
+        int sl = selected.length;
+        int i = 0;
+        int j = sl;
+        for (SelectItem item : all) {
+            if (i < sl && item.getValue().toString().equals(selected[i])) {
+                res[i++] = item;
+            } else {
+                res[j++] = item;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Make a new SelectItem[] with items whose ids belong to selected last,
+     * preserving inner ordering of selected and its complement in all.
+     * <p>
+     * Again this assumes that selected is an ordered sub-list of all
+     * </p>
+     *
+     * @param selected ids of selected items
+     * @param all
+     * @return
+     */
+    static SelectItem[] shiftLast(String[] selected, SelectItem[] all) {
+        SelectItem[] res = new SelectItem[all.length];
+        int sl = selected.length;
+        int cut = all.length - sl;
+        int i = 0;
+        int j = 0;
+        for (SelectItem item : all) {
+            if (i < sl && item.getValue().toString().equals(selected[i])) {
+                res[cut + i++] = item;
+            } else {
+                res[j++] = item;
+            }
+        }
+        return res;
+    }
+
+    static void swap(Object[] ar, int i, int j) {
+        Object t = ar[i];
+        ar[i] = ar[j];
+        ar[j] = t;
+    }
+
+    static void shiftUp(String[] selected, SelectItem[] all) {
+        int pos = -1;
+        for (int i = 0; i < selected.length; i++) {
+            String s = selected[i];
+            // "pos" is the index of previous "s"
+            int previous = pos;
+            while (!all[++pos].getValue().equals(s)) {
+            }
+            // now current "s" is at "pos" index
+            if (pos > previous + 1) {
+                swap(all, pos, --pos);
+            }
+        }
+    }
+
+    static void shiftDown(String[] selected, SelectItem[] all) {
+        int pos = all.length;
+        for (int i = selected.length - 1; i >= 0; i--) {
+            String s = selected[i];
+            // "pos" is the index of previous "s"
+            int previous = pos;
+            while (!all[--pos].getValue().equals(s)) {
+            }
+            // now current "s" is at "pos" index
+            if (pos < previous - 1) {
+                swap(all, pos, ++pos);
+            }
+        }
+    }
+
+    /**
+     * Move items from components to others.
+     */
+    public static void moveItems(UISelectMany sourceSelect,
+            UISelectItems sourceItems, UISelectItems targetItems,
+            UIEditableList hiddenTargetList, boolean setTargetIds) {
+        String[] selected = (String[]) sourceSelect.getSelectedValues();
+        if (selected == null) {
+            // nothing to do
+            return;
+        }
+        List<String> selectedList = Arrays.asList(selected);
+
+        SelectItem[] all = (SelectItem[]) sourceItems.getValue();
+        List<SelectItem> toMove = new ArrayList<SelectItem>();
+        List<SelectItem> toKeep = new ArrayList<SelectItem>();
+        List<String> hiddenIds = new ArrayList<String>();
+        if (all != null) {
+            for (SelectItem item : all) {
+                String itemId = item.getValue().toString();
+                if (selectedList.contains(itemId)) {
+                    toMove.add(item);
+                } else {
+                    toKeep.add(item);
+                    if (!setTargetIds) {
+                        hiddenIds.add(itemId);
+                    }
+                }
+            }
+        }
+        // reset left values
+        sourceItems.setValue(toKeep.toArray(new SelectItem[] {}));
+        sourceSelect.setSelectedValues(new Object[0]);
+
+        // change right values
+        List<SelectItem> newSelectItems = new ArrayList<SelectItem>();
+        SelectItem[] oldSelectItems = (SelectItem[]) targetItems.getValue();
+        if (oldSelectItems == null) {
+            newSelectItems.addAll(toMove);
+        } else {
+            newSelectItems.addAll(Arrays.asList(oldSelectItems));
+            List<String> oldIds = new ArrayList<String>();
+            for (SelectItem oldItem : oldSelectItems) {
+                String id = oldItem.getValue().toString();
+                oldIds.add(id);
+            }
+            if (setTargetIds) {
+                hiddenIds.addAll(0, oldIds);
+            }
+            for (SelectItem toMoveItem : toMove) {
+                String id = toMoveItem.getValue().toString();
+                if (!oldIds.contains(id)) {
+                    newSelectItems.add(toMoveItem);
+                    if (setTargetIds) {
+                        hiddenIds.add(id);
+                    }
+                }
+            }
+        }
+        targetItems.setValue(newSelectItems.toArray(new SelectItem[] {}));
+
+        // update hidden values
+        int numValues = hiddenTargetList.getRowCount();
+        if (numValues > 0) {
+            for (int i = numValues - 1; i > -1; i--) {
+                hiddenTargetList.removeValue(i);
+            }
+        }
+        for (String newHiddenValue : hiddenIds) {
+            hiddenTargetList.addValue(newHiddenValue);
+        }
+    }
+
+    /**
+     * Move items from components to others.
+     */
+    public static void moveAllItems(UISelectItems sourceItems,
+            UISelectItems targetItems, UIEditableList hiddenTargetList,
+            boolean setTargetIds) {
+        SelectItem[] all = (SelectItem[]) sourceItems.getValue();
+        List<SelectItem> toMove = new ArrayList<SelectItem>();
+        List<SelectItem> toKeep = new ArrayList<SelectItem>();
+        List<String> hiddenIds = new ArrayList<String>();
+        if (all != null) {
+            for (SelectItem item : all) {
+                if (!item.isDisabled()) {
+                    toMove.add(item);
+                } else {
+                    toKeep.add(item);
+                }
+            }
+        }
+        // reset left values
+        sourceItems.setValue(toKeep.toArray(new SelectItem[] {}));
+
+        // change right values
+        List<SelectItem> newSelectItems = new ArrayList<SelectItem>();
+        SelectItem[] oldSelectItems = (SelectItem[]) targetItems.getValue();
+        if (oldSelectItems == null) {
+            newSelectItems.addAll(toMove);
+        } else {
+            newSelectItems.addAll(Arrays.asList(oldSelectItems));
+            List<String> oldIds = new ArrayList<String>();
+            for (SelectItem oldItem : oldSelectItems) {
+                String id = oldItem.getValue().toString();
+                oldIds.add(id);
+            }
+            if (setTargetIds) {
+                hiddenIds.addAll(0, oldIds);
+            }
+            for (SelectItem toMoveItem : toMove) {
+                String id = toMoveItem.getValue().toString();
+                if (!oldIds.contains(id)) {
+                    newSelectItems.add(toMoveItem);
+                    if (setTargetIds) {
+                        hiddenIds.add(id);
+                    }
+                }
+            }
+        }
+        targetItems.setValue(newSelectItems.toArray(new SelectItem[] {}));
+
+        // update hidden values
+        int numValues = hiddenTargetList.getRowCount();
+        if (numValues > 0) {
+            for (int i = numValues - 1; i > -1; i--) {
+                hiddenTargetList.removeValue(i);
+            }
+        }
+        for (String newHiddenValue : hiddenIds) {
+            hiddenTargetList.addValue(newHiddenValue);
+        }
     }
 
 }

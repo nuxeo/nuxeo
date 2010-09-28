@@ -25,6 +25,8 @@ import java.util.Comparator;
 import javax.faces.model.SelectItem;
 
 /**
+ * Orders select items by id or label.
+ *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public class SelectItemComparator implements Comparator<SelectItem>,
@@ -66,7 +68,6 @@ public class SelectItemComparator implements Comparator<SelectItem>,
         } else if (ordering.equals("id")) {
             String value1 = String.valueOf(item1.getValue());
             String value2 = String.valueOf(item2.getValue());
-
             if (caseSensitive) {
                 return compare(value1, value2);
             } else {

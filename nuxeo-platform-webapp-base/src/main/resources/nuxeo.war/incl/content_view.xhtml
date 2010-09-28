@@ -15,11 +15,15 @@
  - contentViewListIndex: a marker to generate unique ids
    when iterating over a list of content views, optional
    when only one content view is displayed in the page.
-
+ - selectedResultLayoutColumns: list of result layout columns selected
+ - selectResultLayoutDefaultColumns: boolean indicating if result layout
+   should display only columns selected by default (if no selection exists)
+ - contentViewDocument
+ - contentViewSortInfos
 </c:if>
 
   <nxu:set var="contentView"
-    value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, contentViewSortInfos, null)}"
     cache="true">
 
     <c:if test="#{contentView != null}">

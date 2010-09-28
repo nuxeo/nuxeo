@@ -19,11 +19,16 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.sun.facelets.FaceletContext;
 
 /**
  * Component tag utils.
@@ -49,7 +54,8 @@ public final class ComponentTagUtils {
             return false;
         }
         return value.contains("#{") && value.indexOf("#{") < value.indexOf('}')
-                || value.contains("${") && value.indexOf("${") < value.indexOf('}');
+                || value.contains("${")
+                && value.indexOf("${") < value.indexOf('}');
     }
 
     /**
@@ -92,7 +98,36 @@ public final class ComponentTagUtils {
                 return app.evaluateExpressionGet(context, elExpression,
                         Object.class);
             } catch (Exception e) {
-                log.error(String.format("Error processing expression '%s'",
+                log.error(String.format(
+                        "Faces context: Error processing expression '%s'",
+                        elExpression), e);
+                return null;
+            }
+        }
+    }
+
+    public static Object resolveElExpression(FaceletContext faceletContext,
+            String elExpression) {
+        if (!isValueReference(elExpression)) {
+            // literal
+            return elExpression;
+        } else {
+            if (faceletContext == null) {
+                log.error(String.format(
+                        "FaceletContext is null => cannot resolve el expression '%s'",
+                        elExpression));
+                return null;
+            }
+            // expression => evaluate
+            ExpressionFactory eFactory = faceletContext.getExpressionFactory();
+            ELContext elContext = faceletContext.getFacesContext().getELContext();
+            ValueExpression expr = eFactory.createValueExpression(
+                    faceletContext, elExpression, Object.class);
+            try {
+                return expr.getValue(elContext);
+            } catch (Exception e) {
+                log.error(String.format(
+                        "Facelet context: Error processing expression '%s'",
                         elExpression), e);
                 return null;
             }

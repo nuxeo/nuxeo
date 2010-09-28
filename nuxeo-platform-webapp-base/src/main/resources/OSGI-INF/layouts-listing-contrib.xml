@@ -601,6 +601,121 @@
       </fields>
     </widget>
 
+    <widget name="listing_description" type="text">
+      <labels>
+        <label mode="any">label.dublincore.description</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_subjects" type="template">
+      <labels>
+        <label mode="any">label.dublincore.subject</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.subjects</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/subjects_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rights" type="text">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.rights</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_source" type="text">
+      <labels>
+        <label mode="any">label.dublincore.source</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.source</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_coverage" type="template">
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.coverage</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/coverage_widget.xhtml</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_creation_date" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.created</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_format" type="text">
+      <labels>
+        <label mode="any">label.dublincore.format</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.format</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_language" type="text">
+      <labels>
+        <label mode="any">label.dublincore.language</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.language</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_expiration_date" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.expired</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_contributors" type="template">
+      <labels>
+        <label mode="any">label.dublincore.contributors</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.contributors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/contributors_widget.xhtml</property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -827,8 +942,12 @@
           <widget>listing_version</widget>
         </column>
         <column>
-          <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          <property name="sortPropertyName">ecm:currentLifeCycleState</property>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
           <widget>listing_lifecycle</widget>
         </column>
         <column>
@@ -901,8 +1020,12 @@
           <widget>listing_version</widget>
         </column>
         <column>
-          <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          <property name="sortPropertyName">ecm:currentLifeCycleState</property>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
           <widget>listing_lifecycle</widget>
         </column>
         <column>
@@ -919,19 +1042,19 @@
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_selection_box_with_current_document</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
           <widget>listing_modification_date</widget>
           <widget>listing_author</widget>
@@ -948,19 +1071,19 @@
         </template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
           <widget>listing_modification_date</widget>
           <widget>listing_author</widget>
@@ -977,19 +1100,19 @@
         </template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
           <widget>listing_modification_date</widget>
           <widget>listing_author</widget>
@@ -1004,13 +1127,13 @@
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_selection_box_with_current_document</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_big_icon_type_link</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
         </column>
       </columns>
@@ -1023,13 +1146,13 @@
         </template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_big_icon_type_link</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
         </column>
       </columns>
@@ -1042,14 +1165,245 @@
         </template>
       </templates>
       <columns>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_ajax_selection_box</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_big_icon_type_link</widget>
         </column>
-        <column>
+        <column alwaysSelected="true">
           <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="search_listing_ajax">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="edit_columns">
+          /layouts/layout_column_selection_template.xhtml
+        </template>
+        <template mode="edit_sort_infos">
+          /layouts/layout_sort_infos_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <properties mode="edit_columns">
+        <property name="availableElementsLabel">
+          label.selection.availableColumns
+        </property>
+        <property name="selectedElementsLabel">
+          label.selection.selectedColumns
+        </property>
+        <property name="selectedElementsHelp"></property>
+        <property name="selectSize">10</property>
+        <property name="columnSelectionRequired">true</property>
+        <property name="displayAlwaysSelectedColumns">false</property>
+      </properties>
+      <properties mode="edit_sort_infos">
+        <property name="newSortInfoTemplate">
+          #{documentSearchActions.newSortInfo}
+        </property>
+        <property name="sortInfoSelectionRequired">false</property>
+      </properties>
+      <columns>
+        <column name="selection" alwaysSelected="true">
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column name="icon_type" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.icon_type</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column name="title_link" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column name="lock" selectedByDefault="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.lock</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column name="modification_date" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+            <property name="label">label.content.header.modified</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column name="creator" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+            <property name="label">label.content.header.author</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_author</widget>
+        </column>
+        <column name="version" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.version</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column name="lifecycle" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+            <property name="label">
+              label.content.header.currentLifecycleState
+            </property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column name="livedit_link" selectedByDefault="true">
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">
+              label.selection.column.livedit_link
+            </property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+        <column name="description">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:description</property>
+            <property name="label">description</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_description</widget>
+        </column>
+        <column name="subjects">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.subject</property>
+          </properties>
+          <widget>listing_subjects</widget>
+        </column>
+        <column name="rights">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:rights</property>
+            <property name="label">label.dublincore.rights</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_rights</widget>
+        </column>
+        <column name="source">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:source</property>
+            <property name="label">label.dublincore.source</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_source</widget>
+        </column>
+        <column name="coverage">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:coverage</property>
+            <property name="label">label.dublincore.coverage</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_coverage</widget>
+        </column>
+        <column name="creation_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:created</property>
+            <property name="label">label.dublincore.created</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_creation_date</widget>
+        </column>
+        <column name="format">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:format</property>
+            <property name="label">label.dublincore.format</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_format</widget>
+        </column>
+        <column name="language">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:language</property>
+            <property name="label">label.dublincore.language</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_language</widget>
+        </column>
+        <column name="expired_date">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:expired</property>
+            <property name="label">label.dublincore.expired</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_expiration_date</widget>
+        </column>
+        <column name="contributors">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.dublincore.contributors</property>
+          </properties>
+          <widget>listing_contributors</widget>
         </column>
       </columns>
     </layout>

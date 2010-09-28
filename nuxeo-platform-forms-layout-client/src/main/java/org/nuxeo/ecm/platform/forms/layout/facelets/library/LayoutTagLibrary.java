@@ -19,9 +19,15 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.Layout;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.facelets.DocumentLayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowWidgetTagHandler;
@@ -65,6 +71,38 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
+
+        try {
+            Method getSelectedRows = LayoutTagLibrary.class.getMethod(
+                    "getSelectedRows", new Class[] { Layout.class, List.class,
+                            boolean.class });
+            addFunction("selectedRows", getSelectedRows);
+            addFunction("selectedColumns", getSelectedRows);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
+        try {
+            Method getNotSelectedRows = LayoutTagLibrary.class.getMethod(
+                    "getNotSelectedRows", new Class[] { Layout.class,
+                            List.class });
+            addFunction("notSelectedRows", getNotSelectedRows);
+            addFunction("notSelectedColumns", getNotSelectedRows);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
+        try {
+            Method getDefaultSelectedRowNames = LayoutTagLibrary.class.getMethod(
+                    "getDefaultSelectedRowNames", new Class[] { Layout.class,
+                            boolean.class });
+            addFunction("defaultSelectedRowNames", getDefaultSelectedRowNames);
+            addFunction("defaultSelectedColumnNames",
+                    getDefaultSelectedRowNames);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
     }
 
     // JSF functions
@@ -81,6 +119,58 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             }
         }
         return buff.toString().trim();
+    }
+
+    public static List<LayoutRow> getSelectedRows(Layout layout,
+            List<String> selectedRowNames, boolean showAlwaysSelected) {
+        LayoutRow[] rows = layout.getRows();
+        List<LayoutRow> selectedRows = new ArrayList<LayoutRow>();
+        if (rows != null) {
+            for (LayoutRow row : rows) {
+                if (row.isAlwaysSelected() && showAlwaysSelected) {
+                    selectedRows.add(row);
+                } else if (selectedRowNames == null
+                        && row.isSelectedByDefault() && !row.isAlwaysSelected()) {
+                    selectedRows.add(row);
+                } else if (selectedRowNames != null
+                        && selectedRowNames.contains(row.getName())) {
+                    selectedRows.add(row);
+                }
+            }
+        }
+        return selectedRows;
+    }
+
+    public static List<LayoutRow> getNotSelectedRows(Layout layout,
+            List<String> selectedRowNames) {
+        LayoutRow[] rows = layout.getRows();
+        List<LayoutRow> notSelectedRows = new ArrayList<LayoutRow>();
+        if (rows != null) {
+            for (LayoutRow row : rows) {
+                if (!row.isAlwaysSelected() && !row.isSelectedByDefault()) {
+                    if (selectedRowNames == null) {
+                        notSelectedRows.add(row);
+                    } else if (!selectedRowNames.contains(row.getName())) {
+                        notSelectedRows.add(row);
+                    }
+                }
+            }
+        }
+        return notSelectedRows;
+    }
+
+    public static List<String> getDefaultSelectedRowNames(Layout layout,
+            boolean showAlwaysSelected) {
+        List<LayoutRow> selectedRows = getSelectedRows(layout, null,
+                showAlwaysSelected);
+        List<String> selectedRowNames = null;
+        if (selectedRows != null && !selectedRows.isEmpty()) {
+            selectedRowNames = new ArrayList<String>();
+            for (LayoutRow row : selectedRows) {
+                selectedRowNames.add(row.getName());
+            }
+        }
+        return selectedRowNames;
     }
 
 }

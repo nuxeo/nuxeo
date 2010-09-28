@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
@@ -69,6 +70,10 @@ public interface WebLayoutManager extends LayoutManager {
      */
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName);
+
+    Layout getLayout(FaceletContext ctx, String layoutName, String mode,
+            String valueName, List<String> selectedRows,
+            boolean selectDefaultRows);
 
     /**
      * Returns the facelet handler for given widget.

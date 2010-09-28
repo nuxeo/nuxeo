@@ -213,6 +213,9 @@ public class ContentViewImpl implements ContentView {
                 throw new ClientException(e);
             }
         } else {
+            if (sortInfos != null) {
+                pageProvider.setSortInfos(sortInfos);
+            }
             if (pageSize != null) {
                 pageProvider.setPageSize(pageSize.longValue());
             }

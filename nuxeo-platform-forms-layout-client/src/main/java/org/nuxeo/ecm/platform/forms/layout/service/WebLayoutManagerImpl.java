@@ -21,9 +21,12 @@ package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -43,6 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.LayoutException;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
@@ -269,12 +273,12 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         if (context == null) {
             return expression;
         }
-        Object value = ComponentTagUtils.resolveElExpression(
-                context.getFacesContext(), expression);
+        Object value = ComponentTagUtils.resolveElExpression(context,
+                expression);
         if (value != null && value instanceof String) {
             // evaluate a second time in case it's another EL expression
-            value = ComponentTagUtils.resolveElExpression(
-                    context.getFacesContext(), (String) value);
+            value = ComponentTagUtils.resolveElExpression(context,
+                    (String) value);
         }
         return value;
     }
@@ -313,10 +317,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             WidgetDefinition wDef, String layoutMode) {
         String wMode = getStringValue(context, wDef.getMode(layoutMode));
         if (wMode == null) {
-            if (BuiltinModes.CREATE.equals(layoutMode)
-                    || BuiltinModes.EDIT.equals(layoutMode)
-                    || BuiltinModes.SEARCH.equals(layoutMode)
-                    || BuiltinModes.BULK_EDIT.equals(layoutMode)) {
+            if (layoutMode != null
+                    && (layoutMode.startsWith(BuiltinModes.CREATE)
+                            || layoutMode.startsWith(BuiltinModes.EDIT)
+                            || layoutMode.startsWith(BuiltinModes.SEARCH) || layoutMode.startsWith(BuiltinModes.BULK_EDIT))) {
                 wMode = BuiltinWidgetModes.EDIT;
             } else {
                 wMode = BuiltinWidgetModes.VIEW;
@@ -378,6 +382,12 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName) throws LayoutException {
+        return getLayout(ctx, layoutName, mode, valueName, null, false);
+    }
+
+    public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
+            String valueName, List<String> selectedRows,
+            boolean selectDefaultRows) {
         LayoutDefinition lDef = getLayoutDefinition(layoutName);
         if (lDef == null) {
             log.debug(String.format("Layout %s not found", layoutName));
@@ -389,8 +399,29 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
         LayoutRowDefinition[] rowsDef = lDef.getRows();
         List<LayoutRow> rows = new ArrayList<LayoutRow>();
+        Set<String> foundRowNames = new HashSet<String>();
+        int rowIndex = -1;
         for (LayoutRowDefinition rowDef : rowsDef) {
+            rowIndex++;
+            String rowName = rowDef.getName();
+            if (rowName == null) {
+                rowName = "layout_row_" + rowIndex;
+                if (selectedRows != null) {
+                    log.debug(String.format("Generating default name '%s' in "
+                            + "layout '%s' for row or column at index %s",
+                            rowName, layoutName, Integer.valueOf(rowIndex)));
+                }
+            }
             boolean emptyRow = true;
+            if (selectedRows != null && !selectedRows.contains(rowName)
+                    && !rowDef.isAlwaysSelected()) {
+                continue;
+            }
+            if (selectedRows == null && selectDefaultRows
+                    && !rowDef.isSelectedByDefault()
+                    && !rowDef.isAlwaysSelected()) {
+                continue;
+            }
             List<Widget> widgets = new ArrayList<Widget>();
             for (String widgetName : rowDef.getWidgets()) {
                 if (widgetName == null || widgetName.length() == 0) {
@@ -416,7 +447,22 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 widgets.add(widget);
             }
             if (!emptyRow) {
-                rows.add(new LayoutRowImpl(widgets, rowDef.getProperties(mode)));
+                rows.add(new LayoutRowImpl(rowName,
+                        rowDef.isSelectedByDefault(),
+                        rowDef.isAlwaysSelected(), widgets,
+                        rowDef.getProperties(mode)));
+            }
+            foundRowNames.add(rowName);
+        }
+        if (selectedRows != null) {
+            Collections.sort(rows, new LayoutRowComparator(selectedRows));
+            for (String selectedRow : selectedRows) {
+                if (!foundRowNames.contains(selectedRow)) {
+                    log.debug(String.format(
+                            "Selected row or column named '%s' "
+                                    + "was not found in layout '%s'",
+                            selectedRow, layoutName));
+                }
             }
         }
         int columns = lDef.getColumns();
