@@ -5,6 +5,7 @@
   <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
   <require>org.nuxeo.ecm.webengine.sites.ecm.types</require>
   <require>org.nuxeo.webengine.blogs.ecm.types</require>
+  <require>org.nuxeo.ecm.webapp.contentview.contrib</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
@@ -45,7 +46,7 @@
         <layout>summary_document_route_layout</layout>
       </layouts> 
       <contentViews category="content">
-        <contentView>document_content</contentView>
+        <contentView>orderable_document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
         <contentView>document_trash_content</contentView>
@@ -62,7 +63,7 @@
       <default-view>view_documents</default-view>
       <subtypes>
         <type>StepFolder</type>
-        <type>Step</type>
+        <type>DocumentRouteStep</type>
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
@@ -74,7 +75,7 @@
         <layout>step_folder</layout>
       </layouts>
       <contentViews category="content">
-        <contentView>document_content</contentView>
+        <contentView>orderable_document_content</contentView>
       </contentViews>
       <contentViews category="trash_content">
         <contentView>document_trash_content</contentView>
