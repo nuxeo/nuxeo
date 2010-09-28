@@ -30,9 +30,9 @@ public class SortInfo implements Serializable {
 
     private static final long serialVersionUID = -5490026543290755342L;
 
-    private final String sortColumn;
+    protected String sortColumn;
 
-    private final boolean sortAscending;
+    protected boolean sortAscending;
 
     /**
      * @param sortColumn the column to sort by, in schema:field format
@@ -55,6 +55,20 @@ public class SortInfo implements Serializable {
      */
     public String getSortColumn() {
         return sortColumn;
+    }
+
+    /**
+     * @since 5.4.0
+     */
+    public void setSortColumn(String sortColumn) {
+        this.sortColumn = sortColumn;
+    }
+
+    /**
+     * @since 5.4.0
+     */
+    public void setSortAscending(boolean sortAscending) {
+        this.sortAscending = sortAscending;
     }
 
     @Override
