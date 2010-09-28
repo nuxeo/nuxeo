@@ -147,12 +147,13 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         List<LayoutRow> notSelectedRows = new ArrayList<LayoutRow>();
         if (rows != null) {
             for (LayoutRow row : rows) {
-                if (!row.isAlwaysSelected() && !row.isSelectedByDefault()) {
-                    if (selectedRowNames == null) {
-                        notSelectedRows.add(row);
-                    } else if (!selectedRowNames.contains(row.getName())) {
-                        notSelectedRows.add(row);
-                    }
+                if (selectedRowNames == null && !row.isSelectedByDefault()
+                        && !row.isAlwaysSelected()) {
+                    notSelectedRows.add(row);
+                } else if (selectedRowNames != null
+                        && !row.isAlwaysSelected()
+                        && !selectedRowNames.contains(row.getName())) {
+                    notSelectedRows.add(row);
                 }
             }
         }
