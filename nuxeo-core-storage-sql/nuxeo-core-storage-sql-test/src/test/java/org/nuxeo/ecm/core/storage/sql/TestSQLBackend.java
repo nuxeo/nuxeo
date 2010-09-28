@@ -1380,6 +1380,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "SELECT * FROM TestDoc WHERE NOT (ecm:fulltext = \"world\")",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
+        // Test multiple fulltext
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\" OR  ecm:fulltext = \"barbar\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\" AND  ecm:fulltext = \"barbar\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
     }
 
     public void testFulltextDisabled() throws Exception {

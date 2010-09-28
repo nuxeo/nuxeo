@@ -285,9 +285,12 @@ public class DialectMySQL extends Dialect {
         String match = String.format("MATCH (%s, %s)",
                 stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = Collections.singletonList(new Join(Join.INNER,
-                ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
-                mainColumn.getFullQuotedName()));
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins = Collections.singletonList(new Join(Join.INNER,
+                    ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                    mainColumn.getFullQuotedName()));
+        }
         info.whereExpr = String.format("%s AGAINST (? IN BOOLEAN MODE)", match);
         info.whereExprParam = fulltextQuery;
         // Note: using the boolean query in non-boolean mode gives approximate
