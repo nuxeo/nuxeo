@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.test;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
