@@ -20,35 +20,75 @@
 
   <h:form id="searchForm">
 
-    <div class="foldableBox">
-      <h3 class="unfolded">
-        <a href="#nologo" onclick="return toggleBox(this)">
-          <h:outputText value="#{messages['label.search.criteria']}"/>
-        </a>
-      </h3>
-      <div class="boxBody">
-        <nxu:set var="contentView"
-          value="#{contentViewActions.getContentViewWithProvider('advanced_search', null)}"
-          cache="true">
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider('advanced_search', null)}"
+      cache="true">
+
+      <div class="foldableBox">
+        <h3 class="unfolded">
+          <a href="#nologo" onclick="return toggleBox(this)">
+            <h:outputText value="#{messages['label.search.criteria']}"/>
+          </a>
+        </h3>
+        <div class="boxBody">
           <c:if test="#{contentView != null}">
+            <h:outputText value="#{messages['label.search.form.desc']}"
+              class="infoMessage" />
             <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
               value="#{contentView.searchDocumentModel}" />
           </c:if>
-        </nxu:set>
-        <div>
-          <h:commandButton value="#{messages['command.search']}"
-            action="search_results_advanced" class="button">
-            <nxu:actionListenerMethod
-              value="#{contentViewActions.refresh('advanced_search')}" /> 
-          </h:commandButton>
-          <h:commandButton value="#{messages['command.clearSearch']}"
-            action="#{contentViewActions.reset('advanced_search')}"
-            styleClass="button" />
         </div>
-
       </div>
-    </div>
 
+      <div class="foldableBox">
+        <h3 class="unfolded">
+         <a href="#nologo" onclick="return toggleBox(this)">
+           <h:outputText value="#{messages['label.search.results']}" />
+         </a>
+        </h3>
+        <div class="boxBody">
+          <table class="dataOutput">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.results']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_columns"
+                    value="#{documentSearchActions.selectedLayoutColumns}" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.orderBy']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_sort_infos"
+                    value="#{documentSearchActions.searchSortInfos}" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h:commandButton value="#{messages['command.search']}"
+          action="search_results_advanced" class="button">
+          <nxu:actionListenerMethod
+            value="#{contentViewActions.refresh('advanced_search')}" /> 
+        </h:commandButton>
+        <h:commandButton value="#{messages['command.clearSearch']}"
+          action="#{contentViewActions.reset('advanced_search')}"
+          styleClass="button" />
+        <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
+          action="#{documentSearchActions.resetSelectedLayoutColumns()}"
+          styleClass="button" />
+      </div>
+
+    </nxu:set>
 
   </h:form>
 

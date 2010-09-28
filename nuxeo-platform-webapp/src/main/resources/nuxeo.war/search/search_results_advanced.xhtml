@@ -22,6 +22,11 @@
       <nxu:set var="contentViewName" value="advanced_search">
 
         <ui:decorate template="/incl/content_view.xhtml">
+          <ui:param name="selectedResultLayoutColumns"
+            value="#{documentSearchActions.selectedLayoutColumns}" />
+          <ui:param name="selectResultLayoutDefaultColumns" value="true" />
+          <ui:param name="contentViewSortInfos"
+            value="#{documentSearchActions.searchSortInfos}" />
           <ui:define name="empty_folder_label">
             <h:outputText value="#{messages['label.content.empty.search']}"
               rendered="#{documents.rowCount == 0} and not provider.hasError()}" />
