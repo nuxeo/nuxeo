@@ -48,6 +48,7 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
@@ -76,10 +77,19 @@ public class LayoutTagHandler extends TagHandler {
 
     protected final TagAttribute template;
 
+    protected final TagAttribute selectedRows;
+
+    protected final TagAttribute selectedColumns;
+
+    protected final TagAttribute selectDefaultRows;
+
+    protected final TagAttribute selectDefaultColumns;
+
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name",
-            "mode", "value", "template" };
+    protected final String[] reservedVarsArray = { "id", "name", "mode",
+            "value", "template", "selectedRows", "selectedColumns",
+            "selectDefaultRows", "selectDefaultColumns" };
 
     public LayoutTagHandler(TagConfig config) {
         super(config);
@@ -88,6 +98,20 @@ public class LayoutTagHandler extends TagHandler {
         mode = getRequiredAttribute("mode");
         value = getRequiredAttribute("value");
         template = getAttribute("template");
+        selectedRows = getAttribute("selectedRows");
+        selectedColumns = getAttribute("selectedColumns");
+        if (selectedRows != null && selectedColumns != null) {
+            throw new TagException(this.tag, "Attributes 'selectedRows' "
+                    + "and 'selectedColumns' are aliases: only one of "
+                    + "them should be filled");
+        }
+        selectDefaultRows = getAttribute("selectDefaultRows");
+        selectDefaultColumns = getAttribute("selectDefaultColumns");
+        if (selectDefaultRows != null && selectDefaultColumns != null) {
+            throw new TagException(this.tag, "Attributes 'selectDefaultRows' "
+                    + "and 'selectDefaultColumns' are aliases: only one of "
+                    + "them should be filled");
+        }
         vars = tag.getAttributes().getAll();
     }
 
@@ -96,6 +120,7 @@ public class LayoutTagHandler extends TagHandler {
      * handlers for widgets, ignoring rows.
      */
     // TODO: add javadoc about variables exposed
+    @SuppressWarnings("unchecked")
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         WebLayoutManager layoutService;
@@ -133,8 +158,26 @@ public class LayoutTagHandler extends TagHandler {
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
 
+        List<String> selectedRowsValue = null;
+        if (selectedRows != null || selectedColumns != null) {
+            if (selectedRows != null) {
+                selectedRowsValue = (List<String>) selectedRows.getObject(ctx,
+                        List.class);
+            } else if (selectedColumns != null) {
+                selectedRowsValue = (List<String>) selectedColumns.getObject(
+                        ctx, List.class);
+            }
+        }
+        boolean selectDefaultRowsValue = false;
+        if (selectDefaultRows != null || selectDefaultColumns != null) {
+            if (selectDefaultRows != null) {
+                selectDefaultRowsValue = selectDefaultRows.getBoolean(ctx);
+            } else if (selectDefaultColumns != null) {
+                selectDefaultRowsValue = selectDefaultColumns.getBoolean(ctx);
+            }
+        }
         Layout layout = layoutService.getLayout(ctx, layoutName, modeValue,
-                valueName);
+                valueName, selectedRowsValue, selectDefaultRowsValue);
         if (layout == null) {
             String errMsg = String.format("Layout '%s' not found", layoutName);
             log.error(errMsg);

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webapp.search;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -29,6 +30,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -56,6 +58,10 @@ public class DocumentSearchActions implements Serializable {
 
     protected String nxqlQuery = "";
 
+    protected List<String> selectedLayoutColumns;
+
+    protected List<SortInfo> searchSortInfos;
+
     public String getSimpleSearchKeywords() {
         return simpleSearchKeywords;
     }
@@ -66,7 +72,8 @@ public class DocumentSearchActions implements Serializable {
 
     public void validateSimpleSearchKeywords(FacesContext context,
             UIComponent component, Object value) {
-        if (!(value instanceof String) || StringUtils.isEmpty(((String) value).trim())) {
+        if (!(value instanceof String)
+                || StringUtils.isEmpty(((String) value).trim())) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "feedback.search.noKeywords"), null);
@@ -98,6 +105,30 @@ public class DocumentSearchActions implements Serializable {
         } else {
             return new StringLiteral(nxqlQuery);
         }
+    }
+
+    public List<String> getSelectedLayoutColumns() {
+        return selectedLayoutColumns;
+    }
+
+    public void setSelectedLayoutColumns(List<String> selectedLayoutColumns) {
+        this.selectedLayoutColumns = selectedLayoutColumns;
+    }
+
+    public void resetSelectedLayoutColumns() {
+        setSelectedLayoutColumns(null);
+    }
+
+    public List<SortInfo> getSearchSortInfos() {
+        return searchSortInfos;
+    }
+
+    public void setSearchSortInfos(List<SortInfo> searchSortInfos) {
+        this.searchSortInfos = searchSortInfos;
+    }
+
+    public SortInfo getNewSortInfo() {
+        return new SortInfo("", true);
     }
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)

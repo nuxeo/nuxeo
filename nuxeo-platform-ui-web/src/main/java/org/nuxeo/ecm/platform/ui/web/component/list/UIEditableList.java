@@ -51,6 +51,7 @@ import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
@@ -78,6 +79,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
     protected String model = "";
 
     protected Object template;
+
+    protected Object defaultValue;
 
     protected Boolean diff;
 
@@ -161,7 +164,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
         if (superState != null || stampState != null) {
             return new Object[] { superState, stampState, getSubmittedValue(),
-                    editableModel, model, template, diff, number, removeEmpty };
+                    editableModel, model, template, diff, number, removeEmpty,
+                    defaultValue };
         }
         return null;
     }
@@ -170,6 +174,10 @@ public class UIEditableList extends UIInput implements NamingContainer {
     @Override
     public Object getValue() {
         Object value = super.getValue();
+        if (value == null) {
+            // check defaultValue attribute
+            value = getDefaultValue();
+        }
         if (value instanceof ListProperty) {
             try {
                 value = ((ListProperty) value).getValue();
@@ -179,6 +187,28 @@ public class UIEditableList extends UIInput implements NamingContainer {
         }
         return value;
     }
+
+    public Object getDefaultValue() {
+        if (defaultValue != null) {
+            return defaultValue;
+        }
+        ValueExpression ve = getValueExpression("defaultValue");
+        if (ve != null) {
+            try {
+                return ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    // XXX getDefaultValue to initialize list (?)
 
     @Override
     public void restoreState(FacesContext context, Object state) {
@@ -197,6 +227,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
             diff = (Boolean) array[6];
             number = (Integer) array[7];
             removeEmpty = (Boolean) array[8];
+            defaultValue = array[9];
         } else {
             superState = null;
             stampState = null;
@@ -654,7 +685,13 @@ public class UIEditableList extends UIInput implements NamingContainer {
         ValueExpression ve = getValueExpression("template");
         if (ve != null) {
             try {
-                return ve.getValue(getFacesContext().getELContext());
+                Object res = ve.getValue(getFacesContext().getELContext());
+                if (res instanceof String) {
+                    // try to resolve a second time in case it's an expression
+                    res = ComponentTagUtils.resolveElExpression(
+                            getFacesContext(), (String) res);
+                }
+                return res;
             } catch (ELException e) {
                 throw new FacesException(e);
             }

@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -38,11 +39,33 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@name")
+    String name;
+
+    @XNode("@selectedByDefault")
+    boolean selectedByDefault = false;
+
+    @XNode("@alwaysSelected")
+    boolean alwaysSelected = false;
+
     @XNodeList(value = "widget", type = String[].class, componentType = String.class)
     String[] widgets = new String[0];
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isSelectedByDefault() {
+        return selectedByDefault;
+    }
+
+    @Override
+    public boolean isAlwaysSelected() {
+        return alwaysSelected;
+    }
 
     public int getSize() {
         return widgets.length;

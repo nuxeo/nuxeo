@@ -65,10 +65,6 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     protected Boolean displayObsoleteEntries;
 
-    protected String ordering;
-
-    protected Boolean caseSensitive;
-
     // setters & getters
 
     public String getDirectoryName() {
@@ -132,51 +128,6 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     public void setDisplayObsoleteEntries(Boolean displayObsoleteEntries) {
         this.displayObsoleteEntries = displayObsoleteEntries;
-    }
-
-    public String getOrdering() {
-        if (ordering != null) {
-            return ordering;
-        }
-        ValueExpression ve = getValueExpression("ordering");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return null;
-        }
-    }
-
-    public void setOrdering(String ordering) {
-        this.ordering = ordering;
-    }
-
-    public Boolean getCaseSensitive() {
-        if (caseSensitive != null) {
-            return caseSensitive;
-        }
-        return getBooleanValue("caseSensitive", false);
-    }
-
-    protected Boolean getBooleanValue(String name, boolean defaultValue) {
-        ValueExpression ve = getValueExpression(name);
-        if (ve != null) {
-            try {
-                return (!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return defaultValue;
-        }
-    }
-
-    public void setCaseSensitive(Boolean caseSensitive) {
-        this.caseSensitive = caseSensitive;
     }
 
     protected Session getDirectorySession() {
@@ -331,14 +282,12 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[7];
+        Object[] values = new Object[5];
         values[0] = super.saveState(context);
         values[1] = directoryName;
         values[2] = displayAll;
         values[3] = allValues;
         values[4] = displayObsoleteEntries;
-        values[5] = ordering;
-        values[6] = caseSensitive;
         return values;
     }
 
@@ -350,8 +299,6 @@ public class UIDirectorySelectItems extends UISelectItems {
         displayAll = (Boolean) values[2];
         allValues = (SelectItem[]) values[3];
         displayObsoleteEntries = (Boolean) values[4];
-        ordering = (String) values[5];
-        caseSensitive = (Boolean) values[6];
     }
 
 }

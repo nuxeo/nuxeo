@@ -167,21 +167,19 @@ public class ContentViewActions implements Serializable {
 
     public ContentView getContentViewWithProvider(String name)
             throws ClientException {
-        return getContentViewWithProvider(name, null, null, null,
-                (Object[]) null);
+        return getContentViewWithProvider(name, null, null, null);
     }
 
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel) throws ClientException {
-        return getContentViewWithProvider(name, searchDocumentModel, null,
-                null, (Object[]) null);
+        return getContentViewWithProvider(name, searchDocumentModel, null, null);
     }
 
     public ContentView getContentViewWithProvider(String name,
-            DocumentModel searchDocumentModel, Object... params)
-            throws ClientException {
-        return getContentViewWithProvider(name, searchDocumentModel, null,
-                null, params);
+            DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
+            Long currentPage) throws ClientException {
+        return getContentViewWithProvider(name, searchDocumentModel, sortInfos,
+                currentPage, (Object[]) null);
     }
 
     public ContentView getContentViewWithProvider(String name,
