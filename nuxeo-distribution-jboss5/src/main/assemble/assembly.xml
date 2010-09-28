@@ -143,6 +143,16 @@
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
+    <!-- remove unwanted libs alreaduy provided by jboss -->
+    <delete failonerror="false">
+      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
+        <include name="jboss*" />
+        <include name="hibernate*" />
+        <include name="javaassist*" />
+        <include name="commons-collections*" />
+        <include name="commons-logging*" />
+      </fileset>
+    </delete>
     <!-- Complementary JBoss templates for DM -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"

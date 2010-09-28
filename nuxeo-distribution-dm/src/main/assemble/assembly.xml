@@ -66,11 +66,8 @@
         </includes>
       </artifact:set>
     </copy>
-    <!-- Remove duplicates 
-    <delete>
-      <fileset dir="${nuxeo.ear}/lib">
-      </fileset>
-    </delete> -->
+    <!-- Remove duplicates -->
+    <nx:rmdups dir="${nuxeo.ear}/lib" />
   </target>
 
   <target name="clean">

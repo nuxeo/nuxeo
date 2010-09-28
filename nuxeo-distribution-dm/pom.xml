@@ -242,7 +242,7 @@
     </dependency>
 
     <!-- JCR Storage -->
-    <dependency>
+    <!--dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jca</artifactId>
       <type>rar</type>
@@ -250,8 +250,8 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector</artifactId>
-    </dependency>
-    
+    </dependency-->
+
     <!-- CMIS -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
