@@ -80,12 +80,19 @@ public interface QueuePersister<C extends Serializable> {
     boolean hasContent(URI name);
 
     /**
-     * Should be manually be called by the handler when an executor is launched.
+     * Should be manually be called by the handler when a content processing is launched.
      *
      * @param the content name
-     * @param the execution time
      */
-    void setExecuteTime(URI name, Date date);
+    QueueInfo<C> setLaunched(URI name);
+
+
+    /**
+     * Should be manually be called by the handler when a task is finished
+     *
+     * @param the content name
+     */
+    QueueInfo<C> setBlacklisted(URI contentName);
 
     /**
      * List contents that matches the content owner name
@@ -103,10 +110,20 @@ public interface QueuePersister<C extends Serializable> {
     int removeByOwner(URI name);
 
     /**
+     * Remote out-dated black-listed content from a specified date
+     *
+     * @param the date from where the content should be removed
+     * @return the number of content removed
+     */
+    int removeBlacklisted(Date from);
+
+    /**
      * Create the queue if it does not exist already
      *
      * @return
      */
     void createIfNotExist();
+
+
 
 }

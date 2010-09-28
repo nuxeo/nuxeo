@@ -28,7 +28,7 @@
         <extension target="org.nuxeo.ecm.platform.queue" point="queue">
           <queue type="org.nuxeo.ecm.platform.queue.core.FakeContent" 
                 manager="org.nuxeo.ecm.platform.queue.core.FakeExecutor"
-                persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+                persister="org.nuxeo.ecm.platform.queue.core.DocumentQueuePersister" />
         </extension>
       </code>
     </documentation>

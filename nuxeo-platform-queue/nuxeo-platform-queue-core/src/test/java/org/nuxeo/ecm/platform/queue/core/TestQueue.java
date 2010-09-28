@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.queue.core;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -24,9 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueHandler;
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
@@ -46,8 +47,10 @@ public class TestQueue extends QueueTestCase {
 
 
     public void testNuxeoPersister() throws Exception {
-        NuxeoQueuePersister<FakeContent> persister = new NuxeoQueuePersister<FakeContent>("fake", FakeContent.class);
-        persister.addContent(new URI("test"), new URI("test"), new FakeContent());
+        DocumentQueuePersister<FakeContent> persister = new DocumentQueuePersister<FakeContent>("fake", FakeContent.class);
+        URI ownerName = new URI("test");
+        URI contentName = new URI("test:test1");
+        persister.addContent(ownerName, contentName, new FakeContent());
 
         // Testing the document is in the nuxeo repo
         TestRunner runner = new TestRunner(Framework.getLocalService(
@@ -63,8 +66,24 @@ public class TestQueue extends QueueTestCase {
         assertEquals("Fake content is", "fake", info.getContent().fake);
         // owner
         assertEquals("Owner is", "test",info.getOwnerName().toASCIIString());
-        List<QueueInfo<FakeContent>> ownedItems = persister.listByOwner(new URI("test"));
+        List<QueueInfo<FakeContent>> ownedItems = persister.listByOwner(ownerName);
         assertEquals("owns", 1, ownedItems.size());
+
+         info = persister.setBlacklisted(contentName);
+
+        assertTrue("content is blacklisted", info.isBlacklisted());
+
+        persister.addContent(ownerName, new URI("test:test2"), new FakeContent());
+
+        int count = persister.removeBlacklisted(new Date());
+
+        assertEquals("Removed single content", 1, count);
+
+        assertEquals("Single content in queue", 1, persister.listKnownItems().size());
+
+        persister.removeByOwner(ownerName);
+
+        assertEquals("No content in queue", 0, persister.listKnownItems().size());
     }
 
     class TestRunner extends UnrestrictedSessionRunner {
@@ -75,14 +94,14 @@ public class TestQueue extends QueueTestCase {
 
         @Override
         public void run() throws ClientException {
-            DocumentRef queueRef = new PathRef("/queues/fake");
+            DocumentRef queueRef = DocumentStoreManager.newPath("queues", "fake");
             DocumentModel queueDoc = session.getDocument(queueRef);
             assertNotNull(queueDoc);
-            DocumentModel contentDoc = session.getChild(queueRef, "test");
+            DocumentModel contentDoc = session.getChild(queueRef, "test:test1");
             assertNotNull(contentDoc);
             assertNotNull("server id is not there", contentDoc.getProperty(
-                    NuxeoQueueConstants.QUEUEITEM_SCHEMA,
-                    NuxeoQueueConstants.QUEUEITEM_SERVERID));
+                    DocumentQueueConstants.QUEUEITEM_SCHEMA,
+                    DocumentQueueConstants.QUEUEITEM_SERVERID));
         }
     }
 

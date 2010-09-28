@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_SCHEMA;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_SERVERID;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_BLACKLIST_TIME;
+
 
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -42,9 +44,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  *
  */
-public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
+public class DocumentQueueAdapter<C extends Serializable> implements QueueInfo<C> {
 
-    public static final Log log = LogFactory.getLog(NuxeoQueueAdapter.class);
+    public static final Log log = LogFactory.getLog(DocumentQueueAdapter.class);
 
     protected DocumentModel doc;
 
@@ -55,11 +57,11 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     final URI ownerName;
 
 
-    public NuxeoQueueAdapter(DocumentModel doc) {
+    public DocumentQueueAdapter(DocumentModel doc) {
         this.doc = doc;
         try {
             serverURI = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, QUEUEITEM_SERVERID));
-            ownerName = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_OWNER));
+            ownerName = new URI((String) doc.getProperty(QUEUEITEM_SCHEMA, DocumentQueueConstants.QUEUEITEM_OWNER));
             name = new URI((String)doc.getName());
         } catch (Exception e) {
             throw new QueueError("Cannot build server uri for " + doc.getPathAsString(), e);
@@ -67,10 +69,10 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     }
 
     @Override
-    public Date getLastHandlingDate() {
+    public Date getLastHandlingTime() {
         Calendar calendar;
         try {
-            calendar = (Calendar) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_EXECUTE_TIME);
+            calendar = (Calendar) doc.getProperty(QUEUEITEM_SCHEMA, DocumentQueueConstants.QUEUEITEM_EXECUTE_TIME);
         } catch (ClientException e) {
             throw new QueueError("Cannot get last handling date for " + doc.getPathAsString(), e);
         }
@@ -81,7 +83,7 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     }
 
     @Override
-    public Date getFirstHandlingDate() {
+    public Date getFirstHandlingTime() {
         try {
             Calendar modified = (Calendar) doc.getPropertyValue("dc:created");
             if (modified != null) {
@@ -98,7 +100,7 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     public C getContent() {
         try {
             C context = null;
-            Blob data = (Blob) doc.getProperty(QUEUEITEM_SCHEMA, NuxeoQueueConstants.QUEUEITEM_CONTENT);
+            Blob data = (Blob) doc.getProperty(QUEUEITEM_SCHEMA, DocumentQueueConstants.QUEUEITEM_CONTENT);
             if (data != null) {
                 ObjectInputStream ois = new ObjectInputStream(data.getStream());
                 try {
@@ -122,16 +124,37 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
             }
             return handlingCount.intValue();
         } catch (ClientException e) {
-            throw new QueueError("Unable to get handling count no");
+            throw new QueueError("Unable to get handling count no for " + doc.getPath(), e);
+        }
+    }
+
+    @Override
+    public Date getBlacklistTime() {
+        try {
+            Calendar value = (Calendar)doc.getProperty(QUEUEITEM_SCHEMA, QUEUEITEM_BLACKLIST_TIME);
+            if (value == null) {
+                return null;
+            }
+            return value.getTime();
+        } catch (ClientException e) {
+            throw new QueueError("Cannot get access to blacklist time for " + doc.getPath(), e);
         }
     }
 
     @Override
     public State getState() {
+        if (isBlacklisted()) {
+            return State.Blacklisted;
+        }
         if (isOrphaned()) {
             return State.Orphaned;
         }
         return State.Handled;
+    }
+
+    @Override
+    public boolean isBlacklisted() {
+        return getBlacklistTime() != null;
     }
 
     @Override
@@ -144,8 +167,9 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
             return true;
         }
         // is execute time before the restart of the server
-        return getLastHandlingDate().before(hbInfo.getStartTime());
+        return getLastHandlingTime().before(hbInfo.getStartTime());
     }
+
 
     @Override
     public URI getServerName() {
@@ -167,9 +191,9 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     }
 
     @Override
-    public QueueInfo<C> cancel() {
+    public QueueInfo<C> blacklist() {
         QueueHandler qh = Framework.getLocalService(QueueHandler.class);
-        return qh.cancel(name);
+        return qh.blacklist(name);
     }
 
     @Override
@@ -185,6 +209,11 @@ public class NuxeoQueueAdapter<C extends Serializable> implements QueueInfo<C> {
     @Override
     public String toString() {
         return getName().toASCIIString();
+    }
+
+    @Override
+    public boolean isHandled() {
+        return State.Handled.equals(getState());
     }
 
 }

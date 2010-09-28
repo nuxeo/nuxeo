@@ -4,7 +4,7 @@ org.nuxeo.ecm.webengine.management.queues.QueuesObject|org.nuxeo.ecm.webengine.m
 org.nuxeo.ecm.webengine.management.statuses.ProbesObject|org.nuxeo.ecm.webengine.model.WebObject|type|Probes
 org.nuxeo.ecm.webengine.management.ManagementModule|org.nuxeo.ecm.webengine.model.WebObject|type|Management
 org.nuxeo.ecm.webengine.management.locks.LocksObject|org.nuxeo.ecm.webengine.model.WebObject|type|Locks
-org.nuxeo.ecm.webengine.management.queues.QueueInfoObject|org.nuxeo.ecm.webengine.model.WebObject|type|QueueItem
+org.nuxeo.ecm.webengine.management.queues.QueueInfoObject|org.nuxeo.ecm.webengine.model.WebObject|type|QueueInfo
 org.nuxeo.ecm.webengine.management.locks.LockObject|org.nuxeo.ecm.webengine.model.WebObject|type|Lock
 org.nuxeo.ecm.webengine.management.queues.QueueObject|org.nuxeo.ecm.webengine.model.WebObject|type|Queue
 org.nuxeo.ecm.webengine.management.hosts.HostsObject|org.nuxeo.ecm.webengine.model.WebObject|type|Hosts

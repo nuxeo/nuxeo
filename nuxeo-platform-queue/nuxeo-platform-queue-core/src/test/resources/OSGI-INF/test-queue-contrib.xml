@@ -5,11 +5,11 @@
     <queue name="fake" 
                   type="org.nuxeo.ecm.platform.queue.core.FakeContent"
                   processor="org.nuxeo.ecm.platform.queue.core.FakeProcessor"
-                  persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+                  persister="org.nuxeo.ecm.platform.queue.core.DocumentQueuePersister" />
     <queue name="orphan"
                   type="org.nuxeo.ecm.platform.queue.core.OrphanContent" 
                   processor="org.nuxeo.ecm.platform.queue.core.OrphanProcessor"
-                  persister="org.nuxeo.ecm.platform.queue.core.NuxeoQueuePersister" />
+                  persister="org.nuxeo.ecm.platform.queue.core.DocumentQueuePersister" />
   </extension>
 
 </component>

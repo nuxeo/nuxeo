@@ -10,6 +10,7 @@
   <xs:element name="serverId" type="xs:string" />
   <xs:element name="executeTime" type="xs:date" />
   <xs:element name="executionCount" type="xs:integer" />
+  <xs:element name="blacklistTime" type="xs:date" />
 
   <xs:element name="content" type="nxs:content" />
 

@@ -34,13 +34,16 @@ public interface QueueInfo<C extends Serializable> {
      * <dd>content is currently handled by system</dd>
      * <dt>Orphaned</dt>
      * <dd>content known by system but not handled</dd>
+     * <dt>Blacklisted</dt>
+     * <dd>Content is processed and should not be handled anymore</dd>
      * </dl>
      *
      **/
     public enum State {
 
         Handled,
-        Orphaned
+        Orphaned,
+        Blacklisted
 
     }
 
@@ -77,6 +80,13 @@ public interface QueueInfo<C extends Serializable> {
     State getState();
 
     /**
+     * Checks if the content should not be processed anymore
+     *
+     *@ return true, if is blacklisted
+     */
+    boolean isBlacklisted();
+
+    /**
      * Checks if is orphaned.
      *
      * @return true, if is orphaned
@@ -84,18 +94,31 @@ public interface QueueInfo<C extends Serializable> {
     boolean isOrphaned();
 
     /**
+     * Checks if is handled
+     *
+     * @return true, if is handled
+     */
+    boolean isHandled();
+    /**
      * Gets the first handling date.
      *
      * @return the first handling date
      */
-    Date getFirstHandlingDate();
+    Date getFirstHandlingTime();
 
     /**
      * Gets the last handling date.
      *
      * @return the last handling date
      */
-    Date getLastHandlingDate();
+    Date getLastHandlingTime();
+
+    /**
+     * Get the blacklist date
+     *
+     * @return the blacklist date
+     */
+    Date getBlacklistTime();
 
     /**
      * Gets the handling count.
@@ -110,8 +133,10 @@ public interface QueueInfo<C extends Serializable> {
     QueueInfo<C> retry();
 
     /**
-     * Cancel handling content
+     * Blacklist  content
      */
-    QueueInfo<C> cancel();
+    QueueInfo<C> blacklist();
+
+
 
 }

@@ -61,7 +61,7 @@ public interface QueueHandler {
      * @return
      */
     @Transacted
-    <C extends Serializable> QueueInfo<C> cancel(URI contentName);
+    <C extends Serializable> QueueInfo<C> blacklist(URI contentName);
 
     /**
      * Retry content processing

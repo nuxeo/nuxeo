@@ -16,16 +16,17 @@
  */
 package org.nuxeo.ecm.platform.queue.core;
 
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_CONTENT;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTE_TIME;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_OWNER;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SCHEMA;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUEITEM_SERVERID;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ITEM_TYPE;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ROOT_NAME;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_ROOT_TYPE;
-import static org.nuxeo.ecm.platform.queue.core.NuxeoQueueConstants.QUEUE_TYPE;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_BLACKLIST_TIME;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_CONTENT;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_EXECUTE_TIME;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_EXECUTION_COUNT_PROPERTY;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_OWNER;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_SCHEMA;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUEITEM_SERVERID;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUE_ITEM_TYPE;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUE_ROOT_NAME;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUE_ROOT_TYPE;
+import static org.nuxeo.ecm.platform.queue.core.DocumentQueueConstants.QUEUE_TYPE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.platform.heartbeat.api.HeartbeatManager;
 import org.nuxeo.ecm.platform.queue.api.QueueError;
@@ -59,16 +62,16 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Sun Seng David TAN (a.k.a. sunix) <stan@nuxeo.com>
  */
-public class NuxeoQueuePersister<C extends Serializable> implements QueuePersister<C> {
+public class DocumentQueuePersister<C extends Serializable> implements QueuePersister<C> {
 
-    public static final Log log = LogFactory.getLog(NuxeoQueuePersister.class);
+    public static final Log log = LogFactory.getLog(DocumentQueuePersister.class);
 
     protected PathRef rootPath() {
-        return new PathRef("/" + QUEUE_ROOT_NAME);
+        return DocumentStoreManager.newPath(QUEUE_ROOT_NAME);
     }
 
     protected PathRef queuePath() {
-        return new PathRef("/" + QUEUE_ROOT_NAME + "/" + queueName);
+        return DocumentStoreManager.newPath(QUEUE_ROOT_NAME, queueName);
     }
 
     protected DocumentModel queue(CoreSession session) throws ClientException {
@@ -79,7 +82,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
 
     protected final Class<C> contentType;
 
-    protected NuxeoQueuePersister(String queueName, Class<C> contentType) {
+    protected DocumentQueuePersister(String queueName, Class<C> contentType) {
         this.queueName = queueName;
         this.contentType = contentType;
     }
@@ -101,7 +104,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
             PathRef rootPath = rootPath();
             DocumentModel root;
             if (!session.exists(rootPath)) {
-                root = session.createDocumentModel("/", QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
+                root = session.createDocumentModel(DocumentStoreManager.newPath().toString(), QUEUE_ROOT_NAME, QUEUE_ROOT_TYPE);
                 root = session.createDocument(root);
             } else {
                 root = session.getDocument(rootPath);
@@ -116,7 +119,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     public QueueInfo<C> removeContent(URI contentName) {
             RemoveRunner runner = new RemoveRunner(contentName);
             runner.runSafe();
-            return new NuxeoQueueAdapter<C>(runner.doc);
+            return new DocumentQueueAdapter<C>(runner.doc);
     }
 
     protected class RemoveRunner extends DocumentStoreSessionRunner {
@@ -164,12 +167,6 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
         }
     }
 
-    @Override
-    public List<QueueInfo<C>> listKnownItems() {
-        ListKnownContentRunner runner = new ListKnownContentRunner();
-        runner.runSafe();
-        return adapt(runner.docs);
-    }
 
     @SuppressWarnings("unchecked")
     protected  List<QueueInfo<C>> adapt(List<DocumentModel> docs) {
@@ -178,6 +175,13 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
             queueItemList.add(doc.getAdapter(QueueInfo.class));
         }
         return queueItemList;
+    }
+
+    @Override
+    public List<QueueInfo<C>> listKnownItems() {
+        ListKnownContentRunner runner = new ListKnownContentRunner();
+        runner.runSafe();
+        return adapt(runner.docs);
     }
 
     protected class ListKnownContentRunner extends DocumentStoreSessionRunner {
@@ -202,7 +206,7 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     public QueueInfo<C> addContent(URI ownerName, URI name,  C content)  {
         SaveContentRunner runner = new SaveContentRunner(ownerName, name, content);
         runner.runSafe();
-        return new NuxeoQueueAdapter<C>(runner.doc);
+        return new DocumentQueueAdapter<C>(runner.doc);
     }
 
     protected  class SaveContentRunner extends DocumentStoreSessionRunner {
@@ -247,37 +251,67 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     }
 
     @Override
-    public void setExecuteTime(URI contentName, Date date) {
-        SetExecutionInfoRunner runner = new SetExecutionInfoRunner(contentName, date);
+    public QueueInfo<C> setLaunched(URI contentName) {
+        SetLaunchedRunner runner = new SetLaunchedRunner(contentName);
         runner.runSafe();
+        return new DocumentQueueAdapter<C>(runner.doc);
     }
 
-    protected class SetExecutionInfoRunner extends DocumentStoreSessionRunner {
+
+
+    protected class SetLaunchedRunner extends DocumentStoreSessionRunner {
 
         protected final URI contentName;
 
-        protected final Date executeTime;
-
-        protected  SetExecutionInfoRunner(URI contentName, Date executeTime) {
+        protected  SetLaunchedRunner(URI contentName) {
             this.contentName = contentName;
-            this.executeTime = executeTime;
         }
+
+        protected DocumentModel doc;
 
         @Override
         public void run() throws ClientException {
             PathRef ref = newPathRef(session, contentName);
-            DocumentModel model = session.getDocument(ref);
-            Long executionCount = (Long) model.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
+            doc = session.getDocument(ref);
+            Long executionCount = (Long) doc.getPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY);
             if (executionCount == null) {
                 executionCount = 1L;
             } else {
                 executionCount++;
             }
-            model.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_EXECUTE_TIME,
-                    executeTime);
-            model.setPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY,
-                    executionCount);
-            model = session.saveDocument(model);
+            doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_EXECUTE_TIME, new Date());
+            doc.setPropertyValue(QUEUEITEM_EXECUTION_COUNT_PROPERTY, executionCount);
+            doc = session.saveDocument(doc);
+            detachDocument(doc);
+            session.save();
+        }
+
+    }
+
+    @Override
+    public QueueInfo<C> setBlacklisted(URI contentName) {
+        SetBlacklistedRunner runner = new SetBlacklistedRunner(contentName);
+        runner.runSafe();
+        return new DocumentQueueAdapter<C>(runner.doc);
+    }
+
+        protected class SetBlacklistedRunner extends DocumentStoreSessionRunner {
+
+        protected final URI contentName;
+
+        protected DocumentModel doc;
+
+        protected  SetBlacklistedRunner(URI contentName) {
+            this.contentName = contentName;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            PathRef ref = newPathRef(session, contentName);
+            doc = session.getDocument(ref);
+            doc.setProperty(QUEUEITEM_SCHEMA, QUEUEITEM_BLACKLIST_TIME, new Date());
+            doc = session.saveDocument(doc);
+            detachDocument(doc);
             session.save();
         }
 
@@ -404,7 +438,44 @@ public class NuxeoQueuePersister<C extends Serializable> implements QueuePersist
     public QueueInfo<C> getInfo(URI contentName) {
         GetInfoRunner runner = new GetInfoRunner(contentName);;
         runner.runSafe();
-        return new NuxeoQueueAdapter<C>(runner.doc);
+        return new DocumentQueueAdapter<C>(runner.doc);
+    }
+
+    protected static String formatTimestamp(Date date) {
+        return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(date);
+    }
+
+    protected class RemoveBlacklistedRunner extends DocumentStoreSessionRunner {
+
+         final Date from;
+
+         int removedCount;
+
+         protected RemoveBlacklistedRunner(Date from) {
+             this.from = from;
+         }
+
+        @Override
+        public void run() throws ClientException {
+            String ts = formatTimestamp(from);
+            log.debug("Removing blacklisted doc oldest than " + ts);
+            String req = String.format("SELECT * from QueueItem where qitm:blacklistTime < %s and ecm:isProxy = 0", ts);
+            DocumentModelList docs = session.query(req);
+            removedCount = docs.size();
+            for (DocumentModel doc : docs) {
+                log.debug("Removing blacklisted doc " + doc.getPathAsString());
+                session.removeDocument(doc.getRef());
+            }
+            session.save();
+        }
+
+    }
+
+    @Override
+    public int removeBlacklisted(Date from) {
+        RemoveBlacklistedRunner runner =new RemoveBlacklistedRunner(from);
+        runner.runSafe();
+        return runner.removedCount;
     }
 
     protected void injectContent(DocumentModel doc, Serializable content) throws ClientException {

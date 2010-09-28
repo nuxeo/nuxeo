@@ -62,10 +62,12 @@ public class DefaultQueueRegistry implements QueueRegistry, QueueLocator {
         entries.put(queueName,  new Entry<C>(contentType, persister, processor));
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Serializable> QueuePersister<C> getPersister(URI name) {
         return (QueuePersister<C>)entry(name).persister;
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends Serializable> QueueProcessor<C> getProcessor(URI name) {
         return (QueueProcessor<C>) entry(name).processor;
     }

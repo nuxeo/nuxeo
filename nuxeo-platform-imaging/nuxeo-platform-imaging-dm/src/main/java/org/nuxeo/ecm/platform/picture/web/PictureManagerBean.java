@@ -42,6 +42,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,7 +63,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -72,8 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("pictureManager")
 @Scope(CONVERSATION)
-public class PictureManagerBean implements
-        PictureManager, Serializable {
+public class PictureManagerBean implements PictureManager, Serializable {
 
     private static final long serialVersionUID = -7323791279190937921L;
 
@@ -194,6 +193,10 @@ public class PictureManagerBean implements
             } else {
                 doc = documentManager.createDocument(doc);
                 documentManager.saveDocument(doc);
+
+                Events.instance().raiseEvent(
+                        EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
+
                 documentManager.save();
             }
         } catch (Exception e) {
@@ -308,7 +311,7 @@ public class PictureManagerBean implements
                         }
                     }
                 }
-                if (view==null) {
+                if (view == null) {
                     return;
                 }
                 Blob blob = (Blob) view.getValue(field);
@@ -364,7 +367,7 @@ public class PictureManagerBean implements
         this.cropCoords = cropCoords;
     }
 
-    public Boolean isImageMagickAvailable() throws Exception{
+    public Boolean isImageMagickAvailable() throws Exception {
         if (imageMagickAvailable == null) {
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CommandAvailability ca = cles.getCommandAvailability("cropAndResize");

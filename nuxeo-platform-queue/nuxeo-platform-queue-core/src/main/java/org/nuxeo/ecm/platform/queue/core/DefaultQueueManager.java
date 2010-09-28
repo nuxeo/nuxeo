@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.queue.core;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.queue.api.QueueInfo;
@@ -68,23 +70,34 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
     }
 
     @Override
-    public List<QueueInfo<C>> listHandledContent() {
-        List<QueueInfo<C>> handledItems = new ArrayList<QueueInfo<C>>();
-        for (QueueInfo<C> item : persister.listKnownItems()) {
-            handledItems.add(item);
+    public List<QueueInfo<C>> listKnownContent() {
+        return persister.listKnownItems();
+    }
+
+    public List<QueueInfo<C>> listContentWithState(QueueInfo.State state) {
+         List<QueueInfo<C>> selection = new ArrayList<QueueInfo<C>>();
+        for (QueueInfo<C> info : persister.listKnownItems()) {
+            if (info.getState().equals(state)) {
+                selection.add(info);
+            }
         }
-        return handledItems;
+        return selection;
+    }
+
+
+    @Override
+    public List<QueueInfo<C>> listHandledContent() {
+        return listContentWithState(QueueInfo.State.Handled);
     }
 
     @Override
     public List<QueueInfo<C>> listOrphanedContent() {
-        List<QueueInfo<C>> orphansList = new ArrayList<QueueInfo<C>>();
-        for (QueueInfo<C> info : persister.listKnownItems()) {
-            if (info.isOrphaned()) {
-                orphansList.add(info);
-            }
-        }
-        return orphansList;
+        return listContentWithState(QueueInfo.State.Orphaned);
+    }
+
+        @Override
+    public List<QueueInfo<C>> listBlacklistedContent() {
+         return listContentWithState(QueueInfo.State.Blacklisted); // TODO use dao instead
     }
 
     @Override
@@ -111,6 +124,14 @@ public  class DefaultQueueManager<C extends Serializable> implements QueueManage
     @Override
     public void initialize() {
         persister.createIfNotExist();
+    }
+
+    @Override
+    public int purgeBlacklisted() {
+        Calendar cal = Calendar.getInstance();
+        cal.roll(Calendar.MINUTE, -10);
+        Date from = cal.getTime();
+        return persister.removeBlacklisted(from);
     }
 
 }
