@@ -76,16 +76,19 @@
 
       <div>
         <h:commandButton value="#{messages['command.search']}"
-          action="search_results_advanced" class="button">
+          action="search_results_advanced" class="button"
+          id="searchButton">
           <nxu:actionListenerMethod
             value="#{contentViewActions.refresh('advanced_search')}" /> 
         </h:commandButton>
         <h:commandButton value="#{messages['command.clearSearch']}"
           action="#{contentViewActions.reset('advanced_search')}"
-          styleClass="button" />
+          styleClass="button"
+          id="clearSearchButton" />
         <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
           action="#{documentSearchActions.resetSelectedLayoutColumns()}"
-          styleClass="button" />
+          styleClass="button"
+          id="resetSelectedColumnsButton" />
       </div>
 
     </nxu:set>
