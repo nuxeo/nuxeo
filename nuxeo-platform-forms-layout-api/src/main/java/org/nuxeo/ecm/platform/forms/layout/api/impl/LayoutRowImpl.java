@@ -36,26 +36,45 @@ public class LayoutRowImpl implements LayoutRow {
 
     private static final long serialVersionUID = 1528198770297610864L;
 
+    final String name;
+
+    final boolean selectedByDefault;
+
+    final boolean alwaysSelected;
+
     final Widget[] widgets;
 
     final Map<String, Serializable> properties;
-
-    // Not used
-    public LayoutRowImpl(Widget[] widgets) {
-        this.widgets = widgets;
-        properties = null;
-    }
-
-    //Not used
-    public LayoutRowImpl(List<Widget> widgets) {
-        this.widgets = widgets.toArray(new Widget[] {});
-        properties = null;
-    }
 
     public LayoutRowImpl(List<Widget> widgets,
             Map<String, Serializable> properties) {
         this.widgets = widgets.toArray(new Widget[] {});
         this.properties = properties;
+        name = null;
+        selectedByDefault = false;
+        alwaysSelected = false;
+    }
+
+    public LayoutRowImpl(String name, boolean selectedByDefault,
+            boolean alwaysSelected, List<Widget> widgets,
+            Map<String, Serializable> properties) {
+        this.name = name;
+        this.selectedByDefault = selectedByDefault;
+        this.alwaysSelected = alwaysSelected;
+        this.widgets = widgets.toArray(new Widget[] {});
+        this.properties = properties;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isAlwaysSelected() {
+        return alwaysSelected;
+    }
+
+    public boolean isSelectedByDefault() {
+        return selectedByDefault;
     }
 
     public Widget[] getWidgets() {
