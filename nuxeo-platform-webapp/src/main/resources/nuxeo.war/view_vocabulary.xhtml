@@ -20,7 +20,7 @@
         </script>
 
         <p class="directoryBack">
-          <h:commandLink type="submit"
+          <h:commandLink
             value="#{messages['command.directoryBack']}"
             action="view_vocabularies" />
         </p>
@@ -121,13 +121,13 @@
             </h:panelGroup>
             <h:outputText value=" " />
             <h:panelGroup>
-              <h:commandButton type="submit"
+              <h:commandButton
                 value="#{messages[vocabularyActions.commandName1]}"
                 styleClass="button"
                 action="#{vocabularyActions.addVocabularyEntry}"
                 rendered="#{vocabularyActions.editable}" />
 
-              <h:commandButton type="submit"
+              <h:commandButton
                 value="#{messages[vocabularyActions.commandName2]}"
                 styleClass="button"
                 immediate="true"

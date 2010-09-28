@@ -56,7 +56,7 @@
               </tr>
               <tr>
                 <td></td>
-                <td><h:commandButton type="submit"
+                <td><h:commandButton
                   value="#{messages['command.imageUpload.send']}"
                   action="#{editorImageActions.uploadImage}"
                   class="button" /></td>
@@ -84,7 +84,7 @@
           <h:inputText value="#{editorImageActions.searchKeywords}" size="40"
             class="searchField"
             onkeydown="if (event.keyCode == 13) {this.nextSibling.click()} else return true" />
-          <h:commandButton type="submit"
+          <h:commandButton
             value="#{messages['command.search']}"
             action="#{editorImageActions.searchImages}" class="button" />
         </h:form>

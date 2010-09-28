@@ -40,7 +40,7 @@
 	      <a4j:support  onsubmit="Seam.Component.getInstance('FileManageActions').removeSingleUploadedFile();" event="onclear"/>  
         </rich:fileUpload>
         
-        <h:commandButton type="submit" class="button"
+        <h:commandButton class="button"
           value="#{messages['command.upload']}"
           action="#{FileManageActions.validate}" />
         <h:commandButton class="button"

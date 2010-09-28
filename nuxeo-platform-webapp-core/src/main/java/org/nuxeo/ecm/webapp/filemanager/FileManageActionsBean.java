@@ -71,7 +71,6 @@ import org.richfaces.model.UploadItem;
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- *
  */
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
@@ -160,6 +159,8 @@ public class FileManageActionsBean extends InputController implements
             DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
                     documentManager, blob, path, true, fileName);
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    currentDocument);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_saved"),
@@ -173,7 +174,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     @Deprecated
-    // TODO: update the Seam remoting-based desktop plugins to stop calling this
+    // TODO: update the Seam remoting-based desktop plugins to stop calling
+    // this
     // method
     @WebRemote
     public boolean canWrite() throws ClientException {
@@ -194,8 +196,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
-     *             loading the content in memory
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
+     *             avoid loading the content in memory
      */
     @Deprecated
     @WebRemote
@@ -390,7 +392,8 @@ public class FileManageActionsBean extends InputController implements
 
         if (doc.isProxy()) {
             if (!container.getType().equals("Section")) {
-                // do not allow to move a published document back in a workspace
+                // do not allow to move a published document back in a
+                // workspace
                 // TODO: use a PUBLICATION_TARGET facet instead of hardcoding
                 // the Section type name
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -548,8 +551,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     @SuppressWarnings("unchecked")
-    public void validateMultipleUploadForDocument(DocumentModel current) throws ClientException,
-            FileNotFoundException {
+    public void validateMultipleUploadForDocument(DocumentModel current)
+            throws ClientException, FileNotFoundException {
         if (!current.hasSchema("files")) {
             return;
         }

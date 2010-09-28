@@ -13,7 +13,7 @@
     </h:inputHidden>
     <h:inputText value="#{searchActions.nxql}" size="80"/>
     <br/>
-    <h:commandButton type="submit" value="#{messages['command.search']}"
+    <h:commandButton value="#{messages['command.search']}"
       action="#{searchActions.performSearch}" class="button"/>
   </h:form>
 
@@ -28,7 +28,7 @@
           <h:outputText value="#{messages['label.search.reindexPath']}"/>
           <h:inputText value="#{searchActions.reindexPath}" size="80"/>
         </h:panelGrid>
-        <h:commandButton type="submit" value="#{messages['command.search.reindex']}"
+        <h:commandButton value="#{messages['command.search.reindex']}"
           action="#{searchActions.reindexDocuments}" class="button"/>
       </h:form>
     </div>

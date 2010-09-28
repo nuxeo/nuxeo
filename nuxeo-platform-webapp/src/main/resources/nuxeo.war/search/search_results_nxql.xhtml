@@ -38,7 +38,7 @@
                   <h:outputText value="#{messages['label.search.results.nxql']}" />
                   <f:verbatim>&amp;nbsp;</f:verbatim>
                   <h:inputText value="#{documentSearchActions.nxqlQuery}" size="80"/>
-                  <h:commandButton type="submit" value="#{messages['command.search']}"
+                  <h:commandButton value="#{messages['command.search']}"
                     action="search_results_nxql" class="button">
                     <nxu:actionListenerMethod
                       value="#{contentViewActions.refresh('nxql_search')}" /> 
