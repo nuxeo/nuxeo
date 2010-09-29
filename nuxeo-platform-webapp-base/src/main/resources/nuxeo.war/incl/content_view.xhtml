@@ -23,7 +23,7 @@
 </c:if>
 
   <nxu:set var="contentView"
-    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, contentViewSortInfos, null)}"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1)}"
     cache="true">
 
     <c:if test="#{contentView != null}">

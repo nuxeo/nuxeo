@@ -189,11 +189,16 @@ public class ContentViewImpl implements ContentView {
 
     /**
      * Returns cached page provider if it exists or build a new one if
-     * paramaters have changed.
+     * parameters have changed.
      */
     public PageProvider<?> getPageProvider(DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... params) throws ClientException {
+        // allow to passe negative integers instead of null: EL transforms
+        // numbers into value 0 for numbers
+        if (currentPage != null && currentPage.longValue() < 0) {
+            currentPage = null;
+        }
         if (params == null) {
             // fallback on local parameters
             params = getQueryParameters();

@@ -146,7 +146,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         } else {
             pageProvider.setPageSize(pageSize.longValue());
         }
-        if (currentPage != null && currentPage.longValue() != 0) {
+        if (currentPage != null && currentPage.longValue() > 0) {
             pageProvider.setCurrentPage(currentPage.longValue());
         }
 
