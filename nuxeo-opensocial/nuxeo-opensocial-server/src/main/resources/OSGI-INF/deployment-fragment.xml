@@ -83,15 +83,6 @@
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">
-    <filter>
-      <display-name>Nuxeo Security Filter</display-name>
-      <filter-name>NuxeoAuthenticationFilter
-            </filter-name>
-      <filter-class>
-        org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
-      </filter-class>
-    </filter>
-
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter
       </filter-name>
