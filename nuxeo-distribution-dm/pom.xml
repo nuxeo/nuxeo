@@ -75,8 +75,8 @@
       <artifactId>nuxeo-platform-imaging-jsf</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-imaging-dm</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-dm</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -258,14 +258,6 @@
 
   <profiles>
     <profile>
-      <id>all-distributions</id>
-      <!-- profile for building all classifiers -->
-    </profile>
-    <profile>
-      <id>all</id>
-      <!-- profile for building all classifiers -->
-    </profile>
-    <profile>
       <id>nuxeo-ep</id>
       <!-- profile for disabling build of all classifiers -->
     </profile>
@@ -276,24 +268,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
     </profile>
-    <profile>
-      <id>derby</id>
-    </profile>
-    <profile>
-      <id>mysql</id>
-    </profile>
-    <profile>
-      <id>postgresql</id>
-    </profile>
-    <profile>
-      <id>oracle</id>
-    </profile>
-    <profile>
-      <id>h2</id>
-    </profile>
-    <profile>
-      <id>nuxeo-2parts</id>
-    </profile>
   </profiles>
 
   <build>
@@ -302,7 +276,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jboss-packaging-maven-plugin</artifactId>
-        <version>2.0-beta-1</version>
         <extensions>true</extensions>
       </plugin>
       <plugin>
@@ -311,13 +284,11 @@
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-            <buildFile>${basedir}/src/main/assemble/assembly-stateful-stateless.xml</buildFile>
           </buildFiles>
         </configuration>
       </plugin>
-      <!--
-        copy nuxeo libraries that must go into $JBOSS/server/default/lib/
-      -->
+      <!-- TODO: NXBT-216 move this to server build -->
+      <!-- copy nuxeo libraries that must go into $JBOSS/server/default/lib/ 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -370,7 +341,6 @@
               <groupId>org.apache.lucene</groupId>
               <artifactId>lucene-analyzers</artifactId>
             </artifactItem>
-            <!-- WSS dependencies -->
             <artifactItem>
               <groupId>org.nuxeo.ecm.platform</groupId>
               <artifactId>nuxeo-generic-wss-handler</artifactId>
@@ -383,55 +353,24 @@
               <groupId>commons-lang</groupId>
               <artifactId>commons-lang</artifactId>
             </artifactItem>
+            <artifactItem>
+              <groupId>postgresql</groupId>
+              <artifactId>postgresql</artifactId>
+              <version>8.4-701.jdbc3</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>mysql</groupId>
+              <artifactId>mysql-connector-java</artifactId>
+              <version>5.1.6</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
+              <version>10.5.3.0_1</version>
+            </artifactItem>
           </artifactItems>
         </configuration>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-jdbc-drivers</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>
-                ${project.build.directory}/thirdparty-jdbc-lib
-              </outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>postgresql</groupId>
-                  <artifactId>postgresql</artifactId>
-                  <version>8.3-604.jdbc3</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>postgresql</groupId>
-                  <artifactId>postgresql</artifactId>
-                  <version>8.2-507.jdbc3</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>mysql</groupId>
-                  <artifactId>mysql-connector-java</artifactId>
-                  <version>5.1.6</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.derby</groupId>
-                  <artifactId>derby</artifactId>
-                  <version>10.5.3.0_1</version>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
 

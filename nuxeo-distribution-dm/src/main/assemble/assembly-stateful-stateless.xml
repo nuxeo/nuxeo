@@ -1,3 +1,4 @@
+<!-- DEPRECATED - kept for later update -->
 <project name="nuxeo-assembly-2parts"
          default="build"
          xmlns:nx="urn:nuxeo-build"
