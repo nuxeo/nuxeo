@@ -17,7 +17,7 @@
 
   <extension target="web#SERVLET">
     <servlet>
-      <servlet-name>cmisatom</servlet-name>
+      <servlet-name>atomcmis</servlet-name>
       <servlet-class>
         org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet
       </servlet-class>
@@ -30,15 +30,15 @@
 
   <extension target="web#SERVLET-MAPPING">
     <servlet-mapping>
-      <servlet-name>cmisatom</servlet-name>
-      <url-pattern>/cmis/*</url-pattern>
+      <servlet-name>atomcmis</servlet-name>
+      <url-pattern>/atom/cmis/*</url-pattern>
     </servlet-mapping>
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/cmis/*</url-pattern>
+      <url-pattern>/atom/cmis/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
