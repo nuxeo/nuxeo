@@ -105,7 +105,9 @@
       <div class="boxBody">
         <h:outputText value="#{messages['label.search.form.enterNXQL']}"/>
         <h:form id="nxqlSearchForm">
-          <h:inputText value="#{documentSearchActions.nxqlQuery}" size="80"/>
+          <h:inputText value="#{documentSearchActions.nxqlQuery}"
+            size="80"
+            required="true" />
           <br/>
           <h:commandButton value="#{messages['command.search']}"
             action="search_results_nxql" class="button">
