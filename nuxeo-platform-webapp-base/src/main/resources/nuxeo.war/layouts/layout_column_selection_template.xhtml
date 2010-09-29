@@ -6,7 +6,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   id="#{layout.id}">
-  
+
 <c:if test="false">
   Binds the value given to the layout tag to the selected columns.
   Columns are generated from the layout.
@@ -66,6 +66,7 @@
             <td class="listShuttleSelectionActions">
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeFromSelection}"
+                id="#{layout.id}_removeFormSelection"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -79,6 +80,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addToSelection}"
+                id="#{layout.id}_addToSelection"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>           
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -92,6 +94,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addAllToSelection}"
+                id="#{layout.id}_addAllToSelection"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -105,6 +108,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeAllFromSelection}"
+                id="#{layout.id}_removeAllFromSelection"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -142,6 +146,7 @@
             <td class="listShuttleSelectionActions">
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedFirst}"
+                id="#{layout.id}_shiftSelectedFirst"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -153,6 +158,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedUp}"
+                id="#{layout.id}_shiftSelectedUp"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -164,6 +170,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedDown}"
+                id="#{layout.id}_shiftSelectedDown"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -175,6 +182,7 @@
               <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedLast}"
+                id="#{layout.id}_shiftSelectedLast"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
