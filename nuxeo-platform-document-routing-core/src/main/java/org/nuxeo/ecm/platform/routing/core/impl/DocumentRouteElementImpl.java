@@ -181,6 +181,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             CoreSession session, boolean recursively) {
         try {
             document.followTransition(transition.name());
+            session.saveDocument(document);
             document = session.getDocument(document.getRef());
             if (recursively && document.isFolder()) {
                 DocumentModelList list = session.getChildren(document.getRef());

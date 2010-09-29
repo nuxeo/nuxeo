@@ -6,6 +6,12 @@
     <chain id="setDone">
       <operation id="Document.Routing.Step.Done" />
     </chain>
+    <chain id="simpleValidate">
+      <operation id="Document.Routing.Resume.Step" />
+    </chain>
+    <chain id="simpleRefuse">
+      <operation id="Document.Routing.Resume.Step" />
+    </chain>
   </extension>
 
 </component>
