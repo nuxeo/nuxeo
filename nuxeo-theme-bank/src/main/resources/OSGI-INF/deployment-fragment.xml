@@ -19,7 +19,7 @@
       <display-name>Theme Bank WebEngine Filter</display-name>
       <filter-name>ThemeBankWebEngineFilter</filter-name>
       <filter-class>
-        org.nuxeo.ecm.webengine.app.WebEngineFilter
+        org.nuxeo.theme.bank.ThemeBankWebEngineFilter
       </filter-class>
     </filter>
   </extension>
