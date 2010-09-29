@@ -5,9 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1><span>${bank}</span></h1>
-    <p>description ...</p>
-
+      <h1>Bank: ${bank}</h1>
       <div class="album">
         <a href="${Root.getPath()}/${bank}/style/view">
           <div class="imageSingle">

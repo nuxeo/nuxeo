@@ -1,22 +1,12 @@
-<@extends src="base.ftl">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title></title>
+</head>
 
-  <@block name="title">
-      Nuxeo Theme Bank
-  </@block>
-
-  <@block name="content">
-    <h1>Nuxeo Theme Bank</h1>
-
-    <div class="album">
-        <#list Root.getBankNames() as bank>
-         <a href="${Root.getPath()}/${bank}">
-         <div class="imageSingle">
-           <div class="image"><img src="${Root.getPath()}/${bank}/logo" /></div>
-           <div class="footer">${bank}</div>
-        </div></a>
-        </#list>
-    </div>
-
-  </@block>
-
-</@extends>
+<frameset rows="35, *" frameborder="no">
+  <frame name="actionbar" src="${Root.getPath()}/actionbar">
+  <frame name="main" src="${Root.getPath()}/banks">
+</frameset>
+</html>

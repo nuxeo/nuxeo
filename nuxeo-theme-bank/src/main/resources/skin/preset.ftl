@@ -5,10 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset')">preset</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset-${collection}')">${collection}</a>
-        <span>${category}</span></h1>
+    <h1>Preset: ${collection} ${category}</h1>
     <table class="properties">
     <#list properties?keys as key>
       <tr<#if key_index%2=1> class="odd"</#if>>

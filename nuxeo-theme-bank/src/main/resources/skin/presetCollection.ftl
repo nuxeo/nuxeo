@@ -5,9 +5,7 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset')">preset</a> &gt;
-        <span>${collection}</span></h1>
+    <h1>Preset collection: ${collection}</h1>
     <div class="album">
       <#list presets as preset>
         <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset-${collection}-${preset}')">

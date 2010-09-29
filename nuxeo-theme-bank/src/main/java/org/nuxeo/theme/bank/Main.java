@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -43,14 +44,15 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.presets.PaletteIdentifyException;
 import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
-import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeManager;
 
 @WebObject(type = "theme-banks")
@@ -108,6 +110,35 @@ public class Main extends ModuleRoot {
         return getTemplate("navtree.ftl").arg("bank", bank);
     }
 
+    @GET
+    @Path("actionbar")
+    public Object getActionBarView() {
+        return getTemplate("actionbar.ftl");
+    }
+
+    @GET
+    @Path("banks")
+    public Object getBanksView() {
+        return getTemplate("banks.ftl");
+    }
+
+    @GET
+    @Path("login")
+    public Object getLoginView() {
+        return getTemplate("login.ftl");
+    }
+
+    @POST
+    @Path("@@login")
+    public Object login() {
+        FormData form = ctx.getForm();
+        String redirectUrl = form.getFormProperty("redirect_url");
+        if (redirectUrl != null) {
+            return redirect(redirectUrl);
+        }
+        return getTemplate("login.ftl");
+    }
+
     /*
      * Styles
      */
@@ -141,7 +172,10 @@ public class Main extends ModuleRoot {
                     skinMap.put("collection", collection);
                     skinMap.put("resource", resource);
                     skinMap.put("preview", preview);
-                    skinMap.put("name", String.format("%s (%s)", resource.replace(".css", ""), collection));
+                    skinMap.put(
+                            "name",
+                            String.format("%s (%s)",
+                                    resource.replace(".css", ""), collection));
                     skins.add(skinMap);
                 }
             }
@@ -486,6 +520,7 @@ public class Main extends ModuleRoot {
 
     private static StreamingOutput streamFile(final File file) {
         return new StreamingOutput() {
+            @Override
             public void write(OutputStream out) throws IOException,
                     WebApplicationException {
                 InputStream in = null;

@@ -14,7 +14,7 @@ h1 {
 
 h1 span {
   color: #000;
-  background-color: #ffc;
+  background-color: #fff;
   -moz-border-radius: 3px;
   padding: 0 4px;
   text-decoration: none;
@@ -66,7 +66,6 @@ table.properties td.key {
   font-weight: bold;
   width: 15%;
 }
-
 
 /* Image browser */
 .album {
@@ -122,4 +121,20 @@ table.properties td.key {
   border: 1px solid #eee;
   -moz-border-radius: 4px;
   padding: 20px;
+}
+
+.actionBar {
+  text-align: right;
+}
+
+.actionBar img {
+  border: none;
+  vertical-align: middle;
+  padding: 0 3px;
+}
+
+.actionBar a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #060;
 }

@@ -5,9 +5,11 @@
     <title>${bank}</title>
 </head>
 
-<frameset cols="20%, *" frameborder="no" framespacing="10">
-  <frame name="navtree" src="${Root.getPath()}/${bank}/navtree" >
-  <frame name="main" src="">
+<frameset rows="35, *" frameborder="no">
+  <frame name="actionbar" src="${Root.getPath()}/actionbar">
+  <frameset cols="20%, *" frameborder="no" framespacing="10">
+    <frame name="navtree" src="${Root.getPath()}/${bank}/navtree">
+    <frame name="main" src="${Root.getPath()}/${bank}/view">
+  </frameset>
 </frameset>
-
 </html>

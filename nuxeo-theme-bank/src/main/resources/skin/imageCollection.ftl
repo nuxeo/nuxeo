@@ -6,9 +6,13 @@
 
   <@block name="content">
 
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image')">image</a> &gt;
-        <span>${collection}</span></h1>
+    <h1>Image collection: ${collection}</h1>
+    <form action="">
+      <p>
+        <input type="file" value="" size="40" />
+        <button>Upload image<button>
+      </p>
+    </form>
     <div class="album">
       <#list images as image>
         <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image-${collection}-${image}')">

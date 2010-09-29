@@ -18,9 +18,7 @@
   </@block>
 
   <@block name="content">
-    <h1><a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}')">${bank}</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-style')">style</a> &gt;
-        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-style-${collection}')">${collection}</a> <span>${resource?replace('.css', '')}</span></h1>
+    <h1>Style: ${resource?replace('.css', '')}</h1>
     <pre class="brush: css; toolbar: false">
     ${content}
     </pre>
