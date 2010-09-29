@@ -37,16 +37,25 @@ public class UnzipCommand implements Command {
     protected final Path src;
     protected final Path dst;
     protected final PathFilter filter;
-
+    protected final String prefix;
 
     public UnzipCommand(Path src, Path dst) {
-        this(src, dst, null);
+        this(src, dst, null,null);
     }
 
     public UnzipCommand(Path src, Path dst, PathFilter filter) {
+        this(src, dst, filter,null);
+    }
+
+    public UnzipCommand(Path src, Path dst, String prefix) {
+        this(src, dst, null ,prefix);
+    }
+
+    public UnzipCommand(Path src, Path dst, PathFilter filter, String prefix) {
         this.src = src;
         this.dst = dst;
         this.filter = filter;
+        this.prefix=prefix;
     }
 
     public void exec(CommandContext ctx) throws IOException {
@@ -68,9 +77,17 @@ public class UnzipCommand implements Command {
         }
         // unzip srcFile to directory dstFile
         if (filter != null) {
-            ZipUtils.unzip(srcFile, dstFile, filter);
+            if (prefix!=null) {
+                ZipUtils.unzip(prefix,srcFile, dstFile, filter);
+            } else {
+                ZipUtils.unzip(srcFile, dstFile, filter);
+            }
         } else {
-            ZipUtils.unzip(srcFile, dstFile);
+            if (prefix!=null) {
+                ZipUtils.unzip(prefix, srcFile, dstFile);
+            } else {
+                ZipUtils.unzip(srcFile, dstFile);
+            }
         }
     }
 
