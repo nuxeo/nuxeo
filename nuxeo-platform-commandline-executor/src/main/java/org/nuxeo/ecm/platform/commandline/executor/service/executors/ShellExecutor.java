@@ -49,8 +49,11 @@ public class ShellExecutor extends AbstractExecutor implements Executor {
 
         String paramString = getParametersString(cmdDesc, params);
 
+        if (!isWindows()) {
+            paramString += " 2>&1";
+        }
         String[] cmd = { "/bin/sh", "-c",
-                cmdDesc.getCommand() + " " + paramString + " 2>&1" };
+                cmdDesc.getCommand() + " " + paramString };
 
         if (isWindows()) {
             cmd[0] = "cmd";
