@@ -18,9 +18,12 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +47,15 @@ import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDecimalDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyHtmlDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIdDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
@@ -63,8 +74,11 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteDataImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
@@ -75,6 +89,7 @@ import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfo;
 import org.apache.chemistry.opencmis.commons.server.ObjectInfoHandler;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,6 +119,8 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoCmisService extends AbstractCmisService {
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
+
+    protected static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     protected final NuxeoRepository repository;
 
@@ -784,24 +801,137 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean searchAllVersions, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-
-        IterableQueryResult res;
+        List<ObjectData> list;
+        IterableQueryResult res = null;
         try {
+            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
             res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    this);
+                    this, typeInfo);
+
+            // convert from Nuxeo to CMIS format
+            list = new ArrayList<ObjectData>();
+            for (Map<String, Serializable> map : res) {
+                ObjectDataImpl od = new ObjectDataImpl();
+
+                // properties
+                Map<String, PropertyData<?>> props = new HashMap<String, PropertyData<?>>();
+                for (Entry<String, Serializable> en : map.entrySet()) {
+                    String queryName = en.getKey();
+                    PropertyDefinition<?> pd = typeInfo.get(queryName);
+                    PropertyData<?> p = createPropertyData(pd, en.getValue(),
+                            queryName);
+                    props.put(queryName, p);
+                    // TODO make sure PropertyIds.BASE_TYPE_ID is there as well
+                }
+                Properties properties = objectFactory.createPropertiesData(new ArrayList<PropertyData<?>>(
+                        props.values()));
+                od.setProperties(properties);
+
+                // optional stuff
+                if (Boolean.TRUE.equals(includeAllowableActions)) {
+                    // od.setAllowableActions(allowableActions);
+                }
+                if (includeRelationships != null
+                        && includeRelationships != IncludeRelationships.NONE) {
+                    // od.setRelationships(relationships);
+                }
+                if (renditionFilter != null && renditionFilter.length() > 0) {
+                    // od.setRenditions(renditions);
+                }
+
+                list.add(od);
+            }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.getMessage(), e);
-        }
-        try {
-            for (Map<String, Serializable> map : res) {
-            }
         } finally {
-            res.close();
+            if (res != null) {
+                res.close();
+            }
         }
+        ObjectListImpl objList = new ObjectListImpl();
+        objList.setObjects(list);
+        objList.setNumItems(BigInteger.valueOf(list.size())); // TODO-batching
+        objList.setHasMoreItems(Boolean.FALSE);
+        return objList;
+    }
 
-        ObjectList list = new ObjectListImpl();
-        // return list;
-        throw new UnsupportedOperationException();
+    // TODO extract and move to BindingsObjectFactoryImpl
+    @SuppressWarnings("unchecked")
+    protected static <T> PropertyData<T> createPropertyData(
+            PropertyDefinition<T> pd, Serializable value, String queryName) {
+        AbstractPropertyData<T> p;
+        String id = pd.getId();
+        if (pd instanceof PropertyIdDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyIdData(
+                        id, (String) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyIdData(
+                        id, (List<String>) value);
+            }
+        } else if (pd instanceof PropertyStringDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyStringData(
+                        id, (String) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyStringData(
+                        id, (List<String>) value);
+            }
+        } else if (pd instanceof PropertyDateTimeDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyDateTimeData(
+                        id, (GregorianCalendar) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyDateTimeData(
+                        id, (List<GregorianCalendar>) value);
+            }
+        } else if (pd instanceof PropertyBooleanDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyBooleanData(
+                        id, (Boolean) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyBooleanData(
+                        id, (List<Boolean>) value);
+            }
+        } else if (pd instanceof PropertyIntegerDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyIntegerData(
+                        id, (BigInteger) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyIntegerData(
+                        id, (List<BigInteger>) value);
+            }
+        } else if (pd instanceof PropertyDecimalDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyDecimalData(
+                        id, (BigDecimal) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyDecimalData(
+                        id, (List<BigDecimal>) value);
+            }
+        } else if (pd instanceof PropertyHtmlDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyHtmlData(
+                        id, (String) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyHtmlData(
+                        id, (List<String>) value);
+            }
+        } else if (pd instanceof PropertyUriDefinition) {
+            if (pd.getCardinality() == Cardinality.SINGLE) {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyUriData(
+                        id, (String) value);
+            } else {
+                p = (AbstractPropertyData<T>) objectFactory.createPropertyUriData(
+                        id, (List<String>) value);
+            }
+        } else {
+            throw new CmisRuntimeException("Unknown property definition: " + pd);
+        }
+        p.setLocalName(pd.getLocalName());
+        p.setDisplayName(pd.getDisplayName());
+        p.setQueryName(queryName);
+        return p;
     }
 
     @Override

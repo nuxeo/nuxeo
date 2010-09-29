@@ -113,14 +113,15 @@ public class NuxeoRepository {
         return repositoryId;
     }
 
+    // no need to have it synchronized
     public TypeManagerImpl getTypeManager() {
         if (typeManager == null) {
-            initializeTypes();
+            typeManager = initializeTypes();
         }
         return typeManager;
     }
 
-    protected void initializeTypes() {
+    protected static TypeManagerImpl initializeTypes() {
         SchemaManager schemaManager;
         try {
             schemaManager = Framework.getService(SchemaManager.class);
@@ -147,17 +148,18 @@ public class NuxeoRepository {
         }
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
-        typeManager = new TypeManagerImpl();
+        TypeManagerImpl typeManager = new TypeManagerImpl();
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisFolder());
-        addTypeRecursively(NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done,
-                schemaManager);
-        addTypeRecursively(NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done,
-                schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,
+                typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT,
+                typesChildren, done, schemaManager);
+        return typeManager;
     }
 
-    protected void addTypeRecursively(String name,
-            Map<String, List<String>> typesChildren, Set<String> done,
-            SchemaManager schemaManager) {
+    protected static void addTypesRecursively(TypeManagerImpl typeManager,
+            String name, Map<String, List<String>> typesChildren,
+            Set<String> done, SchemaManager schemaManager) {
         if (done.contains(name)) {
             return;
         }
@@ -166,14 +168,15 @@ public class NuxeoRepository {
         if (dt.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
             return;
         }
-        getTypeManager().addTypeDefinition(NuxeoTypeHelper.construct(dt));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt));
         // recurse in children
         List<String> children = typesChildren.get(name);
         if (children == null) {
             return;
         }
         for (String sub : children) {
-            addTypeRecursively(sub, typesChildren, done, schemaManager);
+            addTypesRecursively(typeManager, sub, typesChildren, done,
+                    schemaManager);
         }
     }
 
@@ -187,7 +190,6 @@ public class NuxeoRepository {
 
     // Structures are not copied when returned
     public TypeDefinition getTypeDefinition(String typeId) {
-        initializeTypes();
         TypeDefinitionContainer typec = getTypeManager().getTypeById(typeId);
         return typec == null ? null : typec.getTypeDefinition();
     }
@@ -196,14 +198,12 @@ public class NuxeoRepository {
     public TypeDefinitionList getTypeChildren(String typeId,
             Boolean includePropertyDefinitions, BigInteger maxItems,
             BigInteger skipCount) {
-        initializeTypes();
         return getTypeManager().getTypeChildren(typeId,
                 includePropertyDefinitions, maxItems, skipCount);
     }
 
     public List<TypeDefinitionContainer> getTypeDescendants(String typeId,
             int depth, Boolean includePropertyDefinitions) {
-        initializeTypes();
         return getTypeManager().getTypeDescendants(typeId, depth,
                 includePropertyDefinitions);
     }

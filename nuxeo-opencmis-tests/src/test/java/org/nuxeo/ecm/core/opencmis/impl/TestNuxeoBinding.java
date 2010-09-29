@@ -74,7 +74,6 @@ import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -636,13 +635,29 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(ob.getId(), ob2.getId());
     }
 
-    @Ignore
     @Test
     public void testQuery() throws Exception {
-        String statement = "SELECT cmis:objectId, dc:title FROM File WHERE cmis:name <> 'abc'";
-        ObjectList res = discService.query(repositoryId, statement, null, null,
-                null, null, null, null, null);
-        assertEquals(123, res.getNumItems().intValue());
+        String statement;
+        ObjectList res;
+        ObjectData data;
+
+        statement = "SELECT cmis:objectId, cmis:name" //
+                + " FROM File" //
+                + " WHERE cmis:name <> 'testfile1_Title'" //
+                + " ORDER BY cmis:name";
+        res = discService.query(repositoryId, statement, null, null, null,
+                null, null, null, null);
+        assertEquals(2, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertEquals("testfile2_Title", getString(data, PropertyIds.NAME));
+
+        // now change order
+        statement += " DESC";
+        res = discService.query(repositoryId, statement, null, null, null,
+                null, null, null, null);
+        assertEquals(2, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertEquals("testfile4_Title", getString(data, PropertyIds.NAME));
     }
 
 }

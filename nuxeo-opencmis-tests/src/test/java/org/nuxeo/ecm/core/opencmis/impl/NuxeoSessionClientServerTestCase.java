@@ -29,6 +29,7 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.SessionType;
 import org.apache.chemistry.opencmis.server.impl.atompub.BasicAuthCallContextHandler;
+import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
@@ -42,9 +43,6 @@ import org.nuxeo.ecm.core.opencmis.bindings.TrustingLoginProvider;
  */
 public abstract class NuxeoSessionClientServerTestCase extends
         NuxeoSessionTestCase {
-
-    // from CmisAtomPubServlet TODO make it public
-    public static final String PARAM_CALL_CONTEXT_HANDLER = "callContextHandler";
 
     public static final String HOST = "localhost";
 
@@ -100,15 +98,13 @@ public abstract class NuxeoSessionClientServerTestCase extends
         connector.setHost(HOST);
         connector.setPort(PORT);
         server.addConnector(connector);
-        // connector.start();
 
-        // server.setHandler(new ContextHandlerCollection());
         Context context = new Context(server, "/", Context.SESSIONS);
         setUpContext(context);
 
         context.setEventListeners(getEventListeners());
         ServletHolder holder = new ServletHolder(getServlet());
-        holder.setInitParameter(PARAM_CALL_CONTEXT_HANDLER,
+        holder.setInitParameter(CmisAtomPubServlet.PARAM_CALL_CONTEXT_HANDLER,
                 BasicAuthCallContextHandler.class.getName());
         context.addServlet(holder, "/*");
 
