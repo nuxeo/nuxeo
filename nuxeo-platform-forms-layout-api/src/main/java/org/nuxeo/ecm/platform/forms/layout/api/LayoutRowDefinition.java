@@ -30,6 +30,21 @@ import java.util.Map;
 public interface LayoutRowDefinition extends Serializable {
 
     /**
+     * Returns the row name
+     */
+    String getName();
+
+    /**
+     * Returns true if this row should be considered selected by default
+     */
+    boolean isSelectedByDefault();
+
+    /**
+     * Return true if this row should be considered always selected
+     */
+    boolean isAlwaysSelected();
+
+    /**
      * Returns the row size
      */
     int getSize();

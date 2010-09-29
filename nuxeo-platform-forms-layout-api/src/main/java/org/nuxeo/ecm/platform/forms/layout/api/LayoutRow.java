@@ -33,6 +33,18 @@ import java.util.Map;
  */
 public interface LayoutRow extends Serializable {
 
+    String getName();
+
+    /**
+     * Returns true if this row should be considered selected by default
+     */
+    boolean isSelectedByDefault();
+
+    /**
+     * Return true if this row should be considered always selected
+     */
+    boolean isAlwaysSelected();
+
     Widget[] getWidgets();
 
     int getSize();
