@@ -14,6 +14,13 @@
   <name>Nuxeo JBoss5 Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss5</description>
 
+  <dependencies>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+      </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
       <id>all-distributions</id>
