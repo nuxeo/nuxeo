@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +38,12 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
+import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
 import org.apache.chemistry.opencmis.server.support.query.AbstractQueryConditionProcessor;
-import org.apache.chemistry.opencmis.server.support.query.AbstractClauseWalker;
-import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
-import org.apache.chemistry.opencmis.server.support.query.CmisQlStrictLexer;
 import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
 import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
 import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
@@ -53,7 +51,6 @@ import org.apache.chemistry.opencmis.server.support.query.FunctionReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference.CmisQlFunction;
 import org.apache.chemistry.opencmis.server.support.query.QueryConditionProcessor;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
-import org.apache.chemistry.opencmis.server.support.query.ClauseWalker;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -84,8 +81,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 /**
  * Transformer of CMISQL queries into real SQL queries for the actual database.
  */
-public class CMISQLQueryMaker extends AbstractClauseWalker implements
-        QueryMaker {
+public class CMISQLQueryMaker implements QueryMaker {
 
     private static final Log log = LogFactory.getLog(CMISQLQueryMaker.class);
 
@@ -124,23 +120,16 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
     /** column aliases useable in ORDER BY */
     public final Map<String, SelectedColumn> columnAliases = new HashMap<String, SelectedColumn>();
 
-    /** joins added by fulltext match */
-    public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join>();
-
     public boolean hasScoreInSelect;
-
-    public boolean hasContains;
 
     public FulltextMatchInfo fulltextMatchInfo;
 
     protected QueryObject query;
 
+    protected Tree whereNode;
+
     /** The columns we'll return. */
     protected List<CmisSelector> selectReferences = new ArrayList<CmisSelector>();
-
-    protected StringBuilder whereBuf;
-
-    protected LinkedList<Serializable> whereBufParams;
 
     protected Set<String> allQualifiers = new HashSet<String>();
 
@@ -207,14 +196,13 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
      * Column for SCORE().
      */
     public static class ScoreColumn extends SelectedColumn {
-        public ScoreColumn(FunctionReference fr) {
-            alias = "SEARCH_SCORE"; // default, from spec
+        public ScoreColumn(String alias) {
+            this.alias = alias;
         }
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + '('
-                    + (alias == null ? "" : alias) + ')';
+            return getClass().getSimpleName() + '(' + alias + ')';
         }
     }
 
@@ -288,34 +276,6 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         }
     }
 
-    public class NuxeoQueryObject extends QueryObject {
-
-        public NuxeoQueryObject(TypeManager tm, QueryConditionProcessor wp) {
-            super(tm, wp);
-        }
-
-        @Override
-        public void resolveTypes() {
-            super.resolveTypes();
-
-            // now resolve column selectors to actual database columns
-            for (CmisSelector sel : getSelectReferences()) {
-                recordCmisSelector(sel, false);
-            }
-            for (SortSpec spec : getOrderBys()) {
-                recordCmisSelector(spec.getSelector(), false);
-            }
-            for (CmisSelector sel : getWhereReferences()) {
-                recordCmisSelector(sel, true);
-            }
-        }
-
-        @Override
-        public void processWhereClause(Tree node) {
-            walkClause(node.getChild(0));
-        }
-    }
-
     private void computeAllPropNames(TypeManagerImpl typeManager) {
         propertyInfoNames = new HashMap<String, String>();
         for (String name : model.getPropertyInfoNames()) {
@@ -361,10 +321,6 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         computeAllPropNames(typeManager);
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
-
-        // used by walker of the WHERE part
-        whereBuf = new StringBuilder();
-        whereBufParams = new LinkedList<Serializable>();
 
         query = new NuxeoQueryObject(typeManager, null);
         CmisQueryWalker walker;
@@ -415,6 +371,11 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
                     throw new CmisRuntimeException("Unknown function: "
                             + fr.getFunction());
                 }
+                String alias = fr.getAliasName();
+                if (alias == null) {
+                    alias = "SEARCH_SCORE"; // default, from spec
+                }
+                sel.setInfo(new ScoreColumn(alias));
                 selectReferences.add(sel);
                 continue;
             }
@@ -669,37 +630,32 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         }
 
         /*
-         * Joins for the external fulltext matches.
+         * WHERE clause.
          */
 
-        Collections.sort(ftJoins); // implicit JOINs last (PostgreSQL)
-        for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : ftJoins) {
-            from.append(join.toString());
-            if (join.tableParam != null) {
-                fromParams.add(join.tableParam);
+        if (whereNode != null) {
+            GeneratingWalker generator = new GeneratingWalker();
+            generator.walkPredicate(whereNode);
+            whereClauses.add(generator.whereBuf.toString());
+            whereParams.addAll(generator.whereBufParams);
+
+            // add JOINs for the external fulltext matches
+            Collections.sort(generator.ftJoins); // implicit JOINs last
+                                                 // (PostgreSQL)
+            for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : generator.ftJoins) {
+                from.append(join.toString());
+                if (join.tableParam != null) {
+                    fromParams.add(join.tableParam);
+                }
             }
         }
-
-        /*
-         * Where clause.
-         */
-
-        String walker_select_where = null;
-        if (walker_select_where != null) {
-            whereClauses.add('(' + walker_select_where + ')');
-            List<String> walker_select_where_params = Collections.emptyList(); // XXX
-            whereParams.addAll(walker_select_where_params);
-        }
-
-        whereClauses.add(whereBuf.toString());
-        whereParams.addAll(whereBufParams);
 
         /*
          * What we select. Fill type info for caller if requested.
          */
 
-        List<String> selectWhat = new ArrayList<String>(selectReferences.size());
-        List<Serializable> selectParams = new ArrayList<Serializable>(0);
+        List<String> selectWhat = new ArrayList<String>();
+        List<Serializable> selectParams = new ArrayList<Serializable>(1);
 
         List<VirtualColumn> virtual = new ArrayList<VirtualColumn>();
         for (CmisSelector sel : selectReferences) {
@@ -723,8 +679,14 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
                 if (fulltextMatchInfo.scoreExprParam != null) {
                     selectParams.add(fulltextMatchInfo.scoreExprParam);
                 }
-                key = sc.alias; // TODO
-                pd = null;
+                key = sc.alias;
+                PropertyDecimalDefinitionImpl scorePD = new PropertyDecimalDefinitionImpl();
+                scorePD.setId(key);
+                scorePD.setQueryName(key);
+                scorePD.setCardinality(Cardinality.SINGLE);
+                scorePD.setDisplayName("Score");
+                scorePD.setLocalName("score");
+                pd = scorePD;
             } else { // sc instanceof VirtualColumn
                 virtual.add((VirtualColumn) sc);
                 continue;
@@ -741,7 +703,7 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         }
 
         /*
-         * Order By.
+         * ORDER BY
          */
 
         List<String> orderbys = new LinkedList<String>();
@@ -798,15 +760,9 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         List<CmisSelector> addedSystemColumns = new ArrayList<CmisSelector>(2);
 
         for (String qual : allQualifiers) {
-            String alias = qual;
-            if (alias == null) {
-                for (Entry<String, String> en : query.getTypes().entrySet()) {
-                    if (en.getKey().equals(en.getValue())) {
-                        alias = en.getValue();
-                    }
-                }
-            }
-            TypeDefinition type = query.getTypeDefinitionFromQueryName(query.getTypeQueryName(alias));
+            TypeDefinition type = getTypeForQualifier(qual);
+
+            // additional references to cmis:objectId and cmis:objectTypeId
             for (String propertyId : Arrays.asList(PropertyIds.OBJECT_ID,
                     PropertyIds.OBJECT_TYPE_ID)) {
                 ColumnReference col = new ColumnReference(qual, propertyId);
@@ -856,6 +812,19 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
                 tablesByFragment.put(fragment, table);
             }
         }
+    }
+
+    protected TypeDefinition getTypeForQualifier(String qual) {
+        if (qual == null) {
+            for (Entry<String, String> en : query.getTypes().entrySet()) {
+                if (en.getKey().equals(en.getValue())) {
+                    qual = en.getValue();
+                    break;
+                }
+            }
+        }
+        return query.getTypeDefinitionFromQueryName(query.getTypeQueryName(qual));
+
     }
 
     /** Records and returns direct column if added. */
@@ -1030,25 +999,6 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         }
     }
 
-    // called from parser in select
-    public SelectedColumn referToScoreInSelect() {
-        if (hasScoreInSelect) {
-            throw new QueryMakerException("At most one SCORE() is allowed");
-        }
-        hasScoreInSelect = true;
-        SelectedColumn sc = new ScoreColumn(null);
-        columnAliases.put(sc.alias, sc); // alias may be redefined later
-
-        // make sure we have a default qualifier present
-        String qual = null;
-        Set<String> fqns = null; // columnsPerQual.get(qual);
-        if (fqns == null) {
-            // columnsPerQual.put(qual, fqns = new LinkedHashSet<String>());
-        }
-
-        return sc;
-    }
-
     // called from parser
     public String referToColumnInOrderBy(String c, String qual) {
         NamedColumn nc;
@@ -1203,286 +1153,302 @@ public class CMISQLQueryMaker extends AbstractClauseWalker implements
         return key;
     }
 
-    protected String getInFolderSql(String qual, String arg,
-            List<Serializable> params) {
-        String idCol = null; // referToColumnInWhere(PropertyIds.PARENT_ID,
-                             // qual);
-        params.add(arg);
-        return idCol + " = ?";
-    }
-
-    protected String getInTreeSql(String qual, String arg,
-            List<Serializable> params) {
-        String idCol = null; // referToColumnInWhere(PropertyIds.OBJECT_ID,
-                             // qual);
-        params.add(arg);
-        return dialect.getInTreeSql(idCol);
-    }
-
-    protected String getContainsSql(String qual, String arg,
-            List<Serializable> params) {
-        if (hasContains) {
-            throw new QueryMakerException("At most one CONTAINS() is allowed");
-        }
-        hasContains = true;
-        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
-        FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(arg,
-                Model.FULLTEXT_DEFAULT_INDEX, 1, mainColumn, model, database);
-        fulltextMatchInfo = info;
-        for (org.nuxeo.ecm.core.storage.sql.jdbc.db.Join join : info.joins) {
-            if (join.kind == org.nuxeo.ecm.core.storage.sql.jdbc.db.Join.LEFT) {
-
-            }
-        }
-        if (info.joins != null) {
-            ftJoins.addAll(info.joins);
-        }
-        String sql = info.whereExpr;
-        if (info.whereExprParam != null) {
-            params.add(info.whereExprParam);
-        }
-        return sql;
-    }
-
     private boolean sameString(String s1, String s2) {
         return s1 == null ? s2 == null : s1.equals(s2);
     }
 
-    @Override
-    public boolean walkNot(Tree opNode, Tree node) {
-        whereBuf.append("NOT ");
-        walkClause(node);
-        return false;
-    }
+    public class NuxeoQueryObject extends QueryObject {
 
-    @Override
-    public boolean walkAnd(Tree opNode, Tree leftNode, Tree rightNode) {
-        whereBuf.append("(");
-        walkClause(leftNode);
-        whereBuf.append(" AND ");
-        walkClause(rightNode);
-        whereBuf.append(")");
-        return false;
-    }
-
-    @Override
-    public boolean walkOr(Tree opNode, Tree leftNode, Tree rightNode) {
-        whereBuf.append("(");
-        walkClause(leftNode);
-        whereBuf.append(" OR ");
-        walkClause(rightNode);
-        whereBuf.append(")");
-        return false;
-    }
-
-    @Override
-    public boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" = ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" <> ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkGreaterThan(Tree opNode, Tree leftNode, Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" > ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkGreaterOrEquals(Tree opNode, Tree leftNode,
-            Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" >= ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkLessThan(Tree opNode, Tree leftNode, Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" < ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkLessOrEquals(Tree opNode, Tree leftNode, Tree rightNode) {
-        walkValue(leftNode);
-        whereBuf.append(" <= ");
-        walkValue(rightNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkIn(Tree opNode, Tree colNode, Tree listNode) {
-        walkValue(colNode);
-        whereBuf.append(" IN ");
-        walkValue(listNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkNotIn(Tree opNode, Tree colNode, Tree listNode) {
-        walkValue(colNode);
-        whereBuf.append(" NOT IN ");
-        walkValue(listNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
-        whereBuf.append(" ANY ");
-        walkValue(colNode);
-        whereBuf.append(" IN ");
-        walkValue(listNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
-        whereBuf.append(" ANY ");
-        walkValue(colNode);
-        whereBuf.append(" NOT IN ");
-        walkValue(listNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
-        walkValue(literalNode);
-        whereBuf.append(" = ANY ");
-        walkValue(colNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkIsNull(Tree opNode, Tree colNode) {
-        walkValue(colNode);
-        whereBuf.append(" IS NULL");
-        return false;
-    }
-
-    @Override
-    public boolean walkIsNotNull(Tree opNode, Tree colNode) {
-        walkValue(colNode);
-        whereBuf.append(" IS NOT NULL");
-        return false;
-    }
-
-    @Override
-    public boolean walkLike(Tree opNode, Tree colNode, Tree stringNode) {
-        walkValue(colNode);
-        whereBuf.append(" LIKE ");
-        walkValue(stringNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkNotLike(Tree opNode, Tree colNode, Tree stringNode) {
-        walkValue(colNode);
-        whereBuf.append(" NOT LIKE ");
-        walkValue(stringNode);
-        return false;
-    }
-
-    @Override
-    public boolean walkContains(Tree opNode, Tree colNode, Tree queryNode) {
-        whereBuf.append("CONTAINS(");
-        walkValue(colNode);
-        whereBuf.append(", ");
-        walkValue(queryNode);
-        whereBuf.append(")");
-        return false;
-    }
-
-    @Override
-    public boolean walkInFolder(Tree opNode, Tree colNode, Tree paramNode) {
-        whereBuf.append("IN_FOLDER(");
-        walkValue(colNode);
-        whereBuf.append(", ");
-        walkValue(paramNode);
-        whereBuf.append(")");
-        return false;
-    }
-
-    @Override
-    public boolean walkInTree(Tree opNode, Tree colNode, Tree paramNode) {
-        whereBuf.append("IN_TREE(");
-        walkValue(colNode);
-        whereBuf.append(", ");
-        walkValue(paramNode);
-        whereBuf.append(")");
-        return false;
-    }
-
-    @Override
-    public Object walkBoolean(Tree node) {
-        String s = node.getText();
-        whereBuf.append("?");
-        whereBufParams.add(Boolean.valueOf(s));
-        return null;
-    }
-
-    @Override
-    public Object walkNumber(Tree node) {
-        String s = node.getText();
-        Number n;
-        if (s.contains(".") || s.contains("e") || s.contains("E")) {
-            n = Double.valueOf(s);
-        } else {
-            n = Long.valueOf(s);
+        public NuxeoQueryObject(TypeManager tm, QueryConditionProcessor wp) {
+            super(tm, wp);
         }
-        whereBuf.append("?");
-        whereBufParams.add(n);
-        return null;
+
+        @Override
+        public void resolveTypes() {
+            super.resolveTypes();
+
+            // now resolve column selectors to actual database columns
+            for (CmisSelector sel : getSelectReferences()) {
+                recordCmisSelector(sel, false);
+            }
+            for (SortSpec spec : getOrderBys()) {
+                recordCmisSelector(spec.getSelector(), false);
+            }
+            for (CmisSelector sel : getWhereReferences()) {
+                recordCmisSelector(sel, true);
+            }
+        }
+
+        @Override
+        public void processWhereClause(Tree node) {
+            whereNode = node == null ? null : node.getChild(0);
+        }
     }
 
-    @Override
-    public Object walkString(Tree node) {
-        String s = node.getText();
-        s = s.substring(1, s.length() - 1);
-        s = s.replace("''", "'"); // unescape quotes
-        whereBuf.append("?");
-        whereBufParams.add(s);
-        return null;
-    }
+    /**
+     * Walker of the WHERE clause that generates final SQL.
+     */
+    public class GeneratingWalker extends AbstractPredicateWalker {
 
-    @Override
-    public Object walkTimestamp(Tree node) {
-        String s = node.getText();
-        s = s.substring(s.indexOf('\'') + 1, s.length() - 1);
-        whereBuf.append("?");
-        whereBufParams.add(CalendarHelper.fromString(s));
-        return null;
-    }
+        public StringBuilder whereBuf = new StringBuilder();
 
-    @Override
-    public Object walkInList(Tree node) {
-        throw new UnsupportedOperationException();
-    }
+        public LinkedList<Serializable> whereBufParams = new LinkedList<Serializable>();
 
-    @Override
-    public Object walkCol(Tree node) {
-        int token = ((Tree) node).getTokenStartIndex();
-        CmisSelector sel = query.getColumnReference(Integer.valueOf(token));
-        if (sel instanceof ColumnReference) {
-            DirectColumn dc = (DirectColumn) sel.getInfo();
+        public boolean hasContains;
+
+        /** joins added by fulltext match */
+        public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join>();
+
+        @Override
+        public boolean walkNot(Tree opNode, Tree node) {
+            whereBuf.append("NOT ");
+            walkPredicate(node);
+            return false;
+        }
+
+        @Override
+        public boolean walkAnd(Tree opNode, Tree leftNode, Tree rightNode) {
+            whereBuf.append("(");
+            walkPredicate(leftNode);
+            whereBuf.append(" AND ");
+            walkPredicate(rightNode);
+            whereBuf.append(")");
+            return false;
+        }
+
+        @Override
+        public boolean walkOr(Tree opNode, Tree leftNode, Tree rightNode) {
+            whereBuf.append("(");
+            walkPredicate(leftNode);
+            whereBuf.append(" OR ");
+            walkPredicate(rightNode);
+            whereBuf.append(")");
+            return false;
+        }
+
+        @Override
+        public boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" = ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" <> ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkGreaterThan(Tree opNode, Tree leftNode,
+                Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" > ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkGreaterOrEquals(Tree opNode, Tree leftNode,
+                Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" >= ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkLessThan(Tree opNode, Tree leftNode, Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" < ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkLessOrEquals(Tree opNode, Tree leftNode,
+                Tree rightNode) {
+            walkExpr(leftNode);
+            whereBuf.append(" <= ");
+            walkExpr(rightNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkIn(Tree opNode, Tree colNode, Tree listNode) {
+            walkExpr(colNode);
+            whereBuf.append(" IN ");
+            walkExpr(listNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkNotIn(Tree opNode, Tree colNode, Tree listNode) {
+            walkExpr(colNode);
+            whereBuf.append(" NOT IN ");
+            walkExpr(listNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
+            whereBuf.append(" ANY ");
+            walkExpr(colNode);
+            whereBuf.append(" IN ");
+            walkExpr(listNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
+            whereBuf.append(" ANY ");
+            walkExpr(colNode);
+            whereBuf.append(" NOT IN ");
+            walkExpr(listNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
+            walkExpr(literalNode);
+            whereBuf.append(" = ANY ");
+            walkExpr(colNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkIsNull(Tree opNode, Tree colNode) {
+            walkExpr(colNode);
+            whereBuf.append(" IS NULL");
+            return false;
+        }
+
+        @Override
+        public boolean walkIsNotNull(Tree opNode, Tree colNode) {
+            walkExpr(colNode);
+            whereBuf.append(" IS NOT NULL");
+            return false;
+        }
+
+        @Override
+        public boolean walkLike(Tree opNode, Tree colNode, Tree stringNode) {
+            walkExpr(colNode);
+            whereBuf.append(" LIKE ");
+            walkExpr(stringNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkNotLike(Tree opNode, Tree colNode, Tree stringNode) {
+            walkExpr(colNode);
+            whereBuf.append(" NOT LIKE ");
+            walkExpr(stringNode);
+            return false;
+        }
+
+        @Override
+        public boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
+            if (hasContains) {
+                throw new QueryMakerException(
+                        "At most one CONTAINS() is allowed");
+            }
+            hasContains = true;
+
+            String qual = qualNode == null ? null : qualNode.getText();
+            String statement = (String) super.walkString(queryNode);
+            DirectColumn dc = (DirectColumn) getSpecialColumn(
+                    PropertyIds.OBJECT_ID, qual);
+            FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
+                    statement, Model.FULLTEXT_DEFAULT_INDEX, 1, dc.column,
+                    model, database);
+            fulltextMatchInfo = info;
+            if (info.joins != null) {
+                ftJoins.addAll(info.joins);
+            }
+            whereBuf.append(info.whereExpr);
+            if (info.whereExprParam != null) {
+                whereBufParams.add(info.whereExprParam);
+            }
+            return false;
+        }
+
+        @Override
+        public boolean walkInFolder(Tree opNode, Tree qualNode, Tree paramNode) {
+            String qual = qualNode == null ? null : qualNode.getText();
+            // this is from the hierarchy table which is always present
+            DirectColumn dc = (DirectColumn) getSpecialColumn(
+                    PropertyIds.PARENT_ID, qual);
             whereBuf.append(dc.column.getFullQuotedName());
-        } else {
-            throw new QueryMakerException("Unknown column: " + sel.getName());
+            whereBuf.append(" = ?");
+            String id = (String) super.walkString(paramNode);
+            whereBufParams.add(id);
+            return false;
         }
-        return null;
-    }
 
+        @Override
+        public boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
+            String qual = qualNode == null ? null : qualNode.getText();
+            DirectColumn dc = (DirectColumn) getSpecialColumn(
+                    PropertyIds.OBJECT_ID, qual);
+            String sql = dialect.getInTreeSql(dc.column.getFullQuotedName());
+            String id = (String) super.walkString(paramNode);
+            whereBuf.append(sql);
+            whereBufParams.add(id);
+            return false;
+        }
+
+        @Override
+        public Object walkList(Tree node) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object walkBoolean(Tree node) {
+            Serializable value = (Serializable) super.walkBoolean(node);
+            whereBuf.append("?");
+            whereBufParams.add(value);
+            return null;
+        }
+
+        @Override
+        public Object walkNumber(Tree node) {
+            Serializable value = (Serializable) super.walkNumber(node);
+            whereBuf.append("?");
+            whereBufParams.add(value);
+            return null;
+        }
+
+        @Override
+        public Object walkString(Tree node) {
+            Serializable value = (Serializable) super.walkString(node);
+            whereBuf.append("?");
+            whereBufParams.add(value);
+            return null;
+        }
+
+        @Override
+        public Object walkTimestamp(Tree node) {
+            Serializable value = (Serializable) super.walkTimestamp(node);
+            whereBuf.append("?");
+            whereBufParams.add(value);
+            return null;
+        }
+
+        @Override
+        public Object walkCol(Tree node) {
+            int token = ((Tree) node).getTokenStartIndex();
+            CmisSelector sel = query.getColumnReference(Integer.valueOf(token));
+            if (sel instanceof ColumnReference) {
+                DirectColumn dc = (DirectColumn) sel.getInfo();
+                whereBuf.append(dc.column.getFullQuotedName());
+            } else {
+                throw new QueryMakerException("Unknown column: "
+                        + sel.getName());
+            }
+            return null;
+        }
+    }
 }

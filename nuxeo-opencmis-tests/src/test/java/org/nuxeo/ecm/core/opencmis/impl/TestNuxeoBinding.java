@@ -158,8 +158,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 null, null, null, null);
     }
 
+    protected ObjectList query(String statement) {
+        return discService.query(repositoryId, statement, null, null, null,
+                null, null, null, null);
+    }
+
+    protected static Object getValue(ObjectData data, String key) {
+        return data.getProperties().getProperties().get(key).getFirstValue();
+    }
+
     protected static String getString(ObjectData data, String key) {
-        return (String) data.getProperties().getProperties().get(key).getFirstValue();
+        return (String) getValue(data, key);
     }
 
     @Test
@@ -636,28 +645,119 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQueryBasic() throws Exception {
+        String statement;
+        ObjectList res;
+
+        statement = "SELECT cmis:objectId, cmis:name" //
+                + " FROM File"; // no WHERE clause
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT cmis:objectId, cmis:name" //
+                + " FROM File" //
+                + " WHERE cmis:name <> 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryOrderBy() throws Exception {
         String statement;
         ObjectList res;
         ObjectData data;
 
         statement = "SELECT cmis:objectId, cmis:name" //
                 + " FROM File" //
-                + " WHERE cmis:name <> 'testfile1_Title'" //
                 + " ORDER BY cmis:name";
-        res = discService.query(repositoryId, statement, null, null, null,
-                null, null, null, null);
-        assertEquals(2, res.getNumItems().intValue());
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
         data = res.getObjects().get(0);
-        assertEquals("testfile2_Title", getString(data, PropertyIds.NAME));
+        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
 
         // now change order
-        statement += " DESC";
-        res = discService.query(repositoryId, statement, null, null, null,
-                null, null, null, null);
-        assertEquals(2, res.getNumItems().intValue());
+        res = query(statement + " DESC");
+        assertEquals(3, res.getNumItems().intValue());
         data = res.getObjects().get(0);
         assertEquals("testfile4_Title", getString(data, PropertyIds.NAME));
+    }
+
+    @Test
+    public void testQueryInFolder() throws Exception {
+        ObjectData f1 = getObjectByPath("/testfolder1");
+        String statementPattern = "SELECT cmis:name FROM File" //
+                + " WHERE IN_FOLDER('%s')" //
+                + " ORDER BY cmis:name";
+        String statement = String.format(statementPattern, f1.getId());
+        ObjectList res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+        assertEquals("testfile1_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+        assertEquals("testfile2_Title",
+                getString(res.getObjects().get(1), PropertyIds.NAME));
+
+        // missing/illegal ID
+        statement = String.format(statementPattern, "nosuchid");
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryInTree() throws Exception {
+        ObjectList res;
+        String statement;
+
+        ObjectData f2 = getObjectByPath("/testfolder2");
+        String statementPattern = "SELECT cmis:name FROM File" //
+                + " WHERE IN_TREE('%s')";
+
+        statement = String.format(statementPattern, f2.getId());
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile4_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        // missing/illegal ID
+        statement = String.format(statementPattern, "nosuchid");
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryContains() throws Exception {
+        ObjectList res;
+        String statement;
+
+        statement = "SELECT cmis:name FROM File" //
+                + " WHERE CONTAINS('testfile1_Title')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile1_Title",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+    }
+
+    @Test
+    public void testQueryScore() throws Exception {
+        ObjectList res;
+        String statement;
+        ObjectData data;
+
+        statement = "SELECT cmis:name, SCORE() FROM File" //
+                + " WHERE CONTAINS('testfile1_Title')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertNotNull(getValue(data, "SEARCH_SCORE")); // name from spec
+
+        // using an alias for the score
+        statement = "SELECT cmis:name, SCORE() AS priority FROM File" //
+                + " WHERE CONTAINS('testfile1_Title')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertNotNull(getValue(data, "priority"));
     }
 
 }
