@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="default"
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      <repository name="default">
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">webp:content</field>
+          <field type="largetext">webc:welcomeText</field>
+          <field type="largetext">comment:comment</field>
+          <field type="largetext">post</field>
+          <field type="largetext">mail:mail</field>
+        </schema>
+        <indexing>
+          <fulltext analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
+        </indexing>
+      </repository>
+    </repository>
+  </extension>
+</component>
