@@ -241,7 +241,7 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.LAST_MODIFIED_BY, "Last Modified By",
                 PropertyType.STRING, Cardinality.SINGLE, Updatability.READONLY,
-                false, true, true));
+                false, true, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date",
                 PropertyType.DATETIME, Cardinality.SINGLE,
@@ -286,7 +286,7 @@ public class NuxeoTypeHelper {
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.VERSION_SERIES_ID, "Version Series ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
-                false, true, true));
+                false, true, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
                 "Is Version Series Checked Out", PropertyType.BOOLEAN,

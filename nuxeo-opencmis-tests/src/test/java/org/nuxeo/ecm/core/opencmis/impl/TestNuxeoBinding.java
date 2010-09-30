@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +64,7 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.DiscoveryService;
@@ -648,6 +650,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testQueryBasic() throws Exception {
         String statement;
         ObjectList res;
+        ObjectData data;
 
         statement = "SELECT cmis:objectId, cmis:name" //
                 + " FROM File"; // no WHERE clause
@@ -659,6 +662,77 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " WHERE cmis:name <> 'testfile1_Title'";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
+
+        // STAR
+        statement = "SELECT * FROM cmis:document";
+        res = query(statement);
+        assertEquals(4, res.getNumItems().intValue());
+        statement = "SELECT * FROM cmis:folder";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        statement = "SELECT cmis:objectId, dc:description" //
+                + " FROM File" //
+                + " WHERE dc:title = 'testfile1_Title'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        statement = "SELECT cmis:objectId, dc:description" //
+                + " FROM File" //
+                + " WHERE dc:title = 'testfile1_Title'"
+                + " AND dc:description <> 'argh'"
+                + " AND dc:coverage <> 'zzzzz'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // spec says names are case-insensitive
+        // statement = "SELECT CMIS:OBJECTid, DC:DESCRIPTion" //
+        // + " FROM CMIS:DOCUMent" //
+        // + " WHERE DC:TItle = 'testfile1_Title'";
+        // res = query(statement);
+        // assertEquals(1, res.getNumItems().intValue());
+
+        // IN
+        // statement = "SELECT cmis:objectId" //
+        // + " FROM cmis:document" //
+        // + " WHERE dc:title IN ('testfile1_Title', 'xyz')";
+        // res = query(statement);
+        // assertEquals(1, res.getNumItems().intValue());
+
+        if (Boolean.TRUE.booleanValue())
+            return;
+
+        // boolean
+        statement = "SELECT * FROM MyDocType WHERE my:boolean = true";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT * FROM MyDocType WHERE my:boolean <> FALSE";
+        assertEquals(1, res.getNumItems().intValue());
+
+        // decimal
+        statement = "SELECT * FROM MyDocType WHERE my:double = 123.456";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT * FROM MyDocType WHERE my:double <> 123";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT * FROM MyDocType";
+        assertEquals(1, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertTrue(getValue(data, "my:double") instanceof BigDecimal);
+        assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
+
+        // datetime
+        statement = "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP '1999-09-09T01:01:01Z'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        try {
+            statement = "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'";
+            res = query(statement);
+            fail("Should be invalid Timestamp");
+        } catch (CmisRuntimeException e) {
+            // ok
+        }
     }
 
     @Test

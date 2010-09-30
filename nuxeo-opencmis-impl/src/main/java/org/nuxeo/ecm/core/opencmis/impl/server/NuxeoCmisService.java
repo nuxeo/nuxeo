@@ -818,6 +818,9 @@ public class NuxeoCmisService extends AbstractCmisService {
                 for (Entry<String, Serializable> en : map.entrySet()) {
                     String queryName = en.getKey();
                     PropertyDefinition<?> pd = typeInfo.get(queryName);
+                    if (pd == null) {
+                        throw new NullPointerException("Cannot get " + queryName);
+                    }
                     PropertyData<?> p = createPropertyData(pd, en.getValue(),
                             queryName);
                     props.put(queryName, p);
