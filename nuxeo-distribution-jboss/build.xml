@@ -5,7 +5,6 @@
   <property name="mvn.opts" value="" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="nuxeo.ear.root" value="../nuxeo-distribution-dm/" />
   <!--the default pom file to use for jboss-patch  -->
   <property name="pom.file" value="jboss-patch/pom.xml" />
 
@@ -73,25 +72,6 @@
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="patch-2parts" description="Package Nuxeo-EP in two parts">
-    <antcall target="patch">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-  </target>
-  <target name="patch-3parts" description="Package Nuxeo-EP in three parts">
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-    <antcall target="patch">
-      <param name="jboss.home" value="${jboss3.dir}" />
-    </antcall>
-  </target>
 
   <!-- Deploy Nuxeo libraries into JBoss -->
   <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
@@ -99,6 +79,13 @@
     <delete>
       <fileset dir="${jboss.lib}">
         <include name="nuxeo-*.jar" />
+        <include name="derby-*.jar" />
+        <include name="h2-*.jar" />
+        <include name="mysql-connector*.jar" />
+        <include name="postgresql*.jar" />
+        <include name="lucene*.jar" />
+        <include name="freemarker*.jar" />
+        <include name="commons-lang*.jar" />
       </fileset>
     </delete>
   </target>
@@ -106,7 +93,7 @@
     <echo message="Copying Nuxeo libs to ${jboss.lib}" />
     <exec executable="mvn" failonerror="true">
       <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="-N" />
@@ -119,7 +106,7 @@
       <arg value="/c" />
       <arg value="mvn.bat" />
       <arg value="-f" />
-      <arg value="${nuxeo.ear.root}/pom.xml" />
+      <arg value="pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="-N" />
