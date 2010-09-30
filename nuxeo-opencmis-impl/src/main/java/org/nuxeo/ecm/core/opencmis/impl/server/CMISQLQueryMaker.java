@@ -541,7 +541,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Table table = getTable(
                         database.getTable(model.MISC_TABLE_NAME), qual);
                 Column column = table.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
-                recordColumn(qual, column);
+                recordColumnFragment(qual, column);
             }
         }
 
@@ -629,7 +629,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             Column column = getColumn(col);
             if (column != null) {
                 col.setInfo(column);
-                recordColumn(qual, column);
+                recordColumnFragment(qual, column);
                 String sql = column.getFullQuotedName();
                 SqlColumn c = new SqlColumn(sql, column, key);
                 realColumns.add(c);
@@ -637,6 +637,11 @@ public class CMISQLQueryMaker implements QueryMaker {
                     TypeDefinition type = col.getTypeDefinition();
                     PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
                             col.getPropertyId());
+                    if (pd.getCardinality() == Cardinality.MULTI) {
+                        throw new QueryMakerException(
+                                "Cannot SELECT on multi-value column: "
+                                        + col.getPropertyQueryName());
+                    }
                     typeInfo.put(key, pd);
                 }
             } else {
@@ -666,6 +671,12 @@ public class CMISQLQueryMaker implements QueryMaker {
             return;
         }
         ColumnReference col = (ColumnReference) sel;
+        TypeDefinition type = col.getTypeDefinition();
+        PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
+                col.getPropertyId());
+        boolean multi = pd.getCardinality() == Cardinality.MULTI;
+
+        // fetch column and associate it to the selector
         Column column = getColumn(col);
         if (column == null) {
             throw new QueryMakerException("Cannot use column in WHERE clause: "
@@ -673,13 +684,17 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
         col.setInfo(column);
         String qual = col.getTypeQueryName();
-        recordColumn(qual, column);
+
+        // record as a needed fragment
+        if (!multi) {
+            recordColumnFragment(qual, column);
+        }
     }
 
     /**
-     * Records a database column (to know all fragments to request).
+     * Records a database column's fragment (to know what to join).
      */
-    protected void recordColumn(String qual, Column column) {
+    protected void recordColumnFragment(String qual, Column column) {
         Table table = column.getTable();
         String fragment = table.getRealTable().getName();
         Map<String, Table> tablesByFragment = allTables.get(qual);
@@ -701,8 +716,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             column = getSystemColumn(qual, id);
         } else {
             ModelProperty propertyInfo = model.getPropertyInfo(id);
+            boolean multi = propertyInfo.propertyType.isArray();
             Table table = database.getTable(propertyInfo.fragmentName);
-            column = getTable(table, qual).getColumn(propertyInfo.fragmentKey);
+            String key = multi ? model.COLL_TABLE_VALUE_KEY
+                    : propertyInfo.fragmentKey;
+            column = getTable(table, qual).getColumn(key);
         }
         return column;
     }
@@ -1005,44 +1023,53 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
-            throw new UnsupportedOperationException();
-            // String c = $column_name.start.getText();
-            // String mqual = "nxm" + multiref++;
-            // $col = ;
-            // $qual = $qualifier.qual; // qualifier in original query, for join
-            // with hier
-            // $mqual = mqual; // qualifier generated internally for subselect
-            // table
-            //
-            // Column col = $mvc.col;
-            // String qual = $mvc.qual;
-            // String mqual = $mvc.mqual;
-            // String realTableName =
-            // col.getTable().getRealTable().getQuotedName();
-            // String tableAlias = col.getTable().getQuotedName();
-            // Table hierTable = queryMaker.getTable(queryMaker.hierTable,
-            // qual);
-            // String hierMainId =
-            // hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
-            // String multiMainId =
-            // col.getTable().getColumn(Model.MAIN_KEY).getFullQuotedName();
-            // $sql = String.format("\%sEXISTS (SELECT 1 FROM \%s \%s WHERE"
-            // + " \%s = \%s AND \%s \%s \%s)",
-            // neg ? "NOT " : "",
-            // realTableName, tableAlias,
-            // hierMainId, multiMainId,
-            // col.getFullQuotedName(), op, $bin_arg.sql);
-            // $params = $bin_arg.params;
+            walkAny(colNode, "IN", listNode);
+            return false;
         }
 
         @Override
         public boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
-            throw new UnsupportedOperationException();
+            walkAny(colNode, "NOT IN", listNode);
+            return false;
         }
 
         @Override
         public boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
-            throw new UnsupportedOperationException();
+            // note that argument order is reversed
+            walkAny(colNode, "=", literalNode);
+            return false;
+        }
+
+        protected void walkAny(Tree colNode, String op, Tree exprNode) {
+            int token = ((Tree) colNode).getTokenStartIndex();
+            ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
+            TypeDefinition type = col.getTypeDefinition();
+            PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
+                    col.getPropertyId());
+            if (pd.getCardinality() != Cardinality.MULTI) {
+                throw new QueryMakerException("Cannot use " + op
+                        + " ANY with single-valued property: "
+                        + col.getPropertyQueryName());
+            }
+            Column column = (Column) col.getInfo();
+            String qual = col.getTypeQueryName();
+            Column hierMainColumn = getTable(hierTable, qual).getColumn(
+                    model.MAIN_KEY);
+            Column multiMainColumn = column.getTable().getColumn(model.MAIN_KEY);
+
+            whereBuf.append("EXISTS (SELECT 1 FROM ");
+            whereBuf.append(column.getTable().getQuotedName());
+            whereBuf.append(" WHERE ");
+            whereBuf.append(hierMainColumn.getFullQuotedName());
+            whereBuf.append(" = ");
+            whereBuf.append(multiMainColumn.getFullQuotedName());
+            whereBuf.append(" AND ");
+            whereBuf.append(column.getFullQuotedName());
+            whereBuf.append(" ");
+            whereBuf.append(op);
+            whereBuf.append(" ");
+            walkExpr(exprNode);
+            whereBuf.append(")");
         }
 
         @Override
@@ -1164,8 +1191,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column column = (Column) sel.getInfo();
                 whereBuf.append(column.getFullQuotedName());
             } else {
-                throw new QueryMakerException("Unknown column: "
-                        + sel.getName());
+                throw new QueryMakerException(
+                        "Cannot use column in WHERE clause: " + sel.getName());
             }
             return null;
         }

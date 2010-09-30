@@ -808,6 +808,39 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryAny() throws Exception {
+        String statement;
+        ObjectList res;
+
+        // ... = ANY ...
+        statement = "SELECT cmis:name FROM File WHERE 'pete' = ANY dc:contributors";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:name FROM File WHERE 'bob' = ANY dc:contributors";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // ANY ... IN ...
+        statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors IN ('pete')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors IN ('pete', 'bob')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // ANY ... NOT IN ...
+        statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('john')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete', 'bob')";
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testQueryOrderBy() throws Exception {
         String statement;
         ObjectList res;
