@@ -131,7 +131,7 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
