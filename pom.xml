@@ -22,11 +22,9 @@
     <module>nuxeo-chemistry-impl</module>
     <module>nuxeo-chemistry-bindings</module>
     <module>nuxeo-chemistry-tests</module>
-    <!--
     <module>nuxeo-opencmis-impl</module>
     <module>nuxeo-opencmis-bindings</module>
     <module>nuxeo-opencmis-tests</module>
-    -->
   </modules>
 
   <properties>
