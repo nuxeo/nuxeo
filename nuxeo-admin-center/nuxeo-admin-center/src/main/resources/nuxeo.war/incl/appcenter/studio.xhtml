@@ -6,19 +6,19 @@
 
   <a4j:outputPanel id="connectAppListing">
     <div class="actionBar">
-    <span><h:outputText value="#{messages['label.studio.update.title.devmode']}"/>: <a class="connectLink" target="_blank" href="http://doc.nuxeo.com/display/Studio/Nuxeo+Studio">Nuxeo Studio</a></span>
-    
-    <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
-           <div>
-           <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
-           <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
-      </div>
-    </h:panelGroup>
-
+      <span><h:outputText value="#{messages['label.studio.update.title.devmode']}"/>: <a class="connectLink" target="_blank" href="http://doc.nuxeo.com/display/Studio/Nuxeo+Studio">Nuxeo Studio</a></span>
+      
+      <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
+        <div>
+          <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
+          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+        </div>
+      </h:panelGroup>
     </div>
+    
     <h:form>
-         <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
-     </h:form>
+      <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
+    </h:form>
 
     <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
        <h:form>

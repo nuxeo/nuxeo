@@ -1029,6 +1029,12 @@
       <selector path=".adminViewContent td">
         <vertical-align>top</vertical-align>
       </selector>
+      <selector path=".adminViewContent h2">
+        <padding>20px 0 10px</padding>
+      </selector>
+      <selector path=".adminViewContent p">
+        <padding>5px 0</padding>
+      </selector>
       <selector path=".adminTabsColumn">
         <background-color>#dbe0e4</background-color>
         <padding>0</padding>
@@ -1168,6 +1174,40 @@
       <selector path=".boldLabel">
         <font-weight>bold</font-weight>
         <color>#777777</color>
+      </selector>
+      <selector path=".hostInfos pre">
+        <border>1px solid #eee</border>
+        <font preset="default (Galaxy Admin fonts)"/>
+        <padding>10px</padding>
+      </selector>
+      <selector path=".repoInfos .dataOutput th">
+        <text-align>left</text-align>
+        <padding>0 0 5px 7px</padding>
+        <font-size>12px</font-size>
+      </selector>
+      <selector path=".setupPanel .dataOutput th">
+        <text-align>left</text-align>
+        <padding>0 0 5px</padding>
+        <font-size>12px</font-size>
+        <border-bottom>1px solid #c7c7c7</border-bottom>
+      </selector>
+      <selector path=".setupPanel .dataOutput td">
+        <padding>0 0 5px 7px</padding>
+        <border>none</border>
+      </selector>
+      <selector path=".setupPanel .dataOutput td.wideLabel">
+        <width>340px</width>
+      </selector>
+      <selector path=".setupPanel .dataOutput td table">
+        <margin-top>10px</margin-top>
+      </selector>
+      <selector path=".setupPanel .actionBar">
+        <background-color>transparent</background-color>
+      </selector>
+      <selector path=".warningLabel">
+        <border>1px solid #ffc76e</border>
+        <background preset="warning (Galaxy Admin backgrounds)"/>
+        <padding>5px 10px 5px 23px</padding>
       </selector>
     </style>
     <!-- General -->

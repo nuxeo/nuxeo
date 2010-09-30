@@ -8,17 +8,18 @@
 
  <h2><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoserverinfo']}" /></h2>
 
- <table>
+ <table class="dataOutput">
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoName']}" /></td>
       <td><h:outputText value="#{nuxeoServerInfo.platformName}" /></td>
-
+ </tr>
+ <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoVersion']}" /></td>
       <td><h:outputText value="#{nuxeoServerInfo.platformVersion}" /></td>
  </tr>
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.warnings']}" /></td>
-      <td colspan="3">
+      <td>
 
        <c:if test="#{nuxeoServerInfo.hasWarnings()}">
         <table>
@@ -37,8 +38,8 @@
  </tr>
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.bundles']}" /></td>
-      <td colspan="3">
-        <div style="overflow:auto;height:300px;width:400px">
+      <td>
+        <div>
         <table>
           <ui:repeat value="#{nuxeoServerInfo.bundleInfos}" var="bi">
             <tr>

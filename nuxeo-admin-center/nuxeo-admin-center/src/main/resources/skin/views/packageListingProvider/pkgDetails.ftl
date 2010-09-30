@@ -9,10 +9,23 @@
     </#if>
   </span>
   <span class="packageInfo">
-    <p><span class="packageLabel">Description:</span><span class="packageField"> ${pkg.description} </span></p>
-    <p><span class="packageLabel">Home Page:</span><span class="packageField"> ${pkg.homePage} </span></p>
-    <!--<p><span class="packageLabel">Comments:</span><span class="packageField"> to be done ... </span></p>-->
-    <p><span class="packageLabel">Download count:</span><span class="packageField"> ${pkg.downloadsCount} </span></p>
+    <table>
+      <tr>
+        <td class="packageLabel">Description :</td>
+        <td class="packageField"> ${pkg.description} </td>
+      </tr>
+      <tr>
+        <td class="packageLabel">Home Page :</td>
+        <td class="packageField"> ${pkg.homePage} </td>
+      </tr>
+      <!--<tr>
+        <td class="packageLabel">Comments :</td>
+        <td class="packageField"> to be done ... </td>
+      </tr>-->
+      <tr>
+        <td class="packageLabel">Download count :</td>
+        <td class="packageField"> ${pkg.downloadsCount} </td>
+      </tr>
   </span>
   <div style="clear:both;"></div>
 

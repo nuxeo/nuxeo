@@ -81,7 +81,6 @@ table {
   }
 
 .packageInfo {
-  float:left;
   padding:5px 0;
   }
 
@@ -119,11 +118,11 @@ table {
 }
 
 .row_odd {
-/*  background-color:#CCCCCC; */
+ background-color:#f6f6f6;
 }
 
 .row_even {
-  background-color:#EEEEFF;
+  background-color:#eeeeff;
 }
 
 .opentd {
