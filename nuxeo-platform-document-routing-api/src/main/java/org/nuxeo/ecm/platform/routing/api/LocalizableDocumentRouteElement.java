@@ -23,12 +23,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Wraps a documentElement adding informations about the level
- * where the document is inside the container documentRote 
- * 
+ * where the document is inside the container documentRoute
+ *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
  */
 public class LocalizableDocumentRouteElement {
-    
+
     DocumentRouteElement element;
 
     int depth;
@@ -37,7 +37,7 @@ public class LocalizableDocumentRouteElement {
         this.element = element;
         this.depth = depth;
     }
-    
+
     public DocumentRouteElement getElement() {
         return element;
     }
@@ -53,7 +53,7 @@ public class LocalizableDocumentRouteElement {
     public void setDepth(int depth) {
         this.depth = depth;
     }
-    
+
     public DocumentModel getDocument(){
         return element.getDocument();
     }
