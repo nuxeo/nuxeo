@@ -336,6 +336,17 @@
 	<td>link=testFolder1</td>
 	<td></td>
 </tr>
+<!-- click twice on 'modified' to make sure advancedSearchText is the first doc in table -->
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
+	<td></td>
+</tr>
 <tr>
 	<td>assertText</td>
 	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[2]/td[3]//span</td>
