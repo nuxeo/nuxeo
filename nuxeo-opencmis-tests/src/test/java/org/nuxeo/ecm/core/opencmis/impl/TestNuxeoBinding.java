@@ -28,10 +28,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -73,6 +76,7 @@ import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
+import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -365,6 +369,50 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testCreateDocumentMyDocType() {
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        props.add(factory.createPropertyIdData(PropertyIds.NAME, "mydoc"));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
+                "MyDocType"));
+        props.add(factory.createPropertyStringData("my:string", "abc"));
+        props.add(factory.createPropertyBooleanData("my:boolean", Boolean.TRUE));
+        props.add(factory.createPropertyIntegerData("my:integer",
+                BigInteger.valueOf(123)));
+        props.add(factory.createPropertyIntegerData("my:long",
+                BigInteger.valueOf(123)));
+        props.add(factory.createPropertyDecimalData("my:double",
+                BigDecimal.valueOf(123.456)));
+        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4,
+                55);
+        props.add(factory.createPropertyDateTimeData("my:date", expectedDate));
+        Properties properties = factory.createPropertiesData(props);
+        String id = objService.createDocument(repositoryId, properties,
+                rootFolderId, null, null, null, null, null, null);
+        assertNotNull(id);
+        ObjectData data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("mydoc", getString(data, PropertyIds.NAME));
+        assertEquals("MyDocType", getString(data, PropertyIds.OBJECT_TYPE_ID));
+        assertEquals("abc", getString(data, "my:string"));
+        assertEquals(Boolean.TRUE, getValue(data, "my:boolean"));
+        assertEquals(BigInteger.valueOf(123), getValue(data, "my:integer"));
+        assertEquals(BigInteger.valueOf(123), getValue(data, "my:long"));
+        assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
+        GregorianCalendar date = (GregorianCalendar) getValue(data, "my:date");
+        if (!CalendarHelper.toString(expectedDate).equals(
+                CalendarHelper.toString(date))) {
+            // there may be a timezone difference if the database
+            // doesn't store timezones -> try with local timezone
+            TimeZone tz = TimeZone.getDefault();
+            GregorianCalendar localDate = Helper.getCalendar(2010, 9, 30, 16,
+                    4, 55, tz);
+            assertEquals(CalendarHelper.toString(localDate),
+                    CalendarHelper.toString(date));
+        }
+    }
+
+    @Test
     public void testCreateDocumentWithContentStream() throws Exception {
         // null filename passed on purpose, size ignored by Nuxeo
         ContentStream cs = new ContentStreamImpl(null, "text/plain",
@@ -650,7 +698,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testQueryBasic() throws Exception {
         String statement;
         ObjectList res;
-        ObjectData data;
 
         statement = "SELECT cmis:objectId, cmis:name" //
                 + " FROM File"; // no WHERE clause
@@ -698,37 +745,62 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " WHERE dc:title IN ('testfile1_Title', 'xyz')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+    }
 
-        if (Boolean.TRUE.booleanValue())
-            return;
+    @Test
+    public void testQueryPropertyTypes() throws Exception {
+        String statement;
+        ObjectList res;
 
-        // boolean
-        statement = "SELECT * FROM MyDocType WHERE my:boolean = true";
+        testCreateDocumentMyDocType();
+
+        // STAR
+        statement = "SELECT * FROM MyDocType";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT * FROM MyDocType WHERE my:boolean <> FALSE";
+
+        // boolean
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:string = 'abc'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:string <> 'def'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // boolean
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:boolean = true";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:boolean <> FALSE";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        // integer
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:integer = 123";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:integer <> 456";
+        res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
         // decimal
-        statement = "SELECT * FROM MyDocType WHERE my:double = 123.456";
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:double = 123.456";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT * FROM MyDocType WHERE my:double <> 123";
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:double <> 123";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT * FROM MyDocType";
-        assertEquals(1, res.getNumItems().intValue());
-        data = res.getObjects().get(0);
-        assertTrue(getValue(data, "my:double") instanceof BigDecimal);
-        assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
 
         // datetime
-        statement = "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP '1999-09-09T01:01:01Z'";
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date = TIMESTAMP '2010-09-30T16:04:55-02:00'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date <> TIMESTAMP '1999-09-09T01:01:01Z'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         try {
-            statement = "SELECT * FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'";
-            res = query(statement);
+            statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'";
+            query(statement);
             fail("Should be invalid Timestamp");
         } catch (CmisRuntimeException e) {
             // ok

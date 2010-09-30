@@ -8,3 +8,4 @@ Export-Package: org.nuxeo.ecm.core.opencmis.tests
 Eclipse-LazyStart: true
 Eclipse-ExtensibleAPI: true
 Require-Bundle: org.nuxeo.ecm.core.api;visibility:=reexport
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml

@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -62,15 +63,25 @@ public class Helper {
     /**
      * Gets a Calendar object.
      */
-    public static Calendar getCalendar(int year, int month, int day, int hours,
-            int minutes, int seconds) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+    public static GregorianCalendar getCalendar(int year, int month, int day,
+            int hours, int minutes, int seconds) {
+        TimeZone tz = TimeZone.getTimeZone("GMT-02:00"); // in the Atlantic
+        return getCalendar(year, month, day, hours, minutes, seconds, tz);
+    }
+
+    /**
+     * Gets a Calendar object with a specific timezone
+     */
+    public static GregorianCalendar getCalendar(int year, int month, int day,
+            int hours, int minutes, int seconds, TimeZone tz) {
+        GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance(tz);
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
         cal.set(Calendar.DAY_OF_MONTH, day);
         cal.set(Calendar.HOUR_OF_DAY, hours);
         cal.set(Calendar.MINUTE, minutes);
         cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal;
     }
 
