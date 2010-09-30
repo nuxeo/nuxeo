@@ -832,6 +832,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         data = res.getObjects().get(0);
         assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
         assertNotNull(getValue(data, "priority"));
+
+        // ORDER BY score
+        statement = "SELECT cmis:name, SCORE() importance FROM File" //
+                + " WHERE CONTAINS('testfile1_Title')" //
+                + " ORDER BY importance DESC";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        data = res.getObjects().get(0);
+        assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
+        assertNotNull(getValue(data, "importance"));
     }
 
 }

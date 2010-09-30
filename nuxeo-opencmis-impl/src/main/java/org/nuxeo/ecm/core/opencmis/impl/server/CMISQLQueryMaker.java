@@ -39,7 +39,6 @@ import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
-import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
 import org.apache.chemistry.opencmis.server.support.query.AbstractQueryConditionProcessor;
 import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
@@ -47,7 +46,6 @@ import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
 import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference.CmisQlFunction;
-import org.apache.chemistry.opencmis.server.support.query.QueryConditionProcessor;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.commons.logging.Log;
@@ -108,8 +106,6 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected QueryObject query;
 
-    protected Tree whereNode;
-
     public FulltextMatchInfo fulltextMatchInfo;
 
     /** Map of qualifier -> fragment -> table */
@@ -167,17 +163,6 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
-    public class NuxeoQueryObject extends QueryObject {
-        public NuxeoQueryObject(TypeManager tm, QueryConditionProcessor wp) {
-            super(tm, wp);
-        }
-
-        @Override
-        public void processWhereClause(Tree node) {
-            whereNode = node == null ? null : node.getChild(0);
-        }
-    }
-
     @Override
     public String getName() {
         return TYPE;
@@ -203,7 +188,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
 
-        query = new NuxeoQueryObject(service.repository.getTypeManager(), null);
+        query = new QueryObject(service.repository.getTypeManager(), null);
         CmisQueryWalker walker;
         try {
             walker = AbstractQueryConditionProcessor.getWalker(statement);
@@ -217,6 +202,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             throw new QueryMakerException("Cannot parse query: " + err);
         }
 
+        Tree whereNode = query.getWhereTree() == null ? null
+                : query.getWhereTree().getChild(0);
         if (whereNode != null) {
             AnalyzingWalker analyzer = new AnalyzingWalker();
             analyzer.walkPredicate(whereNode);
@@ -227,10 +214,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             recordSelectSelector(sel);
         }
         for (CmisSelector sel : query.getWhereReferences()) {
-            recordSelector(sel);
+            recordSelector(sel, false);
         }
         for (SortSpec spec : query.getOrderBys()) {
-            recordSelector(spec.getSelector());
+            recordSelector(spec.getSelector(), true);
         }
 
         boolean distinct = false; // TODO extension
@@ -491,12 +478,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (sel instanceof ColumnReference) {
                 Column column = (Column) sel.getInfo();
                 orderby = column.getFullQuotedName();
-                if (!spec.ascending) {
-                    orderby += " DESC";
-                }
             } else {
-                throw new UnsupportedOperationException(
-                        "Cannot ORDER BY SCORE() yet");
+                orderby = fulltextMatchInfo.scoreAlias;
+            }
+            if (!spec.ascending) {
+                orderby += " DESC";
             }
             orderbys.add(orderby);
         }
@@ -663,11 +649,20 @@ public class CMISQLQueryMaker implements QueryMaker {
      * Records a WHERE / ORDER BY selector, and associates it to a database
      * column.
      */
-    protected void recordSelector(CmisSelector sel) {
+    protected void recordSelector(CmisSelector sel, boolean inOrderBy) {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
-            throw new QueryMakerException(
-                    "Cannot use function in WHERE clause: " + fr.getFunction());
+            if (!inOrderBy) {
+                throw new QueryMakerException(
+                        "Cannot use function in WHERE clause: "
+                                + fr.getFunction());
+            }
+            // ORDER BY SCORE, nothing further to record
+            if (fulltextMatchInfo == null) {
+                throw new QueryMakerException(
+                        "Cannot use ORDER BY SCORE without CONTAINS");
+            }
+            return;
         }
         ColumnReference col = (ColumnReference) sel;
         Column column = getColumn(col);
@@ -1010,6 +1005,33 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
             throw new UnsupportedOperationException();
+            // String c = $column_name.start.getText();
+            // String mqual = "nxm" + multiref++;
+            // $col = ;
+            // $qual = $qualifier.qual; // qualifier in original query, for join
+            // with hier
+            // $mqual = mqual; // qualifier generated internally for subselect
+            // table
+            //
+            // Column col = $mvc.col;
+            // String qual = $mvc.qual;
+            // String mqual = $mvc.mqual;
+            // String realTableName =
+            // col.getTable().getRealTable().getQuotedName();
+            // String tableAlias = col.getTable().getQuotedName();
+            // Table hierTable = queryMaker.getTable(queryMaker.hierTable,
+            // qual);
+            // String hierMainId =
+            // hierTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
+            // String multiMainId =
+            // col.getTable().getColumn(Model.MAIN_KEY).getFullQuotedName();
+            // $sql = String.format("\%sEXISTS (SELECT 1 FROM \%s \%s WHERE"
+            // + " \%s = \%s AND \%s \%s \%s)",
+            // neg ? "NOT " : "",
+            // realTableName, tableAlias,
+            // hierMainId, multiMainId,
+            // col.getFullQuotedName(), op, $bin_arg.sql);
+            // $params = $bin_arg.params;
         }
 
         @Override
