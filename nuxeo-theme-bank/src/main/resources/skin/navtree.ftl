@@ -25,7 +25,7 @@
             data : {
                 type : "json",
                 opts : {
-                    url : "${Root.getPath()}/${bank}/json/tree"
+                    url : "${Root.getPath()}/json/tree"
                 }
             },
             callback : {

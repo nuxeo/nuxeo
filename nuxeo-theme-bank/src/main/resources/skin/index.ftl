@@ -5,8 +5,13 @@
     <title></title>
 </head>
 
-<frameset rows="35, *" frameborder="no">
+<frameset rows="35, *" frameborder="yes" border="1">
   <frame name="actionbar" src="${Root.getPath()}/actionbar">
-  <frame name="main" src="${Root.getPath()}/banks">
+
+  <frameset cols="15%, *" frameborder="yes" framespacing="10">
+    <frame name="navtree" src="${Root.getPath()}/navtree">
+    <frame name="main" src="${Root.getPath()}/banks/view">
+  </frameset>
 </frameset>
+
 </html>

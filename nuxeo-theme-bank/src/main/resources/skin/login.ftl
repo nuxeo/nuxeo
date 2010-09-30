@@ -6,7 +6,7 @@
 
   <@block name="content">
 
-<#if (Context.principal.isAnonymous())>
+<#if (!Context.principal)>
 
   <h1>Log in</h1>
   <form action="${Root.path}/@@login" method="POST">

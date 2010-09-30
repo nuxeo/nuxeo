@@ -105,9 +105,9 @@ public class Main extends ModuleRoot {
     }
 
     @GET
-    @Path("{bank}/navtree")
-    public Object getNavtreeView(@PathParam("bank") String bank) {
-        return getTemplate("navtree.ftl").arg("bank", bank);
+    @Path("navtree")
+    public Object getNavtreeView() {
+        return getTemplate("navtree.ftl");
     }
 
     @GET
@@ -411,31 +411,33 @@ public class Main extends ModuleRoot {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{bank}/json/tree")
-    public String getTree(@PathParam("bank") String bankName) {
+    @Path("json/tree")
+    public String getTree() {
         JSONArray tree = new JSONArray();
 
-        JSONObject bankNode = new JSONObject();
-        bankNode.put("state", "open");
+        for (String bankName : BankManager.getBankNames()) {
+            JSONObject bankNode = new JSONObject();
+            bankNode.put("state", "open");
 
-        JSONObject bankMap = new JSONObject();
-        bankMap.put("title", bankName);
+            JSONObject bankMap = new JSONObject();
+            bankMap.put("title", bankName);
 
-        JSONObject bankAttributes = new JSONObject();
-        bankAttributes.put("rel", "bank");
-        bankAttributes.put("path", String.format("/%s", bankName));
-        bankAttributes.put("id", BankUtils.getDomId(bankName));
-        bankNode.put("attributes", bankAttributes);
-        bankNode.put("data", bankMap);
+            JSONObject bankAttributes = new JSONObject();
+            bankAttributes.put("rel", "bank");
+            bankAttributes.put("path", String.format("/%s", bankName));
+            bankAttributes.put("id", BankUtils.getDomId(bankName));
+            bankNode.put("attributes", bankAttributes);
+            bankNode.put("data", bankMap);
 
-        JSONArray folderTypes = new JSONArray();
-        folderTypes.add(getNavTreeNode(bankName, "style"));
-        folderTypes.add(getNavTreeNode(bankName, "preset"));
-        folderTypes.add(getNavTreeNode(bankName, "image"));
-        folderTypes.add(getNavTreeNode(bankName, "skins"));
-        bankNode.put("children", folderTypes);
+            JSONArray folderTypes = new JSONArray();
+            folderTypes.add(getNavTreeNode(bankName, "style"));
+            folderTypes.add(getNavTreeNode(bankName, "preset"));
+            folderTypes.add(getNavTreeNode(bankName, "image"));
+            folderTypes.add(getNavTreeNode(bankName, "skins"));
+            bankNode.put("children", folderTypes);
 
-        tree.add(bankNode);
+            tree.add(bankNode);
+        }
         return tree.toString();
     }
 
