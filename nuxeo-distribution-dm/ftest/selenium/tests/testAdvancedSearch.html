@@ -338,48 +338,18 @@
 </tr>
 <!-- click twice on 'modified' to make sure advancedSearchText is the first doc in table -->
 <tr>
-	<td>storeEval</td>
-	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
-	<td>innerhtml</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${innerhtml}</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
 	<td></td>
 </tr>
 <tr>
-	<td>storeEval</td>
-	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
-	<td>innerhtml</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${innerhtml}</td>
-	<td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
 	<td>document_content:nxl_document_listing_ajax:listing_modification_date_header_sort</td>
-	<td></td>
-</tr>
-<tr>
-	<td>storeEval</td>
-	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
-	<td>innerhtml</td>
-</tr>
-<tr>
-	<td>echo</td>
-	<td>${innerhtml}</td>
 	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[2]/td[3]//span</td>
+	<td>//form[@id=&quot;document_content&quot;]//table/tbody/tr[1]/td[3]//span</td>
 	<td>advancedSearchTest</td>
 </tr>
 <tr>
