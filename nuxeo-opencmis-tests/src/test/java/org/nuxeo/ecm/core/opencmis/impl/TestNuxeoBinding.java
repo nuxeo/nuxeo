@@ -663,6 +663,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
 
+        // spec says names are case-insensitive
+        // statement = "SELECT CMIS:OBJECTid, DC:DESCRIPTion" //
+        // + " FROM FILE" //
+        // + " WHERE DC:TItle = 'testfile1_Title'";
+        // res = query(statement);
+        // assertEquals(1, res.getNumItems().intValue());
+
         // STAR
         statement = "SELECT * FROM cmis:document";
         res = query(statement);
@@ -685,19 +692,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
-        // spec says names are case-insensitive
-        // statement = "SELECT CMIS:OBJECTid, DC:DESCRIPTion" //
-        // + " FROM CMIS:DOCUMent" //
-        // + " WHERE DC:TItle = 'testfile1_Title'";
-        // res = query(statement);
-        // assertEquals(1, res.getNumItems().intValue());
-
         // IN
-        // statement = "SELECT cmis:objectId" //
-        // + " FROM cmis:document" //
-        // + " WHERE dc:title IN ('testfile1_Title', 'xyz')";
-        // res = query(statement);
-        // assertEquals(1, res.getNumItems().intValue());
+        statement = "SELECT cmis:objectId" //
+                + " FROM File" //
+                + " WHERE dc:title IN ('testfile1_Title', 'xyz')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
 
         if (Boolean.TRUE.booleanValue())
             return;

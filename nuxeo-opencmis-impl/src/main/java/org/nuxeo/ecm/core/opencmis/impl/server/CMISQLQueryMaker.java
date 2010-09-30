@@ -1089,7 +1089,16 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Object walkList(Tree node) {
-            throw new UnsupportedOperationException();
+            whereBuf.append("(");
+            for (int i = 0; i < node.getChildCount(); i++) {
+                if (i != 0) {
+                    whereBuf.append(", ");
+                }
+                Tree child = node.getChild(i);
+                walkExpr(child);
+            }
+            whereBuf.append(")");
+            return null;
         }
 
         @Override
