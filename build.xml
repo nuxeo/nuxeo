@@ -48,6 +48,9 @@
           description="Package Nuxeo-DM" />
   <target name="package-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
+      <arg value="-f" />
+      <arg value="./pom.xml" />
+      <arg value="clean" />
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm" />
@@ -58,6 +61,9 @@
     <exec executable="cmd" failonerror="true">
       <arg value="/c" />
       <arg value="mvn.bat" />
+      <arg value="-f" />
+      <arg value="pom.xml" />
+      <arg value="clean" />
       <arg value="package" />
       <arg value="-Dmaven.test.skip=true" />
       <arg value="-Pnuxeo-dm" />
@@ -96,7 +102,7 @@
   </target>
 
   <target name="copy"
-          depends="delete-ear,copy-ear,copy-lib"
+          depends="delete-ear,copy-ear,copy-lib,copy-resources"
           description="Replace ear and copy libs to jboss" />
   <target name="delete-ear" depends="setproperties">
     <delete dir="${jboss.nuxeo.ear}" failonerror="false" />
@@ -110,42 +116,24 @@
   <target name="copy-lib" description="Copy Nuxeo libs in jboss">
     <ant target="copy-lib" dir="nuxeo-distribution-jboss" />
   </target>
+  <target name="copy-resources" description="Copy Nuxeo libs in jboss">
+    <ant target="copy-resources" dir="nuxeo-distribution-resources" />
+  </target>
 
   <target name="choose-distrib" unless="distrib">
-    <antcall target="list-available-distributions" />
+    <target name="list-available-distributions">
+      <echo message="Available distributions are:" />
+      <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
+      <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
+      <echo message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
+      <echo message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
+      <echo message="tomcat               - build Tomcat distribution" />
+      <echo message="shell                - build Nuxeo Shell" />
+      <echo message="all-distributions    - build all available distributions" />
+    </target>
     <input message="Which distribution do you want to build?"
            validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
-           addproperty="profile" />
-    <condition property="backend-choosable">
-      <or>
-        <equals arg1="${profile}" arg2="nuxeo-ep" />
-        <equals arg1="${profile}" arg2="nuxeo-dm" />
-        <equals arg1="${profile}" arg2="jboss" />
-        <equals arg1="${profile}" arg2="jetty" />
-        <equals arg1="${profile}" arg2="shell" />
-        <equals arg1="${profile}" arg2="tomcat" />
-        <equals arg1="${profile}" arg2="all-distributions" />
-      </or>
-    </condition>
-    <antcall target="choose-backend" />
-    <property name="distrib" value="${profile}" />
-  </target>
-  <target name="choose-backend" if="backend-choosable">
-    <input message="Which backend do you want to use? Simply press Enter to use default one."
-           validargs="derby,mysql,postgresql,oracle,h2"
-           addproperty="backend"
-           defaultvalue="default" />
-    <property name="distrib" value="${profile},${backend}" />
-  </target>
-  <target name="list-available-distributions">
-    <echo message="Available distributions are:" />
-    <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
-    <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-    <echo message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
-    <echo message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
-    <echo message="tomcat               - build Tomcat distribution" />
-    <echo message="shell                - build Nuxeo Shell" />
-    <echo message="all-distributions    - build all available distributions" />
+           addproperty="distrib" />
   </target>
   <target name="distrib"
           depends="choose-distrib,distrib-unix,distrib-windows"
