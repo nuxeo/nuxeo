@@ -56,7 +56,9 @@ public class SetupWizardActionBean implements Serializable {
 
     private final static String[] managedKeyParameters = new String[] {
             "nuxeo.bind.address", "nuxeo.url", "org.nuxeo.ecm.instance.name",
-            "org.nuxeo.ecm.instance.description",
+            "org.nuxeo.ecm.instance.description", "nuxeo.data.dir",
+            "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
+            "org.nuxeo.ecm.product.version", "nuxeo.conf",
             ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "nuxeo.db.name",
             "nuxeo.db.user", "nuxeo.db.password", "nuxeo.db.host",
             "nuxeo.db.port", "nuxeo.db.min-pool-size",
