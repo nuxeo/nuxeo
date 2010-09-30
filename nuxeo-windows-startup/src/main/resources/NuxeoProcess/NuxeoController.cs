@@ -83,6 +83,7 @@ namespace NuxeoProcess
         private bool EnvIsSetUp = false;
         private bool countActive = false;
 		private int countStatus = 0;
+        private bool memoryAllocated = false;
 		
 		// Constructor
 		
@@ -233,10 +234,18 @@ namespace NuxeoProcess
 		}
 
 		public bool Start() {
-			if (!SetupEnv()) {
-				return false;
-			}
-			
+            if (!SetupEnv())
+            {
+                Log("Setup env isn't completed", "ERROR");
+                return false;
+            }
+
+            if (!testMemoryAllocation())
+            {
+                Log("Could not reserve suffisant memory, use a different PermSize value", "ERROR");
+                return false;
+            }
+
             countActive = false;
             
             // Run
@@ -258,6 +267,43 @@ namespace NuxeoProcess
             Stoppable = false;
 			return true;
 		}
+
+        public bool testMemoryAllocation()
+        {
+            Process javaProcess = new Process();
+            javaProcess.StartInfo.FileName = nxEnv["JAVA"];
+            javaProcess.StartInfo.Arguments = nxEnv["JAVA_OPTS"] + " -version";
+            javaProcess.StartInfo.UseShellExecute = false;
+            javaProcess.StartInfo.CreateNoWindow = true;
+            javaProcess.StartInfo.RedirectStandardError = true;
+            javaProcess.Start();
+            String line;
+            while ((line = javaProcess.StandardError.ReadLine()) != null)
+            {
+                if (line.StartsWith("java version"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void versionProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e == null || e.Data == null)
+            {
+                Log("l'event ou les date sont nulls Oo", "INFO");
+                return;
+            }
+            foreach (String line in e.Data.Split("\n".ToCharArray()))
+            {
+                Log(line, "INFO");
+                if (line.StartsWith("java version"))
+                {
+                    memoryAllocated = true;
+                }
+            }
+        }
 
 		void nxProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{

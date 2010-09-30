@@ -400,6 +400,7 @@ namespace NuxeoProcess
 			String ScriptAPI15=null;
 			DirectoryInfo di;
 			FileInfo[] ls;
+            Log("TEST : " + nxEnv["JAVA"]);
 			if (CheckJavaVersion(nxEnv["JAVA"]).StartsWith("1.6")) {
 				di=new DirectoryInfo(NuxeoLib);
 				ls=di.GetFiles();
