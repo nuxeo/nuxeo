@@ -184,9 +184,18 @@ public interface ContentView extends Serializable {
      * Refreshes the current page provider if not null, see
      * {@link PageProvider#refresh()}.
      * <p>
-     * Sort information and query parameters are kept.
+     * Sort information and query parameters and current page are kept.
      */
     void refreshPageProvider();
+
+    /**
+     * Refreshes the current page provider if not null, see
+     * {@link PageProvider#refresh()}, and resets the current page to the
+     * first one.
+     * <p>
+     * Sort information and query parameters are kept.
+     */
+    void refreshAndRewindPageProvider();
 
     /**
      * Returns true is this content view can use the global page size set on

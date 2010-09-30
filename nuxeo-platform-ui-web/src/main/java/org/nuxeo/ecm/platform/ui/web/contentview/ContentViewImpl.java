@@ -264,6 +264,13 @@ public class ContentViewImpl implements ContentView {
         }
     }
 
+    public void refreshAndRewindPageProvider() {
+        if (pageProvider != null) {
+            pageProvider.refresh();
+            pageProvider.firstPage();
+        }
+    }
+
     public String getCacheKey() {
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context, cacheKey);

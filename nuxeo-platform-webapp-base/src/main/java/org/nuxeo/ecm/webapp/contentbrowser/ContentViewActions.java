@@ -218,7 +218,11 @@ public class ContentViewActions implements Serializable {
     }
 
     public void refresh(String contentViewName) {
-        cache.refresh(contentViewName);
+        cache.refresh(contentViewName, false);
+    }
+
+    public void refreshAndRewind(String contentViewName) {
+        cache.refresh(contentViewName, true);
     }
 
     public void reset(String contentViewName) {

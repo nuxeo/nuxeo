@@ -117,16 +117,24 @@ public class ContentViewCache implements Serializable {
         return cView;
     }
 
-    public void refresh(String contentViewName) {
+    public void refresh(String contentViewName, boolean rewind) {
         ContentView cv = namedContentViews.get(contentViewName);
         if (cv != null) {
-            cv.refreshPageProvider();
+            if (rewind) {
+                cv.refreshAndRewindPageProvider();
+            } else {
+                cv.refreshPageProvider();
+            }
         }
         Map<String, ContentView> instances = cacheInstances.get(contentViewName);
         if (instances != null) {
             for (ContentView cView : instances.values()) {
                 if (cView != null) {
-                    cView.refreshPageProvider();
+                    if (rewind) {
+                        cView.refreshAndRewindPageProvider();
+                    } else {
+                        cView.refreshPageProvider();
+                    }
                 }
             }
         }
@@ -137,7 +145,7 @@ public class ContentViewCache implements Serializable {
             Set<String> contentViewNames = eventToContentViewName.get(eventName);
             if (contentViewNames != null) {
                 for (String contentViewName : contentViewNames) {
-                    refresh(contentViewName);
+                    refresh(contentViewName, false);
                 }
             }
         }
