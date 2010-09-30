@@ -152,6 +152,8 @@
         <include name="javaassist*" />
         <include name="commons-collections*" />
         <include name="commons-logging*" />
+        <include name="commons-digester*" />
+        <include name="commons-beanutils*" />
       </fileset>
     </delete>
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">

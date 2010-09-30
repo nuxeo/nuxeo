@@ -5,20 +5,20 @@
 
   <!--template name="jboss-app" src="OSGI-INF/templates/jboss-app.xml"
     installPath="META-INF/jboss-app.xml" required="true" />
-
-  <template name="web" src="OSGI-INF/templates/web.xml" installPath="nuxeo.war/WEB-INF/web.xml"
+  -->
+  <template name="web" src="META-INF/templates/web.xml" installPath="nuxeo.war/WEB-INF/web.xml"
     required="true" />
 
-  <template name="faces-config" src="OSGI-INF/templates/faces-config.xml"
+  <template name="faces-config" src="META-INF/templates/faces-config.xml"
     installPath="nuxeo.war/WEB-INF/faces-config.xml" required="true" />
 
-  <template name="pages" src="OSGI-INF/templates/pages.xml"
+  <template name="pages" src="META-INF/templates/pages.xml"
     installPath="nuxeo.war/WEB-INF/pages.xml" required="true" />
 
-  <template name="components" src="OSGI-INF/templates/components.xml"
+  <template name="components" src="META-INF/templates/components.xml"
     installPath="nuxeo.war/WEB-INF/components.xml" required="true" />
-
-  <template name="jaxws" src="OSGI-INF/templates/sun-jaxws.xml"
+ 
+  <!--template name="jaxws" src="OSGI-INF/templates/sun-jaxws.xml"
     installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" /-->
 
   <!--directory>system</directory>
@@ -35,8 +35,8 @@
     <delete path="${war}" />
 
     <!-- create here the tree directory structure if needed -->
-    <!--mkdir path="${war}" />
+    <mkdir path="${war}" />
     <copy from="/OSGI-INF/templates/WAR_MANIFEST.MF" to="${war}/META-INF/MANIFEST.MF" />
-    <copy from="/OSGI-INF/templates/WAR_deployment-fragment.xml" to="${war}/OSGI-INF/deployment-fragment.xml" /-->
+    <copy from="/OSGI-INF/templates/WAR_deployment-fragment.xml" to="${war}/OSGI-INF/deployment-fragment.xml" />
   </install>
 </container>
