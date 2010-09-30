@@ -13,7 +13,7 @@
 
   <target name="expand">
     <artifact:nuxeo-expand />
-    <!--artifact:print output="dependency-tree.log" / -->
+    <!--artifact:print output="log.txt"/-->
   </target>
 
   <target name="build" depends="init,clean">

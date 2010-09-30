@@ -265,6 +265,7 @@
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>
