@@ -67,8 +67,7 @@ table {
   
 .packagePic {
   border:1px solid #DEDEDE;
-  display:inline;
-  float:left;
+  display:block;
   height:97px;
   margin:5px 15px 10px 0;
   padding:3px;
