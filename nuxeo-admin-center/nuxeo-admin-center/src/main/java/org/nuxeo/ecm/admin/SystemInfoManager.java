@@ -100,7 +100,7 @@ public class SystemInfoManager implements Serializable {
 
         sb.append("\n");
 
-        sb.append("\nPlantform language : ");
+        sb.append("\nPlatform language : ");
         sb.append(System.getProperty("user.language"));
         sb.append("  ");
         sb.append(System.getenv("LANG"));
