@@ -74,6 +74,10 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         if (!doc.isFolder()) {
             return;
         }
+        Boolean nonRecurs = (Boolean) doc.getContextData(LifeCycleConstants.NON_RECURSIVE_LIFECYCLE_CHANGE_KEY);
+        if (Boolean.TRUE.equals(nonRecurs)) {
+            return;
+        }
         CoreSession session = docCtx.getCoreSession();
         if (session == null) {
             log.error("Can not process lifeCycle change since session is null");
