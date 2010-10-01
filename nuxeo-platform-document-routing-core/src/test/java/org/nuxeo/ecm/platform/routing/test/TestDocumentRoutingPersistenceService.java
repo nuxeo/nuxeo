@@ -63,7 +63,7 @@ public class TestDocumentRoutingPersistenceService extends
                 TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT));
         docsId = (List<String>) instance.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         assertEquals("1", docsId.get(0));
-        assertEquals(2, session.getChildren(instance.getRef()).size());
+        assertEquals(3, session.getChildren(instance.getRef()).size());
     }
 
     public void testSaveDocumentRouteInstanceAsNewModel()

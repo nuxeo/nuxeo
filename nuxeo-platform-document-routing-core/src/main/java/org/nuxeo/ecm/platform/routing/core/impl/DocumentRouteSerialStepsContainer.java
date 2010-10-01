@@ -21,7 +21,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
@@ -57,9 +57,9 @@ public class DocumentRouteSerialStepsContainer extends
         setDone(session);
         return;
     }
-    
+
     @Override
-    public String getTypeDescription(){
-        return SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE;
+    public String getTypeDescription() {
+        return DocumentRoutingConstants.ExecutionTypeValues.serial.name();
     }
 }

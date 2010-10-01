@@ -51,8 +51,8 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
-      <type name="DocumentRoute">documentRouteElement</type>
-      <type name="StepFolder">documentRouteElement</type>
+      <type name="DocumentRoute" noRecursionForTransitions="toRunning,toDone">documentRouteElement</type>
+      <type name="StepFolder" noRecursionForTransitions="toRunning,toDone">documentRouteElement</type>
       <type name="DocumentRouteStep">documentRouteElement</type>
     </types>
   </extension>

@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
@@ -86,7 +86,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
-        routeInstance.setReady(session, true);
+        routeInstance.setReady(session);
         routeInstance.save(session);
         if (Framework.isTestModeSet()) {
             Framework.getLocalService(EventService.class).waitForAsyncCompletion();

@@ -45,17 +45,13 @@ public interface DocumentRoutingConstants {
     String OPERATION_CATEGORY_ROUTING_NAME = "Routing";
 
     String OPERATION_STEP_DOCUMENT_KEY = "document.routing.step";
-    
+
     String ROUTE_STEP_FACET = "RouteStep";
-    
+
     String DOCUMENT_ROUTING_ACL = "routing";
-    
+
     String STEP_DOCUMENT_DESCRIPTION_TYPE = "Step";
-    
-    String PARALLEL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE = "Parallel";
-    
-    String SERIAL_STEP_FOLDER_DOCUMENT_DESCRIPTION_TYPE = "Serial";
-    
+
     enum ExecutionTypeValues {
         serial, parallel
     }

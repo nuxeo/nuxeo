@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -32,14 +35,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -58,10 +59,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
         DocumentModel parent = document;
         while (true) {
             try {
-                parent = session.getParentDocument(document.getRef());
                 if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(parent.getType())) {
                     break;
                 }
+                parent = session.getParentDocument(parent.getRef());
             } catch (ClientException e) {
                 throw new RuntimeException(e);
             }
@@ -173,23 +174,20 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setRunning(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toRunning, session, false);
+        followTransition(ElementLifeCycleTransistion.toRunning, session);
     }
 
     @Override
     public void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session, boolean recursively) {
+            CoreSession session) {
         try {
+            session.saveDocument(document);
             document.followTransition(transition.name());
             session.saveDocument(document);
             document = session.getDocument(document.getRef());
-            if (recursively && document.isFolder()) {
-                DocumentModelList list = session.getChildren(document.getRef());
-                for (DocumentModel child : list) {
-                    DocumentRouteElement childElement = child.getAdapter(DocumentRouteElement.class);
-                    childElement.followTransition(transition, session,
-                            recursively);
-                }
+            session.save();
+            if (Framework.isTestModeSet()) {
+                Framework.getLocalService(EventService.class).waitForAsyncCompletion();
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -208,39 +206,17 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setDone(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toDone, session, false);
+        followTransition(ElementLifeCycleTransistion.toDone, session);
     }
 
     @Override
     public void setValidated(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session,
-                false);
+        followTransition(ElementLifeCycleTransistion.toValidated, session);
     }
 
     @Override
     public void setReady(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toReady, session, false);
-    }
-
-    @Override
-    public void setValidated(CoreSession session, boolean recursively) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session,
-                recursively);
-    }
-
-    @Override
-    public void setReady(CoreSession session, boolean recursively) {
-        followTransition(ElementLifeCycleTransistion.toReady, session, recursively);
-    }
-
-    @Override
-    public void setRunning(CoreSession session, boolean recursively) {
-        followTransition(ElementLifeCycleTransistion.toRunning, session, recursively);
-    }
-
-    @Override
-    public void setDone(CoreSession session, boolean recursively) {
-        followTransition(ElementLifeCycleTransistion.toDone, session, recursively);
+        followTransition(ElementLifeCycleTransistion.toReady, session);
     }
 
     public void validate(CoreSession session) throws ClientException {
@@ -291,6 +267,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public String getTypeDescription() {
-      return document.getType();
+        return document.getType();
     }
 }

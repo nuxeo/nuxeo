@@ -78,7 +78,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
     }
 
-    private void setPermissionToUser(DocumentModel doc, String username, String... perms)
+    protected void setPermissionToUser(DocumentModel doc, String username, String... perms)
             throws ClientException {
         ACP acp = doc.getACP();
         if (acp == null) {

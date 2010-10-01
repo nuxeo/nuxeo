@@ -80,6 +80,20 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         createDocumentModel(session, "step2",
                 DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
                 route.getPathAsString());
+        DocumentModel parallelFolder1 = createDocumentModel(session,
+                "parallel1",
+                DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE,
+                route.getPathAsString());
+        parallelFolder1.setPropertyValue(
+                DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME,
+                DocumentRoutingConstants.ExecutionTypeValues.parallel.name());
+        session.saveDocument(parallelFolder1);
+        createDocumentModel(session, "step31",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                parallelFolder1.getPathAsString());
+        createDocumentModel(session, "step32",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
+                parallelFolder1.getPathAsString());
         return route;
     }
 
@@ -101,5 +115,5 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
             throws ClientException {
         return createDocumentModel(session, name, "Note", ROOT_PATH);
     }
-    
+
 }
