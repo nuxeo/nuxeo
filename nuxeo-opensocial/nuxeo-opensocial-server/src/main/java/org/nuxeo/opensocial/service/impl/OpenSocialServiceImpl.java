@@ -151,6 +151,10 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     }
 
     public void setupOpenSocial() throws Exception {
+        if (os==null) {
+            log.warn("OpenSocial does not have any configuration contribution ... setup canceled");
+            return;
+        }
         // state key
         if (StringUtils.isBlank(os.getSigningKey())) {
             byte[] b64 = Base64.encodeBase64(Crypto.getRandomBytes(BasicBlobCrypter.MASTER_KEY_MIN_LEN));

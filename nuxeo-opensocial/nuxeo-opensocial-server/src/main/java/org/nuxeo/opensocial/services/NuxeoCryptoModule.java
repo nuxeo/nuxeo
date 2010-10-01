@@ -18,6 +18,8 @@
 
 package org.nuxeo.opensocial.services;
 
+import java.io.File;
+
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthProblemException;
 
@@ -45,16 +47,24 @@ public class NuxeoCryptoModule extends AbstractModule {
                     NXBlobCrypterSecurityTokenDecoder.class);
             bind(OAuthDataStore.class).to(FakeNuxeoDataStore.class);
 
+            OpenSocialService oss = Framework.getService(OpenSocialService.class);
+
             // These are here because they are no longer supplied in the
             // open social properties file but rather are computed from
             // a contribution to an extension point.
-            String signingKeyPath = Framework.getService(
-                    OpenSocialService.class).getSigningStateKeyFile().getPath();
-            String privateKeyPath = Framework.getService(
-                    OpenSocialService.class).getOAuthPrivateKeyFile().getPath();
-            String privateKeyName = Framework.getService(
-                    OpenSocialService.class).getOAuthPrivateKeyName();
-            String callbackUrl = Framework.getService(OpenSocialService.class).getOAuthCallbackUrl();
+
+            File signingKeyFile = oss.getSigningStateKeyFile();
+            File privateKeyFile = oss.getOAuthPrivateKeyFile();
+
+            if (signingKeyFile==null || privateKeyFile==null) {
+                LOG.warn("OAuth keys not properly configured, existing NuxeoCryptoModule");
+                return;
+            }
+
+            String privateKeyName = oss.getOAuthPrivateKeyName();
+            String callbackUrl = oss.getOAuthCallbackUrl();
+            String signingKeyPath = signingKeyFile.getPath();
+            String privateKeyPath = privateKeyFile.getPath();
 
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.state-key")).toInstance(
