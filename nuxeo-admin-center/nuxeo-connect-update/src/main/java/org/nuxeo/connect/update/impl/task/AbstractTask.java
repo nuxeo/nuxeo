@@ -269,7 +269,7 @@ public abstract class AbstractTask implements Task {
                         + " is being installing. Try again later.");
             } else {
                 status.addWarning("The package " + oldpkg.getId()
-                        + " will ne uninstalled!");
+                        + " will be uninstalled!");
             }
             return oldpkg;
         }
