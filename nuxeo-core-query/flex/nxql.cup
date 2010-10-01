@@ -46,7 +46,7 @@ parser code {:
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
 
 terminal SELECT, FROM, WHERE, AS,
-         IN, LIKE, ILIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE,
+         IN, LIKE, ILIKE, BETWEEN, NOTBETWEEN, NOTIN, NOTLIKE, NOTILIKE,
          ORDERBY, GROUPBY, HAVING, LIMIT, DISTINCT, ALL,
          ASC, DESC, AND, OR, NOT, SUM, SUB, DIV, MUL, EQ, NOTEQ, LT, GT, LTEQ, GTEQ,
          COMMA, LPARA, RPARA, LOCATION, STARTSWITH, TYPE,
@@ -256,6 +256,8 @@ predicate ::= predicate:l AND predicate:r
                 {: RESULT = new Predicate(new Reference(name), Operator.ILIKE, new StringLiteral(s)); :}
             | IDENTIFIER:name NOT LIKE STRING:s
                 {: RESULT = new Predicate(new Reference(name), Operator.NOTLIKE, new StringLiteral(s)); :}
+            | IDENTIFIER:name NOT ILIKE STRING:s
+                {: RESULT = new Predicate(new Reference(name), Operator.NOTILIKE, new StringLiteral(s)); :}
 
             /* -- removed as it is replaced by ecm:path
             | LOCATION STARTSWITH STRING:s
