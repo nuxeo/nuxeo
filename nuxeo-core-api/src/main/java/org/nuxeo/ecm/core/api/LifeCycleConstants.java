@@ -24,13 +24,6 @@ package org.nuxeo.ecm.core.api;
  */
 public interface LifeCycleConstants {
 
-    /**
-     * A change in lifecycle is made recursive with the
-     * BulkLifeCycleChangeListener. If a document has a in its context data this
-     * key with a true value, the bulk listener will not recurse.
-     */
-    static final String NON_RECURSIVE_LIFECYCLE_CHANGE_KEY = "non_recursive_lifecycle_change_key";
-
     static final String DELETED_STATE = "deleted";
 
     static final String DELETE_TRANSITION = "delete";
