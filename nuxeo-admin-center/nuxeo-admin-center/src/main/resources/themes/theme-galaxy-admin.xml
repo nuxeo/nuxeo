@@ -1091,7 +1091,7 @@
         <padding>3px 0</padding>
       </selector>
       <selector path=".marketplace">
-        <background-color>#f8f8f8</background-color>
+        <background-color>#fbfbfb</background-color>
       </selector>
       <selector path=".marketplace .marketplaceLogo">
       </selector>

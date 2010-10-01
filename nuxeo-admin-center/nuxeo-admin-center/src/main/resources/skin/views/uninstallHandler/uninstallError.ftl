@@ -5,9 +5,12 @@
 
 <@block name="body">
 
- Uninstall failed : ${e.message}.
-
- <br/>
- <A href="${Root.path}/packages/${source}" class="installButton"> Cancel </A>
+  <div class="errorDownloadBox">
+ 	  Uninstall failed : ${e.message}.
+ 
+  	<br/>
+  	<a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+  </div>
+ 
 </@block>
 </@extends>

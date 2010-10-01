@@ -31,15 +31,15 @@
   
    <#if needWizard>
       Click the start link to start the installation wizard. <br/><br/><br/>
-      <A href="${Root.path}/install/form/${pkg.id}/0?source=${source}" class="installButton"> Start </A>
+      <A href="${Root.path}/install/form/${pkg.id}/0?source=${source}" class="installButton"> Start </a>
    </#if>
   
    <#if !needWizard>
       Click the start link to start the installation process. <br/><br/><br/>
-      <A href="${Root.path}/install/run/${pkg.id}?source=${source}" class="installButton"> Start </A>
+      <a href="${Root.path}/install/run/${pkg.id}?source=${source}" class="installButton"> Start </a>
    </#if>
   
-    &nbsp; <A href="${Root.path}/packages/${source}" class="installButton"> Cancel </A>
+    &nbsp; <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
   </div>
 
 </@block>

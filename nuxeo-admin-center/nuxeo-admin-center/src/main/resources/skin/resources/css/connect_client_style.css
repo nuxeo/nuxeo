@@ -140,6 +140,7 @@ table {
   width:500px;
   margin:30px auto;
   padding:20px 30px;
+  text-align:center;
   border:1px solid #dedede;
   }
   
@@ -170,6 +171,13 @@ table {
   border:1px solid #dedede;
   background: #fff3f3 url("../images/ko-red.png") no-repeat  20px 18px;
   }
+  
+.installWarningsTitle {
+	padding:20px 30px 20px 50px;
+  margin: 20px 0px;
+  border:1px solid #dedede;
+  background-color:#fffcf5;
+}
 
 .downloadDiv {
   text-align:center;
@@ -194,6 +202,17 @@ table {
 
 .downloadSize {
   color:#666666;
+}
+
+.installButton {
+  background-color:#fff;
+	border:1px solid #f1f1f1;
+	margin:0 10px;
+	padding:5px 5px 5px 9px;
+}
+
+.installButton:hover {
+	border:1px solid #b5cfff;
 }
 
 /* Generic*/
