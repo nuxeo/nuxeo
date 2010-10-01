@@ -9,9 +9,9 @@
     <version>5.4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-audit-client</artifactId>
-  <name>Nuxeo Audit Service - Client</name>
-  <description>Nuxeo Enterprise Platform: Audit Service Client.</description>
+  <artifactId>nuxeo-platform-audit-ws</artifactId>
+  <name>Nuxeo Audit Service - WebService</name>
+  <description>Nuxeo Enterprise Platform: Audit WebService.</description>
 
   <dependencies>
     <dependency>
@@ -28,11 +28,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api</artifactId>
+      <artifactId>nuxeo-platform-ws</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
+      <artifactId>nuxeo-platform-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -48,10 +48,6 @@
       <artifactId>jsr181</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>
     </dependency>
@@ -59,13 +55,12 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <dependency>
+      <groupId>metro.webservices</groupId>
+      <artifactId>webservices-api</artifactId>
+    </dependency>
 
     <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-actions-core</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
