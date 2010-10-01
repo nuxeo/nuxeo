@@ -247,6 +247,11 @@ namespace NuxeoCtl
 				} catch {}
 			}
 		}
+
+        private void nxCtlState_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
+        }
 	}
 	
 	
