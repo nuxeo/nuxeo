@@ -7,12 +7,15 @@
   <@block name="content">
 
     <h1>Image collection: ${collection}</h1>
+    <#if (Context.principal)>
     <form action="">
       <p>
         <input type="file" value="" size="40" />
         <button>Upload image<button>
       </p>
     </form>
+    </#if>
+
     <div class="album">
       <#list images as image>
         <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image-${collection}-${image}')">

@@ -12,7 +12,7 @@
       <#list collections as collection>
        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image-${collection}')">
           <div class="imageSingle">
-            <div class="image"></div>
+            <div class="image"><img src="${basePath}/theme-banks/skin/img/collection.png"></div>
             <div class="footer">${collection}</div>
           </div>
         </a>

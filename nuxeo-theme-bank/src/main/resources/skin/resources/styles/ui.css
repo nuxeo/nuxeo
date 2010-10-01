@@ -3,6 +3,10 @@ body {
   font: 12px Arial, sans-serif;
 }
 
+a {
+  color: #099;
+}
+
 h1 {
   font: bold 12px Tahoma, sans-serif;
   background-color: #666;
@@ -136,5 +140,4 @@ table.properties td.key {
 .actionBar a {
   text-decoration: none;
   font-weight: bold;
-  color: #060;
 }

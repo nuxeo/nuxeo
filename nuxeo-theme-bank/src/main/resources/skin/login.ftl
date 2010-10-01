@@ -6,7 +6,18 @@
 
   <@block name="content">
 
-<#if (!Context.principal)>
+<#if (Context.principal)>
+
+<h1>Log out</h1>
+<p>You are logged in as: <b>${Context.principal}</b></p>
+
+<form action="${Root.path}/@@login" method="POST">
+  <div>
+    <input type="submit" value="Log out"/>
+  </div>
+</form>
+
+<#else>
 
   <h1>Log in</h1>
   <form action="${Root.path}/@@login" method="POST">
@@ -32,19 +43,7 @@
 </table>
 </form>
 
-<#else>
-
-<h1>Log out</h1>
-<p>You are logged in as: <b>${Context.principal}</b></p>
-
-<form action="${Root.path}/@@login" method="POST">
-  <div>
-    <input type="submit" value="Log out"/>
-  </div>
-</form>
-
 </#if>
-
 
   </@block>
 
