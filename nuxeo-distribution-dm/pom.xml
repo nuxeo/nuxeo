@@ -256,20 +256,6 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>nuxeo-ep</id>
-      <!-- profile for disabling build of all classifiers -->
-    </profile>
-    <profile>
-      <id>nuxeo-dm</id>
-      <!-- default profile for building only Nuxeo DM -->
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-  </profiles>
-
   <build>
     <plugins>
       <!-- Required for the "jboss-sar" type resolution -->

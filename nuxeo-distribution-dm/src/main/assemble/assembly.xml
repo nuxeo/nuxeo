@@ -8,12 +8,6 @@
 
 
   <target name="init" unless="init.done">
-    <condition property="no.build">
-      <or>
-        <isset property="maven.profile.nuxeo-ep" />
-      </or>
-    </condition>
-
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="nuxeo.ear" value="${outdir}/nuxeo.ear" />
 
@@ -21,15 +15,12 @@
     <property name="init.done" value="true" />
   </target>
 
-  <target name="expand" unless="no.build">
+  <target name="expand">
     <artifact:nuxeo-expand />
     <!--artifact:print output="dependency-tree.log" /-->
   </target>
 
-  <target name="build"
-          depends="init"
-          unless="no.build"
-          description="Build Nuxeo DM">
+  <target name="build" depends="init" description="Build Nuxeo DM">
     <echo>Building default Nuxeo DM EAR</echo>
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <mkdir dir="${nuxeo.ear}" />
