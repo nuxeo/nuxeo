@@ -19,8 +19,10 @@
 package org.nuxeo.ecm.core.lifecycle;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -52,7 +54,8 @@ public interface LifeCycleService {
      * @param initialStateName the initial state name
      * @throws LifeCycleException
      */
-    void initialize(Document doc, String initialStateName) throws LifeCycleException;
+    void initialize(Document doc, String initialStateName)
+            throws LifeCycleException;
 
     /**
      * Follows a given transition.
@@ -94,6 +97,22 @@ public interface LifeCycleService {
      * @return the life cycle name
      */
     String getLifeCycleNameFor(String typeName);
+
+    /**
+     * Returns a list of transition for which, when a it is followed, it should
+     * no recurse in its children.
+     *
+     * The {@link BulkLifeCycleChangeListener} will listen to the transition
+     * taken event and call a follow transition on the children of the document
+     * if the document is folderish. It check this list of transition to find
+     * out if it should recurse.
+     *
+     * @see BulkLifeCycleChangeListener
+     *
+     * @param docTypeName The doc type
+     * @return a list of transition name
+     */
+    List<String> getNonRecursiveTransitionForDocType(String docTypeName);
 
     /**
      * Returns the mapping from types to life cycle names.

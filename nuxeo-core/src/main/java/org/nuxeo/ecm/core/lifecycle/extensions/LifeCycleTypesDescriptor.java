@@ -18,11 +18,8 @@
 
 package org.nuxeo.ecm.core.lifecycle.extensions;
 
-import java.util.Map;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.w3c.dom.Element;
 
 /**
  * Life cycle types mapping descriptor.
@@ -31,23 +28,27 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@XObject(value = "types")
+@XObject(value = "type")
 public class LifeCycleTypesDescriptor {
+    @XNode("@name")
+    protected String name;
 
-    @XNode("type")
-    private Element typesElement;
+    @XNode("@noRecursionForTransitions")
+    protected String noRecursionForTransitions;
 
-    public Element getTypesElement() {
-        return typesElement;
+    @XNode
+    protected String type;
+
+    public String getDocumentType() {
+        return name;
     }
 
-    public void setTypesElement(Element types) {
-        typesElement = types;
+    public String getNoRecursionForTransitions() {
+        return noRecursionForTransitions;
     }
 
-    public Map<String, String> getTypesMapping() {
-        LifeCycleTypesConfiguration conf = new LifeCycleTypesConfiguration(typesElement);
-        return conf.getTypesMapping();
+    public String getLifeCycleName() {
+        return type;
     }
 
 }

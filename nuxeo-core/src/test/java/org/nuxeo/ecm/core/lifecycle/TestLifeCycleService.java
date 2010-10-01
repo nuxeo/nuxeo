@@ -199,6 +199,11 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     public void testTypeLifeCycleMapping() {
         String lifeCycleName = lifeCycleService.getLifeCycleNameFor("File");
         assertEquals("default", lifeCycleName);
+        List<String> noRecursion = lifeCycleService.getNonRecursiveTransitionForDocType("File");
+        assertEquals(3, noRecursion.size());
+        assertTrue(noRecursion.contains("toBar"));
+        noRecursion = lifeCycleService.getNonRecursiveTransitionForDocType("Folder");
+        assertTrue(noRecursion.isEmpty());
     }
 
     public void testLifeCycleReverse() throws Exception {
