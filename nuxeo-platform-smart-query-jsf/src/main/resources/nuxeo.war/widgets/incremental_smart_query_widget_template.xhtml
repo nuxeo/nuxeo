@@ -1,0 +1,73 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+<c:if test="false">
+  Needed configuration: mapped to IncrementalSmartQuery instance  
+</c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <a4j:outputPanel ajaxRendered="true" id="#{widget.id}_query_panel">
+
+      <c:if test="#{value.showLogicalOperator}">
+        <a4j:region id="#{widget.id}_logical_operator_region">
+          <h:selectOneMenu value="#{value.logicalOperator}"
+            id="#{widget.id}_logical_operator"
+            required="true">
+            <f:selectItem itemLabel="#{messages['label.smart.query.operator.AND']}"
+              itemValue="AND" />
+            <f:selectItem itemLabel="#{messages['label.smart.query.operator.OR']}"
+              itemValue="OR" />
+          </h:selectOneMenu>
+          <h:message for="#{widget.id}_logical_operator" class="errorMessage" />
+        </a4j:region>
+      </c:if>
+
+      <c:if test="#{value.showAddNotOperator}">
+        <a4j:region id="#{widget.id}_add_not_operator_region">
+          <h:selectOneMenu value="#{value.addNotOperator}"
+            id="#{widget.id}_add_not_operator">
+            <f:selectItem itemLabel="" itemValue="false" />
+            <f:selectItem
+              itemLabel="#{messages['label.smart.query.operator.NOT']}"
+              itemValue="true" />
+          </h:selectOneMenu>
+          <h:message for="#{widget.id}_add_not_operator" class="errorMessage" />
+        </a4j:region>
+      </c:if>
+
+      <nxl:layout name="#{widgetProperty_selectionLayout}" mode="edit_rows"
+        value="#{value}" />
+
+      <div>
+        <c:if test="#{value.showOpenParenthesis}">
+          <a4j:region id="#{widget.id}_open_parenthesis_region">
+            <h:selectBooleanCheckbox value="#{value.openParenthesis}"
+              id="#{widget.id}_open_parenthesis" />
+            <h:outputLabel for="#{widget.id}_open_parenthesis"
+              value="#{messages['label.smart.query.openParenthesis']}" />
+            <h:message for="#{widget.id}_open_parenthesis" class="errorMessage" />
+          </a4j:region>
+        </c:if>      
+  
+        <c:if test="#{value.showCloseParenthesis}">
+          <a4j:region id="#{widget.id}_close_parenthesis_region">
+            <h:selectBooleanCheckbox value="#{value.closeParenthesis}"
+              id="#{widget.id}_close_parenthesis" />
+            <h:outputLabel for="#{widget.id}_close_parenthesis"
+              value="#{messages['label.smart.query.closeParenthesis']}" />
+            <h:message for="#{widget.id}_close_parenthesis" class="errorMessage" />
+          </a4j:region>
+        </c:if>
+      </div>
+
+    </a4j:outputPanel>
+
+  </c:if>
+
+</f:subview>

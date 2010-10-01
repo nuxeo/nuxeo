@@ -1,0 +1,54 @@
+<f:subview xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+  id="#{layout.id}">
+  
+  <c:if test="#{layout.mode == 'edit_rows'}">
+  
+    <a4j:region>
+
+      <h:selectOneMenu value="#{layoutValue.selectedRowName}"
+        id="#{layout.id}_rowSelector"
+        required="true">
+        <f:selectItem itemValue="" itemLabel="" />
+        <nxu:selectItems
+          value="#{layout.rows}"
+          var="item"
+          itemValue="#{item.name}"
+          itemLabel="#{messages[item.widgets[0].label]}"
+          id="#{layout.id}_targetRows" />
+        <a4j:support event="onchange" reRender="#{layout.id}_selection" ajaxSingle="true" />
+      </h:selectOneMenu>
+      <h:message for="#{layout.id}_rowSelector" class="errorMessage" />
+      <a4j:status>
+        <f:facet name="start">
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
+
+      <f:subview id="#{layout.id}_selection">
+        <nxl:layout name="#{layout.name}" mode="edit"
+          value="#{layoutValue}" />
+      </f:subview>
+    </a4j:region>
+      
+  </c:if>
+
+  <c:if test="#{layout.mode == 'edit_rows'}">
+
+    <nxl:layoutRow>
+      <f:subview rendered="#{layoutValue.selectedRowName == layoutRow.name}">
+        <nxl:layoutRowWidget>
+          <nxl:widget widget="#{widget}" value="#{value}" />
+        </nxl:layoutRowWidget>
+      </f:subview>
+    </nxl:layoutRow>
+    
+  </c:if>
+
+</f:subview>

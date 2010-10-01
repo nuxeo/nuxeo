@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.smart.query.jsf.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="incremental_smart_query">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/incremental_smart_query_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="incremental_smart_query_item">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/incremental_smart_query_item_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="incremental_smart_query" type="incremental_smart_query">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="any">
+        <property name="selectionLayout">smart_query_selection</property>
+      </properties>
+    </widget>
+
+    <widget name="incremental_smart_query_string" type="textarea">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <properties mode="edit">
+        <property name="required">true</property>
+        <property name="validator">#{smartQueryActions.validateQuery}</property>
+      </properties>
+      <fields>
+        <field>existingQueryPart</field>
+      </fields>
+    </widget>
+
+    <widget name="smart_query_title" type="incremental_smart_query_item">
+      <labels>
+        <label mode="any">title</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:title</property>
+        <propertyList name="availableOperators">
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="title" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="smart_query_created" type="incremental_smart_query_item">
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:created</property>
+        <propertyList name="availableOperators">
+          <value>&lt;</value>
+          <value>&gt;</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="created" type="datetime">
+          <fields>
+            <field>dateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
+      </subWidgets>
+
+    </widget>
+
+    <widget name="smart_query_contributors" type="template">
+      <labels>
+        <label mode="any">label.dublincore.contributors</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stringListValue</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_suggestion_widget_template.xhtml
+        </property>
+        <property name="hideVirtualGroups">true</property>
+      </properties>
+      <properties widgetMode="dynsearch">
+        <property name="searchField">dc:contributors</property>
+        <propertyList name="available_ops">
+          <value>IN</value>
+        </propertyList>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="smart_query_builder">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>incremental_smart_query</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="smart_query_string">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>incremental_smart_query_string</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="smart_query_selection">
+      <templates>
+        <template mode="any">
+          /layouts/incremental_smart_query_selection_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row name="smart_query_title">
+          <widget>smart_query_title</widget>
+        </row>
+        <row name="smart_query_created">
+          <widget>smart_query_created</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

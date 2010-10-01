@@ -1,0 +1,28 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <a4j:form>
+    <nxl:layout name="smart_query_builder" mode="edit" value="#{currentSmartQuery}" />
+
+      <p class="selection_buttons">
+        <a4j:commandButton value="#{messages['label.smart.query.addToQuery']}"
+          action="#{smartQueryActions.buildQueryString}" reRender="myform"
+          styleClass="button" />
+      </p>
+
+  </a4j:form>
+
+  <h:form enctype="multipart/form-data" id="myform">
+
+    <nxl:layout name="smart_query_string" mode="edit" value="#{currentSmartQuery}" />
+
+    <h:commandButton value="submit" />
+
+  </h:form>
+
+</div>

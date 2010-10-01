@@ -1,0 +1,46 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
+
+<c:if test="false">
+  Needed configuration: mapped to IncrementalSmartQuery instance  
+  Subwidget with following information: 
+  - field: bound value (depending on the widget configuration)
+</c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <a4j:outputPanel ajaxRendered="true" id="#{widget.id}_query_item_panel">
+
+      <div style="display:none">
+        <h:selectOneMenu value="#{value.leftExpression}"
+          id="#{widget.id}_search_field"
+          required="true">
+          <f:selectItem itemValue="#{widgetProperty_searchField}" />
+        </h:selectOneMenu>
+      </div>
+      <h:message for="#{widget.id}_search_field" class="errorMessage" />
+
+      <a4j:region id="#{widget.id}_conditional_operator_region">
+        <h:selectOneMenu value="#{value.conditionalOperator}" id="#{widget.id}_conditional_operator"
+          required="true">
+          <c:set var="opLabel" value="label.smart.query.operator.#{fn:replace(op, ' ', '_')}" />
+          <nxu:selectItems var="op" value="#{widgetProperty_availableOperators}"
+            itemValue="#{op}" itemLabel="#{messages[opLabel]}"/>
+        </h:selectOneMenu>
+        <h:message for="#{widget.id}_conditional_operator" class="errorMessage" />
+      </a4j:region>
+
+      <nxl:subWidget>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+      </nxl:subWidget>
+      
+    </a4j:outputPanel>
+
+  </c:if>
+
+</f:subview>

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Smart Query API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.smart.query.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Require: org.nuxeo.ecm.core.api
