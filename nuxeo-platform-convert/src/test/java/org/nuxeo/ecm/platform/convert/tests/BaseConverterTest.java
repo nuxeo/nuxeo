@@ -24,6 +24,9 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -35,22 +38,18 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
-public abstract class BaseConverterTest extends NXRuntimeTestCase {
+public abstract class BaseConverterTest extends Assert {
 
     private static final Log log = LogFactory.getLog(BaseConverterTest.class);
 
+    NXRuntimeTestCase tc = new NXRuntimeTestCase();
+
     OOoManagerService oooManagerService;
-
-    BaseConverterTest() {
-    }
-
-    BaseConverterTest(String name) {
-        super(name);
-    }
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
+
         Blob blob = new FileBlob(file);
         if (srcMT != null) {
             blob.setMimeType(srcMT);
@@ -63,15 +62,16 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         return getBlobFromPath(path, null);
     }
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.platform.convert");
+        tc.setUp();
+        tc.deployBundle("org.nuxeo.ecm.core.api");
+        tc.deployBundle("org.nuxeo.ecm.core.convert.api");
+        tc.deployBundle("org.nuxeo.ecm.core.convert");
+        tc.deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        tc.deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        tc.deployBundle("org.nuxeo.ecm.platform.convert");
+
         oooManagerService = Framework.getService(OOoManagerService.class);
         try {
             oooManagerService.startOOoManager();
@@ -80,13 +80,13 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         }
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         oooManagerService = Framework.getService(OOoManagerService.class);
         if (oooManagerService.isOOoManagerStarted()) {
             oooManagerService.stopOOoManager();
         }
-        super.tearDown();
+        tc.tearDown();
     }
 
     public static String readPdfText(File pdfFile) throws IOException {

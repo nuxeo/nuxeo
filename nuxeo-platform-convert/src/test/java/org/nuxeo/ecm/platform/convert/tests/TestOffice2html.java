@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -49,15 +50,15 @@ public class TestOffice2html extends BaseConverterTest {
         assertNotNull(result);
 
         String html = result.getBlob().getString();
-        System.out.println(html);
         assertTrue(html.contains("Hello"));
     }
 
+    @Test
     public void testOfficeToHtmlConverter() throws Exception {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("office2html");
         assertNotNull(check);
+
         if (!check.isAvailable()) {
             System.out.print("Skipping JOD based converter tests since OOo is not installed");
             System.out.print(" converter check output : " + check.getInstallationMessage());
@@ -70,10 +71,6 @@ public class TestOffice2html extends BaseConverterTest {
         doTestHtmlConverter("application/vnd.oasis.opendocument.text", "hello.odt");
         doTestHtmlConverter("application/vnd.sun.xml.calc", "hello.sxc");
         doTestHtmlConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
-        // Hello Text is present in the generated picture for the following
-        // tests
-        //doTestHtmlConverter("application/vnd.sun.xml.impress",  "hello.sxi");
-        //doTestHtmlConverter("application/vnd.oasis.opendocument.presentation",  "hello.odp");
     }
 
 }

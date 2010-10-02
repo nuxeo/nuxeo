@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -62,6 +63,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         log.info(srcMT + " to PDF conversion : OK");
     }
 
+    @Test
     public void testAnyToTextConverter() throws Exception {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
@@ -107,10 +109,11 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         }
     }
 
+    @Test
     public void testMultiThreadsConverter() throws Exception {
 
-        int t=0;
-        int tMax=120;
+        int t = 0;
+        int tMax = 120;
         ConversionThread t1 = new ConversionThread();
         ConversionThread t2 = new ConversionThread();
 
@@ -119,8 +122,8 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
         while (!(t1.terminated && t2.terminated)) {
             Thread.sleep(1000);
-            t+=1;
-            if (t>tMax) {
+            t += 1;
+            if (t > tMax) {
                 if (!t1.terminated) {
                     t1.interrupt();
                 }
@@ -133,7 +136,6 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
         assertFalse(t1.exception);
         assertFalse(t2.exception);
-
-
     }
+
 }

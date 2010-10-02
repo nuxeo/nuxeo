@@ -81,7 +81,7 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         CommandAvailability ca = cles.getCommandAvailability("pdftohtml");
 
         if (!ca.isAvailable()) {
-            log.warn("pdftohtml command is not avalaible, skipping test");
+            log.warn("pdftohtml command is not available, skipping test");
             return;
         }
 
@@ -93,8 +93,10 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
         List<Blob> blobs = result.getBlobs();
         assertNotNull(blobs);
         assertEquals(2, blobs.size());
+
         Blob mainBlob = result.getBlob();
         assertEquals("index.html", mainBlob.getFilename());
+
         Blob subBlob = blobs.get(1);
         assertTrue(subBlob.getFilename().startsWith("index001"));
 

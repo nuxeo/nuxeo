@@ -97,19 +97,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/TestOOoServiceManagerService.class</exclude>
-            <exclude>**/TestOffice2html.class</exclude>
-            <exclude>**/*$*.java/</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

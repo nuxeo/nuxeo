@@ -56,7 +56,6 @@ public class TestPDFToImage extends NXRuntimeTestCase {
 
         cs = Framework.getLocalService(ConversionService.class);
         assertNotNull(cs);
-
     }
 
     protected static BlobHolder getBlobFromPath(String path) {
@@ -87,7 +86,7 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         CommandAvailability ca = cles.getCommandAvailability("pdftoimage");
 
         if (!ca.isAvailable()) {
-            log.warn("convert command is not avalaible, skipping test");
+            log.warn("convert command is not available, skipping test");
             return;
         }
 
@@ -101,6 +100,7 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         List<Blob> blobs = result.getBlobs();
         assertNotNull(blobs);
         assertEquals(1, blobs.size());
+
         Blob mainBlob = result.getBlob();
         assertEquals("hello.png", mainBlob.getFilename());
     }

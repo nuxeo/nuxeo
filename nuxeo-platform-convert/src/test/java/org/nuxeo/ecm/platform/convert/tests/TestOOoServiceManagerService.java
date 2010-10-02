@@ -22,64 +22,76 @@ package org.nuxeo.ecm.platform.convert.tests;
 import java.io.FileInputStream;
 
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
+import org.junit.*;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerComponent;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerDescriptor;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestOOoServiceManagerService extends NXRuntimeTestCase {
+@Ignore
+public class TestOOoServiceManagerService extends Assert {
+
+    NXRuntimeTestCase tc = new NXRuntimeTestCase();
 
     OOoManagerService ods;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.convert");
-        deployBundle("org.nuxeo.ecm.platform.convert.test");
-        deployContrib("org.nuxeo.ecm.platform.convert.test",
+        tc.setUp();
+        tc.deployBundle("org.nuxeo.ecm.platform.convert");
+        tc.deployBundle("org.nuxeo.ecm.platform.convert.test");
+        tc.deployContrib("org.nuxeo.ecm.platform.convert.test",
                 "test-ooo-manager-contrib.xml");
     }
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         ods.stopOOoManager();
-        super.tearDown();
+        tc.tearDown();
     }
 
+    @Test
     public void testServiceRegistration() throws Exception {
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
+
         ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
+
         OOoManagerComponent odc = (OOoManagerComponent) ods;
         OOoManagerDescriptor desc = odc.getDescriptor();
         String[] pipes = desc.getPipeNames();
         assertEquals("pipe1", pipes[0]);
         assertEquals("pipe2", pipes[1]);
         assertEquals("pipe3", pipes[2]);
+
         int[] ports = desc.getPortNumbers();
         assertEquals(2003, ports[0]);
         assertEquals(2004, ports[1]);
         assertEquals(2005, ports[2]);
     }
 
+    @Test
     public void testSocketConnection() throws Exception {
         Framework.getProperties().load(
-                new FileInputStream(getResource("jodSocket.properties").getFile()));
+                new FileInputStream(tc.getResource("jodSocket.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
+
         ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
     }
 
+    @Test
     public void testPipeConnection() throws Exception {
         Framework.getProperties().load(
-                new FileInputStream(getResource("jodPipe.properties").getFile()));
+                new FileInputStream(tc.getResource("jodPipe.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
+
         ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
