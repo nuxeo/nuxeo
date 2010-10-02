@@ -42,7 +42,10 @@ import javax.ws.rs.core.StreamingOutput;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -59,11 +62,34 @@ import org.nuxeo.theme.themes.ThemeManager;
 @Produces(MediaType.TEXT_HTML)
 public class Main extends ModuleRoot {
 
+    private static final Log log = LogFactory.getLog(Main.class);
+
     private static final String SERVER_ID = "Nuxeo/ThemeBank-1.0";
 
     @GET
     public Object getIndex() {
         return getTemplate("index.ftl");
+    }
+
+    @POST
+    @Path("upload")
+    public Object uploadFile() {
+        FormData form = ctx.getForm();
+
+        String bankName = form.getString("bank");
+        String collection = form.getString("collection");
+        String redirectUrl = form.getString("redirect_url");
+
+        FileItem fileItem = form.getFileItem("file");
+        if (!fileItem.isFormField()) {
+            final byte[] fileData = fileItem.get();
+            final String filename = fileItem.getName();
+
+            String path = String.format("%s/image/%s", bankName, collection);
+            BankManager.createFile(path, filename, fileData);
+        }
+
+        return redirect(redirectUrl);
     }
 
     /*
@@ -132,7 +158,7 @@ public class Main extends ModuleRoot {
     @Path("@@login")
     public Object login() {
         FormData form = ctx.getForm();
-        String redirectUrl = form.getFormProperty("redirect_url");
+        String redirectUrl = form.getString("redirect_url");
         if (redirectUrl != null) {
             return redirect(redirectUrl);
         }
