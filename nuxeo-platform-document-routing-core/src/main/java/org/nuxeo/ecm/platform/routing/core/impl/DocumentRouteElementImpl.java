@@ -56,6 +56,20 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     }
 
     public DocumentModelList getAttachedDocuments(CoreSession session) {
+        List<String> docIds = getDocumentRoute(session).getAttachedDocuments();
+        List<DocumentRef> refs = new ArrayList<DocumentRef>();
+        for (String id : docIds) {
+            refs.add(new IdRef(id));
+        }
+        try {
+            return session.getDocuments(refs.toArray(new DocumentRef[] {}));
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public DocumentRoute getDocumentRoute(CoreSession session) {
         DocumentModel parent = document;
         while (true) {
             try {
@@ -67,17 +81,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
                 throw new RuntimeException(e);
             }
         }
-        DocumentRoute route = parent.getAdapter(DocumentRoute.class);
-        List<String> docIds = route.getAttachedDocuments();
-        List<DocumentRef> refs = new ArrayList<DocumentRef>();
-        for (String id : docIds) {
-            refs.add(new IdRef(id));
-        }
-        try {
-            return session.getDocuments(refs.toArray(new DocumentRef[] {}));
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return parent.getAdapter(DocumentRoute.class);
     }
 
     public AutomationService getAutomationService() {
@@ -144,9 +148,9 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void run(CoreSession session) {
-        // setting the state on teh parent changes the states of all children
-        // so if this is a step or a stepFolder its state was already changed
-        if (!isRunning()) {
+        if (isRunning()) {
+            return;
+        } else {
             setRunning(session);
         }
         if (!(this instanceof DocumentRouteStep)) {
@@ -269,4 +273,5 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     public String getTypeDescription() {
         return document.getType();
     }
+
 }

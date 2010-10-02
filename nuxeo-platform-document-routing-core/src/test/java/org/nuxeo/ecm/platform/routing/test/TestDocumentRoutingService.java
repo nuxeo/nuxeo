@@ -45,11 +45,50 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
         service.validateRouteModel(route, session);
+        assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
+        assertEquals("validated", session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertNotNull(routeInstance);
+        assertTrue(routeInstance.isDone());
+    }
+
+    public void testDocumentRouteWithWaitState() throws Exception {
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        service.validateRouteModel(route, session);
+        assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
+        assertEquals("validated", session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        session.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel,
+                doc1.getId(), session);
+        assertNotNull(routeInstance);
+        assertFalse(routeInstance.isDone());
+        List<String> waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(2, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        assertFalse(routeInstance.isDone());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        assertEquals(0, waiting.size());
+        routeInstance = session.getDocument(routeInstance.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isDone());
     }
 

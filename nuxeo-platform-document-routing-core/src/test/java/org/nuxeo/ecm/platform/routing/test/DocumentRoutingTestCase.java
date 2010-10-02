@@ -35,6 +35,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
 
+    public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.routing.core.test";
+
     protected DocumentRoutingPersistenceService persistenceService;
 
     protected DocumentRoutingEngineService engineService;

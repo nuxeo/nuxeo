@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 public interface DocumentRouteStep extends DocumentRouteElement {
+
 
 }

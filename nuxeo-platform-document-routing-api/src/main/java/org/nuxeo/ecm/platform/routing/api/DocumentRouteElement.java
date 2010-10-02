@@ -34,6 +34,7 @@ public interface DocumentRouteElement {
         toValidated, toReady, toRunning, toDone
     }
 
+    DocumentRoute getDocumentRoute(CoreSession session);
     boolean isValidated();
 
     boolean isReady();
