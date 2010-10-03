@@ -22,10 +22,11 @@ Nuxeo-Component: OSGI-INF/management-contrib.xml,
   OSGI-INF/querymaker-contrib.xml,
   OSGI-INF/reload-contrib.xml
 Bundle-ManifestVersion: 2
-Import-Package: javax.resource,
- javax.resource.cci,
+Import-Package: javax.resource;version="2.0.0",
+ javax.resource.cci;version="2.0.0",
  javax.servlet,
  javax.servlet.http,
+ javax.transaction.xa;version="1.1.1",
  org.apache.commons.beanutils,
  org.apache.commons.collections.map,
  org.apache.commons.httpclient,
