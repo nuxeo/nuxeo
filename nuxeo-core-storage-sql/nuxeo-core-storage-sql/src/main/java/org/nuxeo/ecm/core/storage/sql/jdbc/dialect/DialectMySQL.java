@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * MySQL-specific dialect.
@@ -241,26 +242,21 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replaceAll(" +", " ").trim();
-        List<String> pos = new LinkedList<String>();
-        List<String> neg = new LinkedList<String>();
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.startsWith("-")) {
-                neg.add(word);
-            } else if (word.startsWith("+")) {
-                pos.add(word);
-            } else {
-                pos.add("+" + word);
-            }
-        }
-        if (pos.isEmpty()) {
+        FulltextQuery ft = analyzeFulltextQuery(query);
+        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
             return "+DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        String res = StringUtils.join(pos, " ");
-        if (!neg.isEmpty()) {
-            res += " " + StringUtils.join(neg, " ");
+        List<String> terms = new LinkedList<String>();
+        for (String word : ft.pos) {
+            terms.add("+" + word);
         }
-        return res;
+        for (List<String> words : ft.or) {
+            terms.add("+(" + StringUtils.join(words, " ") + ")");
+        }
+        for (String word : ft.neg) {
+            terms.add("-" + word);
+        }
+        return StringUtils.join(terms, " ");
     }
 
     // SELECT ..., (MATCH(`fulltext`.`simpletext`, `fulltext`.`binarytext`)

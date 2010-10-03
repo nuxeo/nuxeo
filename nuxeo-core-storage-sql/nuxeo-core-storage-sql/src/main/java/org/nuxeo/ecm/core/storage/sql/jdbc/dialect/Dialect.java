@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -264,6 +266,106 @@ public abstract class Dialect {
     public abstract String getCreateFulltextIndexSql(String indexName,
             String quotedIndexName, Table table, List<Column> columns,
             Model model);
+
+    public static class FulltextQuery {
+        /** Positive terms. */
+        public List<String> pos = new LinkedList<String>();
+
+        /** Positive ORed terms. */
+        public List<List<String>> or = new LinkedList<List<String>>();
+
+        /** Negative terms. */
+        public List<String> neg = new LinkedList<String>();
+    }
+
+    /**
+     * Analyzes a fulltext query into a generic datastructure that can be used
+     * for each specific database.
+     */
+    public FulltextQuery analyzeFulltextQuery(String query) {
+        query = query.replaceAll(" +", " ").trim();
+        FulltextQuery ft = new FulltextQuery();
+        boolean wasNeg = false;
+        boolean wasOr = false;
+        String lastWord = null;
+        List<String> lastOr = null;
+        for (String word : StringUtils.split(query, ' ', false)) {
+            if (word.equalsIgnoreCase("OR")) {
+                if (wasNeg) {
+                    throw new QueryMakerException(
+                            "Invalid fulltext query (OR after negation): "
+                                    + query);
+                }
+                if (wasOr) {
+                    throw new QueryMakerException(
+                            "Invalid fulltext query (OR OR): " + query);
+                }
+                if (lastWord == null && lastOr == null) {
+                    throw new QueryMakerException(
+                            "Invalid fulltext query (standalone OR): " + query);
+                }
+                if (lastOr == null) {
+                    lastOr = new LinkedList<String>();
+                }
+                if (lastWord != null) {
+                    lastOr.add(lastWord);
+                    lastWord = null;
+                }
+                wasOr = true;
+            } else if (word.startsWith("-")) {
+                if (wasOr) {
+                    throw new QueryMakerException(
+                            "Invalid fulltext query (negation after OR ): "
+                                    + query);
+                }
+                if (lastOr != null) {
+                    ft.or.add(lastOr);
+                    lastOr = null;
+                }
+                if (lastWord != null) {
+                    ft.pos.add(lastWord);
+                    lastWord = null;
+                }
+                word = word.substring(1);
+                if (word.length() == 0) {
+                    throw new QueryMakerException(
+                            "Invalid fulltxt query (standalone -): " + query);
+                }
+                ft.neg.add(word);
+                wasNeg = true;
+            } else {
+                if (word.startsWith("+")) {
+                    word = word.substring(1);
+                    if (word.length() == 0) {
+                        throw new QueryMakerException(
+                                "Invalid fulltxt query (standalone +): "
+                                        + query);
+                    }
+                }
+                if (wasOr) {
+                    lastOr.add(word);
+                    wasOr = false;
+                } else {
+                    if (lastOr != null) {
+                        ft.or.add(lastOr);
+                        lastOr = null;
+                    }
+                    if (lastWord != null) {
+                        ft.pos.add(lastWord);
+                    }
+                    lastWord = word;
+                }
+                wasNeg = false;
+            }
+        }
+        if (lastWord != null) {
+            ft.pos.add(lastWord);
+        }
+        if (lastOr != null) {
+            ft.or.add(lastOr);
+        }
+        return ft;
+    }
 
     /**
      * Get the dialect-specific version of a fulltext query.

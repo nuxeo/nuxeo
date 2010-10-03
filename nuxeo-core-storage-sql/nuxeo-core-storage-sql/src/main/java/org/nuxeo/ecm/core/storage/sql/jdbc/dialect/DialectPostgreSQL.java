@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * PostgreSQL-specific dialect.
@@ -277,18 +278,18 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
-        query = query.replaceAll(" +", " ").trim();
-        List<String> res = new LinkedList<String>();
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.startsWith("-")) {
-                res.add("!" + word.substring(1));
-            } else if (word.startsWith("+")) {
-                res.add(word.substring(1));
-            } else {
-                res.add(word);
-            }
+        FulltextQuery ft = analyzeFulltextQuery(query);
+        List<String> terms = new LinkedList<String>();
+        for (String word : ft.pos) {
+            terms.add(word);
         }
-        return StringUtils.join(res, " & ");
+        for (List<String> words : ft.or) {
+            terms.add("(" + StringUtils.join(words, " | ") + ")");
+        }
+        for (String word : ft.neg) {
+            terms.add("!" + word);
+        }
+        return StringUtils.join(terms, " & ");
     }
 
     // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore
@@ -312,18 +313,15 @@ public class DialectPostgreSQL extends Dialect {
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins.add(
-                new Join(Join.INNER, ft.getQuotedName(), null, null,
-                        ftMain.getFullQuotedName(),
-                        mainColumn.getFullQuotedName()));
+            info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null,
+                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
-        info.joins.add(
-            new Join(
-                    Join.IMPLICIT, //
-                    String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
-                    queryAlias, // alias
-                    fulltextQuery, // param
-                    null, null));
+        info.joins.add(new Join(
+                Join.IMPLICIT, //
+                String.format("TO_TSQUERY('%s', ?)", fulltextAnalyzer),
+                queryAlias, // alias
+                fulltextQuery, // param
+                null, null));
         info.whereExpr = String.format("(%s @@ %s)", queryAlias,
                 ftColumn.getFullQuotedName());
         info.scoreExpr = String.format("TS_RANK_CD(%s, %s, 32) AS %s",
@@ -583,8 +581,8 @@ public class DialectPostgreSQL extends Dialect {
                         ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements", StringUtils.join(lines,
-                    "\n"));
+            properties.put("fulltextTriggerStatements",
+                    StringUtils.join(lines, "\n"));
         }
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
                 SecurityConstants.BROWSE);

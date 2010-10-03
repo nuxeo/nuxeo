@@ -221,33 +221,28 @@ public class DialectH2 extends Dialect {
         }
         return String.format(
                 "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
-                fullIndexName, table.getName(), StringUtils.join(columnNames,
-                        ", "), analyzer);
+                fullIndexName, table.getName(),
+                StringUtils.join(columnNames, ", "), analyzer);
     }
 
     @Override
     // translate into Lucene-based syntax
     public String getDialectFulltextQuery(String query) {
-        query = query.replaceAll(" +", " ").trim();
-        List<String> pos = new LinkedList<String>();
-        List<String> neg = new LinkedList<String>();
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.startsWith("-")) {
-                neg.add(word);
-            } else if (word.startsWith("+")) {
-                pos.add(word);
-            } else {
-                pos.add("+" + word);
-            }
-        }
-        if (pos.isEmpty()) {
+        FulltextQuery ft = analyzeFulltextQuery(query);
+        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
             return "+DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        String res = StringUtils.join(pos, " ");
-        if (!neg.isEmpty()) {
-            res += " " + StringUtils.join(neg, " ");
+        List<String> terms = new LinkedList<String>();
+        for (String word : ft.pos) {
+            terms.add(word);
         }
-        return res;
+        for (List<String> words : ft.or) {
+            terms.add("(" + StringUtils.join(words, " OR ") + ")");
+        }
+        for (String word : ft.neg) {
+            terms.add("-" + word);
+        }
+        return StringUtils.join(terms, " AND ");
     }
 
     // SELECT ..., 1 as nxscore
@@ -310,18 +305,21 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getReadAclsCheckSql(String idColumnName) {
-        return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?, '%s'))",
+        return String.format(
+                "%s IN (SELECT * FROM nx_get_read_acls_for(?, '%s'))",
                 idColumnName, getUsersSeparator());
     }
 
     @Override
     public String getUpdateReadAclsSql() {
-        return String.format("SELECT nx_update_read_acls('%s');", getUsersSeparator());
+        return String.format("SELECT nx_update_read_acls('%s');",
+                getUsersSeparator());
     }
 
     @Override
     public String getRebuildReadAclsSql() {
-        return String.format("SELECT nx_rebuild_read_acls('%s');", getUsersSeparator());
+        return String.format("SELECT nx_rebuild_read_acls('%s');",
+                getUsersSeparator());
     }
 
     @Override

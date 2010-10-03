@@ -1368,6 +1368,10 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         session.save();
         sleepForFulltext();
 
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
         query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
         assertEquals(1, dml.size());
@@ -1429,6 +1433,20 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(0, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '-kangaroo oyster'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        // OR
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world'";
+        dml = session.query(query);
+        assertEquals(2, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'oyster pete OR world'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster pete OR world'";
         dml = session.query(query);
         assertEquals(1, dml.size());
     }
