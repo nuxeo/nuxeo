@@ -32,7 +32,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -232,6 +231,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Boolean.FALSE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
+
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
         assertEquals("cmis:folder", type.getParentTypeId());
@@ -239,9 +239,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:document",
                 null);
-        assertEquals(Boolean.TRUE, type.isCreatable());
+        assertEquals(Boolean.FALSE, type.isCreatable());
         assertNull(type.getParentTypeId());
-        assertEquals("Document", type.getLocalName());
+        assertEquals("cmis:document", type.getLocalName());
         try {
             // nosuchtype, Document is mapped to cmis:document
             repoService.getTypeDefinition(repositoryId, "Document", null);
@@ -263,29 +263,41 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testGetTypeChildren() {
         TypeDefinitionList types = repoService.getTypeChildren(repositoryId,
                 "cmis:folder", Boolean.FALSE, null, null, null);
-        BigInteger numItems = types.getNumItems();
-        assertTrue(numItems.intValue() > 2);
-        TypeDefinition t = null;
+        List<String> ids = new LinkedList<String>();
         for (TypeDefinition type : types.getList()) {
-            if (type.getId().equals("OrderedFolder")) {
-                t = type;
-            }
+            assertNull(type.getPropertyDefinitions());
+            ids.add(type.getId());
         }
-        assertNotNull(t);
-        assertNull(t.getPropertyDefinitions());
+        assertTrue(ids.contains("Folder"));
+        assertTrue(ids.contains("Root"));
+        assertTrue(ids.contains("Domain"));
+        assertTrue(ids.contains("OrderedFolder"));
+        assertTrue(ids.contains("Workspace"));
 
         // check property definition inclusion
-        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
-                Boolean.TRUE, null, null, null);
-        t = null;
+        types = repoService.getTypeChildren(repositoryId,
+                BaseTypeId.CMIS_FOLDER.value(), Boolean.TRUE, null, null, null);
         for (TypeDefinition type : types.getList()) {
-            if (type.getId().equals("OrderedFolder")) {
-                t = type;
-            }
+            Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
+            assertNotNull(pd);
+            // dublincore in all types
+            assertTrue(pd.keySet().contains("dc:title"));
         }
-        Map<String, PropertyDefinition<?>> propDefs = t.getPropertyDefinitions();
-        assertNotNull(propDefs);
-        assertTrue(propDefs.keySet().contains("dc:title"));
+
+        types = repoService.getTypeChildren(repositoryId,
+                BaseTypeId.CMIS_DOCUMENT.value(), Boolean.TRUE, null, null,
+                null);
+        ids = new LinkedList<String>();
+        for (TypeDefinition type : types.getList()) {
+            Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
+            assertNotNull(pd);
+            ids.add(type.getId());
+            // dublincore in all types
+            assertTrue(pd.keySet().contains("dc:title"));
+        }
+        assertTrue(ids.contains("File"));
+        assertTrue(ids.contains("Note"));
+        assertTrue(ids.contains("MyDocType"));
 
         // nonexistent type
         try {

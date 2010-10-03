@@ -47,7 +47,6 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -149,10 +148,11 @@ public class NuxeoRepository {
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
         TypeManagerImpl typeManager = new TypeManagerImpl();
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisDocument());
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisFolder());
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,
-                typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT,
+                typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,
                 typesChildren, done, schemaManager);
         return typeManager;
     }
@@ -165,10 +165,15 @@ public class NuxeoRepository {
         }
         done.add(name);
         DocumentType dt = schemaManager.getDocumentType(name);
-        if (dt.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
-            return;
+        String parentTypeId = NuxeoTypeHelper.getParentTypeId(dt);
+        if (parentTypeId != null) {
+            if (typeManager.getTypeById(parentTypeId) == null) {
+                // if parent was ignored, reparent under cmis:document
+                parentTypeId = BaseTypeId.CMIS_DOCUMENT.value();
+            }
+            typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt,
+                    parentTypeId));
         }
-        typeManager.addTypeDefinition(NuxeoTypeHelper.construct(dt));
         // recurse in children
         List<String> children = typesChildren.get(name);
         if (children == null) {

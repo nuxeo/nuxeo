@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -62,8 +63,10 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * <p>
  * Maps Nuxeo types to CMIS types using the following rules:
  * <ul>
- * <li>The Document type is mapped to a non-creatable cmis:document,</li>
- * <li>A synthetic non-creatable cmis:folder is added,</li>
+ * <li>Only types containing dublincore are exposed,</li>
+ * <li>cmis:document and cmis:folder expose dublincore, and are not creatable,</li>
+ * <li>The Document type is not exposed,</li>
+ * <li>Types inheriting from Document are exposed as inheriting cmis:document,</li>
  * <li>The Folder type is mapped to a concrete subtype of cmis:folder,</li>
  * <li>Other folderish types directly under Folder are mapped to subtypes of
  * cmis:folder as well.</li>
@@ -79,6 +82,8 @@ public class NuxeoTypeHelper {
 
     public static final String NUXEO_ORDERED_FOLDER = "OrderedFolder";
 
+    public static final String NX_DUBLINCORE = "dublincore";
+
     public static final String NX_DC_TITLE = "dc:title";
 
     public static final String NX_DC_CREATED = "dc:created";
@@ -89,28 +94,45 @@ public class NuxeoTypeHelper {
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
-    public static TypeDefinition construct(DocumentType documentType) {
+    /**
+     * Gets the remapped parent type id, or {@code null} if the type is to be
+     * ignored.
+     */
+
+    public static String getParentTypeId(DocumentType documentType) {
+        String nuxeoTypeId = documentType.getName();
+        if (NuxeoTypeHelper.NUXEO_DOCUMENT.equals(nuxeoTypeId)
+                || documentType.getFacets().contains(
+                        FacetNames.HIDDEN_IN_NAVIGATION)
+                || !documentType.hasSchema(NuxeoTypeHelper.NX_DUBLINCORE)) {
+            // ignore type
+            return null;
+        }
+        if (NUXEO_FOLDER.equals(nuxeoTypeId)) {
+            // Folder has artificial parent cmis:folder
+            return BaseTypeId.CMIS_FOLDER.value();
+        }
+        DocumentType superType = (DocumentType) documentType.getSuperType();
+        if (superType == null) {
+            // TODO relations
+            return null;
+        }
+        String parentId = mappedId(superType.getName());
+        if (NUXEO_FOLDER.equals(parentId)) {
+            // reparent Folder child under cmis:folder
+            parentId = BaseTypeId.CMIS_FOLDER.value();
+        }
+        if (NUXEO_DOCUMENT.equals(parentId)) {
+            // reparent Document child under cmis:document
+            parentId = BaseTypeId.CMIS_DOCUMENT.value();
+        }
+        return parentId;
+    }
+
+    public static TypeDefinition construct(DocumentType documentType,
+            String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
-
-        // parent type id
-        DocumentType superType = (DocumentType) documentType.getSuperType();
-        String parentId;
-        if (id.equals(BaseTypeId.CMIS_DOCUMENT.value())) {
-            parentId = null;
-        } else if (NUXEO_FOLDER.equals(nuxeoTypeId)) {
-            // artificial parent cmis:folder
-            parentId = BaseTypeId.CMIS_FOLDER.value();
-        } else if (NUXEO_ORDERED_FOLDER.equals(nuxeoTypeId)) {
-            // has incorrect type inheritance in Nuxeo
-            parentId = BaseTypeId.CMIS_FOLDER.value();
-        } else {
-            parentId = mappedId(superType.getName());
-            if (NUXEO_FOLDER.equals(parentId)) {
-                // reparent toplevel folder types under cmis:folder
-                parentId = BaseTypeId.CMIS_FOLDER.value();
-            }
-        }
 
         AbstractTypeDefinition t = constructBase(id, parentId,
                 documentType.isFolder(), documentType, nuxeoTypeId, true);
@@ -168,6 +190,15 @@ public class NuxeoTypeHelper {
     }
 
     /**
+     * Constructs the cmis:document type, which is non-creatable and not mapped
+     * to a Nuxeo type.
+     */
+    public static TypeDefinition constructCmisDocument() {
+        return constructBase(BaseTypeId.CMIS_DOCUMENT.value(), null, false,
+                null, null, false);
+    }
+
+    /**
      * Constructs the cmis:folder type, which is non-creatable and not mapped to
      * a Nuxeo type.
      */
@@ -210,7 +241,7 @@ public class NuxeoTypeHelper {
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
             dt.setIsVersionable(Boolean.FALSE);
-            ContentStreamAllowed csa = supportsBlobHolder(documentType) ? ContentStreamAllowed.ALLOWED
+            ContentStreamAllowed csa = (documentType != null && supportsBlobHolder(documentType)) ? ContentStreamAllowed.ALLOWED
                     : ContentStreamAllowed.NOTALLOWED;
             dt.setContentStreamAllowed(csa);
             addDocumentPropertyDefinitions(dt);
@@ -384,9 +415,7 @@ public class NuxeoTypeHelper {
      * Turns a Nuxeo type into a CMIS type.
      */
     protected static String mappedId(String id) {
-        if (id.equals(NUXEO_DOCUMENT)) {
-            return BaseTypeId.CMIS_DOCUMENT.value();
-        }
+        // we don't map any Nuxeo type anymore to cmis:document or cmis:folder
         return id;
     }
 
