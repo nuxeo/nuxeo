@@ -1196,17 +1196,17 @@
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>
-        <version>1.4</version>
+        <version>1.1.5</version>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-core</artifactId>
-        <version>1.4</version>
+        <version>1.1.5</version>
       </dependency>
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-client</artifactId>
-        <version>1.4</version>
+        <version>1.1.5</version>
       </dependency>
       <dependency>
         <groupId>javax.ws.rs</groupId>
