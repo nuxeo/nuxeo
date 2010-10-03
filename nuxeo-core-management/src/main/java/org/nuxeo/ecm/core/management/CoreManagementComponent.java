@@ -128,7 +128,6 @@ public class CoreManagementComponent extends DefaultComponent {
 
     public void onNuxeoServerStartup() {
         getLocalManager().onNuxeoServerStartup();
-        probeRunner.runAllProbes();
     }
 
 }
