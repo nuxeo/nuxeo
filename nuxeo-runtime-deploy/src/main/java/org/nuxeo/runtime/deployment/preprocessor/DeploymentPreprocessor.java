@@ -46,7 +46,6 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class DeploymentPreprocessor {
 
@@ -397,12 +396,8 @@ public class DeploymentPreprocessor {
     }
 
     /**
-     * Read a container fragment metadata file and return the container
+     * Reads a container fragment metadata file and returns the container
      * descriptor.
-     * 
-     * @param file
-     * @return
-     * @throws Exception
      */
     protected ContainerDescriptor getContainer(File home, File file)
             throws Exception {
@@ -447,14 +442,10 @@ public class DeploymentPreprocessor {
      * Run preprocessing in the given home directory and using the given list of
      * bundles. Bundles must be ordered by the caller to have same deployment
      * order on all computers.
-     * 
+     * <p>
      * The metadata file is the metadat file to be used to configure the
      * processor. If null the default location will be used (relative to home):
-     * {@link #CONTAINER_FILE}
-     * 
-     * @param home
-     * @param metadata
-     * @param files
+     * {@link #CONTAINER_FILE}.
      */
     public static void process(File home, File metadata, File[] files)
             throws Exception {

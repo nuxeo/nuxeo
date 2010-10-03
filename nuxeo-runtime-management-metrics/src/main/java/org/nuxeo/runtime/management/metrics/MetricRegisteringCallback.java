@@ -25,7 +25,7 @@ public class MetricRegisteringCallback extends JmxRegisterCallback {
 
     @Override
     public void initialize() {
-        for (String name:SimonManager.simonNames()) {
+        for (String name : SimonManager.simonNames()) {
             this.simonCreated(SimonManager.getSimon(name));
         }
     }

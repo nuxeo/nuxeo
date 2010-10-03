@@ -29,7 +29,6 @@ import org.nuxeo.common.collections.DependencyTree;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor> {
 

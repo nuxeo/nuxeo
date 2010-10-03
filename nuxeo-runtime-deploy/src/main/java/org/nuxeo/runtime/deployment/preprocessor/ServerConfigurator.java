@@ -30,7 +30,6 @@ import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * @author jcarsique
- *
  */
 public abstract class ServerConfigurator {
 
@@ -38,9 +37,6 @@ public abstract class ServerConfigurator {
 
     protected final ConfigurationGenerator generator;
 
-    /**
-     * @param configurationGenerator
-     */
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
     }

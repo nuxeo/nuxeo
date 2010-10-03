@@ -41,7 +41,7 @@ import org.nuxeo.common.Environment;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- * 
+ *
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -58,7 +58,7 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     * 
+     *
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
@@ -200,7 +200,7 @@ public class ConfigurationGenerator {
     /**
      * Initialize configurator, check requirements and load current
      * configuration
-     * 
+     *
      * @return returns true if current install is configurable, else returns
      *         false
      */
@@ -379,10 +379,9 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in nuxeo.conf
-     * 
+     * Save changed parameters in {@code nuxeo.conf}.
+     *
      * @param changedParameters Map of modified parameters
-     * @throws ConfigurationException
      */
     public void saveConfiguration(Map<String, String> changedParameters)
             throws ConfigurationException {
@@ -392,11 +391,6 @@ public class ConfigurationGenerator {
         writeConfiguration(loadConfiguration(), changedParameters);
     }
 
-    /**
-     * @param changedParameters
-     * @param newContent
-     * @throws ConfigurationException
-     */
     private void writeConfiguration(StringBuffer newContent,
             Map<String, String> changedParameters)
             throws ConfigurationException {
@@ -431,10 +425,6 @@ public class ConfigurationGenerator {
         }
     }
 
-    /**
-     * @param newContent
-     * @throws ConfigurationException
-     */
     private StringBuffer loadConfiguration() throws ConfigurationException {
         StringBuffer newContent = new StringBuffer();
         BufferedReader reader = null;

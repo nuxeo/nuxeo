@@ -23,7 +23,6 @@ import java.io.File;
 
 /**
  * @author jcarsique
- *
  */
 public class JettyConfigurator extends ServerConfigurator {
 

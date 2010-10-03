@@ -46,7 +46,7 @@ public class MetricRegisterer {
 
     public void registerMXBean(Object mbean) {
         String name = mbean.getClass().getSimpleName();
-        registerMXBean(mbean,name);
+        registerMXBean(mbean, name);
     }
 
     public void registerMXBean(Object mbean, String name) {

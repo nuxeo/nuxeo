@@ -30,7 +30,6 @@ import org.nuxeo.common.utils.TextTemplate;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class Template {
 
@@ -147,8 +146,8 @@ public class Template {
 
     }
 
-    /**
-     * XXX Remove the following methods when deployment-fragment.xml files will
+    /*
+     * TODO: Remove the following methods when deployment-fragment.xml files will
      * be fixed. These files must not contain <modue><java>...</java></module>
      * declarations.
      */
@@ -156,10 +155,7 @@ public class Template {
     /**
      * Wrapper method introduced to fix JEE java modules in application
      * template. XXX When this will be solved in trunk you can remove this
-     * method and simply call tc.getContent();
-     * 
-     * @param tc
-     * @return
+     * method and simply call {@code tc.getContent();}.
      */
     protected String getContent(TemplateContribution tc,
             Map<String, String> context) {
@@ -177,10 +173,11 @@ public class Template {
         return "\n" + content.trim() + "\n";
     }
 
-    protected static final Pattern JAVA_MODULE = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
+    protected static final Pattern JAVA_MODULE
+            = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
 
     /**
-     * Remove <module><java>...</java></module> from application.xml
+     * Remove {@code <module><java>...</java></module>} from {@code application.xml}
      * contributions. This a temporary fix to remove incorrect java module
      * declarations from deployment-fragments - this should be fixed in each
      * fragment.
