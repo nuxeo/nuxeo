@@ -12,7 +12,7 @@
 
     <h1>Image collection: ${collection}</h1>
     <#if (Context.principal)>
-    <form action="${Root.path}/upload"
+    <form action="${Root.path}/manage/upload"
           enctype="multipart/form-data" method="post">
       <p>
         <input type="file" name="file" size="40" />

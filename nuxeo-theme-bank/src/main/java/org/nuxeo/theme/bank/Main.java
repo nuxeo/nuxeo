@@ -42,7 +42,6 @@ import javax.ws.rs.core.StreamingOutput;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,25 +70,12 @@ public class Main extends ModuleRoot {
         return getTemplate("index.ftl");
     }
 
-    @POST
-    @Path("upload")
-    public Object uploadFile() {
-        FormData form = ctx.getForm();
-
-        String bankName = form.getString("bank");
-        String collection = form.getString("collection");
-        String redirectUrl = form.getString("redirect_url");
-
-        FileItem fileItem = form.getFileItem("file");
-        if (!fileItem.isFormField()) {
-            final byte[] fileData = fileItem.get();
-            final String filename = fileItem.getName();
-
-            String path = String.format("%s/image/%s", bankName, collection);
-            BankManager.createFile(path, filename, fileData);
-        }
-
-        return redirect(redirectUrl);
+    /*
+     * Management mode
+     */
+    @Path("manage")
+    public Object getManagement() {
+        return newObject("Management");
     }
 
     /*
@@ -255,14 +241,16 @@ public class Main extends ModuleRoot {
     }
 
     @GET
-    @Path("{bank}/style/{collection}/{resource}/view")
-    public Object renderStyleView(@PathParam("bank") String bank,
+    @Path("{bank}/style/{collection}/{resource}/{action}")
+    public Object renderStyle(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
-            @PathParam("resource") String resource) {
+            @PathParam("resource") String resource,
+            @PathParam("action") String action) {
         File file = BankManager.getStyleFile(bank, collection, resource);
         String content = BankUtils.getFileContent(file);
         return getTemplate("style.ftl").arg("content", content).arg("bank",
-                bank).arg("resource", resource).arg("collection", collection);
+                bank).arg("resource", resource).arg("collection", collection).arg(
+                "action", action);
     }
 
     @GET
@@ -537,16 +525,7 @@ public class Main extends ModuleRoot {
         return BankManager.getBankNames();
     }
 
-    public static List<String> getCollections(String bank, String typeName) {
-        return BankManager.getCollections(bank, typeName);
-    }
-
-    public static List<String> getItemsInCollection(String bank,
-            String typeName, String collection) {
-        return BankManager.getItemsInCollection(bank, typeName, collection);
-    }
-
-    private static StreamingOutput streamFile(final File file) {
+    public static StreamingOutput streamFile(final File file) {
         return new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException,
@@ -563,6 +542,15 @@ public class Main extends ModuleRoot {
                 }
             }
         };
+    }
+
+    public static List<String> getCollections(String bank, String typeName) {
+        return BankManager.getCollections(bank, typeName);
+    }
+
+    public static List<String> getItemsInCollection(String bank,
+            String typeName, String collection) {
+        return BankManager.getItemsInCollection(bank, typeName, collection);
     }
 
     private Object noPreview() {

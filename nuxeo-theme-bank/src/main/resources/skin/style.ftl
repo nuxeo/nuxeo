@@ -19,9 +19,30 @@
 
   <@block name="content">
     <h1>Style: ${resource?replace('.css', '')}</h1>
+
+    <#if action = 'view'>
+    <div class="actionBar">
+    <a href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
+    <img src="${basePath}/theme-banks/skin/img/edit.png" />
+    Edit</a>
+    </div>
     <pre class="brush: css; toolbar: false">
     ${content}
     </pre>
+    </#if>
+
+    <#if action = 'edit'>
+    <form>
+      <div>
+        <textarea style="width: 100%; height: 300px" class="" name="css">${content}</textarea>
+        <div>
+        <button>SAVE</button>
+        <button>Cancel</button>
+        </div>
+      </div>
+    </form>
+    </#if>
+
   </@block>
 
 </@extends>
