@@ -751,9 +751,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void start(Xid xid, int flags) throws XAException {
         try {
             xaresource.start(xid, flags);
+            if (log.isDebugEnabled()) {
+                log.debug("XA start on " + xid.getFormatId());
+            }
         } catch (XAException e) {
             checkConnectionReset(e);
-            log.error("XA error on start: " + e);
+            log.error("XA start error on " + xid.getFormatId(), e);
             throw e;
         }
     }
@@ -761,12 +764,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
+            if (log.isDebugEnabled()) {
+                log.debug("XA end on " + xid.getFormatId());
+            }
         } catch (NullPointerException e) {
             // H2 when no active transaction
-            log.error("XA error on end: " + e, e);
+            log.error("XA end error on " + xid, e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
-            log.error("XA error on end: " + e, e);
+            log.error("XA end error on " + xid, e);
             throw e;
         }
     }
@@ -775,7 +781,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             return xaresource.prepare(xid);
         } catch (XAException e) {
-            log.error("XA error on prepare: " + e);
+            log.error("XA prepare error on  " + xid, e);
             throw e;
         }
     }
@@ -784,7 +790,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             xaresource.commit(xid, onePhase);
         } catch (XAException e) {
-            log.error("XA error on commit: " + e);
+            log.error("XA commit error on  " + xid, e);
             throw e;
         }
     }
