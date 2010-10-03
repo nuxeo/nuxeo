@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.event;
 
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Event Service Component, allowing registration of contributions and doing the
+ * event service shutdown upon deactivation.
  */
 public class EventServiceComponent extends DefaultComponent {
 
     public static final String EVENT_LISTENER_XP = "listener";
+
+    public static final long DEFAULT_SHUTDOWN_TIMEOUT = 5 * 1000; // 5 seconds
 
     protected EventServiceImpl service;
 
@@ -39,7 +43,12 @@ public class EventServiceComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        service = null;
+        if (service != null) {
+            String s = Framework.getProperty("org.nuxeo.ecm.core.event.shutdown.timeoutMillis");
+            long timeout = s == null ? DEFAULT_SHUTDOWN_TIMEOUT : Long.parseLong(s);
+            service.shutdown(timeout);
+            service = null;
+        }
     }
 
     @Override

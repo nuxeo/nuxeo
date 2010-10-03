@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -47,9 +47,6 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
  * Listeners are of two types: {@link EventListener} notified as the event is
  * raised and {@link PostCommitEventListener} notified after the transaction was
  * committed.
- *
- * @author Bogdan Stefanescu
- * @author Florent Guillaume
  */
 public interface EventService extends EventProducer {
 
@@ -162,6 +159,14 @@ public interface EventService extends EventProducer {
      * Waits until all asynchronous tasks are finished.
      */
     void waitForAsyncCompletion();
+
+    /**
+     * Waits until all asynchronous tasks are finished, but waits no longer than
+     * the given number of milliseconds.
+     *
+     * @param timeout the maximum time to wait for, in milliseconds
+     */
+    void waitForAsyncCompletion(long timeout);
 
     /**
      * Adds an event transaction listener.
