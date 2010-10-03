@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.opencmis.client.api.ChangeEvent;
+import org.apache.chemistry.opencmis.client.api.ChangeEvents;
 import org.apache.chemistry.opencmis.client.api.ObjectFactory;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -38,6 +40,7 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyId;
@@ -177,6 +180,19 @@ public class NuxeoObjectFactory implements ObjectFactory {
         }
         throw new CmisRuntimeException("Unknown base class: "
                 + typeDefinition.getClass().getName());
+    }
+
+    @Override
+    public ChangeEvent convertChangeEvent(ObjectData objectData) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ChangeEvents convertChangeEvents(String changeLogToken,
+            ObjectList objectList) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
 }

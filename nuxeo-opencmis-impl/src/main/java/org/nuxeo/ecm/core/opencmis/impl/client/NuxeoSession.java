@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.chemistry.opencmis.client.api.ChangeEvent;
+import org.apache.chemistry.opencmis.client.api.ChangeEvents;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
@@ -239,7 +239,16 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken) {
+    public ChangeEvents getContentChanges(String changeLogToken,
+            boolean includeProperties, long maxNumItems) {
+        return getContentChanges(changeLogToken, includeProperties,
+                maxNumItems, getDefaultContext());
+    }
+
+    @Override
+    public ChangeEvents getContentChanges(String changeLogToken,
+            boolean includeProperties, long maxNumItems,
+            OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
