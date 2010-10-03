@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.core.api.operation;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Perform a ping operation. Can be used in remote client (NxRCP or NxShell) to
  * test connectivity.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
  */
-public class PingOperation extends Operation {
+public class PingOperation extends Operation<Date> {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,9 +37,9 @@ public class PingOperation extends Operation {
     }
 
     @Override
-    public Object doRun(ProgressMonitor montior) throws Exception {
-        // do nothing
-        return null;
+    public Date doRun(ProgressMonitor montior) throws Exception {
+        session.save();
+        return Calendar.getInstance().getTime();
     }
 
 }
