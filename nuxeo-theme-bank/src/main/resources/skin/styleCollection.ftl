@@ -5,7 +5,9 @@
   </@block>
 
   <@block name="content">
-    <h1>Style collection: ${collection}</h1>
+    <h1>Style collection: ${collection}
+      <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/view">Refresh</a>
+    </h1>
 
     <div class="album">
       <#list styles as style>

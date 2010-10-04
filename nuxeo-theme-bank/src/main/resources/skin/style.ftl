@@ -18,7 +18,9 @@
   </@block>
 
   <@block name="content">
-    <h1>Style: ${resource?replace('.css', '')}</h1>
+    <h1>Style: ${resource?replace('.css', '')}
+      <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view">Refresh</a>
+    </h1>
 
     <#if action = 'view'>
     <div class="actionBar">

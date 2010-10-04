@@ -84,7 +84,7 @@ public class Main extends ModuleRoot {
     @GET
     @Path("{bank}")
     public Object displayBank(@PathParam("bank") String bank) {
-        return getTemplate("ui.ftl").arg("bank", bank);
+        return getTemplate("index.ftl").arg("bank", bank);
     }
 
     @GET

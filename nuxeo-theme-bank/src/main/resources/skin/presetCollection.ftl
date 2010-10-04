@@ -5,7 +5,9 @@
   </@block>
 
   <@block name="content">
-    <h1>Preset collection: ${collection}</h1>
+    <h1>Preset collection: ${collection}
+      <a style="float: right" href="${Root.getPath()}/${bank}/preset/${collection}/view">Refresh</a>
+    </h1>
     <div class="album">
       <#list presets as preset>
         <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset-${collection}-${preset}')">

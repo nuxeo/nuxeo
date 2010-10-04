@@ -10,7 +10,11 @@
 
   <frameset cols="15%, *" frameborder="yes" framespacing="10">
     <frame name="navtree" src="${Root.getPath()}/navtree" style="background-color: #eee">
-    <frame name="main" src="${Root.getPath()}/banks/view">
+    <#if bank>
+      <frame name="main" src="${Root.getPath()}/${bank}/view">
+    <#else>
+      <frame name="main" src="${Root.getPath()}/banks/view">
+    </#if>
   </frameset>
 </frameset>
 

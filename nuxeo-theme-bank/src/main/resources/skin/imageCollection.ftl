@@ -2,6 +2,22 @@
 
 <@extends src="base.ftl">
 
+  <@block name="header_scripts">
+    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jquery.js"></script>
+    <script type="text/javascript">
+      var showImageUploadForm = function (){
+        $('#uploadImageForm').show();
+        $('#imageGallery').hide();
+        return false;
+      }
+      var hideImageUploadForm = function (){
+        $('#uploadImageForm').hide();
+        $('#imageGallery').show();
+        return false;
+      }
+    </script>
+  </@block>
+
   <@block name="title">
       ${collection} image
   </@block>
@@ -10,21 +26,31 @@
 
     <#assign redirect_url="${Root.getPath()}/${bank}/image/${collection}/view" />
 
-    <h1>Image collection: ${collection}</h1>
+    <h1>Image collection: ${collection}
+      <a style="float: right;" href="${Root.getPath()}/${bank}/image/${collection}/view">Refresh</a>
+      <#if (Context.principal)>
+        <a style="float: right; margin-right: 5px" href="javascript:void(0)" onclick="showImageUploadForm()">Upload image</a>
+      </#if>
+    </h1>
+
     <#if (Context.principal)>
-    <form action="${Root.path}/manage/upload"
+    <form style="display: none" id="uploadImageForm" action="${Root.path}/manage/upload"
           enctype="multipart/form-data" method="post">
+      <h2>Upload an image</h2>
       <p>
-        <input type="file" name="file" size="40" />
+        <input type="file" name="file" size="30" />
         <input type="hidden" name="bank" value="${bank}" />
         <input type="hidden" name="collection" value="${collection}" />
         <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '+')}" />
-        <button>Upload image</button>
+      </p>
+      <p>
+      <button>Upload</button>
+        <button onclick="hideImageUploadForm(); return false">Cancel</button>
       </p>
     </form>
     </#if>
 
-    <div class="album">
+    <div class="album" id="imageGallery">
       <#list images as image>
         <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image-${collection}-${image}')">
           <div class="imageSingle">

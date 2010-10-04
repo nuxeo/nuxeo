@@ -6,7 +6,9 @@
 
   <@block name="content">
 
-    <h1>Images</h1>
+    <h1>Images
+      <a style="float: right" href="${Root.getPath()}/${bank}/image/view">Refresh</a>
+    </h1>
 
     <div class="album">
       <#list collections as collection>
