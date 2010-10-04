@@ -25,23 +25,19 @@ import org.nuxeo.connect.update.impl.task.PostInstallCommand;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.w3c.dom.Element;
 
 /**
- * Flush any cache held by the core. This should be used when document types are
- * installed or removed.
- * 
- * The inverse of this command is itself.
+ * Flush all nuxeo caches.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class FlushCoreCache extends PostInstallCommand {
+public class ReloadProperties extends PostInstallCommand {
 
-    public final static String ID = "flush-core";
+    public final static String ID = "reload-properties";
 
-    public FlushCoreCache() {
+    public ReloadProperties() {
         super(ID);
     }
 
@@ -55,11 +51,11 @@ public class FlushCoreCache extends PostInstallCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
-            Framework.getLocalService(ReloadService.class).reloadRepository();
+            Framework.getRuntime().reloadProperties();
         } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
+            throw new PackageException("Failed to reload properties", e);
         }
-        return new FlushCoreCache();
+        return new ReloadProperties();
     }
 
     public void readFrom(Element element) throws PackageException {
@@ -69,5 +65,4 @@ public class FlushCoreCache extends PostInstallCommand {
         writer.start(ID);
         writer.end();
     }
-
 }

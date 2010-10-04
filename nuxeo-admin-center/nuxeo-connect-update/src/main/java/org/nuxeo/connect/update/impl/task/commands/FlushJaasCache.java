@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
-import org.nuxeo.connect.update.impl.task.AbstractCommand;
 import org.nuxeo.connect.update.impl.task.Command;
+import org.nuxeo.connect.update.impl.task.PostInstallCommand;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class FlushJaasCache extends AbstractCommand {
+public class FlushJaasCache extends PostInstallCommand {
 
     public final static String ID = "flush-jaas";
 

@@ -141,7 +141,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         writeCommand(writer);
         writer.end("install");
         builder.addInstallScript(writer.toString());
-        System.out.println(builder.buildManifest());
+        // System.out.println(builder.buildManifest());
         return builder.build();
     }
 
@@ -182,6 +182,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     @Test
     public void testInstallThenUninstall() throws Exception {
         File zip = createPackage();
+        zip.deleteOnExit();
         LocalPackage pkg = service.addPackage(zip);
         if (install(pkg)) {
             // check package installed

@@ -43,9 +43,9 @@ import org.xml.sax.InputSource;
 
 /**
  * A command based task.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class CommandsTask extends AbstractTask {
 
@@ -64,7 +64,7 @@ public abstract class CommandsTask extends AbstractTask {
 
     /**
      * Gte the commands file from where to load commands for this task
-     *
+     * 
      * @param params
      * @return
      */
@@ -80,7 +80,7 @@ public abstract class CommandsTask extends AbstractTask {
     /**
      * Load the commands of this task given the user parameters. The parameter
      * map may be null.
-     *
+     * 
      * @throws PackageException
      */
     protected void loadCommands() throws PackageException {
@@ -95,7 +95,7 @@ public abstract class CommandsTask extends AbstractTask {
 
     /**
      * Get the commands to execute
-     *
+     * 
      * @return
      */
     public List<Command> getCommands() {
@@ -104,7 +104,7 @@ public abstract class CommandsTask extends AbstractTask {
 
     /**
      * Get the command log. These are the commands ran so far.
-     *
+     * 
      * @return
      */
     public List<Command> getCommandLog() {
@@ -113,7 +113,7 @@ public abstract class CommandsTask extends AbstractTask {
 
     /**
      * Add a command to this task
-     *
+     * 
      * @param command
      */
     public void addCommand(Command command) {
@@ -125,11 +125,14 @@ public abstract class CommandsTask extends AbstractTask {
      * own task to o this.
      */
     protected void doRun(Map<String, String> params) throws PackageException {
-        saveParams(params);
         for (Command cmd : commands) {
             Command rollbackCmd = cmd.run(this, params);
             if (rollbackCmd != null) {
-                log.addFirst(rollbackCmd);
+                if (rollbackCmd.isPostInstall()) {
+                    log.add(rollbackCmd);
+                } else {
+                    log.addFirst(rollbackCmd);
+                }
             }
         }
     }

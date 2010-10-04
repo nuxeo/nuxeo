@@ -27,18 +27,18 @@ import org.w3c.dom.Element;
 
 /**
  * All commands have 2 attributes: fail and ignore which are EL expressions.
- *
+ * 
  * If ignore is defined and evaluated to true then the command will be ignored
  * (null is returned as the inverse command) If fail is defined and evaluated to
  * true then the validation fails.
- *
+ * 
  * Commands extending this class must implement the {@link #doExecute()} and
  * {@link #doValidate(ValidationStatus)} methods instead of the one in the
  * interface. These methods are first testing for ignore and fail guards and
  * then if needed delegated to the doXXX method versions.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class AbstractCommand implements Command {
 
@@ -53,6 +53,11 @@ public abstract class AbstractCommand implements Command {
     public AbstractCommand(String id) {
         this.id = id;
         guardVars = new HashMap<String, Object>();
+    }
+
+    @Override
+    public boolean isPostInstall() {
+        return false;
     }
 
     protected abstract Command doRun(Task task, Map<String, String> prefs)
