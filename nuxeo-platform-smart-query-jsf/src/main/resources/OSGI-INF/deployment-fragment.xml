@@ -10,6 +10,22 @@
 
   </extension>
 
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>smart_search_form</from-outcome>
+      <to-view-id>/search/smart_search_form.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>smart_search_results</from-outcome>
+      <to-view-id>/search/smart_search_results.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
   <install>
 
     <!--  unzip the war template -->

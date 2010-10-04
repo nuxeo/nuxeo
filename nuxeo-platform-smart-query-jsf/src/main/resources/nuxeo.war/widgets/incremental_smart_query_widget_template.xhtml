@@ -15,30 +15,26 @@
     <a4j:outputPanel ajaxRendered="true" id="#{widget.id}_query_panel">
 
       <c:if test="#{value.showLogicalOperator}">
-        <a4j:region id="#{widget.id}_logical_operator_region">
-          <h:selectOneMenu value="#{value.logicalOperator}"
-            id="#{widget.id}_logical_operator"
-            required="true">
-            <f:selectItem itemLabel="#{messages['label.smart.query.operator.AND']}"
-              itemValue="AND" />
-            <f:selectItem itemLabel="#{messages['label.smart.query.operator.OR']}"
-              itemValue="OR" />
-          </h:selectOneMenu>
-          <h:message for="#{widget.id}_logical_operator" class="errorMessage" />
-        </a4j:region>
+        <h:selectOneMenu value="#{value.logicalOperator}"
+          id="#{widget.id}_logical_operator"
+          required="true">
+          <f:selectItem itemLabel="#{messages['label.smart.query.operator.AND']}"
+            itemValue="AND" />
+          <f:selectItem itemLabel="#{messages['label.smart.query.operator.OR']}"
+            itemValue="OR" />
+        </h:selectOneMenu>
+        <h:message for="#{widget.id}_logical_operator" class="errorMessage" />
       </c:if>
 
       <c:if test="#{value.showAddNotOperator}">
-        <a4j:region id="#{widget.id}_add_not_operator_region">
-          <h:selectOneMenu value="#{value.addNotOperator}"
-            id="#{widget.id}_add_not_operator">
-            <f:selectItem itemLabel="" itemValue="false" />
-            <f:selectItem
-              itemLabel="#{messages['label.smart.query.operator.NOT']}"
-              itemValue="true" />
-          </h:selectOneMenu>
-          <h:message for="#{widget.id}_add_not_operator" class="errorMessage" />
-        </a4j:region>
+        <h:selectOneMenu value="#{value.addNotOperator}"
+          id="#{widget.id}_add_not_operator">
+          <f:selectItem itemLabel="" itemValue="false" />
+          <f:selectItem
+            itemLabel="#{messages['label.smart.query.operator.NOT']}"
+            itemValue="true" />
+        </h:selectOneMenu>
+        <h:message for="#{widget.id}_add_not_operator" class="errorMessage" />
       </c:if>
 
       <nxl:layout name="#{widgetProperty_selectionLayout}" mode="edit_rows"
@@ -46,23 +42,19 @@
 
       <div>
         <c:if test="#{value.showOpenParenthesis}">
-          <a4j:region id="#{widget.id}_open_parenthesis_region">
-            <h:selectBooleanCheckbox value="#{value.openParenthesis}"
-              id="#{widget.id}_open_parenthesis" />
-            <h:outputLabel for="#{widget.id}_open_parenthesis"
-              value="#{messages['label.smart.query.openParenthesis']}" />
-            <h:message for="#{widget.id}_open_parenthesis" class="errorMessage" />
-          </a4j:region>
+          <h:selectBooleanCheckbox value="#{value.openParenthesis}"
+            id="#{widget.id}_open_parenthesis" />
+          <h:outputLabel for="#{widget.id}_open_parenthesis"
+            value="#{messages['label.smart.query.openParenthesis']}" />
+          <h:message for="#{widget.id}_open_parenthesis" class="errorMessage" />
         </c:if>      
   
         <c:if test="#{value.showCloseParenthesis}">
-          <a4j:region id="#{widget.id}_close_parenthesis_region">
-            <h:selectBooleanCheckbox value="#{value.closeParenthesis}"
-              id="#{widget.id}_close_parenthesis" />
-            <h:outputLabel for="#{widget.id}_close_parenthesis"
-              value="#{messages['label.smart.query.closeParenthesis']}" />
-            <h:message for="#{widget.id}_close_parenthesis" class="errorMessage" />
-          </a4j:region>
+          <h:selectBooleanCheckbox value="#{value.closeParenthesis}"
+            id="#{widget.id}_close_parenthesis" />
+          <h:outputLabel for="#{widget.id}_close_parenthesis"
+            value="#{messages['label.smart.query.closeParenthesis']}" />
+          <h:message for="#{widget.id}_close_parenthesis" class="errorMessage" />
         </c:if>
       </div>
 

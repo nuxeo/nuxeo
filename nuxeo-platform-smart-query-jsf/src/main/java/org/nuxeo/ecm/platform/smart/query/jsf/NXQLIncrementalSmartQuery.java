@@ -17,16 +17,13 @@
 package org.nuxeo.ecm.platform.smart.query.jsf;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 import org.nuxeo.ecm.platform.smart.query.IncrementalSmartQuery;
-import org.nuxeo.ecm.platform.ui.web.contentview.NXQLQueryBuilder;
 
 /**
  * @author Anahide Tchertchian
@@ -48,13 +45,8 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
         super(existingQueryPart);
     }
 
-    public String getQuery(String selectPart, String fixedPart,
-            List<SortInfo> sortInfos) {
-        return getQuery(selectPart, existingQueryPart, fixedPart, sortInfos);
-    }
-
     @Override
-    public void buildQuery() {
+    public String buildQuery() {
         StringBuilder builder = new StringBuilder();
         if (existingQueryPart != null) {
             builder.append(existingQueryPart);
@@ -67,7 +59,7 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
             builder.append(logicalOperator);
             builder.append(" ");
         }
-        if (addNotOperator != null) {
+        if (Boolean.TRUE.equals(addNotOperator)) {
             builder.append("NOT ");
         }
         if (leftExpression != null) {
@@ -118,6 +110,7 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
         String newValue = builder.toString().trim();
         clear();
         existingQueryPart = newValue;
+        return existingQueryPart;
     }
 
     @Override
@@ -133,22 +126,6 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
             return false;
         }
         return true;
-    }
-
-    protected String getQuery(String selectPart, String whereClause,
-            String fixedPart, List<SortInfo> sortInfos) {
-        StringBuilder queryBuilder = new StringBuilder();
-        if (selectPart == null) {
-            selectPart = GENERIC_QUERY_SELECT;
-        }
-        queryBuilder.append(selectPart);
-        queryBuilder.append(whereClause);
-        String sortClause = NXQLQueryBuilder.getSortClause(sortInfos.toArray(new SortInfo[] {}));
-        if (sortClause != null && sortClause.length() > 0) {
-            queryBuilder.append(" ");
-            queryBuilder.append(sortClause);
-        }
-        return queryBuilder.toString().trim();
     }
 
 }

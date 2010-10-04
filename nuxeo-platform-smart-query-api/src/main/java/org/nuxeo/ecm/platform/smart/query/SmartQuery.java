@@ -17,19 +17,13 @@
 package org.nuxeo.ecm.platform.smart.query;
 
 import java.io.Serializable;
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
  * @author Anahide Tchertchian
  */
 public interface SmartQuery extends Serializable {
 
-    void buildQuery();
-
-    String getQuery(String selectPart, String fixedPart,
-            List<SortInfo> sortInfos);
+    String buildQuery();
 
     boolean isValid();
 
