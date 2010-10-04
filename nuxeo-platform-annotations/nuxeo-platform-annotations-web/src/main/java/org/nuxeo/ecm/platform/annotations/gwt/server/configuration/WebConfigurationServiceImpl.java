@@ -57,8 +57,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         WebConfigurationService {
 
-    private static final String NUXEO = VirtualHostHelper.getContextPathProperty() + "/";
-
     private static final long serialVersionUID = 2389527283775608787L;
 
     private static final Log log = LogFactory.getLog(WebConfigurationServiceImpl.class);
@@ -69,20 +67,24 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     private NuxeoPrincipal currentUser;
 
-    static {
-        try {
-            webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
-        } catch (Exception e) {
-            log.error(
-                    "Unable to find WebAnnotationConfigurationService service",
-                    e);
+    protected static WebAnnotationConfigurationService getConfig() {
+        if (webAnnotationConfigurationService==null) {
+            try {
+                webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
+            } catch (Exception e) {
+                log.error(
+                        "Unable to find WebAnnotationConfigurationService service",
+                        e);
+            }
         }
+        return webAnnotationConfigurationService;
     }
+
 
     public WebConfiguration getWebConfiguration(String url) {
         WebConfiguration conf = new WebConfiguration();
 
-        List<WebAnnotationDefinitionDescriptor> types = webAnnotationConfigurationService.getEnabledWebAnnotationDefinitions();
+        List<WebAnnotationDefinitionDescriptor> types = getConfig().getEnabledWebAnnotationDefinitions();
 
         for (WebAnnotationDefinitionDescriptor type : types) {
             Map<String, String[]> fields = new HashMap<String, String[]>();
@@ -96,26 +98,25 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
                     type.isInMenu(), fields));
         }
 
-        UserInfoMapper userInfoMapper = webAnnotationConfigurationService.getUserInfoMapper();
+        UserInfoMapper userInfoMapper = getConfig().getUserInfoMapper();
         if (userInfoMapper != null) {
             conf.setUserInfo(userInfoMapper.getUserInfo(currentUser));
         }
 
-        WebPermission webPermission = webAnnotationConfigurationService.getWebPermission();
+        WebPermission webPermission = getConfig().getWebPermission();
         if (webPermission != null) {
             conf.setCanAnnotate(canAnnotate(url, webPermission));
         }
 
-        Map<String, FilterDescriptor> filters = webAnnotationConfigurationService.getFilterDefinitions();
+        Map<String, FilterDescriptor> filters = getConfig().getFilterDefinitions();
         for (FilterDescriptor filter : filters.values()) {
             conf.addFilter(filter.getOrder(), filter.getName(),
                     filter.getIcon(), filter.getType(), filter.getAuthor(),
                     filter.getFields());
         }
 
-        conf.setDisplayedFields(webAnnotationConfigurationService.getDisplayedFields());
-        conf.setFieldLabels(webAnnotationConfigurationService.getFieldLabels());
-
+        conf.setDisplayedFields(getConfig().getDisplayedFields());
+        conf.setFieldLabels(getConfig().getFieldLabels());
         return conf;
     }
 
@@ -160,7 +161,8 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
     }
 
     protected String getBaseUrl(String url) {
-        return url.substring(0, url.lastIndexOf(NUXEO) + NUXEO.length());
+        String nxUrl = VirtualHostHelper.getContextPathProperty() + "/";
+        return url.substring(0, url.lastIndexOf(nxUrl) + nxUrl.length());
     }
 
     protected CoreSession getCoreSession(DocumentLocation docLocation)

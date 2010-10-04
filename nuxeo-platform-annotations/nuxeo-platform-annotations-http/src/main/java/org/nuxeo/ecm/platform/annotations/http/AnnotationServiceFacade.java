@@ -45,23 +45,29 @@ public class AnnotationServiceFacade {
 
     private static final String TRANSIENT_GRAPH_TYPE = "jena";
 
-    private final AnnotationsService service;
+    private AnnotationsService service;
 
     private final AnnotationManager manager = new AnnotationManager();
 
     public AnnotationServiceFacade() throws AnnotationException {
-        try {
-            service = Framework.getService(AnnotationsService.class);
-        } catch (Exception e) {
-            throw new AnnotationException(e);
+    }
+
+    protected AnnotationsService getService() throws AnnotationException {
+        if (service==null) {
+            try {
+                service = Framework.getService(AnnotationsService.class);
+            } catch (Exception e) {
+                throw new AnnotationException(e);
+            }
         }
+        return service;
     }
 
     public void query(String uri, OutputStream outputStream, NuxeoPrincipal name)
             throws AnnotationException {
         List<Annotation> annotations;
         try {
-            annotations = service.queryAnnotations(new URI(uri), null, name);
+            annotations = getService().queryAnnotations(new URI(uri), null, name);
         } catch (URISyntaxException e) {
             throw new AnnotationException(e);
         }
@@ -87,7 +93,7 @@ public class AnnotationServiceFacade {
 
     public void getAnnotation(String annId, NuxeoPrincipal name,
             OutputStream os, String baseUrl) throws AnnotationException {
-        Annotation annotation = service.getAnnotation(annId, name, baseUrl);
+        Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
         manager.writeAnnotation(os, annotation);
     }
 
@@ -95,13 +101,13 @@ public class AnnotationServiceFacade {
             OutputStream outputStream, String baseUrl)
             throws AnnotationException {
         Annotation annotation = manager.getAnnotation(is);
-        annotation = service.updateAnnotation(annotation, name, baseUrl);
+        annotation = getService().updateAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
     public String getAnnotationBody(String id, NuxeoPrincipal name,
             String baseUrl) throws AnnotationException {
-        Annotation annotation = service.getAnnotation(id, name, baseUrl);
+        Annotation annotation = getService().getAnnotation(id, name, baseUrl);
         return annotation.getBodyAsText();
     }
 
@@ -109,21 +115,21 @@ public class AnnotationServiceFacade {
             OutputStream outputStream, String baseUrl)
             throws AnnotationException {
         Annotation annotation = manager.getAnnotation(inputStream);
-        annotation = service.addAnnotation(annotation, name, baseUrl);
+        annotation = getService().addAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
     public void delete(String annId, NuxeoPrincipal name, String baseUrl)
             throws AnnotationException {
-        Annotation annotation = service.getAnnotation(annId, name, baseUrl);
-        service.deleteAnnotation(annotation, name);
+        Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
+        getService().deleteAnnotation(annotation, name);
     }
 
     public void deleteFor(String uri, String annId, NuxeoPrincipal name, String baseUrl)
             throws AnnotationException {
         try {
-            Annotation annotation = service.getAnnotation(annId, name, baseUrl);
-            service.deleteAnnotationFor(new URI(uri), annotation, name);
+            Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
+            getService().deleteAnnotationFor(new URI(uri), annotation, name);
         } catch (URISyntaxException e) {
             throw new AnnotationException(e);
         }
