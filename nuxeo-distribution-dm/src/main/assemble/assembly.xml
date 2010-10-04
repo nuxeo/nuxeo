@@ -61,6 +61,10 @@
   <target name="third-party-libraries">
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:set>
+        <excludes>
+          <artifact artifactId="gwt-dev" />
+          <artifact artifactId="gwt-user" />
+        </excludes>
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
