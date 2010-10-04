@@ -231,6 +231,12 @@ public final class FaceletHandlerHelper {
                         property.getValue());
                 if (attr != null) {
                     attrs.add(attr);
+                } else {
+                    // create corresponding expression in case it's resolved
+                    // correctly
+                    attr = createAttribute(property.getKey(), String.format(
+                            "#{widget.properties.%s}", property.getKey()));
+                    attrs.add(attr);
                 }
             }
         }

@@ -115,6 +115,12 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     prop.getKey()));
             TagAttribute value = helper.createAttribute("value",
                     prop.getValue());
+            if (value == null) {
+                // create corresponding expression in case it's resolved
+                // correctly
+                value = helper.createAttribute("value", String.format(
+                        "#{widget.properties.%s}", prop.getKey()));
+            }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     FaceletHandlerHelper.getTagAttributes(name, value), leaf);
             paramHandlers.add(new ParamHandler(config));
