@@ -309,11 +309,6 @@
         <include name="hibernate-*" />
         <include name="icu4j-*" />
         <include name="imagej-*" />
-        <include name="jackrabbit-api-*" />
-        <include name="jackrabbit-core-*" />
-        <include name="jackrabbit-jcr-commons-*" />
-        <include name="jackrabbit-spi-*" />
-        <include name="jackrabbit-text-extractors-*" />
         <include name="jai_codec-*" />
         <include name="jai_core-*" />
         <include name="javacc-*" />
@@ -329,7 +324,6 @@
         <include name="jbosssx-*" />
         <include name="jca-api-*" />
         <include name="jcip-annotations-*" />
-        <include name="jcr-*" />
         <include name="jetty-annotations-*" />
         <include name="jetty-naming-*" />
         <include name="jetty-plus-*" />
