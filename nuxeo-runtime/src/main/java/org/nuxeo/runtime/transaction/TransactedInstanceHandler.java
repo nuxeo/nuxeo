@@ -18,6 +18,7 @@
 package org.nuxeo.runtime.transaction;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -49,14 +50,22 @@ public class TransactedInstanceHandler<T> implements InvocationHandler{
         return !TransactionHelper.isTransactionActive();
     }
 
+    protected Object doInvoke(Method m, Object[] args) throws Throwable {
+        try {
+            return m.invoke(object, args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        }
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (!requireTransaction(method)) {
-            return method.invoke(object, args);
+            return doInvoke(method, args);
         }
         TransactionHelper.startTransaction();
         try {
-            return method.invoke(object, args);
+            return doInvoke(method, args);
         } catch (Throwable e) {
             TransactionHelper.setTransactionRollbackOnly();
             throw e;
