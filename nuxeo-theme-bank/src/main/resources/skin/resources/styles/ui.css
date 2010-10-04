@@ -3,10 +3,6 @@ body {
   font: 12px Arial, sans-serif;
 }
 
-a {
-  color: #099;
-}
-
 h1 {
   font: bold 12px Tahoma, sans-serif;
   background-color: #666;
@@ -42,11 +38,6 @@ ul {
   padding: 0;
   list-style-position: inside;
   list-style: square;
-}
-
-a {
-  color: #009;
-  text-decoration: none:
 }
 
 table.properties {
@@ -127,6 +118,8 @@ table.properties td.key {
   padding: 20px;
 }
 
+/* Action bar */
+
 .actionBar {
   text-align: right;
 }
@@ -134,10 +127,16 @@ table.properties td.key {
 .actionBar img {
   border: none;
   vertical-align: middle;
-  padding: 0 3px;
+  margin-right: 3px;
+}
+
+.actionBar span {
+  color: #eee;
 }
 
 .actionBar a {
   text-decoration: none;
   font-weight: bold;
+  color: #fff;
+  margin-right: 5px;
 }
