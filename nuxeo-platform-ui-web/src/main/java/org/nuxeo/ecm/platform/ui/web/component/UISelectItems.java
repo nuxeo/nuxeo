@@ -252,7 +252,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
                     items.add(selectItem);
                 }
             }
-        } else {
+        } else if (value != null) {
             log.warn("Could not map values to select items, value is not supported: "
                     + value);
         }
