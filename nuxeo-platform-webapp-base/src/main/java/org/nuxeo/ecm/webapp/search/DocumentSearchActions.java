@@ -77,6 +77,8 @@ public class DocumentSearchActions implements Serializable {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "feedback.search.noKeywords"), null);
+            // also add global message
+            context.addMessage(null, message);
             throw new ValidatorException(message);
         }
         String[] keywords = ((String) value).trim().split(" ");
@@ -86,6 +88,8 @@ public class DocumentSearchActions implements Serializable {
                 FacesMessage message = new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                                 context, "feedback.search.star"), null);
+                // also add global message
+                context.addMessage(null, message);
                 throw new ValidatorException(message);
             }
         }
