@@ -21,8 +21,8 @@ import java.util.EventListener;
 
 import javax.servlet.Servlet;
 
-import org.apache.chemistry.opencmis.server.impl.atompub.BasicAuthCallContextHandler;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
+import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;

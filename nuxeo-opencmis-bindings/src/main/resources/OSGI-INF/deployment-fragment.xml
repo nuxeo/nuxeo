@@ -23,7 +23,7 @@
       </servlet-class>
       <init-param>
         <param-name>callContextHandler</param-name>
-        <param-value>org.apache.chemistry.opencmis.server.impl.atompub.BasicAuthCallContextHandler</param-value>
+        <param-value>org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
       </init-param>
     </servlet>
   </extension>
