@@ -310,8 +310,7 @@ public class NotificationService extends DefaultComponent implements
         options.put("recipients", username);
         options.put("notifName", notification);
 
-        CoreSession session = CoreInstance.getInstance().getSession(
-                doc.getSessionId());
+        CoreSession session = doc.getCoreSession();
         DocumentEventContext ctx = new DocumentEventContext(session, principal,
                 doc);
         ctx.setCategory(DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);

@@ -194,10 +194,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             if (doc == null) {
                 return null;
             }
-            String sid = doc.getSessionId();
-            session = CoreInstance.getInstance().getSession(sid);
+            session = doc.getCoreSession();
         }
-
         return session;
     }
 
