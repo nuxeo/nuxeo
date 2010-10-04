@@ -9,4 +9,11 @@
     </CallbackFactory>
   </extension>
 
+  <!--  add me as a listener of the repository service -->
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.platform.login.jboss.JaasCacheFlusher">
+      <topic>usermanager</topic>
+    </listener>
+  </extension>
+
 </component>

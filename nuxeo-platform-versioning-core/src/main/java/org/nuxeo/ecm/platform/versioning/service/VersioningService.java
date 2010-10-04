@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -206,8 +205,7 @@ public class VersioningService extends DefaultComponent implements
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
-        CoreSession coreSession = CoreInstance.getInstance().getSession(
-                document.getSessionId());
+        CoreSession coreSession = document.getCoreSession();
         if (coreSession == null) {
             throw new ClientException("cannot get core session for doc: "
                     + document);
@@ -385,8 +383,7 @@ public class VersioningService extends DefaultComponent implements
             DocumentModel doc = req.getDocument();
             String currentDocLifeCycleState;
             try {
-                CoreSession coreSession = CoreInstance.getInstance().getSession(
-                        doc.getSessionId());
+                CoreSession coreSession = doc.getCoreSession();
                 if (null == coreSession) {
                     throw new ClientException(
                             "cannot get core session for doc: " + doc);
@@ -576,8 +573,7 @@ public class VersioningService extends DefaultComponent implements
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
-        CoreSession coreSession = CoreInstance.getInstance().getSession(
-                document.getSessionId());
+        CoreSession coreSession = document.getCoreSession();
         if (coreSession == null) {
             throw new ClientException("cannot get core session for doc: "
                     + document);
