@@ -178,12 +178,12 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setRunning(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toRunning, session);
+        followTransition(ElementLifeCycleTransistion.toRunning, session, false);
     }
 
     @Override
     public void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session) {
+            CoreSession session, boolean recursive) {
         try {
             session.saveDocument(document);
             document.followTransition(transition.name());
@@ -192,6 +192,13 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             session.save();
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+            }
+            if(recursive) {
+                DocumentModelList children = session.getChildren(document.getRef());
+                for(DocumentModel child : children) {
+                    DocumentRouteElement element = child.getAdapter(DocumentRouteElement.class);
+                    element.followTransition(transition, session, recursive);
+                }
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -210,17 +217,17 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setDone(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toDone, session);
+        followTransition(ElementLifeCycleTransistion.toDone, session, false);
     }
 
     @Override
     public void setValidated(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session);
+        followTransition(ElementLifeCycleTransistion.toValidated, session, false);
     }
 
     @Override
     public void setReady(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toReady, session);
+        followTransition(ElementLifeCycleTransistion.toReady, session, true);
     }
 
     public void validate(CoreSession session) throws ClientException {

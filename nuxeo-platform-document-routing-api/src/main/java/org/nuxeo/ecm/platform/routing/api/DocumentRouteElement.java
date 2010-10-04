@@ -35,6 +35,7 @@ public interface DocumentRouteElement {
     }
 
     DocumentRoute getDocumentRoute(CoreSession session);
+
     boolean isValidated();
 
     boolean isReady();
@@ -75,13 +76,8 @@ public interface DocumentRouteElement {
 
     void setReadOnly(CoreSession session) throws ClientException;
 
-    /**
-     * @param transition
-     * @param session
-     * @param recursively
-     */
-    void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session);
-
     String getTypeDescription();
+
+    void followTransition(ElementLifeCycleTransistion transition,
+            CoreSession session, boolean recursive);
 }
