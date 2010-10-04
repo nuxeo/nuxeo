@@ -28,12 +28,21 @@
           value="#{messages['command.search']}" styleClass="button"
           id="simpleSearchSubmitButton" />
 
-        <span class="advancedSearchLink">
-          <h:commandLink action="search_form"
-            value="#{messages['command.advancedSearch']}"
-            immediate="true"
-            id="advancedSearchButton" />
-        </span>
+        <nxu:set var="actions"
+          value="#{webActions.getActionsList('SEARCH_ACTIONS')}"
+          cache="true">
+          <nxu:dataList layout="simple"
+            var="action"
+            value="#{actions}"
+            id="searchActionsTable">
+            <span class="advancedSearchLink">
+              <nxh:commandLink action="#{action.getLink()}"
+                value="#{messages[action.label]}"
+                immediate="true"
+                id="searchActionsButton" />
+            </span>
+          </nxu:dataList>
+        </nxu:set>
       </c:if>
     </div>
   </h:form>

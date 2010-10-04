@@ -62,6 +62,11 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="advanced_search" link="search_form"
+      label="command.advancedSearch" order="10">
+      <category>SEARCH_ACTIONS</category>
+    </action>
+
     <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
       label="command.create.domain" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
