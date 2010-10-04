@@ -97,6 +97,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
         Connector connector = new SocketConnector();
         connector.setHost(HOST);
         connector.setPort(PORT);
+        connector.setMaxIdleTime(60 * 1000); // 60 seconds
         server.addConnector(connector);
 
         Context context = new Context(server, "/", Context.SESSIONS);
