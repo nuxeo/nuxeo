@@ -6,10 +6,10 @@
 </head>
 
 <frameset rows="32, *" frameborder="no">
-  <frame name="actionbar" src="${Root.getPath()}/actionbar"  style="background-color: #666">
+  <frame name="actionbar" src="${Root.getPath()}/actionbar" style="background-color: #666">
 
-  <frameset cols="15%, *" frameborder="yes" framespacing="10">
-    <frame name="navtree" src="${Root.getPath()}/navtree" style="background-color: #eee">
+  <frameset cols="220, *" frameborder="yes" framespacing="10">
+    <frame name="navtree" src="${Root.getPath()}/navtree">
     <#if bank>
       <frame name="main" src="${Root.getPath()}/${bank}/view">
     <#else>

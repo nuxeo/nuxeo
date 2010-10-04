@@ -52,12 +52,11 @@ public class Management extends DefaultObject {
         if (!fileItem.isFormField()) {
             final byte[] fileData = fileItem.get();
             final String filename = fileItem.getName();
-
-            String path = String.format("%s/image/%s", bankName, collection);
+            final String path = String.format("%s/image/%s", bankName,
+                    collection);
             BankManager.createFile(path, filename, fileData);
         }
 
         return redirect(redirectUrl);
     }
-
 }

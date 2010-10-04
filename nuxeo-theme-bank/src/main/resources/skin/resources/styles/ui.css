@@ -5,10 +5,8 @@ body {
 
 h1 {
   font: bold 12px Tahoma, sans-serif;
-  background-color: #666;
+  background-color: #ccc;
   padding: 4px 9px;
-  border: 1px solid #000;
-  color: #fff;
   -moz-border-radius: 4px;
 }
 
@@ -22,9 +20,9 @@ h1 span {
 
 h1 a {
   color: #000;
-  background-color: #eee;
+  background-color: #f6f6f6;
   -moz-border-radius: 3px;
-  padding: 0 4px;
+  padding: 0 6px;
   text-decoration: none;
 }
 

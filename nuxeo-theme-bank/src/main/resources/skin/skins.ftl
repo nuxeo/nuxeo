@@ -20,7 +20,9 @@
 
   <@block name="content">
 
-    <h1>Skins</h1>
+    <h1>Skins
+      <a style="float: right" href="${Root.getPath()}/${bank}/skins/view">Refresh</a>
+    </h1>
 
     <div id="skins" class="album">
     </div>

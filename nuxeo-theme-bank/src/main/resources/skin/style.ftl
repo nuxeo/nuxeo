@@ -20,14 +20,13 @@
   <@block name="content">
     <h1>Style: ${resource?replace('.css', '')}
       <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view">Refresh</a>
+      <a style="float: right; margin-right: 5px" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
+    Edit</a>
+
     </h1>
 
     <#if action = 'view'>
-    <div class="actionBar">
-    <a href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
-    <img src="${basePath}/theme-banks/skin/img/edit.png" />
-    Edit</a>
-    </div>
+
     <pre class="brush: css; toolbar: false">
     ${content}
     </pre>
