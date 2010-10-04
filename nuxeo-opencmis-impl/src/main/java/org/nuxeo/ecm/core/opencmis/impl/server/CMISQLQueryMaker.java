@@ -631,9 +631,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
 
             String key = getColumnKey(col);
-            TypeDefinition type = col.getTypeDefinition();
-            PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
-                    col.getPropertyId());
+            PropertyDefinition<?> pd = col.getPropertyDefinition();
             Column column = getColumn(col);
             if (column != null && pd.getCardinality() == Cardinality.SINGLE) {
                 col.setInfo(column);
@@ -671,9 +669,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             return;
         }
         ColumnReference col = (ColumnReference) sel;
-        TypeDefinition type = col.getTypeDefinition();
-        PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
-                col.getPropertyId());
+        PropertyDefinition<?> pd = col.getPropertyDefinition();
         boolean multi = pd.getCardinality() == Cardinality.MULTI;
 
         // fetch column and associate it to the selector
@@ -1055,9 +1051,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         protected void walkAny(Tree colNode, String op, Tree exprNode) {
             int token = ((Tree) colNode).getTokenStartIndex();
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
-            TypeDefinition type = col.getTypeDefinition();
-            PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
-                    col.getPropertyId());
+            PropertyDefinition<?> pd = col.getPropertyDefinition();
             if (pd.getCardinality() != Cardinality.MULTI) {
                 throw new QueryMakerException("Cannot use " + op
                         + " ANY with single-valued property: "
