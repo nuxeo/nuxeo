@@ -79,7 +79,7 @@
           action="search_results_advanced" class="button"
           id="searchButton">
           <nxu:actionListenerMethod
-            value="#{contentViewActions.refresh('advanced_search')}" /> 
+            value="#{contentViewActions.refreshAndRewind('advanced_search')}" /> 
         </h:commandButton>
         <h:commandButton value="#{messages['command.clearSearch']}"
           action="#{contentViewActions.reset('advanced_search')}"
@@ -112,7 +112,7 @@
           <h:commandButton value="#{messages['command.search']}"
             action="search_results_nxql" class="button">
             <nxu:actionListenerMethod
-              value="#{contentViewActions.refresh('nxql_search')}" /> 
+              value="#{contentViewActions.refreshAndRewind('nxql_search')}" />
           </h:commandButton>
         </h:form>
       </div>
