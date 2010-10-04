@@ -199,8 +199,9 @@ public class GlassFishServer extends AppServer {
     }
 
     /**
-     * In fact this is returning the instance directory ..
-     * See org.glassfish.server.ServerEnvironmentImpl and com.sun.enterprise.module.bootstrap.StartupContext
+     * In fact this returns the instance directory.
+     * See {@link org.glassfish.server.ServerEnvironmentImpl} and
+     * {@link com.sun.enterprise.module.bootstrap.StartupContext}.
      * Should override this otherwise jdbc.ra dirs will not be correctly set
      */
     @Override

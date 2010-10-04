@@ -27,7 +27,6 @@ import org.nuxeo.runtime.deployment.preprocessor.template.Template;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("template")
 public class TemplateDescriptor {

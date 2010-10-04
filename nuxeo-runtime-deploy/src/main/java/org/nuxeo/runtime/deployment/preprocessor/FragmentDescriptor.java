@@ -38,7 +38,6 @@ import org.w3c.dom.DocumentFragment;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("fragment")
 public class FragmentDescriptor {

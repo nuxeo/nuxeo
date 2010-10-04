@@ -21,7 +21,6 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.File;
 
-
 /**
  * @author jcarsique
  */

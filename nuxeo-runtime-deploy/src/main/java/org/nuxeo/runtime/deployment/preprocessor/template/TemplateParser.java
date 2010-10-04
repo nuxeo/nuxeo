@@ -28,10 +28,8 @@ import java.net.URL;
 
 import org.nuxeo.common.utils.FileUtils;
 
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TemplateParser {
 

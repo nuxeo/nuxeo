@@ -37,7 +37,6 @@ import org.osgi.framework.BundleContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ReloadComponent extends DefaultComponent implements ReloadService {
 
@@ -108,11 +107,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * Rebuild the framework resource class loader and add to it the given file
      * paths.
-     *
+     * <p>
      * The already added paths are removed from the class loader.
-     *
-     * @param files
-     * @throws Exception
      */
     public static void reloadResourceClassPath(Collection<String> files)
             throws Exception {

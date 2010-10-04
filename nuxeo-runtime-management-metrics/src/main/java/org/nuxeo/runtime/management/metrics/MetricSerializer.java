@@ -30,7 +30,6 @@ import com.thoughtworks.xstream.XStream;
 
 public class MetricSerializer implements MetricSerializerMXBean {
 
-
     protected File file;
 
     protected ObjectOutputStream outputStream;
@@ -43,7 +42,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
         if (outputStream == null) {
             return;
         }
-        for (Sample sample:samples) {
+        for (Sample sample : samples) {
                 outputStream.writeObject(sample);
         }
         count += 1;
@@ -87,7 +86,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
             return;
         }
         outputStream.close();
-        outputStream= null;
+        outputStream = null;
     }
 
     private void createTempFile() throws IOException {
@@ -101,6 +100,5 @@ public class MetricSerializer implements MetricSerializerMXBean {
     public long getLastUsage() {
         return lastUsage;
     }
-
 
 }

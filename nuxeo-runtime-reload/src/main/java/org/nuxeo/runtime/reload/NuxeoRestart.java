@@ -25,11 +25,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Restart a Nuxeo. For now works only on Unix systems.
- *
- * Usage: <code>RestartNuxeo.restart()</code>
+ * <p>
+ * Usage: <code>NuxeoRestart.restart()</code>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class NuxeoRestart {
 
@@ -110,10 +109,7 @@ public class NuxeoRestart {
 
     /**
      * First argument is the script to run followed by script arguments. The
-     * last argument is the lock file
-     *
-     * @param args
-     * @throws Exception
+     * last argument is the lock file.
      */
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {

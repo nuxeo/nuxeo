@@ -50,7 +50,7 @@ public class MetricSerializingCallback extends CallbackSkeleton {
         try {
             serializer.toStream(sample);
         } catch (IOException e) {
-            log.info("not streamed " +sample, e);
+            log.info("not streamed " + sample, e);
         }
     }
 
