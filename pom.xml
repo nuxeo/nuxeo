@@ -104,9 +104,6 @@
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>1.5.3</gwt.version>
-    <jackrabbit.version>1.5.0</jackrabbit.version>
-    <jackrabbit.jcr-commons.version>1.5.3</jackrabbit.jcr-commons.version>
-    <jackrabbit.core.version>1.5.4</jackrabbit.core.version>
     <jetty.mortbay.version>6.1.14</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating</shindig.version>
     <apache.chemistry.version>0.5-NX</apache.chemistry.version>
@@ -223,12 +220,6 @@
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId>
-        <version>1.0.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -399,29 +390,6 @@
         <artifactId>ooxml-schemas</artifactId>
         <version>1.0</version>
         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <!-- also overrides jbpm's -->
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>${jackrabbit.core.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-text-extractors</artifactId>
-        <version>${jackrabbit.version}</version>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
@@ -1056,12 +1024,6 @@
         <groupId>commons-jexl</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>1.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jsr170</groupId>
-        <artifactId>jcr</artifactId>
-        <version>1.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2585,8 +2547,6 @@
                 <link>http://jakarta.apache.org/commons/io/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://jackrabbit.apache.org/api-1/</link>
-                <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
                 <link>http://www.hibernate.org/hib_docs/v3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
