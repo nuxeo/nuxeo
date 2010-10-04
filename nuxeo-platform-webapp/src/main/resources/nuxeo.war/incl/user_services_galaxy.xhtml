@@ -24,7 +24,6 @@
           id="simpleSearchKeywordsInput"
           required="true" requiredMessage="#{messages['feedback.search.noKeywords']}"
           validator="#{documentSearchActions.validateSimpleSearchKeywords}" />
-        <h:message styleClass="errorMessage" for="simpleSearchKeywordsInput" />
         <h:commandButton action="search_results_simple"
           value="#{messages['command.search']}" styleClass="button"
           id="simpleSearchSubmitButton" />
