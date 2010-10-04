@@ -36,11 +36,11 @@ import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
+import javax.interceptor.Interceptors;
 import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CallerPrincipalProvider;
@@ -53,8 +53,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -67,13 +69,13 @@ import org.nuxeo.ecm.core.model.Session;
  * <p>
  * This class and its children are also the points where security is
  * attached/checked.
- * 
+ *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Stateful
 @Local(DocumentManagerLocal.class)
 @Remote(CoreSession.class)
-@SerializedConcurrentAccess
+@Interceptors({ReentrantCallsShieldInterceptor.class})
 public class DocumentManagerBean extends AbstractSession implements
         DocumentManagerLocal, SessionSynchronization {
 
@@ -135,7 +137,7 @@ public class DocumentManagerBean extends AbstractSession implements
     /**
      * Allays use this method to retrieve the caller principal from the context.
      * This allows fixing a problem on JBoss5.
-     * 
+     *
      * @see CallerPrincipalProvider
      * @return
      */
@@ -572,5 +574,37 @@ public class DocumentManagerBean extends AbstractSession implements
             throw new RollbackClientException(t);
         }
     }
+
+    /**
+    @Override
+    protected DocumentModel readModel(Document doc, String[] schemas) throws ClientException {
+        try {
+            DocumentModelImpl.reentrantCoreSession.set(this);
+            return super.readModel(doc, schemas);
+        } finally {
+            DocumentModelImpl.reentrantCoreSession.set(null);
+        }
+    }
+
+    @Override
+    protected DocumentModel writeModel(Document doc, DocumentModel docModel) throws DocumentException, ClientException {
+        try {
+            DocumentModelImpl.reentrantCoreSession.set(this);
+            return super.writeModel(doc, docModel);
+        } finally {
+            DocumentModelImpl.reentrantCoreSession.set(null);
+        }
+    }
+
+    @Override
+    public void fireEvent(Event event) throws ClientException {
+        try {
+            DocumentModelImpl.reentrantCoreSession.set(this);
+            getEventService().fireEvent(event);
+        }
+        finally {
+            DocumentModelImpl.reentrantCoreSession.set(null);
+        }
+    }**/
 
 }
