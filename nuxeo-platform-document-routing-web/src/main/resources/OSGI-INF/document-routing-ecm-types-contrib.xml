@@ -95,10 +95,9 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>dublincore</layout>
         <layout>step</layout>
+        <layout>dublincore</layout>
       </layouts>
-      <layouts mode="view" />
    </type>
 
  </extension>  

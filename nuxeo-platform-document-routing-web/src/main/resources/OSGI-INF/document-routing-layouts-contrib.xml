@@ -61,8 +61,17 @@
       </fields>
       <widgetModes>
         <mode value="create">hidden</mode>
-        <mode value="any">view</mode>
       </widgetModes>
+      <subWidgets>
+        <widget name="operationId" type="text">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+      </subWidgets>
     </widget>
 
   </extension>
