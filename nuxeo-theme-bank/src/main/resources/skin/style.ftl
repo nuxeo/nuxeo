@@ -20,8 +20,10 @@
   <@block name="content">
     <h1>Style: ${resource?replace('.css', '')}
       <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view">Refresh</a>
-      <a style="float: right; margin-right: 5px" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
+      <#if (Context.principal)>
+        <a style="float: right; margin-right: 5px" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
     Edit</a>
+      </#if>
 
     </h1>
 

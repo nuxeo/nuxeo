@@ -13,7 +13,7 @@
     <#if bank>
       <frame name="main" src="${Root.getPath()}/${bank}/view">
     <#else>
-      <frame name="main" src="${Root.getPath()}/banks/view">
+      <frame name="main" src="${Root.getPath()}/banks">
     </#if>
   </frameset>
 </frameset>

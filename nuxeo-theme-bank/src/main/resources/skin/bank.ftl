@@ -7,19 +7,19 @@
   <@block name="content">
       <h1>Bank: ${bank}</h1>
       <div class="album">
-        <a href="${Root.getPath()}/${bank}/style/view">
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-style')">
           <div class="imageSingle">
             <div class="image"></div>
             <div class="footer">style</div>
           </div>
         </a>
-        <a href="${Root.getPath()}/${bank}/preset/view">
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-preset')">
           <div class="imageSingle">
             <div class="image"></div>
             <div class="footer">preset</div>
           </div>
         </a>
-        <a href="${Root.getPath()}/${bank}/image/view">
+        <a href="javascript:void(0)" onclick="top.navtree.openBranch('${bank}-image')">
           <div class="imageSingle">
             <div class="image"></div>
             <div class="footer">image</div>

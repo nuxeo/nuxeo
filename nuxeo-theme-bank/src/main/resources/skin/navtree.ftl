@@ -98,7 +98,7 @@
   </@block>
 
   <@block name="content">
-    <div id="navtree"></div>
+     <div id="navtree"></div>
   </@block>
 
 </@extends>
