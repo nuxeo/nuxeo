@@ -110,6 +110,8 @@ public class Helper {
         file1.setPropertyValue("content", blob1);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
+        file1.setPropertyValue("dc:modified", cal1);
+        file1.setPropertyValue("dc:creator", "michael");
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1 = session.createDocument(file1);
@@ -120,6 +122,7 @@ public class Helper {
         file2.setPropertyValue("dc:description", "something");
         Calendar cal2 = getCalendar(2007, 4, 1, 12, 0, 0);
         file2.setPropertyValue("dc:created", cal2);
+        file1.setPropertyValue("dc:creator", "pete");
         file2.setPropertyValue("dc:contributors",
                 new String[] { "bob", "pete" });
         file2.setPropertyValue("dc:coverage", "football");

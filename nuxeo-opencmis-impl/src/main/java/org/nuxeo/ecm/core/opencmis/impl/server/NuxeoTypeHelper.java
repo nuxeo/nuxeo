@@ -141,12 +141,6 @@ public class NuxeoTypeHelper {
 
         for (Schema schema : documentType.getSchemas()) {
             for (Field field : schema.getFields()) {
-                String name = field.getName().getPrefixedName();
-                if (NX_DC_CREATED.equals(name) || NX_DC_CREATOR.equals(name)
-                        || NX_DC_MODIFIED.equals(name)) {
-                    // mapped to standard CMIS properties
-                    continue;
-                }
                 PropertyType propertyType;
                 Cardinality cardinality;
                 Type fieldType = field.getType();
@@ -174,6 +168,7 @@ public class NuxeoTypeHelper {
                         propertyType = getPropertType((SimpleType) fieldType);
                     }
                 }
+                String name = field.getName().getPrefixedName();
                 PropertyDefinition<?> pd = newPropertyDefinition(name, name,
                         propertyType, cardinality, Updatability.READWRITE,
                         false, false, true);
@@ -298,6 +293,9 @@ public class NuxeoTypeHelper {
 
     protected static void addDocumentPropertyDefinitions(
             DocumentTypeDefinitionImpl t) {
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_IMMUTABLE,
+                "Is Immutable", PropertyType.BOOLEAN, Cardinality.SINGLE,
+                Updatability.READONLY, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(
                 PropertyIds.IS_LATEST_VERSION, "Is Latest Version",
                 PropertyType.BOOLEAN, Cardinality.SINGLE,

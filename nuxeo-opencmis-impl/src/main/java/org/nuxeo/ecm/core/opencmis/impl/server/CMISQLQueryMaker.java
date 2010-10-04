@@ -51,8 +51,6 @@ import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -173,6 +171,12 @@ public class CMISQLQueryMaker implements QueryMaker {
         return queryType.equals(TYPE);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The optional parameters must be passed: {@code params[0]} is the
+     * {@link NuxeoCmisService}, optional {@code params[1]} is a type info map.
+     */
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model,
             PathResolver pathResolver, String statement,
@@ -323,7 +327,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 from.append(tableMainId);
             }
 
-            // restrict to relevant primary types TODO XXX XXXXXXXXXXX
+            // restrict to relevant primary types
+            // TODO use TypeManager instead of model
 
             String nuxeoType;
             boolean skipFolderish;
@@ -461,7 +466,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         selectParams.addAll(realColumnsParams);
 
         CMISQLMapMaker mapMaker = new CMISQLMapMaker(realColumns,
-                virtualColumns);
+                virtualColumns, service);
         String what = StringUtils.join(selectWhat, ", ");
         if (distinct) {
             what = "DISTINCT " + what;
@@ -626,27 +631,22 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
 
             String key = getColumnKey(col);
+            TypeDefinition type = col.getTypeDefinition();
+            PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
+                    col.getPropertyId());
             Column column = getColumn(col);
-            if (column != null) {
+            if (column != null && pd.getCardinality() == Cardinality.SINGLE) {
                 col.setInfo(column);
                 recordColumnFragment(qual, column);
                 String sql = column.getFullQuotedName();
                 SqlColumn c = new SqlColumn(sql, column, key);
                 realColumns.add(c);
-                if (typeInfo != null) {
-                    TypeDefinition type = col.getTypeDefinition();
-                    PropertyDefinition<?> pd = type.getPropertyDefinitions().get(
-                            col.getPropertyId());
-                    if (pd.getCardinality() == Cardinality.MULTI) {
-                        throw new QueryMakerException(
-                                "Cannot SELECT on multi-value column: "
-                                        + col.getPropertyQueryName());
-                    }
-                    typeInfo.put(key, pd);
-                }
             } else {
                 virtualColumns.put(key, col);
                 virtualColumnNames.add(key);
+            }
+            if (typeInfo != null) {
+                typeInfo.put(key, pd);
             }
         }
     }
@@ -773,8 +773,11 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (alias != null) {
             return alias;
         }
-        String qual = col.getTypeQueryName();
-        String id = col.getPropertyQueryName();
+        return getPropertyKey(col.getTypeQueryName(),
+                col.getPropertyQueryName());
+    }
+
+    protected static String getPropertyKey(String qual, String id) {
         if (qual == null) {
             return id;
         }
@@ -815,10 +818,14 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         protected Map<String, ColumnReference> virtualColumns;
 
+        protected NuxeoCmisService service;
+
         public CMISQLMapMaker(List<SqlColumn> realColumns,
-                Map<String, ColumnReference> virtualColumns) {
+                Map<String, ColumnReference> virtualColumns,
+                NuxeoCmisService service) {
             this.realColumns = realColumns;
             this.virtualColumns = virtualColumns;
+            this.service = service;
         }
 
         @Override
@@ -842,47 +849,52 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
 
             // virtual values
-            Map<String, DocumentModel> docs = null;
+            // map to store actual data for each qualifier
+            Map<String, NuxeoObjectData> datas = null;
             for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
                 String key = vc.getKey();
                 ColumnReference col = vc.getValue();
                 String qual = col.getTypeQueryName();
-                if (docs == null) {
-                    docs = new HashMap<String, DocumentModel>(2);
+                if (datas == null) {
+                    datas = new HashMap<String, NuxeoObjectData>(2);
                 }
-                DocumentModel doc = docs.get(qual);
-                if (doc == null) {
+                NuxeoObjectData data = datas.get(qual);
+                if (data == null) {
                     // find main id for this qualifier in the result set
                     // (main id always included in joins)
-                    // SqlColumn idsc = null; //
-                    // getSpecialColumn(PropertyIds.OBJECT_ID,
-                    // qual);
-                    String id = null; // (String) map.get(getColumnName(idsc));
+                    // TODO check what happens if cmis:objectId is aliased
+                    String id = (String) map.get(getPropertyKey(qual,
+                            PropertyIds.OBJECT_ID));
                     try {
                         // reentrant call to the same session, but the MapMaker
                         // is only called from the IterableQueryResult in
                         // queryAndFetch which manipulates no session state
-                        // doc = conn.session.getDocument(new IdRef(id));
-                        doc = null;
-                        throw new ClientException();
-                    } catch (ClientException e) {
+                        // TODO constructing the DocumentModel (in
+                        // NuxeoObjectData) is expensive, try to get value
+                        // directly
+                        data = (NuxeoObjectData) service.getObject(
+                                service.getNuxeoRepository().getId(), id, null,
+                                null, null, null, null, null, null);
+                    } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
                     }
-                    docs.put(qual, doc);
+                    datas.put(qual, data);
                 }
                 Serializable v;
-                if (doc == null) {
+                if (data == null) {
                     // could not fetch
                     v = null;
                 } else {
-                    // TODO avoid fecthing doc and using a NuxeoProperty to
-                    // compute things like cmis:baseTypeId
-                    // PropertyDefinition pd =
-                    // SimpleType.PROPS_MAP.get(vc.name);
-                    // Property p = NuxeoProperty.construct(vc.name, pd,
-                    // new DocHolder(doc));
-                    // v = p.getValue();
-                    v = null;
+                    NuxeoPropertyDataBase<?> pd = (NuxeoPropertyDataBase<?>) data.getProperty(key);
+                    if (pd == null) {
+                        v = null;
+                    } else {
+                        if (pd.getPropertyDefinition().getCardinality() == Cardinality.SINGLE) {
+                            v = (Serializable) pd.getFirstValue();
+                        } else {
+                            v = (Serializable) pd.getValues();
+                        }
+                    }
                 }
                 map.put(key, v);
             }

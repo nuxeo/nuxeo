@@ -172,6 +172,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         return data.getProperties().getProperties().get(key).getFirstValue();
     }
 
+    protected static Object getValues(ObjectData data, String key) {
+        return data.getProperties().getProperties().get(key).getValues();
+    }
+
     protected static String getString(ObjectData data, String key) {
         return (String) getValue(data, key);
     }
@@ -380,8 +384,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("doc1", getString(data, PropertyIds.NAME));
     }
 
-    @Test
-    public void testCreateDocumentMyDocType() {
+    protected String createDocumentMyDocType() {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
         props.add(factory.createPropertyIdData(PropertyIds.NAME, "mydoc"));
@@ -402,6 +405,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String id = objService.createDocument(repositoryId, properties,
                 rootFolderId, null, null, null, null, null, null);
         assertNotNull(id);
+        return id;
+    }
+
+    @Test
+    public void testCreateDocumentMyDocType() {
+        String id = createDocumentMyDocType();
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
         assertEquals("mydoc", getString(data, PropertyIds.NAME));
@@ -412,6 +421,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(BigInteger.valueOf(123), getValue(data, "my:long"));
         assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
         GregorianCalendar date = (GregorianCalendar) getValue(data, "my:date");
+        GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4,
+                55);
         if (!CalendarHelper.toString(expectedDate).equals(
                 CalendarHelper.toString(date))) {
             // there may be a timezone difference if the database
@@ -759,57 +770,48 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(1, res.getNumItems().intValue());
     }
 
+    protected String NOT_NULL = new String("__NOTNULL__");
+
+    protected void checkWhereTerm(String type, String prop, String value) {
+        if (value == NOT_NULL) {
+            checkQueriedValue(type, prop + " IS NOT NULL");
+        } else {
+            checkQueriedValue(type, prop + " = " + value);
+        }
+    }
+
+    @SuppressWarnings("boxing")
+    protected void checkQueriedValue(String type, String term) {
+        String statement = String.format(
+                "SELECT cmis:objectId FROM %s WHERE %s", type, term);
+        ObjectList res = query(statement);
+        assertNotSame(0, res.getNumItems().intValue());
+    }
+
     @Test
-    public void testQueryPropertyTypes() throws Exception {
+    public void testQueryWhereProperties() throws Exception {
         String statement;
         ObjectList res;
 
-        testCreateDocumentMyDocType();
+        createDocumentMyDocType();
 
         // STAR
         statement = "SELECT * FROM MyDocType";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
-        // boolean
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:string = 'abc'";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:string <> 'def'";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-
-        // boolean
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:boolean = true";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:boolean <> FALSE";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-
-        // integer
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:integer = 123";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:integer <> 456";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-
-        // decimal
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:double = 123.456";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:double <> 123";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-
-        // datetime
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date = TIMESTAMP '2010-09-30T16:04:55-02:00'";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date <> TIMESTAMP '1999-09-09T01:01:01Z'";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
+        checkQueriedValue("MyDocType", "my:string = 'abc'");
+        checkQueriedValue("MyDocType", "my:string <> 'def'");
+        checkQueriedValue("MyDocType", "my:boolean = true");
+        checkQueriedValue("MyDocType", "my:boolean <> FALSE");
+        checkQueriedValue("MyDocType", "my:integer = 123");
+        checkQueriedValue("MyDocType", "my:integer <> 456");
+        checkQueriedValue("MyDocType", "my:double = 123.456");
+        checkQueriedValue("MyDocType", "my:double <> 123");
+        checkQueriedValue("MyDocType",
+                "my:date = TIMESTAMP '2010-09-30T16:04:55-02:00'");
+        checkQueriedValue("MyDocType",
+                "my:date <> TIMESTAMP '1999-09-09T01:01:01Z'");
         try {
             statement = "SELECT cmis:objectId FROM MyDocType WHERE my:date <> TIMESTAMP 'foobar'";
             query(statement);
@@ -817,6 +819,124 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisRuntimeException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testQueryWhereSystemProperties() throws Exception {
+
+        // ----- Object -----
+
+        checkWhereTerm("File", PropertyIds.NAME, "'testfile1_Title'");
+        checkWhereTerm("File", PropertyIds.OBJECT_ID, NOT_NULL);
+        checkWhereTerm("File", PropertyIds.OBJECT_TYPE_ID, "'File'");
+        // checkWhereTerm("File", PropertyIds.BASE_TYPE_ID,
+        // "'cmis:document'");
+        checkWhereTerm("File", PropertyIds.CREATED_BY, "'michael'");
+        checkWhereTerm("File", PropertyIds.CREATION_DATE, NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.LAST_MODIFIED_BY, "'bob'");
+        checkWhereTerm("File", PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
+
+        // ----- Folder -----
+
+        checkWhereTerm("Folder", PropertyIds.PARENT_ID, NOT_NULL);
+        // checkWhereTerm("Folder", PropertyIds.PATH, NOT_NULL);
+        // checkWhereTerm("Folder", PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
+        // NOT_NULL);
+
+        // ----- Document -----
+
+        // checkWhereTerm("File", PropertyIds.IS_IMMUTABLE, "FALSE");
+        // checkWhereTerm("File", PropertyIds.IS_LATEST_VERSION, "TRUE");
+        // checkWhereTerm("File", PropertyIds.IS_MAJOR_VERSION, "TRUE");
+        // checkWhereTerm("File", PropertyIds.IS_LATEST_MAJOR_VERSION, "FALSE");
+        // checkWhereTerm("File", PropertyIds.VERSION_LABEL, NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.VERSION_SERIES_ID, NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.VERSION_SERIES_CHECKED_OUT_BY,
+        // NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.VERSION_SERIES_CHECKED_OUT_ID,
+        // NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.CHECKIN_COMMENT, "xyz");
+        // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_LENGTH, NOT_NULL);
+        // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_MIME_TYPE,
+        // "text/plain");
+        // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_FILE_NAME,
+        // "testfile.txt");
+        // checkWhereTerm("File", PropertyIds.CONTENT_STREAM_ID, NOT_NULL);
+    }
+
+    protected void checkReturnedValue(String prop, Object expected) {
+        checkReturnedValue(prop, expected, "File", "testfile1_Title");
+    }
+
+    protected void checkReturnedValue(String prop, Object expected,
+            String type, String name) {
+        String statement = String.format(
+                "SELECT %s FROM %s WHERE cmis:name = '%s'", prop, type, name);
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        ObjectData data = res.getObjects().get(0);
+        Object value = expected instanceof List ? getValues(data, prop)
+                : getValue(data, prop);
+        if (expected == NOT_NULL) {
+            assertNotNull(value);
+        } else {
+            assertEquals(expected, value);
+        }
+    }
+
+    @Test
+    public void testQueryReturnedProperties() throws Exception {
+        checkReturnedValue("dc:title", "testfile1_Title");
+        checkReturnedValue("dc:modified", NOT_NULL);
+        // multi-valued
+        checkReturnedValue("dc:subjects", Arrays.asList("foo", "gee/moo"));
+        checkReturnedValue("dc:contributors", Arrays.asList("bob", "pete"),
+                "File", "testfile2_Title");
+    }
+
+    @Test
+    public void testQueryReturnedSystemProperties() throws Exception {
+
+        // ----- Object -----
+
+        checkReturnedValue(PropertyIds.NAME, "testfile1_Title");
+        checkReturnedValue(PropertyIds.OBJECT_ID, NOT_NULL);
+        checkReturnedValue(PropertyIds.OBJECT_TYPE_ID, "File");
+        checkReturnedValue(PropertyIds.BASE_TYPE_ID, "cmis:document");
+        checkReturnedValue(PropertyIds.CREATED_BY, "michael");
+        checkReturnedValue(PropertyIds.CREATION_DATE, NOT_NULL);
+        checkReturnedValue(PropertyIds.LAST_MODIFIED_BY, "bob", "File",
+                "testfile2_Title");
+        checkReturnedValue(PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
+        checkReturnedValue(PropertyIds.CHANGE_TOKEN, null);
+
+        // ----- Folder -----
+
+        checkReturnedValue(PropertyIds.PARENT_ID, rootFolderId, "Folder",
+                "testfolder1_Title");
+        checkReturnedValue(PropertyIds.PATH, "/testfolder1", "Folder",
+                "testfolder1_Title");
+        checkReturnedValue(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, null,
+                "Folder", "testfolder1_Title");
+
+        // ----- Document -----
+
+        checkReturnedValue(PropertyIds.IS_IMMUTABLE, Boolean.FALSE);
+        checkReturnedValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE); // TODO
+        checkReturnedValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE); // TODO
+        checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE); // TODO
+        checkReturnedValue(PropertyIds.VERSION_LABEL, null);
+        checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
+        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null);
+        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null);
+        checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
+        checkReturnedValue(
+                PropertyIds.CONTENT_STREAM_LENGTH,
+                new ContentStreamImpl(null, "text/plain", Helper.FILE1_CONTENT).getBigLength());
+        checkReturnedValue(PropertyIds.CONTENT_STREAM_MIME_TYPE, "text/plain");
+        checkReturnedValue(PropertyIds.CONTENT_STREAM_FILE_NAME, "testfile.txt");
+        checkReturnedValue(PropertyIds.CONTENT_STREAM_ID, null);
     }
 
     @Test
