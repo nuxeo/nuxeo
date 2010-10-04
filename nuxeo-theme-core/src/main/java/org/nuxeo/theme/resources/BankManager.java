@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.yaml.snakeyaml.Yaml;
@@ -160,4 +161,14 @@ public class BankManager {
 
     }
 
+    public static void createFile(String path, String fileName, byte[] data) {
+        File file = new File(getFile(path), fileName);
+        try {
+            file.createNewFile();
+            FileUtils.writeFile(file, data);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
