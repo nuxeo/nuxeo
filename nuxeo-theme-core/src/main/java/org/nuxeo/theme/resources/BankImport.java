@@ -20,7 +20,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("import")
 public final class BankImport {
 
-    @XNode("@dest")
+    @XNode("@bank")
     private String bankName;
 
     @XNode("@src")

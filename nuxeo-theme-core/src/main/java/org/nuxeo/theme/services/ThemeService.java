@@ -102,6 +102,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         log.debug("Theme service deactivated");
     }
 
+    @Override
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
             for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
@@ -144,7 +145,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         } else if (xp.equals("resources")) {
             registerResourceExtension(extension);
         } else if (xp.equals("banks")) {
-            registerBankOperation(extension);
+            registerBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -172,7 +173,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         } else if (xp.equals("models")) {
             unregisterModelExtension(extension);
         } else if (xp.equals("banks")) {
-            unregisterBankOperation(extension);
+            unregisterBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -547,13 +548,17 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     private void registerResourceExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        RuntimeContext extensionContext = extension.getContext();
         for (Object contrib : contribs) {
             if (contrib instanceof ResourceType) {
                 ResourceType resourceType = (ResourceType) contrib;
                 typeRegistry.register(resourceType);
-            } else if (contrib instanceof ResourceBank) {
-                ResourceBank resourceBank = (ResourceBank) contrib;
-                typeRegistry.register(resourceBank);
+            } else if (contrib instanceof BankImport) {
+                BankImport bankImport = (BankImport) contrib;
+                String bankName = bankImport.getBankName();
+                String srcFilePath = bankImport.getSrcFilePath();
+                URL srcFileUrl = extensionContext.getResource(srcFilePath);
+                BankManager.importBankData(bankName, srcFileUrl);
             }
         }
         ThemeManager themeManager = (ThemeManager) getRegistry("themes");
@@ -564,28 +569,34 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         ThemeManager themeManager = (ThemeManager) getRegistry("themes");
-        for (Object contrib : contribs) {
-            ResourceType resourceType = (ResourceType) contrib;
-            typeRegistry.unregister(resourceType);
-            themeManager.unregisterResourceOrdering(resourceType);
-        }
-    }
-
-    private void unregisterBankOperation(Extension extension) {
-    }
-
-    private void registerBankOperation(Extension extension) {
-        Object[] contribs = extension.getContributions();
         RuntimeContext extensionContext = extension.getContext();
         for (Object contrib : contribs) {
-            if (contrib instanceof BankImport) {
+            if (contrib instanceof ResourceType) {
+                ResourceType resourceType = (ResourceType) contrib;
+                typeRegistry.unregister(resourceType);
+                themeManager.unregisterResourceOrdering(resourceType);
+            } else if (contrib instanceof BankImport) {
                 BankImport bankImport = (BankImport) contrib;
                 String bankName = bankImport.getBankName();
                 String srcFilePath = bankImport.getSrcFilePath();
-                URL srcFileUrl = extensionContext.getResource(srcFilePath);
-                BankManager.importBankData(bankName, srcFileUrl);
+                // TODO
             }
         }
+    }
+
+    private void registerBank(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (Object contrib : contribs) {
+            if (contrib instanceof ResourceBank) {
+                ResourceBank resourceBank = (ResourceBank) contrib;
+                typeRegistry.register(resourceBank);
+            }
+        }
+    }
+
+    private void unregisterBank(Extension extension) {
+        // TODO
     }
 
 }

@@ -125,7 +125,7 @@
 
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceType"/>
-    <object class="org.nuxeo.theme.resources.ResourceBank"/>    
+    <object class="org.nuxeo.theme.resources.BankImport"/>
   </extension-point>
 
   <extension-point name="views">
@@ -151,7 +151,7 @@
   <extension-point name="themesets">
     <object class="org.nuxeo.theme.themes.ThemeSet"/>
   </extension-point>
-  
+
   <extension-point name="perspectives">
     <documentation>
       Extension Point for registering perspectives.
@@ -222,7 +222,7 @@
   <extension-point name="vocabularies">
     <object class="org.nuxeo.theme.vocabularies.VocabularyType"/>
   </extension-point>
-  
+
   <extension-point name="previews">
     <documentation>This extension point is used to register visible previews of CSS properties, presets, etc.</documentation>
     <object class="org.nuxeo.theme.PreviewType"/>
@@ -240,15 +240,15 @@
 
       where:
       - 'category' is the category of the preview.
-      - 'class' is the java class implementing org.nuxeo.theme.Preview 
+      - 'class' is the java class implementing org.nuxeo.theme.Preview
       - 'properties' is the list of properties in the specified category (typically CSS properties)
-    </documentation>    
+    </documentation>
   </extension-point>
 
   <extension-point name="banks">
     <documentation>
     Import of bank data
     </documentation>
-    <object class="org.nuxeo.theme.resources.BankImport"/>
+    <object class="org.nuxeo.theme.resources.ResourceBank"/>
   </extension-point>
 </component>
