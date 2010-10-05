@@ -36,7 +36,7 @@
 
     <!-- create here the tree directory structure if needed -->
     <mkdir path="${war}" />
-    <copy from="/OSGI-INF/templates/WAR_MANIFEST.MF" to="${war}/META-INF/MANIFEST.MF" />
-    <copy from="/OSGI-INF/templates/WAR_deployment-fragment.xml" to="${war}/OSGI-INF/deployment-fragment.xml" />
+    <!--copy from="/OSGI-INF/templates/WAR_MANIFEST.MF" to="${war}/META-INF/MANIFEST.MF" />
+    <copy from="/OSGI-INF/templates/WAR_deployment-fragment.xml" to="${war}/OSGI-INF/deployment-fragment.xml" /-->
   </install>
 </container>

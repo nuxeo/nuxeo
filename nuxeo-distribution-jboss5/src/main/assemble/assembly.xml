@@ -99,6 +99,15 @@
     <copy todir="${jboss}/server/default/deployers">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:5.1.0.GA" />
     </copy>
+
+    <!-- TODO remove this when bundles will be fixed -->
+     <!--delete failonerror="false">
+        <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
+           <include name="nuxeo-opensocial*" />
+           <include name="nuxeo-*wss*" />
+           <include name="nuxeo-*audit*" />
+        </fileset>
+     </delete-->
   </target>
 
   <target name="build-nuxeo-ep-jboss"
@@ -152,12 +161,28 @@
         <include name="javaassist*" />
         <include name="commons-collections*" />
         <include name="commons-logging*" />
-        <include name="commons-digester*" />
-        <include name="commons-beanutils*" />
+        <include name="geronimo-*" />
+        <include name="jta-*" />
+        <include name="log4j-*" />
+        <include name="persistence-*" />
+        <include name="servlet-api-*" />
+        <include name="script-api-*" />
+        <include name="jca-api-*" />
+        <include name="el-*" />
+        <!-- TODO should we removed the following? -->
+        <!--
+        <include name="javacc-*" />
+        <include name="jaxb-api-*" />
+        <include name="jaxen-*" />
+        <include name="osgi-core-*" />
+        <include name="webservices-api-*" />
+        -->
       </fileset>
     </delete>
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
       <artifact:file groupId="org.apache.derby" artifactId="derby" />
+      <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
+      <artifact:file groupId="commons-el" artifactId="commons-el" />
     </copy>
     <!-- Complementary JBoss templates for DM -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
