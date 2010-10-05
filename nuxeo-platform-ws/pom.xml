@@ -36,6 +36,14 @@
       <artifactId>nuxeo-platform-url-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.ws</groupId> 
+      <artifactId>jbossws-spi</artifactId> 
+      <version>1.1.2.GA</version> 
+    </dependency>
+
+
+
     
     <!-- Fixes compilation failure on 10 sept 2008.
          Is this the right fix? -->
