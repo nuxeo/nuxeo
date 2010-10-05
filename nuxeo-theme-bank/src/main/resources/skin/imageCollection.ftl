@@ -41,7 +41,7 @@
         <input type="file" name="file" size="30" />
         <input type="hidden" name="bank" value="${bank}" />
         <input type="hidden" name="collection" value="${collection}" />
-        <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '+')}" />
+        <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '%20')}" />
       </p>
       <p>
       <button>Upload</button>
