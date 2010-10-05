@@ -926,6 +926,9 @@
         <border>0px solid #FFF</border>
         <padding>7px 4px</padding>
       </selector>
+      <selector path=".dataInput td td, .dataInput td td td">
+        <padding>3px 4px</padding>
+      </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
         <font preset="default (Galaxy fonts)"/>
         <border preset="dataInput (Galaxy borders)" />
@@ -1340,6 +1343,10 @@
       <selector path="div.syndicationButton div.syndicationLinks a">
         <color preset="syndication.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
+      </selector>
+      <!-- Advanced Search -->
+      <selector path=".listShuttleTable .listShuttleSelectionActions a">
+        <display>block</display>
       </selector>
     </style>
     <style name="tree and clipboard column" inherit="common style 1">
