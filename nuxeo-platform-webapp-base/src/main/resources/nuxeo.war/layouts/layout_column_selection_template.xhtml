@@ -31,18 +31,14 @@
           <tr>
             <th>
               <c:if test="#{not empty layoutProperty_availableElementsLabel}">
-                <h3>
-                  <h:outputText value="#{messages[layoutProperty_availableElementsLabel]}" />
-                </h3>
+                <h:outputText value="#{messages[layoutProperty_availableElementsLabel]}" />
               </c:if>
             </th>
             <th>
             </th>
             <th>
               <c:if test="#{not empty layoutProperty_selectedElementsLabel}">
-                <h3>
-                  <h:outputText value="#{messages[layoutProperty_selectedElementsLabel]}" />
-                </h3>
+                <h:outputText value="#{messages[layoutProperty_selectedElementsLabel]}" />
               </c:if>
             </th>
             <th>
@@ -73,11 +69,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_left_black.gif"
+                <nxu:graphicImage value="/icons/move_left.png"
                   alt="#{messages['command.selection.remove']}"
                   title="#{messages['command.selection.remove']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addToSelection}"
                 id="#{layout.id}_addToSelection"
@@ -87,11 +82,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_right_black.gif"
+                <nxu:graphicImage value="/icons/move_right.png"
                   alt="#{messages['command.selection.add']}"
                   title="#{messages['command.selection.add']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addAllToSelection}"
                 id="#{layout.id}_addAllToSelection"
@@ -101,11 +95,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_all_right_black.gif"
+                <nxu:graphicImage value="/icons/move_all_right.png"
                   alt="#{messages['command.selection.addAll']}"
                   title="#{messages['command.selection.addAll']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeAllFromSelection}"
                 id="#{layout.id}_removeAllFromSelection"
@@ -115,7 +108,7 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_all_left_black.gif"
+                <nxu:graphicImage value="/icons/move_all_left.png"
                   alt="#{messages['command.selection.removeAll']}"
                   title="#{messages['command.selection.removeAll']}"/>
               </a4j:commandLink>
@@ -151,11 +144,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_top_black.png"
+                <nxu:graphicImage value="/icons/move_top.png"
                   alt="#{messages['command.selection.moveToTop']}"
                   title="#{messages['command.selection.moveToTop']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedUp}"
                 id="#{layout.id}_shiftSelectedUp"
@@ -163,11 +155,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_up_black.png"
+                <nxu:graphicImage value="/icons/move_up.png"
                   alt="#{messages['command.selection.moveUp']}"
                   title="#{messages['command.selection.moveUp']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedDown}"
                 id="#{layout.id}_shiftSelectedDown"
@@ -175,11 +166,10 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_down_black.png"
+                <nxu:graphicImage value="/icons/move_down.png"
                   alt="#{messages['command.selection.moveDown']}"
                   title="#{messages['command.selection.moveDown']}"/>
               </a4j:commandLink>
-              <br />
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedLast}"
                 id="#{layout.id}_shiftSelectedLast"
@@ -187,7 +177,7 @@
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
                 <f:param name="submittedList" value="#{layout.id}_hiddenTargetList"/>
-                <nxu:graphicImage value="/icons/move_end_black.png"
+                <nxu:graphicImage value="/icons/move_end.png"
                   alt="#{messages['command.selection.moveToBottom']}"
                   title="#{messages['command.selection.moveToBottom']}"/>
               </a4j:commandLink>
