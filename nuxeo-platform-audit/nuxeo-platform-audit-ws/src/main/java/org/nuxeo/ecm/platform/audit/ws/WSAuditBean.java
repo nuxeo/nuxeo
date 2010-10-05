@@ -30,14 +30,12 @@ import java.util.Set;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
@@ -49,12 +47,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audit Web Service bean.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Stateless
-@SerializedConcurrentAccess
 @Local(WSAuditLocal.class)
 @Remote(WSAudit.class)
 @WebService(name = "WSAuditInterface", serviceName = "WSAuditService")
@@ -86,7 +82,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements
         try {
             initSession(sessionId);
         } catch (ClientException ce) {
-            throw new AuditException(ce.getMessage(), ce);
+           throw new AuditException(ce.getMessage(), ce);
         }
 
         BatchInfo batchInfo = BatchHelper.getBatchInfo(sessionId,
