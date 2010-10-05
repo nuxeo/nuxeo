@@ -42,7 +42,7 @@
         <exclude name="**/templates/stateless/**" />
       </patternset>
     </unzip>
-    <property name="app.path" value="${stagedir}/nuxeo-cm-server" />
+    <property name="app.path" value="${stagedir}/nuxeo-dm-server" />
     <nx:rename from="${stagedir}/nuxeo-*" to="${app.path}" />
     <chmod dir="${app.path}" perm="750" includes="*.sh,bin/*.sh" />
     <!-- Deploy Custom plugins -->
