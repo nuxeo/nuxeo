@@ -103,7 +103,9 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRoute routeInstance = getDocumentRoutingService().createNewInstance(
                 currentRoute, currentRoute.getAttachedDocuments(),
                 documentManager);
-        return navigationContext.navigateToDocument(routeInstance.getDocument());
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                currentDocument);
+        return null;
     }
 
     public String getRelatedRouteModelDocument() {
@@ -128,7 +130,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
-        return navigationContext.navigateToDocument(currentDocument);
+        return null;
     }
 
     protected ArrayList<LocalizableDocumentRouteElement> computeRouteElements()
@@ -206,7 +208,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         DocumentModel relatedRouteModel = documentManager.getDocument(new IdRef(
                 relatedRouteModelDocumentId));
-        // set currentCaseId to participatingDocuments on the route
+        // set currentDocumentId to participatingDocuments on the route
         DocumentRoute route = relatedRouteModel.getAdapter(DocumentRoute.class);
         List<String> documentIds = new ArrayList<String>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
