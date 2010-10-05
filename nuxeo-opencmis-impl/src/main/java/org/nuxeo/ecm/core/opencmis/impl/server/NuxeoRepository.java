@@ -148,8 +148,10 @@ public class NuxeoRepository {
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
         TypeManagerImpl typeManager = new TypeManagerImpl();
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisDocument());
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisFolder());
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
+                BaseTypeId.CMIS_DOCUMENT, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
+                BaseTypeId.CMIS_FOLDER, schemaManager));
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT,
                 typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,

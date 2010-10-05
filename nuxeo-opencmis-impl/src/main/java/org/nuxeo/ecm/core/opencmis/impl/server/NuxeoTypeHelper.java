@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -133,73 +134,71 @@ public class NuxeoTypeHelper {
             String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
-
-        AbstractTypeDefinition t = constructBase(id, parentId,
+        // base
+        AbstractTypeDefinition type = constructBase(id, parentId,
                 documentType.isFolder(), documentType, nuxeoTypeId, true);
-
         // Nuxeo Property Definitions
-
         for (Schema schema : documentType.getSchemas()) {
-            for (Field field : schema.getFields()) {
-                PropertyType propertyType;
-                Cardinality cardinality;
-                Type fieldType = field.getType();
-                if (fieldType.isComplexType()) {
-                    // complex type
-                    log.debug("Chemistry: ignoring complex type: "
-                            + schema.getName() + '/' + field.getName());
-                    continue;
-                } else {
-                    if (fieldType.isListType()) {
-                        Type listFieldType = ((ListType) fieldType).getFieldType();
-                        if (!listFieldType.isSimpleType()) {
-                            // complex list
-                            log.debug("Chemistry: ignoring complex list: "
-                                    + schema.getName() + '/' + field.getName());
-                            continue;
-                        } else {
-                            // array: use a collection table
-                            cardinality = Cardinality.MULTI;
-                            propertyType = getPropertType((SimpleType) listFieldType);
-                        }
-                    } else {
-                        // primitive type
-                        cardinality = Cardinality.SINGLE;
-                        propertyType = getPropertType((SimpleType) fieldType);
-                    }
-                }
-                String name = field.getName().getPrefixedName();
-                PropertyDefinition<?> pd = newPropertyDefinition(name, name,
-                        propertyType, cardinality, Updatability.READWRITE,
-                        false, false, true);
-                if (t.getPropertyDefinitions().containsKey(pd.getId())) {
-                    throw new RuntimeException(
-                            "Property already defined for name: " + name
-                                    + " in type: " + nuxeoTypeId);
-                }
-                t.addPropertyDefinition(pd);
-            }
+            addSchemaPropertyDefinitions(type, schema);
         }
-
-        return t;
+        return type;
     }
 
     /**
-     * Constructs the cmis:document type, which is non-creatable and not mapped
-     * to a Nuxeo type.
+     * Constructs a base type, which is non-creatable and not mapped to a Nuxeo
+     * type. It has the dublincore schema though.
      */
-    public static TypeDefinition constructCmisDocument() {
-        return constructBase(BaseTypeId.CMIS_DOCUMENT.value(), null, false,
-                null, null, false);
+    public static TypeDefinition constructCmisBase(BaseTypeId base,
+            SchemaManager schemaManager) {
+        AbstractTypeDefinition type = constructBase(base.value(), null,
+                base == BaseTypeId.CMIS_FOLDER, null, null, false);
+        DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
+        addSchemaPropertyDefinitions(type, dt.getSchema(NX_DUBLINCORE));
+        return type;
     }
 
-    /**
-     * Constructs the cmis:folder type, which is non-creatable and not mapped to
-     * a Nuxeo type.
-     */
-    public static TypeDefinition constructCmisFolder() {
-        return constructBase(BaseTypeId.CMIS_FOLDER.value(), null, true, null,
-                null, false);
+    protected static void addSchemaPropertyDefinitions(
+            AbstractTypeDefinition type, Schema schema) {
+        for (Field field : schema.getFields()) {
+            PropertyType propertyType;
+            Cardinality cardinality;
+            Type fieldType = field.getType();
+            if (fieldType.isComplexType()) {
+                // complex type
+                log.debug("Ignoring complex type: " + schema.getName() + '/'
+                        + field.getName() + " in type: " + type.getId());
+                continue;
+            } else {
+                if (fieldType.isListType()) {
+                    Type listFieldType = ((ListType) fieldType).getFieldType();
+                    if (!listFieldType.isSimpleType()) {
+                        // complex list
+                        log.debug("Ignoring complex list: " + schema.getName()
+                                + '/' + field.getName() + " in type: "
+                                + type.getId());
+                        continue;
+                    } else {
+                        // array: use a collection table
+                        cardinality = Cardinality.MULTI;
+                        propertyType = getPropertType((SimpleType) listFieldType);
+                    }
+                } else {
+                    // primitive type
+                    cardinality = Cardinality.SINGLE;
+                    propertyType = getPropertType((SimpleType) fieldType);
+                }
+            }
+            String name = field.getName().getPrefixedName();
+            PropertyDefinition<?> pd = newPropertyDefinition(name, name,
+                    propertyType, cardinality, Updatability.READWRITE, false,
+                    false, true);
+            if (type.getPropertyDefinitions().containsKey(pd.getId())) {
+                throw new RuntimeException(
+                        "Property already defined for name: " + name
+                                + " in type: " + type.getId());
+            }
+            type.addPropertyDefinition(pd);
+        }
     }
 
     protected static AbstractTypeDefinition constructBase(String id,

@@ -235,6 +235,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Boolean.FALSE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
+        assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
 
         type = repoService.getTypeDefinition(repositoryId, "Folder", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
@@ -246,6 +247,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(Boolean.FALSE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:document", type.getLocalName());
+        assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
+        assertTrue(type.getPropertyDefinitions().containsKey(
+                "cmis:contentStreamFileName"));
+
         try {
             // nosuchtype, Document is mapped to cmis:document
             repoService.getTypeDefinition(repositoryId, "Document", null);
@@ -253,8 +258,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         } catch (CmisInvalidArgumentException e) {
             // ok
         }
-        assertTrue(type.getPropertyDefinitions().containsKey(
-                "cmis:contentStreamFileName"));
 
         type = repoService.getTypeDefinition(repositoryId, "Note", null);
         assertEquals(Boolean.TRUE, type.isCreatable());
