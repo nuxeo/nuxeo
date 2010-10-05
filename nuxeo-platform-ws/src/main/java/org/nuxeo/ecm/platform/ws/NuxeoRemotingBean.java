@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateless;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -37,8 +36,6 @@ import javax.jws.soap.SOAPBinding.Style;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
-import org.jboss.wsf.spi.annotation.WebContext;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -72,11 +69,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Stateless
-@SerializedConcurrentAccess
 @Local(NuxeoRemotingLocal.class)
 @Remote(NuxeoRemoting.class)
-@WebContext( contextRoot = "/nuxeo/webservices" , urlPattern="/nuxeoremoting" )
 @WebService(name = "NuxeoRemotingInterface", serviceName = "NuxeoRemotingService")
 @SOAPBinding(style = Style.DOCUMENT)
 public class NuxeoRemotingBean extends AbstractNuxeoWebService implements

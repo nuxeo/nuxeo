@@ -8,11 +8,12 @@
     <version>5.4.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-ws-sun-jaxws</artifactId>
-  <name>Nuxeo Platform WebService SUN JAXWS Binding</name>
-  <description>Nuxeo Enterprise Platform: The base for web services.</description>
+  <artifactId>nuxeo-platform-ws-jbossws</artifactId>
+  <name>Nuxeo Platform WebService JBossWS Binding</name>
+  <description>Nuxeo Enterprise Platform: JBoss Bindings for base web services.</description>
 
   <dependencies>
+
   </dependencies>
 
 </project>

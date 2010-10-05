@@ -3,7 +3,7 @@
 
   <extension target="application#MODULE">
     <module>
-      <ejb>${bundle.fileName}</ejb>
+      <java>${bundle.fileName}</java>
     </module>
   </extension>
 
