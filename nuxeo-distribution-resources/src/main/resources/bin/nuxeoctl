@@ -373,7 +373,7 @@ checkalive() {
     return 1
   fi
   MYPID=`cat "$PID"`
-  JPS=`$JAVA_HOME/jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+  JPS=`$JAVA_HOME/bin/jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
   if [ "x$JPS" = "x" ]; then
     return 1
   else
