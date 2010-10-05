@@ -29,9 +29,9 @@
 
     <#if action = 'view'>
 
-    <pre class="brush: css; toolbar: false">
-    ${content}
-    </pre>
+<pre class="brush: css; toolbar: false">
+${content}
+</pre>
     </#if>
 
     <#if action = 'edit'>

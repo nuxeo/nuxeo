@@ -116,6 +116,9 @@ public class Main extends ModuleRoot {
                 "Server", SERVER_ID).type(mimeType).build();
     }
 
+    /*
+     * UI
+     */
     @GET
     @Path("navtree")
     public Object getNavtreeView() {
@@ -154,7 +157,6 @@ public class Main extends ModuleRoot {
     /*
      * Styles
      */
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/skins")
