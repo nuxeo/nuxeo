@@ -43,7 +43,7 @@
 
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
       <modules> <module>nuxeo-runtime-test</module> </modules> </profile> -->
   </profiles>
 
@@ -66,11 +66,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-osgi</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
@@ -85,12 +80,6 @@
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-        <type>jboss-sar</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
