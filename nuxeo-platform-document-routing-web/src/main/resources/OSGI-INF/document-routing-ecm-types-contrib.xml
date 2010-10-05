@@ -91,11 +91,9 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>step</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>step</layout>
         <layout>dublincore</layout>
       </layouts>
    </type>
