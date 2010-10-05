@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AclCapabilities;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
@@ -126,15 +125,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     protected String createDocument(String name, String folderId, String typeId) {
-        ContentStream contentStream = null;
-        VersioningState versioningState = VersioningState.NONE;
-        List<String> policies = null;
-        Acl addACEs = null;
-        Acl removeACEs = null;
         return objService.createDocument(repositoryId,
-                createBaseDocumentProperties(name, typeId), folderId,
-                contentStream, versioningState, policies, addACEs, removeACEs,
-                null);
+                createBaseDocumentProperties(name, typeId), folderId, null,
+                null, null, null, null, null);
+    }
+
+    protected String createFolder(String name, String folderId, String typeId) {
+        return objService.createFolder(repositoryId,
+                createBaseDocumentProperties(name, typeId), folderId, null,
+                null, null, null);
     }
 
     protected Properties createBaseDocumentProperties(String name, String typeId) {
@@ -178,6 +177,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected static String getString(ObjectData data, String key) {
         return (String) getValue(data, key);
+    }
+
+    protected static Object getQueryValue(ObjectData data, String queryName) {
+        Properties properties = data.getProperties();
+        for (PropertyData<?> pd : properties.getPropertyList()) {
+            if (queryName.equals(pd.getQueryName())) {
+                return pd.getFirstValue();
+            }
+        }
+        return null;
     }
 
     @Test
@@ -559,54 +568,75 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(1), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title, testfolder2", flat(tree));
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title", flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[testfile1_Title, "
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title, " //
                 + /* */"testfile2_Title, " //
                 + /* */"testfile3_Title], " //
-                + "testfolder2[testfolder3]", flat(tree));
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[testfile1_Title[], "
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title[], " //
                 + /* */"testfile2_Title[], " //
                 + /* */"testfile3_Title[]], " //
-                + "testfolder2[testfolder3[testfile4_Title]]", flat(tree));
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(4), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[testfile1_Title[], "
+        assertEquals("testfolder1_Title[" //
+                + /* */"testfile1_Title[], " //
                 + /* */"testfile2_Title[], " //
                 + /* */"testfile3_Title[]], " //
-                + "testfolder2[testfolder3[testfile4_Title[]]]", flat(tree));
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title[]], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
         assertEquals("testfolder1_Title[testfile1_Title[], "
                 + /* */"testfile2_Title[], " //
                 + /* */"testfile3_Title[]], " //
-                + "testfolder2[testfolder3[testfile4_Title[]]]", flat(tree));
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[testfile4_Title[]], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
         String folder2Id = ob.getId();
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(1), null, null, null, null, null, null);
-        assertEquals("testfolder3", flat(tree));
+        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder3[testfile4_Title]", flat(tree));
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title[]",
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals("testfolder3[testfile4_Title[]]", flat(tree));
+        assertEquals(
+                "testfolder3_Title[testfile4_Title[]], testfolder4_Title[]",
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder3[testfile4_Title[]]", flat(tree));
+        assertEquals(
+                "testfolder3_Title[testfile4_Title[]], testfolder4_Title[]",
+                flat(tree));
     }
 
     @Test
@@ -749,7 +779,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(4, res.getNumItems().intValue());
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
-        assertEquals(3, res.getNumItems().intValue());
+        assertEquals(4, res.getNumItems().intValue());
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
@@ -1082,6 +1112,37 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         data = res.getObjects().get(0);
         assertEquals("testfile1_Title", getString(data, PropertyIds.NAME));
         assertNotNull(getValue(data, "importance"));
+    }
+
+    @Test
+    public void testQueryJoin() throws Exception {
+        String statement;
+        ObjectList res;
+        ObjectData data;
+
+        String folder2id = getObjectByPath("/testfolder2").getId();
+        String folder3id = getObjectByPath("/testfolder2/testfolder3").getId();
+        String folder4id = getObjectByPath("/testfolder2/testfolder4").getId();
+
+        statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
+                + " FROM cmis:folder A" //
+                + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
+                + " WHERE A.cmis:name = 'testfolder2_Title'" //
+                + " ORDER BY B.dc:title";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+
+        data = res.getObjects().get(0);
+        assertEquals(folder2id, getQueryValue(data, "A.cmis:objectId"));
+        assertEquals("testfolder2_Title", getQueryValue(data, "A.dc:title"));
+        assertEquals(folder3id, getQueryValue(data, "B.cmis:objectId"));
+        assertEquals("testfolder3_Title", getQueryValue(data, "B.dc:title"));
+
+        data = res.getObjects().get(1);
+        assertEquals(folder2id, getQueryValue(data, "A.cmis:objectId"));
+        assertEquals("testfolder2_Title", getQueryValue(data, "A.dc:title"));
+        assertEquals(folder4id, getQueryValue(data, "B.cmis:objectId"));
+        assertEquals("testfolder4_Title", getQueryValue(data, "B.dc:title"));
     }
 
 }

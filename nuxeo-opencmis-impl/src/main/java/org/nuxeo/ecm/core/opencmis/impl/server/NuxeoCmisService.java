@@ -84,6 +84,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderData
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
@@ -813,8 +814,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             for (Map<String, Serializable> map : res) {
                 ObjectDataImpl od = new ObjectDataImpl();
 
-                // properties
-                Map<String, PropertyData<?>> props = new HashMap<String, PropertyData<?>>();
+                // properties (kept in list form)
+                PropertiesImpl properties = new PropertiesImpl();
                 for (Entry<String, Serializable> en : map.entrySet()) {
                     String queryName = en.getKey();
                     PropertyDefinition<?> pd = typeInfo.get(queryName);
@@ -823,11 +824,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                     }
                     PropertyData<?> p = createPropertyData(pd, en.getValue(),
                             queryName);
-                    props.put(queryName, p);
-                    // TODO make sure PropertyIds.BASE_TYPE_ID is there as well
+                    properties.addProperty(p);
                 }
-                Properties properties = objectFactory.createPropertiesData(new ArrayList<PropertyData<?>>(
-                        props.values()));
                 od.setProperties(properties);
 
                 // optional stuff

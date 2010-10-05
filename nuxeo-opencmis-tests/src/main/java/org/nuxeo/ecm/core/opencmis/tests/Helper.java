@@ -140,11 +140,18 @@ public class Helper {
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
                 "Folder");
+        folder2.setPropertyValue("dc:title", "testfolder2_Title");
         folder2 = session.createDocument(folder2);
 
         DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
                 "testfolder3", "Folder");
+        folder3.setPropertyValue("dc:title", "testfolder3_Title");
         folder3 = session.createDocument(folder3);
+
+        DocumentModel folder4 = new DocumentModelImpl("/testfolder2",
+                "testfolder4", "Folder");
+        folder4.setPropertyValue("dc:title", "testfolder4_Title");
+        folder4 = session.createDocument(folder4);
 
         DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
                 "testfile4", "File");

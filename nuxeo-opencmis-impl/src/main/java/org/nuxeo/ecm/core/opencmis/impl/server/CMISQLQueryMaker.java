@@ -29,13 +29,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.antlr.runtime.tree.Tree;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
-import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
@@ -47,14 +46,14 @@ import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference.CmisQlFunction;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
+import org.apache.chemistry.opencmis.server.support.query.QueryObject.JoinSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
@@ -124,21 +123,6 @@ public class CMISQLQueryMaker implements QueryMaker {
     /** used for diagnostic when using DISTINCT */
     List<String> virtualColumnNames = new LinkedList<String>();
 
-    public static class Join {
-        /** INNER / LEFT / RIGHT */
-        String kind;
-
-        /** Table name. */
-        String table;
-
-        /** Correlation name (qualifier), or null. */
-        String corr;
-
-        String on1;
-
-        String on2;
-    }
-
     /**
      * Column corresponding to a returned value computed from an actual SQL
      * expression.
@@ -187,12 +171,13 @@ public class CMISQLQueryMaker implements QueryMaker {
         NuxeoCmisService service = (NuxeoCmisService) params[0];
         typeInfo = params.length > 1 ? (Map<String, PropertyDefinition<?>>) params[1]
                 : null;
+        TypeManagerImpl typeManager = service.repository.getTypeManager();
 
         boolean addSystemColumns = true; // TODO
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
 
-        query = new QueryObject(service.repository.getTypeManager(), null);
+        query = new QueryObject(typeManager, null);
         CmisQueryWalker walker;
         try {
             walker = AbstractQueryConditionProcessor.getWalker(statement);
@@ -217,11 +202,14 @@ public class CMISQLQueryMaker implements QueryMaker {
         for (CmisSelector sel : query.getSelectReferences()) {
             recordSelectSelector(sel);
         }
+        for (CmisSelector sel : query.getJoinReferences()) {
+            recordSelector(sel, JOIN);
+        }
         for (CmisSelector sel : query.getWhereReferences()) {
-            recordSelector(sel, false);
+            recordSelector(sel, WHERE);
         }
         for (SortSpec spec : query.getOrderBys()) {
-            recordSelector(spec.getSelector(), true);
+            recordSelector(spec.getSelector(), ORDER_BY);
         }
 
         boolean distinct = false; // TODO extension
@@ -239,52 +227,56 @@ public class CMISQLQueryMaker implements QueryMaker {
          * Walk joins.
          */
 
-        Join jj = new Join();
-        Entry<String, String> ee = query.getTypes().entrySet().iterator().next();
-        jj.table = ee.getValue();
-        jj.corr = ee.getKey();
-        if (jj.table.equals(jj.corr)) {
-            jj.corr = null;
-        }
-        List<Join> walker_from_joins = Collections.singletonList(jj);
-
+        List<JoinSpec> joins = query.getJoins();
         StringBuilder from = new StringBuilder();
         List<Serializable> fromParams = new LinkedList<Serializable>();
-        int njoin = 0;
-        for (Join j : walker_from_joins) {
-            njoin++;
-            boolean firstJoin = njoin == 1;
+        for (int njoin = -1; njoin < joins.size(); njoin++) {
+            boolean firstTable = njoin == -1;
+            JoinSpec join;
+            String alias;
+
+            if (firstTable) {
+                join = null;
+                alias = query.getMainTypeAlias();
+            } else {
+                join = joins.get(njoin);
+                alias = join.alias;
+            }
+
+            String typeQueryName = query.getTypeQueryName(alias);
+            String qual = alias;
+            if (qual.equals(typeQueryName)) {
+                qual = null;
+            }
+            Table qualHierTable;
+            qualHierTable = getTable(hierTable, qual);
 
             // table this join is about
-
-            String qual = j.corr;
-            Table qualHierTable = getTable(hierTable, qual);
-            Table table = null;
-            if (firstJoin) {
-                // start with hier
+            Table table;
+            if (firstTable) {
                 table = qualHierTable;
             } else {
-                // do requested join
-                if (j.kind.equals("LEFT") || j.kind.equals("RIGHT")) {
-                    from.append(" ");
-                    from.append(j.kind);
-                }
-                from.append(" JOIN ");
-                // find which table in on1/on2 refers to current qualifier
-                Set<String> fqns = null; // columnsPerQual.get(qual);
-                for (String fqn : Arrays.asList(j.on1, j.on2)) {
-                    if (!fqns.contains(fqn)) {
-                        continue;
+                // find which table in onLeft/onRight refers to current
+                // qualifier
+                table = null;
+                for (ColumnReference col : Arrays.asList(join.onLeft,
+                        join.onRight)) {
+                    if (alias.equals(col.getTypeQueryName())) {
+                        table = ((Column) col.getInfo()).getTable();
+                        break;
                     }
-                    Column col = null; // columns.get(fqn);
-                    table = col.getTable();
                 }
                 if (table == null) {
                     throw new StorageException(
                             "Bad query, qualifier not found: " + qual);
                 }
+                // do requested join
+                if (join.kind.equals("LEFT") || join.kind.equals("RIGHT")) {
+                    from.append(" ");
+                    from.append(join.kind);
+                }
+                from.append(" JOIN ");
             }
-            String tableMainId = table.getColumn(model.MAIN_KEY).getFullQuotedName();
 
             // join requested table
 
@@ -297,15 +289,17 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             from.append(name);
 
-            if (!firstJoin) {
+            if (!firstTable) {
                 // emit actual join requested
                 from.append(" ON ");
-                from.append(j.on1);
+                from.append(((Column) join.onLeft.getInfo()).getFullQuotedName());
                 from.append(" = ");
-                from.append(j.on2);
+                from.append(((Column) join.onRight.getInfo()).getFullQuotedName());
             }
 
             // join other fragments for qualifier
+
+            String tableMainId = table.getColumn(model.MAIN_KEY).getFullQuotedName();
 
             for (Table t : allTables.get(qual).values()) {
                 if (t.getName().equals(table.getName())) {
@@ -328,52 +322,39 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
 
             // restrict to relevant primary types
-            // TODO use TypeManager instead of model
 
-            String nuxeoType;
-            boolean skipFolderish;
-            if (j.table.equalsIgnoreCase(BaseTypeId.CMIS_DOCUMENT.value())) {
-                nuxeoType = TypeConstants.DOCUMENT;
-                skipFolderish = true;
-            } else if (j.table.equalsIgnoreCase(BaseTypeId.CMIS_FOLDER.value())) {
-                nuxeoType = "Folder"; // TODO extract constant
-                skipFolderish = false;
-            } else {
-                nuxeoType = j.table;
-                skipFolderish = false;
-            }
-            Set<String> subTypes = model.getDocumentSubTypes(nuxeoType);
-            if (subTypes == null) {
-                throw new QueryMakerException("Unknown type: " + j.table);
-            }
             List<String> types = new ArrayList<String>();
-            List<String> qms = new ArrayList<String>();
-            for (String type : subTypes) {
-                Set<String> facets = model.getDocumentTypeFacets(type);
-                if (skipFolderish && facets.contains(FacetNames.FOLDERISH)) {
-                    continue;
-                }
-                if (skipHidden
-                        && facets.contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
-                    continue;
-                }
-                if (type.equals(model.ROOT_TYPE)) {
-                    continue;
-                }
-                types.add(type);
-                qms.add("?");
+            TypeDefinition td = query.getTypeDefinitionFromQueryName(typeQueryName);
+            if (td.getParentTypeId() != null) {
+                // don't add abstract root types
+                types.add(td.getId());
+            }
+            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
+            typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1,
+                    Boolean.TRUE));
+            // recurse to get all subtypes
+            TypeDefinitionContainer tc;
+            while ((tc = typesTodo.poll()) != null) {
+                types.add(tc.getTypeDefinition().getId());
+                typesTodo.addAll(tc.getChildren());
             }
             if (types.isEmpty()) {
-                types.add("__NOSUCHTYPE__");
-                qms.add("?");
+                // shoudn't happen
+                types = Collections.singletonList("__NOSUCHTYPE__");
             }
+            StringBuilder qms = new StringBuilder();
+            for (int i = 0; i < types.size(); i++) {
+                if (i != 0) {
+                    qms.append(", ");
+                }
+                qms.append("?");
+            }
+
             whereClauses.add(String.format(
                     "%s IN (%s)",
                     qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                    StringUtils.join(qms, ", ")));
-            for (String type : types) {
-                whereParams.add(type);
-            }
+                    qms));
+            whereParams.addAll(types);
 
             // lifecycle not deleted filter
 
@@ -405,20 +386,18 @@ public class CMISQLQueryMaker implements QueryMaker {
                     String readAclTable;
                     String readAclIdCol;
                     String readAclAclIdCol;
-                    // if (walker_from_joins.size() == 1) {
-                    if (1 == 1) {
+                    if (joins.size() == 0) {
                         readAclTable = model.HIER_READ_ACL_TABLE_NAME;
                         readAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
                                 + model.HIER_READ_ACL_ID;
                         readAclAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
                                 + model.HIER_READ_ACL_ACL_ID;
                     } else {
-                        String alias = "nxr" + njoin;
+                        String al = "nxr" + njoin;
                         readAclTable = model.HIER_READ_ACL_TABLE_NAME + " "
-                                + alias; // TODO dialect
-                        readAclIdCol = alias + '.' + model.HIER_READ_ACL_ID;
-                        readAclAclIdCol = alias + '.'
-                                + model.HIER_READ_ACL_ACL_ID;
+                                + al; // TODO dialect
+                        readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;
+                        readAclAclIdCol = al + '.' + model.HIER_READ_ACL_ACL_ID;
                     }
                     whereClauses.add(dialect.getReadAclsCheckSql(readAclAclIdCol));
                     whereParams.add(principals);
@@ -649,17 +628,22 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
     }
 
+    protected static final String JOIN = "JOIN";
+
+    protected static final String WHERE = "WHERE";
+
+    protected static final String ORDER_BY = "ORDER BY";
+
     /**
-     * Records a WHERE / ORDER BY selector, and associates it to a database
-     * column.
+     * Records a JOIN / WHERE / ORDER BY selector, and associates it to a
+     * database column.
      */
-    protected void recordSelector(CmisSelector sel, boolean inOrderBy) {
+    protected void recordSelector(CmisSelector sel, String clauseType) {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
-            if (!inOrderBy) {
-                throw new QueryMakerException(
-                        "Cannot use function in WHERE clause: "
-                                + fr.getFunction());
+            if (clauseType != ORDER_BY) { // == ok
+                throw new QueryMakerException("Cannot use function in "
+                        + clauseType + " clause: " + fr.getFunction());
             }
             // ORDER BY SCORE, nothing further to record
             if (fulltextMatchInfo == null) {
@@ -675,8 +659,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         // fetch column and associate it to the selector
         Column column = getColumn(col);
         if (column == null) {
-            throw new QueryMakerException("Cannot use column in WHERE clause: "
-                    + col.getPropertyQueryName());
+            throw new QueryMakerException("Cannot use column in " + clauseType
+                    + " clause: " + col.getPropertyQueryName());
         }
         col.setInfo(column);
         String qual = col.getTypeQueryName();
