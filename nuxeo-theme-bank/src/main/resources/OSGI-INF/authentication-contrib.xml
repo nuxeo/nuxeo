@@ -6,8 +6,13 @@
       point="openUrl">
 
     <openUrl name="ThemeBanks">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/theme-banks</grantPattern>
+    </openUrl>
+
+    <openUrl name="ThemeBanksUI">
       <grantPattern>${org.nuxeo.ecm.contextPath}/.*/theme-banks/.*</grantPattern>
     </openUrl>
+
   </extension>
 
 </component>

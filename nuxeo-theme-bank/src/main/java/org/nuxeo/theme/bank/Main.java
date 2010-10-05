@@ -46,7 +46,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.presets.PaletteIdentifyException;
@@ -138,20 +137,25 @@ public class Main extends ModuleRoot {
     }
 
     @GET
-    @Path("login")
-    public Object getLoginView() {
-        return getTemplate("login.ftl");
+    @Path("session/login")
+    public Object getSessionView() {
+        return getTemplate("session.ftl");
+    }
+
+    @GET
+    @Path("session")
+    public Object doSession() {
+        Object failed = ctx.getProperty("failed");
+        if (failed == null) {
+            return getIndex();
+        }
+        return getSessionView();
     }
 
     @POST
-    @Path("@@login")
+    @Path("session/@@login")
     public Object login() {
-        FormData form = ctx.getForm();
-        String redirectUrl = form.getString("redirect_url");
-        if (redirectUrl != null) {
-            return redirect(redirectUrl);
-        }
-        return getTemplate("login.ftl");
+        return getIndex();
     }
 
     /*
