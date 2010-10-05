@@ -106,6 +106,21 @@ public class DocumentRoutingActionsBean implements Serializable {
         return navigationContext.navigateToDocument(routeInstance.getDocument());
     }
 
+    public String getRelatedRouteModelDocument() {
+        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
+            List<DocumentModel> relatedRoute;
+            try {
+                relatedRoute = findRelatedRouteDocument();
+            } catch (ClientException e) {
+                return "";
+            }
+            if (relatedRoute.size() > 0) {
+                relatedRouteModelDocumentId = relatedRoute.get(0).getId();
+            }
+        }
+        return relatedRouteModelDocumentId;
+    }
+
     public String validateRouteModel() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
@@ -120,6 +135,20 @@ public class DocumentRoutingActionsBean implements Serializable {
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRouteElement currentRouteModelElement = currentDocument.getAdapter(DocumentRouteElement.class);
+        return getElements(currentRouteModelElement);
+    }
+
+    protected ArrayList<LocalizableDocumentRouteElement> computeRelatedRouteElements()
+            throws ClientException {
+        DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
+                findRelatedRouteDocument().get(0).getId()));
+        DocumentRouteElement currentRouteModelElement = relatedRouteDocumentModel.getAdapter(DocumentRouteElement.class);
+        return getElements(currentRouteModelElement);
+    }
+
+    protected ArrayList<LocalizableDocumentRouteElement> getElements(
+            DocumentRouteElement currentRouteModelElement)
+            throws ClientException {
         ArrayList<LocalizableDocumentRouteElement> routeElements = new ArrayList<LocalizableDocumentRouteElement>();
         getDocumentRoutingService().getRouteElements(currentRouteModelElement,
                 documentManager, routeElements, 0);
@@ -133,19 +162,11 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRouteElements(), null);
     }
 
-    public String getRelatedRouteModelDocument() {
-        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
-            List<DocumentModel> relatedRoute;
-            try {
-                relatedRoute = findRelatedRouteDocument();
-            } catch (ClientException e) {
-                return "";
-            }
-            if (relatedRoute.size() > 0) {
-                relatedRouteModelDocumentId = relatedRoute.get(0).getId();
-            }
-        }
-        return relatedRouteModelDocumentId;
+    @Factory(value = "relatedRouteElementsSelectModel", scope = EVENT)
+    public SelectDataModel computeSelectDataModelRelatedRouteElements()
+            throws ClientException {
+        return new SelectDataModelImpl("related_route_elements",
+                computeRelatedRouteElements(), null);
     }
 
     public List<DocumentModel> findRelatedRouteDocument()
@@ -170,11 +191,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @param doc the mail to remove
      */
     public boolean hasRelatedRoute() throws ClientException {
-        relatedRouteModelDocumentId = getRelatedRouteModelDocument();
-        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
-            return false;
-        }
-        return true;
+        return !findRelatedRouteDocument().isEmpty();
     }
 
     public String startRouteRelatedToCurrentDocument() throws ClientException {
