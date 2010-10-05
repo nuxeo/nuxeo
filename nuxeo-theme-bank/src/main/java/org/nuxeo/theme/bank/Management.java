@@ -74,4 +74,19 @@ public class Management extends DefaultObject {
         String redirectUrl = form.getString("redirect_url");
         return redirect(redirectUrl);
     }
+
+    @POST
+    @Path("createStyle")
+    public Object createStyle() {
+        FormData form = ctx.getForm();
+
+        String resource = form.getString("resource");
+        String path = form.getString("path");
+        String fileName = String.format("%s.css", resource);
+
+        BankManager.createFile(path, fileName, "");
+
+        String redirectUrl = form.getString("redirect_url");
+        return redirect(redirectUrl);
+    }
 }

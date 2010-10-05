@@ -164,6 +164,18 @@ textarea:focus {
 }
 
 button {
-
   font-weight: bold;
+}
+
+input.textInput {
+  border: 1px solid #eee;
+  border-top: 1px solid #ccc;
+  text-align: right;
+  font-weight: bold;
+}
+
+input.textInput:focus {
+  background-color: #ffc;
+  border-top: 1px solid #fc0;
+  border: 1px solid #fc0;
 }

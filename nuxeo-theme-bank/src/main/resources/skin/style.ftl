@@ -41,12 +41,11 @@ ${content}
 
     <#if action = 'edit'>
     <form action="${Root.getPath()}/manage/saveCss" method="post">
-    <#assign redirect_url="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view" />
       <div>
         <textarea style="width: 100%; height: 300px" class="" name="css">${content}</textarea>
         <input type="hidden" name="path" value="${bank}/style/${collection}/${style}" />
         <input type="hidden" name="filename" value="${resource}" />
-        <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '%20')}" />
+        <input type="hidden" name="redirect_url" value="${Root.getPath()}/${bank}/style/${collection}/${style}/${resource}/view" />
       </div>
       <p>
         <button>SAVE</button>

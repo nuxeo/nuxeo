@@ -161,6 +161,10 @@ public class BankManager {
 
     }
 
+    public static void createFile(String path, String fileName, String content) {
+        createFile(path, fileName, content.getBytes());
+    }
+
     public static void createFile(String path, String fileName, byte[] data) {
         File file = new File(getFile(path), fileName);
         try {
