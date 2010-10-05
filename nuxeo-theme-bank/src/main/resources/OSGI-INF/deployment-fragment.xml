@@ -7,28 +7,4 @@
     </module>
   </extension>
 
-  <extension target="web#SERVLET-MAPPING">
-    <servlet-mapping>
-      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
-      <url-pattern>/nxthemes/*</url-pattern>
-    </servlet-mapping>
-  </extension>
-
-  <extension target="web#FILTER">
-    <filter>
-      <display-name>Theme Bank WebEngine Filter</display-name>
-      <filter-name>ThemeBankWebEngineFilter</filter-name>
-      <filter-class>
-        org.nuxeo.theme.bank.ThemeBankWebEngineFilter
-      </filter-class>
-    </filter>
-  </extension>
-
-  <extension target="web#FILTER-MAPPING">
-    <filter-mapping>
-      <filter-name>ThemeBankWebEngineFilter</filter-name>
-      <url-pattern>/nxthemes/*</url-pattern>
-    </filter-mapping>
-  </extension>
-
 </fragment>
