@@ -1,0 +1,11 @@
+<div class="lcAndVersion" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:nxdir="http://nuxeo.org/nxdirectory"
+	xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <nxl:layout value="#{routingActions}" mode="edit" name="document_related_route" />
+  <h:commandButton
+	type="submit" class="button"
+	value="#{messages['action.start.related.document.route']}"
+	action="#{routingActions.startRouteRelatedToCurrentDocument()}" />
+</div>

@@ -57,6 +57,8 @@ public class DocumentRoutingSuggestionActionsBean extends
 
     public static final String CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC = "CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC";
 
+    public static final String DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_QUERYMODEL = "DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS";
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -74,6 +76,30 @@ public class DocumentRoutingSuggestionActionsBean extends
             }
 
             QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC);
+            if (qmDescriptor == null) {
+                return docs;
+            }
+
+            List<Object> queryParams = new ArrayList<Object>();
+            queryParams.add(0, String.format("%s%%", input));
+            QueryModel qm = new QueryModel(qmDescriptor);
+            docs = qm.getDocuments(documentManager, queryParams.toArray());
+        } catch (Exception e) {
+            throw new ClientException("error searching for documents", e);
+        }
+        return docs;
+    }
+
+    public List<DocumentModel> getRouteModelSuggestions(Object input)
+            throws ClientException {
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        try {
+            QueryModelService qms = Framework.getService(QueryModelService.class);
+            if (qms == null) {
+                return docs;
+            }
+
+            QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_QUERYMODEL);
             if (qmDescriptor == null) {
                 return docs;
             }

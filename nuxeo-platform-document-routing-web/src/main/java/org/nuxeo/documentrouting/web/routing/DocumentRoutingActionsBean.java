@@ -24,16 +24,25 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.convert.Converter;
+
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -43,6 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,6 +62,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Scope(CONVERSATION)
 @Name("routingActions")
+@Install(precedence = Install.FRAMEWORK)
 public class DocumentRoutingActionsBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -61,17 +72,25 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    private DocumentRoutingService documentRoutingService;
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    protected String relatedRouteModelDocumentId;
 
     public DocumentRoutingService getDocumentRoutingService() {
         try {
-            if (documentRoutingService == null) {
-                documentRoutingService = Framework.getService(DocumentRoutingService.class);
-            }
+            return Framework.getService(DocumentRoutingService.class);
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
-        return documentRoutingService;
+    }
+
+    @Observer(value = { EventNames.DOCUMENT_CHANGED })
+    public void resetRelatedRouteDocumentId() {
+        relatedRouteModelDocumentId = null;
     }
 
     public String startRoute() throws ClientException {
@@ -92,7 +111,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
         getDocumentRoutingService().validateRouteModel(currentRouteModel,
                 documentManager);
-        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                currentDocument);
         return navigationContext.navigateToDocument(currentDocument);
     }
 
@@ -113,8 +133,77 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRouteElements(), null);
     }
 
+    public String getRelatedRouteModelDocument() {
+        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
+            List<DocumentModel> relatedRoute;
+            try {
+                relatedRoute = findRelatedRouteDocument();
+            } catch (ClientException e) {
+                return "";
+            }
+            if (relatedRoute.size() > 0) {
+                relatedRouteModelDocumentId = relatedRoute.get(0).getId();
+            }
+        }
+        return relatedRouteModelDocumentId;
+    }
+
+    public List<DocumentModel> findRelatedRouteDocument()
+            throws ClientException {
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getRelatedDocumentRoutesForAttachedDocument(
+                documentManager, navigationContext.getCurrentDocument().getId());
+        for (DocumentRoute documentRoute : relatedRoutes) {
+            docs.add(documentRoute.getDocument());
+        }
+        return docs;
+    }
+
+    public void setRelatedRouteModelDocument(String relatedRouteModelDocumentId) {
+        this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
+    }
+
+    /**
+     * Check if the related route to this case is started (ready or running) or
+     * no
+     *
+     * @param doc the mail to remove
+     */
+    public boolean hasRelatedRoute() throws ClientException {
+        relatedRouteModelDocumentId = getRelatedRouteModelDocument();
+        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public String startRouteRelatedToCurrentDocument() throws ClientException {
+        // if no relatedRouteModelDocumentId
+        if (relatedRouteModelDocumentId != null
+                && relatedRouteModelDocumentId.isEmpty()) {
+            facesMessages.add(
+                    FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get(
+                            "feedback.casemanagement.document.route.no.valid.route"));
+            return null;
+        }
+        DocumentModel relatedRouteModel = documentManager.getDocument(new IdRef(
+                relatedRouteModelDocumentId));
+        // set currentCaseId to participatingDocuments on the route
+        DocumentRoute route = relatedRouteModel.getAdapter(DocumentRoute.class);
+        List<String> documentIds = new ArrayList<String>();
+        documentIds.add(navigationContext.getCurrentDocument().getId());
+        route.setAttachedDocuments(documentIds);
+        route.save(documentManager);
+        getDocumentRoutingService().createNewInstance(route,
+                route.getAttachedDocuments(), documentManager);
+        relatedRouteModelDocumentId = null;
+        return null;
+    }
+
     public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
-        return depthFormatter(localizable.getDepth() ,localizable.getElement().getTypeDescription());
+        return depthFormatter(localizable.getDepth(),
+                localizable.getElement().getTypeDescription());
     }
 
     private String depthFormatter(int depth, String type) {
@@ -123,10 +212,11 @@ public class DocumentRoutingActionsBean implements Serializable {
             depthFormatter.append("__");
         }
         depthFormatter.append(type);
-        depthFormatter.append(" (");
-        depthFormatter.append(depth -1);
-        depthFormatter.append(")");
         return depthFormatter.toString();
+    }
+
+    public Converter getDocumentModelConverter() {
+        return new DocumentModelConvertor(documentManager);
     }
 
     public boolean isStep(DocumentModel doc) {

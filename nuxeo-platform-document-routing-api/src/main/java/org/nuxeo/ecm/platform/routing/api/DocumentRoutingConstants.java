@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.routing.api;
  */
 public interface DocumentRoutingConstants {
 
+    // web
+    String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
+
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
 
@@ -41,7 +44,7 @@ public interface DocumentRoutingConstants {
 
     String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
 
-        //operation constant
+    // operation constant
     String OPERATION_CATEGORY_ROUTING_NAME = "Routing";
 
     String OPERATION_STEP_DOCUMENT_KEY = "document.routing.step";
