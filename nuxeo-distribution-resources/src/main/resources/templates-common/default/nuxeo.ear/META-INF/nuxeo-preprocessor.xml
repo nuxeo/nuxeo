@@ -31,7 +31,7 @@
 
     <!--  clean up last install -->
     <delete path="/META-INF/application.xml" />
-    <delete path="/META-INF/jboss-app.xml" />
+    <!--delete path="/META-INF/jboss-app.xml" /-->
     <delete path="${war}" />
 
     <!-- create here the tree directory structure if needed -->
