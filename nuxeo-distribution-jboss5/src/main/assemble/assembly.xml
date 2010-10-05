@@ -184,6 +184,12 @@
       <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
       <artifact:file groupId="commons-el" artifactId="commons-el" />
     </copy>
+    <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
+		<fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
+   		  <include name="**/derby-*.jar"/>
+		</fileset>
+    </move>
+
     <!-- Complementary JBoss templates for DM -->
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
