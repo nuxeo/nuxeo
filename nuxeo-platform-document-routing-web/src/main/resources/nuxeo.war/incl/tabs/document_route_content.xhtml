@@ -7,6 +7,11 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+  
+  <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
+    <ui:include src="/incl/document_actions.xhtml" />
+  </c:if>
+  <div style="clear:both"></div>
 
   <h:form id="document_view">
     <a4j:region id="documentViewRegion">
@@ -18,8 +23,8 @@
     </a4j:region>
   </h:form>
   <div style="clear:both"></div>
+  <hr/>
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-    <ui:include src="/incl/document_actions.xhtml" />
     <ui:include src="/incl/document_content_view.xhtml">
       <ui:param name="contentViewCategory" value="content" />
     </ui:include>
