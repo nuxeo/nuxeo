@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.jboss.seam.ScopeType.STATELESS;
+
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -30,17 +32,17 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.In;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
-
-import static org.jboss.seam.ScopeType.STATELESS;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 
 /**
@@ -57,6 +59,9 @@ public class SiteActionsBean {
 
     @In(create = true)
     protected transient CoreSession documentManager;
+
+    @In(required = true, create = true)
+    protected transient NavigationContext navigationContext;
 
     protected static final String WEBSITE = "WebSite";
 
@@ -138,6 +143,11 @@ public class SiteActionsBean {
             try {
                 DocumentModelList sites = querySitesByUrlAndDocType(
                         documentManager, name, siteType);
+                // if editing a site don't verify it's unique against itself
+                DocumentModel currentDocument = navigationContext.getCurrentDocument();
+                if (siteType.equals(currentDocument.getType())) {
+                    sites.remove(currentDocument);
+                }
                 if (!sites.isEmpty()) {
                     FacesMessage message = new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
