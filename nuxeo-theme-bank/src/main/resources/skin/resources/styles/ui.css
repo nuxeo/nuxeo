@@ -149,3 +149,21 @@ table.properties td.key {
   background-color: #f3f3f3;
   margin-top: 30px;
 }
+
+textarea {
+  border: 1px solid #999;
+  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 12px;
+}
+
+textarea:focus {
+  background-color: #ffc;
+  border-color: #fc0;
+}
+
+button {
+
+  font-weight: bold;
+}

@@ -19,10 +19,15 @@
 
   <@block name="content">
     <h1>Style: ${resource?replace('.css', '')}
-      <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view">Refresh</a>
-      <#if (Context.principal)>
-        <a style="float: right; margin-right: 5px" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">
-    Edit</a>
+      <a style="float: right" href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/${action}">Refresh</a>
+      <#if Context.principal>
+        <#if action = 'edit'>
+          <a style="float: right; margin-right: 5px"
+             href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view">Cancel</a>
+        <#else>
+          <a style="float: right; margin-right: 5px"
+             href="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/edit">Edit</a>
+        </#if>
       </#if>
 
     </h1>
@@ -35,14 +40,17 @@ ${content}
     </#if>
 
     <#if action = 'edit'>
-    <form>
+    <form action="${Root.getPath()}/manage/saveCss" method="post">
+    <#assign redirect_url="${Root.getPath()}/${bank}/style/${collection}/${style}${resource}/view" />
       <div>
         <textarea style="width: 100%; height: 300px" class="" name="css">${content}</textarea>
-        <div>
-        <button>SAVE</button>
-        <button>Cancel</button>
-        </div>
+        <input type="hidden" name="path" value="${bank}/style/${collection}/${style}" />
+        <input type="hidden" name="filename" value="${resource}" />
+        <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '%20')}" />
       </div>
+      <p>
+        <button>SAVE</button>
+      </p>
     </form>
     </#if>
 

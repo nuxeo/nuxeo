@@ -171,4 +171,14 @@ public class BankManager {
             e.printStackTrace();
         }
     }
+
+    public static void editFile(String path, String fileName, String content) {
+        File file = new File(getFile(path), fileName);
+        try {
+            FileUtils.writeFile(file, content);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
