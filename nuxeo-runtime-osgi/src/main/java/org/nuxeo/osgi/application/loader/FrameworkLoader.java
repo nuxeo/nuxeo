@@ -40,7 +40,7 @@ import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class FrameworkLoader {
 
@@ -74,11 +74,17 @@ public class FrameworkLoader {
 
     public static final String ARGS = "org.nuxeo.app.args";
 
+    public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
+
     public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
     public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
 
     public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+
+    public static final String NUXEO_CONFIG_DIR = "nuxeo.config.dir";
+
+    public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
 
@@ -242,8 +248,27 @@ public class FrameworkLoader {
         }
     }
 
+    protected static String getEnvProperty(String key,
+            Map<String, Object> hostEnv, Properties sysprops,
+            boolean addToSystemProperties) {
+        String v = (String) hostEnv.get(key);
+        if (v == null) {
+            v = System.getProperty(key);
+        }
+        if (v != null) {
+            v = StringUtils.expandVars(v, sysprops);
+            if (addToSystemProperties) {
+                sysprops.setProperty(key, v);
+            }
+        }
+        return v;
+    }
+
     protected static Environment createEnvironment(File home,
             Map<String, Object> hostEnv) {
+        Properties sysprops = System.getProperties();
+        sysprops.setProperty(NUXEO_HOME_DIR, home.getAbsolutePath());
+
         Environment env = new Environment(home);
         String v = (String) hostEnv.get(HOST_NAME);
         env.setHostApplicationName(v == null ? Environment.NXSERVER_HOST : v);
@@ -251,38 +276,42 @@ public class FrameworkLoader {
         if (v != null) {
             env.setHostApplicationVersion((String) hostEnv.get(HOST_VERSION));
         }
-        String systemParam = System.getProperty(NUXEO_DATA_DIR);
-        v = (String) hostEnv.get(DATA_DIR);
-        if (systemParam != null) {
-            env.setData(new File(systemParam));
-        } else if (v != null) {
-            env.setData(new File(home, v));
-        }
 
-        systemParam = System.getProperty(NUXEO_LOG_DIR);
-        v = (String) hostEnv.get(LOG_DIR);
-        if (systemParam != null) {
-            env.setLog(new File(systemParam));
-        } else if (v != null) {
-            env.setLog(new File(home, v));
-        }
-
-        systemParam = System.getProperty(NUXEO_TMP_DIR);
-        v = (String) hostEnv.get(TMP_DIR);
-        if (systemParam != null) {
-            env.setTemp(new File(systemParam));
-        } else if (v != null) {
-            env.setTemp(new File(home, v));
-        }
-
-        v = (String) hostEnv.get(WEB_DIR);
+        v = getEnvProperty(NUXEO_DATA_DIR, hostEnv, sysprops, true);
         if (v != null) {
-            env.setWeb(new File(home, v));
+            env.setData(new File(v));
+        } else {
+            sysprops.setProperty(NUXEO_DATA_DIR,
+                    env.getData().getAbsolutePath());
         }
 
-        v = (String) hostEnv.get(CONFIG_DIR);
+        v = getEnvProperty(NUXEO_LOG_DIR, hostEnv, sysprops, true);
         if (v != null) {
-            env.setConfig(new File(home, v));
+            env.setLog(new File(v));
+        } else {
+            sysprops.setProperty(NUXEO_LOG_DIR, env.getLog().getAbsolutePath());
+        }
+
+        v = getEnvProperty(NUXEO_TMP_DIR, hostEnv, sysprops, true);
+        if (v != null) {
+            env.setTemp(new File(v));
+        } else {
+            sysprops.setProperty(NUXEO_TMP_DIR, env.getTemp().getAbsolutePath());
+        }
+
+        v = getEnvProperty(NUXEO_CONFIG_DIR, hostEnv, sysprops, true);
+        if (v != null) {
+            env.setConfig(new File(v));
+        } else {
+            sysprops.setProperty(NUXEO_CONFIG_DIR,
+                    env.getConfig().getAbsolutePath());
+        }
+
+        v = getEnvProperty(NUXEO_WEB_DIR, hostEnv, sysprops, true);
+        if (v != null) {
+            env.setWeb(new File(v));
+        } else {
+            sysprops.setProperty(NUXEO_WEB_DIR, env.getWeb().getAbsolutePath());
         }
 
         v = (String) hostEnv.get(ARGS);

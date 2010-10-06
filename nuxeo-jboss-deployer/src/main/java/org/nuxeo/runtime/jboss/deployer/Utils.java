@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -148,6 +149,71 @@ public class Utils {
         }
 
         return ar.toArray(new String[ar.size()]);
+    }
+
+    /**
+     * Expands any variable found in the given expression with the values in the
+     * given map.
+     * <p>
+     * The variable format is ${property_key}.
+     * 
+     * @param expression the expression to expand
+     * @param properties a map containing variables
+     */
+    public static String expandVars(String expression, Map<?, ?> properties) {
+        int p = expression.indexOf("${");
+        if (p == -1) {
+            return expression; // do not expand if not needed
+        }
+
+        char[] buf = expression.toCharArray();
+        StringBuilder result = new StringBuilder(buf.length);
+        if (p > 0) {
+            result.append(expression.substring(0, p));
+        }
+        StringBuilder varBuf = new StringBuilder();
+        boolean dollar = false;
+        boolean var = false;
+        for (int i = p; i < buf.length; i++) {
+            char c = buf[i];
+            switch (c) {
+            case '$':
+                dollar = true;
+                break;
+            case '{':
+                if (dollar) {
+                    dollar = false;
+                    var = true;
+                } else {
+                    result.append(c);
+                }
+                break;
+            case '}':
+                if (var) {
+                    var = false;
+                    String varName = varBuf.toString();
+                    varBuf.setLength(0);
+                    // get the variable value
+                    Object varValue = properties.get(varName);
+                    if (varValue != null) {
+                        result.append(varValue.toString());
+                    } else { // let the variable as is
+                        result.append("${").append(varName).append('}');
+                    }
+                } else {
+                    result.append(c);
+                }
+                break;
+            default:
+                if (var) {
+                    varBuf.append(c);
+                } else {
+                    result.append(c);
+                }
+                break;
+            }
+        }
+        return result.toString();
     }
 
 }

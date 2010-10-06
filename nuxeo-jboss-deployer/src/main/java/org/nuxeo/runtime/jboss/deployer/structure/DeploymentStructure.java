@@ -78,6 +78,22 @@ public class DeploymentStructure {
         return properties.get(key);
     }
 
+    /**
+     * Get the property value given a key. Any variable present in the value
+     * will be expanded against the system properties.
+     * 
+     * @param key
+     * @return
+     */
+    public String expandProperty(String key, String defaultValue) {
+        String v = properties.get(key);
+        if (v != null) {
+            return Utils.expandVars(v, System.getProperties());
+        } else {
+            return defaultValue;
+        }
+    }
+
     public void addContext(Context ctx) {
         ctxs.add(ctx);
     }

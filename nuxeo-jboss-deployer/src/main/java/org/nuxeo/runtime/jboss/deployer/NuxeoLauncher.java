@@ -18,6 +18,8 @@ package org.nuxeo.runtime.jboss.deployer;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
 
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -35,6 +37,10 @@ import org.nuxeo.runtime.jboss.deployer.structure.NuxeoStructureDeployer;
  * 
  */
 public class NuxeoLauncher extends AbstractNuxeoDeployer {
+
+    public final static String NUXEO_HOME_DIR = "nuxeo.home.dir";
+
+    public final static String NUXEO_EAR_DIR = "nuxeo.ear.dir";
 
     protected File home;
 
@@ -58,10 +64,18 @@ public class NuxeoLauncher extends AbstractNuxeoDeployer {
         ClassLoader cl = unit.getClassLoader();
         home = md.getHome();
         log.info("Launching Nuxeo from: " + home);
-        System.getProperties().putAll(md.getProperties());
+        Map<String, String> props = md.getProperties();
+        Properties sysprops = System.getProperties();
+        sysprops.setProperty(NUXEO_EAR_DIR, home.getAbsolutePath());
+        String v = props.get(NUXEO_HOME_DIR);
+        if (v != null) {
+            v = Utils.expandVars(v, sysprops);
+            home = new File(v);
+            home.mkdirs();
+        }
         File[] bundles = md.getResolvedBundleFiles();
         Bootstrap b = new Bootstrap(home, Arrays.asList(bundles), cl);
-        b.getProperties().putAll(md.getProperties());
+        b.getProperties().putAll(props);
         b.startNuxeo();
     }
 
