@@ -100,9 +100,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                 navigationContext.getChangeableDocument().getPropertyValue(
                         DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
-        DocumentRoute routeInstance = getDocumentRoutingService().createNewInstance(
-                currentRoute, currentRoute.getAttachedDocuments(),
-                documentManager);
+        getDocumentRoutingService().createNewInstance(currentRoute,
+                currentRoute.getAttachedDocuments(), documentManager);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
         return null;
