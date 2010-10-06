@@ -16,15 +16,9 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,28 +32,29 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRouteElementImpl implements DocumentRouteElement {
+public class DocumentRouteElementImpl implements DocumentRouteElement,
+        DocumentRouteStep {
 
     private static final long serialVersionUID = 1L;
 
     protected DocumentModel document;
 
-    public DocumentRouteElementImpl(DocumentModel doc) {
+    protected ElementRunner runner;
+
+    public DocumentRouteElementImpl(DocumentModel doc, ElementRunner runner) {
         this.document = doc;
+        this.runner = runner;
     }
 
     public DocumentModelList getAttachedDocuments(CoreSession session) {
@@ -76,6 +71,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     }
 
     @Override
+    public void run(CoreSession session) {
+        runner.run(session, this);
+    }
+
+    @Override
     public DocumentRoute getDocumentRoute(CoreSession session) {
         DocumentModel parent = document;
         while (true) {
@@ -89,22 +89,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             }
         }
         return parent.getAdapter(DocumentRoute.class);
-    }
-
-    public AutomationService getAutomationService() {
-        try {
-            return Framework.getService(AutomationService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public DocumentRoutingService getDocumentRoutingService() {
-        try {
-            return Framework.getService(DocumentRoutingService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public DocumentModel getDocument() {
@@ -154,37 +138,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     }
 
     @Override
-    public void run(CoreSession session) {
-        if (isRunning()) {
-            return;
-        } else {
-            setRunning(session);
-        }
-        if (!(this instanceof DocumentRouteStep)) {
-            throw new RuntimeException(
-                    "Method run should be overriden in parent class.");
-        }
-        fireEvent(session, this, null,
-                DocumentRoutingConstants.Events.beforeStepRunning.name());
-        OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, this);
-        context.setInput(getAttachedDocuments(session));
-        if(!this.isDone()) {
-            fireEvent(session, this, null,
-                    DocumentRoutingConstants.Events.stepWaiting.name());
-        }
-        try {
-            String chainId = getDocumentRoutingService().getOperationChainId(
-                    document.getType());
-            getAutomationService().run(context, chainId);
-        } catch (InvalidChainException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public boolean isRunning() {
         return checkLifeCycleState(ElementLifeCycleState.running);
     }
@@ -198,10 +151,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     public void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursive) {
         try {
-            session.saveDocument(document);
+            //session.saveDocument(document);
             document.followTransition(transition.name());
-            session.saveDocument(document);
-            document = session.getDocument(document.getRef());
+            //session.saveDocument(document);
+            //document = session.getDocument(document.getRef());
             session.save();
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -231,7 +184,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     @Override
     public void setDone(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
-        fireEvent(session, this, null,
+        EventFirer.fireEvent(session, this, null,
                 DocumentRoutingConstants.Events.afterStepRunning.name());
     }
 
@@ -254,52 +207,24 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
     @Override
     public void setReadOnly(CoreSession session) throws ClientException {
         SetDocumentOnReadOnlyUnrestrictedSessionRunner readOnlySetter = new SetDocumentOnReadOnlyUnrestrictedSessionRunner(
-                session, document);
+                session, document.getRef());
         readOnlySetter.runUnrestricted();
-    }
-
-    protected void fireEvent(CoreSession coreSession,
-            DocumentRouteElement element,
-            Map<String, Serializable> eventProperties, String eventName) {
-        if (eventProperties == null) {
-            eventProperties = new HashMap<String, Serializable>();
-        }
-        eventProperties.put(
-                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
-                element);
-        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                DocumentRoutingConstants.ROUTING_CATEGORY);
-        DocumentEventContext envContext = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), element.getDocument());
-        envContext.setProperties(eventProperties);
-        try {
-            getEventProducer().fireEvent(envContext.newEvent(eventName));
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected EventProducer getEventProducer() {
-        try {
-            return Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends
             UnrestrictedSessionRunner {
 
         public SetDocumentOnReadOnlyUnrestrictedSessionRunner(
-                CoreSession session, DocumentModel document) {
+                CoreSession session, DocumentRef ref) {
             super(session);
-            this.document = document;
+            this.ref = ref;
         }
 
-        protected DocumentModel document;
+        protected DocumentRef ref;
 
         @Override
         public void run() throws ClientException {
+            DocumentModel doc = session.getDocument(ref);
             ACP acp = new ACPImpl();
             // add new ACL to set READ permission to everyone
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
@@ -315,15 +240,65 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             localACL.add(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false));
 
-            document.setACP(acp, true);
-            session.saveDocument(document);
+            doc.setACP(acp, true);
+            session.saveDocument(doc);
             session.save();
         }
     }
 
     @Override
-    public String getTypeDescription() {
-        return document.getType();
+    public boolean canValidateStep(CoreSession session) {
+        return hasPermissionOnDocument(session,
+                SecurityConstants.WRITE_LIFE_CYCLE);
     }
 
+    protected boolean hasPermissionOnDocument(CoreSession session,
+            String permission) {
+        try {
+            return session.hasPermission(document.getRef(), permission);
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setCanValidateStep(CoreSession session, String userOrGroup) {
+        setPermissionOnDocument(session, userOrGroup,
+                SecurityConstants.WRITE_LIFE_CYCLE);
+    }
+
+    protected void setPermissionOnDocument(CoreSession session,
+            String userOrGroup, String permission) {
+        ACP acp = new ACPImpl();
+        ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+        routingACL.add(new ACE(userOrGroup, permission, true));
+        try {
+            document.setACP(acp, true);
+            session.saveDocument(document);
+            session.save();
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean canUpdateStep(CoreSession session) {
+        return hasPermissionOnDocument(session,
+                SecurityConstants.WRITE_PROPERTIES);
+    }
+
+    @Override
+    public void setCanUpdateStep(CoreSession session, String userOrGroup) {
+        setPermissionOnDocument(session, userOrGroup, SecurityConstants.WRITE_PROPERTIES);
+    }
+
+    @Override
+    public boolean canDeleteStep(CoreSession session) {
+        return hasPermissionOnDocument(session, SecurityConstants.REMOVE);
+    }
+
+    @Override
+    public void setCanDeleteStep(CoreSession session, String userOrGroup) {
+        setPermissionOnDocument(session, userOrGroup, SecurityConstants.REMOVE);
+    }
 }

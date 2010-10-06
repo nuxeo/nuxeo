@@ -221,7 +221,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
         return depthFormatter(localizable.getDepth(),
-                localizable.getElement().getTypeDescription());
+                localizable.getElement().getDocument().getType());
     }
 
     private String depthFormatter(int depth, String type) {

@@ -19,6 +19,11 @@ package org.nuxeo.ecm.platform.routing.test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -34,6 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
+    public static final String WORKSPACES_PATH = "/default-domain/workspaces";
 
     public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.routing.core.test";
 
@@ -60,6 +66,14 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
                 3,
                 session.getChildren(
                         session.getChildren(root.getRef()).get(0).getRef()).size());
+        DocumentModel workspaces = session.getDocument(new PathRef(WORKSPACES_PATH));
+        assertNotNull(workspaces);
+        ACP acp = workspaces.getACP();
+        ACL acl = acp.getOrCreateACL("local");
+        acl.add(new ACE("bob", SecurityConstants.READ_WRITE, true));
+        session.setACP(workspaces.getRef(), acp, true);
+        session.saveDocument(workspaces);
+        session.save();
         // test our services
         persistenceService = Framework.getService(DocumentRoutingPersistenceService.class);
         engineService = Framework.getService(DocumentRoutingEngineService.class);
@@ -109,13 +123,13 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public DocumentRoute createDocumentRoute(CoreSession session, String name)
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, name, ROOT_PATH);
+        DocumentModel model = createDocumentRouteModel(session, name, WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 
     protected DocumentModel createTestDocument(String name, CoreSession session)
             throws ClientException {
-        return createDocumentModel(session, name, "Note", ROOT_PATH);
+        return createDocumentModel(session, name, "Note", WORKSPACES_PATH);
     }
 
 }

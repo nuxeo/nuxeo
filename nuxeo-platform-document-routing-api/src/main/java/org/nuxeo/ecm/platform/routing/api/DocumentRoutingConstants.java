@@ -53,8 +53,6 @@ public interface DocumentRoutingConstants {
 
     String DOCUMENT_ROUTING_ACL = "routing";
 
-    String STEP_DOCUMENT_DESCRIPTION_TYPE = "Step";
-
     enum ExecutionTypeValues {
         serial, parallel
     }
@@ -116,6 +114,8 @@ public interface DocumentRoutingConstants {
     }
 
     String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";
+
+    String INITIATOR_EVENT_CONTEXT_KEY = "initiator";
 
     String ROUTING_CATEGORY = "Routing";
 }

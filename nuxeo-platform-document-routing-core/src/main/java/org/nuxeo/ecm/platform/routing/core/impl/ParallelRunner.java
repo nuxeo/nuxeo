@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,40 +12,32 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
- * @author arussel
+ * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class DocumentRouteParallelStepsContainer extends
-        DocumentRouteStepsContainerImpl {
-
-    private static final long serialVersionUID = 1L;
-
-    public DocumentRouteParallelStepsContainer(DocumentModel doc) {
-        super(doc);
-    }
+public class ParallelRunner extends AbstractRunner implements ElementRunner {
 
     @Override
-    public void run(CoreSession session) {
-        List<DocumentRouteElement> children = getChildrenElement(session);
+    public void run(CoreSession session, DocumentRouteElement element) {
+        List<DocumentRouteElement> children = getChildrenElement(session,
+                element);
         if (children.isEmpty()) {
-            setRunning(session);
-            setDone(session);
+            element.setRunning(session);
+            element.setDone(session);
             return;
         }
-        if (!isRunning()) {
-            setRunning(session);
+        if (!element.isRunning()) {
+            element.setRunning(session);
             boolean someChildrenNotDone = false;
             for (DocumentRouteElement child : children) {
                 child.run(session);
@@ -54,7 +46,7 @@ public class DocumentRouteParallelStepsContainer extends
                 }
             }
             if (!someChildrenNotDone) {
-                setDone(session);
+                element.setDone(session);
             }
             return;
         } else {
@@ -65,14 +57,8 @@ public class DocumentRouteParallelStepsContainer extends
                 }
             }
             if (!someChildrenNotDone) {
-                setDone(session);
+                element.setDone(session);
             }
-            return;
         }
-
-    }
-
-    public String getTypeDescription() {
-        return DocumentRoutingConstants.ExecutionTypeValues.parallel.name();
     }
 }

@@ -50,7 +50,7 @@ public class WaitingStepRuntimePersister {
     }
 
     static public void resumeStep(final String id, CoreSession session) {
-        if (!ids.remove(id)) {
+        if (!ids.contains(id)) {
             throw new RuntimeException("Asking to resume a non peristed step.");
         }
         new ActionableValidator(new ActionableObject() {
@@ -79,5 +79,6 @@ public class WaitingStepRuntimePersister {
                 return new DocumentModelListImpl();
             }
         }, session).validate();
+        ids.remove(id);
     }
 }

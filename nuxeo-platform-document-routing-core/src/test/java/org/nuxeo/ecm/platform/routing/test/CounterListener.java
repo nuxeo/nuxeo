@@ -45,4 +45,8 @@ public class CounterListener implements EventListener{
     public static int getCounter() {
         return counter;
     }
+
+    public static void resetCouner() {
+        counter = 0;
+    }
 }

@@ -22,11 +22,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteParallelImpl;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteParallelStepsContainer;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteSerialImpl;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteSerialStepsContainer;
-import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteElementImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepsContainerImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.ParallelRunner;
+import org.nuxeo.ecm.platform.routing.core.impl.SerialRunner;
+import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
 
 /**
  * @author arussel
@@ -42,19 +43,19 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:
-                return new DocumentRouteSerialImpl(doc);
+                return new DocumentRouteImpl(doc, new SerialRunner());
             case parallel:
-                return new DocumentRouteParallelImpl(doc);
+                return new DocumentRouteImpl(doc, new ParallelRunner());
             }
         } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
-            return new DocumentRouteStepImpl(doc);
+            return new DocumentRouteElementImpl(doc, new StepElementRunner());
         } else if (DocumentRoutingConstants.STEP_FOLDER_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:
-                return new DocumentRouteSerialStepsContainer(doc);
+                return new DocumentRouteStepsContainerImpl(doc, new SerialRunner());
             case parallel:
-                return new DocumentRouteParallelStepsContainer(doc);
+                return new DocumentRouteStepsContainerImpl(doc, new ParallelRunner());
             }
         }
         return null;

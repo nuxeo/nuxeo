@@ -17,15 +17,12 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStepsContainer;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
@@ -38,8 +35,8 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
 
     private static final long serialVersionUID = 1L;
 
-    public DocumentRouteStepsContainerImpl(DocumentModel doc) {
-        super(doc);
+    public DocumentRouteStepsContainerImpl(DocumentModel doc, ElementRunner runner) {
+        super(doc, runner);
     }
 
     public void setAttachedDocuments(List<String> documentIds) {
@@ -66,26 +63,13 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
     }
 
-    protected List<DocumentRouteElement> getChildrenElement(CoreSession session) {
-        try {
-            DocumentModelList children = session.getChildren(document.getRef());
-            List<DocumentRouteElement> elements = new ArrayList<DocumentRouteElement>();
-            for (DocumentModel model : children) {
-                elements.add(model.getAdapter(DocumentRouteElement.class));
-            }
-            return elements;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-
     @Override
     public void validate(CoreSession session) throws ClientException {
         // validate this routeModel
-        fireEvent(session, this, null,
+        EventFirer.fireEvent(session, this, null,
                 DocumentRoutingConstants.Events.beforeRouteValidated.name());
         setValidated(session);
-        fireEvent(session, this, null,
+        EventFirer.fireEvent(session, this, null,
                 DocumentRoutingConstants.Events.afterRouteValidated.name());
         setReadOnly(session);
     }

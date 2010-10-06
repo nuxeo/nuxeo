@@ -45,8 +45,11 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
         service.validateRouteModel(route, session);
-        assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
@@ -56,6 +59,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     public void testDocumentRouteWithWaitState() throws Exception {
+        CounterListener.resetCouner();
         deployBundle(TEST_BUNDLE);
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -66,8 +70,11 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
         service.validateRouteModel(route, session);
-        assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
-        assertEquals("validated", session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
@@ -88,9 +95,85 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertFalse(routeInstance.isDone());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
         assertEquals(0, waiting.size());
-        routeInstance = session.getDocument(routeInstance.getDocument().getRef()).getAdapter(DocumentRoute.class);
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
         assertTrue(routeInstance.isDone());
-        assertEquals(6/*route*/ + 4 /*number of steps*/ * 3 /*number of event per waiting step*/, CounterListener.getCounter());
+        assertEquals(6/* route */+ 4 /* number of steps */* 3 /*
+                                                               * number of event
+                                                               * per waiting
+                                                               * step
+                                                               */,
+                CounterListener.getCounter());
+    }
+
+    public void testDocumentRouteWithWaitStateAndSecurity() throws Exception {
+        // bob create the route and validate it
+        CounterListener.resetCouner();
+        closeSession();
+        session = openSessionAs("bob");
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        service.validateRouteModel(route, session);
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        session.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel,
+                doc1.getId(), session);
+        closeSession();
+        openSession();
+        session.saveDocument(routeInstance.getDocument());
+        session.save();
+        closeSession();
+        // jack checks he can't do anything on it
+        session = openSessionAs("jack");
+        assertFalse(routeInstance.canValidateStep(session));
+        List<String> waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        boolean exception = false;
+        try {// jacks fails to resume the step
+            WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+            fail();
+        } catch (Exception e) {
+            exception = true;
+        }
+        assertTrue(exception);
+        closeSession();
+        // jack finishes the route
+        session = openSessionAs("bob");
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(2, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getStepIds();
+        assertEquals(1, waiting.size());
+        assertFalse(routeInstance.isDone());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        assertEquals(0, waiting.size());
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(routeInstance.isDone());
+        assertEquals(6/* route */+ 4 /* number of steps */* 3 /*
+                                                               * number of event
+                                                               * per waiting
+                                                               * step
+                                                               */,
+                CounterListener.getCounter());
     }
 
     public void testGetAvailableDocumentRouteModel() throws ClientException {
@@ -101,25 +184,29 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, routes.size());
     }
 
-    public void testRouteModel() throws ClientException{
-        DocumentModel folder = createDocumentModel(session, "TestFolder", "Folder", "/");
+    public void testRouteModel() throws ClientException {
+        DocumentModel folder = createDocumentModel(session, "TestFolder",
+                "Folder", "/");
         session.save();
         assertNotNull(folder);
-        setPermissionToUser(folder, "jdoe" ,SecurityConstants.WRITE);
-        DocumentModel route = createDocumentRouteModel(session, ROUTE1, folder.getPathAsString());
+        setPermissionToUser(folder, "jdoe", SecurityConstants.WRITE);
+        DocumentModel route = createDocumentRouteModel(session, ROUTE1,
+                folder.getPathAsString());
         session.save();
         assertNotNull(route);
-        service.validateRouteModel(route.getAdapter(DocumentRoute.class), session);
+        service.validateRouteModel(route.getAdapter(DocumentRoute.class),
+                session);
         session.save();
         assertEquals("validated", route.getCurrentLifeCycleState());
         closeSession();
         session = openSessionAs("jdoe");
-        assertFalse(session.hasPermission(route.getRef(), SecurityConstants.WRITE));
+        assertFalse(session.hasPermission(route.getRef(),
+                SecurityConstants.WRITE));
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
     }
 
-    protected void setPermissionToUser(DocumentModel doc, String username, String... perms)
-            throws ClientException {
+    protected void setPermissionToUser(DocumentModel doc, String username,
+            String... perms) throws ClientException {
         ACP acp = doc.getACP();
         if (acp == null) {
             acp = new ACPImpl();

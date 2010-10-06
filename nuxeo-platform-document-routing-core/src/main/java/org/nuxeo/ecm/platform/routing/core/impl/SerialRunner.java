@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,38 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
- * @author arussel
+ * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class DocumentRouteSerialStepsContainer extends
-        DocumentRouteStepsContainerImpl {
-
-    private static final long serialVersionUID = 1L;
-
-    public DocumentRouteSerialStepsContainer(DocumentModel doc) {
-        super(doc);
-    }
+public class SerialRunner extends AbstractRunner implements ElementRunner {
 
     @Override
-    public void run(CoreSession session) {
-        List<DocumentRouteElement> children = getChildrenElement(session);
-        if (!isRunning()) {
-            setRunning(session);
+    public void run(CoreSession session, DocumentRouteElement element) {
+        List<DocumentRouteElement> children = getChildrenElement(session,
+                element);
+        if (!element.isRunning()) {
+            element.setRunning(session);
         }
         if (children.isEmpty()) {
-            setDone(session);
+            element.setDone(session);
             return;
         }
         // run all the child unless there is a wait state
@@ -56,12 +48,6 @@ public class DocumentRouteSerialStepsContainer extends
             }
         }
         // all child ran, we're done
-        setDone(session);
-        return;
-    }
-
-    @Override
-    public String getTypeDescription() {
-        return DocumentRoutingConstants.ExecutionTypeValues.serial.name();
+        element.setDone(session);
     }
 }

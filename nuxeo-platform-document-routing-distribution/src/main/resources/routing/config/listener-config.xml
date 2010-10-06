@@ -4,11 +4,6 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="testListeners" async="false" postCommit="false"
-      class="org.nuxeo.ecm.platform.routing.test.CounterListener"
-      priority="120">
-    </listener>
-
     <listener name="securityListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingSecurityListener"
       priority="120">

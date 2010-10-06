@@ -25,18 +25,20 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * @author arussel
  *
  */
-public class DocumentRouteParallelImpl extends
-        DocumentRouteParallelStepsContainer implements DocumentRoute {
+public class DocumentRouteImpl extends
+        DocumentRouteStepsContainerImpl implements DocumentRoute {
     private static final long serialVersionUID = 1L;
 
     @Override
     public void setDone(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
-        fireEvent(session, this, null,
+        EventFirer.fireEvent(session, this, null,
                 DocumentRoutingConstants.Events.afterRouteFinish.name());
     }
 
-    public DocumentRouteParallelImpl(DocumentModel doc) {
-        super(doc);
+    public DocumentRouteImpl(DocumentModel doc, ElementRunner runner) {
+        super(doc, runner);
     }
+
+
 }

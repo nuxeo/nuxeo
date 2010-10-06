@@ -21,13 +21,14 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  *
  * @author arussel
  *
  */
-public interface DocumentRouteElement extends Serializable{
+public interface DocumentRouteElement extends Serializable {
     enum ElementLifeCycleState {
         draft, validated, ready, running, done
     }
@@ -35,6 +36,8 @@ public interface DocumentRouteElement extends Serializable{
     enum ElementLifeCycleTransistion {
         toValidated, toReady, toRunning, toDone
     }
+
+    DocumentModelList getAttachedDocuments(CoreSession session);
 
     DocumentRoute getDocumentRoute(CoreSession session);
 
@@ -78,8 +81,18 @@ public interface DocumentRouteElement extends Serializable{
 
     void setReadOnly(CoreSession session) throws ClientException;
 
-    String getTypeDescription();
-
     void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursive);
+
+    boolean canValidateStep(CoreSession session);
+
+    void setCanValidateStep(CoreSession session, String userOrGroup);
+
+    boolean canUpdateStep(CoreSession session);
+
+    void setCanUpdateStep(CoreSession session, String userOrGroup);
+
+    boolean canDeleteStep(CoreSession session);
+
+    void setCanDeleteStep(CoreSession session, String userOrGroup);
 }
