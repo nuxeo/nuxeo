@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<structure bundles="lib/nuxeo-*.jar:bundles/*.jar:bundles/*.rar" preprocess="false" />
+<structure bundles="lib/nuxeo-*.jar:bundles/*.jar:bundles/*.rar" preprocess="false">
+    <properties>
+      <property name="nuxeo.home.dir">${jboss.server.data.dir}/NXRuntime</property>
+      <property name="nuxeo.config.dir">${nuxeo.ear.dir}/config</property>
+    </properties>
+</structure>
+

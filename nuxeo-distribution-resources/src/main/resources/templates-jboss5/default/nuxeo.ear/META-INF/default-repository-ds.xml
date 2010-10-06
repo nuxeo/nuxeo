@@ -11,7 +11,7 @@
     <max-pool-size>20</max-pool-size>
 
     <config-property name="xaDataSource" type="java.lang.String">org.h2.jdbcx.JdbcDataSource</config-property>
-    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${jboss.server.data.dir}/h2/nuxeo;AUTO_SERVER=true</config-property>
+    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${nuxeo.data.dir}/h2/nuxeo;AUTO_SERVER=true</config-property>
     <config-property name="property" type="java.lang.String">User=sa</config-property>
     <config-property name="property" type="java.lang.String">Password=</config-property>
 
