@@ -25,7 +25,6 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
-import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -33,6 +32,7 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -74,18 +74,26 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public Document copy(List<Property<?>> properties,
-            VersioningState versioningState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public NuxeoDocument copy(ObjectId target) {
+        return copy(target, null, null, null, null, null,
+                session.getDefaultContext());
     }
 
     @Override
-    public Document copy(List<Property<?>> properties,
+    public NuxeoDocument copy(ObjectId target, Map<String, ?> properties,
             VersioningState versioningState, List<Policy> policies,
-            List<Ace> addACEs, List<Ace> removeACEs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+            List<Ace> addACEs, List<Ace> removeACEs, OperationContext context) {
+        if (target == null || target.getId() == null) {
+            throw new CmisInvalidArgumentException("Invalid target: " + target);
+        }
+        if (context == null) {
+            context = session.getDefaultContext();
+        }
+        NuxeoObjectData newData = service.copy(getId(), target.getId(),
+                properties, type, versioningState, policies, addACEs,
+                removeACEs, context);
+        return (NuxeoDocument) session.getObjectFactory().convertObject(
+                newData, context);
     }
 
     @Override

@@ -61,6 +61,7 @@ import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
@@ -128,6 +129,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     /** Converts from an untyped map to a {@link Properties} object. */
+    @SuppressWarnings("unchecked")
     protected Properties convertProperties(Map<String, ?> properties,
             ObjectType type) {
         Map<String, PropertyDefinition<?>> propDefs = type.getPropertyDefinitions();
@@ -214,7 +216,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public Document createDocumentFromSource(ObjectId source,
+    public NuxeoDocument createDocumentFromSource(ObjectId source,
             Map<String, ?> properties, VersioningState versioningState,
             OperationContext context) {
         return createDocumentFromSource(source, properties, versioningState,
@@ -222,12 +224,21 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public Document createDocumentFromSource(ObjectId source,
+    public NuxeoDocument createDocumentFromSource(ObjectId source,
             Map<String, ?> properties, VersioningState versioningState,
-            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
+            List<Policy> policies, List<Ace> addACEs, List<Ace> removeACEs,
             OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (source == null || source.getId() == null) {
+            throw new CmisInvalidArgumentException("Invalid source: " + source);
+        }
+        if (context == null) {
+            context = session.getDefaultContext();
+        }
+        NuxeoObjectData newData = service.copy(source.getId(), getId(),
+                properties, type, versioningState, policies, addACEs,
+                removeACEs, context);
+        return (NuxeoDocument) session.getObjectFactory().convertObject(
+                newData, context);
     }
 
     @Override

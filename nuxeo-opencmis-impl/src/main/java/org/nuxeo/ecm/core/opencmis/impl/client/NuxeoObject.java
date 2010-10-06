@@ -18,9 +18,11 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
@@ -41,6 +43,7 @@ import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
+import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
@@ -58,13 +61,15 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyDataBase;
  */
 public abstract class NuxeoObject implements CmisObject {
 
+    protected static final Set<Updatability> UPDATABILITY_READWRITE = Collections.singleton(Updatability.READWRITE);
+
     protected final NuxeoSession session;
 
     protected final NuxeoCmisService service;
 
     public final NuxeoObjectData data;
 
-    private final ObjectType type;
+    protected final ObjectType type;
 
     protected static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 

@@ -362,17 +362,26 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(folder);
     }
 
-    // XXX TODO copy not implemented (and its signature must change)
-    public void TODOtestCopy() throws Exception {
+    public void testCopy() throws Exception {
+        if (isAtomPub) {
+            // copy not implemented by AtomPub bindings
+            return;
+        }
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", doc.getPropertyValue("dc:title"));
-        Property<String> prop = session.getObjectFactory().createProperty(
-                doc.getType().getPropertyDefinitions().get("dc:title"),
-                "new title");
-        Document copy = doc.copy(Collections.<Property<?>> singletonList(prop),
-                null, null, null, null);
+        Document copy = doc.copy(session.createObjectId(rootFolderId),
+                Collections.singletonMap("dc:title", "new title"), null, null,
+                null, null, session.getDefaultContext());
         assertNotSame(doc.getId(), copy.getId());
         assertEquals("new title", copy.getPropertyValue("dc:title"));
+
+        // copy is also available from the folder
+        Document copy2 = session.getRootFolder().createDocumentFromSource(doc,
+                Collections.singletonMap("dc:title", "other title"), null,
+                session.getDefaultContext());
+        assertNotSame(copy.getId(), copy2.getId());
+        assertNotSame(doc.getId(), copy2.getId());
+        assertEquals("other title", copy2.getPropertyValue("dc:title"));
     }
 
     public void testMove() throws Exception {

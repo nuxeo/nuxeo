@@ -26,7 +26,6 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
-import org.apache.chemistry.opencmis.client.api.ObjectFactory;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -86,7 +85,7 @@ public class NuxeoSession implements Session {
     }
 
     @Override
-    public ObjectFactory getObjectFactory() {
+    public NuxeoObjectFactory getObjectFactory() {
         return objectFactory;
     }
 
@@ -279,7 +278,7 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = service.getObject(getRepositoryId(),
+        NuxeoObjectData data = service.getObject(getRepositoryId(),
                 objectId.getId(), context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),

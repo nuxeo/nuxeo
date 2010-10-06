@@ -30,8 +30,11 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
+import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
@@ -121,7 +124,7 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
-    protected static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
+    protected final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
 
     protected final NuxeoRepository repository;
 
@@ -193,6 +196,10 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     public CoreSession getCoreSession() {
         return coreSession;
+    }
+
+    public BindingsObjectFactory getObjectFactory() {
+        return objectFactory;
     }
 
     /** Gets the filter that hides HiddenInNavigation and deleted objects. */
@@ -278,13 +285,13 @@ public class NuxeoCmisService extends AbstractCmisService {
     }
 
     @Override
-    public ObjectData getObject(String repositoryId, String objectId,
+    public NuxeoObjectData getObject(String repositoryId, String objectId,
             String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
             ExtensionsData extension) {
         DocumentModel doc = getDocumentModel(objectId);
-        ObjectData data = new NuxeoObjectData(repository, doc, filter,
+        NuxeoObjectData data = new NuxeoObjectData(repository, doc, filter,
                 includeAllowableActions, includeRelationships, renditionFilter,
                 includePolicyIds, includeAcl, extension);
         if (context.isObjectInfoRequired()) {
@@ -404,15 +411,38 @@ public class NuxeoCmisService extends AbstractCmisService {
         return object;
     }
 
-    protected void updateProperties(NuxeoObjectData object, String changeToken,
-            Properties properties, boolean creation) {
+    protected <T> void updateProperties(NuxeoObjectData object,
+            String changeToken, Properties properties, boolean creation) {
+        TypeDefinition type = object.getTypeDefinition();
         // TODO changeToken
         Map<String, PropertyData<?>> p;
-        if (properties != null && (p = properties.getProperties()) != null) {
-            for (Entry<String, PropertyData<?>> en : p.entrySet()) {
-                setObjectProperty(object, en.getKey(), en.getValue(),
-                        object.getTypeDefinition(), creation);
+        if (properties == null || (p = properties.getProperties()) == null) {
+            return;
+        }
+        for (Entry<String, PropertyData<?>> en : p.entrySet()) {
+            String key = en.getKey();
+            PropertyData<?> d = en.getValue();
+            setObjectProperty(object, key, d, type, creation);
+        }
+    }
+
+    protected <T> void updateProperties(NuxeoObjectData object,
+            String changeToken, Map<String, ?> properties, TypeDefinition type,
+            boolean creation) {
+        // TODO changeToken
+        if (properties == null) {
+            return;
+        }
+        for (Entry<String, ?> en : properties.entrySet()) {
+            String key = en.getKey();
+            Object value = en.getValue();
+            @SuppressWarnings("unchecked")
+            PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(
+                    key);
+            if (pd == null) {
+                throw new CmisRuntimeException("Unknown property: " + key);
             }
+            setObjectProperty(object, key, value, pd, creation);
         }
     }
 
@@ -423,9 +453,20 @@ public class NuxeoCmisService extends AbstractCmisService {
                 key);
         if (pd == null) {
             throw new CmisRuntimeException("Unknown property: " + key);
-            // log.error("Unknown property, ignored: " + key);
-            // continue;
         }
+        Object value;
+        if (d == null) {
+            value = null;
+        } else if (pd.getCardinality() == Cardinality.SINGLE) {
+            value = d.getFirstValue();
+        } else {
+            value = d.getValues();
+        }
+        setObjectProperty(object, key, value, pd, creation);
+    }
+
+    protected <T> void setObjectProperty(NuxeoObjectData object, String key,
+            Object value, PropertyDefinition<T> pd, boolean creation) {
         Updatability updatability = pd.getUpdatability();
         if (updatability == Updatability.READONLY
                 || (updatability == Updatability.ONCREATE && !creation)) {
@@ -439,13 +480,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         // TODO avoid constructing property object just to set value
         NuxeoPropertyDataBase<T> np = (NuxeoPropertyDataBase<T>) NuxeoPropertyData.construct(
                 object, pd);
-        if (d == null) {
-            np.setValue(null);
-        } else if (pd.getCardinality() == Cardinality.SINGLE) {
-            np.setValue(d.getFirstValue());
-        } else {
-            np.setValue(d.getValues());
-        }
+        np.setValue(value);
     }
 
     @Override
@@ -518,6 +553,28 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             coreSession.save();
             return copy.getId();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    public NuxeoObjectData copy(String sourceId, String targetId,
+            Map<String, ?> properties, TypeDefinition type,
+            VersioningState versioningState, List<Policy> policies,
+            List<Ace> addACEs, List<Ace> removeACEs, OperationContext context) {
+        DocumentModel doc = getDocumentModel(sourceId);
+        DocumentModel folder = getDocumentModel(targetId);
+        try {
+            DocumentModel copyDoc = coreSession.copy(doc.getRef(),
+                    folder.getRef(), null);
+            NuxeoObjectData copy = new NuxeoObjectData(repository, copyDoc,
+                    context);
+            if (properties != null && !properties.isEmpty()) {
+                updateProperties(copy, null, properties, type, false);
+                copy.doc = coreSession.saveDocument(copyDoc);
+            }
+            coreSession.save();
+            return copy;
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -820,7 +877,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                     String queryName = en.getKey();
                     PropertyDefinition<?> pd = typeInfo.get(queryName);
                     if (pd == null) {
-                        throw new NullPointerException("Cannot get " + queryName);
+                        throw new NullPointerException("Cannot get "
+                                + queryName);
                     }
                     PropertyData<?> p = createPropertyData(pd, en.getValue(),
                             queryName);
@@ -858,8 +916,8 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     // TODO extract and move to BindingsObjectFactoryImpl
     @SuppressWarnings("unchecked")
-    protected static <T> PropertyData<T> createPropertyData(
-            PropertyDefinition<T> pd, Serializable value, String queryName) {
+    protected <T> PropertyData<T> createPropertyData(PropertyDefinition<T> pd,
+            Serializable value, String queryName) {
         AbstractPropertyData<T> p;
         String id = pd.getId();
         if (pd instanceof PropertyIdDefinition) {
