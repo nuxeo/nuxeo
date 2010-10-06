@@ -19,8 +19,10 @@
 package org.nuxeo.ecm.core.lifecycle.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -57,6 +59,11 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     /** Type name -> life cycle name. */
     private final Map<String, String> typesMapping;
+
+    /**
+     * a Mapping from doc type => list of transition that should no recurse.
+     */
+    protected final Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<String, List<String>>();
 
     public LifeCycleServiceImpl() {
         lifeCycles = new HashMap<String, LifeCycle>();
@@ -178,8 +185,18 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                 for (Object mapping : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
                     log.info("Registering lifecycle types mapping: "
-                            + desc.getTypesMapping());
-                    typesMapping.putAll(desc.getTypesMapping());
+                            + desc.getDocumentType() + "-"
+                            + desc.getLifeCycleName());
+                    typesMapping.put(desc.getDocumentType(),
+                            desc.getLifeCycleName());
+                    String transitionArray = desc.getNoRecursionForTransitions();
+                    List<String> transitions = new ArrayList<String>();
+                    if (transitionArray != null && !transitionArray.isEmpty()) {
+                        transitions = Arrays.asList(desc.getNoRecursionForTransitions().split(
+                                ","));
+                    }
+                    docTypeToNonRecursiveTransition.put(desc.getDocumentType(),
+                            transitions);
                 }
             }
         }
@@ -204,13 +221,16 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             } else if (point.equals("types")) {
                 for (Object contrib : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) contrib;
-                    for (String typeName : desc.getTypesMapping().keySet()) {
-                        typesMapping.remove(typeName);
-                    }
+                    typesMapping.remove(desc.getDocumentType());
                 }
 
             }
         }
+    }
+
+    @Override
+    public List<String> getNonRecursiveTransitionForDocType(String docTypeName) {
+        return docTypeToNonRecursiveTransition.get(docTypeName);
     }
 
 }

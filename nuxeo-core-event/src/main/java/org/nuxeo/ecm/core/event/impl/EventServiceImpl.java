@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -41,9 +41,7 @@ import org.nuxeo.ecm.core.event.tx.BulkExecutor;
 import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 
 /**
- * @author Bogdan Stefanescu
- * @author Thierry Delprat
- * @author Florent Guillaume
+ * Implementation of the event service.
  */
 public class EventServiceImpl implements EventService, EventServiceAdmin{
 
@@ -76,6 +74,16 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         asyncExec = AsyncEventExecutor.create();
     }
 
+    public void shutdown() {
+        shutdown(0);
+    }
+
+    public void shutdown(long timeout) {
+        // the possible timeout here is doubled. we don't really care.
+        waitForAsyncCompletion(timeout);
+        asyncExec.shutdown(timeout);
+    }
+
     /**
      * @deprecated use {@link #waitForAsyncCompletion()} instead.
      */
@@ -84,14 +92,23 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         return asyncExec.getUnfinishedCount();
     }
 
+    @Override
     public void waitForAsyncCompletion() {
-        do {
+        waitForAsyncCompletion(0);
+    }
+
+    @Override
+    public void waitForAsyncCompletion(long timeout) {
+        long t0 = System.currentTimeMillis();
+        while (asyncExec.getUnfinishedCount() > 0) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
             }
-
-        } while (asyncExec.getUnfinishedCount() > 0);
+            if (timeout > 0 && System.currentTimeMillis() > t0 + timeout) {
+                break;
+            }
+        }
     }
 
     public void addEventListener(EventListenerDescriptor listener) {

@@ -196,6 +196,14 @@ public class TestQueryParser extends TestCase {
         query = SQLQueryParser.parse("SELECT p FROM t WHERE p NOT LIKE '%test%'");
         op = query.getWhereClause().predicate.operator;
         assertEquals(Operator.NOTLIKE, op);
+
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE p ILIKE '%test%'");
+        op = query.getWhereClause().predicate.operator;
+        assertEquals(Operator.ILIKE, op);
+
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE p NOT ILIKE '%test%'");
+        op = query.getWhereClause().predicate.operator;
+        assertEquals(Operator.NOTILIKE, op);
     }
 
     public void testInOperator() {

@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -273,24 +274,20 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replaceAll(" +", " ").trim();
-        List<String> pos = new LinkedList<String>();
-        List<String> neg = new LinkedList<String>();
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.startsWith("-")) {
-                neg.add(word.substring(1));
-            } else if (word.startsWith("+")) {
-                pos.add(word.substring(1));
-            } else {
-                pos.add(word);
-            }
-        }
-        if (pos.isEmpty()) {
+        FulltextQuery ft = analyzeFulltextQuery(query);
+        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        String res = StringUtils.join(pos, " & ");
-        if (!neg.isEmpty()) {
-            res += " &! " + StringUtils.join(neg, " &! ");
+        List<String> terms = new LinkedList<String>();
+        for (String word : ft.pos) {
+            terms.add(word);
+        }
+        for (List<String> words : ft.or) {
+            terms.add("(" + StringUtils.join(words, " | ") + ")");
+        }
+        String res = StringUtils.join(terms, " & ");
+        if (!ft.neg.isEmpty()) {
+            res += " &! " + StringUtils.join(ft.neg, " &! ");
         }
         return res;
     }
@@ -314,20 +311,24 @@ public class DialectSQLServer extends Dialect {
         String scoreAlias = "_nxscore" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         // there are two left joins here
-        info.joins = Arrays.asList(
-                //
+        info.joins = new ArrayList<Join>();
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins.add(
                 new Join(Join.LEFT, ft.getQuotedName(), null, null,
                         ftMain.getFullQuotedName(),
-                        mainColumn.getFullQuotedName()), //
-                new Join(
-                        Join.LEFT, //
-                        String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
-                                ft.getQuotedName(), getQuotedFulltextAnalyzer()),
-                        tableAlias, // alias
-                        fulltextQuery, // param
-                        ftMain.getFullQuotedName(), // on1
-                        String.format("%s.[KEY]", tableAlias) // on2
-                ));
+                        mainColumn.getFullQuotedName()));
+        }
+        info.joins.add(
+            new Join(
+                    Join.LEFT, //
+                    String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
+                            ft.getQuotedName(), getQuotedFulltextAnalyzer()),
+                    tableAlias, // alias
+                    fulltextQuery, // param
+                    ftMain.getFullQuotedName(), // on1
+                    String.format("%s.[KEY]", tableAlias) // on2
+            ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("%s.RANK / 1000.0 AS %s", tableAlias,
                 scoreAlias);

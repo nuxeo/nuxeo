@@ -201,6 +201,14 @@ public abstract class Operator implements ASTNode {
         }
     };
 
+    public static final Operator NOTILIKE = new Operator(sym.NOTILIKE) {
+        private static final long serialVersionUID = 1L;
+        @Override
+        public String toString() {
+            return "NOT ILIKE";
+        }
+    };
+
     public static final Operator NOTIN = new Operator(sym.NOTIN) {
         private static final long serialVersionUID = -6960118201471749419L;
         @Override

@@ -155,7 +155,7 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
     public void testQueryBasic() throws Exception {
         // Documents without creation date don't match any DATE query
         // 2 documents with creation date
-        super.testQueryBasic();
+        createDocs();
         DocumentModelList dml;
 
         if (DatabaseHelper.DATABASE == DatabaseDerby.INSTANCE) {
@@ -178,6 +178,18 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'Test%'");
         assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'foo%'");
+        assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'Foo%'");
+        assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:subjects ILIKE '%oo'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:subjects NOT ILIKE '%oo'");
+        assertEquals(6, dml.size());
     }
 
     public void testQueryComplexTypeFiles() throws Exception {

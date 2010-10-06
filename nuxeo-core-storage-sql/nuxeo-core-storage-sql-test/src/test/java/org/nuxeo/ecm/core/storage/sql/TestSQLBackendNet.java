@@ -66,6 +66,9 @@ public class TestSQLBackendNet extends TestSQLBackend {
         if (DatabaseHelper.DATABASE instanceof DatabaseH2) {
             String contrib = "OSGI-INF/test-server-h2-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
+        } else if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
+            String contrib = "OSGI-INF/test-server-postgresql-contrib.xml";
+            deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
         } else {
             deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                     DatabaseHelper.DATABASE.getDeploymentContrib());

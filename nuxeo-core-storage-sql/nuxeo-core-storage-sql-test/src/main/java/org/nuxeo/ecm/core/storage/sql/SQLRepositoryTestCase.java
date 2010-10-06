@@ -36,11 +36,11 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
  */
 public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
-    protected String REPOSITORY_NAME = "test";
+    public static final String REPOSITORY_NAME = "test";
 
-    protected CoreSession session;
+    public CoreSession session;
 
-    protected DatabaseHelper database = DatabaseHelper.DATABASE;
+    public DatabaseHelper database = DatabaseHelper.DATABASE;
 
     public SQLRepositoryTestCase() {
     }

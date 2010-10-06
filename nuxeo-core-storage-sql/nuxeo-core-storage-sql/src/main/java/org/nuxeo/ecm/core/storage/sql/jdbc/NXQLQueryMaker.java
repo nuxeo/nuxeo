@@ -443,7 +443,8 @@ public class NXQLQueryMaker implements QueryMaker {
              */
 
             if (docKind == DocKind.DIRECT && info.immutableClause != null) {
-                String where = String.format("%s IS %s",
+                String where = String.format(
+                        "%s IS %s",
                         database.getTable(model.VERSION_TABLE_NAME).getColumn(
                                 model.MAIN_KEY).getFullQuotedName(),
                         info.immutableClause.booleanValue() ? "NOT NULL"
@@ -1305,11 +1306,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
                 visitExpressionFulltext(node, name);
-            } else if (op == Operator.ILIKE) {
-                visitExpressionIlike(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN
-                    || op == Operator.LIKE || op == Operator.NOTLIKE)
+                    || op == Operator.LIKE || op == Operator.NOTLIKE
+                    || op == Operator.ILIKE || op == Operator.NOTILIKE)
                     && name != null && !name.startsWith(NXQL.ECM_PREFIX)) {
                 ModelProperty propertyInfo = model.getPropertyInfo(name);
                 if (propertyInfo == null) {
@@ -1318,24 +1318,30 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (propertyInfo.propertyType.isArray()) {
                     // use EXISTS with subselect clause
                     boolean direct = op == Operator.EQ || op == Operator.IN
-                            || op == Operator.LIKE;
+                            || op == Operator.LIKE || op == Operator.ILIKE;
                     Operator directOp = direct ? op
                             : (op == Operator.NOTEQ ? Operator.EQ
                                     : op == Operator.NOTIN ? Operator.IN
-                                            : Operator.LIKE);
+                                            : op == Operator.NOTLIKE ? Operator.LIKE
+                                                    : Operator.ILIKE);
                     Table table = database.getTable(propertyInfo.fragmentName);
                     if (!direct) {
                         buf.append("NOT ");
                     }
                     buf.append(String.format(
                             "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND (",
-                            table.getQuotedName(), dataHierId, table.getColumn(
-                                    model.MAIN_KEY).getFullQuotedName()));
+                            table.getQuotedName(), dataHierId,
+                            table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+
                     allowArray = true;
-                    node.lvalue.accept(this);
+                    if (directOp == Operator.ILIKE) {
+                        visitExpressionIlike(node, directOp);
+                    } else {
+                        node.lvalue.accept(this);
+                        directOp.accept(this);
+                        node.rvalue.accept(this);
+                    }
                     allowArray = false;
-                    directOp.accept(this);
-                    node.rvalue.accept(this);
                     buf.append("))");
                 } else {
                     // boolean literals have to be translated according the
@@ -1354,7 +1360,11 @@ public class NXQLQueryMaker implements QueryMaker {
                                 new BooleanLiteral(v == 1));
                     }
                     // use normal processing
-                    super.visitExpression(node);
+                    if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
+                        visitExpressionIlike(node, node.operator);
+                    } else {
+                        super.visitExpression(node);
+                    }
                 }
             } else if (node.operator == Operator.BETWEEN
                     || node.operator == Operator.NOTBETWEEN) {
@@ -1424,8 +1434,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 Table table = database.getTable(propertyInfo.fragmentName);
                 buf.append(String.format(
                         "EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ",
-                        table.getQuotedName(), dataHierId, table.getColumn(
-                                model.MAIN_KEY).getFullQuotedName()));
+                        table.getQuotedName(), dataHierId,
+                        table.getColumn(model.MAIN_KEY).getFullQuotedName()));
             }
             buf.append('(');
             allowArray = true;
@@ -1571,13 +1581,20 @@ public class NXQLQueryMaker implements QueryMaker {
             }
         }
 
-        private void visitExpressionIlike(Expression node, String name) {
+        protected void visitExpressionIlike(Expression node, Operator op) {
             if (dialect.supportsIlike()) {
-                super.visitExpression(node);
-            } else {
-                buf.append("UPPER(");
                 node.lvalue.accept(this);
-                buf.append(") LIKE UPPER(");
+                op.accept(this);
+                node.rvalue.accept(this);
+            } else {
+                buf.append("LOWER(");
+                node.lvalue.accept(this);
+                buf.append(") ");
+                if (op == Operator.NOTILIKE) {
+                    buf.append("NOT ");
+                }
+                buf.append("LIKE");
+                buf.append(" LOWER(");
                 node.rvalue.accept(this);
                 buf.append(")");
             }

@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * Oracle-specific dialect.
@@ -311,23 +312,20 @@ public class DialectOracle extends Dialect {
     public String getDialectFulltextQuery(String query) {
         query = query.replaceAll(" +", " ").trim();
         query = query.replace("*", "%");
-        List<String> pos = new LinkedList<String>();
-        List<String> neg = new LinkedList<String>();
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.startsWith("-")) {
-                neg.add(word.substring(1));
-            } else if (word.startsWith("+")) {
-                pos.add(word.substring(1));
-            } else {
-                pos.add(word);
-            }
-        }
-        if (pos.isEmpty()) {
+        FulltextQuery ft = analyzeFulltextQuery(query);
+        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        String res = StringUtils.join(pos, " & ");
-        if (!neg.isEmpty()) {
-            res += " ~ " + StringUtils.join(neg, " ~ ");
+        List<String> terms = new LinkedList<String>();
+        for (String word : ft.pos) {
+            terms.add(word);
+        }
+        for (List<String> words : ft.or) {
+            terms.add("(" + StringUtils.join(words, " | ") + ")");
+        }
+        String res = StringUtils.join(terms, " & ");
+        if (!ft.neg.isEmpty()) {
+            res += " ~ " + StringUtils.join(ft.neg, " ~ ");
         }
         return res;
     }
@@ -347,9 +345,12 @@ public class DialectOracle extends Dialect {
                 + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = Collections.singletonList(new Join(Join.INNER,
-                ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
-                mainColumn.getFullQuotedName()));
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins = Collections.singletonList(new Join(Join.INNER,
+                    ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
+                    mainColumn.getFullQuotedName()));
+        }
         info.whereExpr = String.format("CONTAINS(%s, ?, %d) > 0",
                 ftColumn.getFullQuotedName(), nthMatch);
         info.whereExprParam = fulltextQuery;

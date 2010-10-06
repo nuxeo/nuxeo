@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,24 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thomas Roger
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.event.test;
 
 import java.net.URL;
 import java.util.List;
+
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventBundleImpl;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-/**
- * @author <a href="mailto:throger@gmail.com">Thomas Roger</a>
- */
 public class TestEventServiceComponent extends NXRuntimeTestCase {
 
     @Override
@@ -60,6 +61,33 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
 
         eventListenerDescriptor = eventListenerDescriptors.get(0);
         assertFalse(eventListenerDescriptor.isEnabled());
+    }
+
+    /**
+     * Test that when the event service component is deactivated, the threads
+     * of the async event executor are shut down.
+     */
+    public void testAsyncEventExecutorShutdown() throws Exception {
+        int initialCount = Thread.activeCount();
+        // send an async event to make sure the async event executor spawned
+        // some threads
+        // load contrib
+        URL url = getClass().getClassLoader().getResource(
+                "test-PostCommitListeners3.xml");
+        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        // send event
+        EventService service = Framework.getService(EventService.class);
+        Event event = new EventImpl("test1", new EventContextImpl());
+        event.setIsCommitEvent(true);
+        service.fireEvent(event);
+        // wait for async processing to be done
+        service.waitForAsyncCompletion();
+        // check thread count increased
+        assertTrue(Thread.activeCount() > initialCount);
+        // now stop service
+        // this is called by EventServiceComponent.deactivate() in real life
+        ((EventServiceImpl) service).shutdown(1 * 1000);
+        assertEquals(initialCount, Thread.activeCount());
     }
 
 }

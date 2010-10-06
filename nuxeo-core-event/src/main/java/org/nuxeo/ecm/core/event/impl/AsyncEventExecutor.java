@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -36,10 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * ThreadPoolExecutor of listeners for event bundles.
- *
- * @author Bogdan Stefanescu
- * @author Thierry Delprat
- * @author Florent Guillaume
  */
 public class AsyncEventExecutor {
 
@@ -66,6 +62,25 @@ public class AsyncEventExecutor {
         int queueSize = val == null ? QUEUE_SIZE : Integer.parseInt(val);
         return new AsyncEventExecutor(poolSize, maxPoolSize, keepAliveTime,
                 queueSize);
+    }
+
+    public void shutdown() {
+        shutdown(0);
+    }
+
+    public void shutdown(long timeout) {
+        executor.shutdown();
+        // wait for thread pool to drain
+        long t0 = System.currentTimeMillis();
+        while (executor.getPoolSize() > 0) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
+            if (timeout > 0 && System.currentTimeMillis() > t0 + timeout) {
+                break;
+            }
+        }
     }
 
     public AsyncEventExecutor(int poolSize, int maxPoolSize, int keepAliveTime,

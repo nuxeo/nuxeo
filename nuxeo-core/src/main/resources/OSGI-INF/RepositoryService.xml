@@ -18,8 +18,7 @@
         Extension point to register new repositories.
         The extension should use the format:
          <repository name="demo"
-                 factory="org.nuxeo.ecm.core.repository.jcr.JCRRepositoryFactory"
-                 securityManager="org.nuxeo.ecm.core.repository.jcr.JCRSecurityManager">
+                 factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
            ... random XML content ...
         </repository>
         The repository tag may contains any valid XML content that can be used by to specify

@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.core.lifecycle.event;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -83,6 +86,10 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         String targetState;
         if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
             transition = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
+            if (isNonRecursiveTransition(transition, doc.getType())) {
+                // transition should not recurse into children
+                return;
+            }
             if (LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)) {
                 // not processed (as we can undelete also parents)
                 // a specific event documentUndeleted will be used instead
@@ -101,6 +108,12 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             log.error("Unable to get children", e);
             return;
         }
+    }
+
+    protected boolean isNonRecursiveTransition(String transition, String type) {
+        List<String> nonRecursiveTransitions = NXCore.getLifeCycleService().getNonRecursiveTransitionForDocType(
+                type);
+        return nonRecursiveTransitions.contains(transition);
     }
 
     // change doc state and recurse in children
