@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationServiceImpl" />
+
+  <extension-point name="config">
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationConfig" />
+  </extension-point>
+
+</component>

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Shibboleth login module
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.shibboleth;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login
+Nuxeo-Component: OSGI-INF/ShibbolethAuthenticationService.xml,
+ OSGI-INF/shibboleth-authentication-contrib.xml
