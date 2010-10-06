@@ -1,15 +1,13 @@
 <?xml version="1.0"?>
 <fragment>
 
-  <extension target="web#SERVLET">
+  <extension target="web#JBOSSWS">
     <servlet>
       <description>NuxeoRemoting WS EndPoint</description>
       <display-name>NuxeoRemoting EndPoint</display-name>
       <servlet-name>NuxeoRemotingEndPoint</servlet-name>
       <servlet-class>org.nuxeo.ecm.platform.ws.NuxeoRemotingBean</servlet-class>
     </servlet>
-  </extension>
-  <extension target="web#SERVLET-MAPPING">
     <servlet-mapping>
       <servlet-name>NuxeoRemotingEndPoint</servlet-name>
       <url-pattern>/webservices/nuxeoremoting</url-pattern>
