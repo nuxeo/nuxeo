@@ -22,6 +22,9 @@ package org.nuxeo.ecm.platform.routing.api;
  */
 public interface DocumentRoutingConstants {
 
+    // web
+    String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
+
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
 
@@ -41,7 +44,7 @@ public interface DocumentRoutingConstants {
 
     String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
 
-        //operation constant
+    // operation constant
     String OPERATION_CATEGORY_ROUTING_NAME = "Routing";
 
     String OPERATION_STEP_DOCUMENT_KEY = "document.routing.step";
@@ -56,4 +59,63 @@ public interface DocumentRoutingConstants {
         serial, parallel
     }
 
+    // event
+    enum Events {
+        /**
+         * before the route is validated, each part of the route is in "Draft"
+         * state. The session used is unrestricted. The element key is the
+         * route.
+         */
+        beforeRouteValidated,
+        /**
+         * after the route is validated, each part of the route is in
+         * "Validated" state. The session used is unrestricted. The element key
+         * is the route.
+         */
+        afterRouteValidated,
+        /**
+         * before the route is ready, each part of the route is in "Validated"
+         * state.The session used is unrestricted. The element key is the route.
+         */
+        beforeRouteReady,
+        /**
+         * after the route is ready, each part of the route is in "Ready"
+         * state.The session used is unrestricted. The element key is the route.
+         */
+        afterRouteReady,
+        /**
+         * before the route starts. The RouteDocument is in "Running" state,
+         * other parts of the route is either in Ready, Running or Done
+         * state.The session used is unrestricted. The element key is the route.
+         */
+        beforeRouteStart,
+        /**
+         * after the route is finished. The route and each part of the route is
+         * in Done state.The session used is unrestricted. The element key is
+         * the route.
+         */
+        afterRouteFinish,
+        /**
+         * before the operation chain for this step is called. The step is in
+         * "Running" state.The session used is unrestricted. The element key is
+         * the step.
+         */
+        beforeStepRunning,
+        /**
+         * After the operation chain of this step ran and if the step is not
+         * done, ie: if we are in a waiting state.The session used is
+         * unrestricted. The element key is the step.
+         */
+        stepWaiting,
+        /**
+         * after the operation chain for this step is called.The step is in
+         * "Done" state.The session used is unrestricted. The element key is the
+         * step.
+         */
+        afterStepRunning
+    }
+
+    String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";
+
+    String ROUTING_CATEGORY = "Routing";
 }

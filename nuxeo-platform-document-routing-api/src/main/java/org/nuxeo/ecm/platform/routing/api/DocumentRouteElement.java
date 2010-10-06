@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -25,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author arussel
  *
  */
-public interface DocumentRouteElement {
+public interface DocumentRouteElement extends Serializable{
     enum ElementLifeCycleState {
         draft, validated, ready, running, done
     }
@@ -35,6 +37,7 @@ public interface DocumentRouteElement {
     }
 
     DocumentRoute getDocumentRoute(CoreSession session);
+
     boolean isValidated();
 
     boolean isReady();
@@ -75,13 +78,8 @@ public interface DocumentRouteElement {
 
     void setReadOnly(CoreSession session) throws ClientException;
 
-    /**
-     * @param transition
-     * @param session
-     * @param recursively
-     */
-    void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session);
-
     String getTypeDescription();
+
+    void followTransition(ElementLifeCycleTransistion transition,
+            CoreSession session, boolean recursive);
 }

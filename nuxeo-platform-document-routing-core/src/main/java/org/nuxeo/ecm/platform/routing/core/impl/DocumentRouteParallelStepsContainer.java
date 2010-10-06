@@ -30,6 +30,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class DocumentRouteParallelStepsContainer extends
         DocumentRouteStepsContainerImpl {
 
+    private static final long serialVersionUID = 1L;
+
     public DocumentRouteParallelStepsContainer(DocumentModel doc) {
         super(doc);
     }

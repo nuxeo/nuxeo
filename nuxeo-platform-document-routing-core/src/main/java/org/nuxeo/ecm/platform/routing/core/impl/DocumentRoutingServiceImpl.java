@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,9 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -86,15 +89,50 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 model.getDocument(), session);
         DocumentRoute routeInstance = routeInstanceDoc.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
+        fireEvent(session, routeInstance, null,
+                DocumentRoutingConstants.Events.beforeRouteReady.name());
         routeInstance.setReady(session);
+        fireEvent(session, routeInstance, null,
+                DocumentRoutingConstants.Events.afterRouteReady.name());
         routeInstance.save(session);
         if (Framework.isTestModeSet()) {
             Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         }
         if (startInstance) {
+            fireEvent(session, routeInstance, null,
+                    DocumentRoutingConstants.Events.beforeRouteStart.name());
             getEngineService().start(routeInstance, session);
         }
         return routeInstance;
+    }
+
+    protected void fireEvent(CoreSession coreSession,
+            DocumentRouteElement element,
+            Map<String, Serializable> eventProperties, String eventName) {
+        if (eventProperties == null) {
+            eventProperties = new HashMap<String, Serializable>();
+        }
+        eventProperties.put(
+                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
+                element);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                DocumentRoutingConstants.ROUTING_CATEGORY);
+        DocumentEventContext envContext = new DocumentEventContext(coreSession,
+                coreSession.getPrincipal(), element.getDocument());
+        envContext.setProperties(eventProperties);
+        try {
+            getEventProducer().fireEvent(envContext.newEvent(eventName));
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected EventProducer getEventProducer() {
+        try {
+            return Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

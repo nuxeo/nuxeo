@@ -90,6 +90,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(0, waiting.size());
         routeInstance = session.getDocument(routeInstance.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isDone());
+        assertEquals(6/*route*/ + 4 /*number of steps*/ * 3 /*number of event per waiting step*/, CounterListener.getCounter());
     }
 
     public void testGetAvailableDocumentRouteModel() throws ClientException {

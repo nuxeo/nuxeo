@@ -1,6 +1,10 @@
-<div class="lcAndVersion" xmlns:f="http://java.sun.com/jsf/core"
+<div xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxdir="http://nuxeo.org/nxdirectory" xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  
+  <h3 class="summaryTitle">
+    <h:outputText value="#{messages['label.document.routing.participatingDocuments']}" />
+  </h3>
 
   <c:set var="lifeCycleState" value="#{currentDocument.getCurrentLifeCycleState()}" />
   <c:choose>

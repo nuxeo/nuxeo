@@ -16,8 +16,11 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
@@ -35,7 +38,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
@@ -48,6 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class DocumentRouteElementImpl implements DocumentRouteElement {
+
+    private static final long serialVersionUID = 1L;
 
     protected DocumentModel document;
 
@@ -157,9 +164,15 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             throw new RuntimeException(
                     "Method run should be overriden in parent class.");
         }
+        fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.beforeStepRunning.name());
         OperationContext context = new OperationContext(session);
         context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, this);
         context.setInput(getAttachedDocuments(session));
+        if(!this.isDone()) {
+            fireEvent(session, this, null,
+                    DocumentRoutingConstants.Events.stepWaiting.name());
+        }
         try {
             String chainId = getDocumentRoutingService().getOperationChainId(
                     document.getType());
@@ -178,12 +191,12 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setRunning(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toRunning, session);
+        followTransition(ElementLifeCycleTransistion.toRunning, session, false);
     }
 
     @Override
     public void followTransition(ElementLifeCycleTransistion transition,
-            CoreSession session) {
+            CoreSession session, boolean recursive) {
         try {
             session.saveDocument(document);
             document.followTransition(transition.name());
@@ -192,6 +205,13 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
             session.save();
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+            }
+            if (recursive) {
+                DocumentModelList children = session.getChildren(document.getRef());
+                for (DocumentModel child : children) {
+                    DocumentRouteElement element = child.getAdapter(DocumentRouteElement.class);
+                    element.followTransition(transition, session, recursive);
+                }
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -210,17 +230,20 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
 
     @Override
     public void setDone(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toDone, session);
+        followTransition(ElementLifeCycleTransistion.toDone, session, false);
+        fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.afterStepRunning.name());
     }
 
     @Override
     public void setValidated(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toValidated, session);
+        followTransition(ElementLifeCycleTransistion.toValidated, session,
+                false);
     }
 
     @Override
     public void setReady(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toReady, session);
+        followTransition(ElementLifeCycleTransistion.toReady, session, true);
     }
 
     public void validate(CoreSession session) throws ClientException {
@@ -233,6 +256,35 @@ public class DocumentRouteElementImpl implements DocumentRouteElement {
         SetDocumentOnReadOnlyUnrestrictedSessionRunner readOnlySetter = new SetDocumentOnReadOnlyUnrestrictedSessionRunner(
                 session, document);
         readOnlySetter.runUnrestricted();
+    }
+
+    protected void fireEvent(CoreSession coreSession,
+            DocumentRouteElement element,
+            Map<String, Serializable> eventProperties, String eventName) {
+        if (eventProperties == null) {
+            eventProperties = new HashMap<String, Serializable>();
+        }
+        eventProperties.put(
+                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
+                element);
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                DocumentRoutingConstants.ROUTING_CATEGORY);
+        DocumentEventContext envContext = new DocumentEventContext(coreSession,
+                coreSession.getPrincipal(), element.getDocument());
+        envContext.setProperties(eventProperties);
+        try {
+            getEventProducer().fireEvent(envContext.newEvent(eventName));
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected EventProducer getEventProducer() {
+        try {
+            return Framework.getService(EventProducer.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected class SetDocumentOnReadOnlyUnrestrictedSessionRunner extends

@@ -16,8 +16,10 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author arussel
@@ -25,6 +27,15 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
  */
 public class DocumentRouteParallelImpl extends
         DocumentRouteParallelStepsContainer implements DocumentRoute {
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void setDone(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toDone, session, false);
+        fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.afterRouteFinish.name());
+    }
+
     public DocumentRouteParallelImpl(DocumentModel doc) {
         super(doc);
     }

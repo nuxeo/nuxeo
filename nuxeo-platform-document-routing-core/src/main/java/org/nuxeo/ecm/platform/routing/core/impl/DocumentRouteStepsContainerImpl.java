@@ -36,6 +36,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
         implements DocumentRouteStepsContainer {
 
+    private static final long serialVersionUID = 1L;
+
     public DocumentRouteStepsContainerImpl(DocumentModel doc) {
         super(doc);
     }
@@ -59,6 +61,11 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
         }
     }
 
+    @Override
+    public void setDone(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toDone, session, false);
+    }
+
     protected List<DocumentRouteElement> getChildrenElement(CoreSession session) {
         try {
             DocumentModelList children = session.getChildren(document.getRef());
@@ -75,7 +82,11 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl
     @Override
     public void validate(CoreSession session) throws ClientException {
         // validate this routeModel
+        fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.beforeRouteValidated.name());
         setValidated(session);
+        fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.afterRouteValidated.name());
         setReadOnly(session);
     }
 }

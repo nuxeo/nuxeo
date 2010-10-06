@@ -26,12 +26,15 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.STEP_D
  */
 public class DocumentRouteStepImpl extends DocumentRouteElementImpl implements
         DocumentRouteStep {
+
+    private static final long serialVersionUID = 1L;
+
     public DocumentRouteStepImpl(DocumentModel doc) {
         super(doc);
     }
-    
+
     @Override
-    public String getTypeDescription(){
+    public String getTypeDescription() {
         return STEP_DOCUMENT_DESCRIPTION_TYPE;
     }
 }

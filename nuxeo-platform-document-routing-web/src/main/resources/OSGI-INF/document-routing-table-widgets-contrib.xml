@@ -44,7 +44,7 @@
     
     <widget name="dr_listing_title_link" type="listing_title_link">
       <labels>
-        <label mode="any">label.content.header.uid</label>
+        <label mode="any">label.content.header.title</label>
       </labels>
       <translated>true</translated>
       <fields>
