@@ -11,7 +11,6 @@
 
   <@block name="header_scripts">
     <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jquery.js"></script>
-    <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jquery.cookie.js"></script>
     <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/sarissa.js"></script>
     <script type="text/javascript" src="${basePath}/theme-banks/skin/scripts/jsTree/jquery.tree.js"></script>
 
@@ -19,9 +18,11 @@
     $(document).ready(function() {
 
           $("#navtree").tree({
+            plugins : ["themes", "ui", "cookies"],
             ui : {
               theme_name: "classic"
             },
+
             data : {
                 type : "json",
                 opts : {
@@ -70,6 +71,12 @@
                     valid_children : "none",
                     icon: {
                         image: "${basePath}/theme-banks/skin/img/style.png"
+                    }
+                },
+                "skin" : {
+                    valid_children : "none",
+                    icon: {
+                        image: "${basePath}/theme-banks/skin/img/skin.png"
                     }
                 },
                 "image" : {
