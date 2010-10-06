@@ -114,17 +114,22 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     public void addEventListener(EventListenerDescriptor listener) {
         try {
             listenerDescriptors.add(listener);
-
+            log.debug("Registered event listener: " + listener.getName());
         } catch (Exception e) {
-            log.error("Failed to register event listener", e);
+            log.error(
+                    "Failed to register event listener: " + listener.getName(),
+                    e);
         }
     }
 
     public void removeEventListener(EventListenerDescriptor listener) {
         try {
             listenerDescriptors.removeDescriptor(listener);
+            log.debug("Unregistered event listener: " + listener.getName());
         } catch (Exception e) {
-            log.error("Failed to register event listener", e);
+            log.error(
+                    "Failed to unregister event listener: " + listener.getName(),
+                    e);
         }
     }
 
