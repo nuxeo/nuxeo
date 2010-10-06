@@ -50,7 +50,7 @@ public class BankManager {
 
     public static List<String> getBankNames() {
         List<String> names = new ArrayList<String>();
-        for (String bankName : BANKS_DIR.list()) {
+        for (String bankName : BankUtils.listFilesSorted(BANKS_DIR)) {
             names.add(bankName);
         }
         return names;
@@ -63,7 +63,7 @@ public class BankManager {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s", bank, typeName);
         File file = BankManager.getFile(path);
-        for (String collectionName : file.list()) {
+        for (String collectionName : BankUtils.listFilesSorted(file)) {
             names.add(collectionName);
         }
         return names;
@@ -74,7 +74,7 @@ public class BankManager {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s/%s", bank, typeName, collection);
         File file = BankManager.getFile(path);
-        for (String item : file.list()) {
+        for (String item : BankUtils.listFilesSorted(file)) {
             if (typeName.equals("style") && !item.endsWith(".css")) {
                 continue;
             }
