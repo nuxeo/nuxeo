@@ -127,6 +127,10 @@
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
 
+    <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
+    </copy>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
          includes="nuxeo-ep-${maven.project.version}-jboss/**" />
@@ -152,6 +156,15 @@
     <unzip dest="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
+
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
+    </copy>
+
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler:${nuxeo.features.version}" />
+    </copy>
+
     <!-- remove unwanted libs alreaduy provided by jboss -->
     <delete failonerror="false">
       <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
@@ -179,11 +192,13 @@
         -->
       </fileset>
     </delete>
+
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
       <artifact:file groupId="org.apache.derby" artifactId="derby" />
       <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
       <artifact:file groupId="commons-el" artifactId="commons-el" />
     </copy>
+
     <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
 		<fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
    		  <include name="**/derby-*.jar"/>

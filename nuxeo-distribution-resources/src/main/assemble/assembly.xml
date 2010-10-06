@@ -52,10 +52,14 @@
           depends="init"
           description="Build resources package for ${distribution}"
           unless="no.alternate.build">
+
     <copy todir="${outdir}/templates-jboss5" overwrite="true">
       <fileset dir="src/main/resources/templates-common" />
+    </copy>
+    <copy todir="${outdir}/templates-jboss5" overwrite="true">
       <fileset dir="src/main/resources/templates-jboss5" />
     </copy>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
          basedir="${outdir}/templates-jboss5" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
