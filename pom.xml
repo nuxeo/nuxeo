@@ -55,19 +55,6 @@
     </dependencies>  
   </dependencyManagement>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-	<plugin>
-          <groupId>org.nuxeo.build</groupId>
-          <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>1.1</version>
-          <extensions>true</extensions>
-	</plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
   <developers>
     <developer>
       <name>Atlantis</name>
