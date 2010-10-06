@@ -8,15 +8,13 @@
   </extension>
 
  <!-- JBossWS Native EndPoint Declaration -->
- <extension target="web#SERVLET">
+ <extension target="web#JBOSSWS">
     <servlet>
       <description>NuxeoAudit WS EndPoint</description>
       <display-name>NuxeoAudit EndPoint</display-name>
       <servlet-name>NuxeoAuditEndPoint</servlet-name>
       <servlet-class>org.nuxeo.ecm.platform.audit.ws.WSAuditBean</servlet-class>
     </servlet>
-  </extension>
-  <extension target="web#SERVLET-MAPPING">
     <servlet-mapping>
       <servlet-name>NuxeoAuditEndPoint</servlet-name>
       <url-pattern>/webservices/nuxeoaudit</url-pattern>
