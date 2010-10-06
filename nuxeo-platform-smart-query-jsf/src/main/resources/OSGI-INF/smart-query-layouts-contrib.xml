@@ -5,30 +5,21 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
-    <widgetType name="incremental_smart_query">
+    <widgetType name="nxql_incremental_smart_query_widget">
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/incremental_smart_query_widget_template.xhtml
+        /widgets/nxql_incremental_smart_query_widget.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="incremental_smart_query_item">
+    <widgetType name="incremental_smart_query_condition">
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/incremental_smart_query_item_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="incremental_smart_query_string">
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/incremental_smart_query_string_widget_template.xhtml
+        /widgets/incremental_smart_query_condition_widget.xhtml
       </property>
     </widgetType>
 
@@ -37,17 +28,8 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="incremental_smart_query" type="incremental_smart_query">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>true</translated>
-      <properties mode="any">
-        <property name="selectionLayout">smart_query_selection</property>
-      </properties>
-    </widget>
-
-    <widget name="smart_query_title" type="incremental_smart_query_item">
+    <widget name="smart_query_condition_title"
+      type="incremental_smart_query_condition">
       <labels>
         <label mode="any">title</label>
       </labels>
@@ -68,7 +50,8 @@
       </subWidgets>
     </widget>
 
-    <widget name="smart_query_created" type="incremental_smart_query_item">
+    <widget name="smart_query_condition_created"
+      type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.created</label>
       </labels>
@@ -91,32 +74,36 @@
           </properties>
         </widget>
       </subWidgets>
-
     </widget>
 
-    <widget name="smart_query_contributors" type="template">
+    <widget name="smart_query_condition_contributors"
+      type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.contributors</label>
       </labels>
       <translated>true</translated>
-      <fields>
-        <field>stringListValue</field>
-      </fields>
       <properties widgetMode="edit">
-        <property name="styleClass">dataInputText</property>
-      </properties>
-      <properties mode="any">
-        <property name="template">
-          /widgets/user_suggestion_widget_template.xhtml
-        </property>
-        <property name="hideVirtualGroups">true</property>
-      </properties>
-      <properties widgetMode="dynsearch">
         <property name="searchField">dc:contributors</property>
-        <propertyList name="available_ops">
+        <propertyList name="availableOperators">
           <value>IN</value>
         </propertyList>
       </properties>
+      <subWidgets>
+        <widget name="contributors" type="template">
+          <fields>
+            <field>stringListValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+          </properties>
+          <properties mode="any">
+            <property name="template">
+              /widgets/user_suggestion_widget_template.xhtml
+            </property>
+            <property name="hideVirtualGroups">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
     </widget>
 
   </extension>
@@ -124,29 +111,51 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="smart_query_builder">
+    <layout name="nxql_incremental_smart_query_widget">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>incremental_smart_query</widget>
+          <widget>nxql_incremental_smart_query_widget</widget>
         </row>
       </rows>
+      <widget name="nxql_incremental_smart_query_widget"
+        type="nxql_incremental_smart_query_widget">
+        <labels>
+          <label mode="any">label.smart.query.build</label>
+        </labels>
+        <helpLabels>
+          <label mode="edit">label.smart.query.build.help</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <properties mode="any">
+          <property name="selectionLayout">
+            incremental_smart_query_selection
+          </property>
+          <property name="updateQueryPart">true</property>
+        </properties>
+      </widget>
     </layout>
 
-    <layout name="smart_query_selection">
+    <layout name="incremental_smart_query_selection">
       <templates>
         <template mode="any">
           /layouts/incremental_smart_query_selection_layout_template.xhtml
         </template>
       </templates>
       <rows>
-        <row name="smart_query_title">
-          <widget>smart_query_title</widget>
+        <row name="smart_query_condition_title">
+          <widget>smart_query_condition_title</widget>
         </row>
-        <row name="smart_query_created">
-          <widget>smart_query_created</widget>
+        <row name="smart_query_condition_created">
+          <widget>smart_query_condition_created</widget>
+        </row>
+        <row name="smart_query_condition_contributors">
+          <widget>smart_query_condition_contributors</widget>
         </row>
       </rows>
     </layout>

@@ -52,60 +52,64 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
             builder.append(existingQueryPart);
             builder.append(" ");
         }
-        if (Boolean.TRUE.equals(openParenthesis)) {
-            builder.append("(");
-        }
-        if (logicalOperator != null) {
-            builder.append(logicalOperator);
-            builder.append(" ");
-        }
-        if (Boolean.TRUE.equals(addNotOperator)) {
-            builder.append("NOT ");
-        }
-        if (leftExpression != null) {
-            builder.append(leftExpression);
-            builder.append(" ");
-        }
-        if (conditionalOperator != null) {
-            builder.append(conditionalOperator);
-            builder.append(" ");
-        }
-        if (value != null) {
-            if (booleanValue != null) {
-                if (Boolean.TRUE.equals(booleanValue)) {
-                    builder.append(1);
-                } else {
-                    builder.append(0);
-                }
-            } else if (stringValue != null) {
-                builder.append(String.format("'%s'",
-                        escaper.escape(stringValue)));
-            } else if (stringListValue != null) {
-                String[] values = new String[stringListValue.size()];
-                values = stringListValue.toArray(values);
-                for (int i = 0; i < values.length; i++) {
-                    values[i] = String.format("'%s'", escaper.escape(values[i]));
-                }
-                builder.append(String.format("(%s)", StringUtils.join(values,
-                        ",")));
-            } else if (datetimeValue != null) {
-                builder.append(String.format(
-                        "TIMESTAMP '%s'",
-                        isoTimeStamp.format(Long.valueOf(datetimeValue.getTime()))));
-            } else if (dateValue != null) {
-                builder.append(String.format("DATE '%s'",
-                        isoDate.format(Long.valueOf(dateValue.getTime()))));
-            } else if (integerValue != null) {
-                builder.append(integerValue);
-            } else if (floatValue != null) {
-                builder.append(floatValue);
-            } else {
-                // value type not supported
-                builder.append(value.toString());
+        // perform simple check before changing query
+        if (leftExpression != null && conditionalOperator != null) {
+            if (logicalOperator != null) {
+                builder.append(logicalOperator);
+                builder.append(" ");
             }
-        }
-        if (Boolean.TRUE.equals(closeParenthesis)) {
-            builder.append(")");
+            if (Boolean.TRUE.equals(openParenthesis)) {
+                builder.append("(");
+            }
+            if (Boolean.TRUE.equals(addNotOperator)) {
+                builder.append("NOT ");
+            }
+            if (leftExpression != null) {
+                builder.append(leftExpression);
+                builder.append(" ");
+            }
+            if (conditionalOperator != null) {
+                builder.append(conditionalOperator);
+                builder.append(" ");
+            }
+            if (value != null) {
+                if (booleanValue != null) {
+                    if (Boolean.TRUE.equals(booleanValue)) {
+                        builder.append(1);
+                    } else {
+                        builder.append(0);
+                    }
+                } else if (stringValue != null) {
+                    builder.append(String.format("'%s'",
+                            escaper.escape(stringValue)));
+                } else if (stringListValue != null) {
+                    String[] values = new String[stringListValue.size()];
+                    values = stringListValue.toArray(values);
+                    for (int i = 0; i < values.length; i++) {
+                        values[i] = String.format("'%s'",
+                                escaper.escape(values[i]));
+                    }
+                    builder.append(String.format("(%s)", StringUtils.join(
+                            values, ",")));
+                } else if (datetimeValue != null) {
+                    builder.append(String.format(
+                            "TIMESTAMP '%s'",
+                            isoTimeStamp.format(Long.valueOf(datetimeValue.getTime()))));
+                } else if (dateValue != null) {
+                    builder.append(String.format("DATE '%s'",
+                            isoDate.format(Long.valueOf(dateValue.getTime()))));
+                } else if (integerValue != null) {
+                    builder.append(integerValue);
+                } else if (floatValue != null) {
+                    builder.append(floatValue);
+                } else {
+                    // value type not supported
+                    builder.append(value.toString());
+                }
+            }
+            if (Boolean.TRUE.equals(closeParenthesis)) {
+                builder.append(")");
+            }
         }
         String newValue = builder.toString().trim();
         clear();

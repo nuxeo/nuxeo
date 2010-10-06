@@ -34,7 +34,9 @@
           <ui:define name="content_view_header_before_selector">
             <div class="action_bar">
               <h3>
-                <h:outputText value="#{messages['label.search.results.keywords']}" />
+                <h:outputText value="#{messages['label.smart.search.results.query']}" />
+                <f:verbatim>&amp;nbsp;</f:verbatim>
+                "<h:outputText value="#{smartNXQLQueryActions.queryPart}" />"
               </h3>
             </div>
           </ui:define>

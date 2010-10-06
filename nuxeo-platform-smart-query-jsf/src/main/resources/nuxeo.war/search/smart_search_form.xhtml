@@ -8,7 +8,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
 
 <ui:define name="page title">
   <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}"/>
@@ -18,11 +19,7 @@
 
   <ui:include src="/incl/message_banner.xhtml"/>
 
-  <nxu:set var="contentView"
-    value="#{contentViewActions.getContentViewWithProvider('incremental_smart_query')}"
-    cache="true">
-
-    #{smartNXQLQueryActions.initCurrentSmartQuery(smartNXQLQueryActions.queryPart)}
+  <h:form id="smartSearchForm">
 
     <div class="foldableBox">
       <h3 class="unfolded">
@@ -30,124 +27,81 @@
       </h3>
       <div class="boxBody">
 
-        <a4j:region>
-        <a4j:form id="smart_query_builder_form">
+        <nxl:layout name="nxql_incremental_smart_query_widget" mode="edit"
+          value="#{smartNXQLQueryActions.queryPart}" />
 
-          <nxl:layout name="smart_query_builder" mode="edit"
-            value="#{smartNXQLQueryActions.currentSmartQuery}" />
-
-          <table class="dataInput">
-            <tbody>
-              <tr>
-                <td class="iconColumn"></td>
-                <td class="labelColumn"></td>
-                <td class="fieldColumn">
-                  <a4j:commandButton value="#{messages['label.smart.query.addToQuery']}"
-                    actionListener="#{smartNXQLQueryActions.buildQueryString}"
-                    reRender="smart_query_builder_form, smartSearchForm"
-                    styleClass="button" style="float:right;">
-                    <a4j:actionparam name="baseComponentId" value="smartSearchForm" />
-                    <a4j:actionparam name="queryStringComponentId" value="smartQueryString" />
-                  </a4j:commandButton>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-        </a4j:form>
-
-        <h:form id="smartSearchForm">
-
-          <table class="dataInput">
-            <tbody>
-              <tr>
-                <td class="iconColumn"></td>
-                <td class="labelColumn"></td>
-                <td class="fieldColumn">
-                  <h:inputTextarea id="smartQueryString"
-                    value="#{smartNXQLQueryActions.queryPart}"
-                    required="true"
-                    validator="#{smartNXQLQueryActions.validateQueryPart}">
-                    <a4j:support event="onchange"
-                      actionListener="#{smartNXQLQueryActions.queryPartChanged}"
-                      reRender="smart_query_builder_form"
-                      ignoreDupResponses="true" bypassUpdates="true"
-                      immediate="true" limitToList="true" />
-                  </h:inputTextarea>
-                  <a4j:status>
-                    <f:facet name="start">
-                      <h:graphicImage value="/img/standart_waiter.gif" />
-                    </f:facet>
-                  </a4j:status>
-                  <h:message for="#{widget.id}" class="errorMessage" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-    
-          <div class="foldableBox">
-            <h3 class="unfolded">
-             <a href="#nologo" onclick="return toggleBox(this)">
-               <h:outputText value="#{messages['label.search.results']}" />
-             </a>
-            </h3>
-            <div class="boxBody">
-              <table class="dataOutput">
-                <tbody>
-                  <tr>
-                    <td class="labelColumn">
-                      <h:outputText value="#{messages['label.search.results']}" />
-                    </td>
-                    <td>
-                      <nxl:layout name="#{contentView.resultLayouts[0].name}"
-                        mode="edit_columns"
-                        value="#{smartNXQLQueryActions.selectedLayoutColumns}" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="labelColumn">
-                      <h:outputText value="#{messages['label.search.orderBy']}" />
-                    </td>
-                    <td>
-                      <nxl:layout name="#{contentView.resultLayouts[0].name}"
-                        mode="edit_sort_infos"
-                        value="#{smartNXQLQueryActions.searchSortInfos}" />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-    
-          <div>
-            <h:commandButton value="#{messages['command.search']}"
-              action="smart_search_results" class="button"
-              id="searchButton">
-              <nxu:actionListenerMethod
-                value="#{contentViewActions.refreshAndRewind('incremental_smart_query')}" /> 
-            </h:commandButton>
-            <h:commandButton value="#{messages['command.clearSearch']}"
-              action="#{contentViewActions.reset('incremental_smart_query')}"
-              styleClass="button"
-              immediate="true"
-              id="clearSearchButton">
-              <nxu:actionListenerMethod
-                value="#{smartNXQLActions.setQueryPart('')}" /> 
-            </h:commandButton>
-            <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
-              action="#{smartNXQLQueryActions.resetSelectedLayoutColumns()}"
-              styleClass="button"
-              immediate="true"
-              id="resetSelectedColumnsButton" />
-          </div>
-    
-        </h:form>
-        </a4j:region>
-    
       </div>
     </div>
+    
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider('incremental_smart_query')}"
+      cache="true">
 
-  </nxu:set>
+      <div class="foldableBox">
+        <h3 class="unfolded">
+         <a href="#nologo" onclick="return toggleBox(this)">
+           <h:outputText value="#{messages['label.search.results']}" />
+         </a>
+        </h3>
+        <div class="boxBody">
+
+          <table class="dataOutput">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.results']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_columns"
+                    value="#{smartNXQLQueryActions.selectedLayoutColumns}" />
+                </td>
+              </tr>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.search.orderBy']}" />
+                </td>
+                <td>
+                  <nxl:layout name="#{contentView.resultLayouts[0].name}"
+                    mode="edit_sort_infos"
+                    value="#{smartNXQLQueryActions.searchSortInfos}" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+    </nxu:set>
+    
+    <div>
+      <h:commandButton value="#{messages['command.search']}"
+        action="smart_search_results" class="button"
+        id="searchButton">
+        <nxu:actionListenerMethod
+          value="#{contentViewActions.refreshAndRewind('incremental_smart_query')}" /> 
+      </h:commandButton>
+      <nxu:set var="actions"
+        value="#{webActions.getActionsList('SMART_SEARCH_BUTTONS')}"
+        cache="true">
+        <nxu:dataList layout="simple"
+          var="action"
+          value="#{actions}"
+          id="smartSearchActionsTable">
+          <nxh:commandButton action="#{action.getLink()}"
+            value="#{messages[action.label]}"
+            id="smartSearchActionsButton" />
+        </nxu:dataList>
+      </nxu:set>
+      <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
+        action="#{smartNXQLQueryActions.resetSelectedLayoutColumns()}"
+        styleClass="button"
+        immediate="true"
+        id="resetSelectedColumnsButton" />
+    </div>
+  
+  </h:form>
 
 </ui:define>
 

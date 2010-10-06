@@ -18,10 +18,12 @@ package org.nuxeo.ecm.platform.smart.query.jsf;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.validator.ValidatorException;
@@ -48,17 +50,17 @@ public class SmartNXQLQueryActions implements Serializable {
 
     protected String queryPart;
 
-    protected SmartQuery currentSmartQuery;
+    protected NXQLIncrementalSmartQuery currentSmartQuery;
 
     protected List<String> selectedLayoutColumns;
 
     protected List<SortInfo> searchSortInfos;
 
     @RequestParameter
-    protected String baseComponentId;
+    protected Boolean updateQueryPart;
 
     @RequestParameter
-    protected String queryStringComponentId;
+    protected String queryPartComponentId;
 
     public String getQueryPart() {
         return queryPart;
@@ -104,26 +106,36 @@ public class SmartNXQLQueryActions implements Serializable {
         currentSmartQuery = new NXQLIncrementalSmartQuery(existingQueryPart);
     }
 
+    public SmartQuery getCurrentSmartQuery() {
+        if (currentSmartQuery == null) {
+            initCurrentSmartQuery("");
+        }
+        return currentSmartQuery;
+    }
+
     public void queryPartChanged(ActionEvent event) throws ClientException {
         UIComponent comp = event.getComponent();
         UIComponent parent = comp.getParent();
         if (parent instanceof EditableValueHolder) {
-            String newValue = (String) ((EditableValueHolder) parent).getSubmittedValue();
-            // rebuild smart query
-            currentSmartQuery = new NXQLIncrementalSmartQuery(newValue);
+            EditableValueHolder queryComp = (EditableValueHolder) parent;
+            String newQuery = (String) queryComp.getSubmittedValue();
+            // set local value in case of validation error in ajax region
+            // when adding a new item to the query
+            queryComp.setValue(newQuery);
+            // update query
+            currentSmartQuery.setExistingQueryPart(newQuery);
+            if (Boolean.TRUE.equals(updateQueryPart)) {
+                // also set it on source component in case user navigates
+                // somewhere else
+                setQueryPart(newQuery);
+            }
         } else {
             throw new ClientException("Component not found");
         }
     }
 
-    public SmartQuery getCurrentSmartQuery() {
-        if (currentSmartQuery == null) {
-            currentSmartQuery = new NXQLIncrementalSmartQuery("");
-        }
-        return currentSmartQuery;
-    }
-
-    public void buildQueryString(ActionEvent event) throws ClientException {
+    protected void setQueryPart(ActionEvent event, String newQuery)
+            throws ClientException {
         if (currentSmartQuery != null) {
             UIComponent component = event.getComponent();
             if (component == null) {
@@ -131,17 +143,37 @@ public class SmartNXQLQueryActions implements Serializable {
             }
             // find component to update in the hierarchy of JSF components:
             // this is specific to rendering structure...
-            UIComponent commonAncestor = component.getParent().getParent();
-            UIComponent base = ComponentUtils.getComponent(commonAncestor,
-                    baseComponentId, UIComponent.class);
-            EditableValueHolder queryStringComp = ComponentUtils.getComponent(
-                    base, queryStringComponentId, EditableValueHolder.class);
-            if (queryStringComp != null) {
-                queryStringComp.setSubmittedValue(currentSmartQuery.buildQuery());
+            EditableValueHolder queryPartComp = ComponentUtils.getComponent(
+                    component, queryPartComponentId,
+                    EditableValueHolder.class);
+            if (queryPartComp != null) {
+                // set submitted value to ensure validation
+                queryPartComp.setSubmittedValue(newQuery);
+                // set local value in case of validation error in ajax region
+                // when adding a new item to the query
+                queryPartComp.setValue(newQuery);
+                // rebuild smart query
+                initCurrentSmartQuery(newQuery);
+                if (Boolean.TRUE.equals(updateQueryPart)) {
+                    // also set current query part in case user navigates
+                    // somewhere else
+                    setQueryPart(newQuery);
+                }
             } else {
                 throw new ClientException("Component not found");
             }
         }
+    }
+
+    public void buildQueryPart(ActionEvent event) throws ClientException {
+        if (currentSmartQuery != null) {
+            String newQuery = currentSmartQuery.buildQuery();
+            setQueryPart(event, newQuery);
+        }
+    }
+
+    public void clearQueryPart(ActionEvent event) throws ClientException {
+        setQueryPart(event, "");
     }
 
     public void validateQueryPart(FacesContext context, UIComponent component,
@@ -163,6 +195,21 @@ public class SmartNXQLQueryActions implements Serializable {
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
+    }
+
+    public boolean isAjaxRequest() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context != null) {
+            ExternalContext eContext = context.getExternalContext();
+            Map<String, String> requestMap = eContext.getRequestParameterMap();
+            if (requestMap != null) {
+                String ajax = requestMap.get("AJAXREQUEST");
+                if (ajax != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
