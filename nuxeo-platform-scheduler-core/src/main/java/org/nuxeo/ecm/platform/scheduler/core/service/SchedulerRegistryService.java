@@ -35,6 +35,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -133,6 +134,8 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
         try {
             scheduler.scheduleJob(job, trigger);
+        } catch (ObjectAlreadyExistsException e) {
+            ;
         } catch (SchedulerException e) {
             log.error(String.format("failed to schedule job with id '%s': %s",
                     schedule.getId(), e.getMessage()), e);
