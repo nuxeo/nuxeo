@@ -713,8 +713,10 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public Properties getProperties(String repositoryId, String objectId,
             String filter, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        DocumentModel doc = getDocumentModel(objectId);
+        NuxeoObjectData data = new NuxeoObjectData(repository, doc, filter,
+                null, null, null, null, null, null);
+        return data.getProperties();
     }
 
     @Override

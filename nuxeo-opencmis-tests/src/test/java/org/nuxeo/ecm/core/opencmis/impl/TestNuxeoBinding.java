@@ -488,6 +488,24 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testGetProperties() throws Exception {
+        Properties p;
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+
+        p = objService.getProperties(repositoryId, ob.getId(), null, null);
+        assertNotNull(p);
+        assertEquals("testfile1_Title",
+                p.getProperties().get("dc:title").getFirstValue());
+
+        // with filter
+        p = objService.getProperties(repositoryId, ob.getId(), "cmis:name",
+                null);
+        assertNull(p.getProperties().get("dc:title"));
+        assertEquals("testfile1_Title",
+                p.getProperties().get("cmis:name").getFirstValue());
+    }
+
+    @Test
     public void testContentStream() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
 
