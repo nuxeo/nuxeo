@@ -36,11 +36,11 @@ public class RouteSecurityChecker {
     @In(required = true, create = false)
     protected NuxeoPrincipal currentUser;
 
-    public boolean getCanCreateRoute() {
+    public boolean canCreateRoute() {
         return getDocumentRoutingService().canUserCreateRoute(currentUser);
     }
 
-    public boolean getCanValidateRoute() {
+    public boolean canValidateRoute() {
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
     }
 
