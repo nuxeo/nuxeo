@@ -116,7 +116,7 @@
   <target name="copy-lib" description="Copy Nuxeo libs in jboss">
     <ant target="copy-lib" dir="nuxeo-distribution-jboss" />
   </target>
-  <target name="copy-resources" description="Copy Nuxeo libs in jboss">
+  <target name="copy-resources" description="Copy Nuxeo resources in jboss">
     <ant target="copy-resources" dir="nuxeo-distribution-resources" />
   </target>
 
