@@ -20,9 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -34,8 +36,10 @@ import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -278,6 +282,47 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         file.deleteContentStream();
         file.refresh();
         assertEquals(null, file.getContentStream());
+    }
+
+    public void testAllowableActions() throws Exception {
+        CmisObject ob;
+        AllowableActions aa;
+        Set<Action> expected;
+
+        ob = session.getObjectByPath("/testfolder1");
+        aa = ob.getAllowableActions();
+        assertNotNull(aa);
+        expected = EnumSet.of( //
+                Action.CAN_GET_OBJECT_PARENTS, //
+                Action.CAN_GET_PROPERTIES, //
+                Action.CAN_GET_DESCENDANTS, //
+                Action.CAN_GET_FOLDER_PARENT, //
+                Action.CAN_GET_FOLDER_TREE, //
+                Action.CAN_GET_CHILDREN, //
+                Action.CAN_CREATE_DOCUMENT, //
+                Action.CAN_CREATE_FOLDER, //
+                Action.CAN_CREATE_RELATIONSHIP, //
+                Action.CAN_DELETE_TREE, //
+                Action.CAN_ADD_OBJECT_TO_FOLDER, //
+                Action.CAN_REMOVE_OBJECT_FROM_FOLDER, //
+                Action.CAN_UPDATE_PROPERTIES, //
+                Action.CAN_MOVE_OBJECT, //
+                Action.CAN_DELETE_OBJECT);
+        assertEquals(expected, aa.getAllowableActions());
+
+        ob = session.getObjectByPath("/testfolder1/testfile1");
+        aa = ob.getAllowableActions();
+        assertNotNull(aa);
+        expected = EnumSet.of( //
+                Action.CAN_GET_OBJECT_PARENTS, //
+                Action.CAN_GET_PROPERTIES, //
+                Action.CAN_GET_CONTENT_STREAM, //
+                Action.CAN_SET_CONTENT_STREAM, //
+                Action.CAN_DELETE_CONTENT_STREAM, //
+                Action.CAN_UPDATE_PROPERTIES, //
+                Action.CAN_MOVE_OBJECT, //
+                Action.CAN_DELETE_OBJECT);
+        assertEquals(expected, aa.getAllowableActions());
     }
 
     public void testDeletedInTrash() throws Exception {

@@ -273,8 +273,9 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public AllowableActions getAllowableActions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // we don't call data.getAllowableActions as includeAllowableActions
+        // may be false
+        return NuxeoObjectData.getAllowableActions(data.doc, data.creation);
     }
 
     @Override

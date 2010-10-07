@@ -28,15 +28,18 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.AclCapabilities;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
@@ -52,6 +55,7 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityChanges;
@@ -730,6 +734,48 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             // ok
         }
         assertNotNull(getObjectByPath("/testfolder2"));
+    }
+
+    @Test
+    public void testGetAllowableActions() throws Exception {
+        Set<Action> expected;
+        ObjectData ob;
+        AllowableActions aa;
+
+        ob = getObjectByPath("/testfolder1");
+        aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
+        assertNotNull(aa);
+        expected = EnumSet.of( //
+                Action.CAN_GET_OBJECT_PARENTS, //
+                Action.CAN_GET_PROPERTIES, //
+                Action.CAN_GET_DESCENDANTS, //
+                Action.CAN_GET_FOLDER_PARENT, //
+                Action.CAN_GET_FOLDER_TREE, //
+                Action.CAN_GET_CHILDREN, //
+                Action.CAN_CREATE_DOCUMENT, //
+                Action.CAN_CREATE_FOLDER, //
+                Action.CAN_CREATE_RELATIONSHIP, //
+                Action.CAN_DELETE_TREE, //
+                Action.CAN_ADD_OBJECT_TO_FOLDER, //
+                Action.CAN_REMOVE_OBJECT_FROM_FOLDER, //
+                Action.CAN_UPDATE_PROPERTIES, //
+                Action.CAN_MOVE_OBJECT, //
+                Action.CAN_DELETE_OBJECT);
+        assertEquals(expected, aa.getAllowableActions());
+
+        ob = getObjectByPath("/testfolder1/testfile1");
+        aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
+        assertNotNull(aa);
+        expected = EnumSet.of( //
+                Action.CAN_GET_OBJECT_PARENTS, //
+                Action.CAN_GET_PROPERTIES, //
+                Action.CAN_GET_CONTENT_STREAM, //
+                Action.CAN_SET_CONTENT_STREAM, //
+                Action.CAN_DELETE_CONTENT_STREAM, //
+                Action.CAN_UPDATE_PROPERTIES, //
+                Action.CAN_MOVE_OBJECT, //
+                Action.CAN_DELETE_OBJECT);
+        assertEquals(expected, aa.getAllowableActions());
     }
 
     @Test

@@ -378,8 +378,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new IllegalArgumentException(typeId);
         }
         DocumentModel doc = createDocumentModel(folder, type);
-        NuxeoObjectData object = new NuxeoObjectData(repository, doc, null,
-                null, null, null, null, null, null);
+        NuxeoObjectData object = new NuxeoObjectData(repository, doc);
         updateProperties(object, null, properties, true);
         try {
             if (contentStream != null) {
@@ -544,8 +543,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         try {
             DocumentModel copyDoc = coreSession.copy(doc.getRef(),
                     folder.getRef(), null);
-            NuxeoObjectData copy = new NuxeoObjectData(repository, copyDoc,
-                    null, null, null, null, null, null, null);
+            NuxeoObjectData copy = new NuxeoObjectData(repository, copyDoc);
             if (properties != null && properties.getPropertyList() != null
                     && !properties.getPropertyList().isEmpty()) {
                 updateProperties(copy, null, properties, false);
@@ -617,8 +615,8 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public AllowableActions getAllowableActions(String repositoryId,
             String objectId, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        DocumentModel doc = getDocumentModel(objectId);
+        return NuxeoObjectData.getAllowableActions(doc, false);
     }
 
     @Override
@@ -810,8 +808,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         DocumentModel doc = getDocumentModel(objectId);
-        NuxeoObjectData object = new NuxeoObjectData(repository, doc, null,
-                null, null, null, null, null, null);
+        NuxeoObjectData object = new NuxeoObjectData(repository, doc);
         String changeToken = changeTokenHolder == null ? null
                 : changeTokenHolder.getValue();
         updateProperties(object, changeToken, properties, false);

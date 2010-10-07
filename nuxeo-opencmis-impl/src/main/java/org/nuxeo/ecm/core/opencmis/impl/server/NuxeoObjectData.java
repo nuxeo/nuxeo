@@ -60,7 +60,7 @@ public class NuxeoObjectData implements ObjectData {
 
     public DocumentModel doc;
 
-    private boolean creation = false; // TODO
+    public boolean creation = false; // TODO
 
     private List<String> propertyIds;
 
@@ -192,6 +192,11 @@ public class NuxeoObjectData implements ObjectData {
         if (!Boolean.TRUE.equals(includeAllowableActions)) {
             return null;
         }
+        return getAllowableActions(doc, creation);
+    }
+
+    public static AllowableActions getAllowableActions(DocumentModel doc,
+            boolean creation) {
         boolean isFolder = doc.isFolder();
         boolean canWrite;
         try {
