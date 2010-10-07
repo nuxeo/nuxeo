@@ -92,7 +92,8 @@
                             classifier="templates-jboss5" />
     </unzip>
 
-    <copy todir="${jboss}/server/default/lib">
+    <!-- shouldn't the unzip make these 2 jars? -->
+    <copy todir="${jboss}/server/default/deploy/nuxeo.ear/bundles">
       <artifact:resolveFile key="org.nuxeo.common:nuxeo-common" />
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
     </copy>
@@ -100,14 +101,6 @@
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:5.1.0.GA" />
     </copy>
 
-    <!-- TODO remove this when bundles will be fixed -->
-     <!--delete failonerror="false">
-        <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
-           <include name="nuxeo-opensocial*" />
-           <include name="nuxeo-*wss*" />
-           <include name="nuxeo-*audit*" />
-        </fileset>
-     </delete-->
   </target>
 
   <target name="build-nuxeo-ep-jboss"
