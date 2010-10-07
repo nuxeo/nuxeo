@@ -20,6 +20,14 @@
      <type>DocumentRoute</type>
      </subtypes>
    </type>
+   
+   <type id="DocumentRouteInstancesRoot">
+    <label>DocumentRouteInstancesRoot</label>
+    <icon>/icons/folder.gif</icon>
+    <subtypes>
+      <type>Folder</type>
+     </subtypes>
+   </type>
   
    <type id="DocumentRoute" coreType="DocumentRoute">
    	  <label>DocumentRoute</label>

@@ -18,7 +18,7 @@
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <subtypes>
-        <type>Foler</type>
+        <type>Folder</type>
       </subtypes>
     </doctype>
 
