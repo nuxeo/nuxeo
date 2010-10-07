@@ -46,13 +46,17 @@
 
     <filter id="create" append="true">
       <rule grant="true">
+        <permission>AddChildren</permission>
         <type>PictureBook</type>
+        <type>Picture</type>
       </rule>
     </filter>
 
     <filter id="importFile" append="true">
       <rule grant="true">
+        <permission>AddChildren</permission>
         <type>PictureBook</type>
+        <type>Picture</type>
       </rule>
     </filter>
 
