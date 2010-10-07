@@ -65,7 +65,6 @@
       <label>StepFolder</label>
       <icon>/icons/fork.png</icon>
       <bigIcon>/icons/fork_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
