@@ -21,9 +21,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.DatabaseMetaData;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -32,6 +29,7 @@ import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 public class TestDialectQuerySyntax extends TestCase {
 
@@ -74,164 +72,181 @@ public class TestDialectQuerySyntax extends TestCase {
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    protected void checkException(String query) throws Exception {
+    protected static void assertFulltextException(String query)
+            throws Exception {
         try {
-            dialect.analyzeFulltextQuery(query);
+            Dialect.analyzeFulltextQuery(query);
             fail("Query should fail: " + query);
         } catch (QueryMakerException e) {
             // ok
         }
     }
 
-    protected void checkFulltextQuery(String query, List<String> pos,
-            List<String> neg, List<List<String>> or) throws Exception {
-        if (pos == null) {
-            pos = Collections.emptyList();
+    protected static void dumpFulltextQuery(FulltextQuery ft, StringBuilder buf) {
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            assertNull(ft.word);
+            buf.append('[');
+            for (int i = 0; i < ft.terms.size(); i++) {
+                if (i != 0) {
+                    buf.append(' ');
+                    buf.append(ft.op.name());
+                    buf.append(' ');
+                }
+                dumpFulltextQuery(ft.terms.get(i), buf);
+            }
+            buf.append(']');
+            return;
+        } else {
+            assertNull(ft.terms);
+            if (ft.op == Op.NOTWORD) {
+                buf.append('~');
+            }
+            // TODO phrase
+            buf.append(ft.word);
         }
-        if (neg == null) {
-            neg = Collections.emptyList();
-        }
-        if (or == null) {
-            or = Collections.emptyList();
-        }
-        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
-        assertEquals(pos, ft.pos);
-        assertEquals(neg, ft.neg);
-        assertEquals(or, ft.or);
     }
 
-    @SuppressWarnings("unchecked")
+    protected static void assertFulltextQuery(String expected, String query)
+            throws Exception {
+        StringBuilder buf = new StringBuilder();
+        FulltextQuery ftQuery = Dialect.analyzeFulltextQuery(query);
+        if (ftQuery == null) {
+            assertNull(expected);
+            return;
+        } else {
+            dumpFulltextQuery(ftQuery, buf);
+            assertEquals(expected, buf.toString());
+        }
+    }
+
     public void testAnalyzeFulltextQuery() throws Exception {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
 
         // invalid queries
 
-        checkException("-foo OR bar");
-        checkException("foo OR -bar");
-        checkException("foo OR OR bar");
-        checkException("foo + bar");
-        checkException("foo - bar");
-        checkException("foo -bar OR baz");
-        checkException("foo bar OR -baz");
-        checkException("foo bar OR OR baz");
+        assertFulltextException("OR foo");
+        assertFulltextException("OR foo bar");
+        assertFulltextException("foo OR");
+        assertFulltextException("foo bar OR");
+        assertFulltextException("foo OR OR bar");
+        assertFulltextException("foo bar OR OR baz");
+        assertFulltextException("foo + bar");
+        assertFulltextException("foo - bar");
 
         // ok queries
 
-        checkFulltextQuery("foo", Arrays.asList("foo"), null, null);
-        checkFulltextQuery("foo bar", Arrays.asList("foo", "bar"), null, null);
-        checkFulltextQuery("foo bar baz", Arrays.asList("foo", "bar", "baz"),
-                null, null);
-        checkFulltextQuery("foo -bar", Arrays.asList("foo"),
-                Arrays.asList("bar"), null);
-        checkFulltextQuery("foo -bar baz", Arrays.asList("foo", "baz"),
-                Arrays.asList("bar"), null);
-        checkFulltextQuery("foo -bar -baz", Arrays.asList("foo"),
-                Arrays.asList("bar", "baz"), null);
-        checkFulltextQuery("-foo bar", Arrays.asList("bar"),
-                Arrays.asList("foo"), null);
-        checkFulltextQuery("-foo bar baz", Arrays.asList("bar", "baz"),
-                Arrays.asList("foo"), null);
+        assertFulltextQuery(null, "");
+        assertFulltextQuery(null, "  ");
+        assertFulltextQuery("foo", "foo");
+        assertFulltextQuery("foo", " foo ");
+        assertFulltextQuery("[foo AND bar]", "foo bar");
+        assertFulltextQuery("[foo AND bar AND baz]", "foo bar baz");
+        assertFulltextQuery("[foo AND ~bar]", "foo -bar");
+        assertFulltextQuery("[foo AND baz AND ~bar]", "foo -bar baz");
+        assertFulltextQuery("[foo AND ~bar AND ~baz]", "foo -bar -baz");
+        assertFulltextQuery("[bar AND ~foo]", "-foo bar");
+        assertFulltextQuery("[bar AND baz AND ~foo]", "-foo bar baz");
 
         // queries with OR
 
-        checkFulltextQuery("foo OR bar", null, null,
-                Collections.singletonList(Arrays.asList("foo", "bar")));
-        checkFulltextQuery("foo OR bar baz", Arrays.asList("baz"), null,
-                Collections.singletonList(Arrays.asList("foo", "bar")));
-        checkFulltextQuery("foo bar OR baz", Arrays.asList("foo"), null,
-                Collections.singletonList(Arrays.asList("bar", "baz")));
-        checkFulltextQuery("foo OR bar OR baz", null, null,
-                Collections.singletonList(Arrays.asList("foo", "bar", "baz")));
-        checkFulltextQuery(
-                "foo OR bar baz OR gee",
-                null,
-                null,
-                Arrays.asList(Arrays.asList("foo", "bar"),
-                        Arrays.asList("baz", "gee")));
-        checkFulltextQuery("-foo bar OR baz", null, Arrays.asList("foo"),
-                Collections.singletonList(Arrays.asList("bar", "baz")));
-        checkFulltextQuery("foo OR bar -baz", null, Arrays.asList("baz"),
-                Collections.singletonList(Arrays.asList("foo", "bar")));
+        assertFulltextQuery("[foo OR bar]", "foo OR bar");
+        assertFulltextQuery("[foo OR [bar AND baz]]", "foo OR bar baz");
+        assertFulltextQuery("[[foo AND bar] OR baz]", "foo bar OR baz");
+        assertFulltextQuery("[foo OR bar OR baz]", "foo OR bar OR baz");
+        assertFulltextQuery("[foo OR [bar AND baz] OR gee]",
+                "foo OR bar baz OR gee");
+        assertFulltextQuery("[[bar AND ~foo] OR baz]", "-foo bar OR baz");
+        assertFulltextQuery("[foo OR [bar AND ~baz]]", "foo OR bar -baz");
+
+        // queries containing suppressed terms
+
+        assertFulltextQuery(null, "-foo");
+        assertFulltextQuery(null, "-foo -bar");
+        assertFulltextQuery("bar", "-foo OR bar");
+        assertFulltextQuery("foo", "foo OR -bar");
+        assertFulltextQuery(null, "-foo OR -bar");
+        assertFulltextQuery("foo", "foo OR -bar -baz");
+        assertFulltextQuery("baz", "-foo -bar OR baz");
     }
 
-    protected void check(String expected, String query) {
+    protected void assertDialectFT(String expected, String query) {
         assertEquals(expected, dialect.getDialectFulltextQuery(query));
     }
 
     public void testH2() throws Exception {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
-        check("foo", "foo");
-        check("foo", "foo ");
-        check("foo AND bar", "foo    bar ");
-        check("foo AND -bar", "foo -bar");
-        check("bar AND -foo", "-foo bar");
-        check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
-        check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
-        check("(foo OR bar)", "foo OR bar ");
-        check("baz AND (foo OR bar)", "baz foo OR bar ");
-        check("(foo OR bar) AND -baz", "-baz foo OR bar ");
+        assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
+        assertDialectFT("foo", "foo");
+        assertDialectFT("(foo AND bar)", "foo bar");
+        assertDialectFT("(foo NOT bar)", "foo -bar");
+        assertDialectFT("(bar NOT foo)", "-foo bar");
+        assertDialectFT("(foo OR bar)", "foo OR bar");
+        assertDialectFT("foo", "foo OR -bar");
+        assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
+        assertDialectFT("((bar NOT foo) OR baz)", "-foo bar OR baz");
+        assertDialectFT("((foo NOT bar) OR baz)", "foo -bar OR baz");
     }
 
     public void testPostgreSQL() throws Exception {
         dialect = new DialectPostgreSQL(metadata, binaryManager,
                 repositoryDescriptor);
-        check("foo", "foo");
-        check("foo", "foo ");
-        check("foo & bar", "foo    bar ");
-        check("foo & bar", "foo  &  bar"); // compat with native queries
-        check("foo & !bar", "foo -bar");
-        check("bar & !foo", "-foo bar");
-        check("!foo", "-foo");
-        check("!foo & !bar", "-foo -bar");
-        check("(foo | bar)", "foo OR bar ");
-        check("baz & (foo | bar)", "baz foo OR bar ");
-        check("(foo | bar) & !baz", "-baz foo OR bar ");
-    }
-
-    public void testOracle() throws Exception {
-        dialect = new DialectOracle(metadata, binaryManager,
-                repositoryDescriptor);
-        check("foo", "foo");
-        check("foo", "foo ");
-        check("foo%", "foo*");
-        check("foo & bar", "foo    bar ");
-        check("foo ~ bar", "foo -bar");
-        check("bar ~ foo", "-foo bar");
-        check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
-        check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
-        check("(foo | bar)", "foo OR bar ");
-        check("baz & (foo | bar)", "baz foo OR bar ");
-        check("(foo | bar) ~ baz", "-baz foo OR bar ");
-    }
-
-    public void testSQLServer() throws Exception {
-        dialect = new DialectSQLServer(metadata, binaryManager,
-                repositoryDescriptor);
-        check("foo", "foo");
-        check("foo", "foo ");
-        check("foo & bar", "foo    bar ");
-        check("foo &! bar", "foo -bar");
-        check("bar &! foo", "-foo bar");
-        check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
-        check("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
-        check("(foo | bar)", "foo OR bar ");
-        check("baz & (foo | bar)", "baz foo OR bar ");
-        check("(foo | bar) &! baz", "-baz foo OR bar ");
+        assertDialectFT("", "-foo");
+        assertDialectFT("foo", "foo");
+        assertDialectFT("(foo & bar)", "foo bar ");
+        assertDialectFT("(foo & bar)", "foo & bar"); // compat
+        assertDialectFT("(foo & ! bar)", "foo -bar");
+        assertDialectFT("(bar & ! foo)", "-foo bar");
+        assertDialectFT("(foo | bar)", "foo OR bar");
+        assertDialectFT("foo", "foo OR -bar");
+        assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
+        assertDialectFT("((bar & ! foo) | baz)", "-foo bar OR baz");
+        assertDialectFT("((foo & ! bar) | baz)", "foo -bar OR baz");
     }
 
     public void testMySQL() throws Exception {
         dialect = new DialectMySQL(metadata, binaryManager,
                 repositoryDescriptor);
-        check("+foo", "foo");
-        check("+foo", "foo ");
-        check("+foo +bar", "foo    bar ");
-        check("+foo -bar", "foo -bar");
-        check("+bar -foo", "-foo bar");
-        check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
-        check("+DONTMATCHANYTHINGFOREMPTYQUERY", "-foo -bar");
-        check("+(foo bar)", "foo OR bar ");
-        check("+baz +(foo bar)", "baz foo OR bar ");
-        check("+(foo bar) -baz", "-baz foo OR bar ");
+        assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
+        assertDialectFT("foo", "foo");
+        assertDialectFT("(+foo +bar)", "foo bar");
+        assertDialectFT("(+foo -bar)", "foo -bar");
+        assertDialectFT("(+bar -foo)", "-foo bar");
+        assertDialectFT("(foo bar)", "foo OR bar");
+        assertDialectFT("foo", "foo OR -bar");
+        assertDialectFT("((+foo +bar) baz)", "foo bar OR baz");
+        assertDialectFT("((+bar -foo) baz)", "-foo bar OR baz");
+        assertDialectFT("((+foo -bar) baz)", "foo -bar OR baz");
+    }
+
+    public void testOracle() throws Exception {
+        dialect = new DialectOracle(metadata, binaryManager,
+                repositoryDescriptor);
+        assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
+        assertDialectFT("foo", "foo");
+        assertDialectFT("foo%", "foo*"); // special
+        assertDialectFT("(foo AND bar)", "foo bar");
+        assertDialectFT("(foo NOT bar)", "foo -bar");
+        assertDialectFT("(bar NOT foo)", "-foo bar");
+        assertDialectFT("(foo OR bar)", "foo OR bar");
+        assertDialectFT("foo", "foo OR -bar");
+        assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
+        assertDialectFT("((bar NOT foo) OR baz)", "-foo bar OR baz");
+        assertDialectFT("((foo NOT bar) OR baz)", "foo -bar OR baz");
+    }
+
+    public void testSQLServer() throws Exception {
+        dialect = new DialectSQLServer(metadata, binaryManager,
+                repositoryDescriptor);
+        assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
+        assertDialectFT("foo", "foo");
+        assertDialectFT("(foo & bar)", "foo bar");
+        assertDialectFT("(foo &! bar)", "foo -bar");
+        assertDialectFT("(bar &! foo)", "-foo bar");
+        assertDialectFT("(foo | bar)", "foo OR bar");
+        assertDialectFT("foo", "foo OR -bar");
+        assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
+        assertDialectFT("((bar &! foo) | baz)", "-foo bar OR baz");
+        assertDialectFT("((foo &! bar) | baz)", "foo -bar OR baz");
     }
 
 }

@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * Oracle-specific dialect.
@@ -310,24 +311,12 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replaceAll(" +", " ").trim();
         query = query.replace("*", "%");
         FulltextQuery ft = analyzeFulltextQuery(query);
-        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
+        if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        List<String> terms = new LinkedList<String>();
-        for (String word : ft.pos) {
-            terms.add(word);
-        }
-        for (List<String> words : ft.or) {
-            terms.add("(" + StringUtils.join(words, " | ") + ")");
-        }
-        String res = StringUtils.join(terms, " & ");
-        if (!ft.neg.isEmpty()) {
-            res += " ~ " + StringUtils.join(ft.neg, " ~ ");
-        }
-        return res;
+        return translateFulltextOrAndAndNot(ft, "OR", "AND", "NOT");
     }
 
     // SELECT ..., SCORE(1) / 100

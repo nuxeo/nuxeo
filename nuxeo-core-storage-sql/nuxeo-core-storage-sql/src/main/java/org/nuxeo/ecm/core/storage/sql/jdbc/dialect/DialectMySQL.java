@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * MySQL-specific dialect.
@@ -236,27 +237,48 @@ public class DialectMySQL extends Dialect {
             columnNames.add(col.getQuotedName());
         }
         return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)",
-                quotedIndexName, table.getQuotedName(), StringUtils.join(
-                        columnNames, ", "));
+                quotedIndexName, table.getQuotedName(),
+                StringUtils.join(columnNames, ", "));
     }
 
     @Override
     public String getDialectFulltextQuery(String query) {
         FulltextQuery ft = analyzeFulltextQuery(query);
-        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
-            return "+DONTMATCHANYTHINGFOREMPTYQUERY";
+        if (ft == null || ft.op == Op.NOTWORD) {
+            return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        List<String> terms = new LinkedList<String>();
-        for (String word : ft.pos) {
-            terms.add("+" + word);
+        StringBuilder buf = new StringBuilder();
+        translateForMySQL(ft, null, buf);
+        return buf.toString();
+    }
+
+    protected static void translateForMySQL(FulltextQuery ft, Op superOp,
+            StringBuilder buf) {
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            if (superOp == Op.AND) {
+                buf.append('+');
+            }
+            buf.append('(');
+            for (int i = 0; i < ft.terms.size(); i++) {
+                FulltextQuery term = ft.terms.get(i);
+                if (i != 0) {
+                    buf.append(' ');
+                }
+                translateForMySQL(term, ft.op, buf);
+            }
+            buf.append(')');
+            return;
+        } else {
+            if (ft.op == Op.NOTWORD) {
+                buf.append('-');
+            } else { // Op.WORD
+                if (superOp == Op.AND) {
+                    buf.append('+');
+                }
+            }
+            // TODO phrase
+            buf.append(ft.word);
         }
-        for (List<String> words : ft.or) {
-            terms.add("+(" + StringUtils.join(words, " ") + ")");
-        }
-        for (String word : ft.neg) {
-            terms.add("-" + word);
-        }
-        return StringUtils.join(terms, " ");
     }
 
     // SELECT ..., (MATCH(`fulltext`.`simpletext`, `fulltext`.`binarytext`)
