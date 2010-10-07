@@ -81,7 +81,7 @@
           action="search_results_advanced" class="button"
           id="searchButton">
           <nxu:actionListenerMethod
-            value="#{contentViewActions.refreshAndRewind('advanced_search')}" /> 
+            value="#{contentViewActions.reset('advanced_search')}" /> 
         </h:commandButton>
         <h:commandButton value="#{messages['command.clearSearch']}"
           action="#{contentViewActions.reset('advanced_search')}"
