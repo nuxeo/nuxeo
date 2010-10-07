@@ -51,7 +51,7 @@ public class LayoutRowImpl implements LayoutRow {
         this.widgets = widgets.toArray(new Widget[] {});
         this.properties = properties;
         name = null;
-        selectedByDefault = false;
+        selectedByDefault = true;
         alwaysSelected = false;
     }
 
