@@ -159,12 +159,29 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
-    public List<DocumentRoute> getRelatedDocumentRoutesForAttachedDocument(
+    public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId) {
+        List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<DocumentRouteElement.ElementLifeCycleState>();
+        states.add(DocumentRouteElement.ElementLifeCycleState.ready);
+        states.add(DocumentRouteElement.ElementLifeCycleState.running);
+        return getDocumentRoutesForAttachedDocument(session, attachedDocId, states);
+    }
+
+    public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId,
+            List<DocumentRouteElement.ElementLifeCycleState> states) {
         DocumentModelList list = null;
+        StringBuilder statesString = new StringBuilder();
+        if (states != null && !states.isEmpty()) {
+            statesString.append(" ecm:currentLifeCycleState IN (");
+            for (DocumentRouteElement.ElementLifeCycleState state : states) {
+                statesString.append("'" + state.name() + "',");
+            }
+            statesString.deleteCharAt(statesString.length() - 1);
+            statesString.append(") AND");
+        }
         String RELATED_TOUTES_QUERY = String.format(
-                " SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running' OR "
-                        + " ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments IN ('%s') ",
+                " SELECT * FROM DocumentRoute WHERE " + statesString.toString()+ " docri:participatingDocuments IN ('%s') ",
                 attachedDocId);
         try {
             list = session.query(RELATED_TOUTES_QUERY);

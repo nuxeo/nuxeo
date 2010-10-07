@@ -40,15 +40,14 @@ public interface DocumentRoutingService {
      * @return the created {@link DocumentRoute} instance.
      */
     DocumentRoute createNewInstance(DocumentRoute model,
-            List<String> documentIds, CoreSession session,
-            boolean startInstance);
+            List<String> documentIds, CoreSession session, boolean startInstance);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      only one document attached.
      */
-    DocumentRoute createNewInstance(DocumentRoute model,
-            String documentId, CoreSession session, boolean startInstance);
+    DocumentRoute createNewInstance(DocumentRoute model, String documentId,
+            CoreSession session, boolean startInstance);
 
     /**
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
@@ -61,8 +60,8 @@ public interface DocumentRoutingService {
      * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
      *      startInstance <code>true</code> and only one document attached.
      */
-    DocumentRoute createNewInstance(DocumentRoute model,
-            String documentId, CoreSession session);
+    DocumentRoute createNewInstance(DocumentRoute model, String documentId,
+            CoreSession session);
 
     /**
      * Return the list of available {@link DocumentRoute} model for this
@@ -72,8 +71,8 @@ public interface DocumentRoutingService {
      * @return A list of available {@link DocumentRoute}
      */
     List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session);
-    
-     /**
+
+    /**
      * Return the operation chain to run for a documentType. The document type
      * should extend the DocumentRouteStep. Use the <code>chainsToType</code>
      * extension point to contribute new mapping.
@@ -81,33 +80,39 @@ public interface DocumentRoutingService {
      * @param documentType The document type
      * @return The operation chain id.
      */
-     String getOperationChainId(String documentType); 
-    
+    String getOperationChainId(String documentType);
+
     /**
-     * Validates the given {@link DocumentRoute} model by chenging its lifecycle 
-     * state and setting it and all its children in ReadOnly 
+     * Validates the given {@link DocumentRoute} model by chenging its lifecycle
+     * state and setting it and all its children in ReadOnly
      * */
-    void validateRouteModel(DocumentRoute routeModel, CoreSession session) throws 
-           ClientException;
-    
+    void validateRouteModel(DocumentRoute routeModel, CoreSession session)
+            throws ClientException;
+
     /**
-     * Computes the list of elements {@link LocalizableDocumentRouteElement} for this
-     * {@link DocumentRoute}.
+     * Computes the list of elements {@link LocalizableDocumentRouteElement} for
+     * this {@link DocumentRoute}.
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to query the {@link DocumentRoute}.
-     * @param A list of  {@link DocumentRouteElement}
+     * @param A list of {@link DocumentRouteElement}
      */
     void getRouteElements(DocumentRouteElement routeElementDocument,
-            CoreSession session, List<LocalizableDocumentRouteElement> routeElements,
-            int depth) throws ClientException;
-    
+            CoreSession session,
+            List<LocalizableDocumentRouteElement> routeElements, int depth)
+            throws ClientException;
+
     /**
-     * Return the list of related {@link DocumentRoute} for a given attached document.
-     * Returns only ready or running {@link DocumentRoute}s.
+     * Return the list of related {@link DocumentRoute} for a given attached
+     * document. Returns only ready or running {@link DocumentRoute}s.
      *
      * @param session The session used to query the {@link DocumentRoute}.
      * @return A list of available {@link DocumentRoute}
      */
-    List<DocumentRoute> getRelatedDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId);
+    List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId);
+
+    List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId,
+            List<DocumentRouteElement.ElementLifeCycleState> states);
 }

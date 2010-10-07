@@ -173,7 +173,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public List<DocumentModel> findRelatedRouteDocument()
             throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getRelatedDocumentRoutesForAttachedDocument(
+        List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getDocumentRoutesForAttachedDocument(
                 documentManager, navigationContext.getCurrentDocument().getId());
         for (DocumentRoute documentRoute : relatedRoutes) {
             docs.add(documentRoute.getDocument());

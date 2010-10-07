@@ -81,6 +81,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
+        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session, doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
