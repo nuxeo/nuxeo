@@ -35,6 +35,7 @@
 
     <filter id="create" append="true">
       <rule grant="true">
+        <permission>AddChildren</permission>
         <type>DocumentRoute</type>
         <type>StepFolder</type>
       </rule>
