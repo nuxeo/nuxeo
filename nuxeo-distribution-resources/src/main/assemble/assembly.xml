@@ -6,8 +6,6 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-
-
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
@@ -15,26 +13,23 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
-    <!--
-    <antcall target="build-resources">
-      <param name="distribution" value="jetty-base" />
-    </antcall>
-    -->
     <antcall target="build-resources">
       <param name="distribution" value="doc" />
     </antcall>
-    <delete dir="${outdir}/bin" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="bin" />
+    </antcall>
     <unzip dest="${outdir}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${nuxeo.windows.version}:zip" />
     </unzip>
     <antcall target="build-resources">
-      <param name="distribution" value="bin" />
+      <param name="distribution" value="jetty-base" />
     </antcall>
-    <antcall target="build-resources-jboss5">
-    </antcall>
-    <!--
     <antcall target="build-resources">
-      <param name="distribution" value="templates-jboss" />
+      <param name="distribution" value="templates-common" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-jboss5" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-jboss-dm" />
@@ -45,28 +40,8 @@
     <antcall target="build-resources">
       <param name="distribution" value="templates-jetty" />
     </antcall>
-    -->
   </target>
 
-  <target name="build-resources-jboss5"
-          depends="init"
-          description="Build resources package for ${distribution}"
-          unless="no.alternate.build">
-
-    <copy todir="${outdir}/templates-jboss5" overwrite="true">
-      <fileset dir="src/main/resources/templates-common" />
-    </copy>
-    <copy todir="${outdir}/templates-jboss5" overwrite="true">
-      <fileset dir="src/main/resources/templates-jboss5" />
-    </copy>
-
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
-         basedir="${outdir}/templates-jboss5" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-templates-jboss5.zip"
-                     classifier="templates-jboss5"
-                     type="zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
-  </target>
   <target name="build-resources"
           depends="init"
           description="Build resources package for ${distribution}"
