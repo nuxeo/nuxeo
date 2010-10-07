@@ -212,7 +212,6 @@ public class DocumentRoutingActionsBean implements Serializable {
         List<String> documentIds = new ArrayList<String>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
-        route.save(documentManager);
         getDocumentRoutingService().createNewInstance(route,
                 route.getAttachedDocuments(), documentManager);
         relatedRouteModelDocumentId = null;
