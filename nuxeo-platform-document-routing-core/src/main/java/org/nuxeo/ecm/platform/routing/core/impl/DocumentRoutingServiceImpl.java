@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -164,7 +165,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<DocumentRouteElement.ElementLifeCycleState>();
         states.add(DocumentRouteElement.ElementLifeCycleState.ready);
         states.add(DocumentRouteElement.ElementLifeCycleState.running);
-        return getDocumentRoutesForAttachedDocument(session, attachedDocId, states);
+        return getDocumentRoutesForAttachedDocument(session, attachedDocId,
+                states);
     }
 
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
@@ -181,7 +183,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             statesString.append(") AND");
         }
         String RELATED_TOUTES_QUERY = String.format(
-                " SELECT * FROM DocumentRoute WHERE " + statesString.toString()+ " docri:participatingDocuments IN ('%s') ",
+                " SELECT * FROM DocumentRoute WHERE " + statesString.toString()
+                        + " docri:participatingDocuments IN ('%s') ",
                 attachedDocId);
         try {
             list = session.query(RELATED_TOUTES_QUERY);
@@ -193,5 +196,17 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             routes.add(model.getAdapter(DocumentRoute.class));
         }
         return routes;
+    }
+
+    @Override
+    public boolean canUserCreateRoute(NuxeoPrincipal currentUser) {
+        return currentUser.getGroups().contains(
+                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
+    }
+
+    @Override
+    public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
+        return currentUser.getGroups().contains(
+                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
     }
 }

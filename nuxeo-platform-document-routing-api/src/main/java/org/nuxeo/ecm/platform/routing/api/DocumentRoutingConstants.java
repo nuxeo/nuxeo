@@ -25,6 +25,8 @@ public interface DocumentRoutingConstants {
     // web
     String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
 
+    String ROUTE_MANAGERS_GROUP_NAME = "routeManagers";
+
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
 

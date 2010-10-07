@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * The DocumentRoutingService allows to start new {@link DocumentRoute}
@@ -115,4 +116,16 @@ public interface DocumentRoutingService {
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId,
             List<DocumentRouteElement.ElementLifeCycleState> states);
+
+    /**
+     * @param currentUser
+     * @return
+     */
+    boolean canUserCreateRoute(NuxeoPrincipal currentUser);
+
+    /**
+     * @param currentUser
+     * @return
+     */
+    boolean canUserValidateRoute(NuxeoPrincipal currentUser);
 }
