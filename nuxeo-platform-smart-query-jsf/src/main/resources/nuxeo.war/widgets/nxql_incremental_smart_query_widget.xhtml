@@ -8,6 +8,10 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
   id="#{widget.id}">
 
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText value="#{field}" />
+  </c:if>
+
   <c:if test="#{widget.mode == 'edit'}">
 
     <c:if test="#{not facesContext.clientIdsWithMessages.hasNext()}">
@@ -47,11 +51,11 @@
     <table class="dataInput">
       <tbody>
         <tr>
-          <td class="fieldColumn">
+          <td class="fieldColumn" valign="bottom">
             <a4j:outputPanel id="smartQueryPartPanel">
               <h:inputTextarea id="smartQueryPart"
                 value="#{field}"
-                required="#{not smartNXQLQueryActions.ajaxRequest}"
+                required="#{widget.required and not smartNXQLQueryActions.ajaxRequest}"
                 validator="#{smartNXQLQueryActions.validateQueryPart}">
                 <a4j:support event="onchange"
                   actionListener="#{smartNXQLQueryActions.queryPartChanged}"
@@ -71,9 +75,7 @@
               <h:message for="smartQueryPart" class="errorMessage" />
             </a4j:outputPanel>
           </td>
-        </tr>
-        <tr>
-          <td class="fieldColumn">
+          <td valign="bottom">
             <a4j:commandButton value="#{messages['command.clearSearch']}"
               actionListener="#{smartNXQLQueryActions.clearQueryPart}"
               reRender="smartSearchAjaxPanel, smartQueryPartPanel"

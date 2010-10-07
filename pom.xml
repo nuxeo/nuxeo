@@ -18,6 +18,8 @@
   <modules>
     <module>nuxeo-platform-smart-query-api</module>
     <module>nuxeo-platform-smart-query-jsf</module>
+    <module>nuxeo-platform-smart-folder-core</module>
+    <module>nuxeo-platform-smart-folder-jsf</module>
   </modules>
 
   <dependencyManagement>
@@ -30,6 +32,16 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-smart-query-jsf</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-folder-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-smart-folder-jsf</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
     </dependencies>

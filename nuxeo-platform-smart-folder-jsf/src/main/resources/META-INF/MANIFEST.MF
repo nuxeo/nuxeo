@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Smart Folder JSF
+Bundle-SymbolicName: org.nuxeo.ecm.platform.smart.folder.jsf;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Require: org.nuxeo.ecm.platform.smart.query.jsf,
+ org.nuxeo.ecm.webapp.core
+Nuxeo-Component: OSGI-INF/smart-folder-ecm-types-contrib.xml,
+ OSGI-INF/smart-folder-layouts-contrib.xml,
+ OSGI-INF/smart-folder-contentviews-contrib.xml,
+ OSGI-INF/smart-folder-actions-contrib.xml
+

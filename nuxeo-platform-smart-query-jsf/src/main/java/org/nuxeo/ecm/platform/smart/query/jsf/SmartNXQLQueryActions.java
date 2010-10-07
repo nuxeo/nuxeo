@@ -34,8 +34,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.sql.model.Literal;
-import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -50,7 +48,7 @@ public class SmartNXQLQueryActions implements Serializable {
 
     protected String queryPart;
 
-    protected NXQLIncrementalSmartQuery currentSmartQuery;
+    protected IncrementalSmartNXQLQuery currentSmartQuery;
 
     protected List<String> selectedLayoutColumns;
 
@@ -68,14 +66,6 @@ public class SmartNXQLQueryActions implements Serializable {
 
     public void setQueryPart(String queryPart) {
         this.queryPart = queryPart;
-    }
-
-    public Literal getQueryPartAsLiteral() {
-        if (queryPart == null) {
-            return new StringLiteral("");
-        } else {
-            return new StringLiteral(queryPart);
-        }
     }
 
     public List<String> getSelectedLayoutColumns() {
@@ -103,7 +93,7 @@ public class SmartNXQLQueryActions implements Serializable {
     }
 
     public void initCurrentSmartQuery(String existingQueryPart) {
-        currentSmartQuery = new NXQLIncrementalSmartQuery(existingQueryPart);
+        currentSmartQuery = new IncrementalSmartNXQLQuery(existingQueryPart);
     }
 
     public SmartQuery getCurrentSmartQuery() {
@@ -187,7 +177,7 @@ public class SmartNXQLQueryActions implements Serializable {
             throw new ValidatorException(message);
         }
         String query = (String) value;
-        if (!NXQLIncrementalSmartQuery.isValid(query)) {
+        if (!IncrementalSmartNXQLQuery.isValid(query)) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, "error.smart.query.invalidQuery"), null);

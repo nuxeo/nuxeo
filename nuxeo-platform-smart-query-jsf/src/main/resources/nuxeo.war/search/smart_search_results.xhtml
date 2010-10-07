@@ -19,12 +19,11 @@
     <div id="content">
 
       <nxu:set var="contentViewListIndex" value="0">
-      <nxu:set var="contentViewName" value="incremental_smart_query">
+      <nxu:set var="contentViewName" value="nxql_incremental_smart_query">
 
         <ui:decorate template="/incl/content_view.xhtml">
           <ui:param name="selectedResultLayoutColumns"
             value="#{smartNXQLQueryActions.selectedLayoutColumns}" />
-          <ui:param name="selectResultLayoutDefaultColumns" value="true" />
           <ui:param name="contentViewSortInfos"
             value="#{smartNXQLQueryActions.searchSortInfos}" />
           <ui:define name="empty_folder_label">
@@ -34,7 +33,7 @@
           <ui:define name="content_view_header_before_selector">
             <div class="action_bar">
               <h3>
-                <h:outputText value="#{messages['label.smart.search.results.query']}" />
+                <h:outputText value="#{messages['label.smart.search.results']}" />
                 <f:verbatim>&amp;nbsp;</f:verbatim>
                 "<h:outputText value="#{smartNXQLQueryActions.queryPart}" />"
               </h3>

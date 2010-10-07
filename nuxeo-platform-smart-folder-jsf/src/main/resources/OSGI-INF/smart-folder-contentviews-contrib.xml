@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.smart.query.contentviews">
+<component name="org.nuxeo.ecm.platform.smart.folder.contentviews">
 
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
 
-    <contentView name="nxql_incremental_smart_query">
+    <contentView name="nxql_incremental_smart_folder">
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
@@ -14,22 +14,20 @@
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
-        <parameter>#{smartNXQLQueryActions.queryPart}</parameter>
+        <parameter>#{currentDocument.sf.queryPart}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
-        <sortInfosBinding>
-          #{smartNXQLQueryActions.searchSortInfos}
-        </sortInfosBinding>
+        <pageSizeBinding>#{currentDocument.cvd.pageSize}</pageSizeBinding>
+        <sortInfosBinding>#{currentDocument.cvd.sortInfos}</sortInfosBinding>
       </coreQueryPageProvider>
 
-      <useGlobalPageSize>true</useGlobalPageSize>
+      <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
-        <event></event>
       </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
+      <cacheKey>#{currentDocument.cacheKey}</cacheKey>
+      <cacheSize>10</cacheSize>
 
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
@@ -43,7 +41,7 @@
           iconPath="/icons/document_listing_icon_2_columns_icon.png" />
       </resultLayouts>
       <resultColumns>
-        #{smartNXQLQueryActions.selectedLayoutColumns}
+        #{currentDocument.cvd.selectedLayoutColumns}
       </resultColumns>
 
       <selectionList>CURRENT_SELECTION</selectionList>

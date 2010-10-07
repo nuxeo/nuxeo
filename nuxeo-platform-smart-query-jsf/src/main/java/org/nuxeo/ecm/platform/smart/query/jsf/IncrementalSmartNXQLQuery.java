@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.smart.query.IncrementalSmartQuery;
 /**
  * @author Anahide Tchertchian
  */
-public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
+public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
     final SimpleDateFormat isoTimeStamp = new SimpleDateFormat(
             "yyyy-MM-dd hh:mm:ss");
 
-    public NXQLIncrementalSmartQuery(String existingQueryPart) {
+    public IncrementalSmartNXQLQuery(String existingQueryPart) {
         super(existingQueryPart);
     }
 
@@ -69,7 +69,11 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
                 builder.append(" ");
             }
             if (conditionalOperator != null) {
-                builder.append(conditionalOperator);
+                if ("CONTAINS".equals(conditionalOperator)) {
+                    builder.append("LIKE");
+                } else {
+                    builder.append(conditionalOperator);
+                }
                 builder.append(" ");
             }
             if (value != null) {
@@ -80,8 +84,15 @@ public class NXQLIncrementalSmartQuery extends IncrementalSmartQuery {
                         builder.append(0);
                     }
                 } else if (stringValue != null) {
-                    builder.append(String.format("'%s'",
-                            escaper.escape(stringValue)));
+                    if ("CONTAINS".equals(conditionalOperator)) {
+                        builder.append("'%");
+                        builder.append(String.format("%s",
+                                escaper.escape(stringValue)));
+                        builder.append("%'");
+                    } else {
+                        builder.append(String.format("'%s'",
+                                escaper.escape(stringValue)));
+                    }
                 } else if (stringListValue != null) {
                     String[] values = new String[stringListValue.size()];
                     values = stringListValue.toArray(values);

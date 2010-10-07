@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Platform Smart Query Core
-Bundle-SymbolicName: org.nuxeo.ecm.platform.smart.query.core;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0
-

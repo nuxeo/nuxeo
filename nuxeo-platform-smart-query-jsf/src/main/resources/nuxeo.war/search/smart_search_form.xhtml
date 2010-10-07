@@ -27,14 +27,14 @@
       </h3>
       <div class="boxBody">
 
-        <nxl:layout name="nxql_incremental_smart_query_widget" mode="edit"
+        <nxl:layout name="nxql_incremental_smart_query" mode="edit"
           value="#{smartNXQLQueryActions.queryPart}" />
 
       </div>
     </div>
     
     <nxu:set var="contentView"
-      value="#{contentViewActions.getContentViewWithProvider('incremental_smart_query')}"
+      value="#{contentViewActions.getContentViewWithProvider('nxql_incremental_smart_query')}"
       cache="true">
 
       <div class="foldableBox">
@@ -45,16 +45,17 @@
         </h3>
         <div class="boxBody">
 
-          <table class="dataOutput">
+          <table class="dataInput">
             <tbody>
               <tr>
                 <td class="labelColumn">
-                  <h:outputText value="#{messages['label.search.results']}" />
+                  <h:outputText value="#{messages['label.search.resultColumns']}" />
                 </td>
                 <td>
                   <nxl:layout name="#{contentView.resultLayouts[0].name}"
                     mode="edit_columns"
-                    value="#{smartNXQLQueryActions.selectedLayoutColumns}" />
+                    value="#{smartNXQLQueryActions.selectedLayoutColumns}"
+                    selectAllByDefault="true" />
                 </td>
               </tr>
               <tr>
@@ -64,7 +65,8 @@
                 <td>
                   <nxl:layout name="#{contentView.resultLayouts[0].name}"
                     mode="edit_sort_infos"
-                    value="#{smartNXQLQueryActions.searchSortInfos}" />
+                    value="#{smartNXQLQueryActions.searchSortInfos}"
+                    selectAllByDefault="true" />
                 </td>
               </tr>
             </tbody>
@@ -80,19 +82,17 @@
         action="smart_search_results" class="button"
         id="searchButton">
         <nxu:actionListenerMethod
-          value="#{contentViewActions.refreshAndRewind('incremental_smart_query')}" /> 
+          value="#{contentViewActions.resetPageProvider('incremental_smart_query')}" /> 
       </h:commandButton>
       <nxu:set var="actions"
         value="#{webActions.getActionsList('SMART_SEARCH_BUTTONS')}"
         cache="true">
-        <nxu:dataList layout="simple"
-          var="action"
-          value="#{actions}"
-          id="smartSearchActionsTable">
+        <c:forEach var="action" items="#{actions}" varStatus="status">
           <nxh:commandButton action="#{action.getLink()}"
             value="#{messages[action.label]}"
-            id="smartSearchActionsButton" />
-        </nxu:dataList>
+            id="smartSearchActionsButton_#{status.index}"
+            styleClass="button" />
+        </c:forEach>
       </nxu:set>
       <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
         action="#{smartNXQLQueryActions.resetSelectedLayoutColumns()}"

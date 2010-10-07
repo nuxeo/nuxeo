@@ -8,8 +8,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-smart-query-core</artifactId>
-  <name>Nuxeo Platform Smart Query Core</name>
+  <artifactId>nuxeo-platform-smart-folder-core</artifactId>
+  <name>Nuxeo Platform Smart Folder Core</name>
 
   <dependencies></dependencies>
 
