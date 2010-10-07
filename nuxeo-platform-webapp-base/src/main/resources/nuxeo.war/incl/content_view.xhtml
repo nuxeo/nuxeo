@@ -12,7 +12,7 @@
 
  Parameters:
  - contentViewName: the content view name, mandatory
- - contentViewListIndex: a marker to generate unique ids
+ - contentViewId: a marker to generate unique ids
    when iterating over a list of content views, optional
    when only one content view is displayed in the page.
  - contentViewDocument
@@ -28,7 +28,7 @@
     cache="true">
 
     <c:if test="#{contentView != null}">
-    <a4j:region id="contentViewAjaxRegion_#{contentViewListIndex}">
+    <a4j:region id="contentViewAjaxRegion_#{contentViewId}">
 
       <nxu:set var="provider" value="#{contentView.currentPageProvider}"
         cache="true">
@@ -93,7 +93,7 @@
                           <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
                             <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
                               <nxu:dataList var="sel_action" value="#{actions}"
-                                id="clipboardActionsTable_#{contentViewListIndex}_#{status.index}">
+                                id="clipboardActionsTable_#{contentViewId}_#{status.index}">
                               <span id="#{sel_action.id}">
                                 <nxh:commandButton
                                   styleClass="button"

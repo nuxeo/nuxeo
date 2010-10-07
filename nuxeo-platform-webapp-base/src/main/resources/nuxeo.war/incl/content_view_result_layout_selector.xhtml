@@ -7,13 +7,13 @@
 <c:if test="false">
 Needed parameters:
  - contentView: the content view instance, mandatory
- - contentViewListIndex: a marker to generate unique ids
+ - contentViewId: a marker to generate unique ids
    when iterating over a list of content views, optional
    when only one content view is displayed in the page.
 </c:if>
 
 <div class="listingLayoutSelector">
-  <h:form id="contentViewLayoutSelectForm_#{contentViewListIndex}">
+  <h:form id="contentViewLayoutSelectForm_#{contentViewId}">
 
     <c:if test="#{contentView.getResultLayouts().size() > 1}">
       <ul class="layoutViewMode" style="display:inline;">
@@ -52,7 +52,7 @@ Needed parameters:
     <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
   </c:if>
 
-  <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}">
+  <h:form id="contentViewGlobalPageSizeFrom_#{contentViewId}">
 
     <p class="contentViewPageSelectorDesc">
       <h:outputText value="#{messages['label.contentview.pageSize']}" />
