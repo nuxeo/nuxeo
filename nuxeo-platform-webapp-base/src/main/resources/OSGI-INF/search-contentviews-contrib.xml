@@ -122,6 +122,9 @@
           <predicate parameter="ecm:currentLifeCycleState" operator="IN">
             <field schema="advanced_search" name="currentLifeCycleStates" />
           </predicate>
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
+          </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
@@ -136,7 +139,7 @@
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
-      
+
       <!-- TODO: add bindings here instead of search results templates -->
 
       <resultLayouts>
@@ -160,7 +163,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">?</pattern>
-        <parameter>#{documentSearchActions.nxqlQueryAsLiteral}</parameter>
+        <parameter>#{documentSearchActions.nxqlQuery}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
