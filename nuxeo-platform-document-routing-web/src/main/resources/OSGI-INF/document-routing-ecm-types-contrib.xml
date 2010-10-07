@@ -32,9 +32,8 @@
   
    <type id="DocumentRoute" coreType="DocumentRoute">
    	  <label>DocumentRoute</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
-      <icon-expanded>/icons/folder_open.gif</icon-expanded>
+      <icon>/icons/route.png</icon>
+      <bigIcon>/icons/route_100.png</bigIcon>
       <category>Collaborative</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
@@ -64,8 +63,8 @@
      
    <type id="StepFolder" coreType="StepFolder">
       <label>StepFolder</label>
-      <icon>/icons/folder.gif</icon>
-      <bigIcon>/icons/folder_100.png</bigIcon>
+      <icon>/icons/fork.png</icon>
+      <bigIcon>/icons/fork_100.png</bigIcon>
       <icon-expanded>/icons/folder_open.gif</icon-expanded>
       <category>Collaborative</category>
       <description>Folder.description</description>
@@ -93,8 +92,8 @@
      
    <type id="DocumentRouteStep" coreType="DocumentRouteStep">
       <label>Step</label>
-      <icon>/icons/file.gif</icon>
-      <bigIcon>/icons/file_100.png</bigIcon>
+      <icon>/icons/step.png</icon>
+      <bigIcon>/icons/step_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>File.description</description>
       <default-view>view_documents</default-view>
