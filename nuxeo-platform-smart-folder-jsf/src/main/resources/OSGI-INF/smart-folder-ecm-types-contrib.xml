@@ -20,15 +20,13 @@
       </layouts>
       <layouts mode="view">
         <layout>nxql_incremental_smart_folder</layout>
+        <layout>nxql_incremental_smart_folder_content_view</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>nxql_incremental_smart_folder</layout>
         <layout>dublincore</layout>
       </layouts>
-      <contentViews category="content">
-        <contentView>nxql_incremental_smart_folder</contentView>
-      </contentViews>
     </type>
 
     <!-- add it to existing containers -->

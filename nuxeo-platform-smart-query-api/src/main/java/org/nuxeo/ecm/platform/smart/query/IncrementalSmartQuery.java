@@ -59,7 +59,11 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
 
     protected Date datetimeValue;
 
+    protected Date otherDatetimeValue;
+
     protected Date dateValue;
+
+    protected Date otherDateValue;
 
     protected Long integerValue;
 
@@ -142,6 +146,9 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
 
     public void setSelectedRowName(String selectedRowName) {
         this.selectedRowName = selectedRowName;
+        leftExpression = null;
+        conditionalOperator = null;
+        clearValues();
     }
 
     public List<String> getSelectedRowNames() {
@@ -166,6 +173,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
 
     public void setConditionalOperator(String conditionalOperator) {
         this.conditionalOperator = conditionalOperator;
+        clearValues();
     }
 
     public Object getValue() {
@@ -212,6 +220,15 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         setValue(datetimeValue);
     }
 
+    public Date getOtherDatetimeValue() {
+        return otherDatetimeValue;
+    }
+
+    public void setOtherDatetimeValue(Date otherDatetimeValue) {
+        this.otherDatetimeValue = otherDatetimeValue;
+        setValue(otherDatetimeValue);
+    }
+
     public Date getDateValue() {
         return dateValue;
     }
@@ -219,6 +236,15 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     public void setDateValue(Date dateValue) {
         this.dateValue = dateValue;
         setValue(dateValue);
+    }
+
+    public Date getOtherDateValue() {
+        return otherDateValue;
+    }
+
+    public void setOtherDateValue(Date otherDateValue) {
+        this.otherDateValue = otherDateValue;
+        setValue(otherDateValue);
     }
 
     public Long getIntegerValue() {
@@ -247,6 +273,10 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         selectedRowName = null;
         leftExpression = null;
         conditionalOperator = null;
+        clearValues();
+    }
+
+    protected void clearValues() {
         value = null;
         booleanValue = null;
         stringValue = null;
@@ -256,5 +286,6 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         integerValue = null;
         floatValue = null;
     }
+
 
 }

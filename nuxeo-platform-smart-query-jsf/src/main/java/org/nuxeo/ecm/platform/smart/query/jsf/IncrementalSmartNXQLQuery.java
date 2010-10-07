@@ -26,6 +26,8 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 import org.nuxeo.ecm.platform.smart.query.IncrementalSmartQuery;
 
 /**
+ * NXQL implementation of an incremental smart query
+ *
  * @author Anahide Tchertchian
  */
 public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
@@ -33,6 +35,10 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
     private static final long serialVersionUID = 1L;
 
     public static final String GENERIC_QUERY_SELECT = "SELECT * FROM DOCUMENT WHERE ";
+
+    public enum SPECIAL_OPERATORS {
+        CONTAINS, BETWEEN
+    }
 
     public static final Escaper escaper = new LuceneMinimalEscaper();
 
@@ -84,7 +90,8 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                         builder.append(0);
                     }
                 } else if (stringValue != null) {
-                    if ("CONTAINS".equals(conditionalOperator)) {
+                    if (SPECIAL_OPERATORS.CONTAINS.name().equals(
+                            conditionalOperator)) {
                         builder.append("'%");
                         builder.append(String.format("%s",
                                 escaper.escape(stringValue)));
@@ -106,9 +113,22 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                     builder.append(String.format(
                             "TIMESTAMP '%s'",
                             isoTimeStamp.format(Long.valueOf(datetimeValue.getTime()))));
+                    if (otherDatetimeValue != null) {
+                        builder.append(" AND ");
+                        builder.append(String.format(
+                                "TIMESTAMP '%s'",
+                                isoTimeStamp.format(Long.valueOf(otherDatetimeValue.getTime()))));
+                    }
                 } else if (dateValue != null) {
+                    // TODO: handle other date
                     builder.append(String.format("DATE '%s'",
                             isoDate.format(Long.valueOf(dateValue.getTime()))));
+                    if (otherDateValue != null) {
+                        builder.append(" AND ");
+                        builder.append(String.format(
+                                "DATE '%s'",
+                                isoDate.format(Long.valueOf(otherDateValue.getTime()))));
+                    }
                 } else if (integerValue != null) {
                     builder.append(integerValue);
                 } else if (floatValue != null) {

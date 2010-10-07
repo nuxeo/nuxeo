@@ -27,10 +27,6 @@ public interface SmartFolderDocumentConstants {
 
     public static String SORT_INFOS_PROP_NAME = "cvd:sortInfos";
 
-    public static String SORT_INFO_COLUMN_FIELD_NAME = "sortColumn";
-
-    public static String SORT_INFO_ASCENDING_FIELD_NAME = "sortAscending";
-
     public static String PAGE_SIZE_PROP_NAME = "cvd:pageSize";
 
 }

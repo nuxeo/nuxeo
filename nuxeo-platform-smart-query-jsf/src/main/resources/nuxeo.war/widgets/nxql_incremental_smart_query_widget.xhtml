@@ -40,6 +40,11 @@
                   <a4j:actionparam name="updateQueryPart"
                     value="#{widgetProperty_updateQueryPart}" />
                 </a4j:commandButton>
+                <a4j:status>
+                  <f:facet name="start">
+                    <h:graphicImage value="/img/standart_waiter.gif" />
+                  </f:facet>
+                </a4j:status>
               </td>
             </tr>
           </tbody>
@@ -51,7 +56,7 @@
     <table class="dataInput">
       <tbody>
         <tr>
-          <td class="fieldColumn" valign="bottom">
+          <td class="fieldColumn">
             <a4j:outputPanel id="smartQueryPartPanel">
               <h:inputTextarea id="smartQueryPart"
                 value="#{field}"
@@ -67,12 +72,6 @@
                     value="#{widgetProperty_updateQueryPart}" />
                 </a4j:support>
               </h:inputTextarea>
-              <a4j:status>
-                <f:facet name="start">
-                  <h:graphicImage value="/img/standart_waiter.gif" />
-                </f:facet>
-              </a4j:status>
-              <h:message for="smartQueryPart" class="errorMessage" />
             </a4j:outputPanel>
           </td>
           <td valign="bottom">
@@ -86,6 +85,12 @@
               <a4j:actionparam name="updateQueryPart"
                 value="#{widgetProperty_updateQueryPart}" />
             </a4j:commandButton>
+            <a4j:status>
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
+            <h:message for="smartQueryPart" class="errorMessage" />
           </td>
         </tr>
       </tbody>

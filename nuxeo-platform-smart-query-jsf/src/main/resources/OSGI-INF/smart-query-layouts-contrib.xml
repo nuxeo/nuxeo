@@ -42,10 +42,34 @@
       <xs:element name="format" type="xs:string"/>
       <xs:element name="language" type="xs:string"/>
       <xs:element name="creator" type="xs:string"/>
-      <xs:element name="contributors" type="nxs:contributorList"/>
     -->
 
-    <widget name="smart_query_condition_title"
+    <widget name="nxql_smart_query_condition_fulltext"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">content</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">ecm:fulltext</property>
+        <propertyList name="availableOperators">
+          <value>LIKE</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="fulltext" type="text">
+          <helpLabels>
+            <label mode="edit">label.smart.query.build.fulltext.help</label>
+          </helpLabels>
+          <translated>true</translated>
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_title"
       type="incremental_smart_query_condition">
       <labels>
         <label mode="any">title</label>
@@ -68,7 +92,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="smart_query_condition_created"
+    <widget name="nxql_smart_query_condition_created"
       type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.created</label>
@@ -77,12 +101,13 @@
       <properties widgetMode="edit">
         <property name="searchField">dc:created</property>
         <propertyList name="availableOperators">
+          <value>BETWEEN</value>
           <value>&lt;</value>
           <value>&gt;</value>
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="created" type="datetime">
+        <widget name="created_before" type="datetime">
           <fields>
             <field>dateValue</field>
           </fields>
@@ -91,10 +116,39 @@
             <property name="pattern">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
+        <widget name="and" type="text">
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+            </mode>
+          </widgetModes>
+          <properties mode="any">
+            <property name="value">
+              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
+            </property>
+            <property name="escape">false</property>
+          </properties>
+        </widget>
+        <widget name="created_after" type="datetime">
+          <fields>
+            <field>otherDateValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+            </mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
       </subWidgets>
     </widget>
 
-    <widget name="smart_query_condition_contributors"
+    <widget name="nxql_smart_query_condition_contributors"
       type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.contributors</label>
@@ -170,14 +224,17 @@
         </template>
       </templates>
       <rows>
-        <row name="smart_query_condition_title">
-          <widget>smart_query_condition_title</widget>
+        <row name="nxql_smart_query_condition_fulltext">
+          <widget>nxql_smart_query_condition_fulltext</widget>
         </row>
-        <row name="smart_query_condition_created">
-          <widget>smart_query_condition_created</widget>
+        <row name="nxql_smart_query_condition_title">
+          <widget>nxql_smart_query_condition_title</widget>
         </row>
-        <row name="smart_query_condition_contributors">
-          <widget>smart_query_condition_contributors</widget>
+        <row name="nxql_smart_query_condition_created">
+          <widget>nxql_smart_query_condition_created</widget>
+        </row>
+        <row name="nxql_smart_query_condition_contributors">
+          <widget>nxql_smart_query_condition_contributors</widget>
         </row>
       </rows>
     </layout>

@@ -66,7 +66,8 @@
       <a4j:outputPanel id="#{layout.id}_selectionPanel">
 
           <nxl:layoutRow>
-            <f:subview rendered="#{layoutValue.selectedRowName == layoutRow.name}">
+            <f:subview id="#{layout.id}_selectionSubview_#{layoutRowIndex}"
+              rendered="#{layoutValue.selectedRowName == layoutRow.name}">
               <nxl:layoutRowWidget>
                 <nxl:widget widget="#{widget}" value="#{value}" />
               </nxl:layoutRowWidget>

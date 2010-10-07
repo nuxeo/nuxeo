@@ -8,20 +8,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <h:form id="document_view">
-    <a4j:region id="documentViewRegion">
-      <a4j:outputPanel id="documentViewPanel">
-        <nxl:documentLayout mode="view" value="#{currentDocument}" />
-      </a4j:outputPanel>
-    </a4j:region>
-  </h:form>
-
-  <c:if test="#{documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
-
-    <ui:include src="/incl/document_content_view.xhtml">
-      <ui:param name="contentViewCategory" value="content" />
-    </ui:include>
-
-  </c:if>
+  <a4j:region id="documentViewRegion">
+    <a4j:outputPanel id="documentViewPanel">
+      <nxl:documentLayout mode="view" value="#{currentDocument}" />
+    </a4j:outputPanel>
+  </a4j:region>
   
 </div>
