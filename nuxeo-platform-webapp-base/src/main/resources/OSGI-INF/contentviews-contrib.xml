@@ -17,9 +17,6 @@
         <parameter>#{currentDocument.id}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
-        <pageSizeBinding>
-          #{contentViewActions.currentGlobalPageSize}
-        </pageSizeBinding>
       </coreQueryPageProvider>
 
       <useGlobalPageSize>true</useGlobalPageSize>

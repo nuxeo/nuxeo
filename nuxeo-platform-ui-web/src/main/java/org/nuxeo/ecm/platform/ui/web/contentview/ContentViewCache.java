@@ -140,6 +140,21 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    public void resetPageProvider(String contentViewName) {
+        ContentView cv = namedContentViews.get(contentViewName);
+        if (cv != null) {
+            cv.resetPageProvider();
+        }
+        Map<String, ContentView> instances = cacheInstances.get(contentViewName);
+        if (instances != null) {
+            for (ContentView cView : instances.values()) {
+                if (cView != null) {
+                    cView.resetPageProvider();
+                }
+            }
+        }
+    }
+
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
             Set<String> contentViewNames = eventToContentViewName.get(eventName);
