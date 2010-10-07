@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.ui.web.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -76,10 +77,22 @@ public class SortInfoListValidator implements Validator {
         if (value != null) {
             if (value instanceof List) {
                 try {
-                    List<SortInfo> sortInfos = (List) value;
+                    List sortInfos = (List) value;
                     List<String> criteria = new ArrayList<String>();
-                    for (SortInfo sortInfo : sortInfos) {
-                        String criterion = sortInfo.getSortColumn();
+                    for (Object sortInfo : sortInfos) {
+                        String criterion = null;
+                        if (sortInfo instanceof SortInfo) {
+                            criterion = ((SortInfo) sortInfo).getSortColumn();
+                        } else {
+                            // assume it's a map
+                            SortInfo sortInfoValue = SortInfo.asSortInfo((Map) sortInfo);
+                            if (sortInfoValue == null) {
+                                throw new ValidatorException(
+                                        MessageFactory.getMessage(context,
+                                                INVALID_VALUE_MESSAGE_ID));
+                            }
+                            criterion = sortInfoValue.getSortColumn();
+                        }
                         if (criterion == null
                                 || StringUtils.isEmpty(criterion.trim())) {
                             throw new ValidatorException(
@@ -102,5 +115,4 @@ public class SortInfoListValidator implements Validator {
             }
         }
     }
-
 }

@@ -387,7 +387,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
-            boolean selectDefaultRows) {
+            boolean selectAllRowsByDefault) {
         LayoutDefinition lDef = getLayoutDefinition(layoutName);
         if (lDef == null) {
             log.debug(String.format("Layout %s not found", layoutName));
@@ -417,7 +417,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     && !rowDef.isAlwaysSelected()) {
                 continue;
             }
-            if (selectedRows == null && selectDefaultRows
+            if (selectedRows == null && !selectAllRowsByDefault
                     && !rowDef.isSelectedByDefault()
                     && !rowDef.isAlwaysSelected()) {
                 continue;

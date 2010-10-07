@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -172,11 +173,16 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
     // FIXME AT: should use the list property as EditableModel instead
     @Override
+    @SuppressWarnings("unchecked")
     public Object getValue() {
         Object value = super.getValue();
-        if (value == null) {
+        if (value == null
+                || ((value instanceof Collection) && ((Collection) value).size() == 0)) {
             // check defaultValue attribute
-            value = getDefaultValue();
+            Object defaultValue = getDefaultValue();
+            if (defaultValue != null) {
+                value = getDefaultValue();
+            }
         }
         if (value instanceof ListProperty) {
             try {

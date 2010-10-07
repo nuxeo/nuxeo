@@ -67,6 +67,28 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             // default value
             translateTitle = Boolean.FALSE;
         }
+
+        String[] queryParams = null;
+        String searchDocumentType = null;
+        String sortInfosBinding = null;
+        String pageSizeBinding = null;
+        CoreQueryPageProviderDescriptor coreDesc = desc.getCoreQueryPageProvider();
+        GenericPageProviderDescriptor genDesc = desc.getGenericPageProvider();
+        WhereClauseDescriptor whereClause = null;
+        if (coreDesc != null && coreDesc.isEnabled()) {
+            whereClause = coreDesc.getWhereClause();
+            queryParams = coreDesc.getQueryParameters();
+            sortInfosBinding = coreDesc.getSortInfosBinding();
+            pageSizeBinding = coreDesc.getPageSizeBinding();
+        } else if (genDesc != null && genDesc.isEnabled()) {
+            whereClause = genDesc.getWhereClause();
+            queryParams = genDesc.getQueryParameters();
+            sortInfosBinding = genDesc.getSortInfosBinding();
+            pageSizeBinding = genDesc.getPageSizeBinding();
+        }
+        if (whereClause != null) {
+            searchDocumentType = whereClause.getDocType();
+        }
         ContentViewImpl contentView = new ContentViewImpl(name,
                 desc.getTitle(), translateTitle.booleanValue(),
                 desc.getIconPath(), desc.getSelectionListName(),
@@ -74,8 +96,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getSearchLayout(), desc.getResultLayouts(),
                 desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
                 desc.getRefreshEventNames(), useGlobalPageSize.booleanValue(),
-                desc.getQueryParameters(), desc.getSearchDocumentBinding(),
-                desc.getSearchDocumentType());
+                queryParams, desc.getSearchDocumentBinding(),
+                searchDocumentType, desc.getResultColumnsBinding(),
+                sortInfosBinding, pageSizeBinding);
         return contentView;
     }
 
@@ -141,7 +164,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         } else {
             pageProvider.setSortInfos(sortInfos);
         }
-        if (pageSize == null) {
+        if (pageSize == null || pageSize.longValue() < 0) {
             pageProvider.setPageSize(pageDesc.getPageSize());
         } else {
             pageProvider.setPageSize(pageSize.longValue());

@@ -16,7 +16,7 @@
   - selectedElementsLabel (string message to translate)
   - selectedElementsHelp (string message to translate)
   - selectSize (integer)
-  - columnSelectionRequired (boolean)
+  - required (boolean)
   - displayAlwaysSelectedColumns (boolean)
 
   Properties to define on the layout column:
@@ -24,8 +24,13 @@
   - a name on the column, used as an identifier
 </c:if>
 
+  <c:set var="selectionDefaultValue"
+    value="#{nxl:defaultSelectedColumnNames(layout, layoutProperty_displayAlwaysSelectedColumns)}" />
+  <c:set var="selectionReferenceValue"
+    value="#{nxu:test(empty layoutValue, selectionDefaultValue, layoutValue)}" />
+
   <a4j:region renderRegionOnly="true">
-    <a4j:outputPanel ajaxRendered="true" layout="block">
+    <a4j:outputPanel layout="block" id="#{layout.id}_panel">
       <table class="listShuttleTable">
         <tbody>
           <tr>
@@ -50,10 +55,10 @@
                 size="#{nxu:test(empty layoutProperty_selectSize, 5, layoutProperty_selectSize)}"
                 class="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{nxl:notSelectedColumns(layout, layoutValue)}"
-                  var="layoutColumn"
-                  itemValue="#{layoutColumn.name}"
-                  itemLabel="#{messages[layoutColumn.properties.label]}"
+                  value="#{nxl:notSelectedColumns(layout, selectionReferenceValue)}"
+                  var="layoutColumnVar"
+                  itemValue="#{layoutColumnVar.name}"
+                  itemLabel="#{messages[layoutColumnVar.properties.label]}"
                   ordering="label" caseSensitive="true"
                   id="#{layout.id}_sourceItems" />
               </h:selectManyListbox>
@@ -63,6 +68,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeFromSelection}"
                 id="#{layout.id}_removeFormSelection"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -76,6 +82,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addToSelection}"
                 id="#{layout.id}_addToSelection"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>           
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -89,6 +96,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addAllToSelection}"
                 id="#{layout.id}_addAllToSelection"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -102,6 +110,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeAllFromSelection}"
                 id="#{layout.id}_removeAllFromSelection"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -121,25 +130,26 @@
                 size="#{nxu:test(empty layoutProperty_selectSize, 5, layoutProperty_selectSize)}"
                 class="listShuttleSelect">
                 <nxu:selectItems
-                  value="#{nxl:selectedColumns(layout, layoutValue, layoutProperty_displayAlwaysSelectedColumns)}"
-                  var="layoutColumn"
-                  itemValue="#{layoutColumn.name}"
-                  itemLabel="#{messages[layoutColumn.properties.label]}"
-                  itemDisabled="#{layoutColumn.alwaysSelected}"
+                  value="#{nxl:selectedColumns(layout, selectionReferenceValue, layoutProperty_displayAlwaysSelectedColumns)}"
+                  var="layoutColumnVar"
+                  itemValue="#{layoutColumnVar.name}"
+                  itemLabel="#{messages[layoutColumnVar.properties.label]}"
+                  itemDisabled="#{layoutColumnVar.alwaysSelected}"
                   id="#{layout.id}_targetItems" />
               </h:selectManyListbox>
               <h:message styleClass="errorMessage"
                 for="#{layout.id}_targetSelect"/>
               <nxu:inputList id="#{layout.id}_hiddenTargetList"
                 model="model" diff="false" value="#{layoutValue}"
-                defaultValue="#{nxl:defaultSelectedColumnNames(layout, layoutProperty_displayAlwaysSelectedColumns)}"
-                required="#{layoutProperty_columnSelectionRequired}" />
+                defaultValue="#{selectionDefaultValue}"
+                required="#{layoutProperty_required}" />
               <h:message styleClass="errorMessage" for="#{layout.id}_hiddenTargetList"/>
             </td>
             <td class="listShuttleSelectionActions">
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedFirst}"
                 id="#{layout.id}_shiftSelectedFirst"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -151,6 +161,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedUp}"
                 id="#{layout.id}_shiftSelectedUp"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -162,6 +173,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedDown}"
                 id="#{layout.id}_shiftSelectedDown"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -173,6 +185,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedLast}"
                 id="#{layout.id}_shiftSelectedLast"
+                reRender="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>

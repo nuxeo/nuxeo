@@ -44,30 +44,37 @@ Needed parameters:
 </div>
 
 <div class="listingLayoutSelector">
+
   <c:if test="#{contentView.useGlobalPageSize}">
-    <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}">
-
-      <p class="contentViewPageSelectorDesc">
-        <h:outputText value="#{messages['label.content.view.page.selector.description']}" />
-      </p>
-      <h:selectOneMenu value="#{contentViewActions.currentGlobalPageSize}"
-        id="contentViewPageSizeSelector"
-        styleClass="langSelect"
-        onchange="Element.next(this).firstChild.click();">
-        <f:convertNumber />
-        <f:selectItem itemValue="5" itemLabel="5" />
-        <f:selectItem itemValue="10" itemLabel="10" />
-        <f:selectItem itemValue="20" itemLabel="20" />
-        <f:selectItem itemValue="30" itemLabel="30" />
-        <f:selectItem itemValue="40" itemLabel="40" />
-        <f:selectItem itemValue="50" itemLabel="50" />
-      </h:selectOneMenu>
-      <div style="display: none;">
-        <h:commandButton value="submit" />
-      </div>
-
-    </h:form>
+    <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
   </c:if>
+  <c:if test="#{not contentView.useGlobalPageSize}">
+    <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
+  </c:if>
+
+  <h:form id="contentViewGlobalPageSizeFrom_#{contentViewListIndex}">
+
+    <p class="contentViewPageSelectorDesc">
+      <h:outputText value="#{messages['label.contentView.pageSize']}" />
+    </p>
+    <h:selectOneMenu value="#{pageSizeBinding}"
+      id="contentViewPageSizeSelector"
+      styleClass="langSelect"
+      onchange="Element.next(this).firstChild.click();">
+      <f:convertNumber />
+      <f:selectItem itemValue="5" itemLabel="5" />
+      <f:selectItem itemValue="10" itemLabel="10" />
+      <f:selectItem itemValue="20" itemLabel="20" />
+      <f:selectItem itemValue="30" itemLabel="30" />
+      <f:selectItem itemValue="40" itemLabel="40" />
+      <f:selectItem itemValue="50" itemLabel="50" />
+    </h:selectOneMenu>
+    <div style="display: none;">
+      <h:commandButton value="submit" />
+    </div>
+
+  </h:form>
+
 </div>
 
 </c:if>

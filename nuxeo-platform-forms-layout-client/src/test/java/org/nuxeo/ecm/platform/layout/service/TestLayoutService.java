@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.layout.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -45,13 +47,13 @@ public class TestLayoutService extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
-                "layouts-test-contrib.xml");
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
 
-    public void testLayout() {
+    public void testLayout() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
         Layout layout = service.getLayout(null, "testLayout",
                 BuiltinModes.VIEW, null);
         assertNotNull(layout);
@@ -95,6 +97,62 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("globalTestWidget", widget.getName());
         assertEquals("test", widget.getType());
+    }
+
+    public void testLayoutRowSelection() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-listing-test-contrib.xml");
+        Layout layout = service.getLayout(null, "search_listing_ajax",
+                "edit_columns", "", null, false);
+        LayoutRow[] rows = layout.getRows();
+        assertEquals(4, rows.length);
+        assertEquals("selection", rows[0].getName());
+        assertEquals("title_link", rows[1].getName());
+        assertEquals("modification_date", rows[2].getName());
+        assertEquals("lifecycle", rows[3].getName());
+
+        // select all by default
+        layout = service.getLayout(null, "search_listing_ajax", "edit_columns",
+                "", null, true);
+        rows = layout.getRows();
+        assertEquals(7, rows.length);
+        assertEquals("selection", rows[0].getName());
+        assertEquals("title_link", rows[1].getName());
+        assertEquals("modification_date", rows[2].getName());
+        assertEquals("lifecycle", rows[3].getName());
+        assertEquals("description", rows[4].getName());
+        assertEquals("subjects", rows[5].getName());
+        assertEquals("rights", rows[6].getName());
+
+        List<String> selectedRows = new ArrayList<String>();
+        layout = service.getLayout(null, "search_listing_ajax", "edit_columns",
+                "", selectedRows, false);
+        rows = layout.getRows();
+        assertEquals(1, rows.length);
+        assertEquals("selection", rows[0].getName());
+
+        // select all by default => no change
+        layout = service.getLayout(null, "search_listing_ajax", "edit_columns",
+                "", selectedRows, true);
+        rows = layout.getRows();
+        assertEquals(1, rows.length);
+        assertEquals("selection", rows[0].getName());
+
+        selectedRows.add("title_link");
+        layout = service.getLayout(null, "search_listing_ajax", "edit_columns",
+                "", selectedRows, false);
+        rows = layout.getRows();
+        assertEquals(2, rows.length);
+        assertEquals("selection", rows[0].getName());
+        assertEquals("title_link", rows[1].getName());
+
+        // select all by default => no change
+        layout = service.getLayout(null, "search_listing_ajax", "edit_columns",
+                "", selectedRows, true);
+        rows = layout.getRows();
+        assertEquals(2, rows.length);
+        assertEquals("selection", rows[0].getName());
+        assertEquals("title_link", rows[1].getName());
     }
 
 }

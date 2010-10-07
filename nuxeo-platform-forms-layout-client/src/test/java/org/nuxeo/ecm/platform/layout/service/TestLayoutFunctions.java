@@ -45,8 +45,10 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
     }
 
     public void testRowSelectionFunctions() {
+        // row selection needs to be tested against a layout with all rows
+        // selected by default
         Layout layout = service.getLayout(null, "search_listing_ajax",
-                "edit_columns", "");
+                "edit_columns", "", null, true);
         assertNotNull(layout);
 
         List<LayoutRow> selectedRows = LayoutTagLibrary.getSelectedRows(layout,

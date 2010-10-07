@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webapp.search;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -31,8 +32,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.sql.model.Literal;
-import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -103,14 +102,6 @@ public class DocumentSearchActions implements Serializable {
         this.nxqlQuery = nxqlQuery;
     }
 
-    public Literal getNxqlQueryAsLiteral() {
-        if (nxqlQuery == null) {
-            return new StringLiteral("");
-        } else {
-            return new StringLiteral(nxqlQuery);
-        }
-    }
-
     public List<String> getSelectedLayoutColumns() {
         return selectedLayoutColumns;
     }
@@ -133,6 +124,11 @@ public class DocumentSearchActions implements Serializable {
 
     public SortInfo getNewSortInfo() {
         return new SortInfo("", true);
+    }
+
+    public Map<String, Serializable> getNewSortInfoMap() {
+        SortInfo sortInfo = getNewSortInfo();
+        return SortInfo.asMap(sortInfo);
     }
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)

@@ -15,15 +15,16 @@
  - contentViewListIndex: a marker to generate unique ids
    when iterating over a list of content views, optional
    when only one content view is displayed in the page.
- - selectedResultLayoutColumns: list of result layout columns selected
- - selectResultLayoutDefaultColumns: boolean indicating if result layout
-   should display only columns selected by default (if no selection exists)
  - contentViewDocument
  - contentViewSortInfos
+ - selectedResultLayoutColumns: list of result layout columns selected
 </c:if>
 
   <nxu:set var="contentView"
-    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1)}"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), -1, -1)}"
+    cache="true">
+  <nxu:set var="selectedResultLayoutColumns"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.resultLayoutColumns, selectedResultLayoutColumns)}"
     cache="true">
 
     <c:if test="#{contentView != null}">
@@ -127,6 +128,7 @@
 
     </a4j:region>
     </c:if>
+  </nxu:set>
   </nxu:set>
 
 </div>

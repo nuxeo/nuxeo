@@ -49,6 +49,9 @@ public class WhereClauseDescriptor {
     @XNode("fixedPart@quoteParameters")
     protected boolean quoteFixedPartParameters = true;
 
+    @XNode("fixedPart@escape")
+    protected boolean escapeFixedPartParameters = true;
+
     public String getDocType() {
         return docType;
     }
@@ -61,6 +64,10 @@ public class WhereClauseDescriptor {
 
     public boolean getQuoteFixedPartParameters() {
         return quoteFixedPartParameters;
+    }
+
+    public boolean getEscapeFixedPartParameters() {
+        return escapeFixedPartParameters;
     }
 
     public PredicateDescriptor[] getPredicates() {

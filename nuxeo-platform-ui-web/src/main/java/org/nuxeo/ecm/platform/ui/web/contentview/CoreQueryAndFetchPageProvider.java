@@ -136,7 +136,7 @@ public class CoreQueryAndFetchPageProvider extends
             }
             String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
                     getParameters(), descriptor.getQuotePatternParameters(),
-                    sortArray);
+                    descriptor.getEscapePatternParameters(), sortArray);
 
             if (!newQuery.equals(query)) {
                 // query has changed => refresh

@@ -38,11 +38,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Helper to generate NXQL queries from XMap descriptors
  *
+ * @since 5.4
  * @author Anahide Tchertchian
  */
 public class NXQLQueryBuilder {
 
-    public static final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat sf = new SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss");
 
     private NXQLQueryBuilder() {
     }
@@ -114,10 +116,12 @@ public class NXQLQueryBuilder {
         if (fixedPart != null && !fixedPart.equals("")) {
             if (elements.isEmpty()) {
                 elements.add(getQuery(fixedPart, params,
-                        whereClause.getQuoteFixedPartParameters()));
+                        whereClause.getQuoteFixedPartParameters(),
+                        whereClause.getEscapeFixedPartParameters()));
             } else {
                 elements.add('(' + getQuery(fixedPart, params,
-                        whereClause.getQuoteFixedPartParameters()) + ')');
+                        whereClause.getQuoteFixedPartParameters(),
+                        whereClause.getEscapeFixedPartParameters()) + ')');
             }
         }
 
@@ -140,7 +144,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQuery(String pattern, Object[] params,
-            boolean quoteParameters, SortInfo... sortInfos)
+            boolean quoteParameters, boolean escape, SortInfo... sortInfos)
             throws ClientException {
         StringBuilder queryBuilder;
         if (params == null) {
@@ -154,10 +158,10 @@ public class NXQLQueryBuilder {
                 if (params[i] instanceof String[]) {
                     appendStringList(queryBuilder,
                             Arrays.asList((String[]) params[i]),
-                            quoteParameters);
+                            quoteParameters, escape);
                 } else if (params[i] instanceof List) {
                     appendStringList(queryBuilder, (List<?>) params[i],
-                            quoteParameters);
+                            quoteParameters, escape);
                 } else if (params[i] instanceof Boolean) {
                     boolean b = ((Boolean) params[i]).booleanValue();
                     queryBuilder.append(b ? 1 : 0);
@@ -174,12 +178,8 @@ public class NXQLQueryBuilder {
                         queryBuilder.append("''");
                     } else {
                         String queryParam = params[i].toString();
-                        // this will escape everything as if it where a
-                        // string
-                        // use a literal if you want to do your own custom
-                        // stuff
                         queryBuilder.append(prepareStringLiteral(queryParam,
-                                quoteParameters));
+                                quoteParameters, escape));
                     }
                 }
                 queryBuilder.append(queryStrList[i + 1]);
@@ -190,11 +190,12 @@ public class NXQLQueryBuilder {
     }
 
     public static void appendStringList(StringBuilder queryBuilder,
-            List<?> listParam, boolean quoteParameters) {
+            List<?> listParam, boolean quoteParameters, boolean escape) {
         queryBuilder.append('(');
         List<String> result = new ArrayList<String>(listParam.size());
         for (Object param : listParam) {
-            result.add(prepareStringLiteral(param.toString(), quoteParameters));
+            result.add(prepareStringLiteral(param.toString(), quoteParameters,
+                    escape));
         }
         queryBuilder.append(StringUtils.join(result, ", "));
         queryBuilder.append(')');
@@ -203,8 +204,14 @@ public class NXQLQueryBuilder {
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
      */
-    public static String prepareStringLiteral(String s, boolean quoteParameter) {
-        String res = s.replaceAll("'", "\\\\'");
+    public static String prepareStringLiteral(String s, boolean quoteParameter,
+            boolean escape) {
+        String res;
+        if (escape) {
+            res = s.replaceAll("'", "\\\\'");
+        } else {
+            res = s;
+        }
         if (quoteParameter) {
             res = "'" + res + "'";
         }
@@ -387,7 +394,7 @@ public class NXQLQueryBuilder {
             }
             res += "+" + tokens[i];
         }
-        return "= " + prepareStringLiteral(res, true);
+        return "= " + prepareStringLiteral(res, true, true);
     }
 
     protected static String serializeUnary(String parameter, String operator,
@@ -503,7 +510,7 @@ public class NXQLQueryBuilder {
                     || "double".equals(fieldType)) {
                 return value;
             } else {
-                return prepareStringLiteral(value, true);
+                return prepareStringLiteral(value, true, true);
             }
         }
         return value;

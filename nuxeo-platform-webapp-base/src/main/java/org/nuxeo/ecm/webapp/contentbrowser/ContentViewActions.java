@@ -30,7 +30,6 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewCache;
@@ -83,10 +82,7 @@ public class ContentViewActions implements Serializable {
      */
     public Long getCurrentGlobalPageSize() {
         if (globalPageSize == null && currentContentView != null) {
-            PageProvider<?> pp = currentContentView.getCurrentPageProvider();
-            if (pp != null) {
-                return Long.valueOf(pp.getPageSize());
-            }
+            return currentContentView.getCurrentPageSize();
         }
         return globalPageSize;
     }
@@ -167,29 +163,30 @@ public class ContentViewActions implements Serializable {
 
     public ContentView getContentViewWithProvider(String name)
             throws ClientException {
-        return getContentViewWithProvider(name, null, null, null);
+        return getContentViewWithProvider(name, null, null, null, null);
     }
 
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel) throws ClientException {
-        return getContentViewWithProvider(name, searchDocumentModel, null, null);
+        return getContentViewWithProvider(name, searchDocumentModel, null,
+                null, null);
     }
 
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
-            Long currentPage) throws ClientException {
+            Long pageSize, Long currentPage) throws ClientException {
         return getContentViewWithProvider(name, searchDocumentModel, sortInfos,
-                currentPage, (Object[]) null);
+                pageSize, currentPage, (Object[]) null);
     }
 
     public ContentView getContentViewWithProvider(String name,
             DocumentModel searchDocumentModel, List<SortInfo> sortInfos,
-            Long currentPage, Object... params) throws ClientException {
+            Long pageSize, Long currentPage, Object... params)
+            throws ClientException {
         ContentView cView = getContentView(name, searchDocumentModel);
         if (cView != null) {
-            Long pageSize = null;
             if (cView.getUseGlobalPageSize()) {
-                pageSize = globalPageSize;
+                cView.setCurrentPageSize(globalPageSize);
             }
             // initialize provider
             cView.getPageProvider(searchDocumentModel, sortInfos, pageSize,

@@ -49,16 +49,25 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
     @XNode("pageSize")
     long pageSize = 0;
 
+    @XNode("pageSizeBinding")
+    String pageSizeBinding;
+
     @XNode("sortable")
     boolean sortable = true;
 
     @XNodeList(value = "sort", type = ArrayList.class, componentType = SortInfoDescriptor.class)
     List<SortInfoDescriptor> sortInfos;
 
+    @XNode("sortInfosBinding")
+    String sortInfosBinding;
+
     protected String pattern;
 
     @XNode("pattern@quoteParameters")
     protected boolean quotePatternParameters = true;
+
+    @XNode("pattern@escapeParameters")
+    protected boolean escapePatternParameters = true;
 
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
@@ -73,6 +82,10 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     public boolean getQuotePatternParameters() {
         return quotePatternParameters;
+    }
+
+    public boolean getEscapePatternParameters() {
+        return escapePatternParameters;
     }
 
     public Map<String, String> getProperties() {
@@ -111,6 +124,14 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public String getPageSizeBinding() {
+        return pageSizeBinding;
+    }
+
+    public String getSortInfosBinding() {
+        return sortInfosBinding;
     }
 
 }

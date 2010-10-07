@@ -81,15 +81,13 @@ public class LayoutTagHandler extends TagHandler {
 
     protected final TagAttribute selectedColumns;
 
-    protected final TagAttribute selectDefaultRows;
-
-    protected final TagAttribute selectDefaultColumns;
+    protected final TagAttribute selectAllByDefault;
 
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "name", "mode",
             "value", "template", "selectedRows", "selectedColumns",
-            "selectDefaultRows", "selectDefaultColumns" };
+            "selectAllByDefault" };
 
     public LayoutTagHandler(TagConfig config) {
         super(config);
@@ -105,13 +103,7 @@ public class LayoutTagHandler extends TagHandler {
                     + "and 'selectedColumns' are aliases: only one of "
                     + "them should be filled");
         }
-        selectDefaultRows = getAttribute("selectDefaultRows");
-        selectDefaultColumns = getAttribute("selectDefaultColumns");
-        if (selectDefaultRows != null && selectDefaultColumns != null) {
-            throw new TagException(this.tag, "Attributes 'selectDefaultRows' "
-                    + "and 'selectDefaultColumns' are aliases: only one of "
-                    + "them should be filled");
-        }
+        selectAllByDefault = getAttribute("selectAllByDefault");
         vars = tag.getAttributes().getAll();
     }
 
@@ -168,16 +160,12 @@ public class LayoutTagHandler extends TagHandler {
                         ctx, List.class);
             }
         }
-        boolean selectDefaultRowsValue = false;
-        if (selectDefaultRows != null || selectDefaultColumns != null) {
-            if (selectDefaultRows != null) {
-                selectDefaultRowsValue = selectDefaultRows.getBoolean(ctx);
-            } else if (selectDefaultColumns != null) {
-                selectDefaultRowsValue = selectDefaultColumns.getBoolean(ctx);
-            }
+        boolean selectAllByDefaultValue = false;
+        if (selectAllByDefault != null) {
+            selectAllByDefaultValue = selectAllByDefault.getBoolean(ctx);
         }
         Layout layout = layoutService.getLayout(ctx, layoutName, modeValue,
-                valueName, selectedRowsValue, selectDefaultRowsValue);
+                valueName, selectedRowsValue, selectAllByDefaultValue);
         if (layout == null) {
             String errMsg = String.format("Layout '%s' not found", layoutName);
             log.error(errMsg);

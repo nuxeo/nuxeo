@@ -30,8 +30,7 @@
         <c:forEach var="row" items="#{documents.rows}" varStatus="layoutListingStatus">
           <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
           <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-            selectedColumns="#{selectedResultLayoutColumns}"
-            selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
+            selectedColumns="#{selectedResultLayoutColumns}" />
         </c:forEach>
       </table>
     </c:when>
@@ -45,8 +44,7 @@
                 end="#{(documents.size-1)/2}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == 0}" />
                 <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                  selectedColumns="#{selectedResultLayoutColumns}"
-                  selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
+                  selectedColumns="#{selectedResultLayoutColumns}" />
               </c:forEach>
             </table>
           </td>
@@ -56,8 +54,7 @@
                 begin="#{(documents.size-1)/2 + 1}">
                 <c:set var="showListingHeader" value="#{layoutListingStatus.index == documents.size/2+1}" />
                 <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                  selectedColumns="#{selectedResultLayoutColumns}"
-                  selectDefaultColumns="#{selectResultLayoutDefaultColumns}" />
+                  selectedColumns="#{selectedResultLayoutColumns}" />
               </c:forEach>
             </table>
           </td>

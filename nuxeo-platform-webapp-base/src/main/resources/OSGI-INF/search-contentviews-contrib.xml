@@ -136,6 +136,8 @@
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
+      
+      <!-- TODO: add bindings here instead of search results templates -->
 
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
@@ -157,7 +159,7 @@
     <contentView name="nxql_search">
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern quoteParameters="false">?</pattern>
+        <pattern quoteParameters="false" escapeParameters="false">?</pattern>
         <parameter>#{documentSearchActions.nxqlQueryAsLiteral}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>

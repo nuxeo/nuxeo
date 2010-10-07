@@ -73,7 +73,7 @@ public interface WebLayoutManager extends LayoutManager {
 
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
-            boolean selectDefaultRows);
+            boolean selectAllRowsByDefault);
 
     /**
      * Returns the facelet handler for given widget.

@@ -95,6 +95,12 @@ public interface ContentView extends Serializable {
 
     void setCurrentResultLayout(ContentViewLayout layout);
 
+    Long getCurrentPageSize();
+
+    void setCurrentPageSize(Long pageSize);
+
+    List<String> getResultLayoutColumns();
+
     /**
      * Returns the cache key for this content view provider, resolving from the
      * current {@link FacesContext} instance if it's an EL expression.

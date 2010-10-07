@@ -43,7 +43,7 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
     String name;
 
     @XNode("@selectedByDefault")
-    boolean selectedByDefault = false;
+    boolean selectedByDefault = true;
 
     @XNode("@alwaysSelected")
     boolean alwaysSelected = false;

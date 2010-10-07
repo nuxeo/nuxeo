@@ -21,6 +21,8 @@ public interface PageProviderDescriptor extends Serializable {
 
     boolean getQuotePatternParameters();
 
+    boolean getEscapePatternParameters();
+
     void setPattern(String pattern);
 
     String getPattern();
@@ -31,6 +33,10 @@ public interface PageProviderDescriptor extends Serializable {
 
     List<SortInfo> getSortInfos();
 
+    String getSortInfosBinding();
+
     long getPageSize();
+
+    String getPageSizeBinding();
 
 }

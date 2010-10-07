@@ -123,7 +123,8 @@ public class CoreQueryDocumentPageProvider extends
             if (descriptor.getWhereClause() == null) {
                 newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
                         getParameters(),
-                        descriptor.getQuotePatternParameters(), sortArray);
+                        descriptor.getQuotePatternParameters(),
+                        descriptor.getEscapePatternParameters(), sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {

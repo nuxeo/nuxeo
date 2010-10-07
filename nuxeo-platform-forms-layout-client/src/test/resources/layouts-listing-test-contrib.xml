@@ -194,7 +194,7 @@
           </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
-        <column name="title_link" selectedByDefault="true">
+        <column name="title_link">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:title</property>
@@ -205,7 +205,7 @@
           </properties>
           <widget>listing_title_link</widget>
         </column>
-        <column name="modification_date" selectedByDefault="true">
+        <column name="modification_date">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:modified</property>
@@ -217,7 +217,7 @@
           </properties>
           <widget>listing_modification_date</widget>
         </column>
-        <column name="lifecycle" selectedByDefault="true">
+        <column name="lifecycle">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">
@@ -232,7 +232,7 @@
           </properties>
           <widget>listing_lifecycle</widget>
         </column>
-        <column name="description">
+        <column name="description" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:description</property>
@@ -243,14 +243,14 @@
           </properties>
           <widget>listing_description</widget>
         </column>
-        <column name="subjects">
+        <column name="subjects" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="label">label.dublincore.subject</property>
           </properties>
           <widget>listing_subjects</widget>
         </column>
-        <column name="rights">
+        <column name="rights" selectedByDefault="false">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:rights</property>

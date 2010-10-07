@@ -15,7 +15,7 @@
   
   Properties to define on the layout:
   - newSortInfoTemplate (resolving a bare SortInfo instance)
-  - sortInfoSelectionRequired (boolean)
+  - required (boolean)
   
   Properties to define on the layout column:
   - label (for presentation of the column)
@@ -23,17 +23,17 @@
 </c:if>
 
   <a4j:region renderRegionOnly="true" id="#{layout.id}_region">
-    <a4j:outputPanel ajaxRendered="true">
+    <a4j:outputPanel id="#{layout.id}_panel">
 
       <nxu:inputList value="#{layoutValue}" id="#{layout.id}_input" model="model"
         template="#{layoutProperty_newSortInfoTemplate}"
-        required="#{layoutProperty_sortInfoSelectionRequired}">
+        required="#{layoutProperty_required}">
         <f:validator validatorId="SortInfoListValidator" />
 
         <h:panelGrid columns="2">
           <a4j:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
-            id="#{layout.id}_delete" reRender="#{layout.id}_input"
+            id="#{layout.id}_delete" reRender="#{layout.id}_panel"
             bypassUpdates="true">
             <h:graphicImage value="/icons/action_delete.gif" />
             <f:param name="for" value="#{layout.id}_input" />
@@ -83,7 +83,9 @@
     </a4j:outputPanel>
 
     <a4j:commandLink immediate="true"
-      actionListener="#{editableListBean.performAction}" id="#{layout.id}_add">
+      actionListener="#{editableListBean.performAction}"
+      reRender="#{layout.id}_panel"
+      id="#{layout.id}_add">
       <f:param name="for" value="#{layout.id}_input" />
       <f:param name="type" value="add" />
       <h:graphicImage value="/widgets/img/action_add.gif" />

@@ -75,6 +75,9 @@ public class ContentViewDescriptor {
     @XNodeList(value = "resultLayouts/layout", type = ArrayList.class, componentType = ContentViewLayoutImpl.class)
     List<ContentViewLayout> resultLayouts;
 
+    @XNode("resultColumns")
+    String resultColumns;
+
     @XNodeList(value = "flags/flag", type = ArrayList.class, componentType = String.class)
     List<String> flags;
 
@@ -158,30 +161,8 @@ public class ContentViewDescriptor {
         return searchDocument;
     }
 
-    public String getSearchDocumentType() {
-        CoreQueryPageProviderDescriptor coreDesc = getCoreQueryPageProvider();
-        GenericPageProviderDescriptor genDesc = getGenericPageProvider();
-        WhereClauseDescriptor whereClause = null;
-        if (coreDesc != null && coreDesc.isEnabled()) {
-            whereClause = coreDesc.getWhereClause();
-        } else if (genDesc != null && genDesc.isEnabled()) {
-            whereClause = genDesc.getWhereClause();
-        }
-        if (whereClause != null) {
-            return whereClause.getDocType();
-        }
-        return null;
-    }
-
-    public String[] getQueryParameters() {
-        CoreQueryPageProviderDescriptor coreDesc = getCoreQueryPageProvider();
-        GenericPageProviderDescriptor genDesc = getGenericPageProvider();
-        if (coreDesc != null && coreDesc.isEnabled()) {
-            return coreDesc.getQueryParameters();
-        } else if (genDesc != null && genDesc.isEnabled()) {
-            return genDesc.getQueryParameters();
-        }
-        return null;
+    public String getResultColumnsBinding() {
+        return resultColumns;
     }
 
     public List<String> getFlags() {

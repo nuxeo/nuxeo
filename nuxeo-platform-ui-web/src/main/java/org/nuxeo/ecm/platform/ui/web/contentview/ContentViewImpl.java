@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.contentview;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
@@ -26,6 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -80,6 +83,8 @@ public class ContentViewImpl implements ContentView {
 
     protected boolean useGlobalPageSize;
 
+    protected Long currentPageSize;
+
     protected String[] queryParameters;
 
     protected DocumentModel searchDocumentModel;
@@ -88,13 +93,21 @@ public class ContentViewImpl implements ContentView {
 
     protected String searchDocumentModelType;
 
+    protected String resultColumnsBinding;
+
+    protected String pageSizeBinding;
+
+    protected String sortInfosBinding;
+
     public ContentViewImpl(String name, String title, boolean translateTitle,
             String iconPath, String selectionList, String pagination,
             List<String> actionCategories, ContentViewLayout searchLayout,
             List<ContentViewLayout> resultLayouts, List<String> flags,
             String cacheKey, Integer cacheSize, List<String> refreshEventNames,
             boolean useGlobalPageSize, String[] queryParameters,
-            String searchDocumentModelBinding, String searchDocumentModelType) {
+            String searchDocumentModelBinding, String searchDocumentModelType,
+            String resultColumnsBinding, String sortInfosBinding,
+            String pageSizeBinding) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -112,6 +125,9 @@ public class ContentViewImpl implements ContentView {
         this.queryParameters = queryParameters;
         this.searchDocumentModelBinding = searchDocumentModelBinding;
         this.searchDocumentModelType = searchDocumentModelType;
+        this.resultColumnsBinding = resultColumnsBinding;
+        this.pageSizeBinding = pageSizeBinding;
+        this.sortInfosBinding = sortInfosBinding;
     }
 
     public String getName() {
@@ -174,10 +190,12 @@ public class ContentViewImpl implements ContentView {
             for (int i = 0; i < oldParams.length; i++) {
                 if (oldParams[i] == null && newParams[i] == null) {
                     continue;
-                } else if (oldParams[i] != null && newParams[i] != null) {
-                    if (!oldParams[i].equals(newParams[i])) {
-                        return true;
-                    }
+                } else if (oldParams[i] != null
+                        && !oldParams[i].equals(newParams[i])) {
+                    return true;
+                } else if (newParams[i] != null
+                        && !newParams[i].equals(oldParams[i])) {
+                    return true;
                 } else {
                     return false;
                 }
@@ -194,14 +212,28 @@ public class ContentViewImpl implements ContentView {
     public PageProvider<?> getPageProvider(DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... params) throws ClientException {
-        // allow to passe negative integers instead of null: EL transforms
+        // fallback on local parameters if defined in the XML configuration
+        if (params == null) {
+            params = getQueryParameters();
+        }
+        if (sortInfos == null) {
+            sortInfos = resolveSortInfos();
+        }
+        // allow to pass negative integers instead of null: EL transforms
         // numbers into value 0 for numbers
+        if (pageSize != null && pageSize.longValue() < 0) {
+            pageSize = null;
+        }
         if (currentPage != null && currentPage.longValue() < 0) {
             currentPage = null;
         }
-        if (params == null) {
-            // fallback on local parameters
-            params = getQueryParameters();
+        if (pageSize == null) {
+            if (currentPageSize != null) {
+                pageSize = currentPageSize;
+            }
+            if (pageSize == null) {
+                pageSize = resolvePageSize();
+            }
         }
         if (pageProvider == null
                 || getParametersChanged(pageProvider.getParameters(), params)) {
@@ -306,6 +338,22 @@ public class ContentViewImpl implements ContentView {
         return useGlobalPageSize;
     }
 
+    @Override
+    public Long getCurrentPageSize() {
+        if (currentPageSize != null) {
+            return currentPageSize;
+        }
+        if (pageProvider != null) {
+            return Long.valueOf(pageProvider.getPageSize());
+        }
+        return null;
+    }
+
+    @Override
+    public void setCurrentPageSize(Long pageSize) {
+        this.currentPageSize = pageSize;
+    }
+
     public DocumentModel getSearchDocumentModel() {
         if (searchDocumentModel == null) {
             // initialize from binding
@@ -346,6 +394,90 @@ public class ContentViewImpl implements ContentView {
 
     public List<String> getFlags() {
         return flags;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<String> getResultLayoutColumns() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object value = ComponentTagUtils.resolveElExpression(context,
+                resultColumnsBinding);
+        if (value != null && !(value instanceof List)) {
+            log.error(String.format("Error processing expression '%s', "
+                    + "result is not a List: %s", resultColumnsBinding, value));
+        }
+        return (List) value;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<SortInfo> resolveSortInfos() {
+        if (sortInfosBinding == null) {
+            return null;
+        }
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object value = ComponentTagUtils.resolveElExpression(context,
+                sortInfosBinding);
+        if (value != null && !(value instanceof List)) {
+            log.error(String.format("Error processing expression '%s', "
+                    + "result is not a List: %s", sortInfosBinding, value));
+        }
+        if (value == null) {
+            return null;
+        }
+        List<SortInfo> res = new ArrayList<SortInfo>();
+        List listValue = (List) value;
+        for (Object listItem : listValue) {
+            if (listItem instanceof SortInfo) {
+                res.add((SortInfo) listItem);
+            } else if (listItem instanceof Map) {
+                // XXX: MapProperty does not implement containsKey, so resolve
+                // value instead
+                if (listItem instanceof MapProperty) {
+                    try {
+                        listItem = ((MapProperty) listItem).getValue();
+                    } catch (Exception e) {
+                        log.error("Cannot resolve sort info item: " + listItem,
+                                e);
+                    }
+                }
+                Map map = (Map) listItem;
+                SortInfo sortInfo = SortInfo.asSortInfo(map);
+                if (sortInfo != null) {
+                    res.add(sortInfo);
+                } else {
+                    log.error("Cannot resolve sort info item: " + listItem);
+                }
+            } else {
+                log.error("Cannot resolve sort info item: " + listItem);
+            }
+        }
+        if (res.isEmpty()) {
+            return null;
+        }
+        return res;
+    }
+
+    protected Long resolvePageSize() {
+        if (pageSizeBinding == null) {
+            return null;
+        }
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object value = ComponentTagUtils.resolveElExpression(context,
+                pageSizeBinding);
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            try {
+                return Long.valueOf((String) value);
+            } catch (NumberFormatException e) {
+                log.error(String.format("Error processing expression '%s', "
+                        + "result is not a Long: %s", pageSizeBinding, value));
+            }
+        } else if (value instanceof Number) {
+            return Long.valueOf(((Number) value).longValue());
+        }
+        return null;
     }
 
     @Override

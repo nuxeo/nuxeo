@@ -44,6 +44,13 @@ public class SelectItemComparator implements Comparator<SelectItem>,
     }
 
     protected int compare(String item1, String item2) {
+        if (item1 == null && item2 == null) {
+            return 0;
+        } else if (item1 == null) {
+            return -1;
+        } else if (item2 == null) {
+            return 1;
+        }
         // deal with numbers comparison
         try {
             Integer int1 = Integer.valueOf(item1);
