@@ -127,6 +127,7 @@
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
 
+    <!-- add JBossWS specific bundle -->
     <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
     </copy>
@@ -157,13 +158,30 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
 
+    <!-- add JBossWS specific bundle -->
     <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
     </copy>
 
-    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
+    <!-- WSS specific BEGIN -->
+    <!-- install WSS root filter as external lib  -->
+    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler:${nuxeo.features.version}" />
     </copy>
+
+    <!-- move WSS deps outside of Nuxeo ear -->
+     <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
+      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" >
+        <include name="freemarker*" />
+        <include name="commons-lang*" />
+      </fileset>
+    </move>
+
+    <!-- add WSS filter binding in ROOT.WAR -->
+    <move tofile="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/ROOT.war/WEB-INF/web.xml"
+          file="${outdir}/nuxeo-dm-${maven.project.version}-jboss/templates/default/wss-rootweb.xml" />
+
+    <!-- WSS specific END -->
 
     <!-- remove unwanted libs alreaduy provided by jboss -->
     <delete failonerror="false">
