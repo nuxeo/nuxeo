@@ -15,21 +15,21 @@
   <description>Package Nuxeo EP or DM EAR with JBoss5</description>
 
   <dependencies>
-      <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
 
-     <dependency>
-        <groupId>commons-el</groupId>
-        <artifactId>commons-el</artifactId>
-        <version>1.0</version>
-     </dependency>
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <version>1.0</version>
+    </dependency>
 
-      <dependency>
-        <groupId>org.jboss.el</groupId>
-        <artifactId>jboss-el</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.jboss.el</groupId>
+      <artifactId>jboss-el</artifactId>
+    </dependency>
 
   </dependencies>
 
@@ -41,17 +41,17 @@
     <profile>
       <id>all</id>
       <!-- profile for building all classifiers -->
-    </profile>
-    <profile>
-      <id>nuxeo-ep</id>
-      <!-- profile for building only JBoss with Nuxeo EP -->
-    </profile>
-    <profile>
-      <id>nuxeo-dm</id>
-      <!-- default profile for building only JBoss with Nuxeo DM -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+    </profile>
+    <profile>
+      <id>nuxeo-ep</id>
+      <!-- profile for building JBoss with only Nuxeo EP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- default profile for building JBoss with only Nuxeo DM -->
     </profile>
   </profiles>
 

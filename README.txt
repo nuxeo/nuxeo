@@ -141,8 +141,6 @@ Default profiles are within asterisks: *foo*
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-common.zip
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-derby.zip
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-h2.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-jcr-postgresql.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-jcr.zip
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-mono.zip
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-mysql.zip
       (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-oracle.zip
@@ -155,8 +153,6 @@ Default profiles are within asterisks: *foo*
       (DEPRECATED) postgresql
       (DEPRECATED) oracle
       (DEPRECATED) h2
-      (DEPRECATED) jcr-profile
-      (DEPRECATED) jcr-postgresql
       *vcs-profile*
       
   * Module nuxeo-distribution-dm
@@ -165,8 +161,6 @@ Default profiles are within asterisks: *foo*
       nuxeo-distribution-dm-5.4.0-SNAPSHOT.zip
       (COMPLIANCE) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-jcr-postgresql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-jcr.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-derby.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-h2.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-mysql.zip
@@ -181,8 +175,6 @@ Default profiles are within asterisks: *foo*
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-derby.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-h2.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-jcr-postgresql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-jcr.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-mysql.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-oracle.zip
       (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-postgresql.zip
@@ -200,8 +192,6 @@ Default profiles are within asterisks: *foo*
       (DEPRECATED) postgresql
       (DEPRECATED) oracle
       (DEPRECATED) h2
-      (DEPRECATED) jcr
-      (DEPRECATED) jcr-postgresql
       
   * Module nuxeo-distribution-jboss
     o Produced artifacts
@@ -233,7 +223,6 @@ Default profiles are within asterisks: *foo*
       No more build result
     o Available profiles
       ra
-      jcr
       *vcs*
 
   * Module nuxeo-distribution-tomcat
@@ -273,11 +262,6 @@ For example:
   * "ant distrib -Ddistrib=nuxeo-dm"
   * "ant distrib -Ddistrib=tomcat"
   
-Default repository is VCS but it is possible to set JCR+Derby or JCR+PostgreSQL, 
-see nuxeo-distribution-dm-5.4.0-SNAPSHOT-jcr-postgresql.zip
-This configuration requires some manual changes into $JBOSS/server/default/conf/login-config.xml
-It is no more recommended to use JCR, as VCS gives better performance and reliability.
-
 -------------------------------------
 Details about predefined applications
 -------------------------------------
@@ -334,16 +318,11 @@ Details about predefined applications
 
   Built application is in nuxeo-distribution-gf3/target/
 
-  By default the build will generate a server based on JCR repository backend
-  without RA enabled.
-
   You can customize your builds using profiles as following:
 
     - "mvn install -Pgf3,vcs" - a server using VCS repository backend
     - "mvn install -Pgf3,vcs,ra" - a server using VCS repository backend + RA
       support
-    - "mvn install -Pgf3,jcr,ra" - a server using JCR based repository backend
-      + RA support
 
 
 7. Nuxeo Tomcat WebApp

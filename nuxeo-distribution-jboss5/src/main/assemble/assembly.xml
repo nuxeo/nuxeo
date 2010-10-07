@@ -87,6 +87,19 @@
     </unzip>
     <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
+    <!-- Remove non-nuxeo information files from root 
+    <mkdir dir="${jboss}/doc-jboss" />
+    <move todir="${jboss}/doc-jboss">
+      <fileset dir="${jboss}">
+        <include name="lgpl.html" />
+        <include name="JBossORG-EULA.txt" />
+        <include name="jar-versions.xml" />
+        <include name="derby.log" />
+        <include name="copyright.txt" />
+      </fileset>
+    </move>
+    -->
+
     <unzip dest="${jboss}/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-jboss5" />
@@ -163,8 +176,8 @@
     </copy>
 
     <!-- move WSS deps outside of Nuxeo ear -->
-     <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
-      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" >
+    <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
+      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
         <include name="freemarker*" />
         <include name="commons-lang*" />
       </fileset>
@@ -176,7 +189,7 @@
 
     <!-- WSS specific END -->
 
-    <!-- remove unwanted libs alreaduy provided by jboss -->
+    <!-- remove libraries already provided by jboss -->
     <delete failonerror="false">
       <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
         <exclude name="jboss-seam*" />
@@ -211,9 +224,9 @@
     </copy>
 
     <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
-		<fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
-   		  <include name="**/derby-*.jar"/>
-		</fileset>
+      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib">
+        <include name="**/derby-*.jar" />
+      </fileset>
     </move>
 
     <!-- Complementary JBoss templates for DM -->

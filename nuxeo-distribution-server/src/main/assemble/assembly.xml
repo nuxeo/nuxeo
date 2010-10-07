@@ -41,9 +41,6 @@
         also works by not giving the version - if the version is managed it will
         be guessed
       -->
-      <!-- only if profile jca enabled -->
-      <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-jca"
-        profile="jca" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-persistence" />
       <artifact group="org.nuxeo.ecm.core" name="nuxeo-core-convert" />

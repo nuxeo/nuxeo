@@ -215,9 +215,6 @@
   <category name="org.apache" additivity="true">
     <priority value="INFO" />
   </category>
-  <category name="org.apache.jackrabbit.core.query.lucene.IndexMerger">
-    <priority value="WARN" />
-  </category>
   <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
     <priority value="ERROR" />
   </category>

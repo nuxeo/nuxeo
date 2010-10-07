@@ -39,7 +39,7 @@
       </copy>
     </profile>
 
-    <profile-group default="jcr">
+    <profile-group default="vcs">
       <profile name="vcs">
         <echo>Entering Profile VCS</echo>
         <!--
@@ -47,7 +47,6 @@
           modified in base distribution
         -->
         <delete>
-          <fileset dir="${out}/bundles" includes="nuxeo-core-jcr-*.jar" />
           <fileset file="${out}/config/default-versioning-config.xml" />
         </delete>
         <!-- END temp hack -->
@@ -69,30 +68,6 @@
           </copy>
           <resolveArtifact artifactId="nuxeo-core-storage-sql-ra"
             property="rar" />
-          <unzip src="${rar}" dest="${out}/bundles/nuxeo-repository.rar">
-            <patternset>
-              <include name="org/**" />
-            </patternset>
-          </unzip>
-        </profile>
-      </profile>
-      <profile name="jcr">
-        <echo>Entering Profile JCR</echo>
-        <resolveArtifact artifactId="nuxeo-core-jcr-connector"
-          todir="${out}/bundles" />
-        <copy todir="${out}" overwrite="true">
-          <fileset dir="src/main/resources/jcr">
-            <patternset>
-              <exclude name="ra/**" />
-            </patternset>
-          </fileset>
-        </copy>
-        <profile name="ra">
-          <echo>Entering Profile JCR + RA</echo>
-          <copy todir="${out}" overwrite="true">
-            <fileset dir="src/main/resources/jcr/ra" />
-          </copy>
-          <resolveArtifact artifactId="nuxeo-core-jca" property="rar" />
           <unzip src="${rar}" dest="${out}/bundles/nuxeo-repository.rar">
             <patternset>
               <include name="org/**" />

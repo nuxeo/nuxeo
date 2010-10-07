@@ -36,6 +36,12 @@ mail.from=noreply@nuxeo.com
 # The protocol used to connecto to OpenOffice
 # Can be either SOCKET or PIPE, default is SOCKET
 jod.connection.protocol=SOCKET
+jod.max.tasks.per.process=
+jod.task.execution.timeout=
+jod.task.queue.timeout=
+jod.office.home=
+jod.jpipe.lib.path=
+jod.template.profile.dir=
 
 opensocial.gadgets.host=localhost
 opensocial.gadgets.port=8080

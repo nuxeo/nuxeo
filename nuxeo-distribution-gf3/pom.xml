@@ -22,12 +22,6 @@
       </activation>
     </profile>
     <profile>
-      <id>jcr</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
       <id>vcs</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -67,11 +61,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jca</artifactId>
-      <version>${nuxeo.core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector</artifactId>
       <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>

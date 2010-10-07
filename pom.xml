@@ -41,7 +41,9 @@
     <profile>
       <id>msbuild-installed</id>
       <activation>
-        <os><family>windows</family></os>
+        <os>
+          <family>windows</family>
+        </os>
         <file>
           <exists>C:\Windows\Microsoft.NET\Framework\v3.5\MSBuild.exe</exists>
         </file>
@@ -71,32 +73,16 @@
       </modules>
     </profile>
     <profile>
-      <!-- Build all JBoss distributions -->
+      <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-distribution-jboss</module>
-      </modules>
-    </profile>
-    <profile>
-      <!-- Build all JBoss 5 distributions -->
-      <id>jboss5</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss5</module>
       </modules>
     </profile>
     <profile>
-      <!-- Build all Jetty distributions -->
+      <!-- Build Jetty distributions -->
       <id>jetty</id>
       <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
@@ -113,8 +99,6 @@
     <profile>
       <id>tomcat</id>
       <modules>
-        <module>nuxeo-platform-ear</module>
-        <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
@@ -124,12 +108,15 @@
     <!-- for deployment purpose -->
     <profile>
       <id>all-distributions</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <modules>
         <module>nuxeo-distribution-base</module>
         <module>nuxeo-distribution-shell</module>
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-distribution-jboss</module>
+        <module>nuxeo-distribution-jboss5</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-tomcat</module>
