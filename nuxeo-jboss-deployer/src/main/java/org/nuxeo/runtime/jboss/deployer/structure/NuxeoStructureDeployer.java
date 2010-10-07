@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -341,6 +343,26 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
         }
     }
 
+    protected ClassLoader createPreprocessorClassLoader(DeploymentStructure md)
+            throws Exception {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        if (cl == null) {
+            cl = NuxeoStructureDeployer.class.getClassLoader();
+        }
+        String[] cp = md.getPreprocessorClassPath();
+        if (cp != null && cp.length > 0) {
+            PathMatcher matcher = new PathMatcher();
+            matcher.addPatterns(cp);
+            List<File> cpFiles = matcher.getMatchesAsFiles(md.getHome());
+            URL[] urls = new URL[cpFiles.size()];
+            for (int i = 0; i < urls.length; i++) {
+                urls[i] = cpFiles.get(i).toURI().toURL();
+            }
+            cl = new URLClassLoader(urls, cl);
+        }
+        return cl;
+    }
+
     public void preprocess(DeploymentStructure md, File[] bundles)
             throws Exception {
         double start = System.currentTimeMillis();
@@ -352,7 +374,9 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
                     + " file. Skip preprocessing.");
             return;
         }
-        Class<?> klass = Class.forName("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
+        // create the classloader to load the preprocessor
+        ClassLoader cl = createPreprocessorClassLoader(md);
+        Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
         Method process = klass.getMethod("process", File.class, File.class,
                 File[].class);
         process.invoke(null, new Object[] { md.getHome(), metadata, bundles });

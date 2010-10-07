@@ -63,25 +63,32 @@ public class DeploymentStructureReader {
             String[] ar = Utils.split(attr.getValue().trim(), ':', true);
             md.setBundles(ar);
         }
-        attr = root.getAttributeNode("preprocess");
-        if (attr != null) {
-            md.setRequirePreprocessing(Boolean.parseBoolean(attr.getValue().trim()));
-        }
-
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String nname = node.getNodeName().toLowerCase();
-                if ("context".equalsIgnoreCase(nname)) {
+                String name = node.getNodeName().toLowerCase();
+                if ("context".equalsIgnoreCase(name)) {
                     readContext((Element) node, md);
-                } else if ("properties".equals(nname)) {
+                } else if ("properties".equals(name)) {
                     readProperties(home, (Element) node, md);
+                } else if ("preprocessor".equals(name)) {
+                    readPreprocessor((Element) node, md);
                 }
             }
-
             node = node.getNextSibling();
         }
         return md;
+    }
+
+    protected void readPreprocessor(Element element, DeploymentStructure md) {
+        Attr attr = element.getAttributeNode("enabled");
+        String enabled = attr == null ? "true" : attr.getValue().trim();
+        md.setRequirePreprocessing(Boolean.parseBoolean(enabled));
+        attr = element.getAttributeNode("classpath");
+        if (attr != null) {
+            String[] ar = Utils.split(attr.getValue().trim(), ':', true);
+            md.setPreprocessorClassPath(ar);
+        }
     }
 
     protected void readContext(Element element, DeploymentStructure md) {

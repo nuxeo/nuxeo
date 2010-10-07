@@ -52,6 +52,8 @@ public class DeploymentStructure {
 
     protected boolean requirePreprocessing = true;
 
+    protected String[] preprocessorClassPath;
+
     public DeploymentStructure(VirtualFile vhome) throws Exception {
         this.vhome = vhome;
         this.home = Utils.getRealHomeDir(vhome).getCanonicalFile();
@@ -152,6 +154,14 @@ public class DeploymentStructure {
 
     public void setRequirePreprocessing(boolean requirePreprocessing) {
         this.requirePreprocessing = requirePreprocessing;
+    }
+
+    public void setPreprocessorClassPath(String[] preprocessorClassPath) {
+        this.preprocessorClassPath = preprocessorClassPath;
+    }
+
+    public String[] getPreprocessorClassPath() {
+        return preprocessorClassPath;
     }
 
     public boolean isRequirePreprocessing() {
