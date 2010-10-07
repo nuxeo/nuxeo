@@ -959,7 +959,7 @@
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>8.3-604.jdbc3</version>
+        <version>9.0-801.jdbc4</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
