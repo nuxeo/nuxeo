@@ -26,20 +26,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.persistence.TreeHelper;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author arussel
  *
  */
-public class DocumentRoutingPersistenceServiceImpl extends DefaultComponent
-        implements DocumentRoutingPersistenceService {
+public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     private static final String DC_TITLE = "dc:title";
 
-    protected static final Log log = LogFactory.getLog(DocumentRoutingPersistenceServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(DocumentRoutingTreePersister.class);
 
     @Override
     public DocumentModel getParentFolderForDocumentRouteInstance(

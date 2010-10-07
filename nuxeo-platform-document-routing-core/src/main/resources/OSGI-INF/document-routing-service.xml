@@ -27,5 +27,10 @@
     <object
       class="org.nuxeo.ecm.platform.routing.core.impl.ChainToTypeMappingDescriptor" />
   </extension-point>
-
+  
+  
+  <extension-point name="persister">
+    <object
+      class="org.nuxeo.ecm.platform.routing.core.impl.PersisterDescriptor" />
+  </extension-point>
 </component>

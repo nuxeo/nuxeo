@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
  * @author arussel
  *
  */
-public interface DocumentRoutingPersistenceService {
+public interface DocumentRoutingPersister {
     /**
      * The name of the document in which will be create
      */

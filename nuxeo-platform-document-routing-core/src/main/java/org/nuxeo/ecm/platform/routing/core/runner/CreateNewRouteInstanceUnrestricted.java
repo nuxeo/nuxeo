@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,6 +53,8 @@ public class CreateNewRouteInstanceUnrestricted extends
 
     protected String initiator;
 
+    protected DocumentRoutingPersister persister;
+
     /**
      *
      * @param session
@@ -61,17 +63,18 @@ public class CreateNewRouteInstanceUnrestricted extends
      * @param docIds
      */
     public CreateNewRouteInstanceUnrestricted(CoreSession session,
-            DocumentRoute model, List<String> docIds, boolean startInstance) {
+            DocumentRoute model, List<String> docIds, boolean startInstance, DocumentRoutingPersister persister) {
         super(session);
         this.model = model;
         this.docIds = docIds;
         this.startInstance = startInstance;
         this.initiator = session.getPrincipal().getName();
+        this.persister = persister;
     }
 
     @Override
     public void run() throws ClientException {
-        instance = getPersistenceService().createDocumentRouteInstanceFromDocumentRouteModel(
+        instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
                 model.getDocument(), session);
         DocumentRoute routeInstance = instance.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
@@ -95,14 +98,6 @@ public class CreateNewRouteInstanceUnrestricted extends
 
     public DocumentRoute getInstance() {
         return instance.getAdapter(DocumentRoute.class);
-    }
-
-    protected DocumentRoutingPersistenceService getPersistenceService() {
-        try {
-            return Framework.getService(DocumentRoutingPersistenceService.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
     }
 
     protected DocumentRoutingEngineService getEngineService() {

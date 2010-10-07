@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -53,15 +53,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     public static final String CHAINS_TO_TYPE_XP = "chainsToType";
 
+    public static final String PERSISTER_XP = "persister";
+
     protected Map<String, String> typeToChain = new HashMap<String, String>();
 
-    protected DocumentRoutingPersistenceService getPersistenceService() {
-        try {
-            return Framework.getService(DocumentRoutingPersistenceService.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
+    protected DocumentRoutingPersister persister;
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -77,6 +73,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
             ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
             typeToChain.put(desc.getDocumentType(), desc.getChainId());
+        } else if(PERSISTER_XP.equals(extensionPoint)) {
+            PersisterDescriptor des = (PersisterDescriptor) contribution;
+            persister = des.getKlass().newInstance();
         }
     }
 
@@ -84,7 +83,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<String> docIds, CoreSession session, boolean startInstance) {
         CreateNewRouteInstanceUnrestricted runner = new CreateNewRouteInstanceUnrestricted(
-                session, model, docIds, startInstance);
+                session, model, docIds, startInstance, persister);
         try {
             runner.runUnrestricted();
         } catch (ClientException e) {

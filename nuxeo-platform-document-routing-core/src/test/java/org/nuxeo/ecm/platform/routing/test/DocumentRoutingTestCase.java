@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersistenceService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,8 +41,6 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String WORKSPACES_PATH = "/default-domain/workspaces";
 
     public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.routing.core.test";
-
-    protected DocumentRoutingPersistenceService persistenceService;
 
     protected DocumentRoutingEngineService engineService;
 
@@ -75,13 +72,11 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         session.saveDocument(workspaces);
         session.save();
         // test our services
-        persistenceService = Framework.getService(DocumentRoutingPersistenceService.class);
         engineService = Framework.getService(DocumentRoutingEngineService.class);
         service = Framework.getService(DocumentRoutingService.class);
     }
 
     public void testServices() throws Exception {
-        assertNotNull(persistenceService);
         assertNotNull(engineService);
         assertNotNull(service);
     }
