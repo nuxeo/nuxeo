@@ -22,6 +22,7 @@
    </type>
    
    <type id="DocumentRouteInstancesRoot">
+    <default-view>view_documents</default-view>
     <label>DocumentRouteInstancesRoot</label>
     <icon>/icons/folder.gif</icon>
     <subtypes>
