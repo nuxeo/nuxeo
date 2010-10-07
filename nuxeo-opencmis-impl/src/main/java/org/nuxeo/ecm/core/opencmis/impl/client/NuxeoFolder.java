@@ -39,7 +39,7 @@ import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
-import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetch;
+import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
 import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -308,11 +308,11 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
         final ObjectFactory objectFactory = session.getObjectFactory();
         final OperationContext ctx = new OperationContextImpl(context);
 
-        AbstractPageFetch<CmisObject> pageFetcher = new AbstractPageFetch<CmisObject>(
+        AbstractPageFetcher<CmisObject> pageFetcher = new AbstractPageFetcher<CmisObject>(
                 ctx.getMaxItemsPerPage()) {
             @Override
-            protected PageFetchResult<CmisObject> fetchPage(long skipCount) {
-                List<CmisObject> page = new ArrayList<CmisObject>();
+            protected Page<CmisObject> fetchPage(long skipCount) {
+                List<CmisObject> items = new ArrayList<CmisObject>();
                 DocumentModelList children;
                 try {
                     children = service.getCoreSession().getChildren(
@@ -332,17 +332,16 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                         skip--;
                         continue;
                     }
-                    if (page.size() > maxNumItems) {
+                    if (items.size() > maxNumItems) {
                         continue;
                     }
                     NuxeoObjectData data = new NuxeoObjectData(
                             service.getNuxeoRepository(), child, ctx);
                     CmisObject ob = objectFactory.convertObject(data, ctx);
-                    page.add(ob);
+                    items.add(ob);
                 }
-                return new PageFetchResult<CmisObject>(page,
-                        BigInteger.valueOf(totalItems),
-                        Boolean.valueOf(totalItems > skipCount + page.size()));
+                return new Page<CmisObject>(items, totalItems,
+                        totalItems > skipCount + items.size());
             }
         };
         return new CollectionIterable<CmisObject>(pageFetcher);
