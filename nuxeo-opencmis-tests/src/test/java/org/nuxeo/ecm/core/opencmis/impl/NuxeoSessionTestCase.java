@@ -422,8 +422,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         // copy is also available from the folder
         Document copy2 = session.getRootFolder().createDocumentFromSource(doc,
-                Collections.singletonMap("dc:title", "other title"), null,
-                session.getDefaultContext());
+                Collections.singletonMap("dc:title", "other title"), null);
         assertNotSame(copy.getId(), copy2.getId());
         assertNotSame(doc.getId(), copy2.getId());
         assertEquals("other title", copy2.getPropertyValue("dc:title"));

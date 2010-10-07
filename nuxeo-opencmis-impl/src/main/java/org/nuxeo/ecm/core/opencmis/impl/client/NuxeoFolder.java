@@ -82,10 +82,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public Document createDocument(Map<String, ?> properties,
-            ContentStream contentStream, VersioningState versioningState,
-            OperationContext context) {
+            ContentStream contentStream, VersioningState versioningState) {
         return createDocument(properties, contentStream, versioningState, null,
-                null, null, context);
+                null, null, session.getDefaultContext());
     }
 
     @Override
@@ -217,10 +216,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public NuxeoDocument createDocumentFromSource(ObjectId source,
-            Map<String, ?> properties, VersioningState versioningState,
-            OperationContext context) {
+            Map<String, ?> properties, VersioningState versioningState) {
         return createDocumentFromSource(source, properties, versioningState,
-                null, null, null, context);
+                null, null, null, session.getDefaultContext());
     }
 
     @Override
@@ -242,9 +240,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public Folder createFolder(Map<String, ?> properties,
-            OperationContext context) {
-        return createFolder(properties, null, null, null, context);
+    public Folder createFolder(Map<String, ?> properties) {
+        return createFolder(properties, null, null, null,
+                session.getDefaultContext());
     }
 
     @Override
@@ -256,9 +254,9 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     }
 
     @Override
-    public Policy createPolicy(Map<String, ?> properties,
-            OperationContext context) {
-        return createPolicy(properties, null, null, null, context);
+    public Policy createPolicy(Map<String, ?> properties) {
+        return createPolicy(properties, null, null, null,
+                session.getDefaultContext());
     }
 
     @Override
