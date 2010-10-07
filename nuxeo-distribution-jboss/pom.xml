@@ -124,7 +124,7 @@
             <artifactItem>
               <groupId>postgresql</groupId>
               <artifactId>postgresql</artifactId>
-              <version>8.4-701.jdbc3</version>
+              <version>9.0-801.jdbc4</version>
             </artifactItem>
             <artifactItem>
               <groupId>mysql</groupId>

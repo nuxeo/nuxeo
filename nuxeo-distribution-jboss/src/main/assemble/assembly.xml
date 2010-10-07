@@ -117,7 +117,7 @@
       <artifact:resolveFile key="metro.webservices:webservices-tools" />
       <artifact:resolveFile key="org.hibernate:hibernate:3.2.4.SP1_CP01-brew_NXP-3881-NXP-4604" />
       <!-- copy jdbc drivers -->
-      <artifact:resolveFile key="postgresql:postgresql:8.3-604.jdbc3" />
+      <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
       <!-- copy logging monitor -->
       <artifact:resolveFile key="org.jboss.services:logging-monitor" />
