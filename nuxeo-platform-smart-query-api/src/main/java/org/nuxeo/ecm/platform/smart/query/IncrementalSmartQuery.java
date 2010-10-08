@@ -30,6 +30,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class IncrementalSmartQuery implements SmartQuery {
 
+    private static final long serialVersionUID = 1L;
+
     protected String existingQueryPart;
 
     protected String logicalOperator;
