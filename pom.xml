@@ -31,7 +31,9 @@
     <module>nuxeo-platform-faceted-search</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
-    <module>nuxeo-platform-dynsearch</module>
+    <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-platform-sync</module>
+    <module>nuxeo-platform-high-availability</module>
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
       <module>nuxeo-correspondence-marianne</module>
