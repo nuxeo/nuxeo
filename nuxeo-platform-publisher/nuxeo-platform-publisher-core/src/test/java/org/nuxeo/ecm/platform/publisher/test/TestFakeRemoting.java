@@ -298,7 +298,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
         PublishedDocument publisheDocument = clientTree.publish(doc, clientNode);
         assertNotNull(publisheDocument);
-        assertTrue(publisheDocument.getPath().endsWith("a-title-with-spaces"));
+        assertTrue(publisheDocument.getPath().endsWith("A title with spaces"));
     }
 
 }
