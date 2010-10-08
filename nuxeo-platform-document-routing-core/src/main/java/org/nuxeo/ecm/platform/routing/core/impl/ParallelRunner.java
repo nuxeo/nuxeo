@@ -56,7 +56,10 @@ public class ParallelRunner extends AbstractRunner implements ElementRunner {
             boolean someChildrenNotDone = false;
             for (DocumentRouteElement child : children) {
                 if (!child.isDone()) {
-                    someChildrenNotDone = true;
+                    child.run(session);
+                    if (!child.isDone()) {
+                        someChildrenNotDone = true;
+                    }
                 }
             }
             if (!someChildrenNotDone) {

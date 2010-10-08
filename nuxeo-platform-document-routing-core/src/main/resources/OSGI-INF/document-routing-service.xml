@@ -3,7 +3,7 @@
 
   <documentation>
     The Document Routing Service allows to create and sart
-    new DocumentRoute instance. 
+    new DocumentRoute instance.
   </documentation>
 
   <implementation
@@ -27,9 +27,17 @@
     <object
       class="org.nuxeo.ecm.platform.routing.core.impl.ChainToTypeMappingDescriptor" />
   </extension-point>
-  
-  
+
+
   <extension-point name="persister">
+    <documentation>
+      Use to provide a persister. A persister should
+      implement DocumentRoutingPersister. It is responsible to persist
+      instances of route.
+      <code>
+        <persister class="org.my.implementation.of.Persister" />
+      </code>
+    </documentation>
     <object
       class="org.nuxeo.ecm.platform.routing.core.impl.PersisterDescriptor" />
   </extension-point>
