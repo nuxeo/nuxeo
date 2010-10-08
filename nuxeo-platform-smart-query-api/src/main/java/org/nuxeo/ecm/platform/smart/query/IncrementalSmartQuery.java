@@ -57,6 +57,8 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
 
     protected List<String> stringListValue;
 
+    protected String[] stringArrayValue;
+
     protected Date datetimeValue;
 
     protected Date otherDatetimeValue;
@@ -211,6 +213,15 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         setValue(stringListValue);
     }
 
+    public String[] getStringArrayValue() {
+        return stringArrayValue;
+    }
+
+    public void setStringArrayValue(String[] stringArrayValue) {
+        this.stringArrayValue = stringArrayValue;
+        setValue(stringArrayValue);
+    }
+
     public Date getDatetimeValue() {
         return datetimeValue;
     }
@@ -281,11 +292,13 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         booleanValue = null;
         stringValue = null;
         stringListValue = null;
+        stringArrayValue = null;
         datetimeValue = null;
+        otherDatetimeValue = null;
         dateValue = null;
+        otherDateValue = null;
         integerValue = null;
         floatValue = null;
     }
-
 
 }

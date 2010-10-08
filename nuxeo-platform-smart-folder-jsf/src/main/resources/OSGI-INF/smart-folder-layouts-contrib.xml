@@ -29,6 +29,7 @@
           <label mode="any">label.smart.query.build</label>
         </labels>
         <helpLabels>
+          <label mode="create">label.smart.query.build.help</label>
           <label mode="edit">label.smart.query.build.help</label>
         </helpLabels>
         <translated>true</translated>

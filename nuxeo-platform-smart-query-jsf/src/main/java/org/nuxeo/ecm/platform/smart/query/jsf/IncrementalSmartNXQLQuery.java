@@ -109,6 +109,14 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                     }
                     builder.append(String.format("(%s)", StringUtils.join(
                             values, ",")));
+                } else if (stringArrayValue != null) {
+                    String[] values = new String[stringArrayValue.length];
+                    for (int i = 0; i < stringArrayValue.length; i++) {
+                        values[i] = String.format("'%s'",
+                                escaper.escape(stringArrayValue[i]));
+                    }
+                    builder.append(String.format("(%s)", StringUtils.join(
+                            values, ",")));
                 } else if (datetimeValue != null) {
                     builder.append(String.format(
                             "TIMESTAMP '%s'",

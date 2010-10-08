@@ -28,22 +28,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <!-- 
-      <xs:element name="description" type="xs:string"/>
-      <xs:element name="subjects" type="nxs:subjectList"/>
-      <xs:element name="rights" type="xs:string"/>
-      <xs:element name="source" type="xs:string"/>
-      <xs:element name="coverage" type="xs:string"/>
-      <xs:element name="created" type="xs:date"/>
-      <xs:element name="modified" type="xs:date"/>
-      <xs:element name="issued" type="xs:date"/>
-      <xs:element name="valid" type="xs:date"/>
-      <xs:element name="expired" type="xs:date"/>
-      <xs:element name="format" type="xs:string"/>
-      <xs:element name="language" type="xs:string"/>
-      <xs:element name="creator" type="xs:string"/>
-    -->
-
     <widget name="nxql_smart_query_condition_fulltext"
       type="incremental_smart_query_condition">
       <labels>
@@ -62,6 +46,9 @@
             <label mode="edit">label.smart.query.build.fulltext.help</label>
           </helpLabels>
           <translated>true</translated>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+          </properties>
           <fields>
             <field>stringValue</field>
           </fields>
@@ -144,6 +131,302 @@
             <property name="required">true</property>
             <property name="pattern">#{nxu:basicDateFormater()}</property>
           </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_modified"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:modified</property>
+        <propertyList name="availableOperators">
+          <value>BETWEEN</value>
+          <value>&lt;</value>
+          <value>&gt;</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="modified_before" type="datetime">
+          <fields>
+            <field>dateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
+        <widget name="and" type="text">
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+            </mode>
+          </widgetModes>
+          <properties mode="any">
+            <property name="value">
+              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
+            </property>
+            <property name="escape">false</property>
+          </properties>
+        </widget>
+        <widget name="modified_after" type="datetime">
+          <fields>
+            <field>otherDateValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+            </mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_expired"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:expired</property>
+        <propertyList name="availableOperators">
+          <value>BETWEEN</value>
+          <value>&lt;</value>
+          <value>&gt;</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="expired_before" type="datetime">
+          <fields>
+            <field>dateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
+        <widget name="and" type="text">
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+            </mode>
+          </widgetModes>
+          <properties mode="any">
+            <property name="value">
+              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
+            </property>
+            <property name="escape">false</property>
+          </properties>
+        </widget>
+        <widget name="expired_after" type="datetime">
+          <fields>
+            <field>otherDateValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+            </mode>
+          </widgetModes>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="pattern">#{nxu:basicDateFormater()}</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_subjects"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.subjects</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:subjects</property>
+        <propertyList name="availableOperators">
+          <value>IN</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="subjects" type="template">
+          <fields>
+            <field>stringArrayValue</field>
+          </fields>
+          <properties mode="any">
+            <property name="template">/widgets/subjects_widget.xhtml</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_coverage"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.coverage</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:coverage</property>
+        <propertyList name="availableOperators">
+          <value>=</value>
+          <value>LIKE</value>
+          <value>CONTAINS</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="coverage" type="template">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='='?'hidden':mode}
+            </mode>
+          </widgetModes>
+          <properties mode="any">
+            <property name="template">
+              /widgets/query_coverage_widget.xhtml
+            </property>
+          </properties>
+        </widget>
+        <widget name="coverage" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{empty value.conditionalOperator or
+              value.conditionalOperator=='='?'hidden':mode}
+            </mode>
+          </widgetModes>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_description"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">description</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:description</property>
+        <propertyList name="availableOperators">
+          <value>CONTAINS</value>
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="description" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_rights"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.rights</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:rights</property>
+        <propertyList name="availableOperators">
+          <value>CONTAINS</value>
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="rights" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_source"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.source</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:source</property>
+        <propertyList name="availableOperators">
+          <value>CONTAINS</value>
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="source" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_format"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.format</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:format</property>
+        <propertyList name="availableOperators">
+          <value>CONTAINS</value>
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="format" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="nxql_smart_query_condition_language"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.language</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:language</property>
+        <propertyList name="availableOperators">
+          <value>CONTAINS</value>
+          <value>LIKE</value>
+          <value>=</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="language" type="text">
+          <fields>
+            <field>stringValue</field>
+          </fields>
         </widget>
       </subWidgets>
     </widget>
@@ -235,6 +518,33 @@
         </row>
         <row name="nxql_smart_query_condition_contributors">
           <widget>nxql_smart_query_condition_contributors</widget>
+        </row>
+        <row name="nxql_smart_query_condition_modified">
+          <widget>nxql_smart_query_condition_modified</widget>
+        </row>
+        <row name="nxql_smart_query_condition_expired">
+          <widget>nxql_smart_query_condition_expired</widget>
+        </row>
+        <row name="nxql_smart_query_condition_subjects">
+          <widget>nxql_smart_query_condition_subjects</widget>
+        </row>
+        <row name="nxql_smart_query_condition_coverage">
+          <widget>nxql_smart_query_condition_coverage</widget>
+        </row>
+        <row name="nxql_smart_query_condition_description">
+          <widget>nxql_smart_query_condition_description</widget>
+        </row>
+        <row name="nxql_smart_query_condition_rights">
+          <widget>nxql_smart_query_condition_rights</widget>
+        </row>
+        <row name="nxql_smart_query_condition_source">
+          <widget>nxql_smart_query_condition_source</widget>
+        </row>
+        <row name="nxql_smart_query_condition_format">
+          <widget>nxql_smart_query_condition_format</widget>
+        </row>
+        <row name="nxql_smart_query_condition_language">
+          <widget>nxql_smart_query_condition_language</widget>
         </row>
       </rows>
     </layout>

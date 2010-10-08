@@ -47,6 +47,7 @@
           var="item"
           itemValue="#{item.name}"
           itemLabel="#{messages[item.widgets[0].label]}"
+          ordering="label"
           id="#{layout.id}_targetRows" />
         <a4j:support event="onchange"
           reRender="#{layout.id}_selectionPanel, #{layout.id}_rowSelectorMessagePanel"
