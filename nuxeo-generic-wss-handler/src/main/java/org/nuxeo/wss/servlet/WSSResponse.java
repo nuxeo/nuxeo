@@ -33,11 +33,7 @@ import org.nuxeo.wss.MSWSSConsts;
 import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.fm.FreeMarkerRenderer;
 
-public class WSSResponse {
-
-    protected HttpServletResponse httpResponse;
-
-    protected boolean processed=false;
+public class WSSResponse extends WSSStaticResponse {
 
     protected boolean bufferizeRendering = true;
 
@@ -47,51 +43,10 @@ public class WSSResponse {
 
     protected String renderingTemplateName = null;
 
-    protected InputStream additionnalStream;
-
-    protected String contentType=null;
-
     public WSSResponse(HttpServletResponse httpResponse) {
-        this.httpResponse=httpResponse;
+        super(httpResponse);
     }
 
-    public void processIfNeeded() throws Exception {
-        if (!processed) {
-            process();
-        }
-    }
-
-    public void process() throws Exception {
-        if (processed) {
-            throw new ServletException("process called twice on WSSResponse");
-        }
-        processHeaders();
-        processRender();
-        processed=true;
-    }
-
-
-    public void addBinaryStream(InputStream stream) {
-        this.additionnalStream=stream;
-    }
-
-    protected void processHeaders() throws Exception {
-        getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER, WSSConfig.instance().getTSServerVersion());
-        getHttpResponse().setHeader("Set-Cookie","WSS_KeepSessionAuthenticated=80; path=/");
-        //getHttpResponse().setHeader("Server","Microsoft-IIS/6.0");
-        getHttpResponse().setHeader("X-Powered-By", "ASP.NET");
-
-        if (contentType==null) {
-            getHttpResponse().setHeader("Content-type", getDefaultContentType());
-        }
-        else {
-            getHttpResponse().setHeader("Content-type", contentType);
-        }
-    }
-
-    protected String getDefaultContentType() {
-        return "text/plain";
-    }
 
     protected void processRender() throws Exception {
         if (renderingTemplateName!=null) {
@@ -132,17 +87,6 @@ public class WSSResponse {
         }
     }
 
-    public HttpServletResponse getHttpResponse() {
-        return httpResponse;
-    }
-
-    public boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
-    }
 
     public Map<String, Object> getRenderingContext() {
         return renderingContext;
@@ -160,16 +104,8 @@ public class WSSResponse {
         this.renderingTemplateName = renderingTemplateName;
     }
 
-
     public void addRenderingParameter(String name, Object value) {
         renderingContext.put(name, value);
     }
-
-    public void setContentType(String ct) {
-        this.contentType=ct;
-    }
-
-
-
 
 }

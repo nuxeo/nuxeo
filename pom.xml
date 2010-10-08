@@ -48,6 +48,7 @@
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-opensocial</module>
+    <module>nuxeo-generic-wss-front</module>
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-platform-wss-backend</module>
     <module>nuxeo-automation</module>
@@ -891,6 +892,11 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-generic-wss-front</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-generic-wss-handler</artifactId>

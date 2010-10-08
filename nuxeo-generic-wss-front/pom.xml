@@ -10,28 +10,14 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-generic-wss-handler</artifactId>
-  <name>Nuxeo Generic WSS bindings</name>
+  <artifactId>nuxeo-generic-wss-front</artifactId>
+  <name>Nuxeo Generic WSS Front Filter</name>
 
   <dependencies>
-    <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-generic-wss-front</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
