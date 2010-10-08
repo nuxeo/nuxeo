@@ -26,7 +26,10 @@
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
       </refresh>
-      <cacheKey>#{currentDocument.cacheKey}</cacheKey>
+      <reset>
+        <event>documentChanged</event>
+      </reset>
+      <cacheKey>#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
 
       <resultLayouts>
