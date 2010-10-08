@@ -25,6 +25,9 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Smart query providing all the needed methods for UI interaction that will
  * make it possible to build a query adding clauses step by step.
+ * <p>
+ * Specific getters and setters have been defined instead of a generic one for
+ * a better resolution of target types.
  *
  * @author Anahide Tchertchian
  */
@@ -32,45 +35,116 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Stores the current existing query part.
+     * <p>
+     * This does not need to be a valid query as it can still be refined after.
+     */
     protected String existingQueryPart;
 
+    /**
+     * String containing the logical operator at start of the query part to add
+     * (for instance 'AND' or 'OR').
+     */
     protected String logicalOperator;
 
+    /**
+     * Boolean indicating if the query part to add should be negated (for
+     * instance by adding the 'NOT' marker before)
+     */
     protected Boolean addNotOperator;
 
+    /**
+     * Boolean indicating if an open parenthesis should be added prior to the
+     * query part to add.
+     */
     protected Boolean openParenthesis;
 
+    /**
+     * Boolean indicating if an closed parenthesis should be added after the
+     * query part to add.
+     */
     protected Boolean closeParenthesis;
 
+    /**
+     * Marker for layout row selection that will make it possible to display
+     * only the widgets defined in this row for the rest of the query part
+     * definition.
+     */
     protected String selectedRowName;
 
+    /**
+     * String typically representing the search index for the query part to
+     * add.
+     */
     protected String leftExpression;
 
+    /**
+     * String representing the conditional operator to use when building the
+     * query part to add (for instance '=', 'LIKE',...)
+     */
     protected String conditionalOperator;
 
+    /**
+     * Generic set value for the new query part to add.
+     * <p>
+     * Holds the last value set on one of the specific value setters.
+     */
     protected Object value;
 
     // provide a separate field for accepted expression values for a good JFS
     // resolution
 
+    /**
+     * Boolean value binding.
+     */
     protected Boolean booleanValue;
 
+    /**
+     * String value binding.
+     */
     protected String stringValue;
 
+    /**
+     * String list value binding.
+     */
     protected List<String> stringListValue;
 
+    /**
+     * String array value binding.
+     */
     protected String[] stringArrayValue;
 
+    /**
+     * Date and time value binding.
+     */
     protected Date datetimeValue;
 
+    /**
+     * Another date and time value binding (useful when using the 'BETWEEN'
+     * operator for instance)
+     */
     protected Date otherDatetimeValue;
 
+    /**
+     * Date value binding
+     */
     protected Date dateValue;
 
+    /**
+     * Another date value binding (useful when using the 'BETWEEN' operator for
+     * instance)
+     */
     protected Date otherDateValue;
 
+    /**
+     * Integer value binding.
+     */
     protected Long integerValue;
 
+    /**
+     * Float value binding.
+     */
     protected Double floatValue;
 
     public IncrementalSmartQuery(String existingQueryPart) {
@@ -86,6 +160,9 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         this.existingQueryPart = existingQueryPart;
     }
 
+    /**
+     * Returns true if existing query part is not empty.
+     */
     public boolean getShowLogicalOperator() {
         if (existingQueryPart == null || existingQueryPart.trim().length() == 0) {
             return false;
@@ -113,6 +190,9 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         this.addNotOperator = addNotOperator;
     }
 
+    /**
+     * Returns true
+     */
     public boolean getShowOpenParenthesis() {
         return true;
     }
@@ -125,6 +205,10 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         this.openParenthesis = openParenthesis;
     }
 
+    /**
+     * Returns true if there are strictly more open parenthesis in the existing
+     * query part than closed ones.
+     */
     public boolean getShowCloseParenthesis() {
         if (existingQueryPart != null) {
             int numberOpened = StringUtils.countMatches(existingQueryPart, "(");
@@ -148,6 +232,13 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         return selectedRowName;
     }
 
+    /**
+     * Sets the selected row name.
+     * <p>
+     * Also resets the left expression, conditional operator, and all value
+     * bindings, as they may be set to values that are not relevant in this new
+     * row context.
+     */
     public void setSelectedRowName(String selectedRowName) {
         this.selectedRowName = selectedRowName;
         leftExpression = null;
@@ -155,6 +246,8 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         clearValues();
     }
 
+    // TODO: will be useful if layout tag can use it to filter other rows, see
+    // NXP-5725
     public List<String> getSelectedRowNames() {
         List<String> res = new ArrayList<String>();
         if (selectedRowName != null) {
@@ -175,6 +268,12 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         return conditionalOperator;
     }
 
+    /**
+     * Sets the conditional operator.
+     * <p>
+     * Also resets all the value bindings, as they may be set to values that
+     * are not relevant in this new conditional operator context.
+     */
     public void setConditionalOperator(String conditionalOperator) {
         this.conditionalOperator = conditionalOperator;
         clearValues();
@@ -278,6 +377,9 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         setValue(floatValue);
     }
 
+    /**
+     * Clears all field values, except the existing quedry part.
+     */
     protected void clear() {
         logicalOperator = null;
         addNotOperator = null;
@@ -289,6 +391,9 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         clearValues();
     }
 
+    /**
+     * Clears all value bindings.
+     */
     protected void clearValues() {
         value = null;
         booleanValue = null;

@@ -20,6 +20,9 @@ import java.util.LinkedList;
 
 /**
  * Linked list with a capacity to handle undo/redo actions.
+ * <p>
+ * The method {@link #addLast(Object)} will remove the first object of the list
+ * when at full capacity.
  *
  * @author Anahide Tchertchian
  */

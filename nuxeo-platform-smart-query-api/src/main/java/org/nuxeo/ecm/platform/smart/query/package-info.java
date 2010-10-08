@@ -16,7 +16,15 @@
  */
 
 /**
- * Common utility classes and interfaces
+ * Provides the interface for a {@link SmartQuery}.
+ * <p>
+ * Also defines the abstract class {@link IncrementalSmartQuery} that
+ * implements this interface: it provides getters and setters needed for JSF
+ * interactions when constructing a query part by part, e.g adding criterion to
+ * an existing query string.
+ * <p>
+ * The class {@link HistoryList} is useful for undo operations.
+ *
  * @since 5.4
  */
 package org.nuxeo.ecm.platform.smart.query;
