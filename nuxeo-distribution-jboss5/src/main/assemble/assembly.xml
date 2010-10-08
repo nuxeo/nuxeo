@@ -157,17 +157,12 @@
     </copy>
 
     <!-- WSS specific BEGIN -->
-    <!-- install WSS root filter as external lib  -->
-    <copy todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler:${nuxeo.features.version}" />
-    </copy>
 
-    <!-- move WSS deps outside of Nuxeo ear -->
-     <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
-      <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/lib" >
-        <include name="freemarker*" />
-        <include name="commons-lang*" />
-      </fileset>
+    <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
+    <move todir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/lib">
+        <fileset dir="${outdir}/nuxeo-dm-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear/bundles">
+            <include name="nuxeo-generic-wss-front*" />
+        </fileset>
     </move>
 
     <!-- add WSS filter binding in ROOT.WAR -->
