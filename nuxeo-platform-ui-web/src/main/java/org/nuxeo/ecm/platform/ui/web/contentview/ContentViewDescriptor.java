@@ -91,7 +91,10 @@ public class ContentViewDescriptor {
     Boolean useGlobalPageSize;
 
     @XNodeList(value = "refresh/event", type = ArrayList.class, componentType = String.class)
-    List<String> eventNames;
+    List<String> refreshEventNames;
+
+    @XNodeList(value = "reset/event", type = ArrayList.class, componentType = String.class)
+    List<String> resetEventNames;
 
     public String getName() {
         return name;
@@ -138,7 +141,11 @@ public class ContentViewDescriptor {
     }
 
     public List<String> getRefreshEventNames() {
-        return eventNames;
+        return refreshEventNames;
+    }
+
+    public List<String> getResetEventNames() {
+        return refreshEventNames;
     }
 
     public Boolean getUseGlobalPageSize() {

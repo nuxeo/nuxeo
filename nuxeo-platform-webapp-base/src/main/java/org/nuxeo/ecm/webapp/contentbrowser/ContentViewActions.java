@@ -204,14 +204,35 @@ public class ContentViewActions implements Serializable {
     }
 
     /**
+     * Resets all content views page providers that have declared the given
+     * seam event name as a reset event in their XML configuration.
+     */
+    public void resetPageProviderOnSeamEvent(String seamEventName) {
+        cache.resetPageProviderOnEvent(seamEventName);
+    }
+
+    /**
      * Refreshes content views that have declared event
-     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} as a refresh event.
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
+     * {@link EventNames#DOCUMENT_CHANGED} as a refresh event.
      */
     @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
             EventNames.DOCUMENT_CHANGED })
     public void refreshOnDocumentChildrenChanged() {
         refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         refreshOnSeamEvent(EventNames.DOCUMENT_CHANGED);
+    }
+
+    /**
+     * Resets page providers for content views that have declared event
+     * {@link EventNames#DOCUMENT_CHILDREN_CHANGED} or
+     * {@link EventNames#DOCUMENT_CHANGED} as a reset event.
+     */
+    @Observer(value = { EventNames.DOCUMENT_CHILDREN_CHANGED,
+            EventNames.DOCUMENT_CHANGED })
+    public void resetPageProviderOnDocumentChildrenChanged() {
+        resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+        resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHANGED);
     }
 
     public void refresh(String contentViewName) {

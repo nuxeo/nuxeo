@@ -95,10 +95,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getPagination(), desc.getActionCategories(),
                 desc.getSearchLayout(), desc.getResultLayouts(),
                 desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
-                desc.getRefreshEventNames(), useGlobalPageSize.booleanValue(),
-                queryParams, desc.getSearchDocumentBinding(),
-                searchDocumentType, desc.getResultColumnsBinding(),
-                sortInfosBinding, pageSizeBinding);
+                desc.getRefreshEventNames(), desc.getRefreshEventNames(),
+                useGlobalPageSize.booleanValue(), queryParams,
+                desc.getSearchDocumentBinding(), searchDocumentType,
+                desc.getResultColumnsBinding(), sortInfosBinding,
+                pageSizeBinding);
         return contentView;
     }
 
@@ -292,7 +293,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         List<String> events = newDesc.getRefreshEventNames();
         if (events != null && !events.isEmpty()) {
-            oldDesc.eventNames = events;
+            oldDesc.refreshEventNames = events;
         }
 
         ContentViewLayoutImpl searchLayout = newDesc.getSearchLayout();

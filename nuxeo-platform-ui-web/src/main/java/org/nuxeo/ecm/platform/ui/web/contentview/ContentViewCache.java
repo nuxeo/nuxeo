@@ -51,10 +51,16 @@ public class ContentViewCache implements Serializable {
     protected final Map<String, Map<String, ContentView>> cacheInstances = new HashMap<String, Map<String, ContentView>>();
 
     /**
-     * Map holding content view names that need to be invalidated for a given
-     * event
+     * Map holding content view names that need their page provider to be
+     * refreshed for a given event
      */
-    protected final Map<String, Set<String>> eventToContentViewName = new HashMap<String, Set<String>>();
+    protected final Map<String, Set<String>> refreshEventToContentViewName = new HashMap<String, Set<String>>();
+
+    /**
+     * Map holding content view names that need their page provider to be reset
+     * for a given event
+     */
+    protected final Map<String, Set<String>> resetEventToContentViewName = new HashMap<String, Set<String>>();
 
     public void add(ContentView cView) {
         if (cView != null) {
@@ -84,12 +90,24 @@ public class ContentViewCache implements Serializable {
             List<String> events = cView.getRefreshEventNames();
             if (events != null && !events.isEmpty()) {
                 for (String event : events) {
-                    if (eventToContentViewName.containsKey(event)) {
-                        eventToContentViewName.get(event).add(name);
+                    if (refreshEventToContentViewName.containsKey(event)) {
+                        refreshEventToContentViewName.get(event).add(name);
                     } else {
                         Set<String> set = new HashSet<String>();
                         set.add(name);
-                        eventToContentViewName.put(event, set);
+                        refreshEventToContentViewName.put(event, set);
+                    }
+                }
+            }
+            events = cView.getResetEventNames();
+            if (events != null && !events.isEmpty()) {
+                for (String event : events) {
+                    if (resetEventToContentViewName.containsKey(event)) {
+                        resetEventToContentViewName.get(event).add(name);
+                    } else {
+                        Set<String> set = new HashSet<String>();
+                        set.add(name);
+                        resetEventToContentViewName.put(event, set);
                     }
                 }
             }
@@ -157,10 +175,21 @@ public class ContentViewCache implements Serializable {
 
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
-            Set<String> contentViewNames = eventToContentViewName.get(eventName);
+            Set<String> contentViewNames = refreshEventToContentViewName.get(eventName);
             if (contentViewNames != null) {
                 for (String contentViewName : contentViewNames) {
                     refresh(contentViewName, false);
+                }
+            }
+        }
+    }
+
+    public void resetPageProviderOnEvent(String eventName) {
+        if (eventName != null) {
+            Set<String> contentViewNames = resetEventToContentViewName.get(eventName);
+            if (contentViewNames != null) {
+                for (String contentViewName : contentViewNames) {
+                    resetPageProvider(contentViewName);
                 }
             }
         }

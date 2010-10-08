@@ -131,6 +131,12 @@ public interface ContentView extends Serializable {
     List<String> getRefreshEventNames();
 
     /**
+     * Returns the list of event names that should trigger a reset of this
+     * content view page provider.
+     */
+    List<String> getResetEventNames();
+
+    /**
      * Gets page provider according to given parameters
      *
      * @param searchDocument document that will be set on the page provider. If

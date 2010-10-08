@@ -81,6 +81,8 @@ public class ContentViewImpl implements ContentView {
 
     protected List<String> refreshEventNames;
 
+    protected List<String> resetEventNames;
+
     protected boolean useGlobalPageSize;
 
     protected Long currentPageSize;
@@ -104,10 +106,10 @@ public class ContentViewImpl implements ContentView {
             List<String> actionCategories, ContentViewLayout searchLayout,
             List<ContentViewLayout> resultLayouts, List<String> flags,
             String cacheKey, Integer cacheSize, List<String> refreshEventNames,
-            boolean useGlobalPageSize, String[] queryParameters,
-            String searchDocumentModelBinding, String searchDocumentModelType,
-            String resultColumnsBinding, String sortInfosBinding,
-            String pageSizeBinding) {
+            List<String> resetEventNames, boolean useGlobalPageSize,
+            String[] queryParameters, String searchDocumentModelBinding,
+            String searchDocumentModelType, String resultColumnsBinding,
+            String sortInfosBinding, String pageSizeBinding) {
         this.name = name;
         this.title = title;
         this.translateTitle = translateTitle;
@@ -121,6 +123,7 @@ public class ContentViewImpl implements ContentView {
         this.cacheKey = cacheKey;
         this.cacheSize = cacheSize;
         this.refreshEventNames = refreshEventNames;
+        this.resetEventNames = resetEventNames;
         this.useGlobalPageSize = useGlobalPageSize;
         this.queryParameters = queryParameters;
         this.searchDocumentModelBinding = searchDocumentModelBinding;
@@ -333,11 +336,14 @@ public class ContentViewImpl implements ContentView {
         return refreshEventNames;
     }
 
+    public List<String> getResetEventNames() {
+        return resetEventNames;
+    }
+
     public boolean getUseGlobalPageSize() {
         return useGlobalPageSize;
     }
 
-    @Override
     public Long getCurrentPageSize() {
         if (currentPageSize != null) {
             return currentPageSize;
@@ -486,12 +492,13 @@ public class ContentViewImpl implements ContentView {
                 + "selectionList=%s, pagination=%s, "
                 + "actionCategories=%s, searchLayout=%s, "
                 + "resultLayouts=%s, currentResultLayout=%s, "
-                + "flags=%s, cacheKey=%s, cacheSize=%s, refreshEventNames=%s, "
+                + "flags=%s, cacheKey=%s, cacheSize=%s, currentPageSize=%s"
+                + "refreshEventNames=%s, resetEventNames=%s,"
                 + "useGlobalPageSize=%s, searchDocumentModel=%s]", name, title,
                 Boolean.valueOf(translateTitle), iconPath, selectionList,
                 pagination, actionCategories, searchLayout, resultLayouts,
                 currentResultLayout, flags, cacheKey, cacheSize,
-                refreshEventNames, Boolean.valueOf(useGlobalPageSize),
-                searchDocumentModel);
+                currentPageSize, refreshEventNames, resetEventNames,
+                Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
     }
 }
