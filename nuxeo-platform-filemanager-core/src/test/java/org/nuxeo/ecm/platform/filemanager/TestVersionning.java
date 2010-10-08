@@ -77,7 +77,7 @@ public class TestVersionning extends RepositoryOSGITestCase {
         DocumentModel doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest.something");
 
-        assertEquals("mytest", doc.getTitle());
+        assertEquals("mytest.something", doc.getTitle());
 
         VersioningManager vm = Framework
                 .getLocalService(VersioningManager.class);

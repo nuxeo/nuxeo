@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -113,14 +114,9 @@ public final class FileManagerUtils {
      * @return the title
      */
     public static String fetchTitle(String filename) {
-        if (filename.startsWith(".")) {
-            return filename;
-        }
-        // Fetching title
-        int dot = filename.lastIndexOf('.');
-        String title = filename;
-        if (dot != -1) {
-            title = filename.substring(0, filename.lastIndexOf('.'));
+        String title = filename.trim();
+        if (title.length() == 0) {
+            title = IdUtils.generateStringId();
         }
         return title;
     }

@@ -92,8 +92,8 @@ public class NoteImporter extends AbstractFileImporter {
             docModel = overwriteAndIncrementversion(documentManager, docModel);
         } else {
             // Create a new empty DocumentModel of type Note in memory
-            String docId = IdUtils.generateId(title);
-            docModel = documentManager.createDocumentModel(path, docId,
+            String name = IdUtils.generatePathSegment(title);
+            docModel = documentManager.createDocumentModel(path, name,
                     getNoteTypeName());
 
             // Update known attributes (title, note)

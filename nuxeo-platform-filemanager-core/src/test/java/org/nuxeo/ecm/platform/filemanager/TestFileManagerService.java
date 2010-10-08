@@ -102,7 +102,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
                 workspace.getPathAsString(), true, "test-data/hello.doc");
         assertNotNull(doc);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
     }
@@ -119,7 +119,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
 
@@ -133,7 +133,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
 
@@ -153,7 +153,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
 
@@ -164,7 +164,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
 
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
     }
@@ -181,7 +181,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input,
                 workspace.getPathAsString(), true, "test-data/hello.xml");
         assertNotNull(doc);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
         assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
     }
 
@@ -197,7 +197,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         DocumentRef docRef = doc.getRef();
 
         assertNotNull(doc);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
         assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
@@ -209,7 +209,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
         assertNotNull(doc);
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
-        assertEquals("hello", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.xml", doc.getProperty("dublincore", "title"));
         assertEquals(NOTE_XML_CONTENT, doc.getProperty("note", "note"));
 
         versions = coreSession.getVersions(docRef);

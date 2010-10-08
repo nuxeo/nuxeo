@@ -81,9 +81,9 @@ public class DefaultFileImporter extends AbstractFileImporter {
             String title = FileManagerUtils.fetchTitle(filename);
 
             // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
+            String name = IdUtils.generatePathSegment(title);
 
-            docModel = documentManager.createDocumentModel(path, docId,
+            docModel = documentManager.createDocumentModel(path, name,
                     typeName);
 
             // Updating known attributes (title, filename, content)

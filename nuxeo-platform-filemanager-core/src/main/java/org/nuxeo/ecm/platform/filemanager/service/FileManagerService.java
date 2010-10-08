@@ -216,9 +216,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             }
 
             // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
+            String name = IdUtils.generatePathSegment(title);
 
-            docModel = documentManager.createDocumentModel(path, docId,
+            docModel = documentManager.createDocumentModel(path, name,
                     containerTypeName);
 
             // writing changes
