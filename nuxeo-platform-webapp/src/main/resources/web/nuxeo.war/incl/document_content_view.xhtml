@@ -31,7 +31,7 @@ function confirmDeleteDocumentsForever() {
   items="#{documentContentViewActions.getAvailableContentViewsForCurrentDocument(contentViewCategory)}"
   varStatus="contentViewListStatus">
 
-  <nxu:set var="contentViewListIndex" value="#{contentViewListStatus.index}">
+  <nxu:set var="contentViewId" value="#{contentViewListStatus.index}">
   <nxu:set var="contentViewName" value="#{contentViewHeader.name}">
 
     <ui:decorate template="/incl/content_view.xhtml">

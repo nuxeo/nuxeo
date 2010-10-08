@@ -21,7 +21,7 @@
   <h:form id="searchForm">
 
     <nxu:set var="contentView"
-      value="#{contentViewActions.getContentViewWithProvider('advanced_search', null)}"
+      value="#{contentViewActions.getContentViewWithProvider('advanced_search')}"
       cache="true">
 
       <div class="foldableBox">
@@ -47,16 +47,17 @@
          </a>
         </h3>
         <div class="boxBody">
-          <table class="dataOutput">
+          <table class="dataInput">
             <tbody>
               <tr>
                 <td class="labelColumn">
-                  <h:outputText value="#{messages['label.search.results']}" />
+                  <h:outputText value="#{messages['label.search.resultColumns']}" />
                 </td>
                 <td>
                   <nxl:layout name="#{contentView.resultLayouts[0].name}"
                     mode="edit_columns"
-                    value="#{documentSearchActions.selectedLayoutColumns}" />
+                    value="#{documentSearchActions.selectedLayoutColumns}"
+                    selectAllByDefault="true" />
                 </td>
               </tr>
               <tr>
@@ -66,7 +67,8 @@
                 <td>
                   <nxl:layout name="#{contentView.resultLayouts[0].name}"
                     mode="edit_sort_infos"
-                    value="#{documentSearchActions.searchSortInfos}" />
+                    value="#{documentSearchActions.searchSortInfos}"
+                    selectAllByDefault="true" />
                 </td>
               </tr>
             </tbody>
@@ -79,14 +81,16 @@
           action="search_results_advanced" class="button"
           id="searchButton">
           <nxu:actionListenerMethod
-            value="#{contentViewActions.refreshAndRewind('advanced_search')}" /> 
+            value="#{contentViewActions.resetPageProvider('advanced_search')}" /> 
         </h:commandButton>
         <h:commandButton value="#{messages['command.clearSearch']}"
           action="#{contentViewActions.reset('advanced_search')}"
+          immediate="true"
           styleClass="button"
           id="clearSearchButton" />
         <h:commandButton value="#{messages['command.selection.resetSelectedColumns']}"
           action="#{documentSearchActions.resetSelectedLayoutColumns()}"
+          immediate="true"
           styleClass="button"
           id="resetSelectedColumnsButton" />
       </div>

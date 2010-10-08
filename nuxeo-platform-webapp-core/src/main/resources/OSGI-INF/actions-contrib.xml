@@ -21,14 +21,12 @@
       </action>
     -->
 
-    <action id="non_anonymous_logout" link="logout"
-      label="command.logout">
+    <action id="non_anonymous_logout" link="logout" label="command.logout">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="logout"
-      label="command.login">
+    <action id="login" link="logout" label="command.login">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>anonymous</filter-id>
     </action>
@@ -62,6 +60,11 @@
       label="command.manageThemes" order="40">
       <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="advanced_search" link="search_form"
+      label="command.advancedSearch" order="10">
+      <category>SEARCH_ACTIONS</category>
     </action>
 
     <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
@@ -360,8 +363,9 @@
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
-    <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
-      enabled="true" label="command.order.movetotop" icon="">
+    <action id="MOVE_TOP_IN_SECTION"
+      link="#{orderableDocumentActions.moveToTop}" enabled="true"
+      label="command.order.movetotop" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToTop</filter-id>
     </action>
@@ -372,14 +376,16 @@
       <filter-id>canMoveUp</filter-id>
     </action>
 
-    <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
-      enabled="true" label="command.order.movedown" icon="">
+    <action id="MOVE_DOWN_IN_SECTION"
+      link="#{orderableDocumentActions.moveDown}" enabled="true"
+      label="command.order.movedown" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveDown</filter-id>
     </action>
 
-    <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
-      enabled="true" label="command.order.movetobottom" icon="">
+    <action id="MOVE_BOTTOM_IN_SECTION"
+      link="#{orderableDocumentActions.moveToBottom}" enabled="true"
+      label="command.order.movetobottom" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToBottom</filter-id>
     </action>

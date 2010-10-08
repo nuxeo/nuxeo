@@ -926,6 +926,9 @@
         <border>0px solid #FFF</border>
         <padding>7px 4px</padding>
       </selector>
+      <selector path=".dataInput td td, .dataInput td td td">
+        <padding>3px 4px</padding>
+      </selector>
       <selector path=".dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize">
         <font preset="default (Galaxy fonts)"/>
         <border preset="dataInput (Galaxy borders)" />
@@ -1341,6 +1344,10 @@
         <color preset="syndication.link (Galaxy colors)" />
         <text-decoration>none</text-decoration>
       </selector>
+      <!-- Advanced Search -->
+      <selector path=".listShuttleTable .listShuttleSelectionActions a">
+        <display>block</display>
+      </selector>
     </style>
     <style name="tree and clipboard column" inherit="common style 1">
       <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset">
@@ -1570,6 +1577,9 @@
       </selector>
       <selector path=".facetedSearchBlock table.thin">
         <margin>0 0 7px 0</margin>
+      </selector>
+      <selector path=".UserSuggestionInput table">
+        <width>100%</width>
       </selector>
     </style>
     <style name="common style 2">
