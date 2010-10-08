@@ -64,23 +64,26 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         }
 
         String username = httpRequest.getHeader(config.getUidHeader());
-        if (username == null) {
+        if (username == null || "".equals(username)) {
             return null;
         }
         Session userDir = null;
         try {
-            String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
+            UserManager userManager = Framework.getService(UserManager.class);
             userDir = Framework.getService(DirectoryService.class).open(
-                    directoryName);
+                    userManager.getUserDirectoryName());
+            Map<String, Object> fieldMap = new HashMap<String, Object>();
+            for (String key : config.getFieldMapping().keySet()) {
+                fieldMap.put(config.getFieldMapping().get(key), httpRequest.getHeader(key));
+            }
             DocumentModel entry = userDir.getEntry(username);
             if (entry == null) {
-                Map<String, Object> fieldMap = new HashMap<String, Object>();
-                for (String key : config.getFieldMapping().keySet()) {
-                    fieldMap.put(config.getFieldMapping().get(key), httpRequest.getHeader(key));
-                }
                 userDir.createEntry(fieldMap);
-                userDir.commit();
+            } else {
+                entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
+                userDir.updateEntry(entry);
             }
+            userDir.commit();
         } catch (Exception e) {
             log.error("Failed to get or create user entry", e);
         } finally {
