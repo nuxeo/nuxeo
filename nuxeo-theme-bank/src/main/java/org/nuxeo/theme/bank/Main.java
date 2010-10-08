@@ -184,13 +184,9 @@ public class Main extends ModuleRoot {
                 }
                 if (isSkin) {
                     JSONObject skinMap = new JSONObject();
-                    String preview = String.format("%s/style/%s/%s/preview",
-                            resourceBank.getConnectionUrl(), collection,
-                            resource);
                     skinMap.put("bank", bankName);
                     skinMap.put("collection", collection);
                     skinMap.put("resource", resource);
-                    skinMap.put("preview", preview);
                     skinMap.put(
                             "name",
                             String.format("%s (%s)",
@@ -337,6 +333,10 @@ public class Main extends ModuleRoot {
                 category);
         File file = BankManager.getFile(path);
         String content = "";
+        if (!file.exists()) {
+            return Response.status(404).build();
+        }
+
         StringBuilder sb = new StringBuilder();
         for (File f : file.listFiles()) {
             content = BankUtils.getFileContent(f);
@@ -345,7 +345,6 @@ public class Main extends ModuleRoot {
             sb.append(content);
         }
         content = sb.toString();
-
         return Response.ok(content).lastModified(new Date(file.lastModified())).header(
                 "Cache-Control", "public").header("Server", SERVER_ID).build();
     }
