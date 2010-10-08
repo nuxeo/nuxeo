@@ -42,9 +42,6 @@
       </properties>
       <subWidgets>
         <widget name="fulltext" type="text">
-          <helpLabels>
-            <label mode="edit">label.smart.query.build.fulltext.help</label>
-          </helpLabels>
           <translated>true</translated>
           <properties widgetMode="edit">
             <property name="required">true</property>
