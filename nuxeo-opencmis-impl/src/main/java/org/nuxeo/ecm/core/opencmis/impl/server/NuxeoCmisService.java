@@ -311,10 +311,17 @@ public class NuxeoCmisService extends AbstractCmisService {
     protected DocumentModel createDocumentModel(ObjectId folder,
             TypeDefinition type) {
         DocumentModel doc;
+        String typeId = type.getId();
+        String nuxeoTypeId = type.getLocalName();
+        if (BaseTypeId.CMIS_DOCUMENT.value().equals(typeId)) {
+            nuxeoTypeId = NuxeoTypeHelper.NUXEO_FILE;
+        } else if (BaseTypeId.CMIS_FOLDER.value().equals(typeId)) {
+            nuxeoTypeId = NuxeoTypeHelper.NUXEO_FOLDER;
+        }
         try {
-            doc = coreSession.createDocumentModel(type.getLocalName());
+            doc = coreSession.createDocumentModel(nuxeoTypeId);
         } catch (ClientException e) {
-            throw new IllegalArgumentException(type.getId());
+            throw new IllegalArgumentException(typeId);
         }
         if (folder != null) {
             DocumentModel parentDoc;
@@ -328,8 +335,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                     throw new CmisRuntimeException("Cannot create object", e);
                 }
             }
-            String name = type.getId(); // default name based on id
-            doc.setPathInfo(parentDoc.getPathAsString(), name);
+            String pathSegment = nuxeoTypeId; // default path segment based on id
+            doc.setPathInfo(parentDoc.getPathAsString(), pathSegment);
         }
         return doc;
     }
@@ -375,7 +382,10 @@ public class NuxeoCmisService extends AbstractCmisService {
             type = repository.getTypeDefinition(typeId);
         }
         if (type == null || type.getBaseTypeId() != baseType) {
-            throw new IllegalArgumentException(typeId);
+            throw new CmisInvalidArgumentException(typeId);
+        }
+        if (type.isCreatable() == Boolean.FALSE) {
+            throw new CmisInvalidArgumentException("Not creatable: " + typeId);
         }
         DocumentModel doc = createDocumentModel(folder, type);
         NuxeoObjectData object = new NuxeoObjectData(repository, doc);

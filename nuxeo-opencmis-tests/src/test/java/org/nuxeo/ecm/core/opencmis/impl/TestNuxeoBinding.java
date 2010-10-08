@@ -245,7 +245,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         TypeDefinition type;
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:folder", null);
-        assertEquals(Boolean.FALSE, type.isCreatable());
+        assertEquals(Boolean.TRUE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:folder", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
@@ -257,7 +257,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         type = repoService.getTypeDefinition(repositoryId, "cmis:document",
                 null);
-        assertEquals(Boolean.FALSE, type.isCreatable());
+        assertEquals(Boolean.TRUE, type.isCreatable());
         assertNull(type.getParentTypeId());
         assertEquals("cmis:document", type.getLocalName());
         assertTrue(type.getPropertyDefinitions().containsKey("dc:title"));
@@ -393,11 +393,41 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testCreateDocument() {
-        String id = createDocument("doc1", rootFolderId, "File");
+        String id;
+        ObjectData data;
+
+        id = createDocument("newdoc", rootFolderId, "File");
+        assertNotNull(id);
+        data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("newdoc", getString(data, PropertyIds.NAME));
+
+        // creation of a cmis:document (helps simple clients)
+
+        id = createDocument("newdoc2", rootFolderId, "cmis:document");
+        assertNotNull(id);
+        data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("newdoc2", getString(data, PropertyIds.NAME));
+        assertEquals("File", getString(data, PropertyIds.OBJECT_TYPE_ID));
+    }
+
+    @Test
+    public void testCreateFolder() {
+        String id = createFolder("newfold", rootFolderId, "Folder");
         assertNotNull(id);
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
-        assertEquals("doc1", getString(data, PropertyIds.NAME));
+        assertEquals("newfold", getString(data, PropertyIds.NAME));
+
+        // creation of a cmis:folder (helps simple clients)
+
+        id = createFolder("newfold2", rootFolderId, "cmis:folder");
+        assertNotNull(id);
+        data = getObject(id);
+        assertEquals(id, data.getId());
+        assertEquals("newfold2", getString(data, PropertyIds.NAME));
+        assertEquals("Folder", getString(data, PropertyIds.OBJECT_TYPE_ID));
     }
 
     protected String createDocumentMyDocType() {

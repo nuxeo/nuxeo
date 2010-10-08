@@ -81,6 +81,8 @@ public class NuxeoTypeHelper {
 
     public static final String NUXEO_FOLDER = "Folder";
 
+    public static final String NUXEO_FILE = "File";
+
     public static final String NUXEO_ORDERED_FOLDER = "OrderedFolder";
 
     public static final String NX_DUBLINCORE = "dublincore";
@@ -145,13 +147,13 @@ public class NuxeoTypeHelper {
     }
 
     /**
-     * Constructs a base type, which is non-creatable and not mapped to a Nuxeo
-     * type. It has the dublincore schema though.
+     * Constructs a base type, not mapped to a Nuxeo type. It has the dublincore
+     * schema though. When created, it actually constructs a File or a Folder.
      */
     public static TypeDefinition constructCmisBase(BaseTypeId base,
             SchemaManager schemaManager) {
         AbstractTypeDefinition type = constructBase(base.value(), null,
-                base == BaseTypeId.CMIS_FOLDER, null, null, false);
+                base == BaseTypeId.CMIS_FOLDER, null, null, true);
         DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
         addSchemaPropertyDefinitions(type, dt.getSchema(NX_DUBLINCORE));
         return type;
