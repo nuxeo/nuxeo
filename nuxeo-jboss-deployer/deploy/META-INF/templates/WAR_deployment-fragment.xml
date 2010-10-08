@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <web>
+        <web-uri>nuxeo.war</web-uri>
+        <context-root>/nuxeo</context-root>
+      </web>
+    </module>
+  </extension>
+
+</fragment>

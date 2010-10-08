@@ -112,8 +112,12 @@ public final class DOMCommandsParser {
     public static UnzipCommand parseUnzip(Element element) {
         String from = element.getAttribute("from");
         String to = element.getAttribute("to");
+        String prefix = element.getAttribute("prefix");
+        if (prefix!=null && prefix.trim().length()==0) {
+            prefix=null;
+        }
         PathFilter filter = readPathFilter(element);
-        return new UnzipCommand(new Path(from), new Path(to), filter);
+        return new UnzipCommand(new Path(from), new Path(to), filter,prefix);
     }
 
     public static ZipCommand parseZip(Element element) {
