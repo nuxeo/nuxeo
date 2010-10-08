@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -73,7 +74,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
             ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
             typeToChain.put(desc.getDocumentType(), desc.getChainId());
-        } else if(PERSISTER_XP.equals(extensionPoint)) {
+        } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             persister = des.getKlass().newInstance();
         }
@@ -134,9 +135,18 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void validateRouteModel(DocumentRoute routeModel, CoreSession session)
-            throws ClientException {
-        routeModel.validate(session);
+    public DocumentRoute validateRouteModel(final DocumentRoute routeModel,
+            CoreSession userSession) throws ClientException {
+        new UnrestrictedSessionRunner(userSession) {
+            @Override
+            public void run() throws ClientException {
+                DocumentRoute route = session.getDocument(
+                        routeModel.getDocument().getRef()).getAdapter(
+                        DocumentRoute.class);
+                route.validate(session);
+            }
+        }.runUnrestricted();
+        return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(DocumentRoute.class);
     }
 
     @Override

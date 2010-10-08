@@ -44,7 +44,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
-        service.validateRouteModel(route, session);
+        route = service.validateRouteModel(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals(
@@ -54,7 +54,6 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
-        assertNotNull(routeInstance);
         assertTrue(routeInstance.isDone());
     }
 
@@ -69,7 +68,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
-        service.validateRouteModel(route, session);
+        route = service.validateRouteModel(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals(
@@ -81,7 +80,10 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 doc1.getId(), session);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
-        assertEquals(1, service.getDocumentRoutesForAttachedDocument(session, doc1.getId()).size());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
         List<String> waiting = WaitingStepRuntimePersister.getStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
@@ -122,7 +124,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute routeModel = routes.get(0);
         DocumentModel doc1 = createTestDocument("test1", session);
         session.save();
-        service.validateRouteModel(route, session);
+        route = service.validateRouteModel(route, session);
         assertEquals("validated",
                 route.getDocument().getCurrentLifeCycleState());
         assertEquals(
@@ -195,9 +197,10 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 folder.getPathAsString());
         session.save();
         assertNotNull(route);
-        service.validateRouteModel(route.getAdapter(DocumentRoute.class),
-                session);
+        route = service.validateRouteModel(route.getAdapter(DocumentRoute.class),
+                session).getDocument();
         session.save();
+        route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());
         closeSession();
         session = openSessionAs("jdoe");

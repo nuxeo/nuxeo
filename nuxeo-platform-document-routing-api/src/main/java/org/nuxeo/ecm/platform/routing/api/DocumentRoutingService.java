@@ -87,7 +87,7 @@ public interface DocumentRoutingService {
      * Validates the given {@link DocumentRoute} model by chenging its lifecycle
      * state and setting it and all its children in ReadOnly
      * */
-    void validateRouteModel(DocumentRoute routeModel, CoreSession session)
+    DocumentRoute validateRouteModel(DocumentRoute routeModel, CoreSession session)
             throws ClientException;
 
     /**

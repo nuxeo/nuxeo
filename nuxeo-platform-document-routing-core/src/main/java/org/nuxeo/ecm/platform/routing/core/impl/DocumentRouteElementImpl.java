@@ -151,10 +151,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     public void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursive) {
         try {
-            //session.saveDocument(document);
             document.followTransition(transition.name());
-            //session.saveDocument(document);
-            //document = session.getDocument(document.getRef());
             session.save();
             if (Framework.isTestModeSet()) {
                 Framework.getLocalService(EventService.class).waitForAsyncCompletion();
