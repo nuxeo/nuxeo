@@ -54,6 +54,11 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         // deploy and test content template
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.automation.core");
+        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.platform.usermanager");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        deployBundle("org.nuxeo.ecm.directory.sql");
+        deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
         openSession();
         DocumentModel root = session.getRootDocument();

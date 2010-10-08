@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,9 +27,15 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.persistence.TreeHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
@@ -111,8 +119,35 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
                 DC_TITLE,
                 DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE);
         root = session.createDocument(root);
+        ACP acp = session.getACP(root.getRef());
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.addAll(getACEs());
+        session.setACP(root.getRef(), acp, true);
         session.save();
         return root;
+    }
+
+    /**
+     * @return
+     */
+    protected List<ACE> getACEs() {
+        List<ACE> aces = new ArrayList<ACE>();
+        for (String group : getUserManager().getAdministratorsGroups()) {
+            aces.add(new ACE(group, SecurityConstants.EVERYTHING, true));
+        }
+        aces.add(new ACE(DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME,
+                SecurityConstants.READ_WRITE, true));
+        aces.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        return aces;
+    }
+
+    protected UserManager getUserManager() {
+        try {
+            return Framework.getService(UserManager.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected DocumentModel getDocumentRouteInstancesStructure(

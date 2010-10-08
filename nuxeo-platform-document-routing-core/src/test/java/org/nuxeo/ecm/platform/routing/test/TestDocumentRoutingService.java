@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
-    public void testCreateNewInstance() throws ClientException {
+    public void testCreateNewInstance() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
