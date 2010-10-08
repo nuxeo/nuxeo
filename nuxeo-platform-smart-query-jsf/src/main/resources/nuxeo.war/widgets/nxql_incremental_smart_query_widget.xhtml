@@ -11,6 +11,7 @@
   <c:if test="#{widget.mode == 'view'}">
     <h:outputText value="#{field}" />
   </c:if>
+<a4j:log />
 
   <c:if test="#{widget.mode == 'edit'}">
 
@@ -33,7 +34,7 @@
               <td class="fieldColumn">
                 <a4j:commandButton value="#{messages['label.smart.query.addToQuery']}"
                   actionListener="#{smartNXQLQueryActions.buildQueryPart}"
-                  reRender="smartSearchAjaxPanel, smartQueryPartPanel"
+                  reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
                   styleClass="button">
                   <a4j:actionparam name="queryPartComponentId"
                     value="smartQueryPart" />
@@ -61,10 +62,11 @@
               <h:inputTextarea id="smartQueryPart"
                 value="#{field}"
                 required="#{widget.required and not smartNXQLQueryActions.ajaxRequest}"
-                validator="#{smartNXQLQueryActions.validateQueryPart}">
+                validator="#{smartNXQLQueryActions.validateQueryPart}"
+                rows="4">
                 <a4j:support event="onchange"
                   actionListener="#{smartNXQLQueryActions.queryPartChanged}"
-                  reRender="smartSearchAjaxPanel"
+                  reRender="smartSearchAjaxPanel, smartQueryUndoPanel"
                   ignoreDupResponses="true"
                   bypassUpdates="#{widgetProperty_updateQueryPart}"
                   immediate="true">
@@ -75,9 +77,33 @@
             </a4j:outputPanel>
           </td>
           <td valign="bottom">
+            <a4j:outputPanel id="smartQueryUndoPanel">
+              <a4j:commandButton value="#{messages['label.smart.query.undoChanges']}"
+                actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
+                reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
+                immediate="true" styleClass="button"
+                rendered="#{smartNXQLQueryActions.canUndoQueryPartChanges}">
+                <a4j:actionparam name="queryPartComponentId"
+                  value="smartQueryPart" />
+                <a4j:actionparam name="updateQueryPart"
+                  value="#{widgetProperty_updateQueryPart}" />
+              </a4j:commandButton>
+              <br /><br />
+              <a4j:commandButton value="#{messages['label.smart.query.redoChanges']}"
+                actionListener="#{smartNXQLQueryActions.redoQueryPartChanges}"
+                reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
+                immediate="true" styleClass="button"
+                rendered="#{smartNXQLQueryActions.canRedoQueryPartChanges}">
+                <a4j:actionparam name="queryPartComponentId"
+                  value="smartQueryPart" />
+                <a4j:actionparam name="updateQueryPart"
+                  value="#{widgetProperty_updateQueryPart}" />
+              </a4j:commandButton>
+              <br /><br />
+            </a4j:outputPanel>
             <a4j:commandButton value="#{messages['command.clearSearch']}"
               actionListener="#{smartNXQLQueryActions.clearQueryPart}"
-              reRender="smartSearchAjaxPanel, smartQueryPartPanel"
+              reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
               immediate="true"
               styleClass="button">
               <a4j:actionparam name="queryPartComponentId"

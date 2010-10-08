@@ -280,19 +280,36 @@
       <properties widgetMode="edit">
         <property name="searchField">dc:coverage</property>
         <propertyList name="availableOperators">
+          <value>IN</value>
           <value>=</value>
           <value>LIKE</value>
           <value>CONTAINS</value>
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="coverage" type="template">
+        <widget name="coverage_select_multi" type="template">
+          <fields>
+            <field>stringArrayValue</field>
+          </fields>
+          <widgetModes>
+            <mode value="any">
+              #{not empty value.conditionalOperator and
+              value.conditionalOperator!='IN'?'hidden':mode}
+            </mode>
+          </widgetModes>
+          <properties mode="any">
+            <property name="template">
+              /widgets/query_multi_coverage_widget.xhtml
+            </property>
+          </properties>
+        </widget>
+        <widget name="coverage_select" type="template">
           <fields>
             <field>stringValue</field>
           </fields>
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
+              #{empty value.conditionalOperator or
               value.conditionalOperator!='='?'hidden':mode}
             </mode>
           </widgetModes>
@@ -309,6 +326,7 @@
           <widgetModes>
             <mode value="any">
               #{empty value.conditionalOperator or
+              value.conditionalOperator=='IN' or
               value.conditionalOperator=='='?'hidden':mode}
             </mode>
           </widgetModes>
