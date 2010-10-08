@@ -27,6 +27,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Run the operation chain for this step.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
@@ -45,7 +47,8 @@ public class StepElementRunner implements ElementRunner {
         EventFirer.fireEvent(session, element, null,
                 DocumentRoutingConstants.Events.beforeStepRunning.name());
         OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                element);
         context.setInput(element.getAttachedDocuments(session));
         if (!element.isDone()) {
             EventFirer.fireEvent(session, element, null,
@@ -77,6 +80,5 @@ public class StepElementRunner implements ElementRunner {
             throw new RuntimeException(e);
         }
     }
-
 
 }

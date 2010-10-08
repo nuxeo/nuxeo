@@ -20,6 +20,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
+ * Runner responsible to run an element of a route.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */

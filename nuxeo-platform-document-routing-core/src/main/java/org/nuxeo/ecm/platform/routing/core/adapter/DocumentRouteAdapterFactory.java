@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteElementImpl;
@@ -30,6 +31,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.SerialRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
 
 /**
+ * Provides {@link DocumentRoute} for a {@link DocumentModel}.
+ *
  * @author arussel
  *
  */
@@ -53,9 +56,11 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:
-                return new DocumentRouteStepsContainerImpl(doc, new SerialRunner());
+                return new DocumentRouteStepsContainerImpl(doc,
+                        new SerialRunner());
             case parallel:
-                return new DocumentRouteStepsContainerImpl(doc, new ParallelRunner());
+                return new DocumentRouteStepsContainerImpl(doc,
+                        new ParallelRunner());
             }
         }
         return null;

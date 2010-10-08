@@ -29,6 +29,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
+ * Updates the security of the {@link DocumentRoute} so the user responsible for
+ * starting the route on a document can see the route.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */

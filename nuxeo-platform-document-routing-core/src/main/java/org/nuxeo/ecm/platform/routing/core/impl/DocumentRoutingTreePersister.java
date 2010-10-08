@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.persistence.TreeHelper;
@@ -38,6 +39,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * The default persister. It persists the {@link DocumentRoute} in a tree
+ * hierarchy ressembling the current date.
+ *
  * @author arussel
  *
  */

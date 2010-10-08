@@ -21,10 +21,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**
- * The DocumentRoutingPersistenceService is responsible creating a folder
- * structure to persist {@link DocumentRoute} instance, persisting new
- * {@link DocumentRoute} instances and creating {@link DocumentRoute} model from
- * {@link DocumentRoute} instance.
+ * The DocumentRoutingPersister is responsible creating a folder structure to
+ * persist {@link DocumentRoute} instance, persisting new {@link DocumentRoute}
+ * instances and creating {@link DocumentRoute} model from {@link DocumentRoute}
+ * instance.
  *
  * @author arussel
  *
@@ -33,15 +33,11 @@ public interface DocumentRoutingPersister {
     /**
      * The name of the document in which will be create
      */
-
     String DocumentRouteInstanceRootName = "DocumentRouteInstancesRoot";
 
     /**
      * Get or create the parent folder for a {@link DocumentRoute} route
      * instance.
-     *
-     * The way the parent folder is created is configurable via contribution to
-     * the DocuementRoutingPersistenceService.
      *
      * @param document The {@link DocumentRoute} model from which the instance
      *            will be created. Its metadata may be used when creating the

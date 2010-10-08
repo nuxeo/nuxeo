@@ -18,16 +18,24 @@ package org.nuxeo.ecm.platform.routing.core.api;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
  * The DocumentRoutingEngineService is responsible for managing the lifecycle of
- * the DocumentRoute.
+ * the DocumentRoute. This is an internal service, you should use method on the
+ * {@link DocumentRoutingService} to start a route.
  *
  * @author arussel
  *
  */
 public interface DocumentRoutingEngineService {
 
+    /**
+     * Start or resume a the route.
+     *
+     * @param routeInstance
+     * @param session
+     */
     void start(DocumentRoute routeInstance, CoreSession session);
 
 }

@@ -22,6 +22,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
+ * Run all of its children simultaneous and is done when all the children are
+ * done.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
