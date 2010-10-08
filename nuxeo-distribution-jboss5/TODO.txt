@@ -17,7 +17,7 @@ contains preprocessing templates
 
 3. default-repository-ds.xml should be placed in datasources/
 no other files should placed there.
-TODO: I may switch the location of unifid-nuxeo-ds.xml and the one of
+TODO: I may switch the location of unified-nuxeo-ds.xml and the one of
 default-repository-ds.xml (or may be change the location of unified ds and put it in config)
 
 4. A single file in JBoss deploy/ -> nuxeo-ds.xml
@@ -35,7 +35,7 @@ In this case nuxeo-jboss-deployer.jar can be put directly in nuxeo.ear/lib
 This deployment doesn't requires external files apart nuxeo-ds.xml.
 This deployment can work either with a packed or unpacked nuxeo.ear
 
-Depending on the profile you may need different cnfiguration files:
+Depending on the profile you may need different configuration files:
 
 PACKED:
 nuxeo-structure-zip.xml -> rename it to nuxeo-structure.xml
