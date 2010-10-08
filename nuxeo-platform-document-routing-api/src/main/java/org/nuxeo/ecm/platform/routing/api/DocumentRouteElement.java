@@ -24,42 +24,102 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
+ * An element of a {@link DocumentRoute}
  *
  * @author arussel
  *
  */
 public interface DocumentRouteElement extends Serializable {
+
+    /**
+     * The lifecycle state of an element
+     *
+     */
     enum ElementLifeCycleState {
         draft, validated, ready, running, done
     }
 
+    /**
+     * The transition of the lifecycle state.
+     *
+     */
     enum ElementLifeCycleTransistion {
         toValidated, toReady, toRunning, toDone
     }
 
+    /**
+     * Return the list of documents that this route processes.
+     *
+     * @param session the session used to fetch the documents
+     * @return
+     */
     DocumentModelList getAttachedDocuments(CoreSession session);
 
+    /**
+     * Return the DocumentRoute this element is part of.
+     *
+     * @param session The session use to fetch the route.
+     * @return
+     */
     DocumentRoute getDocumentRoute(CoreSession session);
 
+    /**
+     * if the route this element is part of has been validated.
+     *
+     * @return
+     */
     boolean isValidated();
 
+    /**
+     * if this element is ready.
+     *
+     * @return
+     */
     boolean isReady();
 
+    /**
+     * if this route is done.
+     *
+     * @return
+     */
     boolean isDone();
 
+    /**
+     * if this route is running.
+     *
+     * @return
+     */
     boolean isRunning();
 
+    /**
+     * The name of this element.
+     *
+     * @return
+     */
     String getName();
 
+    /**
+     * the description of this element.
+     *
+     * @return
+     */
     String getDescription();
 
     /**
+     * Execute this element. If this is a step, it will run the operation, if
+     * this is a containter it will run its children.
      *
      * @param session
      * @return true is the element is not done
      */
     void run(CoreSession session);
 
+    /**
+     * Validate this element.
+     *
+     * @param session
+     * @throws ClientException
+     */
     void validate(CoreSession session) throws ClientException;
 
     DocumentModel getDocument();

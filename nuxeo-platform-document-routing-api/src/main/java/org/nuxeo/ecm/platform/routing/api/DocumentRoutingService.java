@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- * The DocumentRoutingService allows to start new {@link DocumentRoute}
- * instance.
+ * The DocumentRoutingService allows manipulate {@link DocumentRoute}.
  *
  * @author arussel
  *
@@ -65,10 +64,10 @@ public interface DocumentRoutingService {
             CoreSession session);
 
     /**
-     * Return the list of available {@link DocumentRoute} model for this
-     * session.
+     * Return the list of available {@link DocumentRoute} model the user can
+     * start.
      *
-     * @param session The session used to query the {@link DocumentRoute}.
+     * @param session The session of the user.
      * @return A list of available {@link DocumentRoute}
      */
     List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session);
@@ -84,11 +83,13 @@ public interface DocumentRoutingService {
     String getOperationChainId(String documentType);
 
     /**
-     * Validates the given {@link DocumentRoute} model by chenging its lifecycle
-     * state and setting it and all its children in ReadOnly
+     * Validates the given {@link DocumentRoute} model by changing its lifecycle
+     * state and setting it and all its children in ReadOnly.
+     *
+     * @return The validated route.
      * */
-    DocumentRoute validateRouteModel(DocumentRoute routeModel, CoreSession session)
-            throws ClientException;
+    DocumentRoute validateRouteModel(DocumentRoute routeModel,
+            CoreSession session) throws ClientException;
 
     /**
      * Computes the list of elements {@link LocalizableDocumentRouteElement} for
@@ -104,28 +105,34 @@ public interface DocumentRoutingService {
             throws ClientException;
 
     /**
-     * Return the list of related {@link DocumentRoute} for a given attached
-     * document. Returns only ready or running {@link DocumentRoute}s.
+     * Return the list of related {@link DocumentRoute} in a state for a given
+     * attached document.
      *
      * @param session The session used to query the {@link DocumentRoute}.
+     * @param states the list of states.
      * @return A list of available {@link DocumentRoute}
      */
-    List<DocumentRoute> getDocumentRoutesForAttachedDocument(
-            CoreSession session, String attachedDocId);
-
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId,
             List<DocumentRouteElement.ElementLifeCycleState> states);
 
     /**
-     * @param currentUser
+     * @see #getDocumentRoutesForAttachedDocument(CoreSession, String, List) for
+     *      route running or ready.
+     * @param session
+     * @param attachedDocId
      * @return
+     */
+    List<DocumentRoute> getDocumentRoutesForAttachedDocument(
+            CoreSession session, String attachedDocId);
+
+    /**
+     * if the user can create a route.
      */
     boolean canUserCreateRoute(NuxeoPrincipal currentUser);
 
     /**
-     * @param currentUser
-     * @return
+     * if the user can validate a route.
      */
     boolean canUserValidateRoute(NuxeoPrincipal currentUser);
 }

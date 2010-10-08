@@ -18,32 +18,41 @@ package org.nuxeo.ecm.platform.routing.api;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
 
 /**
+ * An actionable object is an object that can be validated or refused.
+ *
+ * @see ActionableValidator
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
 public interface ActionableObject {
 
     /**
+     * The operation chain id if the action is refused.
+     *
      * @return
      */
     String getRefuseOperationChainId();
 
     /**
+     * The operation chain id if the action is validated.
+     *
      * @return
      */
     String getValidateOperationChainId();
 
     /**
+     * The step that represent the action.
+     *
      * @param session
      * @return
      */
     DocumentRouteStep getDocumentRouteStep(CoreSession session);
 
     /**
-     * @param session
-     * @return
+     * The documents processed by the action.
      */
     DocumentModelList getAttachedDocuments(CoreSession session);
 

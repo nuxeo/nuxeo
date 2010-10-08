@@ -25,12 +25,15 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * An actionable validator allows to run an {@link ActionableObject}.
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
 public class ActionableValidator {
 
     protected ActionableObject actionnable;
+
     protected CoreSession session;
 
     public ActionableValidator(ActionableObject actionnable, CoreSession session) {
@@ -51,7 +54,8 @@ public class ActionableValidator {
     protected void runChain(String chainId) {
         AutomationService automationService = getAutomationService();
         OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, actionnable.getDocumentRouteStep(session));
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                actionnable.getDocumentRouteStep(session));
         context.setInput(actionnable.getAttachedDocuments(session));
         try {
             automationService.run(context, chainId);

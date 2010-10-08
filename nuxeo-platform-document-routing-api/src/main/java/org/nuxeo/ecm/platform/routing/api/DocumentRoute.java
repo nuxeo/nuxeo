@@ -21,7 +21,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * A DocumentRoute model or instance.
+ * A DocumentRoute model or instance. A route is a set of step that processes
+ * documents.
  *
  * If a method is called that change the state of this object, the
  * {@link #save(CoreSession)} method should be called to persist its state.
@@ -38,5 +39,11 @@ public interface DocumentRoute extends DocumentRouteStepsContainer {
      * @param documents
      */
     void setAttachedDocuments(List<String> documentIds);
+
+    /**
+     * The list of documents processed by this route.
+     *
+     * @return
+     */
     List<String> getAttachedDocuments();
 }
