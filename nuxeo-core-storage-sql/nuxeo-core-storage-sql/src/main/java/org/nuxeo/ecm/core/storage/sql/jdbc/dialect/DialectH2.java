@@ -226,23 +226,12 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    // translate into Lucene-based syntax
     public String getDialectFulltextQuery(String query) {
         FulltextQuery ft = analyzeFulltextQuery(query);
-        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
-            return "+DONTMATCHANYTHINGFOREMPTYQUERY";
+        if (ft == null) {
+            return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        List<String> terms = new LinkedList<String>();
-        for (String word : ft.pos) {
-            terms.add(word);
-        }
-        for (List<String> words : ft.or) {
-            terms.add("(" + StringUtils.join(words, " OR ") + ")");
-        }
-        for (String word : ft.neg) {
-            terms.add("-" + word);
-        }
-        return StringUtils.join(terms, " AND ");
+        return translateFulltextOrAndAndNot(ft, "OR", "AND", "NOT");
     }
 
     // SELECT ..., 1 as nxscore

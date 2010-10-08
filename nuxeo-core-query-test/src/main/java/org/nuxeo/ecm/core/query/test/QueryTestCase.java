@@ -1442,11 +1442,27 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         dml = session.query(query);
         assertEquals(2, dml.size());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = 'oyster pete OR world'";
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world smurf'";
         dml = session.query(query);
         assertEquals(1, dml.size());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster pete OR world'";
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -smurf'";
+        dml = session.query(query);
+        assertEquals(2, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-smurf world OR pete'";
+        dml = session.query(query);
+        assertEquals(2, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world oyster'";
+        dml = session.query(query);
+        assertEquals(2, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -oyster'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster world OR pete'";
         dml = session.query(query);
         assertEquals(1, dml.size());
     }

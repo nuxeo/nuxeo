@@ -44,6 +44,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * A Dialect encapsulates knowledge about database-specific behavior.
@@ -267,104 +269,173 @@ public abstract class Dialect {
             String quotedIndexName, Table table, List<Column> columns,
             Model model);
 
+    /**
+     * Structured fulltext query.
+     */
     public static class FulltextQuery {
-        /** Positive terms. */
-        public List<String> pos = new LinkedList<String>();
+        public enum Op {
+            OR, AND, WORD, NOTWORD
+        };
 
-        /** Positive ORed terms. */
-        public List<List<String>> or = new LinkedList<List<String>>();
+        public Op op;
 
-        /** Negative terms. */
-        public List<String> neg = new LinkedList<String>();
+        /** The list of terms, if op is OR or AND */
+        public List<FulltextQuery> terms;
+
+        /** The word, if op is WORD or NOTWORD */
+        public String word;
     }
 
     /**
      * Analyzes a fulltext query into a generic datastructure that can be used
      * for each specific database.
+     * <p>
+     * List of terms containing only negative words are suppressed. Otherwise
+     * negative words are put at the end of the lists of terms.
      */
-    public FulltextQuery analyzeFulltextQuery(String query) {
-        query = query.replaceAll(" +", " ").trim();
-        FulltextQuery ft = new FulltextQuery();
-        boolean wasNeg = false;
-        boolean wasOr = false;
-        String lastWord = null;
-        List<String> lastOr = null;
-        for (String word : StringUtils.split(query, ' ', false)) {
-            if (word.equalsIgnoreCase("OR")) {
-                if (wasNeg) {
-                    throw new QueryMakerException(
-                            "Invalid fulltext query (OR after negation): "
-                                    + query);
-                }
-                if (wasOr) {
-                    throw new QueryMakerException(
-                            "Invalid fulltext query (OR OR): " + query);
-                }
-                if (lastWord == null && lastOr == null) {
-                    throw new QueryMakerException(
-                            "Invalid fulltext query (standalone OR): " + query);
-                }
-                if (lastOr == null) {
-                    lastOr = new LinkedList<String>();
-                }
-                if (lastWord != null) {
-                    lastOr.add(lastWord);
-                    lastWord = null;
-                }
-                wasOr = true;
-            } else if (word.startsWith("-")) {
-                if (wasOr) {
-                    throw new QueryMakerException(
-                            "Invalid fulltext query (negation after OR ): "
-                                    + query);
-                }
-                if (lastOr != null) {
-                    ft.or.add(lastOr);
-                    lastOr = null;
-                }
-                if (lastWord != null) {
-                    ft.pos.add(lastWord);
-                    lastWord = null;
-                }
-                word = word.substring(1);
-                if (word.length() == 0) {
-                    throw new QueryMakerException(
-                            "Invalid fulltxt query (standalone -): " + query);
-                }
-                ft.neg.add(word);
-                wasNeg = true;
-            } else {
-                if (word.startsWith("+")) {
-                    word = word.substring(1);
-                    if (word.length() == 0) {
+    public static FulltextQuery analyzeFulltextQuery(String query) {
+        return new FulltextQueryAnalyzer().analyze(query);
+    }
+
+    public static class FulltextQueryAnalyzer {
+
+        public FulltextQuery ft = new FulltextQuery();
+
+        public List<FulltextQuery> terms = new LinkedList<FulltextQuery>();
+
+        public FulltextQuery analyze(String query) {
+            query = query.replaceAll(" +", " ").trim();
+            if (query.trim().length() == 0) {
+                return null;
+            }
+            ft.op = FulltextQuery.Op.OR;
+            ft.terms = new LinkedList<FulltextQuery>();
+            // current sequence of ANDed terms
+            boolean wasOr = false;
+            for (String word : StringUtils.split(query, ' ', true)) {
+                if (word.equalsIgnoreCase("OR")) {
+                    if (wasOr) {
                         throw new QueryMakerException(
-                                "Invalid fulltxt query (standalone +): "
+                                "Invalid fulltext query (OR OR): " + query);
+                    }
+                    if (terms.isEmpty()) {
+                        throw new QueryMakerException(
+                                "Invalid fulltext query (standalone OR): "
                                         + query);
                     }
-                }
-                if (wasOr) {
-                    lastOr.add(word);
-                    wasOr = false;
+                    wasOr = true;
                 } else {
-                    if (lastOr != null) {
-                        ft.or.add(lastOr);
-                        lastOr = null;
+                    FulltextQuery w = new FulltextQuery();
+                    if (word.startsWith("-")) {
+                        word = word.substring(1);
+                        if (word.length() == 0) {
+                            throw new QueryMakerException(
+                                    "Invalid fulltxt query (standalone -): "
+                                            + query);
+                        }
+                        w.op = FulltextQuery.Op.NOTWORD;
+                    } else {
+                        if (word.startsWith("+")) {
+                            word = word.substring(1);
+                            if (word.length() == 0) {
+                                throw new QueryMakerException(
+                                        "Invalid fulltxt query (standalone +): "
+                                                + query);
+                            }
+                        }
+                        w.op = FulltextQuery.Op.WORD;
                     }
-                    if (lastWord != null) {
-                        ft.pos.add(lastWord);
+                    if (wasOr) {
+                        endAnd();
+                        wasOr = false;
                     }
-                    lastWord = word;
+                    w.word = word;
+                    terms.add(w);
                 }
-                wasNeg = false;
             }
+            if (wasOr) {
+                throw new QueryMakerException(
+                        "Invalid fulltext query (final OR): " + query);
+            }
+            // final terms
+            endAnd();
+            int size = ft.terms.size();
+            if (size == 0) {
+                // all terms were negative
+                return null;
+            } else if (size == 1) {
+                // simplify when no OR
+                ft = ft.terms.get(0);
+            }
+            return ft;
         }
-        if (lastWord != null) {
-            ft.pos.add(lastWord);
+
+        // add current ANDed terms to global OR
+        protected void endAnd() {
+            // put negative words at the end
+            List<FulltextQuery> pos = new LinkedList<FulltextQuery>();
+            List<FulltextQuery> neg = new LinkedList<FulltextQuery>();
+            for (FulltextQuery term : terms) {
+                if (term.op == FulltextQuery.Op.NOTWORD) {
+                    neg.add(term);
+                } else {
+                    pos.add(term);
+                }
+            }
+            if (!pos.isEmpty()) {
+                terms = pos;
+                terms.addAll(neg);
+                if (terms.size() == 1) {
+                    ft.terms.add(terms.get(0));
+                } else {
+                    FulltextQuery a = new FulltextQuery();
+                    a.op = FulltextQuery.Op.AND;
+                    a.terms = terms;
+                    ft.terms.add(a);
+                }
+            }
+            terms = new LinkedList<FulltextQuery>();
         }
-        if (lastOr != null) {
-            ft.or.add(lastOr);
+    }
+
+    /**
+     * Translate fulltext into a common pattern used by many servers.
+     */
+    public static String translateFulltextOrAndAndNot(FulltextQuery ft,
+            String or, String and, String andNot) {
+        StringBuilder buf = new StringBuilder();
+        translateFulltextOrAndAndNot(ft, buf, or, and, andNot);
+        return buf.toString();
+    }
+
+    protected static void translateFulltextOrAndAndNot(FulltextQuery ft,
+            StringBuilder buf, String or, String and, String andNot) {
+
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            buf.append('(');
+            for (int i = 0; i < ft.terms.size(); i++) {
+                FulltextQuery term = ft.terms.get(i);
+                if (i > 0) {
+                    buf.append(' ');
+                    if (ft.op == Op.OR) {
+                        buf.append(or);
+                    } else { // Op.AND
+                        if (term.op == Op.NOTWORD) {
+                            buf.append(andNot);
+                        } else {
+                            buf.append(and);
+                        }
+                    }
+                    buf.append(' ');
+                }
+                translateFulltextOrAndAndNot(term, buf, or, and, andNot);
+            }
+            buf.append(')');
+            return;
+        } else {
+            // TODO phrase
+            buf.append(ft.word);
         }
-        return ft;
     }
 
     /**

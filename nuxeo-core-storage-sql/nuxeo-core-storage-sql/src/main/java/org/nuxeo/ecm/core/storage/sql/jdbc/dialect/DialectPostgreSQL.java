@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * PostgreSQL-specific dialect.
@@ -279,17 +278,10 @@ public class DialectPostgreSQL extends Dialect {
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
         FulltextQuery ft = analyzeFulltextQuery(query);
-        List<String> terms = new LinkedList<String>();
-        for (String word : ft.pos) {
-            terms.add(word);
+        if (ft == null) {
+            return ""; // won't match anything
         }
-        for (List<String> words : ft.or) {
-            terms.add("(" + StringUtils.join(words, " | ") + ")");
-        }
-        for (String word : ft.neg) {
-            terms.add("!" + word);
-        }
-        return StringUtils.join(terms, " & ");
+        return translateFulltextOrAndAndNot(ft, "|", "&", "& !");
     }
 
     // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore

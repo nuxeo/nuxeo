@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -274,22 +275,12 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getDialectFulltextQuery(String query) {
+        query = query.replace("*", "%");
         FulltextQuery ft = analyzeFulltextQuery(query);
-        if (ft.pos.isEmpty() && ft.or.isEmpty()) {
+        if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        List<String> terms = new LinkedList<String>();
-        for (String word : ft.pos) {
-            terms.add(word);
-        }
-        for (List<String> words : ft.or) {
-            terms.add("(" + StringUtils.join(words, " | ") + ")");
-        }
-        String res = StringUtils.join(terms, " & ");
-        if (!ft.neg.isEmpty()) {
-            res += " &! " + StringUtils.join(ft.neg, " &! ");
-        }
-        return res;
+        return translateFulltextOrAndAndNot(ft, "|", "&", "&!");
     }
 
     // SELECT ..., FTTBL.RANK / 1000.0
@@ -314,21 +305,18 @@ public class DialectSQLServer extends Dialect {
         info.joins = new ArrayList<Join>();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
-            info.joins.add(
-                new Join(Join.LEFT, ft.getQuotedName(), null, null,
-                        ftMain.getFullQuotedName(),
-                        mainColumn.getFullQuotedName()));
+            info.joins.add(new Join(Join.LEFT, ft.getQuotedName(), null, null,
+                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
         }
-        info.joins.add(
-            new Join(
-                    Join.LEFT, //
-                    String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
-                            ft.getQuotedName(), getQuotedFulltextAnalyzer()),
-                    tableAlias, // alias
-                    fulltextQuery, // param
-                    ftMain.getFullQuotedName(), // on1
-                    String.format("%s.[KEY]", tableAlias) // on2
-            ));
+        info.joins.add(new Join(
+                Join.LEFT, //
+                String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)",
+                        ft.getQuotedName(), getQuotedFulltextAnalyzer()),
+                tableAlias, // alias
+                fulltextQuery, // param
+                ftMain.getFullQuotedName(), // on1
+                String.format("%s.[KEY]", tableAlias) // on2
+        ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("%s.RANK / 1000.0 AS %s", tableAlias,
                 scoreAlias);

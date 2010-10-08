@@ -20,6 +20,11 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class holds the details for sorting.
@@ -29,6 +34,12 @@ import java.io.Serializable;
 public class SortInfo implements Serializable {
 
     private static final long serialVersionUID = -5490026543290755342L;
+
+    private static final Log log = LogFactory.getLog(SortInfo.class);
+
+    public static final String SORT_COLUMN_NAME = "sortColumn";
+
+    public static final String SORT_ASCENDING_NAME = "sortAscending";
 
     protected String sortColumn;
 
@@ -83,6 +94,31 @@ public class SortInfo implements Serializable {
             return false;
         } else {
             return false;
+        }
+    }
+
+    public static Map<String, Serializable> asMap(SortInfo sortInfo) {
+        if (sortInfo == null) {
+            return null;
+        }
+        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        res.put(SORT_COLUMN_NAME, sortInfo.getSortColumn());
+        res.put(SORT_ASCENDING_NAME,
+                Boolean.valueOf(sortInfo.getSortAscending()));
+        return res;
+    }
+
+    public static SortInfo asSortInfo(Map<String, Serializable> map) {
+        if (map == null) {
+            return null;
+        }
+        if (map.containsKey(SORT_COLUMN_NAME)
+                && map.containsKey(SORT_ASCENDING_NAME)) {
+            return new SortInfo((String) map.get("sortColumn"),
+                    Boolean.TRUE.equals(map.get("sortAscending")));
+        } else {
+            log.error("Cannot resolve sort info from map: " + map);
+            return null;
         }
     }
 

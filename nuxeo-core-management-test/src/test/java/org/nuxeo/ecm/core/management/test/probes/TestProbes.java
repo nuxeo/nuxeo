@@ -48,6 +48,8 @@ public class TestProbes extends SQLRepositoryTestCase {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
 
+        pm.runAllProbes();
+
         ProbeInfo info = pm.getProbeInfo(AdministrativeStatusProbe.class);
         assertNotNull(info);
 
