@@ -19,12 +19,20 @@ package org.nuxeo.ecm.platform.smart.query;
 import java.io.Serializable;
 
 /**
+ * Common interface for query build
+ *
  * @author Anahide Tchertchian
  */
 public interface SmartQuery extends Serializable {
 
+    /**
+     * Returns a String with the built query (or query part).
+     */
     String buildQuery();
 
+    /**
+     * Returns true if query is valid.
+     */
     boolean isValid();
 
 }

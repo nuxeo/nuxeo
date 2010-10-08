@@ -39,6 +39,12 @@ import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
+ * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created
+ * for a given existing query string.
+ * <p>
+ * Also handles undo/redo actions and all ajax interactions for an incremental
+ * query build page.
+ *
  * @author Anahide Tchertchian
  */
 @Name("smartNXQLQueryActions")

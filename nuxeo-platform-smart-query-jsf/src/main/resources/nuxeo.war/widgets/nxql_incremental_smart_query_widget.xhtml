@@ -74,6 +74,7 @@
                     value="#{widgetProperty_updateQueryPart}" />
                 </a4j:support>
               </h:inputTextarea>
+              <h:message for="smartQueryPart" class="errorMessage" />
             </a4j:outputPanel>
           </td>
           <td valign="bottom">
@@ -82,7 +83,7 @@
                 actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
                 reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
                 immediate="true" styleClass="button"
-                rendered="#{smartNXQLQueryActions.canUndoQueryPartChanges}">
+                disabled="#{!smartNXQLQueryActions.canUndoQueryPartChanges}">
                 <a4j:actionparam name="queryPartComponentId"
                   value="smartQueryPart" />
                 <a4j:actionparam name="updateQueryPart"
@@ -93,7 +94,7 @@
                 actionListener="#{smartNXQLQueryActions.redoQueryPartChanges}"
                 reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
                 immediate="true" styleClass="button"
-                rendered="#{smartNXQLQueryActions.canRedoQueryPartChanges}">
+                disabled="#{!smartNXQLQueryActions.canRedoQueryPartChanges}">
                 <a4j:actionparam name="queryPartComponentId"
                   value="smartQueryPart" />
                 <a4j:actionparam name="updateQueryPart"
@@ -101,7 +102,7 @@
               </a4j:commandButton>
               <br /><br />
             </a4j:outputPanel>
-            <a4j:commandButton value="#{messages['command.clearSearch']}"
+            <a4j:commandButton value="#{messages['label.smart.query.clearQuery']}"
               actionListener="#{smartNXQLQueryActions.clearQueryPart}"
               reRender="smartSearchAjaxPanel, smartQueryPartPanel, smartQueryUndoPanel"
               immediate="true"
@@ -116,7 +117,6 @@
                 <h:graphicImage value="/img/standart_waiter.gif" />
               </f:facet>
             </a4j:status>
-            <h:message for="smartQueryPart" class="errorMessage" />
           </td>
         </tr>
       </tbody>

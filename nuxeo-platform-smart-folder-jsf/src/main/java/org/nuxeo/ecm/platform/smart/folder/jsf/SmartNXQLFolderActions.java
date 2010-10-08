@@ -65,7 +65,9 @@ public class SmartNXQLFolderActions implements Serializable {
         List<Map<String, Serializable>> sortInfosForDoc = new ArrayList<Map<String, Serializable>>();
         if (sortInfos != null) {
             for (SortInfo sortInfo : sortInfos) {
-                sortInfosForDoc.add(SortInfo.asMap(sortInfo));
+                if (sortInfo != null) {
+                    sortInfosForDoc.add(SortInfo.asMap(sortInfo));
+                }
             }
         }
         doc.setPropertyValue(SmartFolderDocumentConstants.SORT_INFOS_PROP_NAME,

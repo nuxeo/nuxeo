@@ -10,7 +10,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">
-          SELECT * FROM Document WHERE ? AND ecm:mixinType !=
+          SELECT * FROM Document WHERE (?) AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>

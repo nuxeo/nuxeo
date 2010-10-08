@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.smart.query;
 import java.util.LinkedList;
 
 /**
+ * Linked list with a capacity to handle undo/redo actions.
+ *
  * @author Anahide Tchertchian
  */
 public class HistoryList<E> extends LinkedList<E> {

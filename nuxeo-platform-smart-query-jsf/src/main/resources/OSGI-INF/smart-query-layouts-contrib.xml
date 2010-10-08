@@ -97,7 +97,7 @@
           </fields>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
         <widget name="and" type="text">
@@ -126,7 +126,7 @@
           </widgetModes>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
       </subWidgets>
@@ -153,7 +153,7 @@
           </fields>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
         <widget name="and" type="text">
@@ -182,7 +182,7 @@
           </widgetModes>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
       </subWidgets>
@@ -209,7 +209,7 @@
           </fields>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
         <widget name="and" type="text">
@@ -238,7 +238,7 @@
           </widgetModes>
           <properties widgetMode="edit">
             <property name="required">true</property>
-            <property name="pattern">#{nxu:basicDateFormater()}</property>
+            <property name="format">#{nxu:basicDateFormater()}</property>
           </properties>
         </widget>
       </subWidgets>
