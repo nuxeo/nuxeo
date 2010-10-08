@@ -66,6 +66,8 @@
           <artifact groupId="!org.nuxeo*" />
         </includes>
       </artifact:set>
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-front"/>
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler"/>
     </copy>
     <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
