@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.documentrouting.web.routing;
+package org.nuxeo.ecm.platform.routing.web;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;

@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.documentrouting.web.routing;
+package org.nuxeo.ecm.platform.routing.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
