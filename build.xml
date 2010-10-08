@@ -12,7 +12,7 @@
 
   <!-- set default root properties if not set -->
   <target name="set.jboss.home" unless="jboss.home">
-    <property name="jboss.home" value="${jboss.dir}" />
+    <property name="jboss.home" location="${jboss.dir}" />
   </target>
   <target name="set.assembly.name" unless="assembly.ear">
     <property name="assembly.name" value="nuxeo" />
