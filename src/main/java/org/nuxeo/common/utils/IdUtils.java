@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utils for identifier generation.
@@ -44,14 +46,18 @@ public final class IdUtils {
      * Generates an unique string identifier.
      */
     public static String generateStringId() {
-        return String.valueOf(RANDOM.nextLong());
+        return String.valueOf(generateLongId());
     }
 
     /**
      * Generates an unique long identifier.
      */
     public static long generateLongId() {
-        return RANDOM.nextLong();
+        long r = RANDOM.nextLong();
+        if (r < 0) {
+            r = -r;
+        }
+        return r;
     }
 
     /**
@@ -61,14 +67,10 @@ public final class IdUtils {
      * removes non alphanumerical characters and replaces spaces by the given
      * wordSeparator character.
      *
-     * @param s
-     *            the original String
-     * @param wordSeparator
-     *            the word separator to use (usually '-')
-     * @param lower
-     *            if lower is true, remove upper case
-     * @param maxChars
-     *            maximum longer of identifier characters
+     * @param s the original String
+     * @param wordSeparator the word separator to use (usually '-')
+     * @param lower if lower is true, remove upper case
+     * @param maxChars maximum longer of identifier characters
      * @return the identifier String
      */
     public static String generateId(String s, String wordSeparator,
@@ -112,12 +114,34 @@ public final class IdUtils {
     }
 
     /**
-     * Generates an id from a non-null String.
+     * Generates a Nuxeo path segment from a non-null String.
      * <p>
-     * Uses default values for wordSeparator: '-', lower: true, maxChars: 24.
+     * Basically all characters are kept, except for slashes and
+     * initial/trailing spaces.
+     *
+     * @deprecated use {@link #generatePathSegment} instead, or
+     *             {@link #generateId(String, String, boolean, int)} depending
+     *             on the use cases
      */
+    @Deprecated
     public static String generateId(String s) {
-        return generateId(s, "-", true, 24);
+        return generatePathSegment(s);
+    }
+
+    public static final Pattern STUPID_REGEXP = Pattern.compile("^[- .,;?!:/\\\\'\"]*$");
+
+    /**
+     * Generates a Nuxeo path segment from a non-null String.
+     * <p>
+     * Basically all characters are kept, except for slashes and
+     * initial/trailing spaces.
+     */
+    public static String generatePathSegment(String s) {
+        s = s.trim();
+        if (STUPID_REGEXP.matcher(s).matches()) {
+            return generateStringId();
+        }
+        return s.replace("/", "-");
     }
 
 }
