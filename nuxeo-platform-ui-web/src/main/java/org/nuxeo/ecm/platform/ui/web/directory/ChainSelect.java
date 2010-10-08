@@ -40,6 +40,7 @@ import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 import com.sun.facelets.component.UIRepeat;
@@ -373,6 +374,10 @@ public class ChainSelect extends UIInput {
     }
 
     public Selection getSelection(int i) {
+        if (selections == null) {
+            throw new ClientRuntimeException("ChainSelect is mis-behaving, "
+                    + "it's probable you're experiencing issue NXP-5762");
+        }
         return selections[i];
     }
 
@@ -399,8 +404,8 @@ public class ChainSelect extends UIInput {
     }
 
     /**
-     * If the user changes selection for position k, all options for n>k will be
-     * reset. We only have to rebuild options for position k+1.
+     * If the user changes selection for position k, all options for n>k will
+     * be reset. We only have to rebuild options for position k+1.
      */
     public void rebuildOptions() {
         // for (int i = 0; i < size; i++) {
