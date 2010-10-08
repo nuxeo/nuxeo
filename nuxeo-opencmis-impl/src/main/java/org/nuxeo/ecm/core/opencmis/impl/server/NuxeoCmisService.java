@@ -97,6 +97,7 @@ import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -388,8 +389,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             throw new CmisInvalidArgumentException("Not creatable: " + typeId);
         }
         DocumentModel doc = createDocumentModel(folder, type);
-        NuxeoObjectData object = new NuxeoObjectData(repository, doc);
-        updateProperties(object, null, properties, true);
+        NuxeoObjectData data = new NuxeoObjectData(repository, doc);
+        updateProperties(data, null, properties, true);
         try {
             if (contentStream != null) {
                 if (contentStream.getFileName() == null) {
@@ -410,14 +411,18 @@ public class NuxeoCmisService extends AbstractCmisService {
                     // cannot happen, overwrite = true
                 }
             }
-            object.doc = coreSession.createDocument(doc);
+            // set path segment from title
+            String pathSegment = IdUtils.generatePathSegment(doc.getTitle());
+            doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
+                    pathSegment);
+            data.doc = coreSession.createDocument(doc);
             coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException("Cannot create", e);
         } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
-        return object;
+        return data;
     }
 
     protected <T> void updateProperties(NuxeoObjectData object,

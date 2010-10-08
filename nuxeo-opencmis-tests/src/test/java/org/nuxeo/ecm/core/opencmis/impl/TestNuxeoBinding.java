@@ -98,6 +98,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     // stream content with non-ASCII characters
     public static final String STREAM_CONTENT = "Caf\u00e9 Diem\none\0two";
 
+    public static final String COMPLEX_TITLE = "Is this my/your caf\u00e9?";
+
     protected RepositoryService repoService;
 
     protected ObjectService objService;
@@ -433,7 +435,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     protected String createDocumentMyDocType() {
         BindingsObjectFactory factory = binding.getObjectFactory();
         List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
-        props.add(factory.createPropertyIdData(PropertyIds.NAME, "mydoc"));
+        props.add(factory.createPropertyIdData(PropertyIds.NAME, COMPLEX_TITLE));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
                 "MyDocType"));
         props.add(factory.createPropertyStringData("my:string", "abc"));
@@ -459,7 +461,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String id = createDocumentMyDocType();
         ObjectData data = getObject(id);
         assertEquals(id, data.getId());
-        assertEquals("mydoc", getString(data, PropertyIds.NAME));
+        assertEquals(COMPLEX_TITLE, getString(data, PropertyIds.NAME));
         assertEquals("MyDocType", getString(data, PropertyIds.OBJECT_TYPE_ID));
         assertEquals("abc", getString(data, "my:string"));
         assertEquals(Boolean.TRUE, getValue(data, "my:boolean"));
@@ -479,6 +481,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             assertEquals(CalendarHelper.toString(localDate),
                     CalendarHelper.toString(date));
         }
+        // check path segment created from name/title
+        List<ObjectParentData> parents = navService.getObjectParents(
+                repositoryId, id, null, null, null, null, Boolean.TRUE, null);
+        assertEquals(1, parents.size());
+        String pathSegment = parents.get(0).getRelativePathSegment();
+        assertEquals(COMPLEX_TITLE.replace("/", "-"), pathSegment);
     }
 
     @Test
