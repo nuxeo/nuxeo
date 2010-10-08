@@ -55,12 +55,10 @@ public class Pack {
                     Element mtype = ((Element) n);
                     String type = n.getNodeName().toLowerCase();
                     String path = null;
-                    if ("web".equals(type)) {
-                        path = ((Element) (mtype.getElementsByTagName("web-uri").item(0))).getTextContent().trim();
-                    } else {
+                    if (!"web".equals(type)) {
                         path = mtype.getTextContent().trim();
+                        paths.add(path);
                     }
-                    paths.add(path);
                 }
                 n = n.getNextSibling();
             }
