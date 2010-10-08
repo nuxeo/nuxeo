@@ -26,5 +26,5 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
  *
  */
 public interface ElementRunner {
-    public void run(CoreSession session, DocumentRouteElement element);
+    void run(CoreSession session, DocumentRouteElement element);
 }
