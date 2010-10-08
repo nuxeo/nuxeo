@@ -2,7 +2,6 @@
 <structure bundles="bundles/*.jar:bundles/*.rar:plugins/*.jar">
     <preprocessor enabled="true" classpath="bundles/nuxeo-common-*.jar:bundles/nuxeo-runtime-deploy-*.jar" />
     <context path="" metaDataPath="META-INF" classpath="lib/*.jar" />
-    <context path="datasources" metaDataPath="" />
     <properties>
       <property name="nuxeo.home.dir">${jboss.server.data.dir}/NXRuntime</property>
       <property name="nuxeo.config.dir">${nuxeo.ear.dir}/config</property>
