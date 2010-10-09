@@ -45,7 +45,7 @@ public class SimpleExternalDocumentModelFactory extends
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
-        String name = IdUtils.generateId(doc.getTitle());
+        String name = IdUtils.generatePathSegment(doc.getTitle());
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + name);
         // We don't want to erase the current version
         final ScopedMap ctxData = doc.getContextData();

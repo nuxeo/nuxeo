@@ -358,7 +358,7 @@ public class CommentManagerImpl implements CommentManager {
         String commentName = getCommentName(docModel, comment);
         CommentConverter converter = config.getCommentConverter();
         DocumentModel commentDocModel = mySession.createDocumentModel(pathStr,
-                IdUtils.generateId(commentName), comment.getType());
+                IdUtils.generatePathSegment(commentName), comment.getType());
         converter.updateDocumentModel(commentDocModel, comment);
         commentDocModel.setProperty("dublincore", "title", commentName);
         commentDocModel = mySession.createDocument(commentDocModel);

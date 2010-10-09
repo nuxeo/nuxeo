@@ -55,9 +55,9 @@ public class DocumentHelper {
             if (name == null) {
                 name = form.getDocumentTitle();
                 if (name == null) {
-                    name = IdUtils.generateId(type);
+                    name = IdUtils.generatePathSegment(type);
                 } else {
-                    name = IdUtils.generateId(name);
+                    name = IdUtils.generatePathSegment(name);
                 }
                 String baseTitle = name;
                 int i = 0;

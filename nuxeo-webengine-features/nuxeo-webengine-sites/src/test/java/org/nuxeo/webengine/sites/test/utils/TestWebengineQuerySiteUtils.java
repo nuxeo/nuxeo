@@ -97,7 +97,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     }
 
     protected void createSites() throws Exception {
-        String workspaceSiteId = IdUtils.generateId(workspaceSiteTitle);
+        String workspaceSiteId = IdUtils.generatePathSegment(workspaceSiteTitle);
         workspaceSite = session.createDocumentModel("/", workspaceSiteId,
                 "WebSite");
         assertNotNull(workspaceSite);
@@ -111,7 +111,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
         // re-read the document model
         workspaceSite = session.getDocument(workspaceSite.getRef());
 
-        String webSiteId = IdUtils.generateId(webSiteTitle);
+        String webSiteId = IdUtils.generatePathSegment(webSiteTitle);
         webSite = session.createDocumentModel("/", webSiteId, "WebSite");
         assertNotNull(webSite);
         webSite.setPropertyValue("dc:title", webSiteTitle);
@@ -128,7 +128,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
     protected void createWebPages() throws Exception {
         webPageForWorkspaceSite = session.createDocumentModel(
                 workspaceSite.getPathAsString(),
-                IdUtils.generateId(pageForWorkspaceSiteTitle
+                IdUtils.generatePathSegment(pageForWorkspaceSiteTitle
                         + System.currentTimeMillis()), SiteConstants.WEBPAGE);
         assertNotNull(webPageForWorkspaceSite);
         webPageForWorkspaceSite = session.createDocument(webPageForWorkspaceSite);
@@ -139,7 +139,7 @@ public class TestWebengineQuerySiteUtils extends SQLRepositoryTestCase {
 
         webPageForWebSite = session.createDocumentModel(
                 webSite.getPathAsString(),
-                IdUtils.generateId(pageForWebSiteTitle
+                IdUtils.generatePathSegment(pageForWebSiteTitle
                         + System.currentTimeMillis()), SiteConstants.WEBPAGE);
         assertNotNull(webPageForWebSite);
         webPageForWebSite = session.createDocument(webPageForWebSite);

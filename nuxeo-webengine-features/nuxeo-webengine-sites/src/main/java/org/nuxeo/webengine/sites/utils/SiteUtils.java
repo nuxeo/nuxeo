@@ -177,7 +177,7 @@ public class SiteUtils {
 
         // Trim and replace problematic chars with -
         String theName = (StringUtils.isEmpty(pageName) ? title : pageName).trim();
-        theName = IdUtils.generateId(theName);
+        theName = IdUtils.generatePathSegment(theName);
         //theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
