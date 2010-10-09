@@ -468,7 +468,7 @@ public class DocumentActionsBean extends InputController implements
             if (title == null) {
                 title = "";
             }
-            String name = IdUtils.generateId(title);
+            String name = IdUtils.generatePathSegment(title);
             // set parent path and name for document model
             newDocument.setPathInfo(parentDocumentPath, name);
 

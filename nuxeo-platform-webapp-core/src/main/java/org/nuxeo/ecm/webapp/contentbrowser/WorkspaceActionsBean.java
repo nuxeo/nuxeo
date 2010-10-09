@@ -307,7 +307,7 @@ public class WorkspaceActionsBean extends InputController implements
             // duplicate the template
             String title = (String) tmpWorkspace.getProperty("dublincore",
                     "title");
-            String name = IdUtils.generateId(title);
+            String name = IdUtils.generatePathSegment(title);
             documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
                     name);
             DocumentModel created = documentManager.getChild(currentDocRef,

@@ -139,7 +139,7 @@ public class SiteActionsBean {
             Object value, String siteType) {
         if (value instanceof String) {
             // apply Title2Path translation
-            String name = IdUtils.generateId((String) value);
+            String name = IdUtils.generatePathSegment((String) value);
             try {
                 DocumentModelList sites = querySitesByUrlAndDocType(
                         documentManager, name, siteType);

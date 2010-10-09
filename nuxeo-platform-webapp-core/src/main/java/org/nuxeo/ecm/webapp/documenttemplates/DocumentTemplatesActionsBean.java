@@ -171,7 +171,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
 
         try {
             String title = (String) doc.getProperty("dublincore", "title");
-            String name = IdUtils.generateId(title);
+            String name = IdUtils.generatePathSegment(title);
             DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
                     name);
 
