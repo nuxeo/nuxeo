@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
@@ -39,8 +40,12 @@ public class ResourceBank implements Type {
     @XNode("@name")
     public String name;
 
-    @XNode("@url")
     private String connectionUrl;
+
+    @XNode("@url")
+    public void setConnectionUrl(String connectionUrl) {
+        this.connectionUrl = Framework.expandVars(connectionUrl);
+    }
 
     public ResourceBank() {
     }
@@ -49,10 +54,12 @@ public class ResourceBank implements Type {
         return connectionUrl;
     }
 
+    @Override
     public String getTypeName() {
         return name;
     }
 
+    @Override
     public TypeFamily getTypeFamily() {
         return TypeFamily.RESOURCE_BANK;
     }
