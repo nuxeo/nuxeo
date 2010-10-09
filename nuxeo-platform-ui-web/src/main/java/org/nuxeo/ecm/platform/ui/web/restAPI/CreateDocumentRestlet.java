@@ -92,7 +92,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
         String docTypeName = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         String titleField = "dublincore:title";
         String title = getQueryParamValue(req, titleField, "New " + docTypeName);
-        String id = IdUtils.generateId(title);
+        String id = IdUtils.generatePathSegment(title);
 
         try {
             DocumentModel newDm = documentManager.createDocumentModel(
