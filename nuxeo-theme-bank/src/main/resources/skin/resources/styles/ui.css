@@ -41,24 +41,36 @@ ul {
 table.properties {
   width: 100%;
   margin: 0;
-  padding. 0;
+  padding: 0;
   border-collapse: collapse;
 }
 
 table.properties td {
-  padding: 3px 7px;
-  font: 12px monospace;
+  padding: 5px 7px;
+  font: 11px monospace, sans-serif;
+  border-bottom: 1px dashed #ddd;
 }
 
 table.properties tr.odd td {
-  background-color: #fcfcfc;
 }
 
 table.properties td.key {
   text-align: right;
   font-weight: bold;
-  width: 15%;
+  width: 10%;
 }
+
+table.properties td.value {
+  font-weight: normal;
+  text-align: left;
+  width: 80%;
+}
+
+table.properties td.preview {
+  text-align: left;
+  width: 10%;
+}
+
 
 /* Image browser */
 .album {
@@ -152,10 +164,7 @@ table.properties td.key {
 
 textarea {
   border: 1px solid #999;
-  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
-  font-weight: normal;
-  font-style: normal;
-  font-size: 12px;
+  font: 11px monospace, sans-serif;
 }
 
 textarea:focus {
