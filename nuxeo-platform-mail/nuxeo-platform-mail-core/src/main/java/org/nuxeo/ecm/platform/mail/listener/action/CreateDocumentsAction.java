@@ -92,7 +92,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
         String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
 
         DocumentModel documentModel = session.createDocumentModel(parentPath,
-                IdUtils.generateId(subject + System.currentTimeMillis()),
+                IdUtils.generatePathSegment(subject + System.currentTimeMillis()),
                 MAIL_MESSAGE_TYPE);
         documentModel.setPropertyValue("dc:title", subject);
         documentModel.setPropertyValue(MESSAGE_ID_PROPERTY_NAME,

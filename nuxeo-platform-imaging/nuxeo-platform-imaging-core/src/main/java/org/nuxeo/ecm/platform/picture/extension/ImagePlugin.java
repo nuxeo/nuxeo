@@ -76,7 +76,7 @@ public class ImagePlugin extends AbstractFileImporter {
         } else {
             String title = FileManagerUtils.fetchTitle(filename);
             // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
+            String docId = IdUtils.generatePathSegment(title);
             docModel = documentManager.createDocumentModel(path,
                     docId, ImagingDocumentConstants.PICTURE_TYPE_NAME);
             try {

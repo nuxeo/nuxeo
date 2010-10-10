@@ -60,7 +60,7 @@ public class StoreMessageAction implements MessageAction {
         CoreInstance server = CoreInstance.getInstance();
         CoreSession session = server.open("default", null);
         DocumentModel doc = session.createDocumentModel(parentPath,
-                IdUtils.generateId(title + System.currentTimeMillis()), getMailDocumentType());
+                IdUtils.generatePathSegment(title + System.currentTimeMillis()), getMailDocumentType());
         doc.setProperty("dublincore", "title", title);
         doc = session.createDocument(doc);
         Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get(

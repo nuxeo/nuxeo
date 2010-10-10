@@ -49,7 +49,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
 
     public void testSiteActionListenerWorkspace() throws Exception {
         final String WorkspaceTitle = "Test Workspace";
-        String id = IdUtils.generateId(WorkspaceTitle);
+        String id = IdUtils.generatePathSegment(WorkspaceTitle);
         DocumentModel workspace = session.createDocumentModel("/", id, "Workspace");
         workspace.setPropertyValue("dc:title", WorkspaceTitle);
         workspace = session.createDocument(workspace);
@@ -77,7 +77,7 @@ public class TestWebengineSiteActionListener extends SQLRepositoryTestCase {
 
     public void testSiteActionListenerWebSite() throws Exception {
         final String webSiteTitle = "Test WebSite";
-        String id = IdUtils.generateId(webSiteTitle);
+        String id = IdUtils.generatePathSegment(webSiteTitle);
         DocumentModel webSite = session.createDocumentModel("/", id, "WebSite");
         webSite.setPropertyValue("dc:title", webSiteTitle);
         webSite = session.createDocument(webSite);

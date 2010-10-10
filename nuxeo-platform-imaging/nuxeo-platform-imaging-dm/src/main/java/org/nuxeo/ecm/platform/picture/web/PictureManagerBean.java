@@ -165,7 +165,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         if (title == null) {
             title = "";
         }
-        String name = IdUtils.generateId(title);
+        String name = IdUtils.generatePathSegment(title);
         // set parent path and name for document model
         doc.setPathInfo(parentPath, name);
         try {

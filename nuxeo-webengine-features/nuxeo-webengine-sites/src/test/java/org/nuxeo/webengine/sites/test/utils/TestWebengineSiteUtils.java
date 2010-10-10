@@ -60,7 +60,7 @@ public class TestWebengineSiteUtils extends RepositoryOSGITestCase {
 
     protected void entryTest() throws Exception {
         session = getCoreSession();
-        String id = IdUtils.generateId(webSiteTitle);
+        String id = IdUtils.generatePathSegment(webSiteTitle);
         webSite = session.createDocumentModel("/", id, "WebSite");
         webSite.setPropertyValue("dc:title", webSiteTitle);
         webSite.setPropertyValue("webcontainer:isWebContainer", new Boolean(

@@ -173,7 +173,7 @@ public class PictureBookManagerBean extends InputController implements
         if (title == null) {
             title = "";
         }
-        String name = IdUtils.generateId(title);
+        String name = IdUtils.generatePathSegment(title);
         // set parent path and name for document model
         doc.setPathInfo(parentPath, name);
         doc.setProperty("picturebook", "timeinterval", timeinterval);

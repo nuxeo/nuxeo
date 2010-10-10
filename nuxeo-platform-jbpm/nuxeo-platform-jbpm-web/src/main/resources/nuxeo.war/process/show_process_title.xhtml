@@ -25,6 +25,16 @@
           <h:outputText value="#{messages[label]}" />
         </td>
       </tr>
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.review.out.life.cycle']}"/>
+        </td>
+        <td class="fieldColumn">
+          <c:set var="state"
+            value="#{jbpmActions.currentProcessDestinationState}" />
+          <h:outputText value="#{messages[state]}" rendered="#{state != null}" />
+        </td>
+      </tr>
     </table>
 
   </div>

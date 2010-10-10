@@ -136,7 +136,7 @@ public class ThreadActionBean implements ThreadAction {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
-        String docId = IdUtils.generateId(title);
+        String docId = IdUtils.generatePathSegment(title);
 
         final DocumentModel docThread = documentManager.createDocumentModel(
                 path, docId, type);

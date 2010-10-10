@@ -115,6 +115,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     protected String currentProcessInitiator;
 
+    protected String currentProcessDestinationState;
+
     protected List<TaskInstance> currentTasks;
 
     protected ArrayList<VirtualTaskInstance> currentVirtualTasks;
@@ -254,6 +256,20 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             }
         }
         return currentProcessInitiator;
+    }
+
+    public String getCurrentProcessDestinationState() throws ClientException {
+        if (currentProcessDestinationState == null) {
+            ProcessInstance currentProcess = getCurrentProcess();
+            if (currentProcess != null) {
+                Object destinationState = currentProcess.getContextInstance().getVariable(
+                        JbpmService.VariableName.endLifecycleTransition.name());
+                if (destinationState instanceof String) {
+                    currentProcessDestinationState = (String) destinationState;
+                }
+            }
+        }
+        return currentProcessDestinationState;
     }
 
     public List<TaskInstance> getCurrentTasks(String... taskNames)
@@ -732,6 +748,7 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         canManageParticipants = null;
         currentProcess = null;
         currentProcessInitiator = null;
+        currentProcessDestinationState = null;
         currentTasks = null;
         currentVirtualTasks = null;
         newVirtualTask = null;

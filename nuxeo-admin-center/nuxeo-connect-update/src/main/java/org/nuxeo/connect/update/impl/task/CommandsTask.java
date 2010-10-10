@@ -34,6 +34,7 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.impl.UpdateServiceImpl;
+import org.nuxeo.connect.update.impl.task.commands.Flush;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.w3c.dom.Document;
@@ -134,6 +135,12 @@ public abstract class CommandsTask extends AbstractTask {
                     log.addFirst(rollbackCmd);
                 }
             }
+        }
+        // TODO: force a flush?
+        try {
+            Flush.flush();
+        } catch (Exception e) {
+            throw new PackageException("cache flushing failed", e);
         }
     }
 

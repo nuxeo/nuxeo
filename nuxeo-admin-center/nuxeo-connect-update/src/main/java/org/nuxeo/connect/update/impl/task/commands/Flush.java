@@ -48,14 +48,18 @@ public class Flush extends PostInstallCommand {
         // do nothing
     }
 
+    public static void flush() throws Exception {
+        Framework.getRuntime().reloadProperties();
+        ReloadService deployer = Framework.getLocalService(ReloadService.class);
+        deployer.flushJassCache();
+        deployer.reloadRepository();
+    }
+
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
-            Framework.getRuntime().reloadProperties();
-            ReloadService deployer = Framework.getLocalService(ReloadService.class);
-            deployer.flushJassCache();
-            deployer.reloadRepository();
+            flush();
         } catch (Exception e) {
             throw new PackageException("Failed to reload repository", e);
         }
