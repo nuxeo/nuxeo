@@ -13,12 +13,12 @@ Require-Bundle: org.nuxeo.ecm.webengine.core
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.base.BaseModule; explode:=true; compat:=true
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Import-Package: javax.annotation;version="1.0",
+Import-Package: javax.annotation,
  javax.ejb,
- javax.servlet;version="2.5.0",
+ javax.servlet,
  javax.servlet.http,
- javax.ws.rs;version="1.1",
- javax.ws.rs.core;version="1.1",
+ javax.ws.rs,
+ javax.ws.rs.core,
  org.apache.commons.logging,
  org.nuxeo.common.collections,
  org.nuxeo.common.utils,
