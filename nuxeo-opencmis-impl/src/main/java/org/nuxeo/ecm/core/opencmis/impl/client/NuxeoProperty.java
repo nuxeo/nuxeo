@@ -70,9 +70,11 @@ public class NuxeoProperty<T> implements Property<T> {
         return prop.getPropertyDefinition().getPropertyType();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> U getValue() {
-        return prop.getValue();
+        // cast needed by Sun compiler
+        return (U) prop.getValue();
     }
 
     @Override
