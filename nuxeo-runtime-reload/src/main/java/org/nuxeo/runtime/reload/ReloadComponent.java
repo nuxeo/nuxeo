@@ -76,7 +76,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadRepository() throws Exception {
         Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, "reloadRepository", this, null));
+                new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
     }
 
     public void deployBundle(File file, boolean reloadResourceClassPath)
