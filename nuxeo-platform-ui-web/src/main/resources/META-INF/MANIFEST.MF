@@ -40,8 +40,7 @@ Manifest-Version: 1.0
 Bundle-Name: Nuxeo ECM Web Platform Fragment
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.platform.mimetype.api,
- org.nuxeo.ecm.platform.mimetype.api
+Require-Bundle: org.nuxeo.ecm.platform.mimetype.api
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
@@ -87,7 +86,7 @@ Import-Package: com.noelios.restlet.ext.servlet;resolution:=optional,
  javax.security.auth.login,
  javax.servlet;resolution:=optional,
  javax.servlet.http,
- javax.servlet.jsp.tagext;version="2.2.0",
+ javax.servlet.jsp.tagext;resolution:=optional,
  javax.transaction;version="1.1",
  org.ajax4jsf.javascript;resolution:=optional,
  org.ajax4jsf.resource;resolution:=optional,
