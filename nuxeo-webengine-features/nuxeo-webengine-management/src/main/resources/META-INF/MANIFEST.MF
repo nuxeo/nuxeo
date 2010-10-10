@@ -11,7 +11,6 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.ecm.core.management.api,
  org.nuxeo.ecm.core.management.statuses,
  org.nuxeo.ecm.platform.lock.api,
- org.nuxeo.ecm.platform.management.statuses,
  org.nuxeo.ecm.platform.queue.api,
  org.nuxeo.ecm.platform.usermanager,
  org.nuxeo.ecm.webengine,
@@ -22,10 +21,8 @@ Import-Package: com.thoughtworks.xstream,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Provide-Package: org.nuxeo.ecm.webengine.management,
- org.nuxeo.ecm.webengine.management.auth,
- org.nuxeo.ecm.webengine.management.locks,
- org.nuxeo.ecm.webengine.management.queues,
  org.nuxeo.ecm.webengine.management.statuses
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.management
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.management;singleton=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Nuxeo-Require: org.nuxeo.ecm.platform.management,
