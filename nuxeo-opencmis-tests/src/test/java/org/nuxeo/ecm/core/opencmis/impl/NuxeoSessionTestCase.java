@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -161,6 +162,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         CmisObject child = root.getChildren().iterator().next();
         assertNotNull(child.getProperty("dc:coverage"));
         assertNull(child.getPropertyValue("dc:coverage"));
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        List<String> subjects = doc.getPropertyValue("dc:subjects");
+        assertEquals(Arrays.asList("foo", "gee/moo"), subjects);
     }
 
     public void testPath() throws Exception {
@@ -225,14 +229,21 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         doc.setProperty("dc:title", "new title");
+        doc.setProperty("dc:subjects", Arrays.asList("a", "b", "c"));
         doc.updateProperties();
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         assertEquals("new title", doc.getPropertyValue("dc:title"));
+        assertEquals(Arrays.asList("a", "b", "c"),
+                doc.getPropertyValue("dc:subjects"));
 
-        doc.updateProperties(Collections.singletonMap("dc:title", "other title"));
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("dc:title", "other title");
+        map.put("dc:subjects", Arrays.asList("foo"));
+        doc.updateProperties(map);
         doc.refresh(); // reload
         assertEquals("other title", doc.getPropertyValue("dc:title"));
+        assertEquals(Arrays.asList("foo"), doc.getPropertyValue("dc:subjects"));
     }
 
     public void testContentStream() throws Exception {

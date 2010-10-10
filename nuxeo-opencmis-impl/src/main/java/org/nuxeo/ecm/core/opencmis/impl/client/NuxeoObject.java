@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -41,10 +41,8 @@ import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
-import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
@@ -186,7 +184,7 @@ public abstract class NuxeoObject implements CmisObject {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getPropertyValue(String id) {
-        return (T) data.getProperty(id).getFirstValue();
+        return (T) data.getProperty(id).getValue();
     }
 
     @Override
@@ -204,33 +202,9 @@ public abstract class NuxeoObject implements CmisObject {
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> void setProperty(String id, T value) {
-        NuxeoPropertyDataBase<T> prop = (NuxeoPropertyDataBase<T>) data.getProperty(id);
-        if (!prop.getPropertyDefinition().getCardinality().equals(
-                Cardinality.SINGLE)) {
-            throw new CmisInvalidArgumentException(
-                    "Not a single-valued property: " + id);
-        }
-        prop.setValue(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> List<T> getPropertyMultivalue(String id) {
-        return (List<T>) data.getProperty(id).getValues();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> void setPropertyMultivalue(String id, List<T> value) {
-        NuxeoPropertyDataBase<T> prop = (NuxeoPropertyDataBase<T>) data.getProperty(id);
-        if (!prop.getPropertyDefinition().getCardinality().equals(
-                Cardinality.MULTI)) {
-            throw new CmisInvalidArgumentException(
-                    "Not a multi-valued property: " + id);
-        }
+    public void setProperty(String id, Object value) {
+        NuxeoPropertyDataBase<?> prop = data.getProperty(id);
         prop.setValue(value);
     }
 

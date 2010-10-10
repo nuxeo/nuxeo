@@ -284,8 +284,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
      *
      * @return either a primitive type or a List of them, or {@code null}
      */
+    @Override
     @SuppressWarnings("unchecked")
-    protected Object getValue() {
+    public <U> U getValue() {
         try {
             Property prop = doc.getProperty(name);
             Serializable value = prop.getValue();
@@ -308,10 +309,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 for (int i = 0; i < list.size(); i++) {
                     list.set(i, convertToCMIS(list.get(i)));
                 }
-                return list;
+                return (U) list;
             } else {
                 // primitive type
-                return convertToCMIS(value);
+                return (U) convertToCMIS(value);
             }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);

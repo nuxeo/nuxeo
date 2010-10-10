@@ -182,9 +182,10 @@ public class NuxeoObjectData implements ObjectData {
         }
     }
 
-    public PropertyData<?> getProperty(String id) {
+    public NuxeoPropertyDataBase<?> getProperty(String id) {
         // make use of cache
-        return getProperties(STAR_FILTER).getProperties().get(id);
+        return (NuxeoPropertyDataBase<?>) getProperties(STAR_FILTER).getProperties().get(
+                id);
     }
 
     @Override

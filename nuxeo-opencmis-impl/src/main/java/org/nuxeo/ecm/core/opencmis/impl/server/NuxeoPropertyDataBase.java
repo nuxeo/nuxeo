@@ -75,6 +75,11 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
         return propertyDefinition.getQueryName();
     }
 
+    @SuppressWarnings("unchecked")
+    public <U> U getValue() {
+        return (U) getFirstValue();
+    }
+
     @Override
     public abstract T getFirstValue();
 
@@ -137,6 +142,12 @@ public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
                 PropertyDefinition<T> propertyDefinition, List<T> value) {
             super(propertyDefinition, null);
             this.value = value;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <U> U getValue() {
+            return (U) getValues();
         }
 
         @Override

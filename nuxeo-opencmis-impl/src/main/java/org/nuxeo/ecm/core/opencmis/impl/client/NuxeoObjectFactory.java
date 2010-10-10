@@ -103,12 +103,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
     }
 
     @Override
-    public <T> Property<T> createProperty(PropertyDefinition<?> type, T value) {
-        return new PersistentPropertyImpl<T>(type, value);
-    }
-
-    @Override
-    public <T> Property<T> createPropertyMultivalue(PropertyDefinition<?> type,
+    public <T> Property<T> createProperty(PropertyDefinition<T> type,
             List<T> values) {
         return new PersistentPropertyImpl<T>(type, values);
     }

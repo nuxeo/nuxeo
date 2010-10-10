@@ -71,6 +71,11 @@ public class NuxeoProperty<T> implements Property<T> {
     }
 
     @Override
+    public <U> U getValue() {
+        return prop.getValue();
+    }
+
+    @Override
     public T getFirstValue() {
         return (T) prop.getFirstValue();
     }
