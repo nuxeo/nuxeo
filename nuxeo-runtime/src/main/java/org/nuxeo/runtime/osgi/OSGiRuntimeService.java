@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -489,6 +490,26 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return null;
     }
 
+    protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
+        try {
+            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(bundle);
+            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(proxy);
+            URL root = (URL)loader.getClass().getMethod("findResource", String.class).invoke(loader, "/");
+            Field field = root.getClass().getDeclaredField("handler");
+            field.setAccessible(true);
+            Object handler = field.get(root);
+            Field entryField = handler.getClass().getSuperclass().getDeclaredField("bundleEntry");
+            entryField.setAccessible(true);
+            Object entry = entryField.get(handler);
+            Field fileField = entry.getClass().getDeclaredField("file");
+            fileField.setAccessible(true);
+            return (File)fileField.get(entry);
+        } catch (Throwable e) {
+            log.error("Cannot access to eclipse bundle system files of " + bundle.getSymbolicName());
+            return null;
+        }
+    }
+
     @Override
     public File getBundleFile(Bundle bundle) {
         File file;
@@ -498,17 +519,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         if ("Eclipse".equals(vendor)) { // equinox framework
             log.debug("getBundleFile (Eclipse): " + name + "->" + location);
-            // update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
-            // initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
-            if (location.endsWith("/")) {
-                location = location.substring(0, location.length() - 1);
-            }
-            if (location.startsWith("update@")) {
-                location = location.substring("update@".length());
-            } else if (location.startsWith("initial@reference:file:")) {
-                location = location.substring("initial@reference:file:".length());
-            }
-            file = new File(location);
+            return getEclipseBundleFileUsingReflection(bundle);
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = FileUtils.urlToFile(location);
