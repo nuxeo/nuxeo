@@ -258,7 +258,7 @@ if [ "$jboss" = "true" ]; then
   JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
   NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
   NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
-  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
+  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
   LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #
@@ -373,7 +373,7 @@ checkalive() {
     return 1
   fi
   MYPID=`cat "$PID"`
-  JPS=`$JAVA_HOME/bin/jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
   if [ "x$JPS" = "x" ]; then
     return 1
   else
@@ -558,6 +558,15 @@ console() {
   fi
 }
 
+pack() {
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
+}
+
+
 if check_nuxeo_conf; then
   # warning
   # pause / question / timer
@@ -592,7 +601,10 @@ case "$1" in
   configure)
     generate_configuration console
     ;;
+  pack)
+    pack $NUXEO_EAR $2
+    ;;
   *)
-    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure)"
+    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure|pack)"
     ;;
 esac
