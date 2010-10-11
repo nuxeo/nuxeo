@@ -86,7 +86,7 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-common" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss5" />
+                            classifier="templates-jboss" />
     </unzip>
 
     <!-- shouldn't the unzip make these 2 jars? -->
@@ -177,10 +177,10 @@
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
-    <!-- Complementary JBoss templates for DM -->
+    <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-jboss-dm" />
+                            classifier="templates-common-dm" />
     </unzip>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
