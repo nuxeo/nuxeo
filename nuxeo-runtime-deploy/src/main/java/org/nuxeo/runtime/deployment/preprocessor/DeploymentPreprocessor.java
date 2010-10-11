@@ -51,7 +51,9 @@ public class DeploymentPreprocessor {
 
     public static final String FRAGMENT_FILE = "OSGI-INF/deployment-fragment.xml";
 
-    public static final String CONTAINER_FILE = "OSGI-INF/deployment-container.xml";
+    public static final String CONTAINER_FILE = "META-INF/nuxeo-preprocessor.xml";
+
+    public static final String CONTAINER_FILE_COMPAT = "OSGI-INF/deployment-container.xml";
 
     private static final Log log = LogFactory.getLog(DeploymentPreprocessor.class);
 
@@ -415,6 +417,10 @@ public class DeploymentPreprocessor {
             throws Exception {
         ContainerDescriptor cd = null;
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
+        if (!file.isFile()) {
+            file = new File(directory.getAbsolutePath() + '/'
+                    + CONTAINER_FILE_COMPAT);
+        }
         if (file.isFile()) {
             cd = getContainer(directory, file);
         }

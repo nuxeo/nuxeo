@@ -80,10 +80,6 @@ public class PackZip {
             throw new IllegalArgumentException(
                     "Invalid build - no nuxeo jboss deployer JAR found in deployers directory");
         }
-        if (!dsFile.isFile()) {
-            throw new IllegalArgumentException(
-                    "Invalid build - no nuxeo-ds.xml found in deploy directory");
-        }
     }
 
     public void execute() throws Exception {
