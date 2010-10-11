@@ -27,9 +27,11 @@ import javax.security.auth.login.LoginContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.runtime.api.Framework;
@@ -50,6 +52,7 @@ public class StoreMessageAction implements MessageAction {
 
     @SuppressWarnings("unchecked")
     public boolean execute(ExecutionContext context) throws Exception {
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         Message message = context.getMessage();
         String title = message.getSubject();
         if (log.isDebugEnabled()) {
@@ -59,8 +62,10 @@ public class StoreMessageAction implements MessageAction {
         LoginContext login = Framework.login();
         CoreInstance server = CoreInstance.getInstance();
         CoreSession session = server.open("default", null);
-        DocumentModel doc = session.createDocumentModel(parentPath,
-                IdUtils.generatePathSegment(title + System.currentTimeMillis()), getMailDocumentType());
+        DocumentModel doc = session.createDocumentModel(getMailDocumentType());
+        doc.setProperty("dublincore", "title",
+                title + System.currentTimeMillis());
+        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
         doc.setProperty("dublincore", "title", title);
         doc = session.createDocument(doc);
         Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get(

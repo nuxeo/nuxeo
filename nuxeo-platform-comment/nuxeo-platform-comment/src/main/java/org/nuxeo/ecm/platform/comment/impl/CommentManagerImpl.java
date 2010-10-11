@@ -34,7 +34,6 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -357,10 +357,17 @@ public class CommentManagerImpl implements CommentManager {
         String pathStr = parent.getPathAsString();
         String commentName = getCommentName(docModel, comment);
         CommentConverter converter = config.getCommentConverter();
-        DocumentModel commentDocModel = mySession.createDocumentModel(pathStr,
-                IdUtils.generatePathSegment(commentName), comment.getType());
-        converter.updateDocumentModel(commentDocModel, comment);
+        PathSegmentService pss;
+        try {
+            pss = Framework.getService(PathSegmentService.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        DocumentModel commentDocModel = mySession.createDocumentModel(comment.getType());
         commentDocModel.setProperty("dublincore", "title", commentName);
+        converter.updateDocumentModel(commentDocModel, comment);
+        commentDocModel.setPathInfo(pathStr,
+                pss.generatePathSegment(commentDocModel));
         commentDocModel = mySession.createDocument(commentDocModel);
         setCommentPermissions(commentDocModel);
         log.debug("created comment with id=" + commentDocModel.getId());

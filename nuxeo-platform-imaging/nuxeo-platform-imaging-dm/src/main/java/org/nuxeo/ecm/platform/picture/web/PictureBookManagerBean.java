@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureBlobHolder;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -159,6 +161,7 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     public String createPictureBook() throws Exception {
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 
         String parentPath;
@@ -169,18 +172,12 @@ public class PictureBookManagerBean extends InputController implements
             parentPath = navigationContext.getCurrentDocument().getPathAsString();
         }
 
-        String title = (String) doc.getProperty("dublincore", "title");
-        if (title == null) {
-            title = "";
-        }
-        String name = IdUtils.generatePathSegment(title);
-        // set parent path and name for document model
-        doc.setPathInfo(parentPath, name);
         doc.setProperty("picturebook", "timeinterval", timeinterval);
         doc.setProperty("picturebook", "picturetemplates", views);
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 documentManager.getDocument(new PathRef(parentPath)));
+        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
         doc = documentManager.createDocument(doc);
         documentManager.saveDocument(doc);
         documentManager.save();

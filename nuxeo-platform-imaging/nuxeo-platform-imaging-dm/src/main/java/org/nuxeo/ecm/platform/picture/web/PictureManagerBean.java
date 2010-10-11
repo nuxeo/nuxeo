@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
@@ -151,6 +152,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     public String addPicture() throws Exception {
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 
         String parentPath;
@@ -165,9 +167,8 @@ public class PictureManagerBean implements PictureManager, Serializable {
         if (title == null) {
             title = "";
         }
-        String name = IdUtils.generatePathSegment(title);
         // set parent path and name for document model
-        doc.setPathInfo(parentPath, name);
+        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
         try {
             DocumentModel parent = getCurrentDocument();
             ArrayList<Map<String, Object>> pictureTemplates = null;

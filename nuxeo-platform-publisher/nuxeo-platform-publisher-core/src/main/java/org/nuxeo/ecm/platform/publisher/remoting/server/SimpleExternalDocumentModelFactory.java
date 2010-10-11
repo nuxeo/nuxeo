@@ -22,12 +22,14 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.runtime.api.Framework;
 
 import java.util.Map;
 
@@ -45,8 +47,13 @@ public class SimpleExternalDocumentModelFactory extends
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
-        String name = IdUtils.generatePathSegment(doc.getTitle());
-        doc.setPathInfo(targetNode.getPath(), "remote_doc_" + name);
+        PathSegmentService pss;
+        try {
+            pss = Framework.getService(PathSegmentService.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));
         // We don't want to erase the current version
         final ScopedMap ctxData = doc.getContextData();
         ctxData.putScopedValue(ScopeType.REQUEST,

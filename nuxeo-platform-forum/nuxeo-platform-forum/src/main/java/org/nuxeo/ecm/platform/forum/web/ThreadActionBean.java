@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Action Listener represents a Thread inside a forum.
@@ -136,10 +138,8 @@ public class ThreadActionBean implements ThreadAction {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
-        String docId = IdUtils.generatePathSegment(title);
 
-        final DocumentModel docThread = documentManager.createDocumentModel(
-                path, docId, type);
+        final DocumentModel docThread = documentManager.createDocumentModel(type);
         docThread.setProperty("dublincore", "title", title);
         docThread.setProperty("dublincore", "description", description);
         docThread.setProperty(schema, "moderated", moderated);
@@ -171,6 +171,13 @@ public class ThreadActionBean implements ThreadAction {
             docThread.setProperty(schema, "moderators", selectedModerators);
         }
 
+        PathSegmentService pss;
+        try {
+            pss = Framework.getService(PathSegmentService.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        docThread.setPathInfo(path, pss.generatePathSegment(docThread));
         return docThread;
     }
 

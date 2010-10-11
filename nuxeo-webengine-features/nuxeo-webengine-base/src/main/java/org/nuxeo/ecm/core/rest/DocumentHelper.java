@@ -22,16 +22,19 @@ package org.nuxeo.ecm.core.rest;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,48 +47,33 @@ public class DocumentHelper {
 
     public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) {
         try {
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
             CoreSession session = context.getCoreSession();
             FormData form = context.getForm();
             String type = form.getDocumentType();
             if (type == null) {
                 throw new WebException("Invalid argument exception. Nos doc type specified");
             }
-            String path = parent.getPathAsString();
-            // TODO not the best method to create an unnamed doc - should refactor core API
-            if (name == null) {
-                name = form.getDocumentTitle();
-                if (name == null) {
-                    name = IdUtils.generatePathSegment(type);
-                } else {
-                    name = IdUtils.generatePathSegment(name);
-                }
-                String baseTitle = name;
-                int i = 0;
-                while (true) {
-                    try {
-                        if (i == 10) {
-                            throw new WebException("Failed to create document. Giving up.");
-                        }
-                        session.getDocument(new PathRef(path, name));
-                        name = baseTitle + "_" + Long.toHexString(IdUtils.generateLongId());
-                        i++;
-                    } catch (Exception e) {
-                        // the name should be ok
-                        break;
-                    }
-                }
-            }
-            DocumentModel newDoc = session.createDocumentModel(parent.getPathAsString(), name, type);
+            DocumentModel newDoc = session.createDocumentModel(type);
             form.fillDocument(newDoc);
-            if (newDoc.getTitle().length() == 0) {
-                newDoc.getPart("dublincore").get("title").setValue(newDoc.getName());
+            if (name != null) {
+                newDoc.setPropertyValue("dc:title", name);
             }
             Module module = context.getModule();
             Validator v = module.getValidator(newDoc.getType());
             if (v != null) {
                 newDoc = v.validate(newDoc);
             }
+            newDoc.setPathInfo(parent.getPathAsString(),
+                    pss.generatePathSegment(newDoc));
             newDoc = session.createDocument(newDoc);
+            newDoc.setPropertyValue("dc:title", newDoc.getName());
+            session.saveDocument(newDoc);
             session.save();
             return newDoc;
         } catch (Exception e) {

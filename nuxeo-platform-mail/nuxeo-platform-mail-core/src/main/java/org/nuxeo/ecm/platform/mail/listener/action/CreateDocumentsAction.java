@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.runtime.api.Framework;
@@ -77,6 +78,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
             log.error("Could not open CoreSession");
             return false;
         }
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
 
         ExecutionContext initialContext = context.getInitialContext();
 
@@ -91,9 +93,10 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
         String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
 
-        DocumentModel documentModel = session.createDocumentModel(parentPath,
-                IdUtils.generatePathSegment(subject + System.currentTimeMillis()),
-                MAIL_MESSAGE_TYPE);
+        DocumentModel documentModel = session.createDocumentModel(MAIL_MESSAGE_TYPE);
+        documentModel.setPropertyValue("dc:title",
+                subject + System.currentTimeMillis());
+        documentModel.setPathInfo(parentPath, pss.generatePathSegment(documentModel));
         documentModel.setPropertyValue("dc:title", subject);
         documentModel.setPropertyValue(MESSAGE_ID_PROPERTY_NAME,
                 messageId);

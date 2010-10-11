@@ -33,11 +33,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class ImagePlugin extends AbstractFileImporter {
 
@@ -74,11 +76,14 @@ public class ImagePlugin extends AbstractFileImporter {
             // docModel.setProperty("file", "content", content.persist());
 
         } else {
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
             String title = FileManagerUtils.fetchTitle(filename);
-            // Creating an unique identifier
-            String docId = IdUtils.generatePathSegment(title);
-            docModel = documentManager.createDocumentModel(path,
-                    docId, ImagingDocumentConstants.PICTURE_TYPE_NAME);
+            docModel = documentManager.createDocumentModel(ImagingDocumentConstants.PICTURE_TYPE_NAME);
             try {
                 DocumentModel parent = documentManager.getDocument(new PathRef(path));
                 ArrayList<Map<String, Object>> pictureTemplates = null;
@@ -94,6 +99,7 @@ public class ImagePlugin extends AbstractFileImporter {
             } catch (Exception e) {
                 log.error("Picture.views generation failed", e);
             }
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
         documentManager.save();

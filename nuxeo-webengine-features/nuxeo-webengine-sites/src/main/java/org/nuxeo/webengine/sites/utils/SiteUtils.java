@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -167,6 +168,7 @@ public class SiteUtils {
     public static DocumentModel createDocument(HttpServletRequest request,
             CoreSession session, String parentPath, String documentType)
             throws Exception {
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         String title = request.getParameter("title");
         String pageName = request.getParameter(SiteConstants.PAGE_NAME_ATTRIBUTE);
         String description = request.getParameter("description");
@@ -175,13 +177,7 @@ public class SiteUtils {
         String richtextEditor = request.getParameter("richtextEditor");
         String pushToMenu = request.getParameter("pushToMenu");
 
-        // Trim and replace problematic chars with -
-        String theName = (StringUtils.isEmpty(pageName) ? title : pageName).trim();
-        theName = IdUtils.generatePathSegment(theName);
-        //theName = theName.replaceAll("[ | \\t|/\\@|\\?|\\&]+", "-");
-
-        DocumentModel documentModel = session.createDocumentModel(parentPath,
-                theName, documentType);
+        DocumentModel documentModel = session.createDocumentModel(documentType);
         documentModel.setPropertyValue("dc:title", title);
         documentModel.setPropertyValue("dc:description", description);
         documentModel.setPropertyValue(SiteConstants.WEBPAGE_EDITOR, isRichtext);
@@ -198,6 +194,7 @@ public class SiteUtils {
                 Boolean.valueOf(pushToMenu));
 
         ContextTransmitterHelper.feedContext(documentModel);
+        documentModel.setPathInfo(parentPath, pss.generatePathSegment(documentModel));
         documentModel = session.createDocument(documentModel);
         //documentModel = session.saveDocument(documentModel);
         session.save();
