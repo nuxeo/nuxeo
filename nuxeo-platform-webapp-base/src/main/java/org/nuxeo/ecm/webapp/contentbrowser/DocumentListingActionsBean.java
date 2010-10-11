@@ -80,6 +80,10 @@ public class DocumentListingActionsBean implements Serializable {
 
     // API for current layout in listing mode
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     public String getLayoutForDocument(DocumentModel doc) {
         if (doc != null) {
             String id = doc.getId();
@@ -94,6 +98,10 @@ public class DocumentListingActionsBean implements Serializable {
         return DEFAULT_LISTING_LAYOUT;
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     public void setLayoutForDocument(DocumentModel doc, String layoutName) {
         if (doc == null) {
             log.error("Cannot set listing layout for null document");
@@ -103,6 +111,10 @@ public class DocumentListingActionsBean implements Serializable {
         docTolistings.put(id, layoutName);
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     @Factory(value = "currentListingLayoutName", scope = EVENT)
     public String getLayoutForCurrentDocument() {
         if (currentListingLayoutName == null) {
@@ -112,12 +124,20 @@ public class DocumentListingActionsBean implements Serializable {
         return currentListingLayoutName;
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     public void setLayoutForCurrentDocument(String layoutName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         setLayoutForDocument(currentDocument, layoutName);
         currentListingLayoutName = layoutName;
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     public List<String> getAvailableLayoutsForDocument(DocumentModel doc) {
         if (doc == null) {
             return Collections.emptyList();
@@ -133,6 +153,10 @@ public class DocumentListingActionsBean implements Serializable {
         return res;
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
+    @Deprecated
     @Factory(value = "currentAvailableListingLayoutNames", scope = EVENT)
     public List<String> getAvailableLayoutsForCurrentDocument() {
         if (currentAvailableListingLayoutNames == null) {
@@ -142,8 +166,12 @@ public class DocumentListingActionsBean implements Serializable {
         return currentAvailableListingLayoutNames;
     }
 
+    /**
+     * @deprecated this information is now held by content views
+     */
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
+    @Deprecated
     public void documentChanged() {
         currentListingLayoutName = null;
         currentAvailableListingLayoutNames = null;
