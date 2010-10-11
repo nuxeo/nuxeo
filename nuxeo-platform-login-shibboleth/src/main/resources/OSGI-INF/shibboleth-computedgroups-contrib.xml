@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.computedgroups.UserManager.shibbComputerContrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl"
+    point="computer">
+    <groupComputer name="shibbolethGroupComputer">
+      <computer>org.nuxeo.ecm.platform.computedgroups.ShibbolethGroupComputer
+      </computer>
+    </groupComputer>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl"
+    point="computerChain">
+    <groupComputerChain append="true">
+      <computers>
+        <computer>shibbolethGroupComputer</computer>
+      </computers>
+    </groupComputerChain>
+  </extension>
+</component>

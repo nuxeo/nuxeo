@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Shibboleth login module
+Bundle-SymbolicName: org.nuxeo.test.ecm.platform.shibboleth;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login.shibboleth
+Nuxeo-Component: OSGI-INF/test-sql-directory.xml

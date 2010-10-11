@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.shibboleth.type">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="shibbGroup" src="schema/shibb-group.xsd" />
+  </extension>
+
+  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="shibbGroup">
+      <schema>shibbGroup</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>shibbGroups</table>
+      <idField>groupName</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+  </extension>
+</component>
