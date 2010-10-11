@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   id="#{widget.id}">
 
-  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+  <c:if test="#{widget.mode != 'edit'}">
 
     <nxdir:chainSelect id="#{widget.id}_viewselect" size="2" value="#{field}"
       displayValueOnly="true" multiSelect="true">
@@ -20,12 +20,13 @@
 
   </c:if>
 
-  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <c:if test="#{widget.mode == 'edit'}">
 
     <a4j:region id="#{widget.id}_region">
       <nxdir:chainSelect size="2" value="#{field}"
         id="#{widget.id}_editselect" multiSelect="true" multiParentSelect="true"
-        allowBranchSelection="false" onchange="#{widgetProperty_onchange}">
+        allowBranchSelection="false" onchange="#{widgetProperty_onchange}"
+        required="#{widget.required}">
         <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
           localize="true" id="#{widget.id}_topic" ordering="label">
           <a4j:support event="onchange" reRender="#{widget.id}_subtopic" />
