@@ -82,7 +82,7 @@
     </move>
     -->
 
-    <unzip dest="${jboss}/templates">
+    <unzip dest="${jboss}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-common" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
@@ -178,7 +178,7 @@
     </antcall>
 
     <!-- Complementary templates for DM -->
-    <unzip dest="${distribution.dir}/templates">
+    <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-common-dm" />
     </unzip>
