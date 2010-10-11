@@ -335,6 +335,16 @@ check_old_paths() {
     die "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME\"/server/default/data/ to \"$DATA_DIR\""
     exit 1
   fi
+  if [ "$jboss" = "true" ] && [ -e "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
+    echo ERROR: Deprecated paths used \(NXP-5460\).
+    die "Please move 'binaries' directory from \"$NUXEO_HOME\"/server/default/data/NXRuntime/binaries to \"$DATA_DIR\"/binaries"
+    exit 1
+  fi
+  if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ]; then
+    echo ERROR: Deprecated paths used \(NXP-5460\).
+    die "Please move 'binaries' directory from \"$DATA_DIR\"/NXRuntime/binaries to \"$DATA_DIR\"/binaries"
+    exit 1
+  fi
 }
 
 # Check if nuxeo.conf used has not changed since last run (if not first run)
