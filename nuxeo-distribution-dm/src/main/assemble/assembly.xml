@@ -1,7 +1,10 @@
-<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build"
-  xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
 
 
   <target name="init" unless="init.done">
@@ -24,8 +27,9 @@
     <antcall target="build-standard" />
   </target>
 
-  <target name="build-standard" description="Build default distribution"
-    depends="init">
+  <target name="build-standard"
+          description="Build default distribution"
+          depends="init">
     <copy todir="${nuxeo.ear}/bundles" overwrite="true">
       <artifact:set>
         <includes>
@@ -49,10 +53,10 @@
     <antcall target="third-party-libraries" />
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-      basedir="${nuxeo.ear}" />
-    <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" type="zip" />
+         basedir="${nuxeo.ear}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
   </target>
 
   <target name="third-party-libraries">
@@ -66,8 +70,8 @@
           <artifact groupId="!org.nuxeo*" />
         </includes>
       </artifact:set>
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-front"/>
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler"/>
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-front" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-generic-wss-handler" />
     </copy>
     <!-- Remove duplicates -->
     <nx:rmdups dir="${nuxeo.ear}/lib" />
