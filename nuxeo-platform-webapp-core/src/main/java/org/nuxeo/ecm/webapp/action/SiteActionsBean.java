@@ -41,8 +41,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.runtime.api.Framework;
 
 
 /**
@@ -138,9 +140,18 @@ public class SiteActionsBean {
     private void validateSite(FacesContext context, UIComponent component,
             Object value, String siteType) {
         if (value instanceof String) {
-            // apply Title2Path translation
-            String name = IdUtils.generatePathSegment((String) value);
             try {
+                // apply Title2Path translation
+                PathSegmentService pss;
+                try {
+                    pss = Framework.getService(PathSegmentService.class);
+                } catch (Exception e) {
+                    throw new ClientException(e);
+                }
+                DocumentModel fakeDoc = documentManager.createDocumentModel(siteType);
+                fakeDoc.setPropertyValue("dc:title", (String) value);
+                String name = pss.generatePathSegment(fakeDoc);
+
                 DocumentModelList sites = querySitesByUrlAndDocType(
                         documentManager, name, siteType);
                 // if editing a site don't verify it's unique against itself

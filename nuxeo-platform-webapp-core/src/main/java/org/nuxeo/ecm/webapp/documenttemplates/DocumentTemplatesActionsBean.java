@@ -49,11 +49,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation for the documentTemplatesBean component available on the
@@ -170,13 +172,19 @@ public class DocumentTemplatesActionsBean extends InputController implements
         DocumentRef currentDocRef = navigationContext.getCurrentDocument().getRef();
 
         try {
-            String title = (String) doc.getProperty("dublincore", "title");
-            String name = IdUtils.generatePathSegment(title);
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            String name = pss.generatePathSegment(doc);
             DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef,
                     name);
 
             // Update from user input.
             // This part is for now harcoded for Workspace type.
+            String title = (String) doc.getProperty("dublincore", "title");
             created.setProperty("dublincore", "title", title);
 
             String descr = (String) doc.getProperty("dublincore", "description");
