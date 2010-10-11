@@ -41,12 +41,17 @@ public class BankManagement extends DefaultObject {
 
     String bank;
 
+    @Override
+    protected void initialize(Object... args) {
+        assert args != null && args.length > 0;
+        bank = (String) args[0];
+    }
+
     @POST
     @Path("upload")
     public Object uploadFile() {
         FormData form = ctx.getForm();
 
-        System.out.println(bank);
         String collection = form.getString("collection");
         String redirectUrl = form.getString("redirect_url");
 
@@ -57,8 +62,11 @@ public class BankManagement extends DefaultObject {
             final String path = String.format("%s/image/%s", bank, collection);
             BankManager.createFile(path, filename, fileData);
         }
-
-        return redirect(redirectUrl);
+        if (redirectUrl != null) {
+            return redirect(redirectUrl);
+        } else {
+            return null;
+        }
     }
 
     @POST
