@@ -34,9 +34,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -71,6 +73,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
         }
 
         DocumentModel parentDm;
+        PathSegmentService pss;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));
@@ -84,7 +87,8 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
                         "you must specify a valid document IdRef for the parent document");
                 return;
             }
-        } catch (ClientException e) {
+            pss = Framework.getService(PathSegmentService.class);
+        } catch (Exception e) {
             handleError(res, e);
             return;
         }
@@ -92,11 +96,9 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
         String docTypeName = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         String titleField = "dublincore:title";
         String title = getQueryParamValue(req, titleField, "New " + docTypeName);
-        String id = IdUtils.generatePathSegment(title);
 
         try {
-            DocumentModel newDm = documentManager.createDocumentModel(
-                    parentDm.getPathAsString(), id, docTypeName);
+            DocumentModel newDm = documentManager.createDocumentModel(docTypeName);
             Form queryParameters = req.getResourceRef().getQueryAsForm();
             for (String paramName : queryParameters.getNames()) {
                 if (!DOC_TYPE.equals(paramName)) {
@@ -109,6 +111,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
                 newDm.setPropertyValue(titleField, title);
             }
             // create the document in the repository
+            newDm.setPathInfo(parentDm.getPathAsString(), pss.generatePathSegment(newDm));
             newDm = documentManager.createDocument(newDm);
             documentManager.save();
 
