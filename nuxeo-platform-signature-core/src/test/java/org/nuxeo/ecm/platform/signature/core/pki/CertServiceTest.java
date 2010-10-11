@@ -16,15 +16,18 @@
  */
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,8 +41,10 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,6 +68,9 @@ public class CertServiceTest {
     protected CertService certService;
 
     @Inject
+    protected KeyService keyService;
+
+    @Inject
     protected CAService cAService;
 
     @Inject
@@ -72,13 +80,12 @@ public class CertServiceTest {
 
     protected X509Certificate rootCertificate;
 
-
     @Before
     public void setUp() throws Exception {
         String outputPath = FileUtils.getResourcePathFromContext("test-files");
         String userFilePath = outputPath + "/user.crt";
-        userCertFile=new File(userFilePath);
-        if(userCertFile.exists()){
+        userCertFile = new File(userFilePath);
+        if (userCertFile.exists()) {
             FileUtils.deleteTree(userCertFile);
         }
 
@@ -87,7 +94,6 @@ public class CertServiceTest {
         File rootFile = FileUtils.getResourceFileFromContext(rootCertFilePath);
         rootCertificate = cAService.getCertificate(rootFile);
         cAService.setRootCertificate(rootCertificate);
-
     }
 
     /**
@@ -96,16 +102,14 @@ public class CertServiceTest {
      */
     @Test
     public void testCreateCertificate() throws Exception {
-
-        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) certService.generateCSR(getCertInfo());
+        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) certService.generateCSR(getUserInfo());
 
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         OutputStream outputStream = new FileOutputStream(userCertFile);
 
         // read the saved certificate from file and verify it
-
         X509Certificate userCertificate = cAService.createCertificateFromCSR(
-                csr, getCertInfo());
+                csr, getUserInfo());
         bOut.write(userCertificate.getEncoded());
         outputStream = new FileOutputStream(userCertFile);
         bOut.writeTo(outputStream);
@@ -117,25 +121,26 @@ public class CertServiceTest {
                 userCertificate.getSubjectDN().getName()));
         assertFalse(userCertificateFromFile.getSubjectDN().getName().equals(
                 rootCertificate.getSubjectDN().getName()));
+
+
         boolean deleteGeneratedCertificateFiles = true;
         if (deleteGeneratedCertificateFiles) {
             userCertFile.deleteOnExit();
         }
     }
 
-    private CertInfo getCertInfo() throws Exception {
-        CertInfo certInfo = new CertInfo();
-        certInfo.setUserID("100");
-        certInfo.setUserName("Wojciech Sulejman"); // subject
-        certInfo.setUserDN("CN=Wojciech Sulejman, OU=StarUs, O=Nuxeo, C=US");
-        certInfo.setKeyAlgorithm("RSA");
-        certInfo.setNumBits(1024);
-        certInfo.setCertSignatureAlgorithm("SHA256WithRSAEncryption");
-        Calendar cal = Calendar.getInstance();
-        certInfo.setValidFrom(cal.getTime());
-        cal.add(Calendar.MONTH, 12);
-        certInfo.setValidTo(cal.getTime());
-        certInfo.setSigningReason("Nuxeo signed document");
-        return certInfo;
+    public UserInfo getUserInfo() throws Exception{
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.OU, "IT");
+        userFields.put(CNField.CN, "Wojciech Sulejman");
+        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
+        userFields.put(CNField.UserID, "wsulejman");
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
     }
+
+
 }

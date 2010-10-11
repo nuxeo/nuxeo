@@ -5,14 +5,14 @@
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
 
-    <directory name="listedCompanyRegion">
+    <directory name="certificate">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>digital.signature.keys</table>
       <idField>userID</idField>
-      <dataFile>directories/cert.csv</dataFile>
+      <dataFile>directories/keys.csv</dataFile>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>

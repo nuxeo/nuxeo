@@ -23,10 +23,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.cert.X509Certificate;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,9 +37,10 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -73,50 +72,43 @@ public class SignatureServiceTest {
 
     private static final Log log = LogFactory.getLog(SignatureServiceTest.class);
 
+    //keep signed pdf for verification
+    private static final boolean KEEP_SIGNED_PDF=true;
+
     @Before
     public void setUp() throws Exception {
         String rootCertFilePath = "test-files/root.crt";
         File rootFile = FileUtils.getResourceFileFromContext(rootCertFilePath);
-        X509Certificate rootCertificate=cAService.getCertificate(rootFile);
+        X509Certificate rootCertificate = cAService.getCertificate(rootFile);
         cAService.setRootCertificate(rootCertificate);
-
     }
 
+    // TODO add signature verification
 
     @Test
     public void testSignPDF() throws Exception {
         InputStream origPdf = new FileInputStream(
                 FileUtils.getResourceFileFromContext("pdf-tests/original.pdf"));
-        File outputFile = signatureService.signPDF(getCertInfo(), origPdf);
+        File outputFile = signatureService.signPDF(getUserInfo(),
+                "test reason", origPdf);
         assertTrue(outputFile.exists());
-        //TODO add signature verification
-        outputFile.deleteOnExit();
+        if(KEEP_SIGNED_PDF){
+            log.info("SIGNED PDF: "+outputFile.getAbsolutePath());
+        }else{
+            outputFile.deleteOnExit();
+        }
     }
 
-    protected CertInfo getCertInfo() throws Exception {
-        CertInfo certInfo = new CertInfo();
-        certInfo.setUserID("100");
-        certInfo.setUserName("Wojciech Sulejman");
-        certInfo.setUserDN("CN=Wojciech Sulejman, OU=StarUs, O=Nuxeo, C=US");
-        certInfo.setKeyAlgorithm("RSA");
-        certInfo.setNumBits(1024);
-        certInfo.setCertSignatureAlgorithm("SHA256WithRSAEncryption");
-
-        Calendar cal=Calendar.getInstance();
-        Date now = cal.getTime();
-        cal.add(Calendar.MONTH, 12);//add a year from now
-        Date inAYear=cal.getTime();
-
-        certInfo.setValidFrom(now);
-        certInfo.setValidTo(inAYear);
-        log.error(now+" : "+inAYear);
-        certInfo.setSigningReason("Nuxeo signed document");
-        return certInfo;
+    public UserInfo getUserInfo() throws Exception{
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.OU, "IT");
+        userFields.put(CNField.CN, "Dale Cooper");
+        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
+        userFields.put(CNField.UserID, "wsulejman");
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
     }
-
-    private DateFormat getFormatter() {
-        DateFormat formatter = new SimpleDateFormat("MM/dd/yy");
-        return formatter;
-    }
-
 }

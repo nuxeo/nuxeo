@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.platform.signature.core.pki;
 
 import java.security.KeyPair;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +27,9 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -50,10 +53,7 @@ public class KeyServiceTest extends SQLRepositoryTestCase {
 
     @Test
     public void testCreateKeys() throws Exception {
-        CertInfo certInfo = new CertInfo();
-        certInfo.setKeyAlgorithm("RSA");
-        certInfo.setNumBits(1024);
-        KeyPair keyPair = getKeyService().getKeys(certInfo);
+        KeyPair keyPair = keyService.getKeys(getUserInfo());
         assertNotNull(keyPair.getPrivate());
     }
 
@@ -62,5 +62,18 @@ public class KeyServiceTest extends SQLRepositoryTestCase {
             keyService = Framework.getService(KeyService.class);
         }
         return keyService;
+    }
+
+    public UserInfo getUserInfo() throws Exception{
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.OU, "IT");
+        userFields.put(CNField.CN, "Wojciech Sulejman");
+        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
+        userFields.put(CNField.UserID, "wsulejman");
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
     }
 }

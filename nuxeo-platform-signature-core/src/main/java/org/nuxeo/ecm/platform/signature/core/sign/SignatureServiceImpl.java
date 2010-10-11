@@ -29,26 +29,30 @@ import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfDate;
+import com.lowagie.text.pdf.PdfName;
+import com.lowagie.text.pdf.PdfPKCS7;
 import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfSignature;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 
@@ -66,8 +70,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     protected CertService certService;
 
-    public File signPDF(CertInfo certInfo, InputStream origPdfStream)
-            throws SignException {
+    public File signPDF(UserInfo userInfo, String reason,
+            InputStream origPdfStream) throws SignException {
         File outputFile = null;
         try {
             outputFile = File.createTempFile("signed-", ".pdf");
@@ -76,22 +80,22 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper stp = PdfStamper.createSignature(reader,
                     new FileOutputStream(outputFile), '\0');
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
-            KeyPair keyPair = getKeyService().getKeys(certInfo);
-            Certificate certificate = getCertService().getCertificate(
-                    certInfo);
+            KeyPair keyPair = getKeyService().getKeys(userInfo);
+            Certificate certificate = getCertService().getCertificate(userInfo);
             List<Certificate> certificates = new ArrayList<Certificate>();
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
             sap.setCrypto(keyPair.getPrivate(), certChain, null,
                     PdfSignatureAppearance.SELF_SIGNED);
-            if (certInfo.getSigningReason() == null) {
-                sap.setReason(certInfo.getSigningReason());
-            } else {
-                sap.setReason(getReason());
-            }
+            sap.setReason(reason);
+            sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
             sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1, null);
+            sap.setLocation("Universe");
+            sap.setAcro6Layers(true);
+            sap.setRender(PdfSignatureAppearance.SignatureRenderNameAndDescription);
             stp.close();
+            log.debug("Temporary file "+outputFile.getAbsolutePath()+" created and signed with "+reason);
         } catch (UnrecoverableKeyException e) {
             throw new CertException(e);
         } catch (KeyStoreException e) {
@@ -108,7 +112,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             throw new SignException(e);
         } catch (DocumentException e) {
             throw new SignException(e);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new SignException(e);
         }
         return outputFile;
@@ -128,20 +132,16 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return certService;
     }
 
-    private DateFormat getFormatter() {
-        DateFormat formatter = new SimpleDateFormat("MM/dd/yy");
-        return formatter;
-    }
-
-    String getReason() throws SignatureException{
-        String reason=null;
+    String getReason() throws SignatureException {
+        String reason = null;
         for (SignatureDescriptor sd : config) {
-            if (sd.getReason() != null){
-                reason=sd.getReason();
+            if (sd.getReason() != null) {
+                reason = sd.getReason();
             }
         }
-        if(reason==null){
-            throw new SignatureException("You have to provide a default reason in the extension point");
+        if (reason == null) {
+            throw new SignatureException(
+                    "You have to provide a default reason in the extension point");
         }
         return reason;
     }

@@ -90,9 +90,9 @@
               </li>
             </f:subview>
 
-            <f:subview rendered="#{userManagerActions.allowChangePassword and notReadOnly}">
-              <li class="#{nxu:test(currentUserSubTab == 'editPassword', 'selected', '')}">
-                <h:commandLink action="edit_user_password" immediate="true">
+            <f:subview rendered="#{notReadOnly}">
+              <li class="#{nxu:test(currentUserSubTab == 'editCertificate', 'selected', '')}">
+                <h:commandLink action="edit_certificate" immediate="true">
                   <h:outputText value="#{messages['command.certificate']}" />
                 </h:commandLink>
               </li>

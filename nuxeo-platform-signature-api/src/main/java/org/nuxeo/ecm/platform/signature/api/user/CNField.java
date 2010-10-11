@@ -12,22 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Wojciech Sulejman
+ *    Wojciech Sulejman
  */
-
-package org.nuxeo.ecm.platform.signature.api.pki;
-
+package org.nuxeo.ecm.platform.signature.api.user;
 
 /**
- * Provides storage services for PKI related data:
- * keys & certificates
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * List of required fields
+ * Note the Email and UserID fields
  */
-public interface StoreService {
-
-    /**
-     * Provides access to a store
-     */
-
+public enum CNField {
+    C, O, OU, CN,Email,UserID
 }

@@ -17,8 +17,14 @@
 package org.nuxeo.ecm.platform.signature.web.sign;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,14 +32,20 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 
 /**
@@ -56,10 +68,16 @@ public class SignActions implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
     @In(create = true)
     private transient VersioningManager versioningManager;
 
-    public void signCurrentDoc(String signingReason) throws Exception {
+    @In(create = true)
+    protected transient UserManager userManager;
+
+    public void signCurrentDoc(String signingReason) throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             throw new ClientException(
@@ -68,43 +86,60 @@ public class SignActions implements Serializable {
         BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
         Blob blob = blobHolder.getBlob();
         if (blob == null) {
-            throw new ClientException(
-                    "The current document does not contain an attachment: "
-                            + currentDoc.getName());
-        }
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "Your document does not contain any attachments",null);
+            log.error("Attachments missing for:" + currentDoc.getName());
+        } else {
 
-        if (!blob.getMimeType().equals("application/pdf")) {
-            throw new ClientException("The attachment must be a PDF");
-        }
+            if (!blob.getMimeType().equals("application/pdf")) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "The attachment must be a PDF",null);
+                log.error("The attachment is not a pdf for "
+                        + currentDoc.getName());
+            }
 
-        File signedPdf = signatureService.signPDF(getCertInfo(signingReason),
-                blob.getStream());
-        FileBlob outputBlob = new FileBlob(signedPdf);
-        outputBlob.setFilename(blob.getFilename());
-        outputBlob.setEncoding(blob.getEncoding());
-        currentDoc.getAdapter(BlobHolder.class).setBlob(outputBlob);
-        if (currentDoc.isVersionable()) {
-            currentDoc = versioningManager.incrementMajor(currentDoc);
-            // doc.putContextData(ScopeType.REQUEST,
-            // VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+            try {
+                File signedPdf = signatureService.signPDF(getUserInfo(),
+                        signingReason, blob.getStream());
+                FileBlob outputBlob = new FileBlob(signedPdf);
+                outputBlob.setFilename(blob.getFilename());
+                outputBlob.setEncoding(blob.getEncoding());
+                currentDoc.getAdapter(BlobHolder.class).setBlob(outputBlob);
+                if (currentDoc.isVersionable()) {
+                    currentDoc = versioningManager.incrementMinor(currentDoc);
+                    currentDoc.putContextData(
+                            org.nuxeo.common.collections.ScopeType.REQUEST,
+                            VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
+                            true);
+                    CoreSession session = currentDoc.getCoreSession();
+                    currentDoc = session.saveDocument(currentDoc);
+                }
+                navigationContext.saveCurrentDocument();
+                facesMessages.add(FacesMessage.SEVERITY_INFO,
+                        outputBlob.getFilename()+" has been signed with the following reason "+signingReason,null);
+                log.info("Document has been signed: "
+                        + outputBlob.getFilename());
+            } catch (IOException e) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "PDF generation problem ", e);
+                log.error("PDF generation problem: ", e);
+            }
         }
-        navigationContext.saveCurrentDocument();
-        log.info("Document has been signed: " + outputBlob.getFilename());
     }
 
-    protected CertInfo getCertInfo(String signingReason) {
-        // TODO Hardcoded for NXP-5532
-        CertInfo certInfo = new CertInfo();
-        certInfo.setUserID("100");
-        certInfo.setUserName("Wojciech Sulejman");
-        certInfo.setUserDN("User DN");
-        certInfo.setKeyAlgorithm("RSA");
-        certInfo.setNumBits(1024);
-        certInfo.setSigningReason(signingReason);
-        certInfo.setCertSignatureAlgorithm("SHA256WithRSAEncryption");
-        certInfo.setValidFrom(new Date());
-        certInfo.setValidTo(new Date());
-        return certInfo;
+    UserInfo getUserInfo() throws CertException {
+        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.OU, "IT");
+        userFields.put(CNField.CN, "Wojciech Sulejman");
+        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
+        userFields.put(CNField.UserID, currentUser.getName());
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
     }
 
 }

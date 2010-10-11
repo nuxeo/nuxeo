@@ -7,6 +7,7 @@ Require-Bundle:  org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.signature.api
 Nuxeo-Component: 
+ OSGI-INF/core-types-contrib.xml,
  OSGI-INF/key-service-contrib.xml,
  OSGI-INF/ca-contrib.xml,
  OSGI-INF/ca-service-contrib.xml,

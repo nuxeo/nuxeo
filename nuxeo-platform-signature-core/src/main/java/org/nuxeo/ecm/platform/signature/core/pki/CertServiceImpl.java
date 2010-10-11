@@ -18,15 +18,21 @@
 package org.nuxeo.ecm.platform.signature.core.pki;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
-
-import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
@@ -42,11 +48,16 @@ import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
-import org.nuxeo.ecm.platform.signature.api.pki.StoreService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
+
+import sun.security.x509.CertificateIssuerName;
+import sun.security.x509.X500Name;
+import sun.security.x509.X509CertImpl;
+import sun.security.x509.X509CertInfo;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
@@ -58,7 +69,22 @@ public class CertServiceImpl implements CertService {
 
     protected KeyService keyService;
 
-    private static int DEFAULT_KEY_CHAIN_SIZE = 2;
+    // TODO move to descriptor
+    private static final String CERT_SIGNATURE_ALGORITHM = "SHA256WithRSAEncryption";
+
+    private boolean storeInitialized = true;
+
+    private File keyStoreFile = new File("/home/ws/Desktop/keystore.ks");
+
+    private String caAlias = "caAlias";
+
+    private char[] cAPassword = new char[] { 'a', 'b', 'c' };
+
+    String certToSignAlias = "certToSignAlias";
+
+    char[] password = new char[] { 'a', 'b', 'c' };
+
+    char[] certPassword = new char[] { 'a', 'b', 'c' };
 
     static {
         if (Security.getProvider("BC") == null) {
@@ -66,16 +92,12 @@ public class CertServiceImpl implements CertService {
         }
     }
 
-    public int getCertChainSize() {
-        return DEFAULT_KEY_CHAIN_SIZE;
-    }
-
-    public CertificationRequest generateCSR(CertInfo certInfo)
+    public CertificationRequest generateCSR(UserInfo userInfo)
             throws CertException {
 
         CertificationRequest csr;
 
-        // create a SubjectAlternativeName extension value
+        // TODO extract email using the principal
         GeneralNames subjectAltName = new GeneralNames(new GeneralName(
                 GeneralName.rfc822Name, "ws@nuxeo.com"));
 
@@ -83,20 +105,21 @@ public class CertServiceImpl implements CertService {
         Vector<X509Extension> extensionValues = new Vector<X509Extension>();
 
         objectIdentifiers.add(X509Extensions.SubjectAlternativeName);
-        extensionValues.add(new X509Extension(false, new DEROctetString(subjectAltName)));
+        extensionValues.add(new X509Extension(false, new DEROctetString(
+                subjectAltName)));
 
-        X509Extensions extensions = new X509Extensions(objectIdentifiers, extensionValues);
+        X509Extensions extensions = new X509Extensions(objectIdentifiers,
+                extensionValues);
 
         Attribute attribute = new Attribute(
                 PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, new DERSet(
                         extensions));
 
         try {
-            csr = new PKCS10CertificationRequest(
-                    certInfo.getCertSignatureAlgorithm(), new X500Principal(
-                            certInfo.getUserDN()), getKeyService().getKeys(
-                            certInfo).getPublic(), new DERSet(attribute),
-                    getKeyService().getKeys(certInfo).getPrivate());
+            KeyPair keyPair = getKeyService().getKeys(userInfo);
+            csr = new PKCS10CertificationRequest(CERT_SIGNATURE_ALGORITHM,
+                    userInfo.getX500Principal(), keyPair.getPublic(),
+                    new DERSet(attribute), keyPair.getPrivate());
         } catch (InvalidKeyException e) {
             throw new CertException(e);
         } catch (NoSuchAlgorithmException e) {
@@ -112,22 +135,16 @@ public class CertServiceImpl implements CertService {
     }
 
     @Override
-    public X509Certificate getCertificate(CertInfo certInfo)
+    public X509Certificate getCertificate(UserInfo userInfo)
             throws CertException {
-        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(certInfo);
+        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(userInfo);
         X509Certificate certificate = getCAService().createCertificateFromCSR(
-                csr, certInfo);
+                csr, userInfo);
         return certificate;
     }
 
-    public X509Certificate getCertificate(File certFile)
-            throws CertException {
+    public X509Certificate getCertificate(File certFile) throws CertException {
         return getCAService().getCertificate(certFile);
-    }
-
-    @Override
-    public void storeCertificate(Certificate cert, StoreService store) {
-        // TODO implementation
     }
 
     protected KeyService getKeyService() throws CertException {
@@ -151,4 +168,65 @@ public class CertServiceImpl implements CertService {
         }
         return cAService;
     }
+
+    @Override
+    public void storeCertificate(Certificate cert) throws CertException {
+
+        try {
+
+        } catch (Exception e) {
+            throw new CertException("Certificate storage problem:" + e);
+        }
+    }
+
+    /**
+     * User userId as store alias
+     *
+     * @param userInfo
+     */
+    public PrivateKey getKey(UserInfo userInfo) throws Exception {
+        KeyStore keyStore = java.security.KeyStore.getInstance("JKS");
+        FileInputStream input = new FileInputStream(keyStoreFile);
+        keyStore.load(input, cAPassword);
+        java.security.cert.Certificate cACert = keyStore.getCertificate(caAlias);
+        byte[] encoded = cACert.getEncoded();
+        X509CertImpl caCertImpl = new X509CertImpl(encoded);
+        X509CertInfo caCertInfo = (X509CertInfo) caCertImpl.get(X509CertImpl.NAME
+                + "." + X509CertImpl.INFO);
+        X500Name issuer = (X500Name) caCertInfo.get(X509CertInfo.SUBJECT + "."
+                + CertificateIssuerName.DN_NAME);
+        java.security.cert.Certificate cert = keyStore.getCertificate(caAlias);
+        PrivateKey privateKey = (PrivateKey) keyStore.getKey(certToSignAlias,
+                cAPassword);
+        return privateKey;
+    }
+
+    private void initKeyStore(KeyStore keyStore, String caAlias)
+            throws Exception {
+
+        OutputStream output = new FileOutputStream(keyStoreFile);
+        keyStore.load(null, password);
+        KeyPair caKeys = keyService.getKeys(getUserInfo());
+        PrivateKey caPrivateKey = caKeys.getPrivate();
+        Certificate cACert = cAService.getRootCertificate();
+        keyStore.setCertificateEntry(caAlias, cACert);
+
+        keyStore.store(output, password);
+        output.close();
+    }
+
+    //TODO move to descriptor or external file
+    public UserInfo getUserInfo() throws Exception {
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.OU, "CA");
+        userFields.put(CNField.CN, "PDFCA");
+        userFields.put(CNField.Email, "pdfca@nuxeo.com");
+        userFields.put(CNField.UserID, "Administrator");
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
+    }
+
 }

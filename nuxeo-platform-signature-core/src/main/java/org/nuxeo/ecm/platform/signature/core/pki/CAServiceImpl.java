@@ -16,8 +16,11 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -37,8 +40,9 @@ import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
 import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
 import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
+import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -50,12 +54,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class CAServiceImpl extends DefaultComponent implements CAService {
 
     private List<CADescriptor> config = new ArrayList<CADescriptor>();
-
     protected KeyService keyService;
-
     protected KeyPair rootKeys;
-
     protected X509Certificate rootCertificate;
+
+    //TODO move to descriptor
+    private static final String CERT_SIGNATURE_ALGORITHM= "SHA256WithRSAEncryption";
+    private static final String ROOT_USER_DN="CN=PDFCA";
 
     public void setRootCertificate(X509Certificate rootCertificate) {
         this.rootCertificate = rootCertificate;
@@ -63,7 +68,7 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
 
     @Override
     public X509Certificate createCertificateFromCSR(
-            PKCS10CertificationRequest csr, CertInfo certInfo)
+            PKCS10CertificationRequest csr, UserInfo userInfo)
             throws CertException {
         X509Certificate cert;
         try {
@@ -71,11 +76,10 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
             certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
             certGen.setIssuerDN(getRootCertificate().getIssuerX500Principal());
             certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
-            certGen.setNotBefore(certInfo.getValidFrom());
-            certGen.setNotAfter(certInfo.getValidTo());
+            certGen.setNotBefore(getCertStartDate());
+            certGen.setNotAfter(getCertEndDate());
             certGen.setPublicKey(csr.getPublicKey("BC"));
-            certGen.setSignatureAlgorithm(certInfo.getCertSignatureAlgorithm());
-
+            certGen.setSignatureAlgorithm(CERT_SIGNATURE_ALGORITHM);
             certGen.addExtension(X509Extensions.SubjectKeyIdentifier, false,
                     new SubjectKeyIdentifierStructure(csr.getPublicKey("BC")));
             certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false,
@@ -83,7 +87,7 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
             certGen.addExtension(X509Extensions.BasicConstraints, true,
                     new BasicConstraints(false));
             certGen.addExtension(X509Extensions.KeyUsage, true, new KeyUsage(
-                    KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+                    KeyUsage.digitalSignature));
             certGen.addExtension(X509Extensions.ExtendedKeyUsage, true,
                     new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth));
 
@@ -134,13 +138,12 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
     private X509Certificate createRootCertificate() throws CertException {
         X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
         certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-        certGen.setIssuerDN(new X500Principal(getRootCertInfo().getUserDN()));
-        certGen.setSubjectDN(new X500Principal(getRootCertInfo().getUserName()));
-        certGen.setNotBefore(getRootCertInfo().getValidFrom());
-        certGen.setNotAfter(getRootCertInfo().getValidTo());
+        certGen.setIssuerDN(new X500Principal(ROOT_USER_DN));
+        certGen.setSubjectDN(new X500Principal(ROOT_USER_DN));
+        certGen.setNotBefore(getCertStartDate());
+        certGen.setNotAfter(getCertEndDate());
         certGen.setPublicKey(getRootKeys().getPublic());
-        certGen.setSignatureAlgorithm(getRootCertInfo().getCertSignatureAlgorithm());
-
+        certGen.setSignatureAlgorithm(CERT_SIGNATURE_ALGORITHM);
         try {
             certGen.addExtension(
                     X509Extensions.SubjectKeyIdentifier,
@@ -174,24 +177,9 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
         return rootCertificate;
     }
 
-    //TODO modify from fixed
-    private CertInfo getRootCertInfo() {
-        CertInfo certInfo = new CertInfo();
-        certInfo.setUserName("PDFCA");
-        certInfo.setUserDN("CN=PDFCA");
-        certInfo.setKeyAlgorithm("RSA");
-        certInfo.setNumBits(1024);
-        certInfo.setCertSignatureAlgorithm("SHA256WithRSAEncryption");
-        Calendar cal = Calendar.getInstance();
-        certInfo.setValidFrom(cal.getTime());
-        cal.add(Calendar.MONTH, 12);
-        certInfo.setValidTo(cal.getTime());
-        return certInfo;
-    }
-
     private KeyPair getRootKeys() throws CertException {
         if (rootKeys == null) {
-            rootKeys = getKeyService().getKeys(getRootCertInfo());
+            rootKeys = getKeyService().getKeys(getRootUserInfo());
         }
         return rootKeys;
     }
@@ -255,4 +243,30 @@ public class CAServiceImpl extends DefaultComponent implements CAService {
             String extensionPoint, ComponentInstance contributor) {
         config.remove(contribution);
     }
+
+    //TODO move to descriptor
+    protected UserInfo getRootUserInfo() throws CertException{
+        Map<CNField,String> rootUserFields;
+            rootUserFields = new HashMap<CNField,String>();
+            rootUserFields.put(CNField.C, "US");
+            rootUserFields.put(CNField.O, "Nuxeo");
+            rootUserFields.put(CNField.OU, "CA");
+            rootUserFields.put(CNField.CN, "PDF Certificate Authority");
+            rootUserFields.put(CNField.Email, "ca@nuxeo.com");
+            rootUserFields.put(CNField.UserID, "pdfca");
+        UserInfo rootUserInfo= new UserInfo(rootUserFields);
+        return rootUserInfo;
+    }
+
+    protected Date getCertStartDate(){
+        Calendar cal = Calendar.getInstance();
+        return cal.getTime();
+    }
+
+    protected Date getCertEndDate(){
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 12);
+        return cal.getTime();
+    }
+
 }

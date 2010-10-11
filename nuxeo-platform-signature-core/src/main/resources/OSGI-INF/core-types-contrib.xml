@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="digital.signature.types">
+
+ <require>org.nuxeo.ecm.directory.types</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="user" src="schemas/user.xsd" override="true" />
+  </extension>
+
+</component>

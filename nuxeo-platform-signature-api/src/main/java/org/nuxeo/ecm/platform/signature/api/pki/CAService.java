@@ -22,6 +22,7 @@ import java.security.cert.X509Certificate;
 
 import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
  *
@@ -54,7 +55,7 @@ public interface CAService {
      * @throws CertException
      */
     public X509Certificate createCertificateFromCSR(
-            PKCS10CertificationRequest csr, CertInfo certInfo)
+            PKCS10CertificationRequest csr, UserInfo userInfo)
             throws CertException;
 
     /**

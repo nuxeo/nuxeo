@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
-import org.nuxeo.ecm.platform.signature.api.pki.CertInfo;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
  * Provides digital signature services.
@@ -42,5 +42,5 @@ public interface SignatureService{
      * @return
      * @throws Exception
      */
-    public File signPDF(CertInfo certInfo, InputStream origPdfStream) throws SignException;
+    public File signPDF(UserInfo userInfo, String reason, InputStream origPdfStream) throws SignException;
 }

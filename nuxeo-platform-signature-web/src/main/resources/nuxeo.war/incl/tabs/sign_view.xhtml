@@ -11,21 +11,31 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+
 <fieldset><legend><h:outputText value="${messages['label.sign.title']}" /></legend>
 
   <h2>${messages['label.sign.prompt']} : #{currentDocument.dublincore.title}</h2>
   <a4j:region>
   <a4j:outputPanel id="signPanel">
+
+    <div id="facesStatusMessage" class="facesStatusMessage">
+      <h:messages globalOnly="true"
+        infoClass="infoFeedback"
+        warnClass="warningFeedback"
+        errorClass="errorFeedback"/>
+    </div>
   <a4j:form id="sign_form" ajaxSingle="true" enctype="multipart/form-data">
   <h:outputText value="#{messages['label.sign.reason.prompt']}"/>
   <h:inputText id="signingReason" value="#{signingReason}" required="true" />
   <a4j:commandButton id="SignPDF" styleClass="button" value="#{messages['label.sign.submit']}" action="#{signActions.signCurrentDoc(signingReason)}"
         onclick="" data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (data) { hideWaiter() } else { processFinished() };"
-        reRender="signPanel" />
+        reRender="signPanel,facesStatusMessage" />
   </a4j:form>
   </a4j:outputPanel>
   </a4j:region>
 
  </fieldset>
 </div>
+
+

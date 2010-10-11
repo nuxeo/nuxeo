@@ -41,6 +41,4 @@ public class CertException extends SignException {
     public CertException(Throwable e) {
         super(e);
     }
-
-
 }

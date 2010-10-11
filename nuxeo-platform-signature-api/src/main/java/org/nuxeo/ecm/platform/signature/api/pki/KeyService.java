@@ -18,8 +18,10 @@
 package org.nuxeo.ecm.platform.signature.api.pki;
 
 import java.security.KeyPair;
+import java.security.Principal;
 
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
+import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
  * Handles PKI key generation, retrieval and storage
@@ -34,12 +36,12 @@ public interface KeyService {
      * @param userId
      * @return
      */
-    public KeyPair getKeys(CertInfo certInfo) throws CertException;
+    public KeyPair getKeys(UserInfo userInfo) throws CertException;
 
 
     /**
      * Stores a key-pair in the store
      */
-    void storeKeys(StoreService store);
+    void storeKeys();
 
 }
