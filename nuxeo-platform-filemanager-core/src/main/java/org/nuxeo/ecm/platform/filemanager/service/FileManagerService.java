@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -215,14 +216,17 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 return null;
             }
 
-            // Creating an unique identifier
-            String name = IdUtils.generatePathSegment(title);
-
-            docModel = documentManager.createDocumentModel(path, name,
-                    containerTypeName);
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            docModel = documentManager.createDocumentModel(containerTypeName);
+            docModel.setProperty("dublincore", "title", title);
 
             // writing changes
-            docModel.setProperty("dublincore", "title", title);
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
             documentManager.save();
 

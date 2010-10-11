@@ -29,8 +29,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Imports the string content of a blob as text for the content of the "note"
@@ -91,10 +93,14 @@ public class NoteImporter extends AbstractFileImporter {
             docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
             docModel = overwriteAndIncrementversion(documentManager, docModel);
         } else {
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
             // Create a new empty DocumentModel of type Note in memory
-            String name = IdUtils.generatePathSegment(title);
-            docModel = documentManager.createDocumentModel(path, name,
-                    getNoteTypeName());
+            docModel = documentManager.createDocumentModel(getNoteTypeName());
 
             // Update known attributes (title, note)
             docModel.setProperty(DUBLINCORE_SCHEMA, TITLE_FIELD, title);
@@ -112,6 +118,7 @@ public class NoteImporter extends AbstractFileImporter {
             docModel.setProperty(NOTE_SCHEMA, MT_FIELD, mt);
 
             // Create the new document in the repository
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
         documentManager.save();

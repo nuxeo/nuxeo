@@ -28,8 +28,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Anahide Tchertchian
@@ -80,11 +82,13 @@ public class DefaultFileImporter extends AbstractFileImporter {
             // new
             String title = FileManagerUtils.fetchTitle(filename);
 
-            // Creating an unique identifier
-            String name = IdUtils.generatePathSegment(title);
-
-            docModel = documentManager.createDocumentModel(path, name,
-                    typeName);
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            docModel = documentManager.createDocumentModel(typeName);
 
             // Updating known attributes (title, filename, content)
             docModel.setProperty("dublincore", "title", title);
@@ -92,6 +96,7 @@ public class DefaultFileImporter extends AbstractFileImporter {
             docModel.setProperty("file", "content", input);
 
             // writing the new document to the repository
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
 
