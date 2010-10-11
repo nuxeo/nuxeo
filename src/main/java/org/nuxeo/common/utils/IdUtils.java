@@ -134,7 +134,10 @@ public final class IdUtils {
      * <p>
      * Basically all characters are kept, except for slashes and
      * initial/trailing spaces.
+     *
+     * @deprecated use {@link PathSegmentService} instead
      */
+    @Deprecated
     public static String generatePathSegment(String s) {
         s = s.trim();
         if (STUPID_REGEXP.matcher(s).matches()) {
