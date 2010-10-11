@@ -17,13 +17,12 @@
 
   <template name="components" src="META-INF/templates/components.xml"
     installPath="nuxeo.war/WEB-INF/components.xml" required="true" />
- 
+
   <!--template name="jaxws" src="OSGI-INF/templates/sun-jaxws.xml"
     installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" /-->
 
-  <!--directory>system</directory>
-  <directory>.</directory>
-  <directory>plugins</directory-->
+  <directory>bundles</directory>
+  <directory>plugins</directory>
 
   <install>
     <property name="war" value="/nuxeo.war" />
