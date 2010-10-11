@@ -26,8 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.convert.Converter;
+
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Factory;
@@ -49,11 +48,17 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+import javax.faces.application.FacesMessage;
+import javax.faces.convert.Converter;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
  * Actions for current document route
@@ -76,7 +81,13 @@ public class DocumentRoutingActionsBean implements Serializable {
     protected FacesMessages facesMessages;
 
     @In(create = true)
+    protected WebActions webActions;
+
+    @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
+
+    @In(create = true)
+    protected EventManager eventManager;
 
     protected String relatedRouteModelDocumentId;
 
@@ -241,5 +252,26 @@ public class DocumentRoutingActionsBean implements Serializable {
             return true;
         }
         return false;
+    }
+
+    public String editDocument(DocumentModel doc) throws ClientException{
+        return navigationContext.navigateToDocument(doc, "edit");
+    }
+
+    public String updateRouteElement() throws ClientException{
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+        changeableDocument = documentManager.saveDocument(changeableDocument);
+
+        documentManager.save();
+        // some changes (versioning) happened server-side, fetch new one
+        navigationContext.invalidateCurrentDocument();
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("document_modified"),
+                resourcesAccessor.getMessages().get(
+                        changeableDocument.getType()));
+        eventManager.raiseEventsOnDocumentChange(changeableDocument);
+        DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
+        return webActions.setCurrentTabAndNavigate(docRouteElement.getDocumentRoute(documentManager).getDocument(),
+                "TAB_DOCUMENT_ROUTE_ELEMENTS");
     }
 }

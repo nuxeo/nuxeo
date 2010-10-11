@@ -31,6 +31,12 @@
           </properties>
           <widget>dr_listing_title_description</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>dr_listing__edit_document_route_element</widget>
+        </column>
       </columns>
     </layout>
     </extension>

@@ -10,6 +10,16 @@
 
   </extension>
   
+    <extension target="faces-config#NAVIGATION">
+    
+    <navigation-case>
+      <from-outcome>edit_route_element</from-outcome>
+      <to-view-id>/edit_route_element.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    </extension>
+  
   <install>
 
     <unzip from="${bundle.fileName}" to="/">
