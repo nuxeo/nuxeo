@@ -78,6 +78,11 @@ public class Main extends ModuleRoot {
         return newObject("Management");
     }
 
+    @Path("{bank}/manage")
+    public Object getBankManagement(@PathParam("bank") String bank) {
+        return newObject("BankManagement", bank);
+    }
+
     /*
      * Banks
      */
