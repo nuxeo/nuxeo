@@ -57,12 +57,32 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
             localeString = locale.getLanguage();
         }
 
+        // css link
+        // TODO: make this configurable
+        writer.startElement("link", dateTimeComp);
+        writer.writeAttribute("rel", "stylesheet", null);
+        writer.writeAttribute("type", "text/css", null);
+        String resourceUrl = generateResourceUrl(context, String.format(
+                "/jscalendar/css/jscal2.css", localeString), null);
+        writer.writeAttribute("href", resourceUrl, null);
+        writer.endElement("link");
+
+        // javascript script
+        writer.startElement("script", dateTimeComp);
+        writer.writeAttribute("type", "text/javascript", null);
+        resourceUrl = generateResourceUrl(context, String.format(
+                "/jscalendar/js/jscal2.js", localeString), null);
+        writer.writeAttribute("src", resourceUrl, null);
+        // force the script tag to be opened and then closed to avoid IE bug.
+        writer.write(" ");
+        writer.endElement("script");
+
         // localization script
         writer.startElement("script", dateTimeComp);
         writer.writeAttribute("type", "text/javascript", null);
-        String scriptUrl = generateResourceUrl(context, String.format(
-                "/jscalendar/lang/calendar-%s.js", localeString), null);
-        writer.writeAttribute("src", scriptUrl, null);
+        resourceUrl = generateResourceUrl(context, String.format(
+                "/jscalendar/js/lang/%s.js", localeString), null);
+        writer.writeAttribute("src", resourceUrl, null);
         // force the script tag to be opened and then closed to avoid IE bug.
         writer.write(" ");
         writer.endElement("script");
@@ -120,11 +140,11 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("type", "text/javascript", null);
         Map<String, String> options = new HashMap<String, String>();
         options.put("inputField", inputTextId);
-        options.put("button", triggerButtonId);
+        options.put("trigger", triggerButtonId);
         /* in javascript: empty string == false, non empty string == true */
         String showsTime = dateTimeComp.getShowsTime() ? "true" : "";
-        options.put("showsTime", showsTime);
-        options.put("ifFormat", convertFormat(dateTimeComp.getFormat()));
+        options.put("showTime", showsTime);
+        options.put("dateFormat", convertFormat(dateTimeComp.getFormat()));
         String calendarSetup = String.format("Calendar.setup(%s);",
                 generateOptions(options));
         writer.writeText(calendarSetup, null);
@@ -190,6 +210,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
             strOptions.add(String.format("%s : \"%s\"", option.getKey(),
                     option.getValue()));
         }
+        strOptions.add("onSelect: function() { this.hide(); }");
         StringBuilder res = new StringBuilder();
         res.append('{');
         res.append(StringUtils.join(strOptions.toArray(), ", "));
