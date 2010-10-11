@@ -29,10 +29,10 @@
       <param name="distribution" value="templates-common" />
     </antcall>
     <antcall target="build-resources">
-      <param name="distribution" value="templates-jboss5" />
+      <param name="distribution" value="templates-common-dm" />
     </antcall>
     <antcall target="build-resources">
-      <param name="distribution" value="templates-jboss-dm" />
+      <param name="distribution" value="templates-jboss" />
     </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat" />
