@@ -58,20 +58,37 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         }
 
         // css link
-        // TODO: make this configurable
         writer.startElement("link", dateTimeComp);
         writer.writeAttribute("rel", "stylesheet", null);
         writer.writeAttribute("type", "text/css", null);
-        String resourceUrl = generateResourceUrl(context, String.format(
-                "/jscalendar/css/jscal2.css", localeString), null);
+        String resourceUrl = generateResourceUrl(context,
+                "/jscalendar/css/jscal2.css", null);
         writer.writeAttribute("href", resourceUrl, null);
         writer.endElement("link");
+        // add css for Gecko-based browsers
+        writer.startElement("link", dateTimeComp);
+        writer.writeAttribute("rel", "stylesheet", null);
+        writer.writeAttribute("type", "text/css", null);
+        resourceUrl = generateResourceUrl(context,
+                "/jscalendar/css/border-radius.css", null);
+        writer.writeAttribute("href", resourceUrl, null);
+        writer.endElement("link");
+        // additional styling
+        String calendarCss = dateTimeComp.getCalendarCss();
+        if (calendarCss != null && calendarCss.length() >= 0) {
+            writer.startElement("link", dateTimeComp);
+            writer.writeAttribute("rel", "stylesheet", null);
+            writer.writeAttribute("type", "text/css", null);
+            resourceUrl = generateResourceUrl(context, calendarCss, null);
+            writer.writeAttribute("href", resourceUrl, null);
+            writer.endElement("link");
+        }
 
         // javascript script
         writer.startElement("script", dateTimeComp);
         writer.writeAttribute("type", "text/javascript", null);
-        resourceUrl = generateResourceUrl(context, String.format(
-                "/jscalendar/js/jscal2.js", localeString), null);
+        resourceUrl = generateResourceUrl(context, "/jscalendar/js/jscal2.js",
+                null);
         writer.writeAttribute("src", resourceUrl, null);
         // force the script tag to be opened and then closed to avoid IE bug.
         writer.write(" ");

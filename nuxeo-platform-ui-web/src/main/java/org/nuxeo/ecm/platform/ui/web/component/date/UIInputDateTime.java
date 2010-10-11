@@ -66,6 +66,8 @@ public class UIInputDateTime extends UIInput {
 
     protected String onselect;
 
+    protected String calendarCss;
+
     public UIInputDateTime() {
         setRendererType(COMPONENT_TYPE);
     }
@@ -270,10 +272,19 @@ public class UIInputDateTime extends UIInput {
 
     // state holder
 
+    public String getCalendarCss() {
+        return calendarCss;
+    }
+
+    public void setCalendarCss(String calendarCss) {
+        this.calendarCss = calendarCss;
+    }
+
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), format, showsTime,
-                locale, timeZone, triggerLabel, onchange, onclick, onselect };
+                locale, timeZone, triggerLabel, onchange, onclick, onselect,
+                triggerImg, calendarCss };
     }
 
     @Override
@@ -288,6 +299,8 @@ public class UIInputDateTime extends UIInput {
         onchange = (String) values[6];
         onclick = (String) values[7];
         onselect = (String) values[8];
+        triggerImg = (String) values[9];
+        calendarCss = (String) values[10];
     }
 
 }
