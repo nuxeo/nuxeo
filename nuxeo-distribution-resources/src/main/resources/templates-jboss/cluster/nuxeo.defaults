@@ -1,0 +1,4 @@
+nuxeo.template.includes=postgresql
+
+repository.clustering.delay=1000
+repository.binary.store=/path/to/some/shared/folder/for/binaries
