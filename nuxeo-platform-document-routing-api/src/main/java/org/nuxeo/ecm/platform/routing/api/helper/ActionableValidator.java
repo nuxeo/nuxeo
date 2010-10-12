@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.routing.api.helper;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -36,9 +40,18 @@ public class ActionableValidator {
 
     protected CoreSession session;
 
+    protected Map<String, Serializable> additionalProperties = new HashMap<String, Serializable>();
+
     public ActionableValidator(ActionableObject actionnable, CoreSession session) {
         this.actionnable = actionnable;
         this.session = session;
+    }
+
+    public ActionableValidator(ActionableObject actionnable,
+            CoreSession session, Map<String, Serializable> additionalProperties) {
+        this.actionnable = actionnable;
+        this.session = session;
+        this.additionalProperties = additionalProperties;
     }
 
     public void validate() {
@@ -57,6 +70,7 @@ public class ActionableValidator {
         context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
                 actionnable.getDocumentRouteStep(session));
         context.setInput(actionnable.getAttachedDocuments(session));
+        context.putAll(additionalProperties);
         try {
             automationService.run(context, chainId);
         } catch (InvalidChainException e) {
