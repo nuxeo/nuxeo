@@ -43,6 +43,7 @@
           <artifact artifactId="nuxeo-runtime-management-metrics" />
           <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
+          <artifact artifactId="nuxeo-generic-wss-front" />
           <artifact artifactId="nuxeo-apt-extensions" />
           <artifact artifactId="nuxeo-webengine-apt" />
         </excludes>
