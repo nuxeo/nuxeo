@@ -78,14 +78,18 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     private void doInitIfNeeded()  {
         if (rcm==null) {
-            rcm = Framework.getLocalService(RequestControllerManager.class);
+            if (Framework.getRuntime()!=null) {
+                rcm = Framework.getLocalService(RequestControllerManager.class);
 
-            if (rcm == null) {
-                log.error("Unable to get RequestControlerManager service");
-                //throw new ServletException(
-                //        "RequestControlerManager can not be found");
+                if (rcm == null) {
+                    log.error("Unable to get RequestControlerManager service");
+                    //throw new ServletException(
+                    //        "RequestControlerManager can not be found");
+                }
+                log.debug("Staring NuxeoRequestControler filter");
+            } else {
+                log.debug("Postpone filter init since Runtime is not yet avalaible");
             }
-            log.debug("Staring NuxeoRequestControler filter");
         }
     }
 
