@@ -15,9 +15,9 @@ class Webengine(FunkLoadTestCase):
     server_url = None
     _lipsum = Lipsum()
     ws_title = "FLNXTEST Webengine workspace"
-    ws_id = "flnxtest-webengine-workspace"
+    ws_id = "FLNXTEST Webengine works"
     dir_title = "FLNXTEST Page folder"
-    dir_id = "flnxtest-page-folder"
+    dir_id = "FLNXTEST Page folder"
     tag = "FLNXTEST"
 
     def setUp(self):

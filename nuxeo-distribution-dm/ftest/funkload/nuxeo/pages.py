@@ -42,7 +42,7 @@ Document
 """
 import random
 import time
-from urllib import quote_plus
+from urllib import quote_plus, quote
 from webunit.utility import Upload
 from utils import extractToken, extractJsfState, extractIframes, extractJsessionId
 from funkload.utils import Data
@@ -128,7 +128,7 @@ class BasePage:
         if not outcome:
             outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-               path + "@" + outcome,
+               quote(path) + "@" + outcome,
                description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')

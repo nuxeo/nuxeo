@@ -31,7 +31,7 @@ from nuxeo.testcase import NuxeoTestCase
 class Nuxeo(NuxeoTestCase):
     ws_title = "FLNXTEST Bench workspace"
     dir_title = "FLNXTEST Bench folder"
-    dir_path = "workspaces/flnxtest-bench-workspace/flnxtest-bench-folder"
+    dir_path = "workspaces/FLNXTEST Bench workspace/FLNXTEST Bench folder"
     section_title = "FLNXTEST Bench section"
     section_path = "sections/flnxtest-bench-section"
     tag = "FLNXTEST"

@@ -20,6 +20,8 @@ This modules is tied with the Nuxeo Webengine application.
 
 """
 
+from urllib import quote
+
 class BasePage:
     """Base class for nuxeo ep page."""
     fl = None
@@ -73,7 +75,7 @@ class BasePage:
         if not raiseOn404:
             ok_codes.append(404)
         resp = fl.get(fl.server_url +
-                      "/site/admin/repository/default-domain/" + path +
+                      "/site/admin/repository/default-domain/" + quote(path) +
                       "/@views/content_page?context=tab",
                       description=description, ok_codes=ok_codes)
         if resp.code == 404:
@@ -84,11 +86,11 @@ class BasePage:
     def createDocument(self, parent, title, description=None,
                        doc_type='Note', doc_id=None):
         fl = self.fl
-        fl.get(fl.server_url + "/site/admin/repository/default-domain/" + parent + "/@views/create",
+        fl.get(fl.server_url + "/site/admin/repository/default-domain/" + quote(parent) + "/@views/create",
                description="View create form")
         if not doc_id:
-            doc_id = title.lower().replace(' ', '-')
-        fl.post(fl.server_url + "/site/admin/repository/default-domain/" + parent, params=[
+            doc_id = title.replace('/', '-').strip()
+        fl.post(fl.server_url + "/site/admin/repository/default-domain/" + quote(parent), params=[
             ['name', doc_id],
             ['doctype', doc_type],
             ['dc:title', title],
@@ -99,7 +101,7 @@ class BasePage:
     def deleteDocument(self, path):
         fl = self.fl
         fl.get(fl.server_url + "/site/admin/repository/default-domain/" +
-               path + "/@delete",
+               quote(path) + "/@delete",
             description="Delete " + path)
         return self
 
@@ -121,7 +123,7 @@ class BasePage:
 
     def deleteUser(self, user):
         fl = self.fl
-        fl.get(fl.server_url + "/site/admin/users/user/" + user
+        fl.get(fl.server_url + "/site/admin/users/user/" + quote(user)
                + "/@delete",
                description="Delete user " + user)
         return self
