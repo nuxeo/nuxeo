@@ -2,6 +2,8 @@ package org.nuxeo.theme.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.nuxeo.common.utils.FileUtils;
 
@@ -23,15 +25,19 @@ public class BankUtils {
         return id.replaceAll("[\\s\\.]+", "-");
     }
 
-    public static String[] listFilesSorted(File file) {
-        String[] items = file.list();
-        /*
-         * Arrays.sort(items, new Comparator<String>() {
-         * 
-         * @Override public int compare(String o1, String o2) { return
-         * o1.toLowerCase().compareTo(o2.toLowerCase()); } });
-         */
-        return items;
-
+    public static File[] listFilesSorted(File folder) {
+        if (!folder.isDirectory()) {
+            return null;
+        }
+        File files[] = folder.listFiles();
+        Arrays.sort(files, new Comparator() {
+            @Override
+            public int compare(final Object o1, final Object o2) {
+                return new Long(((File) o1).lastModified()).compareTo(new Long(
+                        ((File) o2).lastModified()));
+            }
+        });
+        return files;
     }
+
 }

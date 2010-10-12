@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.core.tests.resources.banks">
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="resources">
+    <import src="test-bank.zip" bank="test" />
+  </extension>
+
+</component>

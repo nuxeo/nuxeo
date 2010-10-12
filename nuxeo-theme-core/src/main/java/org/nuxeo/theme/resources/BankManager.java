@@ -35,6 +35,8 @@ import org.yaml.snakeyaml.Yaml;
 public class BankManager {
     private static final File BANKS_DIR;
 
+    private static String[] TYPE_NAMES = { "style", "preset", "image" };
+
     static {
         BANKS_DIR = new File(Framework.getRuntime().getHome(), "theme-banks");
         BANKS_DIR.mkdirs();
@@ -50,8 +52,8 @@ public class BankManager {
 
     public static List<String> getBankNames() {
         List<String> names = new ArrayList<String>();
-        for (String bankName : BankUtils.listFilesSorted(BANKS_DIR)) {
-            names.add(bankName);
+        for (File bankFile : BankUtils.listFilesSorted(BANKS_DIR)) {
+            names.add(bankFile.getName());
         }
         return names;
     }
@@ -63,8 +65,10 @@ public class BankManager {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s", bank, typeName);
         File file = BankManager.getFile(path);
-        for (String collectionName : BankUtils.listFilesSorted(file)) {
-            names.add(collectionName);
+        if (file.exists()) {
+            for (File collectionFile : BankUtils.listFilesSorted(file)) {
+                names.add(collectionFile.getName());
+            }
         }
         return names;
     }
@@ -74,11 +78,14 @@ public class BankManager {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s/%s", bank, typeName, collection);
         File file = BankManager.getFile(path);
-        for (String item : BankUtils.listFilesSorted(file)) {
-            if (typeName.equals("style") && !item.endsWith(".css")) {
-                continue;
+        if (file.exists()) {
+            for (File item : BankUtils.listFilesSorted(file)) {
+                String itemName = item.getName();
+                if (typeName.equals("style") && !itemName.endsWith(".css")) {
+                    continue;
+                }
+                names.add(itemName);
             }
-            names.add(item);
         }
         return names;
     }
@@ -87,22 +94,19 @@ public class BankManager {
             String resource) {
         String path = String.format("%s/style/%s/%s", bank, collection,
                 resource);
-        File file = BankManager.getFile(path);
-        return file;
+        return BankManager.getFile(path);
     }
 
     public static File getImageFile(String bank, String collection,
             String resource) {
         String path = String.format("%s/image/%s/%s", bank, collection,
                 resource);
-        File file = BankManager.getFile(path);
-        return file;
+        return BankManager.getFile(path);
     }
 
     public static File getBankLogoFile(String bank) {
         String path = String.format("%s/logo.png", bank);
-        File file = BankManager.getFile(path);
-        return file;
+        return BankManager.getFile(path);
     }
 
     @SuppressWarnings("rawtypes")
@@ -115,8 +119,7 @@ public class BankManager {
                 String preview = (String) value.get("preview");
                 String path = String.format("%s/style/%s/%s", bank, collection,
                         preview);
-                File file = BankManager.getFile(path);
-                return file;
+                return BankManager.getFile(path);
             }
         }
         return null;
@@ -126,8 +129,7 @@ public class BankManager {
             String collection) {
         String path = String.format("%s/%s/%s/info.txt", bank, typeName,
                 collection);
-        File file = BankManager.getFile(path);
-        return file;
+        return BankManager.getFile(path);
     }
 
     @SuppressWarnings("unchecked")
@@ -145,8 +147,7 @@ public class BankManager {
         InputStream in = null;
         try {
             in = srcFileUrl.openStream();
-            String prefix = bankName;
-            ZipUtils.unzip(prefix, in, getBankDir(bankName));
+            ZipUtils.unzip(in, getBankDir(bankName));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

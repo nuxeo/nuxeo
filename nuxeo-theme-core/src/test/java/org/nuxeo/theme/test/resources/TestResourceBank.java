@@ -1,0 +1,79 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Jean-Marc Orliaguet, Chalmers
+ *
+ * $Id$
+ */
+
+package org.nuxeo.theme.test.resources;
+
+import java.util.Map;
+
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.resources.BankManager;
+import org.nuxeo.theme.themes.ThemeManager;
+import org.nuxeo.theme.types.TypeRegistry;
+
+public class TestResourceBank extends NXRuntimeTestCase {
+
+    private ThemeManager themeManager;
+
+    private TypeRegistry typeRegistry;
+
+    private final String BANK_NAME = "test";
+
+    private final String COLLECTION_NAME = "Test";
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
+        themeManager = Manager.getThemeManager();
+        typeRegistry = Manager.getTypeRegistry();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Manager.getTypeRegistry().clear();
+        themeManager.clear();
+        themeManager = null;
+        typeRegistry.clear();
+        typeRegistry = null;
+        super.tearDown();
+    }
+
+    public void testBankImport() {
+        assertEquals(BANK_NAME, BankManager.getBankNames().get(0));
+
+        assertEquals(COLLECTION_NAME,
+                BankManager.getCollections(BANK_NAME, "style").get(0));
+        assertEquals(COLLECTION_NAME,
+                BankManager.getCollections(BANK_NAME, "preset").get(0));
+        assertEquals(COLLECTION_NAME,
+                BankManager.getCollections(BANK_NAME, "image").get(0));
+
+        assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
+                "/test/logo.png"));
+
+        assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
+                "emoticon_smile.png").getPath().endsWith(
+                "/test/image/Test/emoticon_smile.png"));
+
+        Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, "style",
+                COLLECTION_NAME).get("test.css");
+        assertEquals(styleInfo.get("description"), "Test skin");
+        assertEquals(styleInfo.get("skin"), true);
+    }
+}
