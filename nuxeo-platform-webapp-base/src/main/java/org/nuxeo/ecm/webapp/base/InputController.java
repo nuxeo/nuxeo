@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -152,7 +153,7 @@ public abstract class InputController {
     }
 
     protected void setFacesMessage(String msg) {
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(msg));
     }
 
