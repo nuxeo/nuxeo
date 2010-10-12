@@ -26,6 +26,7 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -106,7 +107,7 @@ public class TestBulkEditHelper {
 
     @Test
     public void testGetPropertiesToCopy() {
-        DocumentModel doc = FictiveDocumentModel.createFictiveDocumentModelWith("dublincore");
+        DocumentModel doc = new SimpleDocumentModel("dublincore");
         ScopedMap map = doc.getContextData();
         map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:title", true);
         map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:description", false);
@@ -126,7 +127,7 @@ public class TestBulkEditHelper {
     public void testCopyMetadata() throws Exception {
         List<DocumentModel> docs = createTestDocuments();
         List<String> commonSchemas = BulkEditHelper.getCommonSchemas(docs);
-        DocumentModel sourceDoc = FictiveDocumentModel.createFictiveDocumentModelWith(commonSchemas);
+        DocumentModel sourceDoc = new SimpleDocumentModel(commonSchemas);
         sourceDoc.setProperty("dublincore", "title", "new title");
         sourceDoc.setProperty("dublincore", "description", "new description");
         sourceDoc.setProperty("dublincore", "creator", "new creator");

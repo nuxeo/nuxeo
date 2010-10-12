@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -90,7 +91,7 @@ public class BulkEditActions implements Serializable {
     @Factory(value = "bulkEditDocumentModel", scope = ScopeType.EVENT)
     public DocumentModel getBulkEditDocumentModel() {
         if (fictiveDocumentModel == null) {
-            fictiveDocumentModel = FictiveDocumentModel.createFictiveDocumentModelWith(getCommonSchemas());
+            fictiveDocumentModel = new SimpleDocumentModel(getCommonSchemas());
         }
         return fictiveDocumentModel;
     }
