@@ -164,13 +164,13 @@
 
     <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
     <move todir="${distribution.dir}/server/default/lib">
-        <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+        <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
             <include name="nuxeo-generic-wss-front*" />
         </fileset>
     </move>
     <!-- add WSS filter binding in ROOT.WAR -->
-    <move tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
-          file="${distribution.dir}/templates/default/wss-rootweb.xml" />
+    <copy tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
+          file="${maven.basedir}/src/main/resources/wss-rootweb.xml" overwrite="true"/>
     <!-- WSS specific END -->
 
     <antcall target="reorganize-libs">
