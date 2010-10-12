@@ -26,7 +26,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import javax.faces.application.FacesMessage;
+import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Factory;
@@ -55,10 +56,6 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
-import javax.faces.application.FacesMessage;
-import javax.faces.convert.Converter;
-import org.nuxeo.ecm.webapp.helpers.EventManager;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
 /**
  * Actions for current document route
@@ -248,17 +245,22 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public boolean isStep(DocumentModel doc) {
-        if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
-            return true;
-        }
-        return false;
+        return (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET));
     }
 
-    public String editDocument(DocumentModel doc) throws ClientException{
+    public boolean isUpdatableStep(DocumentModel stepDoc){
+        if (!isStep(stepDoc)){
+            return false;
+        }
+        DocumentRouteElement docRouteElement = stepDoc.getAdapter(DocumentRouteElement.class);
+        return (docRouteElement.isDraft() || docRouteElement.isReady());
+    }
+
+    public String editDocument(DocumentModel doc) throws ClientException {
         return navigationContext.navigateToDocument(doc, "edit");
     }
 
-    public String updateRouteElement() throws ClientException{
+    public String updateRouteElement() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         changeableDocument = documentManager.saveDocument(changeableDocument);
 
@@ -269,9 +271,18 @@ public class DocumentRoutingActionsBean implements Serializable {
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(
                         changeableDocument.getType()));
-        eventManager.raiseEventsOnDocumentChange(changeableDocument);
+        EventManager.raiseEventsOnDocumentChange(changeableDocument);
         DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
-        return webActions.setCurrentTabAndNavigate(docRouteElement.getDocumentRoute(documentManager).getDocument(),
+        return webActions.setCurrentTabAndNavigate(
+                docRouteElement.getDocumentRoute(documentManager).getDocument(),
+                "TAB_DOCUMENT_ROUTE_ELEMENTS");
+    }
+
+    public String goBackToRoute() throws ClientException {
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+        DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
+        return webActions.setCurrentTabAndNavigate(
+                docRouteElement.getDocumentRoute(documentManager).getDocument(),
                 "TAB_DOCUMENT_ROUTE_ELEMENTS");
     }
 }

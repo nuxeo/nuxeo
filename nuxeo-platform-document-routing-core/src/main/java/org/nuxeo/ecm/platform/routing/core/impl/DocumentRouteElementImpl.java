@@ -143,6 +143,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
+    public boolean isDraft() {
+        return checkLifeCycleState(ElementLifeCycleState.draft);
+    }
+
+    @Override
     public void setRunning(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toRunning, session, false);
     }

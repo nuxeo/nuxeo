@@ -92,6 +92,13 @@ public interface DocumentRouteElement extends Serializable {
     boolean isRunning();
 
     /**
+     * if this route is draft.
+     *
+     * @return
+     */
+    boolean isDraft();
+
+    /**
      * The name of this element.
      *
      * @return
