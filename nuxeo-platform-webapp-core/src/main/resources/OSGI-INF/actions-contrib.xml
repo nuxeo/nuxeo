@@ -390,24 +390,6 @@
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
-    <!-- disabled: see NXP-3029 (even if it was disabled before) -->
-    <action id="CURRENT_SELECTION_MASS_EDIT"
-      link="#{massEditActions.putSelectionInWorkList}" enabled="false"
-      label="command.mass_edition.addworklist" icon="">
-      <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>canCopyFromCurrentSelection</filter-id>
-      <filter id="no_massedit_for_domains">
-        <rule grant="false">
-          <type>Root</type>
-        </rule>
-      </filter>
-      <filter id="canBulkEdit">
-        <rule grant="true">
-          <condition>#{clipboardActions.canEditSelectedDocs}</condition>
-        </rule>
-      </filter>
-    </action>
-
     <action id="CURRENT_SELECTION_SECTIONS_TRASH"
       link="#{deleteActions.deleteSelectionSections}" label="command.trashDocs"
       icon="" help="comand.trashDocs.help"
@@ -416,28 +398,6 @@
       <filter id="canDeleteSection">
         <rule grant="true">
           <condition>#{deleteActions.canDeleteSections}</condition>
-        </rule>
-      </filter>
-    </action>
-
-    <!-- disabled: see NXP-3029 -->
-    <action id="CLIPBOARD_BULK_EDIT" link="#{massEditActions.massEditWorkList}"
-      enabled="false" label="command.mass_edition.addworklist"
-      icon="/icons/action_mass_edit.gif">
-      <category>DEFAULT_LIST</category>
-      <filter id="currentWorkListIsNotEmpty_massedit">
-        <rule grant="false">
-          <condition>#{clipboardActions.workListEmpty}</condition>
-        </rule>
-      </filter>
-      <filter id="no_massedit_for_domains">
-        <rule grant="false">
-          <type>Root</type>
-        </rule>
-      </filter>
-      <filter id="canBulkEdit">
-        <rule grant="true">
-          <condition>#{clipboardActions.canEditSelectedDocs}</condition>
         </rule>
       </filter>
     </action>
