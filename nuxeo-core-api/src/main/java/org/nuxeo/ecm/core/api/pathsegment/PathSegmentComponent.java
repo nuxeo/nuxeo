@@ -34,7 +34,7 @@ public class PathSegmentComponent extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(PathSegmentComponent.class);
 
-    public static final String XP = "service";
+    public static final String XP = "pathSegmentService";
 
     protected LinkedList<Class<? extends PathSegmentService>> contribs;
 

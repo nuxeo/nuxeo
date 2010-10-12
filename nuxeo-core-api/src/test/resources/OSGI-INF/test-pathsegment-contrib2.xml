@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.api.pathsegment.PathSegmentService.test2">
 
   <extension target="org.nuxeo.ecm.core.api.pathsegment.PathSegmentService"
-    point="service">
+    point="pathSegmentService">
     <service class="org.nuxeo.ecm.core.api.pathsegment.PathSegmentServiceDefault" />
   </extension>
 
