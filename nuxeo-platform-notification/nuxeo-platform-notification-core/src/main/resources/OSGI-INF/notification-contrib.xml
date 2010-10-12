@@ -43,7 +43,7 @@
       <event name="workflowAbandoned"/>
       <event name="workflowTaskCompleted"/>
       <event name="workflowTaskRejected"/>
-      <event name="worfklowTaskAssigned"/>
+      <event name="workflowTaskAssigned"/>
     </notification>
 
     <notification name="Approbation review started" channel="email" enabled="true" availableIn="Workspace"
@@ -55,7 +55,7 @@
     <notification name="Task assigned" channel="email" enabled="true" availableIn="Workspace"
       autoSubscribed="true" template="workflowTaskAssigned" subject="Task Assigned for ${docTitle}"
       label="label.nuxeo.notifications.appReviewStarted">
-      <event name="worfklowTaskAssigned"/>
+      <event name="workflowTaskAssigned"/>
     </notification>
 
     <notification name="Email document" channel="email" enabled="true" availableIn="all"
