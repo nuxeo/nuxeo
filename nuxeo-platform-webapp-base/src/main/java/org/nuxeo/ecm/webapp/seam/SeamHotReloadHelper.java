@@ -63,7 +63,11 @@ public class SeamHotReloadHelper {
             for (File file : init.getHotDeployPaths()) {
                 if (scan(init, file)) {
                     Seam.clearComponentNameCache();
-                    new Initialization(servletContext).redeploy(httpRequest);
+                    try {
+                        new Initialization(servletContext).redeploy(httpRequest);
+                    } catch (InterruptedException e) {
+                        log.error("Error during hot redeploy", e);
+                    }
                     reloadDone=true;
                     break;
                 }
