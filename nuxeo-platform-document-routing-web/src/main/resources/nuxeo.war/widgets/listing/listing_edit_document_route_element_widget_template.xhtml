@@ -7,7 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
   <div class="popupTarget">
-	<h:commandButton value="edit" action="#{routingActions.editDocument(field_0)}"/>
+	<h:commandButton value="edit" action="#{routingActions.editDocument(field_0)}" rendered="#{routingActions.isUpdatableStep(field_0) and routeSecurityChecker.canCreateRoute()}"/>
   </div>
 
 </f:subview>

@@ -9,10 +9,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:define name="body">
-    <div>
+    <div id="editStep">
     <h3><h:outputText value="#{messages['title.edit']} #{currentType.id}" /></h3>
     <ui:include src="/incl/message_banner.xhtml" />
-    <h:form>
+    <h:form id="edit_step">
       <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
         <ui:include src="/incl/document_editor.xhtml" />
       </c:if>
@@ -22,6 +22,9 @@
       </c:if>
       <h:commandButton value="#{messages['command.save']}"
         action="#{routingActions.updateRouteElement}" />
+     <h:outputText value=" "/>
+     <h:commandButton value="#{messages['command.cancel']}"
+        action="#{routingActions.goBackToRoute}" />
     </h:form>
     </div>
   </ui:define>

@@ -88,7 +88,7 @@
     
     <widget name="dr_listing__edit_document_route_element" type="listing_edit_document_route_element">
       <labels>
-        <label mode="any">label.document.route.content.header.edit</label>
+        <label mode="any">label.document.route.content.header.update</label>
       </labels>
       <translated>true</translated>
       <fields>
