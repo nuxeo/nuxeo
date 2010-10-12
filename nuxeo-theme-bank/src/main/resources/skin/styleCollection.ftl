@@ -32,7 +32,7 @@
     </h1>
 
     <#if (Context.principal)>
-    <form style="display: none" id="styleCreateForm" action="${Root.path}/manage/createStyle"
+    <form style="display: none" id="styleCreateForm" action="${Root.path}/${bank}/manage/createStyle"
            method="post">
       <h2>Create a new style</h2>
       <p>
@@ -40,7 +40,7 @@
         <strong><input class="textInput" type="text" name="resource" size="20" />.css</strong>
       </p>
       <div>
-        <input type="hidden" name="path" value="${bank}/style/${collection}" />
+        <input type="hidden" name="collection" value="${collection}" />
         <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '%20')}" />
       </div>
       <p>

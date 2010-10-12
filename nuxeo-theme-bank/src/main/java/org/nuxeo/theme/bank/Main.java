@@ -54,8 +54,6 @@ import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
-import org.nuxeo.theme.resources.ResourceBank;
-import org.nuxeo.theme.themes.ThemeManager;
 
 @WebObject(type = "theme-banks")
 @Produces(MediaType.TEXT_HTML)
@@ -73,14 +71,9 @@ public class Main extends ModuleRoot {
     /*
      * Management mode
      */
-    @Path("manage")
-    public Object getManagement() {
-        return newObject("Management");
-    }
-
     @Path("{bank}/manage")
-    public Object getBankManagement(@PathParam("bank") String bank) {
-        return newObject("BankManagement", bank);
+    public Object getManagement(@PathParam("bank") String bank) {
+        return newObject("Management", bank);
     }
 
     /*
@@ -173,7 +166,6 @@ public class Main extends ModuleRoot {
     @SuppressWarnings("rawtypes")
     public String listBankSkins(@PathParam("bank") String bankName) {
         JSONArray skins = new JSONArray();
-        ResourceBank resourceBank = ThemeManager.getResourceBank(bankName);
         for (String collection : BankManager.getCollections(bankName, "style")) {
             Map<String, Object> info = BankManager.getInfo(bankName, "style",
                     collection);

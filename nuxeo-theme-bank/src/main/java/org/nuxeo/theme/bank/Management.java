@@ -39,12 +39,19 @@ public class Management extends DefaultObject {
 
     private static final Log log = LogFactory.getLog(Management.class);
 
+    String bank;
+
+    @Override
+    protected void initialize(Object... args) {
+        assert args != null && args.length > 0;
+        bank = (String) args[0];
+    }
+
     @POST
     @Path("upload")
     public Object uploadFile() {
         FormData form = ctx.getForm();
 
-        String bankName = form.getString("bank");
         String collection = form.getString("collection");
         String redirectUrl = form.getString("redirect_url");
 
@@ -52,12 +59,14 @@ public class Management extends DefaultObject {
         if (!fileItem.isFormField()) {
             final byte[] fileData = fileItem.get();
             final String filename = fileItem.getName();
-            final String path = String.format("%s/image/%s", bankName,
-                    collection);
+            final String path = String.format("%s/image/%s", bank, collection);
             BankManager.createFile(path, filename, fileData);
         }
-
-        return redirect(redirectUrl);
+        if (redirectUrl != null) {
+            return redirect(redirectUrl);
+        } else {
+            return null;
+        }
     }
 
     @POST
@@ -66,10 +75,12 @@ public class Management extends DefaultObject {
         FormData form = ctx.getForm();
 
         String css = form.getString("css");
-        String path = form.getString("path");
-        String filename = form.getString("filename");
+        String collection = form.getString("collection");
+        String resource = form.getString("resource");
 
-        BankManager.editFile(path, filename, css);
+        final String path = String.format("%s/style/%s", bank, collection);
+
+        BankManager.editFile(path, resource, css);
 
         String redirectUrl = form.getString("redirect_url");
         return redirect(redirectUrl);
@@ -81,7 +92,8 @@ public class Management extends DefaultObject {
         FormData form = ctx.getForm();
 
         String resource = form.getString("resource");
-        String path = form.getString("path");
+        String collection = form.getString("collection");
+        final String path = String.format("%s/style/%s", bank, collection);
         String fileName = String.format("%s.css", resource);
 
         BankManager.createFile(path, fileName, "");

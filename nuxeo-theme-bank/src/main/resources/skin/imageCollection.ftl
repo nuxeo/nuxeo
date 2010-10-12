@@ -34,12 +34,11 @@
     </h1>
 
     <#if (Context.principal)>
-    <form style="display: none" id="uploadImageForm" action="${Root.path}/manage/upload"
+    <form style="display: none" id="uploadImageForm" action="${Root.path}/${bank}/manage/upload"
           enctype="multipart/form-data" method="post">
       <h2>Upload an image</h2>
       <p>
         <input type="file" name="file" size="30" />
-        <input type="hidden" name="bank" value="${bank}" />
         <input type="hidden" name="collection" value="${collection}" />
         <input type="hidden" name="redirect_url" value="${redirect_url?replace(' ', '%20')}" />
       </p>
