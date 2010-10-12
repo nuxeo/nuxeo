@@ -10,9 +10,6 @@
       </option>
       <option name="datasource">java:/comment-relations</option>
       <option name="databaseDoCompressUri">false</option>
-      <option name="databaseTransactionEnabled">
-        ${org.nuxeo.ecm.sql.jena.databaseTransactionEnabled}
-      </option>
       <namespaces>
         <namespace name="document">http://www.nuxeo.org/document/uid/</namespace>
       </namespaces>

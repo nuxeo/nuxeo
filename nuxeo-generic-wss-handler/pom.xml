@@ -15,6 +15,11 @@
 
   <dependencies>
     <dependency>
+       <groupId>org.nuxeo.ecm.platform</groupId>
+       <artifactId>nuxeo-generic-wss-front</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
     </dependency>

@@ -29,7 +29,9 @@ public class FPRPCResponse extends WSSResponse {
 
     public FPRPCResponse(HttpServletResponse httpResponse) {
         super(httpResponse);
-        httpResponse.setBufferSize(100000);
+        if (!httpResponse.isCommitted()) {
+            httpResponse.setBufferSize(100000);
+        }
     }
 
     @Override

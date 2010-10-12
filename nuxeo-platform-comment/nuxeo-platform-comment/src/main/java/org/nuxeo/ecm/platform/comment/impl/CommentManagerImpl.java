@@ -445,18 +445,13 @@ public class CommentManagerImpl implements CommentManager {
         return pathList;
     }
 
-    private static CoreSession getUserSession(String sid) {
-        return CoreInstance.getInstance().getSession(sid);
-    }
-
     /**
      * @deprecated if the caller is remote, we cannot obtain the session
      */
     @Deprecated
     private static String getCurrentUser(DocumentModel target)
             throws ClientException {
-        String sid = target.getSessionId();
-        CoreSession userSession = getUserSession(sid);
+        CoreSession userSession = target.getCoreSession();
         if (userSession == null) {
             throw new ClientException(
                     "userSession is null, do not invoke this method when the user is not local");

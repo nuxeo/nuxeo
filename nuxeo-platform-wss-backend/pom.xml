@@ -68,6 +68,17 @@
             <scope>test</scope>
             <version>${nuxeo.core.version}</version>
         </dependency>
+
+            <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>catalina</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>coyote</artifactId>
+    </dependency>
+
     </dependencies>
 
 </project>
