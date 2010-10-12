@@ -5,6 +5,10 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <documentation>
+      Adds a link to display the global smart search form.
+    </documentation>
+
     <action id="smart_search" link="smart_search_form"
       label="command.smartSearch" order="20">
       <category>SEARCH_ACTIONS</category>

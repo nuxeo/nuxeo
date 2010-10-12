@@ -24,6 +24,7 @@ import java.util.LinkedList;
  * The method {@link #addLast(Object)} will remove the first object of the list
  * when at full capacity.
  *
+ * @since 5.4
  * @author Anahide Tchertchian
  */
 public class HistoryList<E> extends LinkedList<E> {

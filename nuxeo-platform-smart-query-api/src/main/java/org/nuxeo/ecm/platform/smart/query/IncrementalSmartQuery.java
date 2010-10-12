@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
  * Specific getters and setters have been defined instead of a generic one for
  * a better resolution of target types.
  *
+ * @since 5.4
  * @author Anahide Tchertchian
  */
 public abstract class IncrementalSmartQuery implements SmartQuery {

@@ -33,7 +33,10 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 
 /**
+ * Provides methods to save a global smart search in a document.
+ *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @Name("smartNXQLFolderActions")
 @Scope(ScopeType.CONVERSATION)
@@ -50,6 +53,14 @@ public class SmartNXQLFolderActions implements Serializable {
     @In(create = true, required = true)
     protected transient SmartNXQLQueryActions smartNXQLQueryActions;
 
+    /**
+     * Initializes a document model of given type, and fill its properties
+     * according to fields set on the seam component
+     * {@link SmartNXQLFolderActions}.
+     * <p>
+     * Assumes the document type holds the 'content_view_display' and
+     * 'smart_folder' schemas.
+     */
     public String saveQueryAsDocument(String docType) throws ClientException {
         documentActions.createDocument(docType);
         // fill in information from smart search

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,28 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.platform.smart.query;
-
-import java.io.Serializable;
 
 /**
- * Common interface for query build
+ * Provides utilities to save a global smart search in a document.
  *
  * @since 5.4
- * @author Anahide Tchertchian
  */
-public interface SmartQuery extends Serializable {
-
-    /**
-     * Returns a String with the built query (or query part).
-     */
-    String buildQuery();
-
-    /**
-     * Returns true if query is valid.
-     */
-    boolean isValid();
-
-}
+package org.nuxeo.ecm.platform.smart.folder.jsf;

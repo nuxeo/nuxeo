@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.smart.query.IncrementalSmartQuery;
 /**
  * NXQL implementation of an incremental smart query
  *
+ * @since 5.4
  * @author Anahide Tchertchian
  */
 public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {

@@ -7,6 +7,11 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <documentation>
+      Adds a new tab for the smart folder view, and adds a button to save the
+      global smart search form into a smart folder.
+    </documentation>
+
     <action id="TAB_SMART_FOLDER_VIEW" link="/incl/tabs/smart_folder_view.xhtml"
       order="10" label="action.view.content">
       <category>VIEW_ACTION_LIST</category>
@@ -14,8 +19,8 @@
     </action>
 
     <action id="saveQueryAsSmartFolder"
-      link="#{smartNXQLFolderActions.saveQueryAsDocument('SmartFolder')}" order="10"
-      label="command.save">
+      link="#{smartNXQLFolderActions.saveQueryAsDocument('SmartFolder')}"
+      order="10" label="command.save">
       <category>SMART_SEARCH_BUTTONS</category>
       <!-- TODO: filter when no personal workspace is available -->
     </action>

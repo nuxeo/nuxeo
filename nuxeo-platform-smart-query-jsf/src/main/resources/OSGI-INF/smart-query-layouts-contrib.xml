@@ -6,6 +6,27 @@
     point="widgettypes">
 
     <widgetType name="nxql_incremental_smart_query_widget">
+      <documentation>
+        This widget displays the query builder as well as the query part in a
+        textarea in edit mode, and the query part in view mode.
+
+        It can only be used once on a given page, as it is bound to the
+        IncrementalSmartquery instance held by the seam component
+        'smartNXQLQueryActions'.
+
+        It needs to be bound to the query part, and accepts the the following
+        properties configuration:
+        <ul>
+          <li>
+            updateQueryPart: boolean indicationg if the bound query part should
+            be updated on ajax calls.
+          </li>
+          <li>
+            selectionLayout: the layout holding conditions to display in this
+            builder
+          </li>
+        </ul>
+      </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -15,6 +36,31 @@
     </widgetType>
 
     <widgetType name="incremental_smart_query_condition">
+      <documentation>
+        This widget displays the query builder inputs for a given
+        IncrementalSmartQuery instance.
+
+        It needs to be displayed in a layout using the template
+        '/layouts/incremental_smart_query_selection_layout_template.xhtml': this
+        template will display all the needed selectors to build the query.
+
+        Its subwidgets configuration is used to display inputs to set the query
+        condition right expression. These subwidgets modes can be set according
+        to the chosen operator.
+
+        It needs to be bound to an IncrementalSmartQuery instance, and it
+        accepts the the following properties configuration:
+        <ul>
+          <li>
+            searchField: string property that will be used to build the
+            condition left expression (for instance 'dc:title')
+          </li>
+          <li>
+            availableOperators: property list of available operators (for
+            instance 'IN', '=', '!='...)
+          </li>
+        </ul>
+      </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>

@@ -19,3 +19,6 @@ Install
 
 Setup properties in a file called "build.properties" according to your needs
 and run "ant deploy" to deploy on a jboss with nuxeo installed.
+
+This is equivalent to copying the jars to the director
+$JBOSS_HOME/server/default/deploy/nuxeo.ear/plugins.

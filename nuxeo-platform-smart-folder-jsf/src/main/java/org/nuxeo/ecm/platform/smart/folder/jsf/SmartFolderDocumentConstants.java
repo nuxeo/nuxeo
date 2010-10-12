@@ -17,7 +17,11 @@
 package org.nuxeo.ecm.platform.smart.folder.jsf;
 
 /**
+ * Constants for a SmartFolder document instance, needed to initialize this
+ * document type from a global smart search.
+ *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public interface SmartFolderDocumentConstants {
 

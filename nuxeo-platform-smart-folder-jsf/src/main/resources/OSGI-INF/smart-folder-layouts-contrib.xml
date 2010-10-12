@@ -5,6 +5,12 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
+    <documentation>
+      Layouts configuration for a smart folder, displaying the query builder
+      (for the smart folder edition page) and the content view results (for the
+      smart folder view page).
+    </documentation>
+
     <layout name="nxql_incremental_smart_folder">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
