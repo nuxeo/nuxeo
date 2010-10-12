@@ -94,18 +94,20 @@ Import-Package: com.sun.jersey.core.spi.component,
  org.nuxeo.ecm.platform.rendering.api,
  org.nuxeo.ecm.platform.rendering.fm,
  org.nuxeo.ecm.platform.rendering.fm.adapters,
+ org.nuxeo.ecm.platform.rendering.wiki,
  org.nuxeo.ecm.platform.ui.web.auth,
  org.nuxeo.ecm.platform.ui.web.auth.interfaces,
  org.nuxeo.ecm.platform.ui.web.auth.plugins,
  org.nuxeo.ecm.platform.versioning.api,
  org.nuxeo.ecm.platform.web.common.vh,
+ org.nuxeo.ecm.webengine.login,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.streaming,
  org.osgi.framework;version="1.4",
- org.nuxeo.ecm.platform.rendering.wiki,
  org.w3c.dom
+Eclipse-BuddyPolicy: dependent
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
 Nuxeo-Require: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.rendering
