@@ -735,31 +735,31 @@
 
       <dependency>
         <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.4.SP1_CP01-brew_NXP-5104</version>
+        <artifactId>hibernate-core</artifactId>
+        <version>3.3.1.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.1.ga</version>
+        <version>3.4.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>3.2.1.ga</version>
+        <version>3.4.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-commons-annotations</artifactId>
-        <version>3.3.0.ga</version>
+        <version>3.1.0.GA</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>4.0.2.GA</version>
+        <version>3.1.0.GA</version>
       </dependency>
 
       <dependency>
