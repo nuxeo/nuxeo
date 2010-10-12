@@ -36,6 +36,10 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 
 /**
  * Renderer for input date time component.
+ * <p>
+ * Required javascript and css classes have to be included in the page for this
+ * to work correctly. In default Nuxeo, these resources are managed by the
+ * theme.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -56,16 +60,6 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
             Locale locale = context.getViewRoot().getLocale();
             localeString = locale.getLanguage();
         }
-
-        // localization script
-        writer.startElement("script", dateTimeComp);
-        writer.writeAttribute("type", "text/javascript", null);
-        String scriptUrl = generateResourceUrl(context, String.format(
-                "/jscalendar/lang/calendar-%s.js", localeString), null);
-        writer.writeAttribute("src", scriptUrl, null);
-        // force the script tag to be opened and then closed to avoid IE bug.
-        writer.write(" ");
-        writer.endElement("script");
 
         String inputTextId = dateTimeComp.getClientId(context);
         String triggerButtonId = inputTextId + ":trigger";
@@ -120,13 +114,14 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("type", "text/javascript", null);
         Map<String, String> options = new HashMap<String, String>();
         options.put("inputField", inputTextId);
-        options.put("button", triggerButtonId);
+        options.put("trigger", triggerButtonId);
         /* in javascript: empty string == false, non empty string == true */
         String showsTime = dateTimeComp.getShowsTime() ? "true" : "";
-        options.put("showsTime", showsTime);
-        options.put("ifFormat", convertFormat(dateTimeComp.getFormat()));
-        String calendarSetup = String.format("Calendar.setup(%s);",
-                generateOptions(options));
+        options.put("showTime", showsTime);
+        options.put("dateFormat", convertFormat(dateTimeComp.getFormat()));
+        String calendarSetup = String.format(
+                "Calendar.setup(%s).setLanguage('%s');",
+                generateOptions(options), localeString);
         writer.writeText(calendarSetup, null);
         writer.endElement("script");
 
@@ -190,6 +185,7 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
             strOptions.add(String.format("%s : \"%s\"", option.getKey(),
                     option.getValue()));
         }
+        strOptions.add("onSelect: function() { this.hide(); }");
         StringBuilder res = new StringBuilder();
         res.append('{');
         res.append(StringUtils.join(strOptions.toArray(), ", "));

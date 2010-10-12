@@ -273,7 +273,8 @@ public class UIInputDateTime extends UIInput {
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), format, showsTime,
-                locale, timeZone, triggerLabel, onchange, onclick, onselect };
+                locale, timeZone, triggerLabel, onchange, onclick, onselect,
+                triggerImg };
     }
 
     @Override
@@ -288,6 +289,7 @@ public class UIInputDateTime extends UIInput {
         onchange = (String) values[6];
         onclick = (String) values[7];
         onselect = (String) values[8];
+        triggerImg = (String) values[9];
     }
 
 }
