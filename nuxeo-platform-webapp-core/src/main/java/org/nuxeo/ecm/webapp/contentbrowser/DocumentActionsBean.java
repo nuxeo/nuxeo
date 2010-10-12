@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -79,6 +80,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
+import org.nuxeo.runtime.api.Framework;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
@@ -454,6 +456,12 @@ public class DocumentActionsBean extends InputController implements
                     "after-create");
         }
         try {
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
             if (parentDocumentPath == null) {
                 if (currentDocument == null) {
                     // creating item at the root
@@ -463,14 +471,7 @@ public class DocumentActionsBean extends InputController implements
                 }
             }
 
-            String title = (String) newDocument.getProperty("dublincore",
-                    "title");
-            if (title == null) {
-                title = "";
-            }
-            String name = IdUtils.generateId(title);
-            // set parent path and name for document model
-            newDocument.setPathInfo(parentDocumentPath, name);
+            newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
 
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();
