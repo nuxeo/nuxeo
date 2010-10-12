@@ -1,0 +1,96 @@
+.DynarchCalendar {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0
+}
+
+.DynarchCalendar, .DynarchCalendar-focused {
+  background-color: #fff;
+  border:1px solid #a5a7b5;
+}
+
+.DynarchCalendar-topBar, .DynarchCalendar-focused .DynarchCalendar-topBar {
+  background-color: #c9dcf4;
+  color: #333;
+}
+
+.DynarchCalendar-topBar, .DynarchCalendar-bottomBar {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0
+}
+
+.DynarchCalendar-bottomBar, .DynarchCalendar-focused .DynarchCalendar-bottomBar {
+  background-color: #4e9ae1;
+  color: #fff;
+}
+
+
+.DynarchCalendar-title div {
+  color: #333;
+  text-shadow:1px 1px 1px #fff;
+}
+
+.DynarchCalendar-dayNames { background-color: #ebefff; }
+
+.DynarchCalendar-dayNames div { text-shadow: 1px 1px 1px #fff}
+
+.DynarchCalendar-hover-navBtn div,
+.DynarchCalendar-hover-title div,
+.DynarchCalendar-hover-bottomBar-today {
+  border: 1px solid #fff;
+  background-color: #ededed;
+  color: #333;
+}
+
+
+.DynarchCalendar-menu table td div.DynarchCalendar-hover-navBtn {
+  border: 1px solid #a5a7b5;
+  background-color: #fff;
+  color: #333;
+}
+
+.DynarchCalendar-pressed-navBtn div,
+.DynarchCalendar-pressed-title div,
+.DynarchCalendar-pressed-bottomBar-today,
+.DynarchCalendar-menu table td div.DynarchCalendar-pressed-navBtn {
+  border-color: 1px solid #fff;
+  background-color: #4e9ae1;
+  color: #fff;
+  text-shadow: none;
+}
+
+.DynarchCalendar-hover-date {
+  border: 1px solid #fff;
+  background-color: #ececec;
+}
+.DynarchCalendar-day {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+}
+
+.DynarchCalendar-day-disabled {
+  background: #c4c0b8;
+}
+
+.DynarchCalendar-hover-week { background-color: #eff0f7 !important; }
+
+.DynarchCalendar-day-selected {
+  background-color: #4e9ae1;
+  border: 1px solid #fff;
+  margin: 0;
+  color: #fff !important;
+}
+
+.DynarchCalendar-day-today {
+  background-color: #f1f1f1;
+}
+
+.DynarchCalendar-day-today .DynarchCalendar-day-selected { background-color: #e1e1e1; }
+
+.DynarchCalendar-dayNames .DynarchCalendar-weekend, .DynarchCalendar-weekend { color:#7C4300; }
+
+.DynarchCalendar-menu { background-color: #ededed; }
+
+.DynarchCalendar-hover-time { background-color: #ededed; color: #333; }
