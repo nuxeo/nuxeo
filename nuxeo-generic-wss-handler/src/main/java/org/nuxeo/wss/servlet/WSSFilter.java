@@ -89,6 +89,8 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
 
         WSSBackend backend = Backend.get(request);
 
+        backend.begin();
+
         log.debug("Handling WSS call : " + httpRequest.getRequestURL().toString());
 
         try {
@@ -119,12 +121,12 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
 
             backend.saveChanges();
         }
-        catch (Exception e) {
+        catch (Throwable t) {
             if (backend!=null) {
                 backend.discardChanges();
             }
-            log.error("Error during WSS call processing", e);
-            throw new WSSException("Error while processing WSS request", e);
+            log.error("Error during WSS call processing", t);
+            throw new WSSException("Error while processing WSS request", t);
         }
     }
 

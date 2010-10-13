@@ -34,6 +34,8 @@ public interface WSSBackend {
 
     List<WSSListItem> listLeafItems(String location) throws WSSException;
 
+    void begin() throws WSSException;
+
     void saveChanges() throws WSSException;
 
     void discardChanges() throws WSSException;

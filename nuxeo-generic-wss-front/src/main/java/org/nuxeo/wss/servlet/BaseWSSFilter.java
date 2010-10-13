@@ -65,27 +65,28 @@ public abstract class BaseWSSFilter implements Filter {
                     try {
                         if (forwardedConfig!=null) {
                             handleForwardedCall(httpRequest, httpResponse, (FilterBindingConfig) forwardedConfig);
-                        }
-
-                        FilterBindingConfig config = FilterBindingResolver.getBinding(httpRequest);
-                        if (config!=null) {
-                            if (isRootFilter()) {
-                                log.debug("Forward call to backend filter");
-                                httpRequest.setAttribute(FILTER_FORWARD_PARAM, config);
-                                doForward(httpRequest, httpResponse, config);
+                        } else {
+                            FilterBindingConfig config = FilterBindingResolver.getBinding(httpRequest);
+                            if (config!=null) {
+                                if (isRootFilter()) {
+                                    log.debug("Forward call to backend filter");
+                                    httpRequest.setAttribute(FILTER_FORWARD_PARAM, config);
+                                    doForward(httpRequest, httpResponse, config);
+                                }
+                                else {
+                                    handleWSSCall(httpRequest, httpResponse, config);
+                                }
+                                return;
+                            } else {
+                                // NOT a WSS request
+                                chain.doFilter(request, response);
                             }
-                            else {
-                                handleWSSCall(httpRequest, httpResponse, config);
-                            }
-                            return;
                         }
-                    }
+                        }
                     catch (Exception e) {
                         throw new ServletException("Error processing WSS request", e);
                     }
-
                 }
-                chain.doFilter(request, response);
             }
 
     protected String getRootFilterTarget() {

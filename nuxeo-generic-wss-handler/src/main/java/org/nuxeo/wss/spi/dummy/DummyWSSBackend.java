@@ -117,4 +117,9 @@ public class DummyWSSBackend extends AbstractWSSBackend implements WSSBackend {
         return site;
     }
 
+    @Override
+    public void begin() throws WSSException {
+        // NOP
+    }
+
 }

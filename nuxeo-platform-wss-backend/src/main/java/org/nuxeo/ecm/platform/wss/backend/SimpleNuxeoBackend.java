@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.wss.service.PluggableBackendFactory;
 import org.nuxeo.ecm.platform.wss.service.WSSPlugableBackendManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wss.WSSException;
@@ -184,6 +184,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         }
     }
 
+
     // called when moving from one backend to an other
     public WSSListItem moveDocument(DocumentModel source, String newLocation) throws WSSException {
 
@@ -193,6 +194,10 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         String name = source.getName();
         DocumentRef targetRef = new PathRef(destinationPath.removeLastSegments(1).toString());
         DocumentModel movedDoc = null;
+
+        checkAccess(targetRef, SecurityConstants.ADD_CHILDREN);
+        checkAccess(source.getRef(), SecurityConstants.REMOVE);
+        //checkAccess(source.parent.getRef(), SecurityConstants.REMOVE_CHILDREN);
 
         try {
             movedDoc = getCoreSession().move(source.getRef(), targetRef, name);
@@ -227,6 +232,8 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
 
                  if (source.isFolder()) {
                      source.setPropertyValue("dc:title", dstName);
+                     checkAccess(source.getRef(), SecurityConstants.WRITE_PROPERTIES);
+
                      getCoreSession().saveDocument(source);
                      movedDoc = getCoreSession().move(source.getRef(), source.getParentRef(), cleanName(dstName));
                  } else {
@@ -280,6 +287,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
             throw new WSSException("Document path not found");
         }
         try {
+            checkAccess(docToRemove.getParentRef(), SecurityConstants.REMOVE_CHILDREN);
             getCoreSession().removeDocument(docToRemove.getRef());
         } catch (Exception e) {
             throw new WSSException("Error while deleting doc " + docToRemove.getRef() , e);
@@ -314,6 +322,7 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         String nodeName = cleanName(name);
 
         try {
+            checkAccess(parent.getRef(), SecurityConstants.ADD_CHILDREN);
             DocumentModel newDoc = getCoreSession().createDocumentModel(parent.getPathAsString(), nodeName, targetType);
             newDoc.setPropertyValue("dc:title", name);
             newDoc = getCoreSession().createDocument(newDoc);
