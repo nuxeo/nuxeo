@@ -79,7 +79,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             return;
         }
         CoreSession session = null;
-        FulltextInfo fulltextInfo;
+        FulltextInfo fulltextInfo = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
             if (!event.getName().equals(EVENT_NAME)) {
@@ -126,14 +126,29 @@ public class BinaryTextListener implements PostCommitEventListener {
                 // the target document that carries it
                 continue;
             }
-            List<Blob> blobs = extractor.getBlobs(doc);
-            String text = blobsToText(blobs);
-            try {
-                session.setDocumentSystemProp(docRef,
-                        SQLDocument.BINARY_TEXT_SYS_PROP, text);
-            } catch (DocumentException e) {
-                log.error("Couldn't set fulltext on: " + id, e);
-                continue;
+            
+            
+            
+            // Iterate on each index to set the binaryText column
+            for (String indexName : fulltextInfo.indexNames) {
+                // only extracting to default index is working
+                if ("default".equals(indexName)) {
+                    log.info("Indexing blobs for default index");
+                    log.info("Blob properties to index: " + fulltextInfo.propPathsByIndexBinary.get(indexName));
+                    extractor.setExtractorProperties(
+                            fulltextInfo.propPathsByIndexBinary.get(indexName),
+                            fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
+                            fulltextInfo.indexesAllBinary.contains(indexName));
+                    List<Blob> blobs = extractor.getBlobs(doc);
+                    String text = blobsToText(blobs);
+                    try {
+                        session.setDocumentSystemProp(docRef,
+                                SQLDocument.BINARY_TEXT_SYS_PROP, text);
+                    } catch (DocumentException e) {
+                        log.error("Couldn't set fulltext on: " + id, e);
+                        continue;
+                    }
+                }
             }
             save = true;
         }
