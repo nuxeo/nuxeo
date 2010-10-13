@@ -109,18 +109,7 @@ Services backend: Ms SQL Server XA
 Copy JDBC driver http://repo2.maven.org/maven2/net/sourceforge/jtds/jtds/1.2.2/jtds-1.2.2.jar
 into $TOMCAT/lib/
 
-2.5) cluster
-
-See http://doc.nuxeo.com/display/KB/Nuxeo+clustering+configuration
-
-This configuration activates the clustering mode: two Nuxeo Tomcat servers with 
-identical configuration will share the same database and binaries' file system.
-
-By default, this template is configured to use PostgreSQL.
-Repository backend: PostgreSQL XA
-Services backend: PostgreSQL XA
-
-2.6) custom
+2.5) custom
 
 Sample custom template. It's quite empty, feel free to play with it in order to
 create your own template.
