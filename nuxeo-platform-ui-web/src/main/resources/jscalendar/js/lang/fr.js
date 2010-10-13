@@ -1,4 +1,4 @@
-Calendar.LANG("fr", "Français", {
+Calendar.LANG("fr", "Fran\xe7ais", {
 
         fdow: 1,                // first day of week for this locale; 0 = Sunday, 1 = Monday, etc.
 
@@ -15,30 +15,30 @@ Calendar.LANG("fr", "Français", {
         PM: "pm",
 
         mn : [ "Janvier",
-               "Février",
+               "F\xe9vrier",
                "Mars",
                "Avril",
                "Mai",
                "Juin",
                "Juillet",
-               "Août",
+               "Ao\xfbt",
                "Septembre",
                "Octobre",
                "Novembre",
-               "Décembre" ],
+               "D\xe9cembre" ],
 
         smn : [ "Jan",
-                "Fév",
+                "F\xe9v",
                 "Mar",
                 "Avr",
                 "Mai",
                 "Juin",
                 "Juil",
-                "Aou",
+                "Ao\xfb",
                 "Sep",
                 "Oct",
                 "Nov",
-                "Déc" ],
+                "D\xe9c" ],
 
         dn : [ "Dimanche",
                "Lundi",
