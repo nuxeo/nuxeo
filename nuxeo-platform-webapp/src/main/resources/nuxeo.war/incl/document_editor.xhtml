@@ -5,11 +5,12 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
-<f:subview rendered="false">
+<c:if test="false">
+  This template is deprecated.
   XXX AT: wrap table in another table to avoid table reset,
   see NXP-656 + NXP-689
-</f:subview>
+</c:if>
+
 <h:dataTable value="#{editableListBean.dummyList}" rows="1">
 <h:column>
 

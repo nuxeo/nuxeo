@@ -5,6 +5,10 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
+<c:if test="false">
+  This template is deprecated
+</c:if>
+
 <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
   <h:outputText value="#{messages['label.search.form.enterNXQL']}"/>
   <h:form id="nxqlSearchForm">
