@@ -40,6 +40,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Handles cache and refresh for named content views.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @Name("contentViewActions")
 @Scope(CONVERSATION)

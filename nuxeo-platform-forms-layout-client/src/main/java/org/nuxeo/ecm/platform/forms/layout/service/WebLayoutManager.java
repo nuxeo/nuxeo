@@ -67,10 +67,36 @@ public interface WebLayoutManager extends LayoutManager {
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
      * @return a layout computed in this context.
+     * @since 5.4
      */
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName);
 
+    /**
+     * Returns the computed layout for this name, mode and list of selected
+     * rows in given context, or null if no layout with this name is found.
+     * <p>
+     * When a widget is configured not to be rendered in this mode, the layout
+     * will hold a null value instead. As well, when a row does not hold any
+     * non-null widget in this mode, the layout will not hold it.
+     * <p>
+     * If parameter selectedRows is not null, layout rows will be filtered
+     * according to this value. If selectedRows is null and parameter
+     * selectAllRowsByDefault is true, all rows will be taken into account,
+     * even rows marked as not selected by default.
+     *
+     * @param ctx the facelet context this layout will be computed in. If
+     *            context is null, no expressions can be resolved during
+     *            computing.
+     * @param layoutName the layout definition name.
+     * @param mode the mode.
+     * @param valueName the value name to use when computing tag attributes.
+     * @param selectedRows the list of selected rows names
+     * @param selectAllRowsByDefault boolean indicating if all rows should be
+     *            considered selected by default in case parameter selectedRows
+     *            resolves to null.
+     * @return a layout computed in this context.
+     */
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault);

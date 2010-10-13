@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
  * view.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public class ContentViewCache implements Serializable {
 
@@ -62,6 +63,10 @@ public class ContentViewCache implements Serializable {
      */
     protected final Map<String, Set<String>> resetEventToContentViewName = new HashMap<String, Set<String>>();
 
+    /**
+     * Add given content view to the cache, resolving its cache key and
+     * initializing it with its cache size.
+     */
     public void add(ContentView cView) {
         if (cView != null) {
             String cacheKey = cView.getCacheKey();
@@ -114,6 +119,9 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    /**
+     * Returns cached content view with given name, or null if not found.
+     */
     public ContentView get(String name) {
         ContentView cView = namedContentViews.get(name);
         if (cView != null) {
@@ -135,6 +143,12 @@ public class ContentViewCache implements Serializable {
         return cView;
     }
 
+    /**
+     * Refresh page providers for content views in the cache with given name.
+     * <p>
+     * Other contextual information set on the content view and the page
+     * provider will be kept.
+     */
     public void refresh(String contentViewName, boolean rewind) {
         ContentView cv = namedContentViews.get(contentViewName);
         if (cv != null) {
@@ -158,6 +172,11 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    /**
+     * Resets page providers for content views in the cache with given name.
+     * <p>
+     * Other contextual information set on the content view will be kept.
+     */
     public void resetPageProvider(String contentViewName) {
         ContentView cv = namedContentViews.get(contentViewName);
         if (cv != null) {
@@ -173,6 +192,13 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    /**
+     * Refresh page providers for content views having declared given event as
+     * a refresh event.
+     * <p>
+     * Other contextual information set on the content view and the page
+     * provider will be kept.
+     */
     public void refreshOnEvent(String eventName) {
         if (eventName != null) {
             Set<String> contentViewNames = refreshEventToContentViewName.get(eventName);
@@ -184,6 +210,12 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    /**
+     * Resets page providers for content views having declared given event as a
+     * reset event.
+     * <p>
+     * Other contextual information set on the content view will be kept.
+     */
     public void resetPageProviderOnEvent(String eventName) {
         if (eventName != null) {
             Set<String> contentViewNames = resetEventToContentViewName.get(eventName);
@@ -195,6 +227,9 @@ public class ContentViewCache implements Serializable {
         }
     }
 
+    /**
+     * Resets all cached information for given content view.
+     */
     public void reset(String contentViewName) {
         namedContentViews.remove(contentViewName);
         namedCacheKeys.remove(contentViewName);

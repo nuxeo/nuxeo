@@ -21,6 +21,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject("layout")
 public class ContentViewLayoutImpl implements ContentViewLayout {

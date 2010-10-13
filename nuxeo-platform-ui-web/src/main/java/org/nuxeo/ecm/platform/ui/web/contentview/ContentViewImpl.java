@@ -211,6 +211,11 @@ public class ContentViewImpl implements ContentView {
     /**
      * Returns cached page provider if it exists or build a new one if
      * parameters have changed.
+     * <p>
+     * The search document, current page and page size are set on the page
+     * provider anyway. Sort infos are not set again if page provider was not
+     * built again (e.g if parameters did not change) to avoid erasing sort
+     * infos already held by it.
      */
     public PageProvider<?> getPageProvider(DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,

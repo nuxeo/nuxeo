@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
  * used by default.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject(value = "whereClause")
 public class WhereClauseDescriptor {

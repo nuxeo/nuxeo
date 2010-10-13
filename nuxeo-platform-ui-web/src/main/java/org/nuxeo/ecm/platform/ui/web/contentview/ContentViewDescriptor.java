@@ -27,6 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor for content view registration.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject("contentView")
 public class ContentViewDescriptor {

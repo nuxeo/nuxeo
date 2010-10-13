@@ -39,6 +39,26 @@
           property names for each of the field definitions, separated by a
           space.
         </li>
+        <li>
+          selectedRows(Layout, List<String>, boolean) and alias
+          selectedColumns(Layout, List<String>, boolean): returns the list
+          of LayoutRow instances that are selected given the Layout instance,
+          the list of row names selected, and a boolean that, if set to true,
+          will include rows that are marked as always selected.  
+        </li>
+        <li>
+          notSelectedRows(Layout, List<String>) and alias
+          notSelectedColumns(Layout, List<String>): returns the list of
+          LayoutRow instances that are not selected given the Layout instance
+          and the list of row names selected.  
+        </li>
+        <li>
+          defaultSelectedRowNames(Layout, boolean) and alias
+          defaultSelectedColumnNames(Layout, boolean): returns the list of
+          row names that are marked as selected by default given the Layout
+          instance and a boolean that, if set to true, will include rows that
+          are marked as always selected.
+        </li>
       </ul>
     </p>
     ]]>
@@ -219,6 +239,35 @@
       <description>
         The template to use for this layout, overriding the template declared in
         the layout definition.
+      </description>
+    </attribute>
+    <attribute>
+      <name>selectedRows</name>
+      <required>false</required>
+      <type>java.util.List</type>
+      <description>
+        String list of row names that are selected. If not null, the layout rows
+        will be filtered according to this list. If null, only the rows marked
+        as selected by default will be taken into account, unless attribute
+        selectAllByDefault is set to true. Defaults to null. Is available since
+        version 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>selectedColumns</name>
+      <required>false</required>
+      <type>java.util.List</type>
+      <description>Alias of selectedRows attribute.</description>
+    </attribute>
+    <attribute>
+      <name>selectAllByDefault</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating if all rows should be considered selected by default.
+        Will have an impact only if attribute selectedRows or alias
+        selectedColumns resolve to a null value. Defaults to false. Is available
+        since version 5.4.
       </description>
     </attribute>
     <example>

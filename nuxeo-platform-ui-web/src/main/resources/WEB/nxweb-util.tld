@@ -334,7 +334,8 @@
       <name>itemDisabled</name>
       <required>false</required>
       <description>
-        Value binding resolved to build the item disabled attribute.
+        Value binding resolved to build the item disabled attribute. Available
+        since 5.4.
       </description>
     </attribute>
     <attribute>
@@ -342,6 +343,7 @@
       <required>true</required>
       <description>
         Value binding resolved to exclude the item from the list of selections.
+        Available since 5.4.
       </description>
     </attribute>
     <example>
@@ -868,9 +870,10 @@
       <type>java.util.List</type>
       <description>
         Value binding representing the default value for the list to edit. This
-        is only resolved when the value attribute resolves to a null value, and
-        can be useful to set default values from the interface, without having
-        to resolve them in the original value binding method.
+        is only resolved when the value attribute resolves to a null or empty
+        value, and can be useful to set default values from the interface,
+        without having to resolve them in the original value binding method.
+        Available since 5.4.
       </description>
     </attribute>
     <attribute>

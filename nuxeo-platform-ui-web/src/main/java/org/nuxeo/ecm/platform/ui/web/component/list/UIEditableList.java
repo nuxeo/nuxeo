@@ -214,8 +214,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
         this.defaultValue = defaultValue;
     }
 
-    // XXX getDefaultValue to initialize list (?)
-
     @Override
     public void restoreState(FacesContext context, Object state) {
         final Object superState;

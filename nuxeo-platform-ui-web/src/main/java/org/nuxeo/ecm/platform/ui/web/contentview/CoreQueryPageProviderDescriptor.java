@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * Core Query page provider descriptor.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject("coreQueryPageProvider")
 public class CoreQueryPageProviderDescriptor implements PageProviderDescriptor {

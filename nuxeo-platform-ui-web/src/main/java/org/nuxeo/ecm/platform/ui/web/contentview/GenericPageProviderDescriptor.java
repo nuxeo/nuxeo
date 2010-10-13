@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * common to other page provider descriptors.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject("genericPageProvider")
 public class GenericPageProviderDescriptor implements PageProviderDescriptor {

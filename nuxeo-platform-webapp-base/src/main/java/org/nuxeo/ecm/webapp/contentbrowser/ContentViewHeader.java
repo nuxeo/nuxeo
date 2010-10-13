@@ -23,6 +23,7 @@ import java.io.Serializable;
  * selected one of its result layouts from UI
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public class ContentViewHeader implements Serializable {
 

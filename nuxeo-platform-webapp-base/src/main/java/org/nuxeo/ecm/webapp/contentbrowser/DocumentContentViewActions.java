@@ -41,6 +41,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Handles available content views defined on a document type per category
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @Name("documentContentViewActions")
 @Scope(CONVERSATION)

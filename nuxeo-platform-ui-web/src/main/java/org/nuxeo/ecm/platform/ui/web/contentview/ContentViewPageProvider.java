@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.PageProvider;
  * building queries or computing results.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public interface ContentViewPageProvider<T> extends PageProvider<T> {
 

@@ -91,14 +91,34 @@ public interface ContentView extends Serializable {
      */
     List<ContentViewLayout> getResultLayouts();
 
+    /**
+     * Returns the current result layout, as set using
+     * {@link #setCurrentResultLayout(ContentViewLayout)}, or the first of
+     * defined result layouts when not set.
+     */
     ContentViewLayout getCurrentResultLayout();
 
+    /**
+     * Sets the current result layout.
+     */
     void setCurrentResultLayout(ContentViewLayout layout);
 
+    /**
+     * Returns the current page size, as set using
+     * {@link #setCurrentPageSize(Long)}, or the page size set on current page
+     * provider if not null.
+     */
     Long getCurrentPageSize();
 
+    /**
+     * Sets the current page size.
+     */
     void setCurrentPageSize(Long pageSize);
 
+    /**
+     * Returns the list of selected result layout columns, resolving the bound
+     * EL expression set in the content view definition.
+     */
     List<String> getResultLayoutColumns();
 
     /**
@@ -228,7 +248,6 @@ public interface ContentView extends Serializable {
      * Sets the search document model to be passed on the page provider, and
      * set it also on the current page provider if not null.
      */
-    // TODO: make it possible to load sort info from document model
     void setSearchDocumentModel(DocumentModel doc);
 
     /**

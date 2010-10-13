@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * component.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @Name("contentViewService")
 @Scope(SESSION)

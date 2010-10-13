@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.PageSelections;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
- * Page provider performing a query on a core session and returning
+ * Page provider performing a query on a core session.
  * <p>
  * It builds the query at each call so that it can refresh itself when the
  * query changes.
@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * TODO: describe needed properties
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public class CoreQueryDocumentPageProvider extends
         AbstractPageProvider<DocumentModel> implements

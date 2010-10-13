@@ -22,6 +22,7 @@ import java.io.Serializable;
  * Content view layout definition
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public interface ContentViewLayout extends Serializable {
 

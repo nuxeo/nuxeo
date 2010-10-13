@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * {@link PageProvider} generation.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public interface PageProviderDescriptor extends Serializable {
 

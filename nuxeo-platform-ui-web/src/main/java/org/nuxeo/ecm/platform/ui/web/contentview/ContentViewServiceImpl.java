@@ -38,6 +38,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 public class ContentViewServiceImpl extends DefaultComponent implements
         ContentViewService {

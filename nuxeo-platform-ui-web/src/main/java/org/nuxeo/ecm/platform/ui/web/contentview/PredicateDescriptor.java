@@ -28,6 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * parameter.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @XObject(value = "predicate")
 public class PredicateDescriptor {
