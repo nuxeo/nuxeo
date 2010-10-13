@@ -329,6 +329,7 @@ fi
 # Check old paths (NXP-5370, NXP-5460)
 ## look for h2 and derby directories (JBoss)
 check_old_paths() {
+  # Check JBoss paths
   if [ "$jboss" = "true" ] && \
     ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e "$NUXEO_HOME"/server/default/data/derby ] ); then
     echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
@@ -345,6 +346,9 @@ check_old_paths() {
     die "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
     exit 1
   fi
+  # Check Tomcat paths
+  
+  
 }
 
 # Check if nuxeo.conf used has not changed since last run (if not first run)

@@ -39,8 +39,8 @@
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
-    <antcall target="build-nuxeo-ep-jboss" />
-    <antcall target="build-nuxeo-dm-jboss" />
+    <antcall target="build-nuxeo-ep" />
+    <antcall target="build-nuxeo-dm" />
 
     <delete dir="${jboss}" failonerror="false" />
   </target>
@@ -89,23 +89,20 @@
                             classifier="templates-jboss" />
     </unzip>
 
-    <!-- shouldn't the unzip make these 2 jars? -->
-    <copy todir="${jboss}/server/default/deploy/nuxeo.ear/bundles">
-      <artifact:resolveFile key="org.nuxeo.common:nuxeo-common" />
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-deploy" />
-    </copy>
     <copy todir="${jboss}/server/default/deployers">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:5.1.0.GA" />
     </copy>
-
+    <copy todir="${jboss}/server/default/lib">
+      <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
+      <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+    </copy>
   </target>
 
-  <target name="build-nuxeo-ep-jboss"
+  <target name="build-nuxeo-ep"
           if="build.ep"
           description="Build JBoss distribution with Nuxeo EP">
     <property name="distribution.dir"
               value="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
-
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${jboss}" />
@@ -114,14 +111,13 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
-    <!-- Nuxeo EP EAR -->
+    <!-- Nuxeo EP -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
 
     <antcall target="add-jbossws-bundle">
-      <param name="bundles.dir"
-             value="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles" />
+      <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
@@ -136,12 +132,11 @@
                      type="zip" />
   </target>
 
-  <target name="build-nuxeo-dm-jboss"
+  <target name="build-nuxeo-dm"
           if="build.dm"
           description="Build JBoss distribution with Nuxeo DM">
     <property name="distribution.dir"
               value="${outdir}/nuxeo-dm-${maven.project.version}-jboss" />
-
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${jboss}" />
@@ -150,27 +145,26 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
-    <!-- Nuxeo DM EAR -->
+    <!-- Nuxeo DM -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
 
     <antcall target="add-jbossws-bundle">
-      <param name="bundles.dir"
-             value="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles" />
+      <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
     <!-- WSS specific BEGIN -->
-
     <!-- move WSS front filter as external lib  since it must be referenced from root Web context-->
     <move todir="${distribution.dir}/server/default/lib">
-        <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-            <include name="nuxeo-generic-wss-front*" />
-        </fileset>
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="nuxeo-generic-wss-front*" />
+      </fileset>
     </move>
     <!-- add WSS filter binding in ROOT.WAR -->
     <copy tofile="${distribution.dir}/server/default/deploy/ROOT.war/WEB-INF/web.xml"
-          file="${maven.basedir}/src/main/resources/wss-rootweb.xml" overwrite="true"/>
+          file="${maven.basedir}/src/main/resources/wss-rootweb.xml"
+          overwrite="true" />
     <!-- WSS specific END -->
 
     <antcall target="reorganize-libs">
@@ -194,14 +188,18 @@
 
   <target name="add-jbossws-bundle">
     <!-- add JBossWS specific bundle -->
-    <copy todir="${bundles.dir}">
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ws-jbossws:${nuxeo.features.version}" />
     </copy>
   </target>
 
   <target name="reorganize-libs">
-    <!-- remove libraries already provided by JBoss -->
+    <!-- remove libraries already provided by JBoss or unneeded -->
     <delete failonerror="false">
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+        <include name="*nuxeo-runtime-jetty-*" />
+        <include name="*nuxeo-runtime-jtajca" />
+      </fileset>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
         <exclude name="jboss-seam*" />
         <include name="jboss*" />
@@ -238,7 +236,7 @@
     <!-- Move some libraries from nuxeo.ear to JBoss default lib directory -->
     <move todir="${distribution.dir}/server/default/lib">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-        <include name="**/derby-*.jar" />
+        <include name="derby-*.jar" />
       </fileset>
     </move>
   </target>

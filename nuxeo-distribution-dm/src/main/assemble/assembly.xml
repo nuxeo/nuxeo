@@ -37,11 +37,7 @@
         </includes>
         <excludes>
           <artifact artifactId="*-test" />
-          <artifact artifactId="*nuxeo-runtime-jetty-adapter" />
-          <artifact artifactId="*nuxeo-runtime-deploy" />
-          <artifact artifactId="*nuxeo-runtime-jtajca" />
           <artifact artifactId="nuxeo-runtime-management-metrics" />
-          <artifact groupId="org.nuxeo.common" />
           <artifact artifactId="nuxeo-generic-wss-handler" />
           <artifact artifactId="nuxeo-generic-wss-front" />
           <artifact artifactId="nuxeo-apt-extensions" />

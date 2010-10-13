@@ -2,23 +2,10 @@
 
   <!-- ARTIFACTS -->
   <assemble>
-    <outputFile>/</outputFile>
-    <set>root-artifacts</set>
+    <outputFile>bundles</outputFile>
+    <set>bundles</set>
   </assemble>
-  <artifactSet id="root-artifacts">
-    <import>**</import>
-    <includeDependencies>false</includeDependencies>
-    <includes>
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
-    </includes>
-  </artifactSet>
-
-  <assemble>
-    <outputFile>system</outputFile>
-    <set>system</set>
-  </assemble>
-  <artifactSet id="system">
+  <artifactSet id="bundles">
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
@@ -27,24 +14,18 @@
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
-      <artifact group="org.nuxeo.common" />
-      <artifact name="nuxeo-runtime-jboss-extensions" />
       <artifact name="nuxeo-runtime-management-metrics" />
-      <artifact name="nuxeo-runtime-jetty-adapter" />
       <artifact name="nuxeo-generic-wss-handler" />
-
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
+      <artifact name="nuxeo-generic-wss-front" />
 
       <artifact name="nuxeo-apt-extensions" />
       <artifact name="nuxeo-webengine-apt" />
-      <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
 
   <assemble>
     <delete>true</delete>
-    <outputFile>system</outputFile>
+    <outputFile>bundles</outputFile>
     <file>nuxeo-platform-ear-${project.version}.pom</file>
   </assemble>
 
