@@ -11,7 +11,7 @@
   <module>
     <web>
       <web-uri>nuxeo.war</web-uri>
-      <context-root>/nuxeo</context-root>
+      <context-root>${org.nuxeo.ecm.contextPath}</context-root>
     </web>
   </module>
 
