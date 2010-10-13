@@ -43,6 +43,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * and result pages.
  *
  * @author Anahide Tchertchian
+ * @since 5.4
  */
 @Name("documentSearchActions")
 @Scope(ScopeType.CONVERSATION)
