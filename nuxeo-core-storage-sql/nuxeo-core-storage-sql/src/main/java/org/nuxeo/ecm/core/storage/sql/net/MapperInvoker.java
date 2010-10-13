@@ -75,8 +75,6 @@ public class MapperInvoker extends Thread {
 
     private Mapper mapper;
 
-    private MapperClientInfo info;
-
     protected MapperClientInfo clientInfo;
 
     protected final BlockingQueue<MethodCall> methodCalls;
