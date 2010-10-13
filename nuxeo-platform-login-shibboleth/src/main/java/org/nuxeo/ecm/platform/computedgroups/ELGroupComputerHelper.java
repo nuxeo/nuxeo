@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
@@ -24,7 +26,16 @@ import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 
 import de.odysseus.el.ExpressionFactoryImpl;
 
+/**
+ * Helper to provide an easy way to execute the expression language defined in a
+ * Shibb Group doc
+ * 
+ * @author Arnaud Kervern
+ * 
+ */
 public class ELGroupComputerHelper {
+
+    private static final Log log = LogFactory.getLog(ELGroupComputerHelper.class);
 
     protected static final ExpressionContext ec = new ExpressionContext();
 
@@ -32,6 +43,10 @@ public class ELGroupComputerHelper {
             new ExpressionFactoryImpl());
 
     public static boolean isUserInGroup(DocumentModel user, String el) {
+        if (el == null || el.equals("")) {
+            return false;
+        }
+
         ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME, user);
         return ee.evaluateExpression(ec, "${" + el + "}", Boolean.class);
     }

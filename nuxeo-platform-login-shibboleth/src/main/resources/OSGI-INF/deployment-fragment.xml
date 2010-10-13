@@ -5,4 +5,46 @@
       <java>${bundle.fileName}</java>
     </module>
   </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>view_shibbGroups</from-outcome>
+      <to-view-id>/view_shibbGroups.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_shibbGroup</from-outcome>
+      <to-view-id>/view_shibbGroup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_shibbGroup</from-outcome>
+      <to-view-id>/edit_shibbGroup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>create_shibbGroup</from-outcome>
+      <to-view-id>/create_shibbGroup.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+  <install>
+    <!--  be sure no directory with that name exists -->
+    <delete path="${bundle.fileName}.tmp" />
+    <!--  create a temporary directory -->
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+      <include>nuxeo.war/**</include>
+      <include>i18n/**</include>
+    </unzip>
+    <copy from="${bundle.fileName}.tmp/nuxeo.war" to="/" />
+    <append from="${bundle.fileName}.tmp/i18n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/i18n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
+  </install>
 </fragment>

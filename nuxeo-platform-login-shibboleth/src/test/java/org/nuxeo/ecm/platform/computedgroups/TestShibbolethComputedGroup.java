@@ -53,9 +53,6 @@ import de.odysseus.el.ExpressionFactoryImpl;
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.el",
         "org.nuxeo.ecm.platform.usermanager.api",

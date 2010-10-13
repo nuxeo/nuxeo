@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Shibboleth login module
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login.shibboleth;singleton:=true
 Bundle-Version: ${eclipseVersion}-r${buildNumber}
-Require-Bundle: org.nuxeo.ecm.platform.login
-Nuxeo-Component: OSGI-INF/ShibbolethAuthenticationService.xml,
- OSGI-INF/shibboleth-authentication-contrib.xml,
- OSGI-INF/shibboleth-group-type-contrib.xml,
- OSGI-INF/shibboleth-computedgroups-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.login, org.nuxeo.ecm.webapp.base
+Nuxeo-Component: OSGI-INF/shibboleth-group-type-contrib.xml,
+ OSGI-INF/shibboleth-computedgroups-contrib.xml,
+ OSGI-INF/shibboleth-layout-contrib.xml
