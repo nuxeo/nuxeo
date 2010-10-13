@@ -17,5 +17,5 @@ errors that should not be there.
 Install
 -------
 
-Setup properties in a file called "build.properties" according to you needs
+Setup properties in a file called "build.properties" according to your needs
 and run "ant deploy" to deploy on a jboss with nuxeo installed.

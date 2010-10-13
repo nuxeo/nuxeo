@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
  * Seam component performing errors
  *
  * @author Anahide Tchertchian
- *
  */
 @Name("errorSeamComponent")
 @Scope(CONVERSATION)
@@ -55,7 +54,7 @@ public class SeamErrorComponent {
         String title = "Test document";
         newDocument.setProperty("dublincore", "title", "Test document");
         String parentDocumentPath = "/default-domain/workspaces";
-        String name = IdUtils.generateId(title);
+        String name = IdUtils.generateId(title, "-", true, 24);
         newDocument.setPathInfo(parentDocumentPath, name);
 
         newDocument = documentManager.createDocument(newDocument);
