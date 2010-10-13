@@ -182,7 +182,7 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version>
+        <version>${nuxeo.runtime.version}-CP01</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
