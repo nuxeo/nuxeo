@@ -5,12 +5,11 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>5.4.0-I20101011_0115</version>
+    <version>5.4.0-I20101011_0115-CP01</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>5.4.0-I20101011_0115</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -229,12 +228,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-persistence</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP01</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-management</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP01</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -244,7 +243,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-persistence</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP01</version>
         <classifier>tests</classifier>
         <scope>test</scope>
       </dependency>
