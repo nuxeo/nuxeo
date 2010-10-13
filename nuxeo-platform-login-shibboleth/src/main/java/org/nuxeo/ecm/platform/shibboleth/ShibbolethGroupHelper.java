@@ -29,9 +29,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.computedgroups.ELGroupComputerHelper;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,9 +70,13 @@ public class ShibbolethGroupHelper {
             session = getDirectoryService().open(
                     ShibbolethConstants.SHIBBOLETH_DIRECTORY);
 
-            if (session.hasEntry(group.getId())) {
+            if (session.hasEntry(group.getPropertyValue(
+                    ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
+                            + ShibbolethConstants.GROUP_ID_PROPERTY).toString())) {
                 throw new GroupAlreadyExistsException();
             }
+
+            checkExpressionLanguageValidity(group);
 
             group = session.createEntry(group);
             session.commit();
@@ -101,6 +107,9 @@ public class ShibbolethGroupHelper {
         try {
             session = getDirectoryService().open(
                     ShibbolethConstants.SHIBBOLETH_DIRECTORY);
+
+            checkExpressionLanguageValidity(group);
+
             session.updateEntry(group);
             session.commit();
         } finally {
@@ -159,6 +168,16 @@ public class ShibbolethGroupHelper {
             if (session != null) {
                 session.close();
             }
+        }
+    }
+
+    protected static void checkExpressionLanguageValidity(DocumentModel group)
+            throws ClientException {
+        String expressionLanguage = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA
+                + ":" + ShibbolethConstants.GROUP_EL_PROPERTY);
+        if (!ELGroupComputerHelper.isValidEL(expressionLanguage)) {
+            throw new InvalidPropertyValueException(expressionLanguage
+                    + " : is not a valid expression language");
         }
     }
 }

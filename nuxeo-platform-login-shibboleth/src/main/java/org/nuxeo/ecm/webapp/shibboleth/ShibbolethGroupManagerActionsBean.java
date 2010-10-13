@@ -22,6 +22,8 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.security.Principal;
 
+import javax.faces.application.FacesMessage;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -30,16 +32,19 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 @Name("shibbGroupManagerActions")
 @Scope(CONVERSATION)
@@ -77,6 +82,12 @@ public class ShibbolethGroupManagerActionsBean {
     @In(create = true)
     protected Principal currentUser;
 
+    @In(create = true, required = false)
+    protected transient FacesMessages facesMessages;
+
+    @In(create = true)
+    protected transient ResourcesAccessor resourcesAccessor;
+
     public String createGroup() throws ClientException {
         try {
             selectedGroup = ShibbolethGroupHelper.createGroup(newGroup);
@@ -85,6 +96,16 @@ public class ShibbolethGroupManagerActionsBean {
             resetGroups();
             return viewGroup(selectedGroup, false);
         } catch (GroupAlreadyExistsException e) {
+            String message = resourcesAccessor.getMessages().get(
+                    "error.groupManager.groupAlreadyExists");
+            facesMessages.addToControl("groupName",
+                    FacesMessage.SEVERITY_ERROR, message);
+            return null;
+        } catch (InvalidPropertyValueException e) {
+            String message = resourcesAccessor.getMessages().get(
+                    "error.shibboleth.groupManager.wrongEl");
+            facesMessages.addToControl("expressionLanguage",
+                    FacesMessage.SEVERITY_ERROR, message);
             return null;
         }
     }
@@ -143,10 +164,18 @@ public class ShibbolethGroupManagerActionsBean {
     }
 
     public String updateGroup() throws ClientException {
-        ShibbolethGroupHelper.updateGroup(selectedGroup);
-        // reset users and groups
-        resetGroups();
-        return viewGroup(selectedGroup.getId());
+        try {
+            ShibbolethGroupHelper.updateGroup(selectedGroup);
+            // reset users and groups
+            resetGroups();
+            return viewGroup(selectedGroup.getId());
+        } catch (InvalidPropertyValueException e) {
+            String message = resourcesAccessor.getMessages().get(
+                    "error.shibboleth.groupManager.wrongEl");
+            facesMessages.addToControl("expressionLanguage",
+                    FacesMessage.SEVERITY_ERROR, message);
+            return null;
+        }
     }
 
     protected void resetGroups() {

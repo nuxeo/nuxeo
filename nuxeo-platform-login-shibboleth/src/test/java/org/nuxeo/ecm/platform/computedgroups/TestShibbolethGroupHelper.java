@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -58,6 +59,8 @@ public class TestShibbolethGroupHelper {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
 
         group.setPropertyValue("shibbGroup:groupName", "group1");
+        group.setPropertyValue("shibbGroup:expressionLanguage",
+                ShibbolethConstants.EL_CURRENT_USER_NAME);
         ShibbolethGroupHelper.createGroup(group);
 
         assertSame(1, ShibbolethGroupHelper.getGroups().size());
@@ -81,6 +84,7 @@ public class TestShibbolethGroupHelper {
             throws Exception {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
         group.setPropertyValue("shibbGroup:groupName", name);
+        group.setPropertyValue("shibbGroup:expressionLanguage", "currentUser");
 
         if (createIt) {
             group = ShibbolethGroupHelper.createGroup(group);

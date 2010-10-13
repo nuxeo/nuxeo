@@ -152,6 +152,17 @@ public class TestShibbolethComputedGroup {
         assertSame(2, gc.getGroupsForUser(nxp).size());
     }
 
+    @Test
+    public void testValidElMethod() {
+        assertFalse(ELGroupComputerHelper.isValidEL(""));
+        assertFalse(ELGroupComputerHelper.isValidEL(null));
+
+        assertTrue(ELGroupComputerHelper.isValidEL("currentUser.user.email != \"test\""));
+        assertFalse(ELGroupComputerHelper.isValidEL("fdsfds ! fdsf^6"));
+        assertFalse(ELGroupComputerHelper.isValidEL("testMethodCall == hello"));
+        assertTrue(ELGroupComputerHelper.isValidEL("currentUser"));
+    }
+
     protected DocumentModel createUser(String username) throws Exception {
         Map<String, Object> user = new HashMap<String, Object>();
         user.put("username", username);

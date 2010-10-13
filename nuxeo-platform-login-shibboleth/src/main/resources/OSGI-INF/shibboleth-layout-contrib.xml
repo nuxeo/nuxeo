@@ -34,6 +34,10 @@
         <fields>
           <field>shibbGroup:groupName</field>
         </fields>
+        <properties widgetMode="any">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
       <widget name="expressionLanguage" type="text">
         <translated>true</translated>
@@ -44,6 +48,10 @@
         <fields>
           <field>shibbGroup:expressionLanguage</field>
         </fields>
+        <properties widgetMode="any">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
     </layout>
   </extension>

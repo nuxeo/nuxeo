@@ -17,14 +17,18 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
+import javax.el.PropertyNotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 
 import de.odysseus.el.ExpressionFactoryImpl;
+import de.odysseus.el.tree.TreeBuilderException;
 
 /**
  * Helper to provide an easy way to execute the expression language defined in a
@@ -49,5 +53,22 @@ public class ELGroupComputerHelper {
 
         ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME, user);
         return ee.evaluateExpression(ec, "${" + el + "}", Boolean.class);
+    }
+
+    public static boolean isValidEL(String el) {
+        if (el == null || el.equals("")) {
+            return false;
+        }
+
+        try {
+            ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME,
+                    new DocumentModelImpl("user"));
+            ee.evaluateExpression(ec, "${" + el + "}", String.class);
+        } catch (TreeBuilderException e) {
+            return false;
+        } catch (PropertyNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }

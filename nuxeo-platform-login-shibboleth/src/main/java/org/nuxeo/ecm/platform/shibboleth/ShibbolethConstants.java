@@ -28,7 +28,7 @@ public final class ShibbolethConstants {
 
     public static final String SHIBBOLETH_SCHEMA = "shibbGroup";
 
-    public static final String GROUP_EL_PROPERTY = "shibbGroup:expressionLanguage";
+    public static final String GROUP_EL_PROPERTY = "expressionLanguage";
 
     public static final String EL_CURRENT_USER_NAME = "currentUser";
 
