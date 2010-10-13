@@ -40,11 +40,16 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
 
     protected ServiceProvider nextProvider;
 
+    boolean installed = false;
+
     public  void installSelf() {
-        if (nextProvider == null) {
-            nextProvider = DefaultServiceProvider.getProvider();
-            DefaultServiceProvider.setProvider(this);
+        // next provider can be null, we need a flag
+        if (installed) {
+            return;
         }
+        installed = true;
+        nextProvider = DefaultServiceProvider.getProvider();
+        DefaultServiceProvider.setProvider(this);
     }
 
     protected abstract Class<? extends Annotation> annotationClass();
