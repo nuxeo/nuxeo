@@ -38,6 +38,7 @@
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
 
+      <searchLayout name="nxql_incremental_smart_query" />
       <resultLayouts>
         <layout name="search_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png" />

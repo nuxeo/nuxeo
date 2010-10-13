@@ -21,22 +21,22 @@
 
   <h:form id="smartSearchForm">
 
-    <div class="foldableBox">
-      <h3 class="unfolded">
-        <h:outputText value="#{messages['label.search.criteria']}"/>
-      </h3>
-      <div class="boxBody">
-
-        <nxl:layout name="nxql_incremental_smart_query" mode="edit"
-          value="#{smartNXQLQueryActions.queryPart}" />
-
-      </div>
-    </div>
-    
     <nxu:set var="contentView"
       value="#{contentViewActions.getContentViewWithProvider('nxql_incremental_smart_query')}"
       cache="true">
 
+      <div class="foldableBox">
+        <h3 class="unfolded">
+          <h:outputText value="#{messages['label.search.criteria']}"/>
+        </h3>
+        <div class="boxBody">
+  
+          <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+            value="#{smartNXQLQueryActions.queryPart}" />
+  
+        </div>
+      </div>
+    
       <div class="foldableBox">
         <h3 class="unfolded">
          <a href="#nologo" onclick="return toggleBox(this)">
