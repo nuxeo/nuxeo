@@ -15,6 +15,7 @@
 package org.nuxeo.theme.services;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -558,7 +559,12 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 String bankName = bankImport.getBankName();
                 String srcFilePath = bankImport.getSrcFilePath();
                 URL srcFileUrl = extensionContext.getResource(srcFilePath);
-                BankManager.importBankData(bankName, srcFileUrl);
+                try {
+                    BankManager.importBankData(bankName, srcFileUrl);
+                } catch (IOException e) {
+                    log.error("Could not import bank resources: " + srcFileUrl,
+                            e);
+                }
             }
         }
         ThemeManager themeManager = (ThemeManager) getRegistry("themes");

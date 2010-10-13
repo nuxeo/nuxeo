@@ -19,6 +19,8 @@
 
 package org.nuxeo.theme.bank;
 
+import java.io.IOException;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -60,7 +62,11 @@ public class Management extends DefaultObject {
             final byte[] fileData = fileItem.get();
             final String filename = fileItem.getName();
             final String path = String.format("%s/image/%s", bank, collection);
-            BankManager.createFile(path, filename, fileData);
+            try {
+                BankManager.createFile(path, filename, fileData);
+            } catch (IOException e) {
+                throw new ThemeBankException(e.getMessage(), e);
+            }
         }
         if (redirectUrl != null) {
             return redirect(redirectUrl);
@@ -80,7 +86,11 @@ public class Management extends DefaultObject {
 
         final String path = String.format("%s/style/%s", bank, collection);
 
-        BankManager.editFile(path, resource, css);
+        try {
+            BankManager.editFile(path, resource, css);
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
 
         String redirectUrl = form.getString("redirect_url");
         return redirect(redirectUrl);
@@ -96,7 +106,11 @@ public class Management extends DefaultObject {
         final String path = String.format("%s/style/%s", bank, collection);
         String fileName = String.format("%s.css", resource);
 
-        BankManager.createFile(path, fileName, "");
+        try {
+            BankManager.createFile(path, fileName, "");
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
 
         String redirectUrl = form.getString("redirect_url");
         return redirect(redirectUrl);

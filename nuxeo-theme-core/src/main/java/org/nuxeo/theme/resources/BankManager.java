@@ -35,18 +35,19 @@ import org.yaml.snakeyaml.Yaml;
 public class BankManager {
     private static final File BANKS_DIR;
 
-    private static String[] TYPE_NAMES = { "style", "preset", "image" };
-
     static {
         BANKS_DIR = new File(Framework.getRuntime().getHome(), "theme-banks");
         BANKS_DIR.mkdirs();
     }
 
-    public static File getFile(String path) {
+    public static File getFile(String path) throws IOException {
+        if (!BankUtils.checkFilePath(path)) {
+            throw new IOException("File path not allowed: " + path);
+        }
         return new File(BANKS_DIR, path);
     }
 
-    public static File getBankDir(String bankName) {
+    public static File getBankDir(String bankName) throws IOException {
         return getFile(bankName);
     }
 
@@ -61,10 +62,11 @@ public class BankManager {
     /*
      * Collections
      */
-    public static List<String> getCollections(String bank, String typeName) {
+    public static List<String> getCollections(String bank, String typeName)
+            throws IOException {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s", bank, typeName);
-        File file = BankManager.getFile(path);
+        File file = getFile(path);
         if (file.exists()) {
             for (File collectionFile : BankUtils.listFilesSorted(file)) {
                 names.add(collectionFile.getName());
@@ -74,10 +76,10 @@ public class BankManager {
     }
 
     public static List<String> getItemsInCollection(String bank,
-            String typeName, String collection) {
+            String typeName, String collection) throws IOException {
         List<String> names = new ArrayList<String>();
         String path = String.format("%s/%s/%s", bank, typeName, collection);
-        File file = BankManager.getFile(path);
+        File file = getFile(path);
         if (file.exists()) {
             for (File item : BankUtils.listFilesSorted(file)) {
                 String itemName = item.getName();
@@ -91,50 +93,50 @@ public class BankManager {
     }
 
     public static File getStyleFile(String bank, String collection,
-            String resource) {
+            String resource) throws IOException {
         String path = String.format("%s/style/%s/%s", bank, collection,
                 resource);
-        return BankManager.getFile(path);
+        return getFile(path);
     }
 
     public static File getImageFile(String bank, String collection,
-            String resource) {
+            String resource) throws IOException {
         String path = String.format("%s/image/%s/%s", bank, collection,
                 resource);
-        return BankManager.getFile(path);
+        return getFile(path);
     }
 
-    public static File getBankLogoFile(String bank) {
+    public static File getBankLogoFile(String bank) throws IOException {
         String path = String.format("%s/logo.png", bank);
-        return BankManager.getFile(path);
+        return getFile(path);
     }
 
     @SuppressWarnings("rawtypes")
     public static File getStylePreviewFile(String bank, String collection,
-            String resource) {
+            String resource) throws IOException {
         Map<String, Object> info = getInfo(bank, "style", collection);
-        if (info.containsKey(resource)) {
-            Map value = (Map) info.get(resource);
-            if (value.containsKey("preview")) {
-                String preview = (String) value.get("preview");
-                String path = String.format("%s/style/%s/%s", bank, collection,
-                        preview);
-                return BankManager.getFile(path);
-            }
+        if (!info.containsKey(resource)) {
+            throw new IOException("Style preview not found: " + resource);
         }
-        return null;
+        Map value = (Map) info.get(resource);
+        if (value.containsKey("preview")) {
+            throw new IOException("Style preview not found: " + resource);
+        }
+        String preview = (String) value.get("preview");
+        String path = String.format("%s/style/%s/%s", bank, collection, preview);
+        return getFile(path);
     }
 
     public static File getInfoFile(String bank, String typeName,
-            String collection) {
+            String collection) throws IOException {
         String path = String.format("%s/%s/%s/info.txt", bank, typeName,
                 collection);
-        return BankManager.getFile(path);
+        return getFile(path);
     }
 
     @SuppressWarnings("unchecked")
     public static Map<String, Object> getInfo(String bank, String typeName,
-            String collection) {
+            String collection) throws IOException {
         File file = getInfoFile(bank, typeName, collection);
         Yaml yaml = new Yaml();
         return (Map<String, Object>) yaml.load(BankUtils.getFileContent(file));
@@ -143,47 +145,31 @@ public class BankManager {
     /*
      * I/O
      */
-    public static void importBankData(String bankName, URL srcFileUrl) {
+    public static void importBankData(String bankName, URL srcFileUrl)
+            throws IOException {
         InputStream in = null;
-        try {
-            in = srcFileUrl.openStream();
-            ZipUtils.unzip(in, getBankDir(bankName));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-
-                }
-            }
+        in = srcFileUrl.openStream();
+        ZipUtils.unzip(in, getBankDir(bankName));
+        if (in != null) {
+            in.close();
         }
-
     }
 
-    public static void createFile(String path, String fileName, String content) {
+    public static void createFile(String path, String fileName, String content)
+            throws IOException {
         createFile(path, fileName, content.getBytes());
     }
 
-    public static void createFile(String path, String fileName, byte[] data) {
+    public static void createFile(String path, String fileName, byte[] data)
+            throws IOException {
         File file = new File(getFile(path), fileName);
-        try {
-            file.createNewFile();
-            FileUtils.writeFile(file, data);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        file.createNewFile();
+        FileUtils.writeFile(file, data);
     }
 
-    public static void editFile(String path, String fileName, String content) {
+    public static void editFile(String path, String fileName, String content)
+            throws IOException {
         File file = new File(getFile(path), fileName);
-        try {
-            FileUtils.writeFile(file, content);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        FileUtils.writeFile(file, content);
     }
 }

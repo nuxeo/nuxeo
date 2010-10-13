@@ -14,11 +14,13 @@
 
 package org.nuxeo.theme.test.resources;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.BankManager;
+import org.nuxeo.theme.resources.BankUtils;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -54,7 +56,7 @@ public class TestResourceBank extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testBankImport() {
+    public void testBankImport() throws IOException {
         assertEquals(BANK_NAME, BankManager.getBankNames().get(0));
 
         assertEquals(COLLECTION_NAME,
@@ -75,5 +77,32 @@ public class TestResourceBank extends NXRuntimeTestCase {
                 COLLECTION_NAME).get("test.css");
         assertEquals(styleInfo.get("description"), "Test skin");
         assertEquals(styleInfo.get("skin"), true);
+    }
+
+    public void testCheckFilePath() {
+        assertTrue(BankUtils.checkFilePath("test.css"));
+        assertTrue(BankUtils.checkFilePath("/test/test.css"));
+        assertTrue(BankUtils.checkFilePath("/test-1"));
+        assertTrue(BankUtils.checkFilePath("/a-b/test-1"));
+        assertTrue(BankUtils.checkFilePath("/a b/test-1"));
+
+        assertFalse(BankUtils.checkFilePath("../test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/../test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/./test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/ /test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/a /test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/ b/test/test.css"));
+        assertFalse(BankUtils.checkFilePath("./test/test/test.css"));
+        assertFalse(BankUtils.checkFilePath("/test/test/."));
+        assertFalse(BankUtils.checkFilePath("/test/test/.."));
+        assertFalse(BankUtils.checkFilePath("/test/test/../"));
+        assertFalse(BankUtils.checkFilePath("\\test\\..\\"));
+        assertFalse(BankUtils.checkFilePath("test*"));
+        assertFalse(BankUtils.checkFilePath("test:"));
+        assertFalse(BankUtils.checkFilePath("test>"));
+        assertFalse(BankUtils.checkFilePath("test<"));
+        assertFalse(BankUtils.checkFilePath("test?"));
+        assertFalse(BankUtils.checkFilePath("test\""));
+        assertFalse(BankUtils.checkFilePath("test'"));
     }
 }
