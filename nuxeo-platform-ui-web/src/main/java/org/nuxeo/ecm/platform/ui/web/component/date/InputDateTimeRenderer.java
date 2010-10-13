@@ -45,6 +45,10 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
  */
 public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
 
+    public enum SUPPORTED_LOCALES {
+        ca, cn, cz, de, en, es, fr, it, jp, nl, pl, pt, ro, ru, sv
+    }
+
     @Override
     public void encodeBegin(FacesContext context, UIComponent component)
             throws IOException {
@@ -59,6 +63,15 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
             // get local string
             Locale locale = context.getViewRoot().getLocale();
             localeString = locale.getLanguage();
+        }
+        if (localeString == null) {
+            localeString = SUPPORTED_LOCALES.en.name();
+        }
+        try {
+            SUPPORTED_LOCALES.valueOf(localeString);
+        } catch (IllegalArgumentException e) {
+            // locale not supported
+            localeString = SUPPORTED_LOCALES.en.name();
         }
 
         String inputTextId = dateTimeComp.getClientId(context);
