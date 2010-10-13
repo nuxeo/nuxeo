@@ -11,9 +11,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 public class BankUtils {
 
-    final static Pattern filenamePattern = Pattern.compile(
-            "^([a-zA-Z0-9]+)([a-zA-Z0-9_\\-\\.\\s].*?)([a-zA-Z0-9]+)$",
-            Pattern.DOTALL);
+    final static Pattern filenamePattern = Pattern.compile("^\\p{IsAlnum}+[a-z0-9_\\-\\. ]*\\p{IsAlnum}+$|^\\p{IsAlnum}$");
 
     public static String getFileContent(File file) {
         String content = "";

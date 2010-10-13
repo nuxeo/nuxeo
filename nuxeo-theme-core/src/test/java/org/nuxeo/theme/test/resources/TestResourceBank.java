@@ -85,6 +85,8 @@ public class TestResourceBank extends NXRuntimeTestCase {
         assertTrue(BankUtils.checkFilePath("/test-1"));
         assertTrue(BankUtils.checkFilePath("/a-b/test-1"));
         assertTrue(BankUtils.checkFilePath("/a b/test-1"));
+        assertTrue(BankUtils.checkFilePath("ab"));
+        assertTrue(BankUtils.checkFilePath("a"));
 
         assertFalse(BankUtils.checkFilePath("../test/test.css"));
         assertFalse(BankUtils.checkFilePath("/test/../test/test.css"));
@@ -103,6 +105,8 @@ public class TestResourceBank extends NXRuntimeTestCase {
         assertFalse(BankUtils.checkFilePath("test<"));
         assertFalse(BankUtils.checkFilePath("test?"));
         assertFalse(BankUtils.checkFilePath("test\""));
-        assertFalse(BankUtils.checkFilePath("test'"));
+        assertFalse(BankUtils.checkFilePath("test'a"));
+        assertFalse(BankUtils.checkFilePath("test\ta"));
+        assertFalse(BankUtils.checkFilePath("test\na"));
     }
 }
