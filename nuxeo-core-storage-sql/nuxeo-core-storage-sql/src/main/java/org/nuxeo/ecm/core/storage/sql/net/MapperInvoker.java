@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CachingRowMapper;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
-import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 
@@ -74,8 +73,6 @@ public class MapperInvoker extends Thread {
     private Session session;
 
     private Mapper mapper;
-
-    private MapperClientInfo info;
 
     protected MapperClientInfo clientInfo;
 

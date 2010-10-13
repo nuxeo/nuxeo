@@ -32,4 +32,8 @@
       class="org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="mgmt-guards" class="org.nuxeo.ecm.core.management.guards.GuardsCacheUpdater"/>
+  </extension>
+  
 </component>

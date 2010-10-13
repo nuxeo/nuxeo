@@ -27,7 +27,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.storage.Credentials;
