@@ -158,6 +158,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
             if (md == null) { // not a nuxeo deployment
                 return false;
             }
+            md.initialize(0);
             log.info("Found Nuxeo Deployment: " + root.getName());
             File[] bundles = md.getResolvedBundleFiles();
             // launch preprocessor if needed

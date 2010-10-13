@@ -54,9 +54,21 @@ public class DeploymentStructure {
 
     protected String[] preprocessorClassPath;
 
-    public DeploymentStructure(VirtualFile vhome) throws Exception {
+    public DeploymentStructure(VirtualFile vhome) {
         this.vhome = vhome;
-        this.home = Utils.getRealHomeDir(vhome).getCanonicalFile();
+    }
+
+    /**
+     * Must be called immediately after the deployment structure was created
+     * (before using the object).
+     * 
+     * The lastModified is optional - if you don't need it you must specify a
+     * value of 0.
+     * 
+     * @param home
+     */
+    public void initialize(long lastModified) throws Exception {
+        this.home = Utils.getRealHomeDir(vhome, lastModified).getCanonicalFile();
     }
 
     public Map<String, String> getProperties() {
@@ -137,6 +149,10 @@ public class DeploymentStructure {
     }
 
     public File getHome() {
+        if (home == null) {
+            throw new java.lang.IllegalStateException(
+                    "The initialize method must be called before using the deployment structure object.");
+        }
         return home;
     }
 

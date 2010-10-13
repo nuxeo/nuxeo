@@ -84,21 +84,36 @@ public class Utils {
     }
 
     public static File getRealHomeDir(VirtualFile vf) throws Exception {
+        return getRealHomeDir(vf, 0);
+    }
+
+    /**
+     * Unzip only if the given lastModified is greater than the already unzipped
+     * home (if any). Must use a vlue of 0 if the lastModified time is not
+     * known.
+     * 
+     * @param vf
+     * @param lastModified
+     * @return
+     * @throws Exception
+     */
+    public static File getRealHomeDir(VirtualFile vf, long lastModified)
+            throws Exception {
         File file = Utils.getFile(vf);
         if (file.isFile()) { // may be an archive
-            return getZippedHomeDir(file, vf.getName());
+            return getZippedHomeDir(file, vf.getName(), lastModified);
         } else {
             return file;
         }
     }
 
-    protected static File getZippedHomeDir(File jar, String name)
-            throws Exception {
+    protected static File getZippedHomeDir(File jar, String name,
+            long lastModified) throws Exception {
         String tmpPath = System.getProperty("jboss.server.temp.dir");
         File tmp = new File(tmpPath);
         File homeDir = new File(tmp, "nuxeo/" + name);
         if (homeDir.isDirectory()) {
-            if (jar.lastModified() < homeDir.lastModified()) {
+            if (lastModified > 0 && lastModified < homeDir.lastModified()) {
                 return homeDir;
             } else {
                 // remove the existing unzipped nuxeo - TODO not working
@@ -109,8 +124,10 @@ public class Utils {
         homeDir.mkdirs();
         InputStream in = new FileInputStream(jar);
         try {
-            log.info("Unpacking Nuxeo Application");
+            double s = System.currentTimeMillis();
             JarUtils.unjar(in, homeDir);
+            log.info("Unpacking Nuxeo Application took: "
+                    + ((System.currentTimeMillis() - s) / 1000) + " sec.");
         } finally {
             in.close();
         }

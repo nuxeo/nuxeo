@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.virtual.VirtualFile;
 import org.nuxeo.runtime.jboss.deployer.structure.DeploymentStructure;
 import org.nuxeo.runtime.jboss.deployer.structure.NuxeoStructureDeployer;
 
@@ -52,14 +53,41 @@ public class NuxeoLauncher extends AbstractNuxeoDeployer {
         return home;
     }
 
+    /**
+     * This method is needed for optimization in the zipped ear deployment. It
+     * tries to get the original zip file to be able to check the last modified
+     * time to see if the unzip is required.
+     * 
+     * @param unit
+     * @return
+     * @throws Exception
+     */
+    public File getRealNuxeoZipFile(VFSDeploymentUnit unit) throws Exception {
+        String name = unit.getName();
+        int p = name.indexOf(':');
+        if (p > -1) {
+            name = name.substring(p + 1);
+        }
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length() - 1);
+        }
+        File file = new File(name);
+        return file.isFile() ? file : null;
+    }
+
     @Override
     protected void doDeploy(VFSDeploymentUnit unit) throws Exception {
         DeploymentStructure md = NuxeoStructureDeployer.popStructure(unit.getRoot().getName());
         if (md == null) {
-            md = NuxeoStructureDeployer.accept(unit.getRoot());
-        }
-        if (md == null) {
-            return;
+            VirtualFile root = unit.getRoot();
+            md = NuxeoStructureDeployer.accept(root);
+            if (md == null) {
+                return;
+            }
+            // try to optimize unzipping by using the last modified time of the
+            // original zip it the location is known.
+            File realzip = getRealNuxeoZipFile(unit);
+            md.initialize(realzip != null ? realzip.lastModified() : 0);
         }
         ClassLoader cl = unit.getClassLoader();
         home = md.getHome();

@@ -47,9 +47,9 @@ public class DeploymentStructureReader {
         dbfac = DocumentBuilderFactory.newInstance();
     }
 
-    public DeploymentStructure read(VirtualFile home, InputStream in)
+    public DeploymentStructure read(VirtualFile vhome, InputStream in)
             throws Exception {
-        DeploymentStructure md = new DeploymentStructure(home);
+        DeploymentStructure md = new DeploymentStructure(vhome);
         DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
         Document doc = docBuilder.parse(in);
         Element root = doc.getDocumentElement();
@@ -70,7 +70,7 @@ public class DeploymentStructureReader {
                 if ("context".equalsIgnoreCase(name)) {
                     readContext((Element) node, md);
                 } else if ("properties".equals(name)) {
-                    readProperties(home, (Element) node, md);
+                    readProperties(vhome, (Element) node, md);
                 } else if ("preprocessor".equals(name)) {
                     readPreprocessor((Element) node, md);
                 }
