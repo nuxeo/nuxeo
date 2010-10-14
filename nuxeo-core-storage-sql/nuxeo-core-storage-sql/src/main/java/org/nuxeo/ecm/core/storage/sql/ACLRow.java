@@ -65,6 +65,7 @@ public class ACLRow implements Serializable {
 
         public static final ACLRowPositionComparator INSTANCE = new ACLRowPositionComparator();
 
+        @Override
         public int compare(ACLRow acl1, ACLRow acl2) {
             return acl1.pos - acl2.pos;
         }

@@ -33,14 +33,17 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
     protected QueryMakerDescriptor desc;
 
     public static class DummyQueryMaker1 implements QueryMaker {
+        @Override
         public String getName() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean accepts(String query) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Query buildQuery(SQLInfo sqlInfo, Model model,
                 PathResolver pathResolver, String query,
                 QueryFilter queryFilter, Object... params)
@@ -50,14 +53,17 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
     }
 
     public static class DummyQueryMaker2 implements QueryMaker {
+        @Override
         public String getName() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean accepts(String query) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Query buildQuery(SQLInfo sqlInfo, Model model,
                 PathResolver pathResolver, String query,
                 QueryFilter queryFilter, Object... params)

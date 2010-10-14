@@ -115,6 +115,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Creates a new {@link Connection} handle to this {@link ManagedConnection}
      * .
      */
+    @Override
     public synchronized Connection getConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
@@ -133,6 +134,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * <p>
      * Later, the application server may call {@link #getConnection} again.
      */
+    @Override
     public void cleanup() {
         log.debug("cleanup: " + this);
         synchronized (connections) {
@@ -147,6 +149,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Called by the application server before this {@link ManagedConnection} is
      * destroyed.
      */
+    @Override
     public void destroy() throws ResourceException {
         log.debug("destroy: " + this);
         cleanup();
@@ -158,6 +161,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * application-level {@link Connection} handle with a
      * {@link ManagedConnection} instance.
      */
+    @Override
     public void associateConnection(Object object) throws ResourceException {
         ConnectionImpl connection = (ConnectionImpl) object;
         log.debug("associateConnection: " + this + ", connection: "
@@ -173,10 +177,12 @@ public class ManagedConnectionImpl implements ManagedConnection,
         }
     }
 
+    @Override
     public XAResource getXAResource() {
         return xaresource;
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() {
         throw new UnsupportedOperationException(
                 "Local transactions not supported");
@@ -186,6 +192,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Called by the application server to add a listener who should be notified
      * of all relevant events on this connection.
      */
+    @Override
     public void addConnectionEventListener(ConnectionEventListener listener) {
         listeners.add(listener);
     }
@@ -193,18 +200,22 @@ public class ManagedConnectionImpl implements ManagedConnection,
     /**
      * Called by the application server to remove a listener.
      */
+    @Override
     public void removeConnectionEventListener(ConnectionEventListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public ManagedConnectionMetaData getMetaData() {
         return this;
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) {
         this.out = out;
     }
 
+    @Override
     public PrintWriter getLogWriter() {
         return out;
     }
@@ -213,18 +224,22 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * ----- javax.resource.spi.ManagedConnectionMetaData -----
      */
 
+    @Override
     public String getEISProductName() {
         return "Nuxeo Core SQL Storage";
     }
 
+    @Override
     public String getEISProductVersion() {
         return "1.0.0";
     }
 
+    @Override
     public int getMaxConnections() {
         return Integer.MAX_VALUE; // or lower?
     }
 
+    @Override
     public String getUserName() throws ResourceException {
         Credentials credentials = connectionSpec.getCredentials();
         if (credentials == null) {

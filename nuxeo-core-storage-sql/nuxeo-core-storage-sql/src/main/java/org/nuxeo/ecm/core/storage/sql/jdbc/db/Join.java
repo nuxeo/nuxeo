@@ -65,6 +65,7 @@ public class Join implements Serializable, Comparable<Join> {
     }
 
     // make sure IMPLICIT joins are last
+    @Override
     public int compareTo(Join other) {
         if (kind == IMPLICIT && other.kind == IMPLICIT) {
             return 0;

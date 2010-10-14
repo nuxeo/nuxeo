@@ -51,26 +51,32 @@ public class TableAlias implements Table {
         dialect = table.getDialect();
     }
 
+    @Override
     public boolean isAlias() {
         return true;
     }
 
+    @Override
     public Table getRealTable() {
         return table;
     }
 
+    @Override
     public Dialect getDialect() {
         return dialect;
     }
 
+    @Override
     public String getName() {
         return alias;
     }
 
+    @Override
     public String getQuotedName() {
         return dialect.openQuote() + alias + dialect.closeQuote();
     }
 
+    @Override
     public String getQuotedSuffixedName(String suffix) {
         return dialect.openQuote() + alias + suffix + dialect.closeQuote();
     }
@@ -86,11 +92,13 @@ public class TableAlias implements Table {
         return buf.toString();
     }
 
+    @Override
     public Column getColumn(String name) {
         return new Column(table.getColumn(name), this);
     }
 
     // probably never used
+    @Override
     public Collection<Column> getColumns() {
         Collection<Column> columns = table.getColumns();
         List<Column> result = new ArrayList<Column>(columns.size());
@@ -100,39 +108,48 @@ public class TableAlias implements Table {
         return result;
     }
 
+    @Override
     public Column addColumn(String name, ColumnType type, String key,
             Model model) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addIndex(String... columnNames) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addFulltextIndex(String indexName, String... columnNames) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean hasFulltextIndex() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getCreateSql() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getAddColumnSql(Column column) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<String> getPostCreateSqls(Model model) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<String> getPostAddSqls(Column column, Model model) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getDropSql() {
         throw new UnsupportedOperationException();
     }

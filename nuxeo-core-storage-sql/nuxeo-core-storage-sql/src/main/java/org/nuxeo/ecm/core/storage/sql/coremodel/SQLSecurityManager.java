@@ -50,6 +50,7 @@ public class SQLSecurityManager implements SecurityManager {
      * ----- org.nuxeo.ecm.core.security.SecurityManager -----
      */
 
+    @Override
     public ACP getACP(Document doc) throws SecurityException {
         try {
             Property property = ((SQLDocument) doc).getACLProperty();
@@ -59,6 +60,7 @@ public class SQLSecurityManager implements SecurityManager {
         }
     }
 
+    @Override
     public void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException {
         if (!overwrite && acp == null) {
@@ -78,6 +80,7 @@ public class SQLSecurityManager implements SecurityManager {
         }
     }
 
+    @Override
     public ACP getMergedACP(Document doc) throws SecurityException {
         try {
             Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
@@ -104,11 +107,13 @@ public class SQLSecurityManager implements SecurityManager {
         }
     }
 
+    @Override
     public boolean checkPermission(Document doc, String username,
             String permission) throws SecurityException {
         return getAccess(doc, username, permission).toBoolean();
     }
 
+    @Override
     public Access getAccess(Document doc, String username, String permission)
             throws SecurityException {
         ACP acp = getMergedACP(doc);
@@ -116,6 +121,7 @@ public class SQLSecurityManager implements SecurityManager {
                 permission);
     }
 
+    @Override
     public void invalidateCache(Session session) {
     }
 

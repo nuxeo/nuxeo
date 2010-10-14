@@ -89,6 +89,7 @@ public class SQLRepository implements Repository {
      * ----- org.nuxeo.ecm.core.model.Repository -----
      */
 
+    @Override
     public String getName() {
         return name;
     }
@@ -96,6 +97,7 @@ public class SQLRepository implements Repository {
     /*
      * Called by LocalSession.createSession
      */
+    @Override
     public Session getSession(Map<String, Serializable> context)
             throws DocumentException {
         synchronized (this) {
@@ -117,10 +119,12 @@ public class SQLRepository implements Repository {
         return new SQLSession(session, this, context);
     }
 
+    @Override
     public SchemaManager getTypeManager() {
         return schemaManager;
     }
 
+    @Override
     public SecurityManager getNuxeoSecurityManager() {
         return securityManager;
     }
@@ -128,12 +132,14 @@ public class SQLRepository implements Repository {
     /*
      * Used only by unit tests. Shouldn't be in public API.
      */
+    @Override
     public void initialize() {
     }
 
     /**
      * @deprecated unused
      */
+    @Override
     @Deprecated
     public Session getSession(long sessionId) {
         throw new UnsupportedOperationException("unused");
@@ -142,10 +148,12 @@ public class SQLRepository implements Repository {
     /*
      * Used only by JCR MBean.
      */
+    @Override
     public synchronized Session[] getOpenedSessions() {
         return new Session[0];
     }
 
+    @Override
     public void shutdown() {
         try {
             repository.close();
@@ -154,18 +162,22 @@ public class SQLRepository implements Repository {
         }
     }
 
+    @Override
     public int getStartedSessionsCount() {
         return 0;
     }
 
+    @Override
     public int getClosedSessionsCount() {
         return 0;
     }
 
+    @Override
     public int getActiveSessionsCount() {
         return 0;
     }
 
+    @Override
     public boolean supportsTags() {
         return true;
     }

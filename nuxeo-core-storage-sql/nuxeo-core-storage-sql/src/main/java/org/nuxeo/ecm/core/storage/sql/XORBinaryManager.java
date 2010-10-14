@@ -72,6 +72,7 @@ public class XORBinaryManager extends DefaultBinaryManager {
             pos = 0;
         }
 
+        @Override
         public void scrambleBuffer(byte[] buf, int off, int n) {
             for (int i = 0; i < n; i++) {
                 buf[off + i] ^= pattern[(int) (pos % pattern.length)];
@@ -79,19 +80,23 @@ public class XORBinaryManager extends DefaultBinaryManager {
             }
         }
 
+        @Override
         public void unscrambleBuffer(byte[] buf, int off, int n) {
             // scramble and unscramble are the same for XOR
             scrambleBuffer(buf, off, n);
         }
 
+        @Override
         public Binary getUnscrambledBinary(File file, String digest) {
             return new ScrambledBinary(file, digest, this);
         }
 
+        @Override
         public void skip(long n) {
             pos += n;
         }
 
+        @Override
         public void reset() {
             pos = 0;
         }

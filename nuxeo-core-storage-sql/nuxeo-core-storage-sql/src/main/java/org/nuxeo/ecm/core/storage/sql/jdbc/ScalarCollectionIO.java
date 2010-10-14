@@ -32,6 +32,7 @@ public class ScalarCollectionIO implements CollectionIO {
 
     public static final CollectionIO INSTANCE = new ScalarCollectionIO();
 
+    @Override
     public Serializable getCurrentFromResultSet(ResultSet rs,
             List<Column> columns, Model model, Serializable[] returnId,
             int[] returnPos) throws SQLException {
@@ -60,6 +61,7 @@ public class ScalarCollectionIO implements CollectionIO {
         return value;
     }
 
+    @Override
     public void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)

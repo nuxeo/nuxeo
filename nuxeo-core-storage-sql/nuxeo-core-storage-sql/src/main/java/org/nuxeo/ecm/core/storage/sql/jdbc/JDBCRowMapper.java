@@ -80,6 +80,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public InvalidationsPair receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
         if (clusterNodeHandler != null) {
@@ -99,6 +100,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public void sendInvalidations(Invalidations invalidations)
             throws StorageException {
         if (clusterNodeHandler != null) {
@@ -106,10 +108,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public void clearCache() {
         // no cache
     }
 
+    @Override
     public void rollback(Xid xid) throws XAException {
         try {
             xaresource.rollback(xid);
@@ -128,6 +132,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * ----- RowIO -----
      */
 
+    @Override
     public List<? extends RowId> read(Collection<RowId> rowIds)
             throws StorageException {
         // reorganize by table
@@ -392,6 +397,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public void write(RowBatch batch) throws StorageException {
         if (!batch.creates.isEmpty()) {
             writeCreates(batch.creates);
@@ -607,6 +613,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public Row readSimpleRow(RowId rowId) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectFragmentById.get(rowId.tableName);
         Map<String, Serializable> criteriaMap = Collections.singletonMap(
@@ -616,6 +623,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         return maps == null ? null : maps.get(0);
     }
 
+    @Override
     public Serializable[] readCollectionRowArray(RowId rowId)
             throws StorageException {
         String tableName = rowId.tableName;
@@ -657,6 +665,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public Row readChildHierRow(Serializable parentId, String childName,
             boolean complexProp) throws StorageException {
         String sql = sqlInfo.getSelectByChildNameSql(complexProp);
@@ -746,6 +755,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    @Override
     public List<Row> readChildHierRows(Serializable parentId,
             boolean complexProp) throws StorageException {
         if (parentId == null) {
@@ -760,6 +770,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 false);
     }
 
+    @Override
     public List<Row> getVersionRows(Serializable versionableId)
             throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
@@ -769,6 +780,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 null, false);
     }
 
+    @Override
     public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
             Serializable parentId) throws StorageException {
         Map<String, Serializable> criteriaMap = Collections.singletonMap(
@@ -789,6 +801,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 joinMap, false);
     }
 
+    @Override
     public CopyHierarchyResult copyHierarchy(Serializable sourceId,
             String typeName, Serializable destParentId, String destName,
             Row overwriteRow) throws StorageException {

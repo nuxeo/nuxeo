@@ -49,30 +49,37 @@ public abstract class SQLBaseProperty implements Property {
      * ----- org.nuxeo.ecm.core.model.Property -----
      */
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public boolean isNull() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setNull() throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isPropertySet(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Property getProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Collection<Property> getProperties() throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Iterator<Property> getPropertyIterator() throws DocumentException {
         throw new UnsupportedOperationException();
     }

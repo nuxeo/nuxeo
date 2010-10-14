@@ -29,8 +29,6 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
@@ -61,8 +59,6 @@ public class ConnectionFactoryImpl implements Repository,
         org.nuxeo.ecm.core.model.Repository {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(ConnectionFactoryImpl.class);
 
     private final ManagedConnectionFactoryImpl managedConnectionFactory;
 
@@ -138,6 +134,7 @@ public class ConnectionFactoryImpl implements Repository,
      *
      * @return the connection
      */
+    @Override
     public Session getConnection() throws StorageException {
         ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl();
         try {
@@ -156,6 +153,7 @@ public class ConnectionFactoryImpl implements Repository,
      * @param connectionSpec the connection spec, containing credentials
      * @return the connection
      */
+    @Override
     public Session getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
         assert connectionSpec instanceof ConnectionSpecImpl;
@@ -172,11 +170,13 @@ public class ConnectionFactoryImpl implements Repository,
         }
     }
 
+    @Override
     public ResourceAdapterMetaData getMetaData() throws ResourceException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    @Override
     public RecordFactory getRecordFactory() throws ResourceException {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -185,10 +185,12 @@ public class ConnectionFactoryImpl implements Repository,
      * ----- javax.naming.Referenceable -----
      */
 
+    @Override
     public Reference getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(Reference reference) {
         this.reference = reference;
     }
@@ -197,6 +199,7 @@ public class ConnectionFactoryImpl implements Repository,
      * ----- Repository -----
      */
 
+    @Override
     public void close() throws StorageException {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -205,10 +208,12 @@ public class ConnectionFactoryImpl implements Repository,
      * ----- org.nuxeo.ecm.core.model.Repository -----
      */
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public org.nuxeo.ecm.core.model.Session getSession(
             Map<String, Serializable> context) throws DocumentException {
         ConnectionSpec connectionSpec;
@@ -241,17 +246,20 @@ public class ConnectionFactoryImpl implements Repository,
     /**
      * @deprecated unused
      */
+    @Override
     @Deprecated
     public org.nuxeo.ecm.core.model.Session getSession(long sessionId)
             throws DocumentException {
         throw new UnsupportedOperationException("unused");
     }
 
+    @Override
     public SecurityManager getNuxeoSecurityManager() {
         initializeServices();
         return securityManager;
     }
 
+    @Override
     public SchemaManager getTypeManager() {
         initializeServices();
         return schemaManager;
@@ -260,24 +268,29 @@ public class ConnectionFactoryImpl implements Repository,
     /*
      * Used only by unit tests. Shouldn't be in public API.
      */
+    @Override
     public void initialize() {
     }
 
     /*
      * Used only by core MBean.
      */
+    @Override
     public synchronized org.nuxeo.ecm.core.model.Session[] getOpenedSessions() {
         return new org.nuxeo.ecm.core.model.Session[0];
     }
 
+    @Override
     public void shutdown() {
         managedConnectionFactory.shutdown();
     }
 
+    @Override
     public int getStartedSessionsCount() {
         return 0;
     }
 
+    @Override
     public int getClosedSessionsCount() {
         return 0;
     }
@@ -286,27 +299,33 @@ public class ConnectionFactoryImpl implements Repository,
      * ----- org.nuxeo.ecm.core.model.RepositoryManagement -----
      */
 
+    @Override
     public int getActiveSessionsCount() {
         return managedConnectionFactory.getActiveSessionsCount();
     }
 
+    @Override
     public int clearCaches() {
         return managedConnectionFactory.clearCaches();
     }
 
+    @Override
     public void processClusterInvalidationsNext() {
         managedConnectionFactory.processClusterInvalidationsNext();
     }
 
+    @Override
     public boolean supportsTags() {
         return true;
     }
 
+    @Override
     public void activateServer() {
         managedConnectionFactory.activateServer();
 
     }
 
+    @Override
     public void deactivateServer() {
         managedConnectionFactory.deactivateServer();
 

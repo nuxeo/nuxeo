@@ -68,24 +68,29 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
      * ----- DocumentVersion -----
      */
 
+    @Override
     public String getLabel() throws DocumentException {
         return getString(Model.VERSION_LABEL_PROP);
     }
 
+    @Override
     public String getDescription() throws DocumentException {
         return getString(Model.VERSION_DESCRIPTION_PROP);
     }
 
+    @Override
     public Calendar getCreated() throws DocumentException {
         return getDate(Model.VERSION_CREATED_PROP);
     }
 
     // API unused
+    @Override
     public DocumentVersion[] getPredecessors() {
         throw new UnsupportedOperationException();
     }
 
     // API unused
+    @Override
     public DocumentVersion[] getSuccessors() {
         throw new UnsupportedOperationException();
     }
@@ -205,18 +210,22 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     protected static final DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
+        @Override
         public boolean hasNext() {
             return false;
         }
 
+        @Override
         public DocumentVersion next() {
             throw new NoSuchElementException();
         }
 
+        @Override
         public DocumentVersion nextDocumentVersion() {
             throw new NoSuchElementException();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

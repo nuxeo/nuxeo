@@ -36,18 +36,22 @@ public class NetBackend implements RepositoryBackend {
 
     protected RepositoryImpl repository;
 
+    @Override
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
     }
 
+    @Override
     public void initializeModelSetup(ModelSetup modelSetup)
             throws StorageException {
         modelSetup.materializeFulltextSyntheticColumn = false; // TODO-H2
     }
 
+    @Override
     public void initializeModel(Model model) throws StorageException {
     }
 
+    @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
             Credentials credentials, boolean create) throws StorageException {
         try {
@@ -59,6 +63,7 @@ public class NetBackend implements RepositoryBackend {
         }
     }
 
+    @Override
     public void shutdown() {
     }
 

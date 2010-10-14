@@ -147,6 +147,7 @@ public final class SimpleFragment extends Fragment {
             this.posKey = posKey;
         }
 
+        @Override
         public int compare(SimpleFragment frag1, SimpleFragment frag2) {
             try {
                 Long pos1 = (Long) frag1.get(posKey);

@@ -41,14 +41,17 @@ public class CapturingQueryMaker implements QueryMaker {
         public PathResolver pathResolver;
     }
 
+    @Override
     public String getName() {
         return TYPE;
     }
 
+    @Override
     public boolean accepts(String queryType) {
         return TYPE.equals(queryType);
     }
 
+    @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model,
             PathResolver pathResolver, String query, QueryFilter queryFilter,
             Object... params) throws StorageException {

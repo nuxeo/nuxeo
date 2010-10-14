@@ -24,6 +24,7 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  */
 public class RepositoryStatusFactory extends AbstractResourceFactory {
 
+    @Override
     public void registerResources() {
         RepositoryStatus instance = new RepositoryStatus();
         service.registerResource("SQLRepositoryStatus",

@@ -70,10 +70,12 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      * ----- org.nuxeo.ecm.core.model.Property -----
      */
 
+    @Override
     public String getName() {
         return node.getName();
     }
 
+    @Override
     public Object getValue() throws DocumentException {
         Map<String, Object> map = new HashMap<String, Object>();
         Collection<Property> properties = getProperties();
@@ -83,6 +85,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         return map;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
@@ -139,69 +142,83 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      * (used for SQLDocument, SQLComplexProperty itself doesn't need it)
      */
 
+    @Override
     public Map<String, Object> exportFlatMap(String[] schemas)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Map<String, Map<String, Object>> exportMap(String[] schemas)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Map<String, Object> exportMap(String schemaName)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void importFlatMap(Map<String, Object> map) throws DocumentException {
         checkWritable();
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void importMap(Map<String, Map<String, Object>> map)
             throws DocumentException {
         checkWritable();
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<String> getDirtyFields() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getPropertyValue(String name) throws DocumentException {
         // when called from AbstractSession.getDataModelFields,
         // we may get an unprefixed name...
         return getProperty(name).getValue();
     }
 
+    @Override
     public String getString(String name) throws DocumentException {
         return (String) getProperty(name).getValue();
     }
 
+    @Override
     public boolean getBoolean(String name) throws DocumentException {
         Boolean value = (Boolean) getProperty(name).getValue();
         return value == null ? false : value.booleanValue();
     }
 
+    @Override
     public long getLong(String name) throws DocumentException {
         Long value = (Long) getProperty(name).getValue();
         return value == null ? 0L : value.longValue();
     }
 
+    @Override
     public double getDouble(String name) throws DocumentException {
         Double value = (Double) getProperty(name).getValue();
         return value == null ? 0D : value.doubleValue();
     }
 
+    @Override
     public Calendar getDate(String name) throws DocumentException {
         return (Calendar) getProperty(name).getValue();
     }
 
+    @Override
     public Blob getContent(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
         // TODO check constraints
@@ -216,30 +233,37 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         }
     }
 
+    @Override
     public void setString(String name, String value) throws DocumentException {
         setPropertyValue(name, value);
     }
 
+    @Override
     public void setBoolean(String name, boolean value) throws DocumentException {
         setPropertyValue(name, Boolean.valueOf(value));
     }
 
+    @Override
     public void setLong(String name, long value) throws DocumentException {
         setPropertyValue(name, Long.valueOf(value));
     }
 
+    @Override
     public void setDouble(String name, double value) throws DocumentException {
         setPropertyValue(name, Double.valueOf(value));
     }
 
+    @Override
     public void setDate(String name, Calendar value) throws DocumentException {
         setPropertyValue(name, value);
     }
 
+    @Override
     public void setContent(String name, Blob value) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }

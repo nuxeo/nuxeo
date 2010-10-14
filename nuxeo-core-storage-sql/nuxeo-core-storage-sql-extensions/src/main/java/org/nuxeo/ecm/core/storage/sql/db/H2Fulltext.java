@@ -532,6 +532,7 @@ public class H2Fulltext {
         /**
          * Trigger interface: initialization.
          */
+        @Override
         public void init(Connection conn, String schema, String triggerName,
                 String table, boolean before, int opType) throws SQLException {
             indexPath = getIndexPath(conn);
@@ -612,6 +613,7 @@ public class H2Fulltext {
         /**
          * Trigger interface.
          */
+        @Override
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
             if (indexWriter == null) {
@@ -669,6 +671,7 @@ public class H2Fulltext {
             }
         }
 
+        @Override
         public void close() throws SQLException {
             if (indexWriter != null) {
                 try {
@@ -682,6 +685,7 @@ public class H2Fulltext {
             }
         }
 
+        @Override
         public void remove() {
             // ignore
         }

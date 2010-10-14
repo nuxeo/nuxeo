@@ -73,18 +73,22 @@ public class SQLQueryResult implements QueryResult {
         this.offset = (int) offset;
     }
 
+    @Override
     public long count() {
         return size;
     }
 
+    @Override
     public long getTotalSize() {
         return totalSize;
     }
 
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    @Override
     public DocumentModelList getDocumentModels() throws QueryException {
         // get ids
         List<Serializable> ids = new ArrayList<Serializable>((int) size);
@@ -137,6 +141,7 @@ public class SQLQueryResult implements QueryResult {
             this.sign = asc ? 1 : -1;
         }
 
+        @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
             String p1 = doc1.getPathAsString();
             String p2 = doc2.getPathAsString();
@@ -151,6 +156,7 @@ public class SQLQueryResult implements QueryResult {
         }
     }
 
+    @Override
     public DocumentIterator getDocuments(int start) {
         // initial skip
         for (int i = 0; i < start; i++) {
@@ -162,6 +168,7 @@ public class SQLQueryResult implements QueryResult {
         }
 
         return new DocumentIterator() {
+            @Override
             public Document next() {
                 currentId = it.next();
                 try {
@@ -172,19 +179,23 @@ public class SQLQueryResult implements QueryResult {
                 }
             }
 
+            @Override
             public boolean hasNext() {
                 return it.hasNext();
             }
 
+            @Override
             public long getSize() {
                 return size;
             }
 
+            @Override
             public void remove() {
             }
         };
     }
 
+    @Override
     public boolean next() {
         if (!it.hasNext()) {
             return false;
@@ -193,47 +204,58 @@ public class SQLQueryResult implements QueryResult {
         return true;
     }
 
+    @Override
     public Object getObject() throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public long row() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean getBoolean(int i) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean getBoolean(String column) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double getDouble(int i, double defaultValue) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double getDouble(String column, double defaultValue)
             throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public long getLong(int i, long defaultValue) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public long getLong(String column, long defaultValue) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Object getObject(String column) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getString(int i) throws QueryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getString(String column) throws QueryException {
         throw new UnsupportedOperationException();
     }

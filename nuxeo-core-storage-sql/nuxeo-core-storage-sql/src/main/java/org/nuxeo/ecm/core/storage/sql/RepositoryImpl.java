@@ -247,26 +247,31 @@ public class RepositoryImpl implements Repository {
         }
     }
 
+    @Override
     public boolean isServerActivated() {
         return serverStarted;
     }
 
+    @Override
     public String getServerURL() {
         String host = Framework.getProperty("org.nuxeo.runtime.server.host", "localhost:");
         return String.format("http://%s:%d/%s",
                 host, repositoryDescriptor.listen.port, repositoryDescriptor.listen.path);
     }
 
+    @Override
     public void activateServer() {
         activateServletMapper();
         activateBinaryManagerServlet(binaryManager);
     }
 
+    @Override
     public void deactivateServer() {
         deactivateServletMapper();
         deactivateBinaryManagerServlet();
     }
 
+    @Override
     public Collection<MapperClientInfo> getClientInfos() {
         if (!serverStarted) {
             return Collections.emptyList();
@@ -293,6 +298,7 @@ public class RepositoryImpl implements Repository {
      * @return the session
      * @throws StorageException
      */
+    @Override
     public SessionImpl getConnection() throws StorageException {
         return getConnection(null);
     }
@@ -305,6 +311,7 @@ public class RepositoryImpl implements Repository {
      * @return the session
      * @throws StorageException
      */
+    @Override
     public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
         assert connectionSpec == null
@@ -347,6 +354,7 @@ public class RepositoryImpl implements Repository {
             this.session = session;
         }
 
+        @Override
         public Serializable getIdForPath(String path) throws StorageException {
             Node node = session.getNodeByPath(path, null);
             return node == null ? null : node.getId();
@@ -357,10 +365,12 @@ public class RepositoryImpl implements Repository {
      * -----
      */
 
+    @Override
     public ResourceAdapterMetaData getMetaData() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public RecordFactory getRecordFactory() {
         throw new UnsupportedOperationException();
     }
@@ -371,10 +381,12 @@ public class RepositoryImpl implements Repository {
 
     private Reference reference;
 
+    @Override
     public void setReference(Reference reference) {
         this.reference = reference;
     }
 
+    @Override
     public Reference getReference() {
         return reference;
     }
@@ -383,6 +395,7 @@ public class RepositoryImpl implements Repository {
      * ----- Repository -----
      */
 
+    @Override
     public synchronized void close() throws StorageException {
         for (SessionImpl session : sessions) {
             if (!session.isLive()) {
@@ -414,14 +427,17 @@ public class RepositoryImpl implements Repository {
      * ----- RepositoryManagement -----
      */
 
+    @Override
     public String getName() {
         return repositoryDescriptor.name;
     }
 
+    @Override
     public int getActiveSessionsCount() {
         return sessions.size();
     }
 
+    @Override
     public int clearCaches() {
         int n = 0;
         for (SessionImpl session : sessions) {
@@ -430,6 +446,7 @@ public class RepositoryImpl implements Repository {
         return n;
     }
 
+    @Override
     public void processClusterInvalidationsNext() {
         // TODO pass through or something
     }

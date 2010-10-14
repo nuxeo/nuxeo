@@ -67,6 +67,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return list;
     }
 
+    @Override
     public String listActiveSessions() {
         List<RepositoryManagement> repositories;
         try {
@@ -85,6 +86,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return buf.toString();
     }
 
+    @Override
     public int getActiveSessionsCount() {
         List<RepositoryManagement> repositories;
         try {
@@ -99,6 +101,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return count;
     }
 
+    @Override
     public String clearCaches() {
         List<RepositoryManagement> repositories;
         try {

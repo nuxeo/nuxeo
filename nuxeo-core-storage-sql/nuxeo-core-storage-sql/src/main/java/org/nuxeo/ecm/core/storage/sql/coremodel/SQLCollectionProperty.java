@@ -58,10 +58,12 @@ public class SQLCollectionProperty extends SQLBaseProperty {
      * ----- org.nuxeo.ecm.core.model.Property -----
      */
 
+    @Override
     public String getName() {
         return property.getName();
     }
 
+    @Override
     public Object getValue() throws DocumentException {
         try {
             Serializable[] value = property.getValue();
@@ -75,6 +77,7 @@ public class SQLCollectionProperty extends SQLBaseProperty {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();

@@ -94,6 +94,7 @@ public class MapperClient implements InvocationHandler {
         return sd.getUrl() + '/' + RepositoryImpl.SERVER_PATH_VCS;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         String methodName = method.getName();

@@ -94,6 +94,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         repositoryDescriptor.name = name;
     }
 
+    @Override
     public String getName() {
         return repositoryDescriptor.name;
     }
@@ -131,11 +132,13 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * ManagedConnectionFactory with a ResourceAdapter. The ResourceAdapter may
      * then be used to look up configuration.
      */
+    @Override
     public void setResourceAdapter(ResourceAdapter resourceAdapter)
             throws ResourceException {
         this.resourceAdapter = resourceAdapter;
     }
 
+    @Override
     public ResourceAdapter getResourceAdapter() {
         return resourceAdapter;
     }
@@ -144,10 +147,12 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * ----- javax.resource.spi.ManagedConnectionFactory -----
      */
 
+    @Override
     public void setLogWriter(PrintWriter out) {
         this.out = out;
     }
 
+    @Override
     public PrintWriter getLogWriter() {
         return out;
     }
@@ -155,6 +160,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     /*
      * Used in non-managed scenarios.
      */
+    @Override
     public Object createConnectionFactory() throws ResourceException {
         return createConnectionFactory(new ConnectionManagerImpl());
     }
@@ -162,6 +168,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     /*
      * Used in managed scenarios.
      */
+    @Override
     public Object createConnectionFactory(ConnectionManager connectionManager)
             throws ResourceException {
         ConnectionFactoryImpl connectionFactory = new ConnectionFactoryImpl(
@@ -179,6 +186,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * If connectionRequestInfo is null then it means that the call is made by
      * the application server for the recovery case (6.5.3.5).
      */
+    @Override
     public ManagedConnection createManagedConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
@@ -194,6 +202,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Called by the application server when it's looking for an appropriate
      * connection to server from a pool.
      */
+    @Override
     public ManagedConnection matchManagedConnections(Set set, Subject subject,
             ConnectionRequestInfo cri) throws ResourceException {
         for (Object candidate : set) {
@@ -213,6 +222,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * ----- org.nuxeo.ecm.core.storage.sql.RepositoryManagement -----
      */
 
+    @Override
     public int getActiveSessionsCount() {
         if (repository == null) {
             return 0;
@@ -220,6 +230,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return repository.getActiveSessionsCount();
     }
 
+    @Override
     public int clearCaches() {
         if (repository == null) {
             return 0;
@@ -227,6 +238,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return repository.clearCaches();
     }
 
+    @Override
     public void processClusterInvalidationsNext() {
         if (repository != null) {
             repository.processClusterInvalidationsNext();
@@ -324,11 +336,13 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         return props;
     }
 
+    @Override
     public void activateServer() {
         repository.activateServer();
 
     }
 
+    @Override
     public void deactivateServer() {
        repository.deactivateServer();
 

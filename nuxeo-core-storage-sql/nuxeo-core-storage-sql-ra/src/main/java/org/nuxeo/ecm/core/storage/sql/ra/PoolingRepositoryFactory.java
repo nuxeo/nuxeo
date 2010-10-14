@@ -41,6 +41,7 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
 
     private static final Log log = LogFactory.getLog(PoolingRepositoryFactory.class);
 
+    @Override
     public Repository createRepository(RepositoryDescriptor descriptor)
             throws Exception {
         log.info("Creating pooling repository: " + descriptor.getName());

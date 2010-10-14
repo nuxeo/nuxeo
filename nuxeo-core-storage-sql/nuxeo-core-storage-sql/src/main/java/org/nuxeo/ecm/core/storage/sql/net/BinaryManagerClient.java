@@ -53,6 +53,7 @@ public class BinaryManagerClient implements BinaryManager {
         this.httpClient = httpClient;
     }
 
+    @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
         url = getUrl(repositoryDescriptor);
@@ -63,6 +64,7 @@ public class BinaryManagerClient implements BinaryManager {
         return sd.getUrl() + '/' + RepositoryImpl.SERVER_PATH_BINARY;
     }
 
+    @Override
     public Binary getBinary(InputStream in) throws IOException {
         Binary binary = binaryManager.getBinary(in);
 
@@ -88,6 +90,7 @@ public class BinaryManagerClient implements BinaryManager {
         return binary;
     }
 
+    @Override
     public Binary getBinary(String digest) {
         Binary binary = binaryManager.getBinary(digest);
         if (binary != null) {

@@ -29,11 +29,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -64,8 +62,6 @@ public class SQLInfo {
     private static final String ORDER_DESC = "DESC";
 
     private static final String ORDER_ASC = "ASC";
-
-    private static final Log log = LogFactory.getLog(SQLInfo.class);
 
     public final Database database;
 
@@ -1034,6 +1030,7 @@ public class SQLInfo {
             this.keys = keys;
         }
 
+        @Override
         public Map<String, Serializable> makeMap(ResultSet rs)
                 throws SQLException {
             Map<String, Serializable> map = new HashMap<String, Serializable>();

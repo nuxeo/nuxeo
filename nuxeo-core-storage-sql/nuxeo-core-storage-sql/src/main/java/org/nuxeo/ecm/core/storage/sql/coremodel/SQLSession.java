@@ -112,19 +112,23 @@ public class SQLSession implements Session {
      * ----- org.nuxeo.ecm.core.model.Session -----
      */
 
+    @Override
     public Document getRootDocument() {
         return root;
     }
 
+    @Override
     public Document getNullDocument() {
         return new SQLDocumentLive(null, null, this, true);
     }
 
     // not called
+    @Override
     public XAResource getXAResource() {
         throw new RuntimeException();
     }
 
+    @Override
     public void close() throws DocumentException {
         try {
             session.save();
@@ -134,6 +138,7 @@ public class SQLSession implements Session {
         dispose();
     }
 
+    @Override
     public void save() throws DocumentException {
         try {
             session.save();
@@ -142,15 +147,18 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public void cancel() throws DocumentException {
         // TODO
         // throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isLive() {
         return session != null && session.isLive();
     }
 
+    @Override
     public void dispose() {
         try {
             session.close();
@@ -161,31 +169,38 @@ public class SQLSession implements Session {
     }
 
     // not used?
+    @Override
     public long getSessionId() {
         throw new RuntimeException();
         // return sid;
     }
 
+    @Override
     public String getUserSessionId() {
         return userSessionId;
     }
 
+    @Override
     public Repository getRepository() {
         return repository;
     }
 
+    @Override
     public Map<String, Serializable> getSessionContext() {
         return context;
     }
 
+    @Override
     public SchemaManager getTypeManager() {
         return repository.getTypeManager();
     }
 
+    @Override
     public SecurityManager getSecurityManager() {
         return repository.getNuxeoSecurityManager();
     }
 
+    @Override
     public Document getDocumentByUUID(String uuid) throws DocumentException {
         try {
             /**
@@ -206,6 +221,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Document resolvePath(String path) throws DocumentException {
         if (path.endsWith("/") && path.length() > 1) {
             path = path.substring(0, path.length() - 1);
@@ -232,6 +248,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Document move(Document source, Document parent, String name)
             throws DocumentException {
         assert source instanceof SQLDocument;
@@ -264,6 +281,7 @@ public class SQLSession implements Session {
         return name;
     }
 
+    @Override
     public Document copy(Document source, Document parent, String name)
             throws DocumentException {
         assert source instanceof SQLDocument;
@@ -282,6 +300,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException {
         try {
@@ -301,6 +320,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Document createProxy(Document doc, Document folder)
             throws DocumentException {
         try {
@@ -330,6 +350,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Document createProxyForVersion(Document parent, Document document,
             String label) throws DocumentException {
         try {
@@ -348,6 +369,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public Collection<Document> getProxies(Document document, Document parent)
             throws DocumentException {
         Collection<Node> proxyNodes;
@@ -365,6 +387,7 @@ public class SQLSession implements Session {
         return proxies;
     }
 
+    @Override
     public InputStream getDataStream(String key) throws DocumentException {
         // XXX TODO
         throw new UnsupportedOperationException();
@@ -372,6 +395,7 @@ public class SQLSession implements Session {
 
     // returned document is r/w even if a version or a proxy, so that normal
     // props can be set
+    @Override
     public Document importDocument(String uuid, Document parent, String name,
             String typeName, Map<String, Serializable> properties)
             throws DocumentException {
@@ -424,6 +448,7 @@ public class SQLSession implements Session {
         return importChild(uuid, parentNode, name, pos, typeName, props);
     }
 
+    @Override
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
         if (qType != Query.Type.NXQL) {
@@ -439,6 +464,7 @@ public class SQLSession implements Session {
         }
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws QueryException {
         return new SQLSessionQuery(query, queryType).executeAndFetch(
@@ -469,14 +495,17 @@ public class SQLSession implements Session {
             this.queryType = queryType;
         }
 
+        @Override
         public QueryResult execute() throws QueryException {
             return execute(QueryFilter.EMPTY, false);
         }
 
+        @Override
         public QueryResult execute(boolean countTotal) throws QueryException {
             return execute(QueryFilter.EMPTY, countTotal);
         }
 
+        @Override
         public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
                 throws QueryException {
             try {

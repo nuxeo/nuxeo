@@ -118,6 +118,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // called by NetServlet when forwarding remote NetMapper calls.
+    @Override
     public Mapper getMapper() {
         return mapper;
     }
@@ -186,6 +187,7 @@ public class SessionImpl implements Session, XAResource {
      * ----- javax.resource.cci.Connection -----
      */
 
+    @Override
     public void close() throws ResourceException {
         try {
             closeSession();
@@ -202,18 +204,22 @@ public class SessionImpl implements Session, XAResource {
         // don't clean the caches, we keep the pristine cache around
     }
 
+    @Override
     public Interaction createInteraction() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ConnectionMetaData getMetaData() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ResultSetInfo getResultSetInfo() throws ResourceException {
         throw new UnsupportedOperationException();
     }
@@ -222,24 +228,29 @@ public class SessionImpl implements Session, XAResource {
      * ----- Session -----
      */
 
+    @Override
     public boolean isLive() {
         return live;
     }
 
+    @Override
     public String getRepositoryName() {
         return repository.getName();
     }
 
+    @Override
     public Model getModel() {
         return model;
     }
 
+    @Override
     public Node getRootNode() {
         checkThread();
         checkLive();
         return rootNode;
     }
 
+    @Override
     public Binary getBinary(InputStream in) throws StorageException {
         try {
             return repository.getBinaryManager().getBinary(in);
@@ -248,6 +259,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @Override
     public void save() throws StorageException {
         checkLive();
         flush();
@@ -507,6 +519,7 @@ public class SessionImpl implements Session, XAResource {
      * -------------------------------------------------------------
      */
 
+    @Override
     public Node getNodeById(Serializable id) throws StorageException {
         checkThread();
         checkLive();
@@ -520,6 +533,7 @@ public class SessionImpl implements Session, XAResource {
         return nodes.get(0);
     }
 
+    @Override
     public List<Node> getNodesByIds(List<Serializable> ids)
             throws StorageException {
         checkThread();
@@ -592,6 +606,7 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
+    @Override
     public Node getParentNode(Node node) throws StorageException {
         checkLive();
         if (node == null) {
@@ -601,6 +616,7 @@ public class SessionImpl implements Session, XAResource {
         return id == null ? null : getNodeById(id);
     }
 
+    @Override
     public String getPath(Node node) throws StorageException {
         checkLive();
         List<String> list = new LinkedList<String>();
@@ -624,6 +640,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /* Does not apply to properties for now (no use case). */
+    @Override
     public Node getNodeByPath(String path, Node node) throws StorageException {
         // TODO optimize this to use a dedicated path-based table
         checkLive();
@@ -659,6 +676,7 @@ public class SessionImpl implements Session, XAResource {
         return node;
     }
 
+    @Override
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
         if (pos == null && !complexProp && parent != null) {
@@ -667,6 +685,7 @@ public class SessionImpl implements Session, XAResource {
         return addChildNode(null, parent, name, pos, typeName, complexProp);
     }
 
+    @Override
     public Node addChildNode(Serializable id, Node parent, String name,
             Long pos, String typeName, boolean complexProp)
             throws StorageException {
@@ -706,6 +725,7 @@ public class SessionImpl implements Session, XAResource {
         return new Node(context, fragmentGroup);
     }
 
+    @Override
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
@@ -714,6 +734,7 @@ public class SessionImpl implements Session, XAResource {
         return proxy;
     }
 
+    @Override
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
@@ -723,6 +744,7 @@ public class SessionImpl implements Session, XAResource {
         return fragment != null;
     }
 
+    @Override
     public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
@@ -736,6 +758,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // TODO optimize with dedicated backend call
+    @Override
     public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
         checkLive();
@@ -744,6 +767,7 @@ public class SessionImpl implements Session, XAResource {
         return children.size() > 0;
     }
 
+    @Override
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
@@ -762,6 +786,7 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
+    @Override
     public void orderBefore(Node parent, Node source, Node dest)
             throws StorageException {
         checkLive();
@@ -769,6 +794,7 @@ public class SessionImpl implements Session, XAResource {
                 : dest.getId());
     }
 
+    @Override
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
@@ -778,6 +804,7 @@ public class SessionImpl implements Session, XAResource {
         return source;
     }
 
+    @Override
     public Node copy(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
@@ -787,11 +814,13 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id);
     }
 
+    @Override
     public void removeNode(Node node) throws StorageException {
         checkLive();
         context.removeNode(node.getHierFragment());
     }
 
+    @Override
     public Node checkIn(Node node, String label, String description)
             throws StorageException {
         checkLive();
@@ -803,12 +832,14 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id);
     }
 
+    @Override
     public void checkOut(Node node) throws StorageException {
         checkLive();
         context.checkOut(node);
         requireReadAclsUpdate();
     }
 
+    @Override
     public void restore(Node node, Node version) throws StorageException {
         checkLive();
         // save done inside method
@@ -816,6 +847,7 @@ public class SessionImpl implements Session, XAResource {
         requireReadAclsUpdate();
     }
 
+    @Override
     public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
         checkLive();
@@ -824,6 +856,7 @@ public class SessionImpl implements Session, XAResource {
         return id == null ? null : getNodeById(id);
     }
 
+    @Override
     public Node getLastVersion(Node node) throws StorageException {
         checkLive();
         flush();
@@ -831,6 +864,7 @@ public class SessionImpl implements Session, XAResource {
         return id == null ? null : getNodeById(id);
     }
 
+    @Override
     public List<Node> getVersions(Node versionableNode) throws StorageException {
         checkLive();
         flush();
@@ -842,6 +876,7 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
+    @Override
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
@@ -873,26 +908,31 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
+    @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return mapper.query(query, queryFilter, countTotal);
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
+    @Override
     public void requireReadAclsUpdate() {
         readAclsChanged = true;
     }
 
+    @Override
     public void updateReadAcls() throws StorageException {
         mapper.updateReadAcls();
         readAclsChanged = false;
     }
 
+    @Override
     public void rebuildReadAcls() throws StorageException {
         mapper.rebuildReadAcls();
         readAclsChanged = false;
@@ -965,10 +1005,12 @@ public class SessionImpl implements Session, XAResource {
      * ----- XAResource -----
      */
 
+    @Override
     public boolean isSameRM(XAResource xaresource) {
         return xaresource == this;
     }
 
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         if (flags == TMNOFLAGS) {
             try {
@@ -983,6 +1025,7 @@ public class SessionImpl implements Session, XAResource {
         checkThreadStart();
     }
 
+    @Override
     public void end(Xid xid, int flags) throws XAException {
         boolean failed = true;
         try {
@@ -1012,10 +1055,12 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @Override
     public int prepare(Xid xid) throws XAException {
         return mapper.prepare(xid);
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
         try {
             mapper.commit(xid, onePhase);
@@ -1034,6 +1079,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @Override
     public void rollback(Xid xid) throws XAException {
         try {
             try {
@@ -1048,18 +1094,22 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    @Override
     public void forget(Xid xid) throws XAException {
         mapper.forget(xid);
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
         return mapper.recover(flag);
     }
 
+    @Override
     public boolean setTransactionTimeout(int seconds) throws XAException {
         return mapper.setTransactionTimeout(seconds);
     }
 
+    @Override
     public int getTransactionTimeout() throws XAException {
         return mapper.getTransactionTimeout();
     }

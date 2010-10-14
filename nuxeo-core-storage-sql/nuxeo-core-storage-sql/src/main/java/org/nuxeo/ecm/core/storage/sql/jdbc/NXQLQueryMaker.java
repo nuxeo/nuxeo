@@ -174,10 +174,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected List<Serializable> whereParams;
 
+    @Override
     public String getName() {
         return "NXQL";
     }
 
+    @Override
     public boolean accepts(String queryString) {
         return queryString.equals("NXQL")
                 || queryString.toLowerCase().trim().startsWith("select ");
@@ -187,6 +189,7 @@ public class NXQLQueryMaker implements QueryMaker {
         DIRECT, PROXY;
     }
 
+    @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model,
             PathResolver pathResolver, String query, QueryFilter queryFilter,
             Object... params) throws StorageException {
@@ -1100,6 +1103,7 @@ public class NXQLQueryMaker implements QueryMaker {
             this.value = value;
         }
 
+        @Override
         public void accept(IVisitor visitor) {
             ((WhereBuilder) visitor).visitBooleanLiteral(this);
         }
