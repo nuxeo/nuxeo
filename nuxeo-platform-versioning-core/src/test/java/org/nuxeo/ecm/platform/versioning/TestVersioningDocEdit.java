@@ -133,7 +133,9 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         doc = session.saveDocument(doc);
         checkVersion(doc, 2, 0);
 
-        // now snapshot+inc
+        // now dirty doc and snapshot+inc
+        doc.setProperty("dublincore", "title", "BB");
+        doc = session.saveDocument(doc);
         doc.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         doc.putContextData(VersioningActions.KEY_FOR_INC_OPTION,
