@@ -9,7 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-jboss5</artifactId>
+  <artifactId>nuxeo-distribution-jboss</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo JBoss5 Distribution</name>
   <description>Package Nuxeo EP or DM EAR with JBoss5</description>
