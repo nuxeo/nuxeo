@@ -346,17 +346,14 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * @return the version for the checked-in document
      * @throws ClientException
      */
-    private VersionModel saveDocumentAsNewVersion(DocumentModel documentModel)
+    private void saveDocumentAsNewVersion(DocumentModel documentModel)
             throws ClientException {
         // Do a checkin / checkout of the edited version
         DocumentRef docRef = documentModel.getRef();
-        VersionModel newVersion = new VersionModelImpl();
-        newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
-        documentManager.checkIn(docRef, newVersion);
+        documentManager.checkIn(docRef, (String) null);
         log.debug("Checked in " + documentModel);
         documentManager.checkOut(docRef);
         log.debug("Checked out " + documentModel);
-        return newVersion;
     }
 
     public String getVersioningOptionInstanceId() {
