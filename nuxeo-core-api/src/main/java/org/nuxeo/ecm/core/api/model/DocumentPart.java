@@ -37,6 +37,7 @@ public interface DocumentPart extends Property {
      *
      * @return the schema
      */
+    @Override
     Schema getSchema();
 
     Property createProperty(Property parent, Field field);

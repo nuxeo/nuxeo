@@ -160,6 +160,7 @@ public abstract class AbstractSession implements CoreSession,
      */
     public abstract Session getSession() throws ClientException;
 
+    @Override
     public String connect(String repositoryName,
             Map<String, Serializable> context) throws ClientException {
         if (null == context) {
@@ -250,6 +251,7 @@ public abstract class AbstractSession implements CoreSession,
         return repositoryName + '-' + SIDGenerator.next();
     }
 
+    @Override
     public DocumentType getDocumentType(String type) {
         return NXSchema.getSchemaManager().getDocumentType(type);
     }
@@ -260,6 +262,7 @@ public abstract class AbstractSession implements CoreSession,
      * @return the String representation of an auto-incremented counter that not
      *         used in any label of docRef
      */
+    @Override
     public String generateVersionLabelFor(DocumentRef docRef)
             throws ClientException {
         // find the biggest label that is castable to an int
@@ -275,10 +278,12 @@ public abstract class AbstractSession implements CoreSession,
         return Integer.toString(max + 1);
     }
 
+    @Override
     public String getSessionId() {
         return sessionId;
     }
 
+    @Override
     public Principal getPrincipal() {
         return ANONYMOUS;
     }
@@ -325,6 +330,7 @@ public abstract class AbstractSession implements CoreSession,
         return eventService;
     }
 
+    @Override
     public void afterBegin() {
         if (log.isTraceEnabled()) {
             log.trace("Transaction started");
@@ -336,9 +342,11 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void beforeCompletion() {
     }
 
+    @Override
     public void afterCompletion(boolean committed) {
         if (log.isTraceEnabled()) {
             log.trace("Transaction "
@@ -437,6 +445,7 @@ public abstract class AbstractSession implements CoreSession,
                 false, false);
     }
 
+    @Override
     public boolean hasPermission(DocumentRef docRef, String permission)
             throws ClientException {
         try {
@@ -519,6 +528,7 @@ public abstract class AbstractSession implements CoreSession,
         part.iterator();
     }
 
+    @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name)
             throws ClientException {
         try {
@@ -562,6 +572,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
             throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
@@ -573,6 +584,7 @@ public abstract class AbstractSession implements CoreSession,
         return newDocuments;
     }
 
+    @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
             String name) throws ClientException {
         try {
@@ -614,6 +626,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
             DocumentRef dst) throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
@@ -625,6 +638,7 @@ public abstract class AbstractSession implements CoreSession,
         return newDocuments;
     }
 
+    @Override
     public DocumentModel move(DocumentRef src, DocumentRef dst, String name)
             throws ClientException {
         try {
@@ -662,6 +676,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void move(List<DocumentRef> src, DocumentRef dst)
             throws ClientException {
         for (DocumentRef ref : src) {
@@ -669,6 +684,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public ACP getACP(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -679,6 +695,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite)
             throws ClientException {
         try {
@@ -703,6 +720,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void cancel() throws ClientException {
         try {
             getSession().cancel();
@@ -735,12 +753,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel createDocumentModel(String typeName)
             throws ClientException {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
+    @Override
     public DocumentModel createDocumentModel(String parentPath, String id,
             String typeName) throws ClientException {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -751,6 +771,7 @@ public abstract class AbstractSession implements CoreSession,
         return model;
     }
 
+    @Override
     public DocumentModel createDocumentModel(String typeName,
             Map<String, Object> options) throws ClientException {
 
@@ -763,6 +784,7 @@ public abstract class AbstractSession implements CoreSession,
         return createDocumentModelFromTypeName(typeName, serializableOptions);
     }
 
+    @Override
     public DocumentModel createDocument(DocumentModel docModel)
             throws ClientException {
         String typeName = docModel.getType();
@@ -828,6 +850,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void importDocuments(List<DocumentModel> docModels)
             throws ClientException {
         try {
@@ -903,6 +926,7 @@ public abstract class AbstractSession implements CoreSession,
         return name;
     }
 
+    @Override
     public DocumentModel[] createDocument(DocumentModel[] docModels)
             throws ClientException {
         DocumentModel[] models = new DocumentModel[docModels.length];
@@ -916,6 +940,7 @@ public abstract class AbstractSession implements CoreSession,
 
     public abstract boolean isSessionAlive();
 
+    @Override
     public void disconnect() throws ClientException {
         if (isSessionAlive()) {
             getSession().dispose();
@@ -928,6 +953,7 @@ public abstract class AbstractSession implements CoreSession,
         repositoryName = null;
     }
 
+    @Override
     public boolean exists(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -940,6 +966,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getChild(DocumentRef parent, String name)
             throws ClientException {
         try {
@@ -953,11 +980,13 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent)
             throws ClientException {
         return getChildren(parent, null, READ, null, null);
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -966,11 +995,13 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, READ, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException {
         return getChildren(parent, type, READ, null, null);
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type) throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -979,16 +1010,19 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, type, null, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             String perm) throws ClientException {
         return getChildren(parent, type, perm, null, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             Filter filter, Sorter sorter) throws ClientException {
         return getChildren(parent, type, null, filter, sorter);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             String perm, Filter filter, Sorter sorter) throws ClientException {
         try {
@@ -1021,6 +1055,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm)
             throws ClientException {
         if (perm != null) {
@@ -1044,6 +1079,7 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Method used internally to retrieve frames of a long result.
      */
+    @Override
     public DocumentModelsChunk getDocsResultChunk(DocsQueryProviderDef def,
             String type, String perm, Filter filter, final int start,
             final int max) throws ClientException {
@@ -1107,6 +1143,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type, String perm, Filter filter) throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1115,6 +1152,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, type, perm, filter);
     }
 
+    @Override
     public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1126,6 +1164,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException {
         try {
@@ -1137,6 +1176,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>(docRefs.length);
@@ -1154,6 +1194,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelListImpl(docs);
     }
 
+    @Override
     public DocumentModelList getFiles(DocumentRef parent)
             throws ClientException {
         try {
@@ -1174,6 +1215,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getFilesIterator(DocumentRef parent)
             throws ClientException {
 
@@ -1183,6 +1225,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
     }
 
+    @Override
     public DocumentModelList getFiles(DocumentRef parent, Filter filter,
             Sorter sorter) throws ClientException {
         try {
@@ -1209,6 +1252,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getFolders(DocumentRef parent)
             throws ClientException {
         try {
@@ -1228,6 +1272,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1236,6 +1281,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
     }
 
+    @Override
     public DocumentModelList getFolders(DocumentRef parent, Filter filter,
             Sorter sorter) throws ClientException {
         try {
@@ -1262,6 +1308,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getParentDocument(DocumentRef docRef)
             throws ClientException {
         try {
@@ -1282,6 +1329,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> getParentDocuments(final DocumentRef docRef)
             throws ClientException {
 
@@ -1311,6 +1359,7 @@ public abstract class AbstractSession implements CoreSession,
         return docsList;
     }
 
+    @Override
     public DocumentModel getRootDocument() throws ClientException {
         try {
             return readModel(getSession().getRootDocument(), null);
@@ -1319,6 +1368,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean hasChildren(DocumentRef docRef) throws ClientException {
         try {
             // TODO: validate permission check with td
@@ -1331,25 +1381,30 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList query(String query) throws ClientException {
         return query(query, null, 0, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, int max)
             throws ClientException {
         return query(query, null, max, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, Filter filter)
             throws ClientException {
         return query(query, filter, 0, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, Filter filter, int max)
             throws ClientException {
         return query(query, filter, max, 0, false);
     }
 
+    @Override
     @SuppressWarnings("null")
     public DocumentModelList query(String query, Filter filter, long limit,
             long offset, boolean countTotal) throws ClientException {
@@ -1441,6 +1496,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             Object... params) throws ClientException {
         try {
@@ -1473,6 +1529,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1492,12 +1549,14 @@ public abstract class AbstractSession implements CoreSession,
         return t.getMessage();
     }
 
+    @Override
     @Deprecated
     public DocumentModelList querySimpleFts(String keywords)
             throws ClientException {
         return querySimpleFts(keywords, null);
     }
 
+    @Override
     @Deprecated
     public DocumentModelList querySimpleFts(String keywords, Filter filter)
             throws ClientException {
@@ -1530,12 +1589,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     @Deprecated
     public DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
             int pageSize) throws ClientException {
         return querySimpleFtsIt(query, null, filter, pageSize);
     }
 
+    @Override
     @Deprecated
     public DocumentModelIterator querySimpleFtsIt(String query,
             String startingPath, Filter filter, int pageSize)
@@ -1548,6 +1609,7 @@ public abstract class AbstractSession implements CoreSession,
                 filter);
     }
 
+    @Override
     public void removeChildren(DocumentRef docRef) throws ClientException {
         // TODO: check req permissions with td
         try {
@@ -1567,6 +1629,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1609,6 +1672,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void removeDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1669,6 +1733,7 @@ public abstract class AbstractSession implements CoreSession,
      * Implementation uses the fact that the lexicographic ordering of paths is
      * a refinement of the "contains" partial ordering.
      */
+    @Override
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         Document[] docs = new Document[docRefs.length];
 
@@ -1701,6 +1766,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void save() throws ClientException {
         try {
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -1712,6 +1778,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel saveDocument(DocumentModel docModel)
             throws ClientException {
         try {
@@ -1779,6 +1846,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean isDirty(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1814,6 +1882,7 @@ public abstract class AbstractSession implements CoreSession,
         return version;
     }
 
+    @Override
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
         // TODO: optimize this - avoid calling at each iteration saveDoc...
         for (DocumentModel docModel : docModels) {
@@ -1821,6 +1890,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getSourceDocument(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1849,6 +1919,7 @@ public abstract class AbstractSession implements CoreSession,
         return versionModel;
     }
 
+    @Override
     public VersionModel getLastVersion(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1867,6 +1938,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getLastDocumentVersion(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1885,6 +1957,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentRef> getVersionsRefs(DocumentRef docRef)
             throws ClientException {
         try {
@@ -1901,6 +1974,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> getVersions(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1935,6 +2009,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<VersionModel> getVersionsForDocument(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -2119,6 +2194,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void checkOut(DocumentRef docRef) throws ClientException {
         Document doc;
         try {
@@ -2165,6 +2241,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean isCheckedOut(DocumentRef docRef) throws ClientException {
         assert null != docRef;
 
@@ -2178,6 +2255,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getVersion(String versionableId,
             VersionModel versionModel) throws ClientException {
         String id = versionModel.getId();
@@ -2198,6 +2276,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getDocumentWithVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
         String id = version.getId();
@@ -2367,6 +2446,7 @@ public abstract class AbstractSession implements CoreSession,
         return null;
     }
 
+    @Override
     public DocumentModelList getProxies(DocumentRef docRef,
             DocumentRef folderRef) throws ClientException {
         try {
@@ -2390,6 +2470,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException {
         try {
@@ -2419,12 +2500,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<String> getAvailableSecurityPermissions()
             throws ClientException {
         // XXX: add security check?
         return Arrays.asList(getSecurityService().getPermissionProvider().getPermissions());
     }
 
+    @Override
     public DataModel getDataModel(DocumentRef docRef, String schema)
             throws ClientException {
         try {
@@ -2440,6 +2523,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public Object getDataModelField(DocumentRef docRef, String schema,
             String field) throws ClientException {
         try {
@@ -2466,6 +2550,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public Object[] getDataModelFields(DocumentRef docRef, String schema,
             String[] fields) throws ClientException {
         try {
@@ -2493,6 +2578,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public SerializableInputStream getContentData(String key)
             throws ClientException {
         try {
@@ -2503,6 +2589,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String getStreamURI(String blobPropertyId) throws ClientException {
         String uri;
         try {
@@ -2521,6 +2608,7 @@ public abstract class AbstractSession implements CoreSession,
         return uri;
     }
 
+    @Override
     public String getCurrentLifeCycleState(DocumentRef docRef)
             throws ClientException {
         String currentLifeCycleState;
@@ -2540,6 +2628,7 @@ public abstract class AbstractSession implements CoreSession,
         return currentLifeCycleState;
     }
 
+    @Override
     public String getLifeCyclePolicy(DocumentRef docRef) throws ClientException {
         String lifecyclePolicy;
         try {
@@ -2558,6 +2647,7 @@ public abstract class AbstractSession implements CoreSession,
         return lifecyclePolicy;
     }
 
+    @Override
     public boolean followTransition(DocumentRef docRef, String transition)
             throws ClientException {
         boolean operationResult;
@@ -2598,6 +2688,7 @@ public abstract class AbstractSession implements CoreSession,
         return operationResult;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions(DocumentRef docRef)
             throws ClientException {
         Collection<String> allowedStateTransitions;
@@ -2618,6 +2709,7 @@ public abstract class AbstractSession implements CoreSession,
         return allowedStateTransitions;
     }
 
+    @Override
     public Object[] getDataModelsField(DocumentRef[] docRefs, String schema,
             String field) throws ClientException {
 
@@ -2635,6 +2727,7 @@ public abstract class AbstractSession implements CoreSession,
         return values;
     }
 
+    @Override
     public DocumentRef[] getParentDocumentRefs(DocumentRef docRef)
             throws ClientException {
 
@@ -2658,6 +2751,7 @@ public abstract class AbstractSession implements CoreSession,
         return docRefs.toArray(refs);
     }
 
+    @Override
     public Object[] getDataModelsFieldUp(DocumentRef docRef, String schema,
             String field) throws ClientException {
 
@@ -2669,6 +2763,7 @@ public abstract class AbstractSession implements CoreSession,
         return getDataModelsField(allRefs, schema, field);
     }
 
+    @Override
     public String getLock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2679,6 +2774,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void setLock(DocumentRef docRef, String key) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2695,6 +2791,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String unlock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2741,6 +2838,7 @@ public abstract class AbstractSession implements CoreSession,
         return false;
     }
 
+    @Override
     public void applyDefaultPermissions(String userOrGroupName)
             throws ClientException {
         if (null == userOrGroupName) {
@@ -2761,6 +2859,7 @@ public abstract class AbstractSession implements CoreSession,
         setACP(rootDocument.getRef(), acp, false);
     }
 
+    @Override
     public void destroy() {
         log.debug("Destroying core session ...");
         try {
@@ -2770,6 +2869,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel publishDocument(DocumentModel docToPublish,
             DocumentModel section) throws ClientException {
         return publishDocument(docToPublish, section, true);

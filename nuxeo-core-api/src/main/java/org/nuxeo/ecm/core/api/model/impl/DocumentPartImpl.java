@@ -70,6 +70,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     public void internalSetValue(Serializable value) throws PropertyException {
     }
 
+    @Override
     public boolean isContainer() {
         return true;
     }
@@ -79,6 +80,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         return schema;
     }
 
+    @Override
     public String getName() {
         return schema.getName();
     }
@@ -88,6 +90,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         return schema;
     }
 
+    @Override
     public Field getField() {
         throw new UnsupportedOperationException(
                 "Document parts are not bound to schema fields");
@@ -110,15 +113,18 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         }
     }
 
+    @Override
     public Map<String, Serializable> exportValues() throws PropertyException {
         ValueExporter exporter = new ValueExporter();
         return exporter.run(this);
     }
 
+    @Override
     public void importValues(Map<String, Serializable> values) throws PropertyException {
         init((Serializable) values);
     }
 
+    @Override
     public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
         arg = visitor.visit(this, arg);
         if (arg != null) {
@@ -126,18 +132,22 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         }
     }
 
+    @Override
     public Property createProperty(Property parent, Field field) {
         return createProperty(parent, field, 0);
     }
 
+    @Override
     public Property createProperty(Property parent, Field field, int flags) {
         return factory.createProperty(parent, field, flags);
     }
 
+    @Override
     public PropertyDiff exportDiff() {
         return null;
     }
 
+    @Override
     public void importDiff(PropertyDiff diff) {
     }
 

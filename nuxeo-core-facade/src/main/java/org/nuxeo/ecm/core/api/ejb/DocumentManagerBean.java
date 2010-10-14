@@ -221,6 +221,7 @@ public class DocumentManagerBean extends AbstractSession implements
         return session;
     }
 
+    @Override
     public boolean supportsTags(String repositoryName) throws ClientException {
         try {
             Repository repo = NXCore.getRepository(repositoryName);
@@ -231,6 +232,7 @@ public class DocumentManagerBean extends AbstractSession implements
         }
     }
 
+    @Override
     public boolean supportsTags() throws ClientException {
         if (supportsTags != null) {
             return supportsTags.booleanValue();
@@ -246,6 +248,7 @@ public class DocumentManagerBean extends AbstractSession implements
         return repo.getSession(context);
     }
 
+    @Override
     public boolean isStateSharedByAllThreadSessions() {
         // we have an underlying JCA pool that shares state for all connections
         // in the same thread

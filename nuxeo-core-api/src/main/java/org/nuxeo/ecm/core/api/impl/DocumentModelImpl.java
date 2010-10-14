@@ -331,6 +331,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.sourceId = sourceId;
     }
 
+    @Override
     public DocumentType getDocumentType() {
         return type.get();
     }
@@ -342,6 +343,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @throws ClientException
      * @see DocumentModel#getTitle()
      */
+    @Override
     public String getTitle() throws ClientException {
         String title = (String) getProperty("dublincore", "title");
         if (title != null) {
@@ -354,14 +356,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return id;
     }
 
+    @Override
     public String getSessionId() {
         return sid;
     }
 
+    @Override
     public DocumentRef getRef() {
         return ref;
     }
 
+    @Override
     public DocumentRef getParentRef() {
         if (parentRef == null && path != null) {
             if (path.isAbsolute()) {
@@ -373,6 +378,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return parentRef;
     }
 
+    @Override
     public CoreSession getCoreSession() {
         if (sid == null) {
             return null;
@@ -505,6 +511,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
+    @Override
     public DataModel getDataModel(String schema) throws ClientException {
         DataModel dataModel = dataModels.get(schema);
         if (dataModel == null) {
@@ -513,6 +520,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dataModel;
     }
 
+    @Override
     public Collection<DataModel> getDataModelsCollection() {
         return dataModels.values();
     }
@@ -521,18 +529,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dataModels.put(dataModel.getSchema(), dataModel);
     }
 
+    @Override
     public String[] getDeclaredSchemas() {
         return declaredSchemas;
     }
 
+    @Override
     public Set<String> getDeclaredFacets() {
         return declaredFacets;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         if (path != null) {
             return path.lastSegment();
@@ -540,6 +552,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
+    @Override
     public String getPathAsString() {
         if (path != null) {
             return path.toString();
@@ -547,6 +560,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
+    @Override
     public Map<String, Object> getProperties(String schemaName)
             throws ClientException {
         DataModel dm = getDataModel(schemaName);
@@ -563,6 +577,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @return Object
      * @see DocumentModel#getProperty(String, String)
      */
+    @Override
     public Object getProperty(String schemaName, String name)
             throws ClientException {
         DataModel dm = dataModels.get(schemaName);
@@ -582,19 +597,23 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dm == null ? null : dm.getData(name);
     }
 
+    @Override
     public void setPathInfo(String parentPath, String name) {
         path = new Path(parentPath == null ? name : parentPath + '/' + name);
         ref = new PathRef(parentPath, name);
     }
 
+    @Override
     public String getLock() {
         return lock;
     }
 
+    @Override
     public boolean isLocked() {
         return lock != null;
     }
 
+    @Override
     public void setLock(String key) throws ClientException {
         CoreSession session = getCoreSession();
 
@@ -617,6 +636,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         lock = key;
     }
 
+    @Override
     public void unlock() throws ClientException {
         CoreSession session = getCoreSession();
         if (session != null) {
@@ -662,6 +682,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return version;
     }
 
+    @Override
     public ACP getACP() throws ClientException {
         if (!isACPLoaded) { // lazy load
             CoreSession session = getCoreSession();
@@ -682,6 +703,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return acp;
     }
 
+    @Override
     public void setACP(ACP acp, boolean overwrite) throws ClientException {
         CoreSession session = getCoreSession();
         if (session != null) {
@@ -703,6 +725,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         isACPLoaded = false;
     }
 
+    @Override
     public String getType() {
         // TODO there are some DOcumentModel impl like DocumentMessageImpl which
         // use null types and extend this impl which is wrong - fix this -> type
@@ -710,6 +733,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return type != null ? type.getName() : null;
     }
 
+    @Override
     public void setProperties(String schemaName, Map<String, Object> data)
             throws ClientException {
         DataModel dm = getDataModel(schemaName);
@@ -718,6 +742,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public void setProperty(String schemaName, String name, Object value)
             throws ClientException {
         DataModel dm = getDataModel(schemaName);
@@ -726,6 +751,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public boolean hasSchema(String schema) {
         if (type == null) {
             return false;
@@ -735,6 +761,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dt == null ? false : dt.hasSchema(schema);
     }
 
+    @Override
     public boolean hasFacet(String facet) {
         if (declaredFacets != null) {
             return declaredFacets.contains(facet);
@@ -742,10 +769,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return false;
     }
 
+    @Override
     public Path getPath() {
         return path;
     }
 
+    @Override
     public DataModelMap getDataModels() {
         return dataModels;
     }
@@ -756,14 +785,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         other.dataModels = dataModels;
     }
 
+    @Override
     public boolean isFolder() {
         return hasFacet("Folderish");
     }
 
+    @Override
     public boolean isVersionable() {
         return hasFacet("Versionable");
     }
 
+    @Override
     public boolean isDownloadable() throws ClientException {
         if (hasFacet("Downloadable")) {
             // XXX find a better way to check size that does not depend on the
@@ -776,6 +808,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return false;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> itf) {
         T facet = (T) getAdapters().get(itf);
@@ -800,6 +833,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return adapters;
     }
 
+    @Override
     public <T> T getAdapter(Class<T> itf, boolean refreshCache) {
         T facet;
 
@@ -841,6 +875,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null;
     }
 
+    @Override
     public boolean followTransition(String transition) throws ClientException {
         CoreSession session = getCoreSession();
         boolean res = false;
@@ -867,6 +902,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return res;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions()
             throws ClientException {
         Collection<String> allowedStateTransitions = new ArrayList<String>();
@@ -886,6 +922,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return allowedStateTransitions;
     }
 
+    @Override
     public String getCurrentLifeCycleState() throws ClientException {
         if (currentLifeCycleState != null) {
             return currentLifeCycleState;
@@ -911,6 +948,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return currentLifeCycleState;
     }
 
+    @Override
     public String getLifeCyclePolicy() throws ClientException {
         if (lifeCyclePolicy != null) {
             return lifeCyclePolicy;
@@ -932,14 +970,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return lifeCyclePolicy;
     }
 
+    @Override
     public boolean isVersion() {
         return (flags & F_VERSION) != 0;
     }
 
+    @Override
     public boolean isProxy() {
         return (flags & F_PROXY) != 0;
     }
 
+    @Override
     public boolean isImmutable() {
         return (flags & F_IMMUTABLE) != 0;
     }
@@ -968,26 +1009,32 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public ScopedMap getContextData() {
         return contextData;
     }
 
+    @Override
     public Serializable getContextData(ScopeType scope, String key) {
         return contextData.getScopedValue(scope, key);
     }
 
+    @Override
     public void putContextData(ScopeType scope, String key, Serializable value) {
         contextData.putScopedValue(scope, key, value);
     }
 
+    @Override
     public Serializable getContextData(String key) {
         return contextData.getScopedValue(key);
     }
 
+    @Override
     public void putContextData(String key, Serializable value) {
         contextData.putScopedValue(key, value);
     }
 
+    @Override
     public void copyContextData(DocumentModel otherDocument) {
         ScopedMap otherMap = otherDocument.getContextData();
         if (otherMap != null) {
@@ -995,6 +1042,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
         String[] schemas = sourceDoc.getDeclaredSchemas();
         declaredSchemas = schemas == null ? null : schemas.clone();
@@ -1099,6 +1147,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return cloneDataModel(mgr.getSchema(data.getSchema()), data);
     }
 
+    @Override
     public String getCacheKey() throws ClientException {
         // UUID - sessionId
         String key = id + '-' + sid + '-' + getPathAsString();
@@ -1111,14 +1160,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return key;
     }
 
+    @Override
     public String getRepositoryName() {
         return repositoryName;
     }
 
+    @Override
     public String getSourceId() {
         return sourceId;
     }
 
+    @Override
     public String getVersionLabel() {
         return (String) contextData.getScopedValue("version.label");
     }
@@ -1128,6 +1180,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     // TODO: id is schema.field and not prefix:field
+    @Override
     public void prefetchProperty(String id, Object value) {
         if (prefetch == null) {
             prefetch = new HashMap<String, Serializable>();
@@ -1136,10 +1189,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         prefetch.put(id, value == null ? Null.VALUE : sValue);
     }
 
+    @Override
     public void prefetchCurrentLifecycleState(String lifecycle) {
         currentLifeCycleState = lifecycle;
     }
 
+    @Override
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
         this.lifeCyclePolicy = lifeCyclePolicy;
     }
@@ -1156,6 +1211,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         flags = 0L;
     }
 
+    @Override
     public long getFlags() {
         return flags;
     }
@@ -1220,10 +1276,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return buf.toString();
     }
 
+    @Override
     public Map<String, Serializable> getPrefetch() {
         return prefetch;
     }
 
+    @Override
     public <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException {
 
@@ -1244,10 +1302,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public boolean isLifeCycleLoaded() {
         return currentLifeCycleState != null;
     }
 
+    @Override
     public DocumentPart getPart(String schema) throws ClientException {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
@@ -1256,6 +1316,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return null; // TODO thrown an exception?
     }
 
+    @Override
     public DocumentPart[] getParts() throws ClientException {
         DocumentType type;
         try {
@@ -1275,6 +1336,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return parts;
     }
 
+    @Override
     public Property getProperty(String xpath) throws ClientException {
         Path path = new Path(xpath);
         if (path.segmentCount() == 0) {
@@ -1328,11 +1390,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return part.resolvePath(path.toString());
     }
 
+    @Override
     public Serializable getPropertyValue(String path) throws PropertyException,
             ClientException {
         return getProperty(path).getValue();
     }
 
+    @Override
     public void setPropertyValue(String path, Serializable value)
             throws PropertyException, ClientException {
         getProperty(path).setValue(value);
@@ -1382,6 +1446,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return dm;
     }
 
+    @Override
     public void reset() {
         if (dataModels != null) {
             dataModels.clear();
@@ -1395,10 +1460,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         lifeCyclePolicy = null;
     }
 
+    @Override
     public void refresh() throws ClientException {
         refresh(REFRESH_DEFAULT, null);
     }
 
+    @Override
     public void refresh(int refreshFlags, String[] schemas)
             throws ClientException {
         if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
