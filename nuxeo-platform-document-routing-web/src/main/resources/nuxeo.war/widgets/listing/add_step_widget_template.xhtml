@@ -1,0 +1,24 @@
+<f:subview id="#{widget.id}"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+
+  <div>
+    <a4j:commandLink id="before_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion" 
+      onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+      value ="#{messages['command.add.routeelement.before']}" />
+  </div>
+
+  <div>
+    <a4j:commandLink id="in_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion" rendered="#{field_1}"
+      onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+      value ="#{messages['command.add.routeelement.in']}" />
+  </div>
+
+  <div>
+    <a4j:commandLink  id="after_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion"
+    onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'after';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
+    value ="#{messages['command.add.routeelement.after']}" />
+  </div>
+
+</f:subview>
