@@ -42,7 +42,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- * This class starts up an embedded server with the Nuxeo services.
+ * Starts up an embedded server with the Nuxeo services.
  */
 public class Server {
 
@@ -69,7 +69,7 @@ public class Server {
                         + "%sapplication.wadl\nHit Ctrl-C to stop it...",
                 UriBuilder.fromUri(BASE_URI).port(PORT).build()));
         try {
-            Thread.sleep(Integer.MAX_VALUE);
+            Thread.sleep(Long.MAX_VALUE);
         } finally {
             System.out.println("Stopping grizzly...");
             stopServer();
@@ -93,21 +93,16 @@ public class Server {
         // deploy this project's bundles + contribs
         osgi.deployBundle(Constants.BUNDLE_NAME);
 
-        if (System.getenv("BT") != null) {
-            osgi.deployContrib(Constants.BUNDLE_NAME,
-                    "config/default-repository-config-bt.xml");
-        } else {
-            osgi.deployContrib(Constants.BUNDLE_NAME,
-                    "config/default-repository-config.xml");
-        }
-        osgi.deployContrib(Constants.BUNDLE_NAME,
+        osgi.deployContrib(Constants.TEST_BUNDLE_NAME,
+                "config/default-repository-config.xml");
+        osgi.deployContrib(Constants.TEST_BUNDLE_NAME,
                 "config/platform-config.xml");
 
         setupTestRepo();
 
-        osgi.deployContrib(Constants.BUNDLE_NAME,
+        osgi.deployContrib(Constants.TEST_BUNDLE_NAME,
                 "config/authentication-config.xml");
-        osgi.deployContrib(Constants.BUNDLE_NAME,
+        osgi.deployContrib(Constants.TEST_BUNDLE_NAME,
                 "config/login-config.xml");
     }
 

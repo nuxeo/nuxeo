@@ -1,20 +1,18 @@
 package org.nuxeo.ecm.webdav.resource;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MiscTest extends Assert {
+public class MiscTest {
 
     @Test
     public void testIf() throws Exception {
@@ -34,10 +32,12 @@ public class MiscTest extends Assert {
     }
 
     @Test
-    public void testUri() throws URISyntaxException, UnsupportedEncodingException {
+    public void testUri() throws Exception {
         URI uri;
         uri = new URI(URLEncoder.encode("/ toto /", "UTF8"));
+        assertEquals("%2F+toto+%2F", uri.toASCIIString());
         uri = new URI(URLEncoder.encode("workspaces/Desktop/.xvpics/Photo 16.jpg", "UTF8"));
+        assertEquals("workspaces%2FDesktop%2F.xvpics%2FPhoto+16.jpg", uri.toASCIIString());
     }
 
 }

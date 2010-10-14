@@ -20,6 +20,9 @@ import org.junit.Test;
 
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static HttpClient client;
@@ -28,7 +31,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
     public static void setUp() {
         // Setup code
         HostConfiguration hostConfig = new HostConfiguration();
-        hostConfig.setHost("localhost", LitmusTest.port);
+        hostConfig.setHost("localhost", PORT);
 
         HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpConnectionManagerParams params = new HttpConnectionManagerParams();

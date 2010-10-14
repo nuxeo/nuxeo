@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,10 +28,13 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Tests that the runtime starts correctly and we can play with the core.
  */
-public class RuntimeTest extends Assert {
+public class RuntimeTest {
 
     @Before
     public void setUp() throws Exception {

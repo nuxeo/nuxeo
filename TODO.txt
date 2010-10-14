@@ -3,3 +3,10 @@ TODO
 
 - Objects without a "file" property should be mapped to a file of zero length.
 
+- Create a Response wrapper that sloses the core session when the response has
+  been sent and commits/rollbacks the transaction ?
+
+- Or add a try/finally to the RootResource?
+
+- Use nuxeo.runtime.transaction.TransactionHelper (startTra...
+  setTransactionRollbackOnly...) & remove the request-controller-contrib.

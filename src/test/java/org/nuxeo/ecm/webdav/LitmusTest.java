@@ -23,7 +23,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.junit.Test;
-import org.nuxeo.ecm.webdav.AbstractServerTest;
+
+import static org.junit.Assert.assertEquals;
 
 public class LitmusTest extends AbstractServerTest {
 
@@ -32,10 +33,6 @@ public class LitmusTest extends AbstractServerTest {
      */
     @Test
     public void testWithLitmus() throws Exception {
-        // XXX: temporary while test suite doesn't pass fully
-        if (System.getenv("BT") != null) {
-            return;
-        }
         Process p = Runtime.getRuntime().exec("litmus -k " + ROOT_URI);
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String s;

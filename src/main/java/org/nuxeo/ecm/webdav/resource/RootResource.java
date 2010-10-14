@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import java.security.Principal;
 
 @Path("dav")
@@ -80,6 +82,11 @@ public class RootResource {
         DocumentRef ref = new PathRef("/" + path);
         if (!session.exists(ref)) {
             return new UnknownResource(path, request);
+        }
+
+        // Send 401 error if not authorised to read.
+        if (!session.hasPermission(ref, SecurityConstants.READ)) {
+            return Response.status(401);
         }
 
         DocumentModel doc = session.getDocument(ref);

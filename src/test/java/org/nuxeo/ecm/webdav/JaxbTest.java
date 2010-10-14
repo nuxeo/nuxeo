@@ -9,10 +9,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 /**
  * Tests that some sample files are properly parsed by JAXB.
  */
-public class JaxbTest extends Assert {
+public class JaxbTest {
 
     @Test
     public void testPropFind() throws Exception {

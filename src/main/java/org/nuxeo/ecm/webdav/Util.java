@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -78,7 +79,7 @@ public class Util {
                 LockTokenSubmitted.class, LockType.class, MultiStatus.class, NoConflictingLock.class,
                 NoExternalEntities.class, Owner.class, PreservedLiveProperties.class, Prop.class, PropertyUpdate.class,
                 PropFind.class, PropFindFiniteDepth.class, PropName.class, PropStat.class, Remove.class,
-                ResourceType.class, javax.ws.rs.core.Response.class, ResponseDescription.class, Set.class, Shared.class, Status.class,
+                ResourceType.class, Response.class, ResponseDescription.class, Set.class, Shared.class, Status.class,
                 SupportedLock.class, TimeOut.class, Write.class});
     }
 

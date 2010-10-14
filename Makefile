@@ -1,6 +1,6 @@
 	APPS=$(HOME)/apps
-	JBOSS=$(APPS)/nuxeo-dm-jboss-pg-dav
-	TOMCAT=$(APPS)/nuxeo-dm-tomcat-pg-dav
+	JBOSS=$(APPS)/nuxeo-dm-jboss-dav
+	TOMCAT=$(APPS)/nuxeo-dm-tomcat-dav
 	JETTY=$(APPS)/nuxeo-dm-jetty
 
 	EAR=$(JBOSS)/server/default/deploy/nuxeo.ear
