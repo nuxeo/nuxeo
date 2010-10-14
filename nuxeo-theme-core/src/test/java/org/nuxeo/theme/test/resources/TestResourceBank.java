@@ -56,27 +56,77 @@ public class TestResourceBank extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testBankImport() throws IOException {
+    public void testGetBankNames() throws IOException {
         assertEquals(BANK_NAME, BankManager.getBankNames().get(0));
+    }
 
+    public void testGetCollections() throws IOException {
         assertEquals(COLLECTION_NAME,
                 BankManager.getCollections(BANK_NAME, "style").get(0));
         assertEquals(COLLECTION_NAME,
                 BankManager.getCollections(BANK_NAME, "preset").get(0));
         assertEquals(COLLECTION_NAME,
                 BankManager.getCollections(BANK_NAME, "image").get(0));
+    }
 
+    public void testGetBankLogoFile() throws IOException {
         assertTrue(BankManager.getBankLogoFile(BANK_NAME).getPath().endsWith(
                 "/test/logo.png"));
+    }
 
+    public void testGetImageFile() throws IOException {
         assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
                 "emoticon_smile.png").getPath().endsWith(
                 "/test/image/Test/emoticon_smile.png"));
+    }
 
+    public void testGetStyleInfo() throws IOException {
         Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, "style",
                 COLLECTION_NAME).get("test.css");
         assertEquals(styleInfo.get("description"), "Test skin");
         assertEquals(styleInfo.get("skin"), true);
+    }
+
+    public void testGetStylePreviewFile() throws IOException {
+        assertEquals(
+                "test.png",
+                BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
+                        "test.css").getName());
+        assertEquals(
+                "style-preview.png",
+                BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
+                        "style-with-preview.css").getName());
+    }
+
+    public void testGetStylePreviewFileNotFound() throws IOException {
+
+        boolean thrown = false;
+        try {
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
+                    "style-not-found.css");
+        } catch (IOException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
+        thrown = false;
+        try {
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
+                    "skin-without-preview.css");
+        } catch (IOException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
+        thrown = false;
+        try {
+            BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
+                    "style-without-preview.css");
+        } catch (IOException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+
     }
 
     public void testCheckFilePath() {

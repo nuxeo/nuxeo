@@ -297,7 +297,12 @@ public class Main extends ModuleRoot {
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }
-        String content = BankUtils.getFileContent(file);
+        String content;
+        try {
+            content = BankUtils.getFileContent(file);
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
         return getTemplate("style.ftl").arg("content", content).arg("bank",
                 bank).arg("resource", resource).arg("collection", collection).arg(
                 "action", action);
@@ -312,9 +317,6 @@ public class Main extends ModuleRoot {
         try {
             file = BankManager.getStylePreviewFile(bank, collection, resource);
         } catch (IOException e) {
-            throw new ThemeBankException(e.getMessage(), e);
-        }
-        if (file == null || !file.exists()) {
             return noPreview();
         }
         String ext = FileUtils.getFileExtension(path);
@@ -385,7 +387,12 @@ public class Main extends ModuleRoot {
 
         StringBuilder sb = new StringBuilder();
         for (File f : file.listFiles()) {
-            content = BankUtils.getFileContent(f);
+            try {
+                content = BankUtils.getFileContent(f);
+            } catch (IOException e) {
+                log.warn("Could not read file: " + f.getAbsolutePath());
+                continue;
+            }
             content = PaletteParser.renderPaletteAsCsv(content.getBytes(),
                     f.getName());
             sb.append(content);
@@ -410,16 +417,21 @@ public class Main extends ModuleRoot {
         }
         Properties properties = new Properties();
         for (File f : file.listFiles()) {
-            String content = BankUtils.getFileContent(f);
+            String content;
+            try {
+                content = BankUtils.getFileContent(f);
+            } catch (IOException e) {
+                log.warn("Could not read file: " + f.getAbsolutePath());
+                continue;
+            }
             try {
                 properties.putAll(PaletteParser.parse(content.getBytes(),
                         f.getName()));
             } catch (PaletteIdentifyException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.warn("Could not identify palette type: "
+                        + f.getAbsolutePath());
             } catch (PaletteParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.warn("Could not parse palette: " + f.getAbsolutePath());
             }
         }
         return getTemplate("preset.ftl").arg("properties", properties).arg(

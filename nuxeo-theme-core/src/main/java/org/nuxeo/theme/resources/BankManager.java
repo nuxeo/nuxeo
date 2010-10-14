@@ -119,12 +119,17 @@ public class BankManager {
             throw new IOException("Style preview not found: " + resource);
         }
         Map value = (Map) info.get(resource);
-        if (value.containsKey("preview")) {
+        if (!value.containsKey("preview")) {
             throw new IOException("Style preview not found: " + resource);
         }
         String preview = (String) value.get("preview");
         String path = String.format("%s/style/%s/%s", bank, collection, preview);
-        return getFile(path);
+
+        File file = getFile(path);
+        if (!file.exists()) {
+            throw new IOException("Style preview not found: " + resource);
+        }
+        return file;
     }
 
     public static File getInfoFile(String bank, String typeName,

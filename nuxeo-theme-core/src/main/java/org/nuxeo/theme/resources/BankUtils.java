@@ -13,16 +13,11 @@ public class BankUtils {
 
     final static Pattern filenamePattern = Pattern.compile("^\\p{IsAlnum}+[a-z0-9_\\-\\. ]*\\p{IsAlnum}+$|^\\p{IsAlnum}$");
 
-    public static String getFileContent(File file) {
-        String content = "";
-        if (file.exists()) {
-            try {
-                content = FileUtils.readFile(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public static String getFileContent(File file) throws IOException {
+        if (!file.exists()) {
+            throw new IOException("File not found: " + file.getAbsolutePath());
         }
-        return content;
+        return FileUtils.readFile(file);
     }
 
     public static String getDomId(String id) {
