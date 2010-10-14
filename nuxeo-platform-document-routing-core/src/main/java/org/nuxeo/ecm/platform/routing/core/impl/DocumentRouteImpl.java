@@ -40,5 +40,10 @@ public class DocumentRouteImpl extends
         super(doc, runner);
     }
 
+    @Override
+    public boolean canUndoStep(CoreSession session) {
+        return false;
+    }
+
 
 }

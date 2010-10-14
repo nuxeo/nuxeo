@@ -12,6 +12,9 @@
     <chain id="simpleRefuse">
       <operation id="Document.Routing.Resume.Step" />
     </chain>
+    <chain id="simpleUndo">
+      <operation id="Document.Routing.BackToReady" />
+    </chain>
   </extension>
 
 </component>

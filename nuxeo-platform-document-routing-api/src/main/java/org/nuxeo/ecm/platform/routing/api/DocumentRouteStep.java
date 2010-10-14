@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 /**
  * A Step. The element of the route that will process the documents.
  *
@@ -23,4 +25,9 @@ package org.nuxeo.ecm.platform.routing.api;
  *
  */
 public interface DocumentRouteStep extends DocumentRouteElement {
+
+    /**
+     * Undo this step. This operation run the undo operation on this element.
+     */
+    DocumentRouteStep undo(CoreSession session);
 }

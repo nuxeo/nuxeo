@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener;
 
 /**
  * An element of a {@link DocumentRoute}
@@ -44,7 +45,7 @@ public interface DocumentRouteElement extends Serializable {
      *
      */
     enum ElementLifeCycleTransistion {
-        toValidated, toReady, toRunning, toDone
+        toValidated, toReady, toRunning, toDone, backToReady
     }
 
     /**
@@ -122,13 +123,18 @@ public interface DocumentRouteElement extends Serializable {
     void run(CoreSession session);
 
     /**
-     * Validate this element.
+     * Set this element to the validate state and put it in read only mode.
      *
      * @param session
      * @throws ClientException
      */
     void validate(CoreSession session) throws ClientException;
 
+    /**
+     * Get the underlying document representing this element.
+     *
+     * @return
+     */
     DocumentModel getDocument();
 
     /**
@@ -138,28 +144,83 @@ public interface DocumentRouteElement extends Serializable {
      */
     void save(CoreSession session);
 
+    /**
+     * set this element as validated.
+     */
     void setValidated(CoreSession session);
 
+    /**
+     * set this element as ready.
+     */
     void setReady(CoreSession session);
 
+    /**
+     * set this element as running.
+     */
     void setRunning(CoreSession session);
 
+    /**
+     * set this element as done.
+     */
     void setDone(CoreSession session);
 
+    /**
+     * remove write rights to everyone but the administrators.
+     */
     void setReadOnly(CoreSession session) throws ClientException;
 
+    /**
+     * make this element follow a transition.
+     *
+     * @param transition the followed transition.
+     * @param session the session used to follow the transition.
+     * @param recursive If this element has children, do we recurse the follow
+     *            transition.
+     * @see BulkLifeCycleChangeListener
+     */
     void followTransition(ElementLifeCycleTransistion transition,
             CoreSession session, boolean recursive);
 
+    /**
+     * If this session can validate the step.
+     */
     boolean canValidateStep(CoreSession session);
 
+    /**
+     * make this user or group a validator for this step.
+     */
     void setCanValidateStep(CoreSession session, String userOrGroup);
 
+    /**
+     * If this session can update this step.
+     */
     boolean canUpdateStep(CoreSession session);
 
+    /**
+     * make this user or group a step updater.
+     */
     void setCanUpdateStep(CoreSession session, String userOrGroup);
 
+    /**
+     * If this session can delete this step.
+     */
     boolean canDeleteStep(CoreSession session);
 
+    /**
+     * If this step can be undone. Default is to allow undoing only if the
+     * parent folder is running.
+     */
+    boolean canUndoStep(CoreSession session);
+
+    /**
+     * make this user or group step deleter.
+     */
     void setCanDeleteStep(CoreSession session, String userOrGroup);
+
+    /**
+     * Set the step back to the ready state from running or done. This method
+     * only modify the step state, it does not run any other action (such as
+     * undoing the step action)
+     */
+    void backToReady(CoreSession session);
 }

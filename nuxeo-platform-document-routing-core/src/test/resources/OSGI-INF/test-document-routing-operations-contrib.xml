@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation class="org.nuxeo.ecm.platform.routing.test.StepRunningOperation"/>
+    <operation class="org.nuxeo.ecm.platform.routing.test.StepUndoOperation"/>
   </extension>
 
 </component>

@@ -112,7 +112,23 @@ public interface DocumentRoutingConstants {
          * "Done" state.The session used is unrestricted. The element key is the
          * step.
          */
-        afterStepRunning
+        afterStepRunning,
+        /**
+         * before a step is put back to ready state.
+         */
+        beforeStepBackToReady,
+        /**
+         * after a step was put back to ready state.
+         */
+        afterStepBackToReady,
+        /**
+         * before the undo operation is run on the step.
+         */
+        beforeUndoingStep,
+        /**
+         * after the undo operation is run on the step.
+         */
+        afterUndoingStep
     }
 
     String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";

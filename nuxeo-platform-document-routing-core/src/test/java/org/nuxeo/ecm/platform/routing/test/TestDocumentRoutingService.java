@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -84,16 +85,16 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 1,
                 service.getDocumentRoutesForAttachedDocument(session,
                         doc1.getId()).size());
-        List<String> waiting = WaitingStepRuntimePersister.getStepIds();
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(2, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         assertFalse(routeInstance.isDone());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
@@ -108,6 +109,83 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                                                                * step
                                                                */,
                 CounterListener.getCounter());
+    }
+
+    public void testDocumentRouteWithStepBack() throws Exception {
+        CounterListener.resetCouner();
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        route = service.validateRouteModel(route, session);
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        session.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel,
+                doc1.getId(), session);
+        assertNotNull(routeInstance);
+        assertFalse(routeInstance.isDone());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        String firstStepId = waiting.get(0);
+        // run first step
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        // undo second step
+        String secondStepId = waiting.get(0);
+        DocumentRouteStep step = WaitingStepRuntimePersister.getStep(
+                secondStepId, session);
+        assertTrue(step.canUndoStep(session));
+        step = step.undo(session);
+        assertTrue(step.isReady());
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        // restart route
+        routeInstance.run(session);
+        // undo second and first step
+        DocumentRouteStep firstStep = WaitingStepRuntimePersister.getStep(
+                firstStepId, session);
+        DocumentRouteStep secondStep = WaitingStepRuntimePersister.getStep(
+                secondStepId, session);
+        secondStep = secondStep.undo(session);
+        firstStep = firstStep.undo(session);
+        assertTrue(secondStep.isReady());
+        assertTrue(firstStep.isReady());
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        // restart route
+        routeInstance.run(session);
+        // run first step
+        WaitingStepRuntimePersister.resumeStep(firstStepId, session);
+        // run second step
+        WaitingStepRuntimePersister.resumeStep(secondStepId, session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(2, waiting.size());
+        // run third (parallel) step
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        assertFalse(routeInstance.isDone());
+        // run fourth (parallel) step
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        assertEquals(0, waiting.size());
+        routeInstance = session.getDocument(
+                routeInstance.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(routeInstance.isDone());
+        assertFalse(routeInstance.canUndoStep(session));
     }
 
     public void testDocumentRouteWithWaitStateAndSecurity() throws Exception {
@@ -142,7 +220,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         // jack checks he can't do anything on it
         session = openSessionAs("jack");
         assertFalse(routeInstance.canValidateStep(session));
-        List<String> waiting = WaitingStepRuntimePersister.getStepIds();
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         boolean exception = false;
         try {// jacks fails to resume the step
@@ -156,13 +234,13 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         // jack finishes the route
         session = openSessionAs("bob");
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(2, waiting.size());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
-        waiting = WaitingStepRuntimePersister.getStepIds();
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         assertFalse(routeInstance.isDone());
         WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
@@ -197,8 +275,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 folder.getPathAsString());
         session.save();
         assertNotNull(route);
-        route = service.validateRouteModel(route.getAdapter(DocumentRoute.class),
-                session).getDocument();
+        route = service.validateRouteModel(
+                route.getAdapter(DocumentRoute.class), session).getDocument();
         session.save();
         route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());

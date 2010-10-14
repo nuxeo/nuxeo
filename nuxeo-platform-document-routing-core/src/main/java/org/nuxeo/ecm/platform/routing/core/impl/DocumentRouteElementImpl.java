@@ -291,7 +291,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public void setCanUpdateStep(CoreSession session, String userOrGroup) {
-        setPermissionOnDocument(session, userOrGroup, SecurityConstants.WRITE_PROPERTIES);
+        setPermissionOnDocument(session, userOrGroup,
+                SecurityConstants.WRITE_PROPERTIES);
     }
 
     @Override
@@ -302,5 +303,58 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public void setCanDeleteStep(CoreSession session, String userOrGroup) {
         setPermissionOnDocument(session, userOrGroup, SecurityConstants.REMOVE);
+    }
+
+    @Override
+    public void backToReady(CoreSession session) {
+        EventFirer.fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.beforeStepBackToReady.name());
+        followTransition(ElementLifeCycleTransistion.backToReady, session,
+                false);
+        EventFirer.fireEvent(session, this, null,
+                DocumentRoutingConstants.Events.afterStepBackToReady.name());
+    }
+
+    @Override
+    public DocumentRouteStep undo(CoreSession session) {
+        runner.undo(session, this);
+        try {
+            document = session.getDocument(document.getRef());
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+        return this;
+    }
+
+    @Override
+    public boolean canUndoStep(CoreSession session) {
+        try {
+            GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(
+                    session);
+            runner.runUnrestricted();
+            return runner.isRunning();
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected class GetIsParentRunningUnrestricted extends
+            UnrestrictedSessionRunner {
+        public GetIsParentRunningUnrestricted(CoreSession session) {
+            super(session);
+        }
+
+        protected boolean isRunning;
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel parent = session.getDocument(document.getParentRef());
+            DocumentRouteElement parentElement = parent.getAdapter(DocumentRouteElement.class);
+            isRunning = parentElement.isRunning();
+        }
+
+        public boolean isRunning() {
+            return isRunning;
+        }
     }
 }

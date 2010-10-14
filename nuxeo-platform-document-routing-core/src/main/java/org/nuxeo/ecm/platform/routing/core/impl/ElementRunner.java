@@ -20,11 +20,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
- * Runner responsible to run an element of a route.
+ * Runner responsible to run or undo an element of a route.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
 public interface ElementRunner {
     void run(CoreSession session, DocumentRouteElement element);
+
+    void undo(CoreSession session, DocumentRouteElement element);
 }

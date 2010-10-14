@@ -18,6 +18,9 @@
         <transition name="toDone" destinationState="done">
           <description>the element finishes</description>
         </transition>
+        <transition name="backToReady" destinationState="ready">
+          <description>the element finishes</description>
+        </transition>
       </transitions>
       <states>
         <state name="draft" description="Default state" initial="true">
@@ -38,10 +41,12 @@
         <state name="running" description="The element is running">
           <transitions>
             <transition>toDone</transition>
+            <transition>backToReady</transition>
           </transitions>
         </state>
         <state name="done" description="The element is done">
           <transitions>
+            <transition>backToReady</transition>
           </transitions>
         </state>
       </states>

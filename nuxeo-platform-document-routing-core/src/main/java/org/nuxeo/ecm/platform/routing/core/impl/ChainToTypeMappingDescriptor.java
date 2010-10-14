@@ -31,11 +31,25 @@ public class ChainToTypeMappingDescriptor {
     @XNode("@chainId")
     protected String chainId;
 
+    @XNode("@undoChainIdFromRunning")
+    protected String undoChainIdFromRunning;
+
+    @XNode("@undoChainIdFromDone")
+    protected String undoChainIdFromDone;
+
     public String getDocumentType() {
         return documentType;
     }
 
     public String getChainId() {
         return chainId;
+    }
+
+    public String getUndoChainIdFromRunning() {
+        return undoChainIdFromRunning;
+    }
+
+    public String getUndoChainIdFromDone() {
+        return undoChainIdFromDone;
     }
 }

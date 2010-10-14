@@ -83,6 +83,26 @@ public interface DocumentRoutingService {
     String getOperationChainId(String documentType);
 
     /**
+     * Return the operation chain to undo a step when the step is in running
+     * state. The document type should extend the DocumentRouteStep. Use the
+     * <code>chainsToType</code> extension point to contribute new mapping.
+     *
+     * @param documentType
+     * @return
+     */
+    String getUndoFromRunningOperationChainId(String documentType);
+
+    /**
+     * Return the operation chain to undo a step when the step is in done state.
+     * The document type should extend the DocumentRouteStep. Use the
+     * <code>chainsToType</code> extension point to contribute new mapping.
+     *
+     * @param documentType
+     * @return
+     */
+    String getUndoFromDoneOperationChainId(String documentType);
+
+    /**
      * Validates the given {@link DocumentRoute} model by changing its lifecycle
      * state and setting it and all its children in ReadOnly.
      *
@@ -135,4 +155,5 @@ public interface DocumentRoutingService {
      * if the user can validate a route.
      */
     boolean canUserValidateRoute(NuxeoPrincipal currentUser);
+
 }

@@ -81,4 +81,32 @@ public class StepElementRunner implements ElementRunner {
         }
     }
 
+    @Override
+    public void undo(CoreSession session, DocumentRouteElement element) {
+        EventFirer.fireEvent(session, element, null,
+                DocumentRoutingConstants.Events.beforeUndoingStep.name());
+        OperationContext context = new OperationContext(session);
+        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                element);
+        context.setInput(element.getAttachedDocuments(session));
+        String operationChainId;
+        String docType = element.getDocument().getType();
+        if (element.isDone()) {
+            operationChainId = getDocumentRoutingService().getUndoFromDoneOperationChainId(
+                    docType);
+        } else if (element.isRunning()) {
+            operationChainId = getDocumentRoutingService().getUndoFromRunningOperationChainId(
+                    docType);
+        } else {
+            throw new RuntimeException(
+                    "Trying to undo a step neither in done nor running state.");
+        }
+        try {
+            getAutomationService().run(context, operationChainId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        EventFirer.fireEvent(session, element, null,
+                DocumentRoutingConstants.Events.afterUndoingStep.name());
+    }
 }

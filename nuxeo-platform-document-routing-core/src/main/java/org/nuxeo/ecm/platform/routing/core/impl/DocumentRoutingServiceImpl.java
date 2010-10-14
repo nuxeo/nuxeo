@@ -58,6 +58,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     protected Map<String, String> typeToChain = new HashMap<String, String>();
 
+    protected Map<String, String> undoChainIdFromRunning = new HashMap<String, String>();
+
+    protected Map<String, String> undoChainIdFromDone = new HashMap<String, String>();
+
     protected DocumentRoutingPersister persister;
 
     protected DocumentRoutingEngineService getEngineService() {
@@ -74,6 +78,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
             ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
             typeToChain.put(desc.getDocumentType(), desc.getChainId());
+            undoChainIdFromRunning.put(desc.getDocumentType(),
+                    desc.getUndoChainIdFromRunning());
+            undoChainIdFromDone.put(desc.getDocumentType(),
+                    desc.getUndoChainIdFromDone());
         } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             persister = des.getKlass().newInstance();
@@ -135,6 +143,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public String getUndoFromRunningOperationChainId(String documentType) {
+        return undoChainIdFromRunning.get(documentType);
+    }
+
+    @Override
+    public String getUndoFromDoneOperationChainId(String documentType) {
+        return undoChainIdFromDone.get(documentType);
+    }
+
+    @Override
     public DocumentRoute validateRouteModel(final DocumentRoute routeModel,
             CoreSession userSession) throws ClientException {
         new UnrestrictedSessionRunner(userSession) {
@@ -146,7 +164,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 route.validate(session);
             }
         }.runUnrestricted();
-        return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(DocumentRoute.class);
+        return userSession.getDocument(routeModel.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
     }
 
     @Override

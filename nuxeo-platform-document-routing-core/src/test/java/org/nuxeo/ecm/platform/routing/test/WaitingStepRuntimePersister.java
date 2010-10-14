@@ -21,10 +21,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.platform.routing.api.ActionableObject;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
 
@@ -36,49 +33,47 @@ import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
  *
  */
 public class WaitingStepRuntimePersister {
-    protected static final List<String> ids = new ArrayList<String>();
+    protected static final List<String> runningSteps = new ArrayList<String>();
+
+    protected static final List<String> doneSteps = new ArrayList<String>();
 
     static public void addStepId(String id) {
-        if (ids.contains(id)) {
+        if (runningSteps.contains(id)) {
             throw new RuntimeException("Asking twice to wait on the same step.");
         }
-        ids.add(id);
+        runningSteps.add(id);
     }
 
-    static public List<String> getStepIds() {
-        return ids;
+    static public List<String> getRunningStepIds() {
+        return runningSteps;
+    }
+
+    static public DocumentRouteStep getStep(String id, CoreSession session)
+            throws ClientException {
+        return session.getDocument(new IdRef(id)).getAdapter(
+                DocumentRouteStep.class);
+    }
+
+    static public List<String> getDoneStepIds() {
+        return doneSteps;
     }
 
     static public void resumeStep(final String id, CoreSession session) {
-        if (!ids.contains(id)) {
+        if (!runningSteps.contains(id)) {
             throw new RuntimeException("Asking to resume a non peristed step.");
         }
-        new ActionableValidator(new ActionableObject() {
-            @Override
-            public String getValidateOperationChainId() {
-                return "simpleValidate";
-            }
+        ActionableValidator validator = new ActionableValidator(
+                new SimpleActionableObject(id), session);
+        validator.validate();
+        runningSteps.remove(id);
+        doneSteps.add(id);
+    }
 
-            @Override
-            public String getRefuseOperationChainId() {
-                return "simpleRefuse";
-            }
-
-            @Override
-            public DocumentRouteStep getDocumentRouteStep(CoreSession session) {
-                try {
-                    return session.getDocument(new IdRef(id)).getAdapter(
-                            DocumentRouteStep.class);
-                } catch (ClientException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public DocumentModelList getAttachedDocuments(CoreSession session) {
-                return new DocumentModelListImpl();
-            }
-        }, session).validate();
-        ids.remove(id);
+    /**
+     * @param stepId
+     */
+    public static void removeStepId(String stepId) {
+        runningSteps.remove(stepId);
+        doneSteps.remove(stepId);
     }
 }

@@ -5,6 +5,7 @@
     point="operations">
     <operation class="org.nuxeo.ecm.platform.routing.api.operation.ResumeStepOperation" />
     <operation class="org.nuxeo.ecm.platform.routing.api.operation.StepDoneOperation"/>
+    <operation class="org.nuxeo.ecm.platform.routing.api.operation.StepBackToReadyOperation"/>
   </extension>
 
 </component>

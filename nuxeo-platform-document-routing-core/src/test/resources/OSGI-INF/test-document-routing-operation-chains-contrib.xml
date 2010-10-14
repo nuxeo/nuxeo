@@ -6,6 +6,10 @@
     <chain id="setWaiting">
       <operation id="Document.Routing.Step.Waiting" />
     </chain>
+    <chain id="setUndo">
+      <operation id="Document.Routing.BackToReady" />
+      <operation id="Document.Routing.Step.Undo" />
+    </chain>
   </extension>
 
 </component>
