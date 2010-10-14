@@ -186,11 +186,13 @@ public class SmartNXQLQueryActions implements Serializable {
      * @param event the JSF event that will give an anchor on the JSF tree to
      *            find the target component.
      * @param newQuery the new query to set.
+     * @param rebuildSmartQuery if true, will rebuild the smart query
+     *            completely, otherwise will just set the query part on it.
      * @throws ClientException if target JSF component is not found in the JSF
      *             tree.
      */
-    protected void setQueryPart(ActionEvent event, String newQuery)
-            throws ClientException {
+    protected void setQueryPart(ActionEvent event, String newQuery,
+            boolean rebuildSmartQuery) throws ClientException {
         if (currentSmartQuery != null) {
             UIComponent component = event.getComponent();
             if (component == null) {
@@ -206,8 +208,12 @@ public class SmartNXQLQueryActions implements Serializable {
                 // set local value in case of validation error in ajax region
                 // when adding a new item to the query
                 queryPartComp.setValue(newQuery);
-                // rebuild smart query
-                initCurrentSmartQuery(newQuery, false);
+                if (rebuildSmartQuery) {
+                    // rebuild smart query
+                    initCurrentSmartQuery(newQuery, false);
+                } else {
+                    currentSmartQuery.setExistingQueryPart(newQuery);
+                }
                 if (Boolean.TRUE.equals(updateQueryPart)) {
                     // also set current query part in case user navigates
                     // somewhere else
@@ -230,7 +236,7 @@ public class SmartNXQLQueryActions implements Serializable {
     public void buildQueryPart(ActionEvent event) throws ClientException {
         if (currentSmartQuery != null) {
             String newQuery = currentSmartQuery.buildQuery();
-            setQueryPart(event, newQuery);
+            setQueryPart(event, newQuery, true);
         }
     }
 
@@ -240,7 +246,7 @@ public class SmartNXQLQueryActions implements Serializable {
      * @see #setQueryPart(ActionEvent, String)
      */
     public void clearQueryPart(ActionEvent event) throws ClientException {
-        setQueryPart(event, "");
+        setQueryPart(event, "", false);
     }
 
     protected String getCurrentQueryPart() {
@@ -281,10 +287,10 @@ public class SmartNXQLQueryActions implements Serializable {
         String currentQueryPart = getCurrentQueryPart();
         // lastQueryPart cannot be null
         if (!lastQueryPart.equals(currentQueryPart)) {
-            setQueryPart(event, lastQueryPart);
+            setQueryPart(event, lastQueryPart, false);
         } else if (history.size() > 0) {
             lastQueryPart = history.getLast();
-            setQueryPart(event, lastQueryPart);
+            setQueryPart(event, lastQueryPart, false);
             history.removeLast();
         }
         if (redoHistory != null) {
