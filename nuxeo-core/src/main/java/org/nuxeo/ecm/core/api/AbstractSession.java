@@ -40,6 +40,7 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Null;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -1628,14 +1629,8 @@ public abstract class AbstractSession implements CoreSession,
             removeNotifyOneDoc(doc);
 
         } catch (DocumentException e) {
-            try {
-                throw new ClientException("Failed to remove document "
-                        + doc.getUUID(), e);
-            } catch (DocumentException e2) {
-                log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and "
-                        + "even to get UUID " + doc.toString());
-            }
+            throw new ClientException("Failed to remove document "
+                    + doc.getUUID(), e);
         }
     }
 
@@ -1799,29 +1794,24 @@ public abstract class AbstractSession implements CoreSession,
      * <p>
      * Passed options are propagated to the checked out event.
      *
-     * @return the last version (that was just created)
+     * @return the last version
      */
     private DocumentModel createDocumentSnapshot(DocumentModel docModel,
             Document doc, Map<String, Serializable> options, boolean pendingSave)
             throws ClientException {
         DocumentRef docRef = docModel.getRef();
-        if (!isDirty(docRef) && getLastVersion(docRef) != null) {
-            log.debug("Document not dirty and has a last version "
-                    + "-> avoid creating a new version");
-            return null;
+        DocumentModel version;
+        if (!isDirty(docRef)
+                && (version = getLastDocumentVersion(docRef)) != null) {
+            return version;
         }
 
         // Do a checkin / checkout of the edited version
-        VersionModel newVersion = new VersionModelImpl();
-        String vlabel = generateVersionLabelFor(docRef);
-        newVersion.setLabel(vlabel);
-
-        checkIn(docRef, newVersion);
+        version = checkIn(docRef, (String) null);
         log.debug("doc checked in " + docModel.getTitle());
         checkOut(docModel, doc, options, pendingSave);
         log.debug("doc checked out " + docModel.getTitle());
-
-        return getDocumentWithVersion(docRef, newVersion);
+        return version;
     }
 
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
@@ -1849,6 +1839,16 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    protected VersionModel getVersionModel(DocumentVersion version)
+            throws DocumentException {
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setId(version.getUUID());
+        versionModel.setCreated(version.getCreated());
+        versionModel.setDescription(version.getDescription());
+        versionModel.setLabel(version.getLabel());
+        return versionModel;
+    }
+
     public VersionModel getLastVersion(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1861,11 +1861,7 @@ public abstract class AbstractSession implements CoreSession,
             if (version == null) {
                 return null;
             }
-            VersionModel versionModel = new VersionModelImpl();
-            versionModel.setCreated(version.getCreated());
-            versionModel.setDescription(version.getDescription());
-            versionModel.setLabel(version.getLabel());
-            return versionModel;
+            return getVersionModel(version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -1953,19 +1949,11 @@ public abstract class AbstractSession implements CoreSession,
 
             while (versionIterator.hasNext()) {
                 DocumentVersion docVersion = versionIterator.nextDocumentVersion();
-
                 if (null == docVersion.getLabel()) {
                     // TODO: the root default version - discard
                     continue;
                 }
-
-                VersionModel versionModel = new VersionModelImpl();
-
-                versionModel.setCreated(docVersion.getCreated());
-                versionModel.setDescription(docVersion.getDescription());
-                versionModel.setLabel(docVersion.getLabel());
-
-                versions.add(versionModel);
+                versions.add(getVersionModel(docVersion));
             }
 
             log.debug("Retrieved the versions of the document " + doc.getPath());
@@ -1978,19 +1966,57 @@ public abstract class AbstractSession implements CoreSession,
 
     }
 
+    @Override
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            DocumentRef versionRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            Document ver = resolveReference(versionRef);
+            return restoreToVersion(doc, ver, false, false);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    @Override
+    @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
         return restoreToVersion(docRef, version, false);
     }
 
+    @Override
+    @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version, boolean skipSnapshotCreation)
             throws ClientException {
-        assert docRef != null;
-        assert version != null;
-
         try {
             Document doc = resolveReference(docRef);
+            Document ver = doc.getVersion(version.getLabel());
+            return restoreToVersion(doc, ver, skipSnapshotCreation, false);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    @Override
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            DocumentRef versionRef, boolean skipSnapshotCreation,
+            boolean skipCheckout) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            Document ver = resolveReference(versionRef);
+            return restoreToVersion(doc, ver, skipSnapshotCreation,
+                    skipCheckout);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    protected DocumentModel restoreToVersion(Document doc, Document version,
+            boolean skipSnapshotCreation, boolean skipCheckout)
+            throws ClientException {
+        try {
             checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
 
@@ -2017,8 +2043,7 @@ public abstract class AbstractSession implements CoreSession,
                         minorVer);
             }
             // add the uuid of the version being restored
-            Document docVersion = doc.getVersion(version.getLabel());
-            String versionUUID = docVersion.getUUID();
+            String versionUUID = version.getUUID();
             options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY,
                     versionUUID);
 
@@ -2026,9 +2051,12 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true, true);
             writeModel(doc, docModel);
 
-            doc.restore(version.getLabel());
-            // restore gives us a checked in document, so do a checkout
-            doc.checkOut();
+            doc.restore(version);
+
+            if (!skipCheckout) {
+                // restore gives us a checked in document, so do a checkout
+                doc.checkOut();
+            }
 
             // re-read doc model after restoration
             docModel = readModel(doc, null);
@@ -2036,15 +2064,22 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true, false);
             docModel = writeModel(doc, docModel);
 
-            log.debug("Document restored to version:" + version.getLabel());
+            log.debug("Document restored to version:" + version.getUUID());
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document " + docRef, e);
+            throw new ClientException("Failed to restore document " + doc, e);
         }
-
     }
 
-    public void checkIn(DocumentRef docRef, VersionModel version)
+    @Override
+    @Deprecated
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver)
+            throws ClientException {
+        return checkIn(docRef, ver.getDescription());
+    }
+
+    @Override
+    public DocumentModel checkIn(DocumentRef docRef, String description)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2058,19 +2093,13 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true, true);
             writeModel(doc, docModel);
 
-            String description = version.getDescription();
-            if (description != null) {
-                doc.checkIn(version.getLabel(), description);
-            } else {
-                doc.checkIn(version.getLabel());
-            }
-
-            Document versionDocument = doc.getVersion(version.getLabel());
-            DocumentModel versionModel = readModel(versionDocument, null);
+            String label = generateVersionLabelFor(docRef);
+            Document versionDocument = doc.checkIn(label, description);
+            DocumentModel version = readModel(versionDocument, null);
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
-                    options, null, null, true, false);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, version, options,
+                    null, null, true, false);
 
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
@@ -2083,7 +2112,7 @@ public abstract class AbstractSession implements CoreSession,
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
                     options, null, null, true, false);
-            writeModel(versionDocument, versionModel);
+            return writeModel(versionDocument, version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
                     e);
@@ -2151,25 +2180,30 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModel getVersion(String versionableId,
             VersionModel versionModel) throws ClientException {
-        if (!isAdministrator()) {
-            throw new DocumentSecurityException(
-                    "Only Administrator can fetch versions directly");
+        String id = versionModel.getId();
+        if (id != null) {
+            return getDocument(new IdRef(id));
         }
-        String label = versionModel.getLabel();
         try {
             Document doc = getSession().getVersion(versionableId, versionModel);
-            return doc == null ? null : readModel(doc, null);
+            if (doc == null) {
+                return null;
+            }
+            checkPermission(doc, READ_PROPERTIES);
+            checkPermission(doc, READ_VERSION);
+            return readModel(doc, null);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get version " + label
-                    + " for " + versionableId, e);
+            throw new ClientException("Failed to get version "
+                    + versionModel.getLabel() + " for " + versionableId, e);
         }
     }
 
     public DocumentModel getDocumentWithVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
-        assert docRef != null;
-        assert version != null;
-
+        String id = version.getId();
+        if (id != null) {
+            return getDocument(new IdRef(id));
+        }
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_PROPERTIES);
@@ -2190,25 +2224,28 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    /**
-     * Creates a generic proxy to a document.
-     * <p>
-     * The document may be a version, or a working copy (live document) in which
-     * case the proxy will be a "shortcut".
-     */
+    @Override
     public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            Document folder = resolveReference(folderRef);
+            Document fold = resolveReference(folderRef);
             checkPermission(doc, READ);
-            checkPermission(folder, ADD_CHILDREN);
+            checkPermission(fold, ADD_CHILDREN);
+            return createProxyInternal(doc, fold,
+                    new HashMap<String, Serializable>());
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
 
+    protected DocumentModel createProxyInternal(Document doc, Document folder,
+            Map<String, Serializable> options) throws ClientException {
+        try {
             // create the new proxy
             Document proxy = getSession().createProxy(doc, folder);
             DocumentModel proxyModel = readModel(proxy, null);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
                     options, null, null, true, false);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
@@ -2218,23 +2255,21 @@ public abstract class AbstractSession implements CoreSession,
                     folderModel, options, null, null, true, false);
             return proxyModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to create proxy for doc: "
-                    + docRef, e);
+            throw new ClientException("Failed to create proxy for doc: " + doc,
+                    e);
         }
     }
 
+    @Override
+    @Deprecated
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy)
             throws ClientException {
-        assert null != parentRef;
-        assert null != docRef;
-        assert null != version;
-
         try {
             Document doc = resolveReference(docRef);
-            Document section = resolveReference(parentRef);
+            Document sec = resolveReference(parentRef);
             checkPermission(doc, READ);
-            checkPermission(section, ADD_CHILDREN);
+            checkPermission(sec, ADD_CHILDREN);
 
             DocumentModel proxyModel = null;
             Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -2247,7 +2282,7 @@ public abstract class AbstractSession implements CoreSession,
                     throw new ClientException("Document " + docRef
                             + " has no version " + vlabel);
                 }
-                proxyModel = updateExistingProxies(doc, section, target);
+                proxyModel = updateExistingProxies(doc, sec, target);
                 // proxyModel is null is update fails
                 if (proxyModel != null) {
                     // notify for proxy updates
@@ -2255,7 +2290,7 @@ public abstract class AbstractSession implements CoreSession,
                             proxyModel, options, null, null, true, false);
                 } else {
                     List<String> removedProxyIds = Collections.emptyList();
-                    removedProxyIds = removeExistingProxies(doc, section);
+                    removedProxyIds = removeExistingProxies(doc, sec);
                     options.put(CoreEventConstants.REPLACED_PROXY_IDS,
                             (Serializable) removedProxyIds);
                 }
@@ -2263,8 +2298,8 @@ public abstract class AbstractSession implements CoreSession,
 
             if (proxyModel == null) {
                 // create the new proxy
-                Document proxy = getSession().createProxyForVersion(section,
-                        doc, vlabel);
+                Document proxy = getSession().createProxyForVersion(sec, doc,
+                        vlabel);
                 log.debug("Created proxy for version " + vlabel
                         + " of the document " + doc.getPath());
                 // notify for reindexing
@@ -2278,7 +2313,7 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true, false);
 
-            DocumentModel sectionModel = readModel(section, null);
+            DocumentModel sectionModel = readModel(sec, null);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     sectionModel, options, null, null, true, false);
 
@@ -2307,7 +2342,11 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Update the proxy while republishing.
+     * Update the proxy for doc in the given section to point to the new target.
+     * Do nothing if there are several proxies.
+     *
+     * @return the proxy if it was updated, or {@code null} if none or several
+     *         were found
      */
     protected DocumentModel updateExistingProxies(Document doc,
             Document folder, Document target) throws DocumentException,
@@ -2736,60 +2775,61 @@ public abstract class AbstractSession implements CoreSession,
         return publishDocument(docToPublish, section, true);
     }
 
-    public DocumentModel publishDocument(DocumentModel docToPublish,
+    public DocumentModel publishDocument(DocumentModel document,
             DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
+        try {
+            Document doc = resolveReference(document.getRef());
+            Document sec = resolveReference(section.getRef());
 
-        DocumentRef docRef = docToPublish.getRef();
-        DocumentRef sectionRef = section.getRef();
-        if (docToPublish.isProxy()) {
-            try {
-                Document doc = resolveReference(docRef);
-                Document sec = resolveReference(sectionRef);
-                checkPermission(doc, READ);
-                checkPermission(sec, ADD_CHILDREN);
+            checkPermission(doc, READ);
+            checkPermission(sec, ADD_CHILDREN);
 
-                List<String> removedProxyIds = Collections.emptyList();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            DocumentModel proxy = null;
+            Document target;
+            if (document.isProxy()) {
                 if (overwriteExistingProxy) {
-                    removedProxyIds = removeExistingProxies(doc, sec);
+                    // remove previous
+                    List<String> removedProxyIds = removeExistingProxies(doc,
+                            sec);
+                    options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                            (Serializable) removedProxyIds);
                 }
-
-                // publishing a proxy is just a copy
-                // TODO copy also copies security. just recreate a proxy
-                DocumentModel newDocument = copy(docRef, sectionRef,
-                        docToPublish.getName());
-
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(CoreEventConstants.REPLACED_PROXY_IDS,
-                        (Serializable) removedProxyIds);
-                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                        newDocument, options, null, null, true, false);
-
-                notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                        section, options, null, null, true, false);
-
-                return newDocument;
-            } catch (DocumentException e) {
-                throw new ClientException(e);
+                target = doc;
+            } else {
+                // snapshot the document
+                DocumentModel version = createDocumentSnapshot(document, null,
+                        null, false);
+                target = resolveReference(version.getRef());
+                if (overwriteExistingProxy) {
+                    proxy = updateExistingProxies(doc, sec, target);
+                    if (proxy == null) {
+                        // no or several proxies, remove them
+                        List<String> removedProxyIds = removeExistingProxies(
+                                doc, sec);
+                        options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                                (Serializable) removedProxyIds);
+                    } else {
+                        // notify proxy updates
+                        notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED,
+                                proxy, options, null, null, true, false);
+                        notifyEvent(
+                                DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+                                proxy, options, null, null, true, false);
+                        notifyEvent(
+                                DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
+                                section, options, null, null, true, false);
+                    }
+                }
             }
-        } else {
-            // snapshot the document
-            createDocumentSnapshot(docToPublish, null, null, false);
-            VersionModel version = getLastVersion(docRef);
-            if (version == null) {
-                throw new ClientException("Cannot create proxy: "
-                        + "there is no version to point to");
+            if (proxy == null) {
+                proxy = createProxyInternal(target, sec, options);
             }
-            DocumentModel newProxy = createProxy(sectionRef, docRef, version,
-                    overwriteExistingProxy);
-            return newProxy;
+            return proxy;
+        } catch (DocumentException e) {
+            throw new ClientException(e);
         }
-    }
-
-    public VersionModel isPublished(DocumentModel document,
-            DocumentModel section) {
-        // FIXME: this is very useful API
-        return null;
     }
 
     public String getSuperParentType(DocumentModel doc) throws ClientException {
@@ -2995,9 +3035,9 @@ public abstract class AbstractSession implements CoreSession,
         // service.fireOperationTerminated(operation);
     }
 
-    public Object[] refreshDocument(DocumentRef ref, int refreshFlags,
-            String[] schemas) throws ClientException {
-        Object[] result = new Object[6];
+    public DocumentModelRefresh refreshDocument(DocumentRef ref,
+            int refreshFlags, String[] schemas) throws ClientException {
+        DocumentModelRefresh refresh = new DocumentModelRefresh();
 
         try {
 
@@ -3030,28 +3070,27 @@ public abstract class AbstractSession implements CoreSession,
                                     value == null ? Null.VALUE
                                             : (Serializable) value);
                         }
-                        result[0] = prefetch;
+                        refresh.prefetch = prefetch;
                     }
                 }
             }
 
-            if ((refreshFlags & DocumentModel.REFRESH_LOCK) != 0) {
+            if ((refreshFlags & DocumentModel.REFRESH_STATE) != 0) {
                 if (!readPermChecked) {
                     checkPermission(doc, READ);
+                    // checkPermission(doc, READ_LIFE_CYCLE);
                     readPermChecked = true;
                 }
-                result[1] = doc.getLock();
-            }
-
-            if ((refreshFlags & DocumentModel.REFRESH_LIFE_CYCLE) != 0) {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                result[2] = doc.getCurrentLifeCycleState();
-                result[3] = doc.getLifeCyclePolicy();
+                refresh.lock = doc.getLock();
+                refresh.checkedOut = doc.isCheckedOut();
+                refresh.lifeCycleState = doc.getCurrentLifeCycleState();
+                refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
             }
 
             if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
                 checkPermission(doc, READ_SECURITY);
-                result[4] = getSession().getSecurityManager().getMergedACP(doc);
+                refresh.acp = getSession().getSecurityManager().getMergedACP(
+                        doc);
             }
 
             if ((refreshFlags & DocumentModel.REFRESH_CONTENT) != 0) {
@@ -3070,7 +3109,7 @@ public abstract class AbstractSession implements CoreSession,
                     doc.readDocumentPart(part);
                     parts[i] = part;
                 }
-                result[5] = parts;
+                refresh.documentParts = parts;
             }
 
         } catch (ClientException e) {
@@ -3078,7 +3117,7 @@ public abstract class AbstractSession implements CoreSession,
         } catch (Exception e) {
             throw new ClientException("Failed to get refresh data", e);
         }
-        return result;
+        return refresh;
 
     }
 

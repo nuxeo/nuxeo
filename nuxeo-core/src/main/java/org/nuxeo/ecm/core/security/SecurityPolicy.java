@@ -35,6 +35,11 @@ public interface SecurityPolicy {
 
     /**
      * Checks given permission for doc and principal.
+     * <p>
+     * Note that for the {@code Browse} permission, which is also implemented in
+     * SQL using {@link #getQueryTransformer}, a security policy must never
+     * bypass standard ACL access, it must only return DENY or UNKNOWN. Failing
+     * to do this would make direct access and queries behave differently.
      *
      * @param doc the document to check
      * @param mergedAcp merged ACP resolved for this document
@@ -44,7 +49,7 @@ public interface SecurityPolicy {
      *            containing permission
      * @param additionalPrincipals
      *
-     * @return access: true, false, or nothing. When nothing is returned,
+     * @return access: GRANT, DENY, or UNKNOWN. When UNKNOWN is returned,
      *         following policies or default core security are applied.
      */
     Access checkPermission(Document doc, ACP mergedAcp, Principal principal,

@@ -809,15 +809,10 @@ public class SessionImpl implements Session, XAResource {
         requireReadAclsUpdate();
     }
 
-    public void restoreByLabel(Node node, String label) throws StorageException {
+    public void restore(Node node, Node version) throws StorageException {
         checkLive();
-        // find the version
-        Serializable versionId = mapper.getVersionIdByLabel(node.getId(), label);
-        if (versionId == null) {
-            throw new StorageException("Unknown version: " + label);
-        }
         // save done inside method
-        context.restoreVersion(node, versionId);
+        context.restoreVersion(node, version);
         requireReadAclsUpdate();
     }
 

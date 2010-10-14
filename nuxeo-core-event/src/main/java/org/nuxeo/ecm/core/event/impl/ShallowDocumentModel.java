@@ -367,4 +367,19 @@ public class ShallowDocumentModel implements DocumentModel {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean isCheckedOut() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void checkOut() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DocumentModel checkIn(String description) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -123,6 +124,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected String lock;
 
+    // null when not loaded
+    protected Boolean checkedout;
+
+    protected String currentLifeCycleState;
+
+    protected String lifeCyclePolicy;
+
     // acp is not send between client/server
     // it will be loaded lazy first time it is accessed
     // and discarded when object is serialized
@@ -152,10 +160,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
     protected HashMap<String, Serializable> prefetch;
-
-    private String currentLifeCycleState;
-
-    private String lifeCyclePolicy;
 
     protected static Boolean strictSessionManagement = null;
 
@@ -635,6 +639,27 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isCheckedOut() throws ClientException {
+        if (checkedout == null) {
+            checkedout = Boolean.valueOf(getCoreSession().isCheckedOut(ref));
+        }
+        return checkedout.booleanValue();
+    }
+
+    @Override
+    public void checkOut() throws ClientException {
+        getCoreSession().checkOut(ref);
+        checkedout = Boolean.TRUE;
+    }
+
+    @Override
+    public DocumentModel checkIn(String description) throws ClientException {
+        DocumentModel version = getCoreSession().checkIn(ref, description);
+        checkedout = Boolean.FALSE;
+        return version;
     }
 
     public ACP getACP() throws ClientException {
@@ -1388,28 +1413,27 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             schemas = keys.toArray(new String[keys.size()]);
         }
 
-        Object[] result = getCoreSession().refreshDocument(ref, refreshFlags,
-                schemas);
+        DocumentModelRefresh refresh = getCoreSession().refreshDocument(ref,
+                refreshFlags, schemas);
 
         if ((refreshFlags & REFRESH_PREFETCH) != 0) {
-            prefetch = (HashMap<String, Serializable>) result[0];
+            prefetch = (HashMap<String, Serializable>) refresh.prefetch;
         }
-        if ((refreshFlags & REFRESH_LOCK) != 0) {
-            lock = (String) result[1];
-        }
-        if ((refreshFlags & REFRESH_LIFE_CYCLE) != 0) {
-            currentLifeCycleState = (String) result[2];
-            lifeCyclePolicy = (String) result[3];
+        if ((refreshFlags & REFRESH_STATE) != 0) {
+            lock = refresh.lock;
+            checkedout = Boolean.valueOf(refresh.checkedOut);
+            currentLifeCycleState = refresh.lifeCycleState;
+            lifeCyclePolicy = refresh.lifeCyclePolicy;
         }
         acp = null;
         isACPLoaded = false;
         if ((refreshFlags & REFRESH_ACP) != 0) {
-            acp = (ACP) result[4];
+            acp = refresh.acp;
             isACPLoaded = true;
         }
         dataModels.clear();
         if ((refreshFlags & REFRESH_CONTENT) != 0) {
-            DocumentPart[] parts = (DocumentPart[]) result[5];
+            DocumentPart[] parts = refresh.documentParts;
             if (parts != null) {
                 for (DocumentPart part : parts) {
                     DataModelImpl dm = new DataModelImpl(part);

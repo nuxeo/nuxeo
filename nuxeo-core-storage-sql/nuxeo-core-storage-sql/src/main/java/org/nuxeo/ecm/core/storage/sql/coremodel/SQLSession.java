@@ -312,7 +312,7 @@ public class SQLSession implements Session {
                 versionableId = (Serializable) doc.getProperty(
                         Model.VERSION_VERSIONABLE_PROP).getValue();
             } else if (doc.isProxy()) {
-                // not supported, but don't crash... copy the proxy
+                // copy the proxy
                 targetId = (Serializable) doc.getProperty(
                         Model.PROXY_TARGET_PROP).getValue();
                 versionableId = (Serializable) doc.getProperty(
@@ -731,10 +731,11 @@ public class SQLSession implements Session {
         }
     }
 
-    protected void checkIn(Node node, String label, String description)
+    protected Document checkIn(Node node, String label, String description)
             throws DocumentException {
         try {
-            session.checkIn(node, label, description);
+            Node versionNode = session.checkIn(node, label, description);
+            return versionNode == null ? null : newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -748,10 +749,10 @@ public class SQLSession implements Session {
         }
     }
 
-    protected void restoreByLabel(Node node, String label)
+    protected void restore(Node node, Node version)
             throws DocumentException {
         try {
-            session.restoreByLabel(node, label);
+            session.restore(node, version);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

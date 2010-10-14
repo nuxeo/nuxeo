@@ -366,13 +366,9 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return this;
     }
 
-    public void checkIn(String label) throws DocumentException {
-        checkIn(label, null);
-    }
-
-    public void checkIn(String label, String description)
+    public Document checkIn(String label, String description)
             throws DocumentException {
-        session.checkIn(getNode(), label, description);
+        return session.checkIn(getNode(), label, description);
     }
 
     public void checkOut() throws DocumentException {
@@ -383,8 +379,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return !getBoolean(Model.MAIN_CHECKED_IN_PROP);
     }
 
-    public void restore(String label) throws DocumentException {
-        session.restoreByLabel(getNode(), label);
+    public void restore(Document version) throws DocumentException {
+        if (!version.isVersion()) {
+            throw new DocumentException("Cannot restore a non-version: "
+                    + version);
+        }
+        session.restore(getNode(), ((SQLDocument) version).getNode());
     }
 
     public List<String> getVersionsIds() throws DocumentException {

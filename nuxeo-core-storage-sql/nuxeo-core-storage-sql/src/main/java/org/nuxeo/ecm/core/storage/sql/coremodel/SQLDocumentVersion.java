@@ -180,12 +180,7 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
      */
 
     @Override
-    public void checkIn(String label) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void checkIn(String label, String description) {
+    public Document checkIn(String label, String description) {
         throw new VersionNotModifiableException();
     }
 
@@ -200,7 +195,7 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     @Override
-    public void restore(String label) {
+    public void restore(Document version) {
         throw new VersionNotModifiableException();
     }
 

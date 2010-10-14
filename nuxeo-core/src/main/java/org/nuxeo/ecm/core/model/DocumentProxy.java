@@ -31,7 +31,7 @@ public interface DocumentProxy extends Document {
     Document getTargetDocument();
 
     /**
-     * Sets the source document (not the version) to which this proxy points.
+     * Sets the document (version or live document) to which this proxy points.
      */
     void setTargetDocument(Document target) throws DocumentException;
 

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -118,7 +119,9 @@ public interface CoreSession {
      * @return the String representation of an auto-incremented counter that not
      *         used in any label of docRef
      * @throws ClientException
+     * @deprecated use {@link #checkIn(DocumentRef, String)} directly
      */
+    @Deprecated
     String generateVersionLabelFor(DocumentRef docRef) throws ClientException;
 
     /**
@@ -917,7 +920,9 @@ public interface CoreSession {
      * @param docRef the reference to the document
      * @return the version
      * @throws ClientException if any error occurs
+     * @deprecated use {@link #getLastDocumentVersion} instead
      */
+    @Deprecated
     VersionModel getLastVersion(DocumentRef docRef) throws ClientException;
 
     /**
@@ -955,7 +960,7 @@ public interface CoreSession {
      * Retrieves all the versions for a specified document.
      *
      * @param docRef the reference to the document
-     * @return the list of {@see DocumentModel} representing versions, empty
+     * @return the list of {@link DocumentModel} representing versions, empty
      *         list if none is found.
      * @throws ClientException
      */
@@ -965,7 +970,7 @@ public interface CoreSession {
      * Retrieves all the versions for a specified document.
      *
      * @param docRef the reference to the document
-     * @return the list of {@see VersionModel} representing versions, empty list
+     * @return the list of {@link VersionModel} representing versions, empty list
      *         if none is found.
      */
     List<VersionModel> getVersionsForDocument(DocumentRef docRef)
@@ -983,7 +988,9 @@ public interface CoreSession {
      * @param versionModel the version model holding the label
      * @return the version, or {@code null} if not found
      * @throws ClientException
+     * @deprecated use version ids directly
      */
+    @Deprecated
     DocumentModel getVersion(String versionableId, VersionModel versionModel)
             throws ClientException;
 
@@ -999,6 +1006,20 @@ public interface CoreSession {
             VersionModel version) throws ClientException;
 
     /**
+     * Restores the given document to the specified version.
+     *
+     * @param docRef the reference to the document
+     * @param versionRef the reference to the version
+     * @param skipSnapshotCreation {@code true} if the document should not be
+     *            snapshotted before being restored
+     * @param skipCheckout {@code true} if the restored document should be kept
+     *            in a checked-in state
+     * @since 5.4
+     */
+    DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef,
+            boolean skipSnapshotCreation, boolean skipCheckout) throws ClientException;
+
+    /**
      * Restores the given document to the specified version permitting to skip
      * the creation of the snapshot for current document.
      *
@@ -1006,7 +1027,11 @@ public interface CoreSession {
      * @param version the version to which the document should be restored to -
      *            only the label is used for the moment
      * @param skipSnapshotCreation indicates if skipping snapshot creation
+     * @deprecated use
+     *             {@link #restoreToVersion(DocumentRef, DocumentRef, boolean, boolean)}
+     *             instead
      */
+    @Deprecated
     DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version,
             boolean skipSnapshotCreation) throws ClientException;
 
@@ -1014,9 +1039,22 @@ public interface CoreSession {
      * Restores the given document to the specified version.
      *
      * @param docRef the reference to the document
+     * @param versionRef the reference to the version
+     * @since 5.4
+     */
+    DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef)
+            throws ClientException;
+
+    /**
+     * Restores the given document to the specified version.
+     *
+     * @param docRef the reference to the document
      * @param version the version to which the document should be restored to -
      *            only the label is used for the moment
+     * @deprecated use {@link #restoreToVersion(DocumentRef, DocumentRef)}
+     *             instead
      */
+    @Deprecated
     DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version)
             throws ClientException;
 
@@ -1033,9 +1071,24 @@ public interface CoreSession {
      *
      * @param docRef the reference to the document
      * @param version the version descriptor
+     * @return the version document just created
      * @throws ClientException
+     * @deprecated use {@link #checkIn(DocumentRef, String)} instead
      */
-    void checkIn(DocumentRef docRef, VersionModel version)
+    @Deprecated
+    DocumentModel checkIn(DocumentRef docRef, VersionModel version)
+            throws ClientException;
+
+    /**
+     * Checks in a modified document, creating a new version.
+     *
+     * @param docRef the reference to the document
+     * @param description the version description (checkin comment)
+     * @return the version document just created
+     * @throws ClientException
+     * @since 5.4
+     */
+    DocumentModel checkIn(DocumentRef docRef, String description)
             throws ClientException;
 
     /**
@@ -1052,6 +1105,7 @@ public interface CoreSession {
      * <p>
      * The document may be a version, or a working copy (live document) in which
      * case the proxy will be a "shortcut".
+     * @since 1.6.1 (5.3.1)
      */
     DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException;
@@ -1063,7 +1117,11 @@ public interface CoreSession {
      * @param version the version
      * @return the proxy
      * @throws ClientException if any error occurs
+     * @deprecated use {@link #createProxy(DocumentRef, DocumentRef)} or
+     *             {@link #publishDocument(DocumentModel, DocumentModel, boolean)}
+     *             instead
      */
+    @Deprecated
     DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy)
             throws ClientException;
@@ -1374,16 +1432,6 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Checks if the document is already published in the section and retrieves
-     * it's version.
-     *
-     * @param document
-     * @param section
-     * @return
-     */
-    VersionModel isPublished(DocumentModel document, DocumentModel section);
-
-    /**
      * Finds the proxies for a document. If the parent is not null, the search
      * will be limited to its direct children.
      * <p>
@@ -1540,26 +1588,15 @@ public interface CoreSession {
      * specified a third argument must be passed representing the schema names
      * for document parts to refresh. This argument is ignored if the flag is
      * not specified or no schema names are provided
-     * <p>
-     * The result is an array defined as follows:
-     * <ul>
-     * <li>on index 0 - the prefetch data
-     * <li>on index 1 - the lock state info
-     * <li>on index 2 - the life cycle state info
-     * <li>on index 3 - the life cycle policy
-     * <li>on index 4 - the ACP
-     * <li>on index 5 - an array of {@link DocumentPart} objects
-     * </ul>
      *
      * @param ref the document reference
      * @param refreshFlags refresh flags as defined in {@link DocumentModel}
      * @param schemas the schema names if a partial content refresh is required
-     * @return an array containing the refreshed data - this array will always
-     *         have 5 elements.
+     * @return a DocumentModelRefresh object
      *
      * @throws ClientException
      */
-    Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
+    DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
             throws ClientException;
 
     /**

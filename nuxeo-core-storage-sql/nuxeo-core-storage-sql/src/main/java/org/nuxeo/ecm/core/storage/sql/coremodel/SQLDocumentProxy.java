@@ -91,7 +91,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
         return proxy.getName();
     }
 
-    public String getUUID() throws DocumentException {
+    public String getUUID() {
         return proxy.getUUID();
     }
 
@@ -221,11 +221,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
         return target;
     }
 
-    public void checkIn(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void checkIn(String label, String description)
+    public Document checkIn(String label, String description)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }
@@ -238,8 +234,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
         return target.isCheckedOut();
     }
 
-    public void restore(String label) throws DocumentException {
-        target.restore(label);
+    public void restore(Document version) throws DocumentException {
+        target.restore(version);
     }
 
     public List<String> getVersionsIds() throws DocumentException {
@@ -335,7 +331,12 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     public Property getProperty(String name) throws DocumentException {
-        return target.getProperty(name);
+        if (Model.PROXY_TARGET_PROP.equals(name)
+                || Model.PROXY_VERSIONABLE_PROP.equals(name)) {
+            return proxy.getProperty(name);
+        } else {
+            return target.getProperty(name);
+        }
     }
 
     public Collection<Property> getProperties() throws DocumentException {
@@ -461,7 +462,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + target + ')';
+        return getClass().getSimpleName() + '(' + target + ','
+                + proxy.getUUID() + ')';
     }
 
     @Override

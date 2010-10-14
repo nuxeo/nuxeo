@@ -67,7 +67,7 @@ import org.nuxeo.ecm.core.model.Session;
  * <p>
  * This class and its children are also the points where security is
  * attached/checked.
- * 
+ *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Stateful
@@ -135,7 +135,7 @@ public class DocumentManagerBean extends AbstractSession implements
     /**
      * Allays use this method to retrieve the caller principal from the context.
      * This allows fixing a problem on JBoss5.
-     * 
+     *
      * @see CallerPrincipalProvider
      * @return
      */
@@ -441,10 +441,21 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    public void checkIn(DocumentRef docRef, VersionModel version)
+    public DocumentModel checkIn(DocumentRef docRef, String description)
             throws ClientException {
         try {
-            super.checkIn(docRef, version);
+            return super.checkIn(docRef, description);
+        } catch (Throwable e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel version)
+            throws ClientException {
+        try {
+            return super.checkIn(docRef, version);
         } catch (Throwable e) {
             throw new RollbackClientException(e);
         }

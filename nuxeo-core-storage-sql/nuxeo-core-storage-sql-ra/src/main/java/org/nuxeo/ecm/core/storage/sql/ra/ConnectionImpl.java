@@ -249,8 +249,8 @@ public class ConnectionImpl implements Session {
         getSession().checkOut(node);
     }
 
-    public void restoreByLabel(Node node, String label) throws StorageException {
-        getSession().restoreByLabel(node, label);
+    public void restore(Node node, Node version) throws StorageException {
+        getSession().restore(node, version);
     }
 
     public Node getVersionByLabel(Serializable versionableId, String label)

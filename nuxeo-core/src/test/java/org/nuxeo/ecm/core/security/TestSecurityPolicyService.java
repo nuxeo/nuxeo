@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.security;
@@ -26,12 +25,10 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.MockDocument;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-/**
- * @author Anahide Tchertchian
- */
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     static final String creator = "Bodie";
@@ -44,7 +41,6 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     private SecurityPolicyService service;
 
-    private Document doc;
 
     @Override
     public void setUp() throws Exception {
@@ -58,19 +54,18 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         service = Framework.getService(SecurityPolicyService.class);
         assertNotNull(service);
 
-        doc = new MockDocument("Test", creator);
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
         service = null;
-        doc = null;
     }
 
     public void testPolicies() throws Exception {
         String permission = SecurityConstants.WRITE;
         String[] permissions = { SecurityConstants.WRITE };
+        Document doc = new MockDocument("Test", creator);
 
         // without lock
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
@@ -85,13 +80,27 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
                 userPrincipal, permission, permissions, null));
 
-        // test creator policy takes over lock
+        // test creator policy with lower order takes over lock
         deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
                 "test-security-policy-contrib.xml");
         assertEquals(Access.GRANT, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
                 userPrincipal, permission, permissions, null));
+    }
+
+    public void testCheckOutPolicy() throws Exception {
+        String permission = SecurityConstants.WRITE;
+        String[] permissions = { SecurityConstants.WRITE, SecurityConstants.WRITE_PROPERTIES };
+        MockDocument doc = new MockDocument("uuid1", null);
+
+        doc.checkedout = true;
+        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+                creatorPrincipal, permission, permissions, null));
+
+        doc.checkedout = false;
+        assertEquals(Access.DENY, service.checkPermission(doc, null,
+                creatorPrincipal, permission, permissions, null));
     }
 
 }

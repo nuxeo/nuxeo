@@ -17,7 +17,7 @@
  * $Id: FakeDocument.java 26383 2007-10-23 16:21:34Z bstefanescu $
  */
 
-package org.nuxeo.ecm.core.security;
+package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -30,11 +30,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
-import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
-import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.DocumentTypeImpl;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
@@ -46,11 +41,13 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
  */
 public class MockDocument implements Document {
 
-    final String uuid;
+    public String uuid;
 
-    final String creator;
+    public String creator;
 
-    String lock;
+    public String lock;
+
+    public boolean checkedout;
 
     public MockDocument(String uuid, String creator) {
         this.uuid = uuid;
@@ -61,7 +58,7 @@ public class MockDocument implements Document {
         return uuid;
     }
 
-    public String getUUID() throws DocumentException {
+    public String getUUID() {
         return uuid;
     }
 
@@ -145,11 +142,9 @@ public class MockDocument implements Document {
             throws DocumentException {
     }
 
-    public void checkIn(String label, String description)
+    public Document checkIn(String label, String description)
             throws DocumentException {
-    }
-
-    public void checkIn(String label) throws DocumentException {
+        return null;
     }
 
     public void checkOut() throws DocumentException {
@@ -180,14 +175,14 @@ public class MockDocument implements Document {
     }
 
     public boolean isCheckedOut() throws DocumentException {
-        return false;
+        return checkedout;
     }
 
     public boolean isVersion() {
         return false;
     }
 
-    public void restore(String label) throws DocumentException {
+    public void restore(Document version) throws DocumentException {
     }
 
     public Document addChild(String name, String typeName)
