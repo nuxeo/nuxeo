@@ -24,7 +24,6 @@ import javax.ejb.Remove;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -33,7 +32,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,7 +49,6 @@ import org.nuxeo.ecm.platform.jbpm.dashboard.WorkflowDashBoard;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
-import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
@@ -295,7 +292,7 @@ public class DashBoardActionsBean implements DashboardActions {
                     selectedDomain = availableDomains.get(0);
                 }
             }
-        } else if (availableDomains != null
+        } else if (availableDomains != null && !availableDomains.isEmpty()
                 && !availableDomains.contains(selectedDomain)) {
             // reset old domain: it's not available anymore
             selectedDomain = availableDomains.get(0);
