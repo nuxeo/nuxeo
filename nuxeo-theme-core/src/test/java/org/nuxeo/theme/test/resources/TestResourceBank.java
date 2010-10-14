@@ -21,6 +21,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -54,6 +55,13 @@ public class TestResourceBank extends NXRuntimeTestCase {
         typeRegistry.clear();
         typeRegistry = null;
         super.tearDown();
+    }
+
+    public void testGetRegisteredBanks() {
+        ResourceBank bank = ThemeManager.getResourceBank(BANK_NAME);
+        assertEquals("test", bank.getName());
+        assertEquals("http://localhost:8080/nuxeo/site/theme-banks/test",
+                bank.getConnectionUrl());
     }
 
     public void testGetBankNames() throws IOException {

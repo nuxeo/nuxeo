@@ -282,7 +282,6 @@
         <bank name="mybank" url="http://theme.bank.address.com:8080/nuxeo/site/theme-banks/mybank" />
       </code>
 
-
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceBank"/>
   </extension-point>
