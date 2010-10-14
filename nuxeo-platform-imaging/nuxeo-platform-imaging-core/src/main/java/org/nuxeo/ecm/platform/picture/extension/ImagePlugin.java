@@ -65,9 +65,7 @@ public class ImagePlugin extends AbstractFileImporter {
 
             // Do a checkin / checkout of the current version first
             DocumentRef docRef = docModel.getRef();
-            VersionModel newVersion = new VersionModelImpl();
-            newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
-            documentManager.checkIn(docRef, newVersion);
+            documentManager.checkIn(docRef, (String) null);
             documentManager.checkOut(docRef);
 
             ((Map) ((List) docModel.getDataModel("picture").getData("views")).get(0)).put(

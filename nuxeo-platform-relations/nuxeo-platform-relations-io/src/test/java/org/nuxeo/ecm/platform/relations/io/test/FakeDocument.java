@@ -56,7 +56,7 @@ public class FakeDocument implements Document {
         return uuid;
     }
 
-    public String getUUID() throws DocumentException {
+    public String getUUID() {
         return uuid;
     }
 
@@ -140,11 +140,9 @@ public class FakeDocument implements Document {
             throws DocumentException {
     }
 
-    public void checkIn(String label, String description)
+    public Document checkIn(String label, String description)
             throws DocumentException {
-    }
-
-    public void checkIn(String label) throws DocumentException {
+        return null;
     }
 
     public void checkOut() throws DocumentException {
@@ -182,7 +180,7 @@ public class FakeDocument implements Document {
         return false;
     }
 
-    public void restore(String label) throws DocumentException {
+    public void restore(Document version) throws DocumentException {
     }
 
     public Document addChild(String name, String typeName)

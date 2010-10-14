@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameAlreadyBoundException;
 
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
@@ -71,6 +72,21 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         ds.setUser("sa");
         ds.setPassword("");
         Context context = new InitialContext();
+        try {
+            context.createSubcontext("java:comp");
+        } catch (NameAlreadyBoundException e) {
+            // already bound when using Jetty NamingContext
+        }
+        try {
+            context.createSubcontext("java:comp/env");
+        } catch (NameAlreadyBoundException e) {
+            // already bound when using Nuxeo Common NamingContext
+        }
+        try {
+            context.createSubcontext("java:comp/env/jdbc");
+        } catch (NameAlreadyBoundException e) {
+            // already bound when using Nuxeo Common NamingContext
+        }
         context.bind("java:comp/env/jdbc/nxrelations-default-jena", ds);
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
@@ -132,36 +148,18 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
         session.saveDocument(doc);
-        // create version
-        VersionModel versionModel1 = new VersionModelImpl();
-        versionModel1.setLabel("v1");
-        session.checkIn(doc.getRef(), versionModel1);
-        session.checkOut(doc.getRef());
+        // create proxies
+        session.publishDocument(doc, section1);
+        doc.setPropertyValue("dc:description", null); // dirty it
         session.saveDocument(doc);
-        session.save();
-        VersionModel versionModel2 = new VersionModelImpl();
-        versionModel2.setLabel("v2");
-        session.checkIn(doc.getRef(), versionModel2);
-        session.checkOut(doc.getRef());
+        session.publishDocument(doc, section2);
+        doc.setPropertyValue("dc:description", null); // dirty it
         session.saveDocument(doc);
-        session.save();
-        VersionModel versionModel3 = new VersionModelImpl();
-        versionModel3.setLabel("v3");
-        session.checkIn(doc.getRef(), versionModel3);
-        session.checkOut(doc.getRef());
-        session.saveDocument(doc);
+        session.publishDocument(doc, section3);
         session.save();
         List<DocumentModel> l = session.getVersions(doc.getRef());
         assertFalse(doc.isVersion());
         assertEquals(3, l.size());
-        // create proxies
-        session.createProxy(section1.getRef(), doc.getRef(), versionModel1,
-                true);
-        session.createProxy(section2.getRef(), doc.getRef(), versionModel2,
-                true);
-        session.createProxy(section3.getRef(), doc.getRef(), versionModel3,
-                true);
-        session.save();
         List<DocumentModel> proxies = session.getProxies(doc.getRef(), null);
         assertNotNull(proxies);
         assertEquals(3, proxies.size());
