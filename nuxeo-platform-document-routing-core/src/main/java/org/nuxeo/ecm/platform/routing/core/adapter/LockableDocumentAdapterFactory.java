@@ -19,11 +19,11 @@ package org.nuxeo.ecm.platform.routing.core.adapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.LockableAdapter;
-import org.nuxeo.ecm.platform.routing.core.impl.LockableAdapterImpl;
+import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
+import org.nuxeo.ecm.platform.routing.core.impl.LockableDocumentRouteImpl;
 
 /**
- * Provides {@link LockableAdapter} for a {@link DocumentModel}.
+ * Provides {@link LockableDocumentRoute} for a {@link DocumentModel}.
  *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
  *
@@ -35,7 +35,7 @@ public class LockableDocumentAdapterFactory implements DocumentAdapterFactory {
     public Object getAdapter(DocumentModel doc, Class clazz) {
         String type = doc.getType();
         if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(type)) {
-            return new LockableAdapterImpl(doc);
+            return new LockableDocumentRouteImpl(doc);
         }
         return null;
     }

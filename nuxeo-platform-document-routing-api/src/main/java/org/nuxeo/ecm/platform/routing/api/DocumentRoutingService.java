@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 
 /**
  * The DocumentRoutingService allows manipulate {@link DocumentRoute}.
@@ -108,7 +109,7 @@ public interface DocumentRoutingService {
     /**
      * Validates the given {@link DocumentRoute} model by changing its lifecycle
      * state and setting it and all its children in ReadOnly.
-     * 
+     *
      * @return The validated route.
      * */
     DocumentRoute validateRouteModel(DocumentRoute routeModel,
@@ -165,7 +166,7 @@ public interface DocumentRoutingService {
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param idx The position of the document in its container.
      * @param routeElement The document to add.
-     * @param session 
+     * @param session
      * @throws ClientException
      */
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
@@ -175,7 +176,7 @@ public interface DocumentRoutingService {
      * Add a route element in another route element.
      *
      * @param parentDocumentRef The DocumentRef of the parent document.
-     * @param sourceName the name of the previous document in the container. 
+     * @param sourceName the name of the previous document in the container.
      * @param routeElement the document to add.
      * @param session
      * @throws ClientException
@@ -205,5 +206,28 @@ public interface DocumentRoutingService {
      */
     public DocumentModelList getOrderedRouteElement(String routeElementId,
             CoreSession session) throws ClientException;
+
+    /**
+     * Locks this {@link DocumentRoute}. If the document is already locked and
+     * {@link DocumentRouteAlredayLockedException} is thrown
+     *
+     * @param routeDocument {@link DocumentRoute}.
+     * @param session The session used to lock the {@link DocumentRoute}.
+     * @throws ClientException
+     * @throws {@link DocumentRouteAlredayLockedException}
+     */
+    void lockDocumentRoute(DocumentRoute routeModel, CoreSession session)
+            throws DocumentRouteAlredayLockedException, ClientException;
+
+    /**
+     * Unlocks this {@link DocumentRoute}
+     *
+     * @param routeDocument {@link DocumentRoute}.
+     * @param session The session used to lock the {@link DocumentRoute}.
+     * @throws {@link ClientException}
+     */
+    void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session)
+            throws ClientException;
+
 
 }

@@ -27,20 +27,20 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.routing.api.LockableAdapter;
+import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 
 /**
  *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
  *
  */
-public class LockableAdapterImpl implements LockableAdapter {
+public class LockableDocumentRouteImpl implements LockableDocumentRoute {
 
-    private static final Log log = LogFactory.getLog(LockableAdapterImpl.class);
+    private static final Log log = LogFactory.getLog(LockableDocumentRouteImpl.class);
 
     protected final DocumentModel doc;
 
-    public LockableAdapterImpl(DocumentModel document) {
+    public LockableDocumentRouteImpl(DocumentModel document) {
         this.doc = document;
     }
 

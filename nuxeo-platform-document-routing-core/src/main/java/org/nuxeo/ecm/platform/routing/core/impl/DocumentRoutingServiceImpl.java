@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -37,6 +36,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
@@ -96,6 +97,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<String> docIds, CoreSession session, boolean startInstance) {
         CreateNewRouteInstanceUnrestricted runner = new CreateNewRouteInstanceUnrestricted(
@@ -108,23 +110,27 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return runner.getInstance();
     }
 
+    @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             String documentId, CoreSession session, boolean startInstance) {
         return createNewInstance(model, Collections.singletonList(documentId),
                 session, startInstance);
     }
 
+    @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<String> documentIds, CoreSession session) {
         return createNewInstance(model, documentIds, session, true);
     }
 
+    @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             String documentId, CoreSession session) {
         return createNewInstance(model, Collections.singletonList(documentId),
                 session, true);
     }
 
+    @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(
             CoreSession session) {
         DocumentModelList list = null;
@@ -140,18 +146,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return routes;
     }
 
+    @Override
     public String getOperationChainId(String documentType) {
         return typeToChain.get(documentType);
     }
 
+    @Override
     public String getUndoFromRunningOperationChainId(String documentType) {
         return undoChainIdFromRunning.get(documentType);
     }
 
+    @Override
     public String getUndoFromDoneOperationChainId(String documentType) {
         return undoChainIdFromDone.get(documentType);
     }
 
+    @Override
     public DocumentRoute validateRouteModel(final DocumentRoute routeModel,
             CoreSession userSession) throws ClientException {
         new UnrestrictedSessionRunner(userSession) {
@@ -167,6 +177,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 DocumentRoute.class);
     }
 
+    @Override
     public void getRouteElements(DocumentRouteElement routeElementDocument,
             CoreSession session,
             List<LocalizableDocumentRouteElement> routeElements, int depth)
@@ -224,31 +235,37 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return routes;
     }
 
+    @Override
     public boolean canUserCreateRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
     }
 
+    @Override
     public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
     }
 
+    @Override
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
-            DocumentModel routeElement, CoreSession session) throws ClientException {
+            DocumentModel routeElement, CoreSession session)
+            throws ClientException {
         DocumentModel parentDoc = session.getDocument(parentDocumentRef);
         DocumentModelList children = session.query(String.format(
                 ORDERED_CHILDREN_QUERY, parentDoc.getId()));
         DocumentModel sourceDoc;
         try {
             sourceDoc = children.get(idx);
-            addRouteElementToRoute(parentDocumentRef, sourceDoc.getName(), routeElement,
-                    session);
+            addRouteElementToRoute(parentDocumentRef, sourceDoc.getName(),
+                    routeElement, session);
         } catch (IndexOutOfBoundsException e) {
-            addRouteElementToRoute(parentDocumentRef, null, routeElement, session);
+            addRouteElementToRoute(parentDocumentRef, null, routeElement,
+                    session);
         }
     }
 
+    @Override
     public void addRouteElementToRoute(DocumentRef parentDocumentRef,
             String sourceName, DocumentModel routeElement, CoreSession session)
             throws ClientException {
@@ -260,24 +277,48 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new ClientRuntimeException(e);
         }
         String parentDocumentPath = parentDoc.getPathAsString();
-        routeElement.setPathInfo(parentDocumentPath, pss.generatePathSegment(routeElement));
+        routeElement.setPathInfo(parentDocumentPath,
+                pss.generatePathSegment(routeElement));
         routeElement = session.createDocument(routeElement);
-        session.orderBefore(parentDocumentRef, routeElement.getName(), sourceName);
+        session.orderBefore(parentDocumentRef, routeElement.getName(),
+                sourceName);
         session.save();
     }
 
-    public void removeRouteElement(DocumentModel routeElement, CoreSession session)
-            throws ClientException {
+    @Override
+    public void removeRouteElement(DocumentModel routeElement,
+            CoreSession session) throws ClientException {
         session.removeDocument(routeElement.getRef());
         session.save();
     }
 
+    @Override
     public DocumentModelList getOrderedRouteElement(String routeElementId,
-            CoreSession session)
-            throws ClientException {
+            CoreSession session) throws ClientException {
         String query = String.format(ORDERED_CHILDREN_QUERY, routeElementId);
         DocumentModelList orderedChildren = session.query(query);
         return orderedChildren;
+    }
+
+    @Override
+    public void lockDocumentRoute(DocumentRoute routeModel, CoreSession session)
+            throws DocumentRouteAlredayLockedException, ClientException {
+        LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(
+                LockableDocumentRoute.class);
+        if (lockableRoute.isLocked()) {
+            throw new DocumentRouteAlredayLockedException();
+        }
+        lockableRoute.lockDocument(session);
+    }
+
+    @Override
+    public void unlockDocumentRoute(DocumentRoute routeModel,
+            CoreSession session) throws ClientException {
+        LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(
+                LockableDocumentRoute.class);
+        if (lockableRoute.isLocked()) {
+            lockableRoute.unlockDocument(session);
+        }
     }
 
 }

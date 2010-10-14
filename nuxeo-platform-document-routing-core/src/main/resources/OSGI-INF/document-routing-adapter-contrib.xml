@@ -9,7 +9,7 @@
       factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory" />
     <adapter class="org.nuxeo.ecm.platform.routing.api.DocumentRouteElement"
       factory="org.nuxeo.ecm.platform.routing.core.adapter.DocumentRouteAdapterFactory" />
-    <adapter class="org.nuxeo.ecm.platform.routing.api.LockableAdapter"
+    <adapter class="org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute"
       factory="org.nuxeo.ecm.platform.routing.core.adapter.LockableDocumentAdapterFactory" />
   </extension>
 
