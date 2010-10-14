@@ -2,12 +2,6 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-<c:if test="false">
-  Needed configuration: mapped to IncrementalSmartQuery instance  
-  Subwidget with following information: 
-  - field: bound value (depending on the widget configuration)
-</c:if>
-
   <c:if test="#{widget.mode == 'view'}">
     <h:outputText value="#{field}" id="#{widget.id}" />  
   </c:if>

@@ -12,7 +12,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
 <ui:define name="page title">
-  <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}"/>
+  <h:outputText value="#{nuxeoApplicationName} - #{messages['label.smart.search.form']}"/>
 </ui:define>
 
 <ui:define name="body">
@@ -31,6 +31,8 @@
         </h3>
         <div class="boxBody">
   
+          <h:outputText value="#{messages['label.smart.query.build.help']}"
+            class="infoMessage" />
           <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
             value="#{smartNXQLQueryActions.queryPart}" />
   
