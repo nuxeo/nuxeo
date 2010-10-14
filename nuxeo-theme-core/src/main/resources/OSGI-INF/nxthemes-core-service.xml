@@ -103,7 +103,9 @@
 
   <extension-point name="resources">
     <documentation>
-      Extension Point for registering Resources.
+      Extension Point for registering theme resources.
+
+      1) Local resources
 
       The XML syntax is:
 
@@ -122,6 +124,32 @@
 
       <require>other-resource1.xxx</require>
       <require>other-resource2.xxx</require>
+
+      2) Remote resources (theme banks)
+
+      Resources can be registered into theme banks to be accessed remotely.
+
+      The XML syntax on the server side is:
+      <code>
+        <import src="bank-resources.zip" bank="bank name" />
+      </code>
+
+      The zip archive is deployed into the bank.
+      The archive's structure is:
+
+      style/
+      style/collection name/
+      ...
+      image/
+      image/collection name/
+      ...
+      preset/
+      preset/collection name/
+      preset/collection name/border/
+      preset/collection name/font/
+      preset/collection name/background/
+      preset/collection name/color/
+      ...
 
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceType"/>
@@ -247,7 +275,14 @@
 
   <extension-point name="banks">
     <documentation>
-    Import of bank data
+      Extension Point for registering theme banks.
+
+      The XML syntax on the client side is:
+      <code>
+        <bank name="mybank" url="http://theme.bank.address.com:8080/nuxeo/site/theme-banks/mybank" />
+      </code>
+
+
     </documentation>
     <object class="org.nuxeo.theme.resources.ResourceBank"/>
   </extension-point>
