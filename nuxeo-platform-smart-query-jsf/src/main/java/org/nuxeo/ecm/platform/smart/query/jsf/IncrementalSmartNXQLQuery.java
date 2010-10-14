@@ -41,6 +41,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
         CONTAINS, BETWEEN
     }
 
+    // XXX: figure out when this is needed so that it is used
     public static final Escaper escaper = new LuceneMinimalEscaper();
 
     final SimpleDateFormat isoDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -76,7 +77,8 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                 builder.append(" ");
             }
             if (conditionalOperator != null) {
-                if ("CONTAINS".equals(conditionalOperator)) {
+                if (SPECIAL_OPERATORS.CONTAINS.name().equals(
+                        conditionalOperator)) {
                     builder.append("LIKE");
                 } else {
                     builder.append(conditionalOperator);
@@ -94,27 +96,48 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                     if (SPECIAL_OPERATORS.CONTAINS.name().equals(
                             conditionalOperator)) {
                         builder.append("'%");
-                        builder.append(String.format("%s",
-                                escaper.escape(stringValue)));
+                        if (Boolean.TRUE.equals(escapeValue)) {
+                            builder.append(String.format("%s",
+                                    escaper.escape(stringValue)));
+                        } else {
+                            builder.append(stringValue);
+                        }
                         builder.append("%'");
                     } else {
-                        builder.append(String.format("'%s'",
-                                escaper.escape(stringValue)));
+                        if (Boolean.TRUE.equals(escapeValue)) {
+                            builder.append(String.format("'%s'",
+                                    escaper.escape(stringValue)));
+                        } else {
+                            builder.append(String.format("'%s'", stringValue));
+                        }
                     }
                 } else if (stringListValue != null) {
                     String[] values = new String[stringListValue.size()];
                     values = stringListValue.toArray(values);
-                    for (int i = 0; i < values.length; i++) {
-                        values[i] = String.format("'%s'",
-                                escaper.escape(values[i]));
+                    if (Boolean.TRUE.equals(escapeValue)) {
+                        for (int i = 0; i < values.length; i++) {
+                            values[i] = String.format("'%s'",
+                                    escaper.escape(values[i]));
+                        }
+                    } else {
+                        for (int i = 0; i < values.length; i++) {
+                            values[i] = String.format("'%s'", values[i]);
+                        }
                     }
                     builder.append(String.format("(%s)", StringUtils.join(
                             values, ",")));
                 } else if (stringArrayValue != null) {
                     String[] values = new String[stringArrayValue.length];
-                    for (int i = 0; i < stringArrayValue.length; i++) {
-                        values[i] = String.format("'%s'",
-                                escaper.escape(stringArrayValue[i]));
+                    if (Boolean.TRUE.equals(escapeValue)) {
+                        for (int i = 0; i < stringArrayValue.length; i++) {
+                            values[i] = String.format("'%s'",
+                                    escaper.escape(stringArrayValue[i]));
+                        }
+                    } else {
+                        for (int i = 0; i < stringArrayValue.length; i++) {
+                            values[i] = String.format("'%s'",
+                                    stringArrayValue[i]);
+                        }
                     }
                     builder.append(String.format("(%s)", StringUtils.join(
                             values, ",")));

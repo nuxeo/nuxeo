@@ -523,6 +523,36 @@
       </subWidgets>
     </widget>
 
+    <widget name="nxql_smart_query_condition_path"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.advanced_search.searchpath</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">ecm:path</property>
+        <propertyList name="availableOperators">
+          <value>STARTSWITH</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="search_path" type="template">
+          <labels>
+            <label mode="any">label.advanced_search.searchpath</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>stringValue</field>
+          </fields>
+          <properties mode="any">
+            <property name="template">
+              /widgets/search_path_widget.xhtml
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -606,6 +636,9 @@
         </row>
         <row name="nxql_smart_query_condition_language">
           <widget>nxql_smart_query_condition_language</widget>
+        </row>
+        <row name="nxql_smart_query_condition_path">
+          <widget>nxql_smart_query_condition_path</widget>
         </row>
       </rows>
     </layout>

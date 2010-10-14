@@ -86,6 +86,8 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
      */
     protected String conditionalOperator;
 
+    protected Boolean escapeValue;
+
     /**
      * Generic set value for the new query part to add.
      * <p>
@@ -280,6 +282,14 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
         clearValues();
     }
 
+    public Boolean getEscapeValue() {
+        return escapeValue;
+    }
+
+    public void setEscapeValue(Boolean escapeValue) {
+        this.escapeValue = escapeValue;
+    }
+
     public Object getValue() {
         return value;
     }
@@ -396,6 +406,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
      * Clears all value bindings.
      */
     protected void clearValues() {
+        escapeValue = null;
         value = null;
         booleanValue = null;
         stringValue = null;
