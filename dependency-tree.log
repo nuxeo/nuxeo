@@ -1,0 +1,208 @@
+ org.nuxeo.ecm.distribution:nuxeo-distribution-shell:5.4.0-SNAPSHOT:zip:
+  |-- org.nuxeo.runtime:nuxeo-runtime-scripting:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- xerces:xercesImpl:2.9.1:jar:
+  |--  |--  |--  |-- xml-apis:xml-apis:1.3.04:jar:
+  |--  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |--  |-- log4j:log4j:1.2.12:jar:
+  |--  |--  |--  |-- logkit:logkit:1.0.1:jar:
+  |--  |--  |--  |-- avalon-framework:avalon-framework:4.1.3:jar:
+  |--  |--  |--  |-- javax.servlet:servlet-api:2.3:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- javax.transaction:jta:1.1:jar:
+  |--  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |--  |-- jboss:jboss-remoting:2.2.2.SP1:jar:
+  |--  |--  |-- jboss:jboss-common:4.0.4.GA:jar:
+  |--  |--  |-- commons-jexl:commons-jexl:1.1:jar:
+  |--  |--  |-- commons-io:commons-io:1.4:jar:
+  |--  |--  |-- xerces:xercesImpl:2.9.1:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- javax.script:script-api:1.0:jar:
+  |--  |-- commons-jexl:commons-jexl:1.1:jar:
+  |--  |-- javax.script:jexl-engine:1.0:jar:
+  |--  |-- rhino:js:1.7R1:jar:
+  |--  |-- javax.script:js-engine:1.0:jar:
+  |--  |-- org.jruby:jruby:1.0.3:jar:
+  |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.0:jar:
+  |--  |--  |-- jline:jline:0.9.91:jar:
+  |--  |--  |--  |-- junit:junit:3.8.1:jar:
+  |--  |--  |-- asm:asm:2.2.3:jar:
+  |--  |--  |-- asm:asm-commons:2.2.3:jar:
+  |--  |--  |--  |-- asm:asm-tree:2.2.3:jar:
+  |--  |--  |--  |--  |-- asm:asm:2.2.3:jar:
+  |--  |-- javax.script:jruby-engine:1.0:jar:
+  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar:
+  |--  |-- asm:asm:2.2.3:jar:
+  |--  |-- org.python:jython:2.2.1:jar:
+  |--  |-- javax.script:jython-engine:1.0:jar:
+  |--  |-- bsh:bsh:2.0b1:jar:
+  |--  |-- javax.script:bsh-engine:1.0:jar:
+  |--  |-- org.codehaus.groovy:groovy-all:1.5.7:jar:
+  |--  |--  |-- junit:junit:3.8.2:jar:
+  |--  |--  |-- org.apache.ant:ant:1.7.0:jar:
+  |--  |--  |--  |-- org.apache.ant:ant-launcher:1.7.0:jar:
+  |--  |--  |-- org.apache.ant:ant-launcher:1.7.0:jar:
+  |--  |--  |-- jline:jline:0.9.94:jar:
+  |--  |--  |--  |-- junit:junit:3.8.1:jar:
+  |--  |-- javax.script:groovy-engine:1.0:jar:
+  |--  |-- antlr:antlr:2.7.7:jar:
+  |--  |-- jboss:jboss-remoting:2.2.2.SP1:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.runtime:nuxeo-runtime-osgi:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |-- jboss:jboss-system:4.0.4.GA:jar:
+  |--  |-- jboss:jboss-common:4.0.4.GA:jar:
+  |--  |-- jboss:jboss-jmx:4.0.4.GA:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.runtime:nuxeo-runtime-launcher:5.4.0-SNAPSHOT:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.core:nuxeo-core-client:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- com.sun.xml:xsom:20060306:jar:
+  |--  |--  |--  |-- com.sun.xml:relaxngDatatype:1.0:jar:
+  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |-- dom4j:dom4j:1.6.1:jar:
+  |--  |--  |--  |-- xml-apis:xml-apis:1.0.b2:jar:
+  |--  |--  |-- commons-collections:commons-collections:3.1:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime-osgi:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |-- jboss:jboss-remoting:2.2.2.SP1:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- cup:java-cup:0.11a:jar:
+  |--  |-- joda-time:joda-time:1.6:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.core:nuxeo-core-io:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |-- dom4j:dom4j:1.6.1:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |-- org.nuxeo.ecm.platform:nuxeo-shell-core:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime-osgi:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime-scripting:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime-jtajca:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- commons-beanutils:commons-beanutils:1.6:jar:
+  |--  |--  |--  |-- commons-logging:commons-logging:1.0:jar:
+  |--  |--  |--  |-- commons-collections:commons-collections:2.0:jar:
+  |--  |--  |-- javax.ressource:jca-api:1.5:jar:
+  |--  |--  |-- org.apache.geronimo.components:geronimo-connector:2.1.3:jar:
+  |--  |--  |--  |-- org.slf4j:slf4j-api:1.4.3:jar:
+  |--  |--  |--  |-- org.apache.geronimo.components:geronimo-transaction:2.1.3:jar:
+  |--  |--  |--  |--  |-- org.slf4j:slf4j-api:1.4.3:jar:
+  |--  |--  |--  |--  |-- org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1:jar:
+  |--  |--  |--  |--  |-- org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec:2.0.0:jar:
+  |--  |--  |--  |--  |-- org.objectweb.howl:howl:1.0.1-1:jar:
+  |--  |--  |--  |-- org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec:2.0.0:jar:
+  |--  |--  |-- org.apache.geronimo.components:geronimo-transaction:2.1.3:jar:
+  |--  |--  |-- org.apache.geronimo.specs:geronimo-jta_1.1_spec:1.1.1:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-client:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-io:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-search-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-event:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime-management:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |--  |--  |-- commons-lang:commons-lang:2.3:jar:
+  |--  |--  |--  |--  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |--  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |--  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |--  |--  |--  |-- javax.transaction:jta:1.1:jar:
+  |--  |--  |--  |--  |-- javax.script:script-api:1.0:jar:
+  |--  |--  |--  |--  |-- commons-lang:commons-lang:2.3:jar:
+  |--  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |--  |--  |-- javax.transaction:jta:1.1:jar:
+  |--  |--  |--  |-- xerces:xercesImpl:2.9.1:jar:
+  |--  |--  |--  |-- commons-lang:commons-lang:2.3:jar:
+  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-directory-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-login:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-usermanager-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- commons-collections:commons-collections:3.1:jar:
+  |--  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |--  |-- javax.transaction:jta:1.1:jar:
+  |--  |-- org.osgi:osgi-core:4.1:jar:
+  |--  |-- jline:jline:0.9.94:jar:
+  |--  |-- net.sf.opencsv:opencsv:1.7:jar:
+  |--  |-- log4j:log4j:1.2.16:jar:
+  |--  |-- jboss:jboss-remoting:2.2.2.SP1:jar:
+  |--  |-- javax.script:script-api:1.0:jar:
+  |--  |-- javax.ejb:ejb-api:3.0:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.platform:nuxeo-platform-audit-api:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.ecm.core:nuxeo-core-event:5.4.0-SNAPSHOT:jar:
+  |--  |-- commons-collections:commons-collections:3.1:jar:
+  |--  |-- commons-beanutils:commons-beanutils:1.6:jar:
+  |--  |-- javax.persistence:persistence:3.0:jar:
+  |--  |-- org.hibernate:hibernate-annotations:3.4.0.GA:jar:
+  |--  |-- commons-lang:commons-lang:2.3:jar:
+  |--  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |--  |-- commons-logging:commons-logging:1.1:jar:
+  |-- org.nuxeo.ecm.platform:nuxeo-platform-search-api:5.4.0-SNAPSHOT:jar:
+  |-- javax.ejb:ejb-api:3.0:jar:
+  |-- org.slf4j:slf4j-api:1.6.0:jar:
+  |-- org.slf4j:slf4j-log4j12:1.6.0:jar:
+  |--  |-- org.slf4j:slf4j-api:1.6.0:jar:
+  |--  |-- log4j:log4j:1.2.14:jar:
+  |-- org.nuxeo.common:nuxeo-common:5.4.0-SNAPSHOT:jar:
+  |-- org.nuxeo.runtime:nuxeo-runtime:5.4.0-SNAPSHOT:jar:
+  |-- commons-logging:commons-logging:1.1:jar:
