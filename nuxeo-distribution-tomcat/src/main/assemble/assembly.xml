@@ -69,9 +69,9 @@
     <chmod dir="${tomcat}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
     <!-- Remove non-nuxeo information files from root
-    <mkdir dir="${outdir}/${tomcat}/doc-tomcat" />
-    <move todir="${outdir}/${tomcat}/doc-tomcat">
-      <fileset dir="${outdir}/${tomcat}">
+    <mkdir dir="${tomcat}/doc-tomcat" />
+    <move todir="${tomcat}/doc-tomcat">
+      <fileset dir="${tomcat}">
         <include name="LICENSE" />
         <include name="NOTICE" />
         <include name="RELEASE-NOTES" />
@@ -122,6 +122,12 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
     </unzip>
+    <!-- NXP-5800 - tomcat adapter ignoring .rar -->
+    <copy todir="${distribution.dir}/nxserver/bundles">
+      <artifact:file groupId="org.nuxeo.ecm.core"
+                     artifactId="nuxeo-core-storage-sql-ra"
+                     type="jar" />
+    </copy>
 
     <!-- Tomcat equivalent ? 
     <antcall target="add-jbossws-bundle">
@@ -159,21 +165,16 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
+    <!-- NXP-5800 - tomcat adapter ignoring .rar -->
+    <copy todir="${distribution.dir}/nxserver/bundles">
+      <artifact:file groupId="org.nuxeo.ecm.core"
+                     artifactId="nuxeo-core-storage-sql-ra"
+                     type="jar" />
+    </copy>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
-
-    <!-- Should be already there
-    <copy todir="${outdir}/${tomcat}/nxserver/bundles">
-      <artifact:file groupId="org.nuxeo.ecm.core"
-                     artifactId="nuxeo-core-storage-sql-ra"
-                     type="jar" />
-      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-impl" />
-      <artifact:resolveFile key="org.nuxeo.ecm.core:nuxeo-chemistry-bindings" />
-      <artifact:resolveFile key="org.nuxeo.ecm.webengine:nuxeo-webengine-core" />
-    </copy>
-    -->
 
     <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
@@ -285,7 +286,9 @@
     <!-- remove libraries already provided by Tomcat or unneeded -->
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/nxserver/bundle">
-        <include name="*nuxeo-runtime-jetty-*" />
+        <include name="nuxeo-runtime-jetty-*" />
+        <!-- temporary removal of wss -->
+        <include name="*wss*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/lib">
         <exclude name="jboss-seam*" />
@@ -300,38 +303,22 @@
         <include name="servlet-api-*" />
         <include name="el-api*" />
         <include name="jsp-*" />
-        <include name="gwt-servlet*" />
         <include name="slf4j-*-1.3*" />
         <include name="catalina-*" />
+        <!-- temporary removal of wss -->
+        <include name="*wss*" />
       </fileset>
     </delete>
 
     <!-- Add missing libraries (should already be in nuxeo.ear ?) -->
     <copy todir="${distribution.dir}/nxserver/lib">
-      <artifact:resolveFile key="com.google.gwt:gwt-servlet:1.7.0:jar" />
       <artifact:resolveFile key="jstl:jstl:1.1.2:jar" />
-      <artifact:resolveFile key="javax.el:el-ri:unknown:jar" />
-      <artifact:resolveFile key="org.apache.geronimo.components:geronimo-connector" />
-      <artifact:resolveFile key="org.apache.geronimo.components:geronimo-transaction" />
-      <artifact:resolveFile key="org.objectweb.howl:howl" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-api" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-commons" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-atompub-server" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-ws" />
-      <artifact:resolveFile key="org.apache.chemistry:chemistry-soap-server" />
-      <artifact:resolveFile key="org.antlr:antlr-runtime" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-core" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-i18n" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-parser" />
-      <artifact:resolveFile key="org.apache.abdera:abdera-server" />
-      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
-      <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
-      <artifact:resolveFile key="jaxen:jaxen" />
       <artifact:resolveFile key="org.jboss.naming:jnp-client:5.0.3.GA" />
       <artifact:resolveFile key="org.jboss.logging:jboss-logging-spi:2.1.0.GA" />
       <artifact:resolveFile key="javassist:javassist:3.9.0.GA" />
       <artifact:resolveFile key="org.jboss:jboss-common-core:2.2.14.GA" />
+      <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
+      <artifact:file groupId="commons-el" artifactId="commons-el" />
     </copy>
 
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->

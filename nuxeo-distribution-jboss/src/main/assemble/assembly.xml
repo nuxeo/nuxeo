@@ -196,8 +196,8 @@
     <!-- remove libraries already provided by JBoss or unneeded -->
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
-        <include name="*nuxeo-runtime-jetty-*" />
-        <include name="*nuxeo-runtime-jtajca" />
+        <include name="nuxeo-runtime-jetty-*" />
+        <include name="nuxeo-runtime-jtajca*" />
       </fileset>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
         <exclude name="jboss-seam*" />
