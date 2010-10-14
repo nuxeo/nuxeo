@@ -37,7 +37,7 @@ public interface DocumentRouteElement extends Serializable {
      *
      */
     enum ElementLifeCycleState {
-        draft, validated, ready, running, done
+        draft, validated, ready, running, done, cancelled
     }
 
     /**
@@ -45,7 +45,7 @@ public interface DocumentRouteElement extends Serializable {
      *
      */
     enum ElementLifeCycleTransistion {
-        toValidated, toReady, toRunning, toDone, backToReady
+        toValidated, toReady, toRunning, toDone, backToReady, toCancelled
     }
 
     /**
@@ -223,4 +223,22 @@ public interface DocumentRouteElement extends Serializable {
      * undoing the step action)
      */
     void backToReady(CoreSession session);
+
+    /**
+     * Set the step to a cancel step. This method only modify the state of this
+     * element and does not run any other action.
+     */
+    void setCancelled(CoreSession session);
+
+    /**
+     * Cancel this element.
+     *
+     * @param session
+     */
+    void cancel(CoreSession session);
+
+    /**
+     * @return
+     */
+    boolean isCancelled();
 }

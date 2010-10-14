@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -184,6 +185,51 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                                                                * step
                                                                */,
                 CounterListener.getCounter());
+    }
+    public void testCancelRoute() throws Exception {
+        CounterListener.resetCouner();
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", session);
+        session.save();
+        route = service.validateRouteModel(route, session);
+        assertEquals("validated",
+                route.getDocument().getCurrentLifeCycleState());
+        assertEquals(
+                "validated",
+                session.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        session.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel,
+                doc1.getId(), session);
+        assertNotNull(routeInstance);
+        assertFalse(routeInstance.isDone());
+        assertEquals(
+                1,
+                service.getDocumentRoutesForAttachedDocument(session,
+                        doc1.getId()).size());
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        routeInstance.cancel(session);
+        assertTrue(routeInstance.isCancelled());
+        DocumentModelList children = session.getChildren(routeInstance.getDocument().getRef());
+        while(true) {
+            for(DocumentModel doc : children) {
+                  assertTrue(doc.getCurrentLifeCycleState().equals("cancelled"));
+            }
+            children = new DocumentModelListImpl();
+            for(DocumentModel doc : children) {
+                children.addAll(session.getChildren(doc.getRef()));
+            }
+            if(children.isEmpty()) {
+                break;
+            }
+        }
     }
 
     public void testDocumentRouteWithStepBack() throws Exception {

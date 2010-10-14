@@ -53,8 +53,4 @@ public class SerialRunner extends AbstractRunner implements ElementRunner {
         // all child ran, we're done
         element.setDone(session);
     }
-
-    @Override
-    public void undo(CoreSession session, DocumentRouteElement element) {
-    }
 }

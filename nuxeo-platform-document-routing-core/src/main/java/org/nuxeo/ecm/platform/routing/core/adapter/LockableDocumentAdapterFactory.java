@@ -30,9 +30,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.LockableDocumentRouteImpl;
  */
 public class LockableDocumentAdapterFactory implements DocumentAdapterFactory {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Object getAdapter(DocumentModel doc, Class clazz) {
+    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class clazz) {
         String type = doc.getType();
         if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(type)) {
             return new LockableDocumentRouteImpl(doc);

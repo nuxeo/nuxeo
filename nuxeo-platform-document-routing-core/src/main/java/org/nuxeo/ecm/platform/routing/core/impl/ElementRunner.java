@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
@@ -26,7 +27,22 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
  *
  */
 public interface ElementRunner {
+    /**
+     * Run this element. If an exception is thrown while doing, it cancels the
+     * route.
+     */
     void run(CoreSession session, DocumentRouteElement element);
 
+    /**
+     * Run the undo chain on this element. If this element is not a step, then
+     * throw an exception.
+     */
     void undo(CoreSession session, DocumentRouteElement element);
+
+    /**
+     * Cancel this element.
+     *
+     * @see DocumentRoute#cancel(CoreSession)
+     */
+    void cancel(CoreSession session, DocumentRouteElement element);
 }

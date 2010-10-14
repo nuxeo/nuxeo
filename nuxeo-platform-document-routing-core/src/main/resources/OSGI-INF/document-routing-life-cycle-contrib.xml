@@ -21,6 +21,9 @@
         <transition name="backToReady" destinationState="ready">
           <description>the element finishes</description>
         </transition>
+        <transition name="toCancelled" destinationState="cancelled">
+          <description>cancel this element</description>
+        </transition>
       </transitions>
       <states>
         <state name="draft" description="Default state" initial="true">
@@ -36,17 +39,20 @@
         <state name="ready" description="The element is ready">
           <transitions>
             <transition>toRunning</transition>
+            <transition>toCancelled</transition>
           </transitions>
         </state>
         <state name="running" description="The element is running">
           <transitions>
             <transition>toDone</transition>
             <transition>backToReady</transition>
+            <transition>toCancelled</transition>
           </transitions>
         </state>
         <state name="done" description="The element is done">
           <transitions>
             <transition>backToReady</transition>
+            <transition>toCancelled</transition>
           </transitions>
         </state>
       </states>

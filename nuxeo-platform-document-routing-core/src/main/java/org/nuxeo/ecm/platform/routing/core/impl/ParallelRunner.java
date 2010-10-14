@@ -67,8 +67,4 @@ public class ParallelRunner extends AbstractRunner implements ElementRunner {
             }
         }
     }
-
-    @Override
-    public void undo(CoreSession session, DocumentRouteElement element) {
-    }
 }

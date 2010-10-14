@@ -109,4 +109,20 @@ public class StepElementRunner implements ElementRunner {
         EventFirer.fireEvent(session, element, null,
                 DocumentRoutingConstants.Events.afterUndoingStep.name());
     }
+
+    @Override
+    public void cancel(CoreSession session, DocumentRouteElement element) {
+        if (element.isReady() || element.isDone()) {
+            element.setCancelled(session);
+        } else if (element.isRunning()) {
+            try {
+                undo(session, element);
+            } finally {
+                element.setCancelled(session);
+            }
+        } else {
+            throw new RuntimeException(
+                    "Not allowed to cancel an element neither in ready, done or running state.");
+        }
+    }
 }

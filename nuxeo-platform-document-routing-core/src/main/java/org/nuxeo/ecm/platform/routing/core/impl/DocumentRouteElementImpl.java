@@ -143,6 +143,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
+    public boolean isCancelled() {
+        return checkLifeCycleState(ElementLifeCycleState.cancelled);
+    }
+
+    @Override
     public boolean isDraft() {
         return checkLifeCycleState(ElementLifeCycleState.draft);
     }
@@ -356,5 +361,14 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         public boolean isRunning() {
             return isRunning;
         }
+    }
+
+    public void cancel(CoreSession session) {
+        runner.cancel(session, this);
+    }
+
+    @Override
+    public void setCancelled(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toCancelled, session, false);
     }
 }

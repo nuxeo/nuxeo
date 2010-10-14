@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-public class AbstractRunner {
+public abstract class AbstractRunner implements ElementRunner {
 
     protected List<DocumentRouteElement> getChildrenElement(
             CoreSession session, DocumentRouteElement element) {
@@ -44,5 +44,20 @@ public class AbstractRunner {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public void undo(CoreSession session, DocumentRouteElement element) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void cancel(CoreSession session, DocumentRouteElement element) {
+        List<DocumentRouteElement> children = getChildrenElement(session,
+                element);
+        for (DocumentRouteElement child : children) {
+            child.cancel(session);
+        }
+        element.setCancelled(session);
     }
 }
