@@ -84,6 +84,7 @@
         <property name="searchField">ecm:fulltext</property>
         <propertyList name="availableOperators">
           <value>LIKE</value>
+          <value>NOT LIKE</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -111,6 +112,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -300,6 +304,7 @@
         <property name="searchField">dc:subjects</property>
         <propertyList name="availableOperators">
           <value>IN</value>
+          <value>NOT IN</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -327,6 +332,10 @@
           <value>=</value>
           <value>LIKE</value>
           <value>CONTAINS</value>
+          <value>NOT IN</value>
+          <value>!=</value>
+          <value>NOT LIKE</value>
+          <value>NOT_CONTAINS</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -335,9 +344,13 @@
             <field>stringArrayValue</field>
           </fields>
           <widgetModes>
+            <!-- to show only when using 'IN' or 'NOT IN' -->
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='IN'?'hidden':mode}
+              <![CDATA[            
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='IN'
+              and value.conditionalOperator!='NOT IN'?'hidden':mode}
+              ]]>
             </mode>
           </widgetModes>
           <properties mode="any">
@@ -351,9 +364,11 @@
             <field>stringValue</field>
           </fields>
           <widgetModes>
+            <!-- to use for '=' or '!=' -->
             <mode value="any">
               #{empty value.conditionalOperator or
-              value.conditionalOperator!='='?'hidden':mode}
+              (value.conditionalOperator!='=' and
+              value.conditionalOperator!='!=')?'hidden':mode}
             </mode>
           </widgetModes>
           <properties mode="any">
@@ -367,10 +382,15 @@
             <field>stringValue</field>
           </fields>
           <widgetModes>
+            <!-- use in other cases -->
             <mode value="any">
-              #{empty value.conditionalOperator or
-              value.conditionalOperator=='IN' or
-              value.conditionalOperator=='='?'hidden':mode}
+              <![CDATA[
+              #{empty value.conditionalOperator
+              or value.conditionalOperator=='IN'
+              or value.conditionalOperator=='NOT IN'
+              or value.conditionalOperator=='='
+              or value.conditionalOperator=='!='?'hidden':mode}
+              ]]>
             </mode>
           </widgetModes>
         </widget>
@@ -389,6 +409,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -412,6 +435,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -435,6 +461,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -458,6 +487,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -481,6 +513,9 @@
           <value>CONTAINS</value>
           <value>LIKE</value>
           <value>=</value>
+          <value>NOT_CONTAINS</value>
+          <value>NOT LIKE</value>
+          <value>!=</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -502,6 +537,7 @@
         <property name="searchField">dc:contributors</property>
         <propertyList name="availableOperators">
           <value>IN</value>
+          <value>NOT IN</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -533,6 +569,7 @@
         <property name="searchField">ecm:path</property>
         <propertyList name="availableOperators">
           <value>STARTSWITH</value>
+          <value>NOT STARTSWITH</value>
         </propertyList>
       </properties>
       <subWidgets>

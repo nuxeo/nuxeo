@@ -37,8 +37,21 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     public static final String GENERIC_QUERY_SELECT = "SELECT * FROM DOCUMENT WHERE ";
 
-    public enum SPECIAL_OPERATORS {
-        CONTAINS, BETWEEN
+    public static enum SPECIAL_OPERATORS {
+
+        CONTAINS("CONTAINS"), BETWEEN("BETWEEN"), NOT_CONTAINS("NOT CONTAINS"), NOT_STARTSWITH(
+                "NOT STARTSWITH");
+
+        String stringValue;
+
+        SPECIAL_OPERATORS(String stringValue) {
+            this.stringValue = stringValue;
+        }
+
+        public String getStringValue() {
+            return stringValue;
+        }
+
     }
 
     // XXX: figure out when this is needed so that it is used
@@ -69,7 +82,9 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
             if (Boolean.TRUE.equals(openParenthesis)) {
                 builder.append("(");
             }
-            if (Boolean.TRUE.equals(addNotOperator)) {
+            if (Boolean.TRUE.equals(addNotOperator)
+                    || SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(
+                            conditionalOperator)) {
                 builder.append("NOT ");
             }
             if (leftExpression != null) {
@@ -77,9 +92,16 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                 builder.append(" ");
             }
             if (conditionalOperator != null) {
-                if (SPECIAL_OPERATORS.CONTAINS.name().equals(
+                if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(
                         conditionalOperator)) {
                     builder.append("LIKE");
+                } else if (SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(
+                        conditionalOperator)) {
+                    builder.append("NOT LIKE");
+                } else if (SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(
+                        conditionalOperator)) {
+                    // negation already added above
+                    builder.append("STARTSWITH");
                 } else {
                     builder.append(conditionalOperator);
                 }
@@ -93,8 +115,10 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                         builder.append(0);
                     }
                 } else if (stringValue != null) {
-                    if (SPECIAL_OPERATORS.CONTAINS.name().equals(
-                            conditionalOperator)) {
+                    if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(
+                            conditionalOperator)
+                            || SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(
+                                    conditionalOperator)) {
                         builder.append("'%");
                         if (Boolean.TRUE.equals(escapeValue)) {
                             builder.append(String.format("%s",

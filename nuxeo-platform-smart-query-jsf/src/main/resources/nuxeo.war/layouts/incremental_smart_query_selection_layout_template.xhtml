@@ -12,7 +12,7 @@
   Layout template presenting a selector with row names and titles as well
   as contributed widgets for given row when selecting a given row.
   
-  Needed configuration: mapped to IncrementalSmartQuery instance  
+  Needed configuration: mapped to IncrementalSmartQuery instance
 </c:if>
 
   <c:if test="#{layout.mode == 'edit' or layout.mode == 'create'}">
@@ -27,15 +27,17 @@
     </h:selectOneMenu>
     <h:message for="#{layout.id}_logical_operator" class="errorMessage" />
 
-    <h:selectOneMenu value="#{layoutValue.addNotOperator}"
-      id="#{layout.id}_add_not_operator"
-      rendered="#{layoutValue.showAddNotOperator}">
-      <f:selectItem itemLabel="" itemValue="false" />
-      <f:selectItem
-        itemLabel="#{messages['label.smart.query.operator.NOT']}"
-        itemValue="true" />
-    </h:selectOneMenu>
-    <h:message for="#{layout.id}_add_not_operator" class="errorMessage" />
+    <c:if test="#{not layoutProperty_hideNotOperator}">
+      <h:selectOneMenu value="#{layoutValue.addNotOperator}"
+        id="#{layout.id}_add_not_operator"
+        rendered="#{layoutValue.showAddNotOperator}">
+        <f:selectItem itemLabel="" itemValue="false" />
+        <f:selectItem
+          itemLabel="#{messages['label.smart.query.operator.NOT']}"
+          itemValue="true" />
+      </h:selectOneMenu>
+      <h:message for="#{layout.id}_add_not_operator" class="errorMessage" />
+    </c:if>
 
     <a4j:region id="#{layout.id}_rowSelectorRegion">
       <h:selectOneMenu value="#{layoutValue.selectedRowName}"
