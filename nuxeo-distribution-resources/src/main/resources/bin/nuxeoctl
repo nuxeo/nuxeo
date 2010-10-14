@@ -347,8 +347,13 @@ check_old_paths() {
     exit 1
   fi
   # Check Tomcat paths
-  
-  
+  if [ "$jboss" = "true" ] && \
+    ( [ -e "$NUXEO_HOME"/vcsh2repo ] ); then
+    echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
+    die "Please rename 'vcsh2repo' directory from \"$DATA_DIR/h2/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
+    exit 1
+  fi
+
 }
 
 # Check if nuxeo.conf used has not changed since last run (if not first run)

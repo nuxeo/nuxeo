@@ -6,6 +6,7 @@ nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=8443
 nuxeo.server.tomcat-admin.port=8005
 
+nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
 
