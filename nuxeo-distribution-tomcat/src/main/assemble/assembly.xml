@@ -41,6 +41,7 @@
     <antcall target="build-nuxeo-ep" />
     <antcall target="build-nuxeo-dm" />
     <antcall target="build-nuxeo-coreserver" />
+    <delete dir="${tomcat}" failonerror="false" />
   </target>
 
   <target name="prepare-tomcat">
@@ -100,6 +101,7 @@
       <!-- copy jdbc drivers -->
       <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+      <artifact:file groupId="org.apache.derby" artifactId="derby" />
     </copy>
   </target>
 
@@ -286,6 +288,9 @@
         <include name="*nuxeo-runtime-jetty-*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/lib">
+        <exclude name="jboss-seam*" />
+        <exclude name="jboss-remoting*" />
+        <include name="jboss*" />
         <include name="core-*" />
         <!-- jetty is needed by vcs remote -->
         <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
@@ -297,20 +302,7 @@
         <include name="jsp-*" />
         <include name="gwt-servlet*" />
         <include name="slf4j-*-1.3*" />
-        <!-- for info, other JBoss deletions:
-        <exclude name="jboss-seam*" />
-        <include name="jboss*" />
-        <include name="hibernate*" />
-        <include name="javaassist*" />
-        <include name="commons-collections*" />
-        <include name="commons-logging*" />
-        <include name="geronimo-*" />
-        <include name="jta-*" />
-        <include name="log4j-*" />
-        <include name="persistence-*" />
-        <include name="script-api-*" />
-        <include name="jca-api-*" />
-        -->
+        <include name="catalina-*" />
       </fileset>
     </delete>
 
@@ -336,12 +328,15 @@
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-api" />
       <artifact:resolveFile key="org.apache.ws.commons.axiom:axiom-impl" />
       <artifact:resolveFile key="jaxen:jaxen" />
+      <artifact:resolveFile key="org.jboss.naming:jnp-client:5.0.3.GA" />
+      <artifact:resolveFile key="org.jboss.logging:jboss-logging-spi:2.1.0.GA" />
+      <artifact:resolveFile key="javassist:javassist:3.9.0.GA" />
+      <artifact:resolveFile key="org.jboss:jboss-common-core:2.2.14.GA" />
     </copy>
 
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->
     <move todir="${distribution.dir}/lib">
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="derby-*.jar" />
         <include name="h2-*" />
         <include name="log4j-*" />
         <include name="lucene-*" />

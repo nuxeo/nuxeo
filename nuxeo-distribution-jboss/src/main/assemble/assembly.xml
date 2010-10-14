@@ -34,14 +34,12 @@
   <target name="build" depends="init" unless="no.build">
     <echo>Building JBoss distributions...</echo>
     <property name="jboss" value="${outdir}/jboss.tmp" />
-
     <antcall target="prepare-jboss" />
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
     <antcall target="build-nuxeo-ep" />
     <antcall target="build-nuxeo-dm" />
-
     <delete dir="${jboss}" failonerror="false" />
   </target>
 
@@ -95,6 +93,7 @@
     <copy todir="${jboss}/server/default/lib">
       <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
+      <artifact:file groupId="org.apache.derby" artifactId="derby" />
     </copy>
   </target>
 
@@ -215,6 +214,7 @@
         <include name="script-api-*" />
         <include name="jca-api-*" />
         <include name="el-*" />
+        <include name="catalina-*" />
         <!-- TODO should we removed the following? -->
         <!--
         <include name="javacc-*" />
@@ -228,16 +228,8 @@
 
     <!-- Add missing libraries (should already be in nuxeo.ear ?) -->
     <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-      <artifact:file groupId="org.apache.derby" artifactId="derby" />
       <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
       <artifact:file groupId="commons-el" artifactId="commons-el" />
     </copy>
-
-    <!-- Move some libraries from nuxeo.ear to JBoss default lib directory -->
-    <move todir="${distribution.dir}/server/default/lib">
-      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-        <include name="derby-*.jar" />
-      </fileset>
-    </move>
   </target>
 </project>
