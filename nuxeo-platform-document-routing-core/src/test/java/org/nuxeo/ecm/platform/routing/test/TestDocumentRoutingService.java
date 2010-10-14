@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -28,6 +30,7 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,6 +38,78 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
+
+    public void testAddStepToRouteElement() throws Exception {
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        DocumentModel step = session.createDocumentModel(DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step31bis");
+        DocumentModelList stepFolders = session.query("Select * From Document WHERE dc:title = 'parallel1'");
+        assertEquals(1, stepFolders.size());
+        DocumentModel parallel1 = stepFolders.get(0);
+        service.addRouteElementToRoute(parallel1.getRef(), "step32", step, session);
+        DocumentModelList parallel1Childs = service.getOrderedRouteElement(
+                parallel1.getId(), session);
+        assertEquals(3, parallel1Childs.size());
+        step = parallel1Childs.get(1);
+        assertEquals("step31bis", step.getTitle());
+
+        step = session.createDocumentModel(DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step33");
+        service.addRouteElementToRoute(parallel1.getRef(), null, step, session);
+        parallel1Childs = service.getOrderedRouteElement(parallel1.getId(), session);
+        assertEquals(4, parallel1Childs.size());
+        step = parallel1Childs.get(3);
+        assertEquals("step33", step.getTitle());
+
+        step = session.createDocumentModel(DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step30");
+        service.addRouteElementToRoute(parallel1.getRef(), 0, step, session);
+        parallel1Childs = service.getOrderedRouteElement(parallel1.getId(), session);
+        assertEquals(5, parallel1Childs.size());
+        step = parallel1Childs.get(0);
+        assertEquals("step30", step.getTitle());
+
+        step = session.createDocumentModel(DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step34");
+        service.addRouteElementToRoute(parallel1.getRef(), 5, step, session);
+        parallel1Childs = service.getOrderedRouteElement(parallel1.getId(), session);
+        assertEquals(6, parallel1Childs.size());
+        step = parallel1Childs.get(5);
+        assertEquals("step34", step.getTitle());
+
+        step = session.createDocumentModel(DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step33bis");
+        service.addRouteElementToRoute(parallel1.getRef(), 5, step, session);
+        parallel1Childs = service.getOrderedRouteElement(parallel1.getId(), session);
+        assertEquals(7, parallel1Childs.size());
+        step = parallel1Childs.get(5);
+        assertEquals("step33bis", step.getTitle());
+    }
+
+    public void testRemoveStep() throws Exception {
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        assertNotNull(route);
+        session.save();
+        DocumentModel stepFolder = session.getDocument(new PathRef(
+                WORKSPACES_PATH + "/" + ROUTE1 + "/parallel1/"));
+        DocumentModelList childs = service.getOrderedRouteElement(stepFolder.getId(),
+                session);
+        assertEquals(2, childs.size());
+
+        DocumentModel step32 = session.getDocument(new PathRef(WORKSPACES_PATH
+                + "/" + ROUTE1 + "/parallel1/step32"));
+        assertNotNull(step32);
+        service.removeRouteElement(step32, session);
+        childs = service.getOrderedRouteElement(stepFolder.getId(), session);
+        assertEquals(1, childs.size());
+    }
 
     public void testCreateNewInstance() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
