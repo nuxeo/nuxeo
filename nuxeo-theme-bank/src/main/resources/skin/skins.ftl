@@ -9,9 +9,10 @@
       for (i=0; i < data.length; i++) {
         var skin = data[i];
         $('#skins').append(
+          '<a href="javascript:void(0)" onclick="top.navtree.openBranch(\'' + skin.bank + '-skins-' + skin.collection + '-' + skin.resource + '\')">' +
           '<div class="imageSingle"><div class="image">' +
           '<img src="${Root.getPath()}/' + skin.bank + '/style/' + skin.collection + '/' + skin.resource + '/preview">' +
-          '</div><div class="footer">' + skin.resource + '</div></div>'
+          '</div><div class="footer">' + skin.resource + '</div></div></a>'
         )
       }
     });
