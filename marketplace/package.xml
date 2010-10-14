@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package name="nuxeo-platform-smart-search" version="5.4.0-SNAPSHOT"
+  type="addon">
+  <title>Smart Search</title>
+  <description>
+    This module adds UI features to build a query, and save it in a document.
+  </description>
+  <vendor>Nuxeo</vendor>
+  <license>LGPL</license>
+  <platforms>
+    <platform>dm-5.4.0</platform>
+  </platforms>
+  <dependencies></dependencies>
+</package>
