@@ -136,6 +136,7 @@
         <property name="searchField">dc:created</property>
         <propertyList name="availableOperators">
           <value>BETWEEN</value>
+          <value>NOT BETWEEN</value>
           <value>&lt;</value>
           <value>&gt;</value>
         </propertyList>
@@ -153,8 +154,11 @@
         <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              ]]>
             </mode>
           </widgetModes>
           <properties mode="any">
@@ -170,8 +174,11 @@
           </fields>
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
+              ]]>
             </mode>
           </widgetModes>
           <properties widgetMode="edit">
@@ -192,6 +199,7 @@
         <property name="searchField">dc:modified</property>
         <propertyList name="availableOperators">
           <value>BETWEEN</value>
+          <value>NOT BETWEEN</value>
           <value>&lt;</value>
           <value>&gt;</value>
         </propertyList>
@@ -209,8 +217,11 @@
         <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              ]]>
             </mode>
           </widgetModes>
           <properties mode="any">
@@ -226,8 +237,11 @@
           </fields>
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
+              ]]>
             </mode>
           </widgetModes>
           <properties widgetMode="edit">
@@ -248,6 +262,7 @@
         <property name="searchField">dc:expired</property>
         <propertyList name="availableOperators">
           <value>BETWEEN</value>
+          <value>NOT BETWEEN</value>
           <value>&lt;</value>
           <value>&gt;</value>
         </propertyList>
@@ -265,8 +280,11 @@
         <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':'view'}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              ]]>
             </mode>
           </widgetModes>
           <properties mode="any">
@@ -282,8 +300,11 @@
           </fields>
           <widgetModes>
             <mode value="any">
-              #{not empty value.conditionalOperator and
-              value.conditionalOperator!='BETWEEN'?'hidden':mode}
+              <![CDATA[
+              #{not empty value.conditionalOperator
+              and value.conditionalOperator!='BETWEEN'
+              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
+              ]]>
             </mode>
           </widgetModes>
           <properties widgetMode="edit">
@@ -634,6 +655,9 @@
           /layouts/incremental_smart_query_selection_layout_template.xhtml
         </template>
       </templates>
+      <properties mode="any">
+        <property name="hideNotOperator">true</property>
+      </properties>
       <rows>
         <row name="nxql_smart_query_condition_fulltext">
           <widget>nxql_smart_query_condition_fulltext</widget>
