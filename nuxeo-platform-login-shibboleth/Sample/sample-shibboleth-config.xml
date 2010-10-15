@@ -14,4 +14,20 @@
     </authenticationChain>
   </extension>
 
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService"
+    point="config">
+    <config>
+      <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+      <loginRedirectURLParameter>target</loginRedirectURLParameter>
+      <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+      <logoutRedirectURLParameter>return</logoutRedirectURLParameter>
+
+      <uidHeader>uid</uidHeader>
+      <fieldMapping header="uid">username</fieldMapping>
+      <fieldMapping header="mail">email</fieldMapping>
+    </config>
+  </extension>
+
 </component>

@@ -16,6 +16,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.shib;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +32,31 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
-public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin {
+public class ShibbolethAuthenticationPlugin implements
+        NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
 
     protected ShibbolethAuthenticationConfig config;
+
+    protected ShibbolethAuthenticationConfig getConfig() {
+        if (config == null) {
+            try {
+                ShibbolethAuthenticationService service = Framework.getService(ShibbolethAuthenticationService.class);
+                config = service.getConfig();
+            } catch (Exception e) {
+                log.error(
+                        "Failed to load Shibboleth authentication configuration",
+                        e);
+            }
+        }
+        return config;
+    }
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -46,19 +64,53 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
-        return false;
+        ShibbolethAuthenticationConfig config = getConfig();
+        if (config == null) {
+            return false;
+        }
+        String loginURL = config.getLoginURL();
+        try {
+            if (loginURL == null) {
+                log.error("Unable to handle Shibboleth login, no loginURL registered");
+                return false;
+            }
+            loginURL = loginURL + "?target="
+                    + VirtualHostHelper.getBaseURL(httpRequest);
+            httpResponse.sendRedirect(loginURL);
+        } catch (IOException e) {
+            String errorMessage = String.format(
+                    "Unable to handle Shibboleth login on %s", loginURL);
+            log.error(errorMessage, e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean handleLogout(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
+        ShibbolethAuthenticationConfig config = getConfig();
+        if (config == null) {
+            return false;
+        }
+        String logoutURL = config.getLogoutURL();
+        if (logoutURL == null) {
+            return false;
+        }
+        try {
+            logoutURL = logoutURL + "?return="
+                    + VirtualHostHelper.getBaseURL(httpRequest);
+            httpResponse.sendRedirect(logoutURL);
+        } catch (IOException e) {
+            log.error("Unable to handle Shibboleth logout", e);
+            return false;
+        }
+        return true;
     }
 
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        if (config == null) {
-            try {
-                ShibbolethAuthenticationService service = Framework.getService(ShibbolethAuthenticationService.class);
-                config = service.getConfig();
-            } catch (Exception e) {
-                log.error("Failed to load Shibboleth authentication configuration", e);
-            }
-        }
+        ShibbolethAuthenticationConfig config = getConfig();
         if (config == null) {
             return null;
         }
@@ -74,13 +126,15 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
                     userManager.getUserDirectoryName());
             Map<String, Object> fieldMap = new HashMap<String, Object>();
             for (String key : config.getFieldMapping().keySet()) {
-                fieldMap.put(config.getFieldMapping().get(key), httpRequest.getHeader(key));
+                fieldMap.put(config.getFieldMapping().get(key),
+                        httpRequest.getHeader(key));
             }
             DocumentModel entry = userDir.getEntry(username);
             if (entry == null) {
                 userDir.createEntry(fieldMap);
             } else {
-                entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
+                entry.getDataModel(userManager.getUserSchemaName()).setMap(
+                        fieldMap);
                 userDir.updateEntry(entry);
             }
             userDir.commit();
@@ -103,7 +157,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return false;
+        return true;
     }
 
 }
