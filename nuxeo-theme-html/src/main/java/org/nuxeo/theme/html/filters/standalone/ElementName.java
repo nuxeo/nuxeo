@@ -15,7 +15,7 @@
 package org.nuxeo.theme.html.filters.standalone;
 
 import org.nuxeo.theme.elements.Element;
-import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;
 
@@ -26,7 +26,8 @@ public class ElementName extends StandaloneFilter {
         final Element element = info.getElement();
         String elementName = element.getName();
         if (elementName != null) {
-            String markup = Utils.insertCssClass(info.getMarkup(), elementName);
+            String markup = CSSUtils.insertCssClass(info.getMarkup(),
+                    elementName);
             info.setMarkup(markup);
         }
         return info;
