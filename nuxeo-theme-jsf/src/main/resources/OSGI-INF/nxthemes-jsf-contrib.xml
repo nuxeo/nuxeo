@@ -117,6 +117,12 @@
       </class>
     </standalone-filter>    
 
+    <standalone-filter name="set element name" template-engine="jsf-facelets">
+      <class>
+        org.nuxeo.theme.html.filters.standalone.ElementName
+      </class>
+    </standalone-filter>
+
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
