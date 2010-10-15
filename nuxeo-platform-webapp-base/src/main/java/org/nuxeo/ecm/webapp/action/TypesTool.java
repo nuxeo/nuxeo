@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,9 +45,6 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Document type service for document type creation.
@@ -93,44 +93,52 @@ public class TypesTool implements Serializable {
         boolean set = false;
         DocumentModel model = getCurrentItem();
         if (model != null) {
-            Type docType = typeManager.getType(model.getType());
-            if (docType != null) {
-                typesMap = new HashMap<String, List<List<Type>>>();
-                Map<String, SubType> allowedSubTypes = docType.getAllowedSubTypes();
-                allowedSubTypes = filterSubTypes(allowedSubTypes);
-                Set<String> allowedSubTypesKeySet = allowedSubTypes.keySet();
-                for (String currentKey : allowedSubTypesKeySet) {
-                    SubType currentSubType = allowedSubTypes.get(currentKey);
-                    boolean addElement = true;
-                    List<String> subTypesHiddenInCreation = currentSubType.getHidden();
-                    if (subTypesHiddenInCreation != null
-                            && subTypesHiddenInCreation.contains("create")) {
-                        addElement = false;
-                    }
-
-                    if (addElement) {
-                        Type subType = typeManager.getType(currentKey);
-                        if (subType != null) {
-                            String key = subType.getCategory();
-                            if (key == null) {
-                                key = DEFAULT_CATEGORY;
-                            }
-                            if (!typesMap.containsKey(key)) {
-                                typesMap.put(key, new ArrayList<List<Type>>());
-                                typesMap.get(key).add(new ArrayList<Type>());
-                            }
-                            typesMap.get(key).get(0).add(subType);
-                        }
-                    }
-                }
-                typesMap = organizeType();
-                set = true;
-            }
+            typesMap = getOrganizedTypeMapForDocumentType(model.getType());
+            set = true;
         }
         if (!set) {
             // set an empty list
             typesMap = new HashMap<String, List<List<Type>>>();
         }
+    }
+
+    public Map<String, List<List<Type>>> getOrganizedTypeMapForDocumentType(
+            String type) {
+        Type docType = typeManager.getType(type);
+        if (docType != null) {
+            Map<String, List<List<Type>>> docTypesMap = new HashMap<String, List<List<Type>>>();
+            Map<String, SubType> allowedSubTypes = docType.getAllowedSubTypes();
+            allowedSubTypes = filterSubTypes(allowedSubTypes);
+            Set<String> allowedSubTypesKeySet = allowedSubTypes.keySet();
+            for (String currentKey : allowedSubTypesKeySet) {
+                SubType currentSubType = allowedSubTypes.get(currentKey);
+                boolean addElement = true;
+                List<String> subTypesHiddenInCreation = currentSubType.getHidden();
+                if (subTypesHiddenInCreation != null
+                        && subTypesHiddenInCreation.contains("create")) {
+                    addElement = false;
+                }
+
+                if (addElement) {
+                    Type subType = typeManager.getType(currentKey);
+                    if (subType != null) {
+                        String key = subType.getCategory();
+                        if (key == null) {
+                            key = DEFAULT_CATEGORY;
+                        }
+                        if (!docTypesMap.containsKey(key)) {
+                            docTypesMap.put(key, new ArrayList<List<Type>>());
+                            docTypesMap.get(key).add(new ArrayList<Type>());
+                        }
+                        docTypesMap.get(key).get(0).add(subType);
+                    }
+                }
+            }
+            docTypesMap = organizeType(docTypesMap);
+            return docTypesMap;
+
+        }
+        return new HashMap<String, List<List<Type>>>();
     }
 
     protected Map<String, SubType> filterSubTypes(
@@ -139,8 +147,13 @@ public class TypesTool implements Serializable {
     }
 
     protected Map<String, List<List<Type>>> organizeType() {
+        return organizeType(typesMap);
+    }
+
+    protected Map<String, List<List<Type>>> organizeType(
+            Map<String, List<List<Type>>> types) {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
-        Set<Entry<String, List<List<Type>>>> typeEntrySet = typesMap.entrySet();
+        Set<Entry<String, List<List<Type>>>> typeEntrySet = types.entrySet();
         for (Entry<String, List<List<Type>>> set : typeEntrySet) {
             List<List<Type>> typeList = set.getValue();
             List<List<Type>> newList = new ArrayList<List<Type>>();
