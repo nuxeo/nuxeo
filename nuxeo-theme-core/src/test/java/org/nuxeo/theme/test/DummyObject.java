@@ -32,13 +32,13 @@ public class DummyObject {
 
     @FieldInfo
     public Boolean booleanClass = false;
-    
+
     @FieldInfo
     public int maxItems;
-    
+
     @FieldInfo
     public Integer integerClass;
-    
+
     @FieldInfo
     public List<String> stringSequence = new ArrayList<String>();
 

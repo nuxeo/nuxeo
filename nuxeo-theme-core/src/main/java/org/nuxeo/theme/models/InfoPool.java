@@ -33,7 +33,7 @@ public final class InfoPool {
     public static Map<String, Info> getInfoMap() {
         return threadInstance.get();
     }
-    
+
     public static void register(RenderingInfo info) {
         getInfoMap().put(computeInfoId(info), info);
     }

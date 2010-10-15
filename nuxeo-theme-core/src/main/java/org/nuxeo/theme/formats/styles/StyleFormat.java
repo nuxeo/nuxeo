@@ -124,8 +124,8 @@ public class StyleFormat extends DefaultFormat implements Style {
         Style sourceStyle = (Style) source;
         for (String viewName : sourceStyle.getSelectorViewNames()) {
             for (String path : sourceStyle.getPathsForView(viewName)) {
-                setPropertiesFor(viewName, path, sourceStyle.getPropertiesFor(
-                        viewName, path));
+                setPropertiesFor(viewName, path,
+                        sourceStyle.getPropertiesFor(viewName, path));
             }
         }
     }

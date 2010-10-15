@@ -28,7 +28,6 @@ import org.nuxeo.theme.types.TypeFamily;
 @XObject("application")
 public final class ApplicationType implements Type {
 
-
     private String root;
 
     @XNode("@template-engine")

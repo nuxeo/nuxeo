@@ -55,7 +55,7 @@ public class TestThemeSet extends NXRuntimeTestCase {
         assertEquals(1, themeSets.size());
         assertEquals("galaxy", themeSets.get(0).getName());
     }
-    
+
     public void testGetThemeSetByName() {
         ThemeSet themeSet = themeManager.getThemeSetByName("galaxy");
         assertEquals("galaxy", themeSet.getName());

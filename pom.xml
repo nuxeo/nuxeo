@@ -20,12 +20,14 @@
 
   <properties>
     <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
+    <nuxeo.webengine.version>${pom.version}</nuxeo.webengine.version>
   </properties>
 
   <modules>
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
     <module>nuxeo-theme-html</module>
+    <module>nuxeo-theme-bank</module>
   </modules>
 
   <organization>
@@ -71,7 +73,11 @@
         <artifactId>nuxeo-theme-html</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

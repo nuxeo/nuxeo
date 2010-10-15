@@ -44,7 +44,6 @@ import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
-import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
@@ -74,17 +73,15 @@ public class ThemeParser {
 
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-    public static String registerTheme(final ThemeDescriptor themeDescriptor)
-            throws ThemeIOException {
-        return registerTheme(themeDescriptor, null);
+    public static void registerTheme(final ThemeDescriptor themeDescriptor,
+            final boolean load) throws ThemeIOException {
+        registerTheme(themeDescriptor, null, load);
     }
 
-    public static String registerTheme(final ThemeDescriptor themeDescriptor,
-            final String xmlSource) throws ThemeIOException {
+    public static void registerTheme(final ThemeDescriptor themeDescriptor,
+            final String xmlSource, final boolean load) throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
-        String themeName = null;
         InputStream in = null;
-
         try {
             if (xmlSource == null) {
                 URL url = null;
@@ -105,7 +102,7 @@ public class ThemeParser {
             } else {
                 in = new ByteArrayInputStream(xmlSource.getBytes());
             }
-            themeName = registerThemeFromInputStream(themeDescriptor, in);
+            registerThemeFromInputStream(themeDescriptor, in, load);
         } catch (FileNotFoundException e) {
             throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
@@ -123,12 +120,11 @@ public class ThemeParser {
                 }
             }
         }
-        return themeName;
     }
 
-    private static String registerThemeFromInputStream(
-            final ThemeDescriptor themeDescriptor, final InputStream in)
-            throws ThemeIOException, ThemeException {
+    private static void registerThemeFromInputStream(
+            final ThemeDescriptor themeDescriptor, final InputStream in,
+            boolean load) throws ThemeIOException, ThemeException {
         String themeName = null;
 
         final InputSource is = new InputSource(in);
@@ -141,7 +137,6 @@ public class ThemeParser {
         } catch (ParserConfigurationException e) {
             log.debug("Could not set DTD non-validation feature");
         }
-        final ThemeManager themeManager = Manager.getThemeManager();
 
         DocumentBuilder db;
         try {
@@ -170,8 +165,18 @@ public class ThemeParser {
                     "Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
                             + themeName);
         }
+        themeDescriptor.setName(themeName);
+        if (load) {
+            loadTheme(themeDescriptor, docElem);
+        }
+    }
 
+    private static void loadTheme(ThemeDescriptor themeDescriptor,
+            org.w3c.dom.Element docElem) throws ThemeException,
+            ThemeIOException {
+        final ThemeManager themeManager = Manager.getThemeManager();
         // remove old theme
+        String themeName = themeDescriptor.getName();
         ThemeElement oldTheme = themeManager.getThemeByName(themeName);
         if (oldTheme != null) {
             try {
@@ -217,8 +222,16 @@ public class ThemeParser {
         // parse layout
         parseLayout(theme, baseNode);
 
+        // Look for presets in remote resources
+        for (Style style : themeManager.getNamedStyles(themeName)) {
+            PresetManager.loadPresetsUsedInStyle(style);
+        }
+        for (Style style : themeManager.getStyles(themeName)) {
+            PresetManager.loadPresetsUsedInStyle(style);
+        }
+
         themeManager.registerTheme(theme);
-        return themeName;
+        log.info("Loaded THEME: " + themeName);
     }
 
     public static void parseLayout(final Element parent, Node node)
@@ -279,13 +292,14 @@ public class ThemeParser {
                 throw new ThemeIOException("Could not parse node: " + nodeName);
             }
 
-            if (elem instanceof PageElement) {
-                String pageName = attributes.getNamedItem("name").getNodeValue();
-                if (!pageName.matches("[a-z0-9_\\-]+")) {
+            Node nameAttr = attributes.getNamedItem("name");
+            if (nameAttr != null) {
+                String elementName = nameAttr.getNodeValue();
+                if (!elementName.matches("[a-z0-9_\\-]+")) {
                     throw new ThemeIOException(
-                            "Page names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
+                            "Element names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
                 }
-                elem.setName(pageName);
+                elem.setName(elementName);
             }
 
             String description = getCommentAssociatedTo(n);
@@ -312,10 +326,23 @@ public class ThemeParser {
             final String category = attrs.getNamedItem("category").getNodeValue();
             final String value = PresetManager.resolvePresets(themeName,
                     n.getTextContent());
-            final String group = theme.getName(); // use the theme's name as
+            final String group = themeName; // use the theme's name as
             // group name
+
+            final Node labelAttr = attrs.getNamedItem("label");
+            String label = "";
+            if (labelAttr != null) {
+                label = labelAttr.getNodeValue();
+            }
+
+            final Node descriptionAttr = attrs.getNamedItem("description");
+            String description = "";
+            if (descriptionAttr != null) {
+                description = descriptionAttr.getNodeValue();
+            }
+
             PresetType preset = new CustomPresetType(name, value, group,
-                    category);
+                    category, label, description);
             typeRegistry.register(preset);
         }
     }
@@ -370,7 +397,7 @@ public class ThemeParser {
                 if (nameAttr != null) {
                     styleName = nameAttr.getNodeValue();
                     style.setName(styleName);
-                    themeManager.setNamedObject(theme.getName(), "style", style);
+                    themeManager.setNamedObject(themeName, "style", style);
                 }
 
                 if (inheritedAttr != null) {
@@ -378,8 +405,14 @@ public class ThemeParser {
                     Style inheritedStyle = (Style) themeManager.getNamedObject(
                             themeName, "style", inheritedName);
                     if (inheritedStyle == null) {
-                        log.error("Unknown style: " + inheritedName);
-                    } else {
+                        inheritedStyle = (Style) FormatFactory.create("style");
+                        inheritedStyle.setName(inheritedName);
+                        themeManager.registerFormat(inheritedStyle);
+                        themeManager.setNamedObject(themeName, "style",
+                                inheritedStyle);
+                        ThemeManager.loadRemoteStyle(inheritedStyle);
+                    }
+                    if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
                         log.debug("Made style " + style + " inherit from "
                                 + inheritedName);
@@ -393,8 +426,19 @@ public class ThemeParser {
                     continue;
                 }
 
-                for (Node selectorNode : getChildElementsByTagName(n,
-                        "selector")) {
+                List<Node> selectorNodes = getChildElementsByTagName(n,
+                        "selector");
+
+                // Try to retrieve the style from the resource bank
+                if (style.isNamed()) {
+                    ThemeManager.loadRemoteStyle(style);
+                    if (style.isRemote() && !selectorNodes.isEmpty()) {
+                        style.setCustomized(true);
+                    }
+                }
+
+                // Use style properties from the theme
+                for (Node selectorNode : selectorNodes) {
                     NamedNodeMap attrs = selectorNode.getAttributes();
                     Node pathAttr = attrs.getNamedItem("path");
                     if (pathAttr == null) {

@@ -30,6 +30,7 @@ public class DefaultStyleView extends AbstractView {
 
     @Override
     public String render(final RenderingInfo info) {
+
         final Style style = (Style) info.getFormat();
         final StringBuilder sb = new StringBuilder();
 

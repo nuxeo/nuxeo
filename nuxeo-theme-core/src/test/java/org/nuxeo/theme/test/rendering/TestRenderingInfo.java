@@ -29,10 +29,13 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "engine-config.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "template-engine-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests",
+                "template-engine-config.xml");
     }
 
     public void testInfoUid() {
@@ -43,7 +46,8 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
 
     public void testInfoClone() throws MalformedURLException {
         Element page = ElementFactory.create("page");
-        URL themeUrl = new URL("nxtheme://theme/test-engine/mode/theme/page/perspective/test-template-engine");
+        URL themeUrl = new URL(
+                "nxtheme://theme/test-engine/mode/theme/page/perspective/test-template-engine");
         RenderingInfo info = new RenderingInfo(page, themeUrl);
 
         assertEquals("test-engine", info.getEngine().getName());
@@ -70,7 +74,7 @@ public class TestRenderingInfo extends NXRuntimeTestCase {
     public void testInfoPool() {
         Element page = ElementFactory.create("page");
         RenderingInfo info = new RenderingInfo(page, null);
-      
+
         String infoId = InfoPool.computeInfoId(info);
         InfoPool.register(info);
         assertSame(info, InfoPool.get(infoId));

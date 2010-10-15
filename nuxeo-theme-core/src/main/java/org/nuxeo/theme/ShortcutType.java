@@ -26,9 +26,7 @@ public final class ShortcutType implements Type {
     @XNode("@key")
     private String key;
 
-
     private String target;
-
 
     public TypeFamily getTypeFamily() {
         return TypeFamily.SHORTCUT;

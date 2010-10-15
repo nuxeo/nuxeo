@@ -28,8 +28,8 @@ import org.nuxeo.theme.types.TypeFamily;
 @XObject("theme")
 public class ThemeDescriptor implements Type {
 
-    protected RuntimeContext ctx; 
-    
+    protected RuntimeContext ctx;
+
     private boolean configured = false;
 
     private boolean customized = false;
@@ -49,15 +49,14 @@ public class ThemeDescriptor implements Type {
     @XNode("src")
     public String src = "";
 
-    
     public void setContext(RuntimeContext ctx) {
         this.ctx = ctx;
     }
-    
+
     public RuntimeContext getContext() {
         return ctx;
     }
-    
+
     public TypeFamily getTypeFamily() {
         return TypeFamily.THEME;
     }

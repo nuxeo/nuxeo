@@ -75,6 +75,7 @@ public class DummyRenderingInfo extends RenderingInfo {
         return ThemeManager.getEngineByUrl(themeUrl);
     }
 
+    @Override
     public String getViewMode() {
         return ThemeManager.getViewModeByUrl(themeUrl);
     }
@@ -104,10 +105,12 @@ public class DummyRenderingInfo extends RenderingInfo {
         this.dirty = dirty;
     }
 
+    @Override
     public ThemeElement getTheme() {
         return Manager.getThemeManager().getThemeByUrl(themeUrl);
     }
 
+    @Override
     public TemplateEngineType getTemplateEngine() {
         return ThemeManager.getTemplateEngineByUrl(themeUrl);
     }

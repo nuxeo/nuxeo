@@ -41,7 +41,6 @@ public final class NegotiationType implements Type {
 
     private List<Scheme> schemes;
 
-
     public String getTypeName() {
         return String.format("%s/%s", strategy, object);
     }

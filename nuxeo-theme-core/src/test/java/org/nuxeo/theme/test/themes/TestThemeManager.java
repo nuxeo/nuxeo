@@ -395,7 +395,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
             ThemeException {
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setSrc("theme.xml");
-        ThemeParser.registerTheme(themeDef);
+        final boolean load = true;
+        ThemeParser.registerTheme(themeDef, load);
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
         List<Format> formatsAfter = themeManager.listFormats();
@@ -548,9 +549,68 @@ public class TestThemeManager extends NXRuntimeTestCase {
         Element section = ElementFactory.create("section");
         theme.addChild(page).addChild(section);
         themeManager.registerTheme(theme);
-       
+
         assertSame(page, themeManager.getPageByPath("theme/page"));
         themeManager.deletePage("theme/page");
         assertNull(themeManager.getPageByPath("theme/page"));
+    }
+
+    public void testMakeElementUseNamedStyle() throws ThemeException,
+            NodeException {
+        final String currentThemeName = "theme";
+
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName(currentThemeName);
+        PageElement page = (PageElement) ElementFactory.create("page");
+        page.setName("default");
+        theme.addChild(page);
+        themeManager.registerTheme(theme);
+
+        final String styleName1 = "named style 1";
+        Style namedStyle1 = (Style) FormatFactory.create("style");
+        namedStyle1.setName(styleName1);
+        themeManager.registerFormat(namedStyle1);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle1);
+
+        final String styleName2 = "named style 2";
+        Style namedStyle2 = (Style) FormatFactory.create("style");
+        namedStyle2.setName(styleName2);
+        themeManager.registerFormat(namedStyle2);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle2);
+
+        Style pageStyle = (Style) FormatFactory.create("style");
+        themeManager.registerFormat(pageStyle);
+        ElementFormatter.setFormat(page, pageStyle);
+
+        // Do not preserve style inheritance
+        boolean preserveInheritance = false;
+        themeManager.makeElementUseNamedStyle(page, styleName1,
+                currentThemeName, preserveInheritance);
+        assertSame(namedStyle1, ThemeManager.getAncestorFormatOf(pageStyle));
+
+        themeManager.makeElementUseNamedStyle(page, styleName2,
+                currentThemeName, preserveInheritance);
+        assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
+
+        // Preserve style inheritance
+        final String ancestorName = "ancestor style";
+        Style ancestorStyle = (Style) FormatFactory.create("style");
+        ancestorStyle.setName(ancestorName);
+        themeManager.registerFormat(ancestorStyle);
+        themeManager.setNamedObject(currentThemeName, "style", ancestorStyle);
+
+        themeManager.makeFormatInherit(namedStyle1, ancestorStyle);
+        themeManager.makeElementUseNamedStyle(page, styleName1,
+                currentThemeName, preserveInheritance);
+        assertSame(namedStyle1, ThemeManager.getAncestorFormatOf(pageStyle));
+        assertSame(ancestorStyle, ThemeManager.getAncestorFormatOf(namedStyle1));
+
+        preserveInheritance = true;
+
+        themeManager.makeElementUseNamedStyle(page, styleName2,
+                currentThemeName, preserveInheritance);
+        assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
+        assertSame(ancestorStyle, ThemeManager.getAncestorFormatOf(namedStyle2));
+        assertNull(ThemeManager.getAncestorFormatOf(namedStyle1));
     }
 }

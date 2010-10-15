@@ -85,7 +85,7 @@ public final class Manager {
         return (VocabularyManager) getRegistry("vocabularies");
     }
 
-    @SuppressWarnings( { "ResultOfObjectAllocationIgnored" })
+    @SuppressWarnings({ "ResultOfObjectAllocationIgnored" })
     public static void initializeProtocols() {
         Properties properties = System.getProperties();
         String handlers = System.getProperty("java.protocol.handler.pkgs");
@@ -100,9 +100,9 @@ public final class Manager {
         /*
          * Register the 'nxtheme' URL protocol handler programmatically to get
          * around m2/surefire classloading bug.
-         *
+         * 
          * ref. http://jira.codehaus.org/browse/SUREFIRE-104
-         *
+         * 
          * TODO: remove with Maven surefire 2.4
          */
 

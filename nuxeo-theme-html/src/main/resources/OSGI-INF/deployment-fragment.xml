@@ -22,6 +22,11 @@
       <servlet-name>NXThemes CSS</servlet-name>
       <servlet-class>org.nuxeo.theme.html.servlets.Styles</servlet-class>
     </servlet>
+    
+    <servlet>
+      <servlet-name>NXThemes Images</servlet-name>
+      <servlet-class>org.nuxeo.theme.html.servlets.Images</servlet-class>
+    </servlet>    
 
     <servlet>
       <servlet-name>NXThemes Negotiation Selector</servlet-name>
@@ -44,6 +49,11 @@
       <servlet-name>NXThemes CSS</servlet-name>
       <url-pattern>/nxthemes-css/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet-mapping>
+      <servlet-name>NXThemes Images</servlet-name>
+      <url-pattern>/nxthemes-images/*</url-pattern>
+    </servlet-mapping>    
 
     <servlet-mapping>
       <servlet-name>NXThemes Negotiation Selector</servlet-name>

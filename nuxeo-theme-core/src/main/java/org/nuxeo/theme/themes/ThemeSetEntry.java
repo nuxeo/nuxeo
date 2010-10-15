@@ -43,7 +43,7 @@ public class ThemeSetEntry {
     public List<String> getFeatures() {
         return Arrays.asList(features.split(","));
     }
-    
+
     public void addFeature(String feature) {
         if (!getFeatures().contains(feature)) {
             features += features.concat(",").concat(feature);

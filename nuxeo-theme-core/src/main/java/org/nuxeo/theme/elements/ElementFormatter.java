@@ -45,7 +45,8 @@ public final class ElementFormatter {
                         format));
     }
 
-    public static Format getFormatByType(final Object object, final FormatType type) {
+    public static Format getFormatByType(final Object object,
+            final FormatType type) {
         final Collection<Relation> relations = Manager.getRelationStorage().search(
                 type.getPredicate(), (Element) object, null);
         final Iterator<Relation> i = relations.iterator();
@@ -69,11 +70,12 @@ public final class ElementFormatter {
         return formats;
     }
 
-    public static Format getFormatFor(final Element element, final String typeName) {
+    public static Format getFormatFor(final Element element,
+            final String typeName) {
         final RelationStorage relationStorage = Manager.getRelationStorage();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final FormatType type = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,
-                typeName);
+        final FormatType type = (FormatType) typeRegistry.lookup(
+                TypeFamily.FORMAT, typeName);
         // FIXME: this loop doesn't loop!
         for (Relation relation : relationStorage.search(type.getPredicate(),
                 element, null)) {

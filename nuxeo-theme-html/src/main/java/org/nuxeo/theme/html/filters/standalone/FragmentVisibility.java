@@ -28,8 +28,7 @@ public final class FragmentVisibility extends StandaloneFilter {
         final Element element = info.getElement();
         if (element.getElementType().getTypeName().equals("fragment")) {
             final Fragment fragment = (Fragment) element;
-            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(
-                    info.getThemeUrl());
+            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(info.getThemeUrl());
             if (perspective != null) {
                 if (!fragment.isVisibleInPerspective(perspective)) {
                     return null;

@@ -28,8 +28,10 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "preset-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
@@ -37,28 +39,32 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
     }
 
     public void testRegisterPropertiesPalette1() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET, "Plum (default colors)");
+        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
+                "Plum (default colors)");
         assertNotNull(preset);
         assertEquals("rgb(173,127,168)", preset.getValue());
         assertEquals("color", preset.getCategory());
     }
 
     public void testRegisterPropertiesPalette2() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET, "Chocolate (default colors)");
+        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
+                "Chocolate (default colors)");
         assertNotNull(preset);
         assertEquals("rgb(233,185,110)", preset.getValue());
         assertEquals("color", preset.getCategory());
     }
 
     public void testRegisterPropertiesPalette3() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET, "ChocolateBorder (default borders)");
+        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
+                "ChocolateBorder (default borders)");
         assertNotNull(preset);
         assertEquals("1px solid rgb(233,185,110)", preset.getValue());
         assertEquals("border", preset.getCategory());
     }
 
     public void testRegisterPropertiesPalette4() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET, "PlumBorder (default borders)");
+        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
+                "PlumBorder (default borders)");
         assertNotNull(preset);
         assertEquals("1px solid rgb(173,127,168)", preset.getValue());
         assertEquals("border", preset.getCategory());

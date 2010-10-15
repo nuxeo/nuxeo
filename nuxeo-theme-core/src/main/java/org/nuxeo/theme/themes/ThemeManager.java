@@ -34,6 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,6 +78,8 @@ import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
@@ -112,6 +116,8 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, String> cachedResources = new HashMap<String, String>();
 
+    private final Map<String, byte[]> cachedBinaries = new HashMap<String, byte[]>();
+
     private List<String> resourceOrdering = new ArrayList<String>();
 
     private static final File CUSTOM_THEME_DIR;
@@ -119,6 +125,9 @@ public final class ThemeManager implements Registrable {
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
     private static final int DEFAULT_THEME_INDENT = 2;
+
+    private static final Pattern styleResourceNamePattern = Pattern.compile(
+            "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
     static {
         CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
@@ -403,7 +412,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public void fillScratchPage(final String themeName, final Element element)
-    throws NodeException, ThemeException {
+            throws NodeException, ThemeException {
         String pagePath = String.format("%s/~", themeName);
 
         PageElement scratchPage = getPageByPath(pagePath);
@@ -485,6 +494,7 @@ public final class ThemeManager implements Registrable {
         }
         final Integer uid = objectsInTheme.get(String.format("%s/%s", realm,
                 name));
+
         if (uid != null) {
             return (Identifiable) Manager.getUidManager().getObjectByUid(uid);
         }
@@ -496,7 +506,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public void setNamedObject(final String themeName, final String realm,
-            final Identifiable object) {
+            final Identifiable object) throws ThemeException {
         if (!namedObjectsByTheme.containsKey(themeName)) {
             namedObjectsByTheme.put(themeName,
                     new LinkedHashMap<String, Integer>());
@@ -504,8 +514,8 @@ public final class ThemeManager implements Registrable {
         final Integer uid = object.getUid();
         final String name = object.getName();
         if (name == null) {
-            log.error("Cannot register unnamed object");
-            return;
+            throw new ThemeException("Cannot register unnamed object, uid: "
+                    + uid);
         }
         namedObjectsByTheme.get(themeName).put(
                 String.format("%s/%s", realm, name), uid);
@@ -554,24 +564,71 @@ public final class ThemeManager implements Registrable {
     }
 
     public void makeElementUseNamedStyle(final Element element,
-            final String inheritedName, final String currentThemeName) {
+            final String inheritedName, final String themeName,
+            final boolean preserveInheritance) throws ThemeException {
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,
                 styleType);
+
+        if (style == null) {
+            throw new ThemeException("Element has no assigned style: "
+                    + element.computeXPath());
+        }
         // Make the style no longer inherits from other another style if
         // 'inheritedName' is null
         if (inheritedName == null) {
             ThemeManager.removeInheritanceTowards(style);
         } else {
-            final String themeName = currentThemeName.split("/")[0];
-            final Style inheritedStyle = (Style) getNamedObject(themeName,
-                    "style", inheritedName);
+            Style inheritedStyle = (Style) getNamedObject(themeName, "style",
+                    inheritedName);
             if (inheritedStyle == null) {
-                log.error("Unknown style: " + inheritedName);
-            } else {
-                makeFormatInherit(style, inheritedStyle);
+                inheritedStyle = (Style) FormatFactory.create("style");
+                inheritedStyle.setName(inheritedName);
+                registerFormat(inheritedStyle);
+                setNamedObject(themeName, "style", inheritedStyle);
+                loadRemoteStyle(inheritedStyle);
             }
+
+            if (preserveInheritance) {
+                Style existingStyle = (Style) ThemeManager.getAncestorFormatOf(style);
+                if (existingStyle != null) {
+                    Style ancestor = (Style) ThemeManager.getAncestorFormatOf(existingStyle);
+                    if (ancestor != null) {
+                        if (ancestor.isNamed()) {
+                            Style newStyle = (Style) getNamedObject(themeName,
+                                    "style", inheritedName);
+                            if (newStyle != null) {
+                                removeInheritanceTowards(existingStyle);
+                                makeFormatInherit(newStyle, ancestor);
+                            }
+                        }
+                    }
+                }
+            }
+
+            makeFormatInherit(style, inheritedStyle);
+        }
+    }
+
+    public static void loadRemoteStyle(Style style) {
+        if (!style.isNamed()) {
+            return;
+        }
+        String styleName = style.getName();
+        String cssSource = null;
+        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
+        if (resourceNameMatcher.find()) {
+            String collectionName = resourceNameMatcher.group(2);
+            String resourceId = resourceNameMatcher.group(1) + ".css";
+            cssSource = ResourceManager.getBankResource("style",
+                    collectionName, resourceId);
+        }
+        if (cssSource == null) {
+            log.error("Unknown style: " + styleName);
+        } else {
+            Utils.loadCss(style, cssSource, "*");
+            style.setRemote(true);
         }
     }
 
@@ -744,9 +801,11 @@ public final class ThemeManager implements Registrable {
             Style style = (Style) format;
             if (themeName != null) {
                 ThemeElement theme = getThemeOfFormat(style);
-                // FIXME This shouldn't happen
                 if (theme == null) {
-                    // The style is associated to a non-existing element
+                    if (!style.isNamed()) {
+                        log.warn("THEME inconsistency: " + style
+                                + " is not associated to any element.");
+                    }
                     continue;
                 }
                 if (!themeName.equals(theme.getName())) {
@@ -812,8 +871,6 @@ public final class ThemeManager implements Registrable {
 
         themeModified(themeName);
         stylesModified(themeName);
-
-        log.debug("Added theme: " + themeName);
     }
 
     public void registerPage(final ThemeElement theme, final PageElement page)
@@ -848,6 +905,23 @@ public final class ThemeManager implements Registrable {
         log.debug("Removed page: " + pageName + " from theme: " + themeName);
     }
 
+    public static void loadTheme(ThemeDescriptor themeDescriptor) {
+        String src = themeDescriptor.getSrc();
+        if (src == null) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not load theme, source not set. ");
+            return;
+        }
+        try {
+            final boolean load = true;
+            ThemeParser.registerTheme(themeDescriptor, load);
+        } catch (ThemeIOException e) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not register theme: " + src + " " + e.getMessage());
+            return;
+        }
+    }
+
     // Theme management
     public void loadTheme(String src, String xmlSource)
             throws ThemeIOException, ThemeException {
@@ -857,13 +931,11 @@ public final class ThemeManager implements Registrable {
         }
         final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
-        String themeName = ThemeParser.registerTheme(themeDescriptor, xmlSource);
-        if (themeName == null) {
-            throw new ThemeIOException("Could not parse theme: " + src);
-        }
+        final boolean load = true;
+        ThemeParser.registerTheme(themeDescriptor, xmlSource, load);
+        String themeName = themeDescriptor.getName();
         themeDescriptor.setName(themeName);
-        themeDescriptor.setLoadingFailed(false);
-        themeDescriptor.setLastLoaded(new Date());
+
         themeModified(themeName);
         stylesModified(themeName);
         updateThemeDescriptors();
@@ -877,6 +949,10 @@ public final class ThemeManager implements Registrable {
                 }
             }
         }
+
+        themeDescriptor.setLoadingFailed(false);
+        themeDescriptor.setLastLoaded(new Date());
+
         log.debug("Loaded theme: " + src);
     }
 
@@ -1262,6 +1338,20 @@ public final class ThemeManager implements Registrable {
         }
     }
 
+    public byte[] getImageResource(String path) {
+        String key = String.format("image/%s", path);
+        byte[] data = cachedBinaries.get(key);
+        if (data == null) {
+            String[] parts = path.split("/");
+            String collectionName = parts[0];
+            String resourceName = parts[1];
+            data = ResourceManager.getBinaryBankResource("image",
+                    collectionName, resourceName);
+            cachedBinaries.put(key, data);
+        }
+        return data;
+    }
+
     public static List<ViewType> getViewTypesForFragmentType(
             final FragmentType fragmentType) {
         final List<ViewType> viewTypes = new ArrayList<ViewType>();
@@ -1296,6 +1386,29 @@ public final class ThemeManager implements Registrable {
         return viewTypes;
     }
 
+    // Resource banks
+    public static ResourceBank getResourceBank(String name) {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(
+                TypeFamily.RESOURCE_BANK, name);
+        if (resourceBank != null) {
+            return resourceBank;
+        } else {
+            log.warn("Resource bank not found: " + name);
+        }
+        return null;
+    }
+
+    public static List<ResourceBank> getResourceBanks() {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        List<ResourceBank> resourceBanks = new ArrayList<ResourceBank>();
+        for (Type type : typeRegistry.getTypes(TypeFamily.RESOURCE_BANK)) {
+            resourceBanks.add((ResourceBank) type);
+        }
+        return resourceBanks;
+    }
+
+    // Theme descriptors
     public static List<ThemeDescriptor> getThemeDescriptors() {
         final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();

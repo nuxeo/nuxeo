@@ -27,11 +27,13 @@ public class FeedItem extends AbstractModel {
     private String creator;
 
     private String publisher;
+
     private String rights;
+
     private String imageUrl;
 
     private String url;
-    
+
     private String uuid;
 
     public FeedItem() {

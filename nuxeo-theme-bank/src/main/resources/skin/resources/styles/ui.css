@@ -1,0 +1,190 @@
+
+body {
+  font: 12px Arial, sans-serif;
+}
+
+h1 {
+  font: bold 12px Tahoma, sans-serif;
+  background-color: #ccc;
+  padding: 4px 9px;
+  -moz-border-radius: 4px;
+}
+
+h1 span {
+  color: #000;
+  background-color: #fff;
+  -moz-border-radius: 3px;
+  padding: 0 4px;
+  text-decoration: none;
+}
+
+h1 a {
+  color: #000;
+  background-color: #f6f6f6;
+  -moz-border-radius: 3px;
+  padding: 0 6px;
+  text-decoration: none;
+}
+
+h1 a:hover {
+  background-color: #fff;
+}
+
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+  list-style: square;
+}
+
+table.properties {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+}
+
+table.properties td {
+  padding: 5px 7px;
+  font: 11px monospace, sans-serif;
+  border-bottom: 1px dashed #ddd;
+}
+
+table.properties tr.odd td {
+}
+
+table.properties td.key {
+  text-align: right;
+  font-weight: bold;
+  width: 10%;
+}
+
+table.properties td.value {
+  font-weight: normal;
+  text-align: left;
+  width: 80%;
+}
+
+table.properties td.preview {
+  text-align: left;
+  width: 10%;
+}
+
+
+/* Image browser */
+.album {
+  width: 100%;
+  padding: 0;
+  float: left;
+  background-color: #f6f6f6;
+  -moz-border-radius: 8px;
+}
+
+.album .imageSingle {
+  float: left;
+  margin: 10px;
+  width: 212px;
+  text-align: center;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  background-color: #fff;
+}
+
+.album .imageSingle .image {
+  width: 200px;
+  height: 135px;
+  margin: 5px;
+ }
+
+.album .imageSingle:hover {
+  border: 1px solid #666;
+  cursor: pointer;
+}
+
+.album .imageSingle:hover .footer {
+  color: #666;
+  text-decoration: none;
+}
+
+.album .footer {
+  text-align: center;
+  color: #999;
+  padding-bottom: 2px;
+  font: bold 11px tahoma;
+}
+
+.album .imageSingle img {
+  max-width: 200px;
+  max-height: 135px;
+  border: none;
+}
+
+.imageFrame {
+  margin: 15px 0;
+  text-align: center;
+  border: 1px solid #eee;
+  -moz-border-radius: 4px;
+  padding: 20px;
+}
+
+/* Action bar */
+
+.actionBar {
+  text-align: right;
+}
+
+.actionBar img {
+  border: none;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.actionBar span {
+  color: #eee;
+}
+
+.actionBar a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.window {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #999;
+  padding: 10px 20px;
+  -moz-border-radius: 10px;
+  background-color: #f3f3f3;
+  margin-top: 30px;
+}
+
+textarea {
+  border: 1px solid #999;
+  font: 11px monospace, sans-serif;
+}
+
+textarea:focus {
+  background-color: #ffc;
+  border-color: #fc0;
+}
+
+button {
+  font-weight: bold;
+}
+
+input.textInput {
+  border: 1px solid #eee;
+  border-top: 1px solid #ccc;
+  text-align: right;
+  font-weight: bold;
+}
+
+input.textInput:focus {
+  background-color: #ffc;
+  border-top: 1px solid #fc0;
+  border: 1px solid #fc0;
+}

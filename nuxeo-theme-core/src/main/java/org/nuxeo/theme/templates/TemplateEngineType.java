@@ -55,7 +55,6 @@ public final class TemplateEngineType implements Type {
         this.title = title;
     }
 
-
     public String getTemplateView() {
         return templateView;
     }

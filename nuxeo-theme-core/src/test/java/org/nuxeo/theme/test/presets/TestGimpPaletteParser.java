@@ -20,12 +20,13 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.nuxeo.theme.presets.GimpPaletteParser;
+import org.nuxeo.theme.presets.PaletteParser;
 
 public class TestGimpPaletteParser extends TestCase {
 
     public void testParser() {
         URL url = getClass().getClassLoader().getResource("gimp-palette.gpl");
-        Map<String, String> entries = GimpPaletteParser.parse(url);
+        Map<String, String> entries = PaletteParser.parse(url);
         Object[] keys = entries.keySet().toArray();
         assertEquals(4, keys.length);
         assertEquals("Plum", keys[0]);

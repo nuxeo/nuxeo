@@ -32,13 +32,16 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
-        preset1 = new PresetType("preset1", "value", "group", "category");
-        preset2 = new PresetType("preset2", "value", "", "category");
+        preset1 = new PresetType("preset1", "value", "group", "category", "",
+                "");
+        preset2 = new PresetType("preset2", "value", "", "category", "", "");
     }
 
     public void testPresetType() {
@@ -59,8 +62,8 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains(
                 "preset2"));
 
-        assertSame(preset1, typeRegistry.lookup(TypeFamily.PRESET,
-                "preset1 (group)"));
+        assertSame(preset1,
+                typeRegistry.lookup(TypeFamily.PRESET, "preset1 (group)"));
         assertSame(preset2, typeRegistry.lookup(TypeFamily.PRESET, "preset2"));
 
         // unregister presets

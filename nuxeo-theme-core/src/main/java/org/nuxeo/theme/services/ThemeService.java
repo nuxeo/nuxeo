@@ -15,9 +15,9 @@
 package org.nuxeo.theme.services;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +41,9 @@ import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.resources.BankImport;
+import org.nuxeo.theme.resources.BankManager;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -85,7 +88,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
     @Override
     public void activate(ComponentContext ctx) {
-        this.context = ctx.getRuntimeContext();
+        context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
         ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
                 this);
@@ -100,8 +103,12 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         log.debug("Theme service deactivated");
     }
 
+    @Override
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
+            for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
+                registerTheme(themeDescriptor);
+            }
             registerCustomThemes();
         }
         ThemeManager.updateThemeDescriptors();
@@ -138,6 +145,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerModelExtension(extension);
         } else if (xp.equals("resources")) {
             registerResourceExtension(extension);
+        } else if (xp.equals("banks")) {
+            registerBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -164,6 +173,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             unregisterViewExtension(extension);
         } else if (xp.equals("models")) {
             unregisterModelExtension(extension);
+        } else if (xp.equals("banks")) {
+            unregisterBank(extension);
         } else {
             log.warn(String.format("Unknown extension point: %s", xp));
         }
@@ -341,34 +352,26 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
         for (Object contrib : contribs) {
             ThemeDescriptor themeDescriptor = (ThemeDescriptor) contrib;
-            themeDescriptor.setContext(extension.getContext()); 
+            themeDescriptor.setContext(extension.getContext());
             themeDescriptor.setConfigured(true);
-
-            String src = themeDescriptor.getSrc();
 
             // register the theme descriptor even if the theme fails to load
             typeRegistry.register(themeDescriptor);
+        }
+    }
 
-            if (src == null) {
-                themeDescriptor.setLoadingFailed(true);
-                log.error("Could not load theme, source not set. ");
-                continue;
-            }
-
-            String themeName;
-            try {
-                themeName = ThemeParser.registerTheme(themeDescriptor);
-            } catch (ThemeIOException e) {
-                themeDescriptor.setLoadingFailed(true);
-                log.error("Could not register theme: " + src + " "
-                        + e.getMessage());
-                continue;
-            }
-
-            // add some meta information to the theme descriptor
-            themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
-            themeDescriptor.setName(themeName);
+    private void registerTheme(ThemeDescriptor themeDescriptor) {
+        String src = themeDescriptor.getSrc();
+        if (src == null) {
+            themeDescriptor.setLoadingFailed(true);
+            log.error("Could not load theme, source not set. ");
+            return;
+        }
+        try {
+            final boolean load = false;
+            ThemeParser.registerTheme(themeDescriptor, load);
+        } catch (ThemeIOException e) {
+            log.error("Could not register theme: " + src + " " + e.getMessage());
         }
     }
 
@@ -419,19 +422,14 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
 
             themeDescriptor.setSrc(src);
 
-            String themeName;
             try {
-                themeName = ThemeParser.registerTheme(themeDescriptor);
+                final boolean load = false;
+                ThemeParser.registerTheme(themeDescriptor, load);
             } catch (ThemeIOException e) {
-                themeDescriptor.setLoadingFailed(true);
                 log.error("Could not register theme: " + src + " "
                         + e.getMessage());
                 continue;
             }
-
-            themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
-            themeDescriptor.setName(themeName);
             typeRegistry.register(themeDescriptor);
         }
         log.debug("Registered local themes");
@@ -470,7 +468,7 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 String value = PresetManager.resolvePresets(null,
                         entry.getValue());
                 PresetType preset = new PresetType(entry.getKey(), value,
-                        paletteName, category);
+                        paletteName, category, "", "");
                 typeRegistry.register(preset);
             }
         }
@@ -551,11 +549,25 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     private void registerResourceExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
+        RuntimeContext extensionContext = extension.getContext();
         for (Object contrib : contribs) {
-            ResourceType resourceType = (ResourceType) contrib;
-            typeRegistry.register(resourceType);
+            if (contrib instanceof ResourceType) {
+                ResourceType resourceType = (ResourceType) contrib;
+                typeRegistry.register(resourceType);
+            } else if (contrib instanceof BankImport) {
+                BankImport bankImport = (BankImport) contrib;
+                String bankName = bankImport.getBankName();
+                String srcFilePath = bankImport.getSrcFilePath();
+                URL srcFileUrl = extensionContext.getResource(srcFilePath);
+                try {
+                    BankManager.importBankData(bankName, srcFileUrl);
+                } catch (IOException e) {
+                    log.error("Could not import bank resources: " + srcFileUrl,
+                            e);
+                }
+            }
         }
+        ThemeManager themeManager = (ThemeManager) getRegistry("themes");
         themeManager.updateResourceOrdering();
     }
 
@@ -563,10 +575,34 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         ThemeManager themeManager = (ThemeManager) getRegistry("themes");
+        RuntimeContext extensionContext = extension.getContext();
         for (Object contrib : contribs) {
-            ResourceType resourceType = (ResourceType) contrib;
-            typeRegistry.unregister(resourceType);
-            themeManager.unregisterResourceOrdering(resourceType);
+            if (contrib instanceof ResourceType) {
+                ResourceType resourceType = (ResourceType) contrib;
+                typeRegistry.unregister(resourceType);
+                themeManager.unregisterResourceOrdering(resourceType);
+            } else if (contrib instanceof BankImport) {
+                BankImport bankImport = (BankImport) contrib;
+                String bankName = bankImport.getBankName();
+                String srcFilePath = bankImport.getSrcFilePath();
+                // TODO
+            }
         }
     }
+
+    private void registerBank(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (Object contrib : contribs) {
+            if (contrib instanceof ResourceBank) {
+                ResourceBank resourceBank = (ResourceBank) contrib;
+                typeRegistry.register(resourceBank);
+            }
+        }
+    }
+
+    private void unregisterBank(Extension extension) {
+        // TODO
+    }
+
 }

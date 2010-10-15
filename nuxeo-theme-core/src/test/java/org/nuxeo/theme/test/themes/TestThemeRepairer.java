@@ -38,8 +38,10 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
         themeManager = Manager.getThemeManager();
     }
 
@@ -175,7 +177,8 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("2px solid #000", styleProperties.get("border-bottom"));
     }
 
-    public void testCleanupEmptyStylePaths() throws ThemeException, NodeException {
+    public void testCleanupEmptyStylePaths() throws ThemeException,
+            NodeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         theme.addChild(page);
@@ -247,7 +250,8 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
                 style.getPropertiesFor("section frame", "").getProperty("color"));
     }
 
-    public void testSharedStylesOnDifferentElementTypes() throws ThemeException, NodeException {
+    public void testSharedStylesOnDifferentElementTypes()
+            throws ThemeException, NodeException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -320,7 +324,8 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
 
         // Make sure that inherited styles are preserved
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(pageStyle));
-        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(sectionStyle));
+        assertSame(inheritedStyle,
+                ThemeManager.getAncestorFormatOf(sectionStyle));
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell2Style));
         assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell1Style));
     }

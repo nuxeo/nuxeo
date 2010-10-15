@@ -33,9 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.JSUtils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
@@ -130,6 +130,7 @@ public final class Resources extends HttpServlet implements Serializable {
                 }
                 writeResource(resource, out);
                 source = out.toString();
+
                 if (resourceName.endsWith(".js")) {
                     if (resource.isShrinkable()) {
                         try {

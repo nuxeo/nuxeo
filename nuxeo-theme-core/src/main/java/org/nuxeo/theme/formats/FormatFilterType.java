@@ -48,7 +48,8 @@ public final class FormatFilterType extends FilterType {
     public FormatFilterType() {
     }
 
-    public FormatFilterType(@SuppressWarnings("unused") final String name, final String formatName) {
+    public FormatFilterType(@SuppressWarnings("unused") final String name,
+            final String formatName) {
         this.formatName = formatName;
     }
 

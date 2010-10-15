@@ -44,8 +44,7 @@ public abstract class AbstractFragment extends AbstractElement implements
     }
 
     public void setVisibleInPerspective(PerspectiveType perspective) {
-        PerspectiveManager.setVisibleInPerspective(this,
-                perspective);
+        PerspectiveManager.setVisibleInPerspective(this, perspective);
     }
 
     public void setAlwaysVisible() {
