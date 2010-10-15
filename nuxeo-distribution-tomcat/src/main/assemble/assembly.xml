@@ -285,7 +285,7 @@
   <target name="reorganize-libs">
     <!-- remove libraries already provided by Tomcat or unneeded -->
     <delete failonerror="false">
-      <fileset dir="${distribution.dir}/nxserver/bundle">
+      <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-runtime-jetty-*" />
         <!-- temporary removal of wss -->
         <include name="*wss*" />
@@ -305,6 +305,15 @@
         <include name="jsp-*" />
         <include name="slf4j-*-1.3*" />
         <include name="catalina-*" />
+        <include name="juel-api-*" />
+        <include name="hibernate-3.2.6.ga*" />
+        <!--
+          org.jbpm.jbpm3:jbpm-jpdl:3.3.0.GA:jar:
+            bsh:bsh:1.3.0:jar:
+              commons-logging:commons-logging:1.1.1:jar:
+                org.hibernate:hibernate:3.2.6.ga:jar:
+        -->
+
         <!-- temporary removal of wss -->
         <include name="*wss*" />
       </fileset>

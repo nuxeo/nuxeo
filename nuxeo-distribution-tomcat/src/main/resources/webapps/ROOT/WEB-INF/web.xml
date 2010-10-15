@@ -28,7 +28,7 @@
 
 
 
-   <!--Adding WSS Filter declaration and mapping -->
+   <!--Adding WSS Filter declaration and mapping
    <filter>
        <display-name>WSS ROOT Filter</display-name>
        <filter-name>WSSROOTFilter</filter-name>
@@ -42,5 +42,6 @@
        <filter-name>WSSROOTFilter</filter-name>
        <url-pattern>/*</url-pattern>
    </filter-mapping>
+   -->
 
 </web-app>
