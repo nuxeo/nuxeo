@@ -144,6 +144,9 @@ public class PaletteParser {
 
     public static Map<String, String> parseCsv(String text) {
         Map<String, String> properties = new HashMap<String, String>();
+        if (text == null) {
+            return properties;
+        }
         StringReader sr = new StringReader(text);
         CSVReader reader = new CSVReader(sr, '\t');
         String[] nextLine;
