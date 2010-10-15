@@ -50,7 +50,6 @@ import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
-import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
 
@@ -217,7 +216,7 @@ public class Editor {
         if (style.getName() != null || "".equals(viewName)) {
             viewName = "*";
         }
-        org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
+        org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
 
         saveTheme(themeName);
     }
@@ -231,7 +230,7 @@ public class Editor {
             throw new ThemeException("A named style is required.");
         }
         final String viewName = "*";
-        org.nuxeo.theme.html.Utils.loadCss(style, cssSource, viewName);
+        org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
         saveTheme(themeName);
     }
 
@@ -679,7 +678,8 @@ public class Editor {
         themeManager.setNamedObject(themeName, "style", style);
 
         if (element != null) {
-            themeManager.makeElementUseNamedStyle(element, styleName, themeName);
+            themeManager.makeElementUseNamedStyle(element, styleName,
+                    themeName, false);
         }
 
         saveTheme(themeName);
@@ -705,7 +705,7 @@ public class Editor {
         Style inheritedStyle = (Style) themeManager.getNamedObject(themeName,
                 "style", styleName);
         themeManager.deleteFormat(inheritedStyle);
-        themeManager.makeElementUseNamedStyle(element, null, themeName);
+        themeManager.makeElementUseNamedStyle(element, null, themeName, false);
         themeManager.removeNamedObject(themeName, "style", styleName);
         saveTheme(themeName);
     }
@@ -765,7 +765,8 @@ public class Editor {
         if (PresetManager.getCustomPreset(themeName, presetName) != null) {
             throw new ThemeException("Preset name already taken: " + presetName);
         }
-        PresetManager.createCustomPreset(themeName, presetName, category, value);
+        PresetManager.createCustomPreset(themeName, presetName, category,
+                value, "", "");
         saveTheme(themeName);
         return presetName;
     }
@@ -1018,7 +1019,7 @@ public class Editor {
             ElementFormatter.setFormat(fragment, style);
 
             themeManager.makeElementUseNamedStyle(fragment, styleName,
-                    currentThemeName);
+                    currentThemeName, false);
 
             String themeName = currentThemeName.split("/")[0];
             themeManager.fillScratchPage(themeName, fragment);
