@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-jetty</name>
-  <comment>Nuxeo Distribution Jetty</comment>
+  <name>nuxeo-distribution-jetty-base</name>
+  <comment>Nuxeo Distribution Jetty Base</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
