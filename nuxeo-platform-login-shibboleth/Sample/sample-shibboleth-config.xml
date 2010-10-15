@@ -1,7 +1,7 @@
 <component name="sample.shibboleth.config">
 
-  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
-  <require>org.nuxeo.ecm.platform.login.shibboleth</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
 
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
@@ -10,21 +10,20 @@
       <plugins>
         <plugin>BASIC_AUTH</plugin>
         <plugin>SHIB_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
 
-
   <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService"
+    target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
     point="config">
     <config>
-      <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
-      <loginRedirectURLParameter>target</loginRedirectURLParameter>
-      <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
-      <logoutRedirectURLParameter>return</logoutRedirectURLParameter>
-
       <uidHeader>uid</uidHeader>
+
+      <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+      <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+
       <fieldMapping header="uid">username</fieldMapping>
       <fieldMapping header="mail">email</fieldMapping>
     </config>

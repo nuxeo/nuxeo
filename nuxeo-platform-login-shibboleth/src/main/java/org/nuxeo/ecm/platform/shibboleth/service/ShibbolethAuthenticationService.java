@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.platform.ui.web.auth.shib;
+package org.nuxeo.ecm.platform.shibboleth.service;
 
 public interface ShibbolethAuthenticationService {
 

@@ -14,7 +14,7 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.platform.ui.web.auth.shib;
+package org.nuxeo.ecm.platform.shibboleth.auth;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +31,8 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig;
+import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.usermanager.UserManager;

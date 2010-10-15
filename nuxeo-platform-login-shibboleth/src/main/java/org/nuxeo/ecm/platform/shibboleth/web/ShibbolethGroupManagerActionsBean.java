@@ -15,7 +15,7 @@
  *     Arnaud Kervern
  */
 
-package org.nuxeo.ecm.webapp.shibboleth;
+package org.nuxeo.ecm.platform.shibboleth.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;

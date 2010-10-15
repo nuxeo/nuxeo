@@ -8,4 +8,5 @@ Nuxeo-Component: OSGI-INF/shibboleth-group-type-contrib.xml,
  OSGI-INF/shibboleth-computedgroups-contrib.xml,
  OSGI-INF/shibboleth-layout-contrib.xml,
  OSGI-INF/shibboleth-authentication-service.xml,
- OSGI-INF/shibboleth-authentication-contrib.xml
+ OSGI-INF/shibboleth-authenticators-contrib.xml,
+ OSGI-INF/shibboleth-exception-handling-contrib.xml

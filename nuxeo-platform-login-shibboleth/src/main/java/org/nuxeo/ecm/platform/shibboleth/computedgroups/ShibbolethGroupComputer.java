@@ -15,7 +15,7 @@
  *     Arnaud Kervern
  */
 
-package org.nuxeo.ecm.platform.computedgroups;
+package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +24,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
 public class ShibbolethGroupComputer extends AbstractGroupComputer {
-
-    protected static class ShibbContextBean {
-
-    }
 
     protected String getDirectoryName() {
         return ShibbolethConstants.SHIBBOLETH_DIRECTORY;
@@ -80,7 +77,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     /**
      * Get current Directory Service
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -90,7 +87,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     /**
      * List all Shibbolet Group in a DocumentModelList
-     * 
+     *
      * @return
      * @throws Exception
      */

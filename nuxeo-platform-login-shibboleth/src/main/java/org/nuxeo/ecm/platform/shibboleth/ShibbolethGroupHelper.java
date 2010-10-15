@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.computedgroups.ELGroupComputerHelper;
+import org.nuxeo.ecm.platform.shibboleth.computedgroups.ELGroupComputerHelper;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -180,4 +180,5 @@ public class ShibbolethGroupHelper {
                     + " : is not a valid expression language");
         }
     }
+
 }

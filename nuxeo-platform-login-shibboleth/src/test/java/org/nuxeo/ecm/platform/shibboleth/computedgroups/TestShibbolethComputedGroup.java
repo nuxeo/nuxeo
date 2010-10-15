@@ -15,12 +15,7 @@
  *     Arnaud Kervern
  */
 
-package org.nuxeo.ecm.platform.computedgroups;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,16 +33,22 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
 import de.odysseus.el.ExpressionFactoryImpl;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -58,9 +59,9 @@ import de.odysseus.el.ExpressionFactoryImpl;
         "org.nuxeo.ecm.platform.usermanager.api",
         "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib",
         "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.test.ecm.platform.shibboleth",
         "org.nuxeo.ecm.platform.login.shibboleth",
         "org.nuxeo.ecm.platform.web.common" })
+@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethComputedGroup {
 
     @Before

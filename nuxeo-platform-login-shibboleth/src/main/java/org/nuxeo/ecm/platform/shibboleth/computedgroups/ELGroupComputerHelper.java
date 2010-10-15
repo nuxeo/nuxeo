@@ -15,7 +15,7 @@
  *     Arnaud Kervern
  */
 
-package org.nuxeo.ecm.platform.computedgroups;
+package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
 import javax.el.PropertyNotFoundException;
 
@@ -33,9 +33,9 @@ import de.odysseus.el.tree.TreeBuilderException;
 /**
  * Helper to provide an easy way to execute the expression language defined in a
  * Shibb Group doc
- * 
+ *
  * @author Arnaud Kervern
- * 
+ *
  */
 public class ELGroupComputerHelper {
 

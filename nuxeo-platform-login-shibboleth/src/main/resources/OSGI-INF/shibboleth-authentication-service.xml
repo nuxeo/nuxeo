@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component
-  name="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService">
+  name="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService">
 
   <documentation>
     The Shibboleth Authentication Service handles the configuration to use
@@ -11,11 +11,11 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService" />
+      interface="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService" />
   </service>
 
   <implementation
-    class="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationServiceImpl" />
+    class="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationServiceImpl" />
 
   <extension-point name="config">
     <documentation>
@@ -24,7 +24,7 @@
       * the login / logout URLs for Shibboleth
     </documentation>
     <object
-      class="org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationConfig" />
+      class="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig" />
   </extension-point>
 
 </component>

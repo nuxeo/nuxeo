@@ -14,7 +14,7 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.ecm.platform.ui.web.auth.shib.exceptionhandling;
+package org.nuxeo.ecm.platform.shibboleth.auth.exceptionhandling;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.seam.web.Session;
+import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig;
+import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationConfig;
-import org.nuxeo.ecm.platform.ui.web.auth.shib.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoSecurityExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;

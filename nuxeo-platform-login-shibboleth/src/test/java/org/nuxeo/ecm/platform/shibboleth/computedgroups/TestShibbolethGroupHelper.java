@@ -15,9 +15,7 @@
  *     Arnaud Kervern
  */
 
-package org.nuxeo.ecm.platform.computedgroups;
-
-import static org.junit.Assert.assertSame;
+package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,14 +26,16 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import static org.junit.Assert.assertSame;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -44,14 +44,12 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.test.ecm.platform.shibboleth",
         "org.nuxeo.ecm.platform.login.shibboleth" })
+@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
-    @Inject
-    protected CoreSession session;
 
     @Inject
-    protected DirectoryService directoryService;
+    protected CoreSession session;
 
     @Test
     public void testCreateGroup() throws Exception {
