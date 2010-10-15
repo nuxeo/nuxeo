@@ -6,4 +6,6 @@ Bundle-Version: ${eclipseVersion}-r${buildNumber}
 Require-Bundle: org.nuxeo.ecm.platform.login, org.nuxeo.ecm.webapp.base
 Nuxeo-Component: OSGI-INF/shibboleth-group-type-contrib.xml,
  OSGI-INF/shibboleth-computedgroups-contrib.xml,
- OSGI-INF/shibboleth-layout-contrib.xml
+ OSGI-INF/shibboleth-layout-contrib.xml,
+ OSGI-INF/shibboleth-authentication-service.xml,
+ OSGI-INF/shibboleth-authentication-contrib.xml
