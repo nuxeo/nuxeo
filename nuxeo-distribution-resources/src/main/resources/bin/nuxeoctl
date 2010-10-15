@@ -220,32 +220,21 @@ fi
 # JBOSS
 #
 if [ "$jboss" = "true" ]; then
-
-  # TODO: remove since Nuxeo is no more compliant with Java 1.5
-  # Fix JRE 1.5/1.6 issue with script-api.jar
   IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
   NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
-  JAVA5_APIS="script-api"
-  for java5_api in $JAVA5_APIS;
-  do
   if [ ! -z "$IS_JRE_6" ]; then
     #echo "Java 1.6 detected"
-    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
-    if [ -f "$JAVA5_API" ]; then
-      echo "Moving $JAVA5_API out of classpath (already provided by Java6)"
-      mkdir "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
-      mv "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/
-    fi
+    JAVA5_APIS="script-api"
+    for java5_api in $JAVA5_APIS; do
+      JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+      if [ -f "$JAVA5_API" ]; then
+        echo "Removing $JAVA5_API (already provided by Java6)"
+        rm -rf "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
+      fi
+    done
   else
-    #echo "Assumed Java 1.5"
-    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
-    if [ ! -f "$JAVA5_API" ]; then
-      echo "Moving $JAVA5_API into classpath"
-      mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR"/lib/ 2>/dev/null || \
-      echo "Missing $java5_api in $NUXEO_EAR/lib/ or $NUXEO_EAR/lib-jre1.5/" >&2
-    fi
+    die "Nuxeo 5.4 requires Java 6."
   fi
-  done
 
   # Paths and specific options
   TMP_OVERRIDE="false"
