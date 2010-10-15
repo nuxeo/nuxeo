@@ -6,7 +6,7 @@
     point="actions">
 
 
-    <action id="PlatformExplorer" link="view_explorer.xhtml"
+    <action id="PlatformExplorer" link="view_admin-fragment.xhtml"
       label="admcommand.explorer" order="40">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
