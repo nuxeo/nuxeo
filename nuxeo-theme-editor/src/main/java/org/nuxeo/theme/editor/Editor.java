@@ -346,7 +346,7 @@ public class Editor {
                 css.append("#stylePreviewArea");
                 css.append(' ').append(path).append(" {");
                 Properties styleProperties = s.getPropertiesFor(name, path);
-                Enumeration<?> propertyNames = org.nuxeo.theme.html.Utils.getCssProperties().propertyNames();
+                Enumeration<?> propertyNames = org.nuxeo.theme.html.CSSUtils.getCssProperties().propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     String propertyName = (String) propertyNames.nextElement();
                     String value = styleProperties.getProperty(propertyName);
@@ -724,7 +724,7 @@ public class Editor {
         for (Style style : Manager.getThemeManager().getStyles(themeName)) {
             for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
                 String value = (String) entry.getValue();
-                colors.addAll(org.nuxeo.theme.html.Utils.extractCssColors(value));
+                colors.addAll(org.nuxeo.theme.html.CSSUtils.extractCssColors(value));
             }
         }
         Set<String> colorPresetValues = new HashSet<String>();
@@ -741,7 +741,7 @@ public class Editor {
         for (Style style : Manager.getThemeManager().getStyles(themeName)) {
             for (Map.Entry<Object, Object> entry : style.getAllProperties().entrySet()) {
                 String value = (String) entry.getValue();
-                images.addAll(org.nuxeo.theme.html.Utils.extractCssImages(value));
+                images.addAll(org.nuxeo.theme.html.CSSUtils.extractCssImages(value));
             }
         }
         Set<String> imagePresetValues = new HashSet<String>();
@@ -850,10 +850,10 @@ public class Editor {
                         String key = (String) entry.getKey();
                         String newText = text;
                         if (category.equals("color")) {
-                            newText = org.nuxeo.theme.html.Utils.replaceColor(
+                            newText = org.nuxeo.theme.html.CSSUtils.replaceColor(
                                     text, value, presetStr);
                         } else if (category.equals("image")) {
-                            newText = org.nuxeo.theme.html.Utils.replaceImage(
+                            newText = org.nuxeo.theme.html.CSSUtils.replaceImage(
                                     text, value, presetStr);
                         }
                         if (!newText.equals(text)) {
