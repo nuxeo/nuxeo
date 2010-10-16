@@ -26,12 +26,23 @@ public final class BankImport {
     @XNode("@src")
     private String srcFilePath;
 
+    public BankImport() {
+    }
+
     public String getBankName() {
         return bankName;
     }
 
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
     public String getSrcFilePath() {
         return srcFilePath;
+    }
+
+    public void setSrcFilePath(String srcFilePath) {
+        this.srcFilePath = srcFilePath;
     }
 
 }
