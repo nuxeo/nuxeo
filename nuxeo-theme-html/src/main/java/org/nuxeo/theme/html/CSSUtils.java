@@ -383,62 +383,6 @@ public final class CSSUtils {
         return images;
     }
 
-    /* web lengths */
-
-    public static String addWebLengths(final String length1,
-            final String length2) {
-        final WebLength webLength1 = getWebLength(length1);
-        final WebLength webLength2 = getWebLength(length2);
-        if (!webLength1.unit.equals(webLength2.unit)) {
-            return null;
-        }
-        return new WebLength(webLength1.value + webLength2.value,
-                webLength1.unit).toString();
-    }
-
-    public static String substractWebLengths(final String length1,
-            final String length2) {
-        final WebLength webLength1 = getWebLength(length1);
-        final WebLength webLength2 = getWebLength(length2);
-        if (!webLength1.unit.equals(webLength2.unit)) {
-            return null;
-        }
-        return new WebLength(webLength1.value - webLength2.value,
-                webLength1.unit).toString();
-    }
-
-    public static String divideWebLength(final String length, final int divider) {
-        if (divider <= 0) {
-            return null;
-        }
-        final WebLength webLength = getWebLength(length);
-        if (webLength != null) {
-            return new WebLength(webLength.value / divider, webLength.unit).toString();
-        }
-        return null;
-    }
-
-    public static WebLength getWebLength(final String length) {
-        Integer value = null;
-        String unit = null;
-        for (String lengthUnit : lengthUnits) {
-            if (length.endsWith(lengthUnit)) {
-                unit = lengthUnit;
-                try {
-                    value = Integer.valueOf(length.substring(0, length.length()
-                            - lengthUnit.length()));
-                } catch (NumberFormatException e) {
-                    log.error("Could not convert web lengths to integers", e);
-                }
-                break;
-            }
-        }
-        if (value != null && unit != null) {
-            return new WebLength(value, unit);
-        }
-        return null;
-    }
-
     public static String toCamelCase(final String value) {
         if (value == null || value.trim().equals("")) {
             return value;
