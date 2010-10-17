@@ -50,7 +50,7 @@ public class ReverseXMapTest extends TestCase{
         // load from new created map
         xmap = new XMap();
         xmap.register(Author.class);
-        author = (Author) xmap.load(file.toURL());
+        author = (Author) xmap.load(file.toURI().toURL());
 
         assertEquals("First test 22", author.title);
         assertEquals("bla bla", author.description);

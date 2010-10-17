@@ -97,7 +97,7 @@ public class TestZipUtils extends TestCase {
     public void testGetZipContentBytByURL() throws Exception {
         String path = "test-data/hello.odt";
         File sourceFile = FileUtils.getResourceFileFromContext(path);
-        URL url = sourceFile.toURL();
+        URL url = sourceFile.toURI().toURL();
 
         List<String> contentNames = ZipUtils.getEntryNames(url);
         assertEquals("Number of elements", 9, contentNames.size());
