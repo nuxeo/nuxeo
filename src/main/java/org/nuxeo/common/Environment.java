@@ -50,55 +50,54 @@ public class Environment {
     public static String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
     /**
-     * the home directory
-     * 
+     * The home directory.
+     *
      * @deprecated never defined
      */
+    @Deprecated
     public static final String HOME_DIR = "org.nuxeo.app.home";
 
     /**
-     * the web root
-     * 
+     * The web root.
+     *
      * @deprecated never defined
      */
+    @Deprecated
     public static final String WEB_DIR = "org.nuxeo.app.web";
 
     /**
-     * the config directory
-     * 
+     * The config directory.
+     *
      * @deprecated never defined
      */
+    @Deprecated
     public static final String CONFIG_DIR = "org.nuxeo.app.config";
 
     /**
-     * the data directory
-     * 
+     * The data directory.
+     *
      * @deprecated never defined
      */
+    @Deprecated
     public static final String DATA_DIR = "org.nuxeo.app.data";
 
     /**
-     * the log directory
-     * 
+     * The log directory.
+     *
      * @deprecated never defined
      */
+    @Deprecated
     public static final String LOG_DIR = "org.nuxeo.app.log";
 
-    // the application layout (optional)
-    // directory containing nuxeo runtime osgi bundles
+    /**
+     * The application layout (optional):
+     * directory containing nuxeo runtime osgi bundles.
+     */
     public static final String BUNDLES_DIR = "nuxeo.osgi.app.bundles";
 
     public static final String BUNDLES = "nuxeo.osgi.bundles";
 
     private static Environment DEFAULT;
-
-    public static void setDefault(Environment env) {
-        DEFAULT = env;
-    }
-
-    public static Environment getDefault() {
-        return DEFAULT;
-    }
 
     protected final File home;
 
@@ -133,6 +132,14 @@ public class Environment {
             loadProperties(properties);
         }
         this.properties.put(HOME_DIR, this.home.getAbsolutePath());
+    }
+
+    public static void setDefault(Environment env) {
+        DEFAULT = env;
+    }
+
+    public static Environment getDefault() {
+        return DEFAULT;
     }
 
     public File getHome() {
