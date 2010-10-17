@@ -56,7 +56,7 @@ public class GuardedServiceHandler<T> implements InvocationHandler {
         if (administred == null) {
             return;
         }
-        GuardedServiceProvider.INSTANCE.checkIsActive(administred.id());
+        GuardedServiceProvider.INSTANCE.checkIsActive(m, administred.id());
     }
 
     @Override
