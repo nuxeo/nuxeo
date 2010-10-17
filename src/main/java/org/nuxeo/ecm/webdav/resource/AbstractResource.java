@@ -38,7 +38,7 @@ public class AbstractResource {
 
     protected CoreSession session;
 
-    protected HttpServletRequest request;    
+    protected HttpServletRequest request;
     protected LockManager lockManager = LockManager.getInstance();
 
     protected AbstractResource(String path, HttpServletRequest request) throws Exception {

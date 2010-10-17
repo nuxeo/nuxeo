@@ -84,12 +84,12 @@ public class FileResource extends ExistingResource {
     }
 
     @PROPFIND
-	public Response propfind(@Context UriInfo uriInfo) throws Exception {
+    public Response propfind(@Context UriInfo uriInfo) throws Exception {
         Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
         Blob content = (Blob) doc.getPropertyValue("file:content");
 
-		net.java.dev.webdav.jaxrs.xml.elements.Response response;
+        net.java.dev.webdav.jaxrs.xml.elements.Response response;
         response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null,
                 new PropStat(new Prop(
@@ -98,9 +98,9 @@ public class FileResource extends ExistingResource {
                         new GetContentLength(content.getLength())),
                         new Status(OK)));
 
-		MultiStatus st = new MultiStatus(response);
+        MultiStatus st = new MultiStatus(response);
         Util.endTransaction();
-		return Response.status(207).entity(st).build();
-	}
+        return Response.status(207).entity(st).build();
+    }
 
 }

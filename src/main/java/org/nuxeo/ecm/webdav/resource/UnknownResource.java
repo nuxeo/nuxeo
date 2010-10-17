@@ -58,7 +58,7 @@ public class UnknownResource extends AbstractResource {
 
         // Special case: ignore magic MacOS files.
         if (name.startsWith("._")) {
-            Util.endTransaction();                        
+            Util.endTransaction();
             // Not sure if it's the right error code.
             throw new WebApplicationException(409);
         }
@@ -90,7 +90,7 @@ public class UnknownResource extends AbstractResource {
 
         InputStreamSource iss = new InputStreamSource(request.getInputStream());
         if (iss.getString().length() > 0) {
-            Util.endTransaction();            
+            Util.endTransaction();
             return Response.status(415).build();
         }
 
@@ -140,7 +140,7 @@ public class UnknownResource extends AbstractResource {
     private void ensureParentExists() throws Exception {
         DocumentRef parentRef = new PathRef(parentPath);
         if (!session.exists(parentRef)) {
-            Util.endTransaction();            
+            Util.endTransaction();
             throw new WebApplicationException(409);
         }
     }

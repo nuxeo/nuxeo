@@ -86,11 +86,11 @@ public class ExistingResource extends AbstractResource {
         if (lockManager.isLocked(path)) {
             String token = getTokenFromHeaders("if");
             if (!lockManager.canUnlock(path, token)) {
-                Util.endTransaction();                
+                Util.endTransaction();
                 return Response.status(423).build();
             }
         }
-        
+
         return copyOrMove("MOVE", dest, overwrite);
     }
 
