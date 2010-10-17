@@ -70,10 +70,13 @@ public class DefaultBinaryManager implements BinaryManager {
 
     protected File tmpDir;
 
+    protected String repositoryName;
+
     protected BinaryManagerDescriptor descriptor;
 
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
+       this.repositoryName = repositoryDescriptor.name;
         String path = repositoryDescriptor.binaryStorePath;
         if (path == null || path.trim().length() == 0) {
             path = DEFAULT_PATH;
@@ -171,7 +174,7 @@ public class DefaultBinaryManager implements BinaryManager {
         /*
          * Now we can build the Binary.
          */
-        return getBinaryScrambler().getUnscrambledBinary(file, digest);
+        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     public Binary getBinary(String digest) {
@@ -179,7 +182,7 @@ public class DefaultBinaryManager implements BinaryManager {
         if (file == null || !file.exists()) {
             return null;
         }
-        return getBinaryScrambler().getUnscrambledBinary(file, digest);
+        return getBinaryScrambler().getUnscrambledBinary(file, digest, repositoryName);
     }
 
     /**
@@ -270,8 +273,8 @@ public class DefaultBinaryManager implements BinaryManager {
         public void unscrambleBuffer(byte[] buf, int off, int n) {
         }
 
-        public Binary getUnscrambledBinary(File file, String digest) {
-            return new Binary(file, digest);
+        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
+            return new Binary(file, digest, repoName);
         }
 
         public void skip(long n) {
@@ -293,9 +296,9 @@ public class DefaultBinaryManager implements BinaryManager {
 
         protected final BinaryScrambler scrambler;
 
-        public ScrambledBinary(File file, String digest,
+        public ScrambledBinary(File file, String digest, String repoName,
                 BinaryScrambler scrambler) {
-            super(file, digest);
+            super(file, digest, repoName);
             this.file = file;
             this.scrambler = scrambler;
         }
@@ -309,6 +312,7 @@ public class DefaultBinaryManager implements BinaryManager {
         public StreamSource getStreamSource() {
             return new ScrambledStreamSource(file, scrambler);
         }
+
     }
 
     /**

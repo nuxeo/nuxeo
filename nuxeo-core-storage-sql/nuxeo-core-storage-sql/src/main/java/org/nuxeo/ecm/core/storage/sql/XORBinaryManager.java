@@ -84,8 +84,8 @@ public class XORBinaryManager extends DefaultBinaryManager {
             scrambleBuffer(buf, off, n);
         }
 
-        public Binary getUnscrambledBinary(File file, String digest) {
-            return new ScrambledBinary(file, digest, this);
+        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
+            return new ScrambledBinary(file, digest, repoName, this);
         }
 
         public void skip(long n) {
