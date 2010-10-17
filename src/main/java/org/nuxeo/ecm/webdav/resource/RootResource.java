@@ -77,15 +77,18 @@ public class RootResource {
     public Object findResource(@PathParam("path") String path,
             @Context HttpServletRequest request) throws Exception {
 
+        Util.startTransaction();
         CoreSession session = Util.getSession(request);
 
         DocumentRef ref = new PathRef("/" + path);
         if (!session.exists(ref)) {
+            Util.endTransaction();
             return new UnknownResource(path, request);
         }
 
         // Send 401 error if not authorised to read.
         if (!session.hasPermission(ref, SecurityConstants.READ)) {
+            Util.endTransaction();
             return Response.status(401);
         }
 

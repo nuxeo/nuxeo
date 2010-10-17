@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webdav.provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webdav.Util;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -55,6 +56,7 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
             log.error(e, e);
             msg = "Error\n\n" + e.getMessage() + "\n\n" + sw;
         }
+        Util.endTransaction();
         return Response.status(status).type("text/plain").entity(msg).build();
     }
 

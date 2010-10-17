@@ -23,6 +23,10 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Jackrabbit includes a WebDAV client library. Let's use it to test our
+ * server.
+ */
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static HttpClient client;

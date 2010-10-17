@@ -71,6 +71,7 @@ public class FolderResource extends ExistingResource {
             propFind = (PropFind) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
             log.error(e);
+            Util.endTransaction();
             // FIXME: check this is the right response code
             return Response.status(400).build();
         }
@@ -88,6 +89,7 @@ public class FolderResource extends ExistingResource {
                         new Status(OK)));
 
         if (!doc.isFolder() || depth.equals("0")) {
+            Util.endTransaction();
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
@@ -139,6 +141,7 @@ public class FolderResource extends ExistingResource {
         MultiStatus st = new MultiStatus(responses.toArray(
                 new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
         //printXml(st);
+        Util.endTransaction();
         return Response.status(207).entity(st).build();
     }
 

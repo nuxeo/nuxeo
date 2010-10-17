@@ -43,7 +43,7 @@ public class JerseyClientTest extends AbstractServerTest {
 
     @Test
     public void multipleTest() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             simpleTest();
         }
     }

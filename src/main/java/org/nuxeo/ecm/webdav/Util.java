@@ -29,8 +29,11 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
@@ -51,7 +54,12 @@ public class Util {
     }
 
     public static CoreSession getSession(HttpServletRequest request) throws Exception {
-        return getSession();
+        // Don't cache session at all.
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        Repository repo = rm.getDefaultRepository();
+        return repo.open();
+
+        //return getSession();
 
         // FIXME
         //UserSession us = UserSession.getCurrentSession(request);
@@ -65,6 +73,21 @@ public class Util {
             session = repo.open();
         }
         return session;
+    }
+
+    public static void startTransaction() {
+        try {
+            TransactionHelper.lookupTransactionManager();
+            TransactionHelper.startTransaction();
+        } catch (NamingException e) {
+            // pass
+        }
+    }
+
+    public static void endTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
     // utility methods related to JAXB marshalling

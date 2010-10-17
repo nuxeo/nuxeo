@@ -19,12 +19,7 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.methods.COPY;
-import net.java.dev.webdav.jaxrs.methods.MKCOL;
-import net.java.dev.webdav.jaxrs.methods.MOVE;
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
-
+import net.java.dev.webdav.jaxrs.methods.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -63,10 +58,12 @@ public class UnknownResource extends AbstractResource {
 
         // Special case: ignore magic MacOS files.
         if (name.startsWith("._")) {
+            Util.endTransaction();                        
             // Not sure if it's the right error code.
             throw new WebApplicationException(409);
         }
-        
+
+        Util.startTransaction();
         ensureParentExists();
 
         Blob content = new StreamingBlob(new InputStreamSource(request.getInputStream()));
@@ -80,6 +77,7 @@ public class UnknownResource extends AbstractResource {
         session.createDocument(newdoc);
         session.save();
 
+        Util.endTransaction();
         return Response.created(new URI(request.getRequestURI())).build();
     }
 
@@ -92,6 +90,7 @@ public class UnknownResource extends AbstractResource {
 
         InputStreamSource iss = new InputStreamSource(request.getInputStream());
         if (iss.getString().length() > 0) {
+            Util.endTransaction();            
             return Response.status(415).build();
         }
 
@@ -100,6 +99,7 @@ public class UnknownResource extends AbstractResource {
         session.createDocument(folder);
         session.save();
 
+        Util.endTransaction();
         return Response.created(new URI(request.getRequestURI())).build();
     }
 
@@ -107,26 +107,31 @@ public class UnknownResource extends AbstractResource {
 
     @DELETE
     public Response delete() {
+        Util.endTransaction();
         return Response.status(404).build();
     }
 
     @COPY
     public Response copy() {
+        Util.endTransaction();
         return Response.status(404).build();
     }
 
     @MOVE
     public Response move() {
+        Util.endTransaction();
         return Response.status(404).build();
     }
 
     @PROPFIND
     public Response propfind() {
+        Util.endTransaction();
         return Response.status(404).build();
     }
 
     @PROPPATCH
     public Response proppatch() {
+        Util.endTransaction();
         return Response.status(404).build();
     }
 
@@ -135,6 +140,7 @@ public class UnknownResource extends AbstractResource {
     private void ensureParentExists() throws Exception {
         DocumentRef parentRef = new PathRef(parentPath);
         if (!session.exists(parentRef)) {
+            Util.endTransaction();            
             throw new WebApplicationException(409);
         }
     }

@@ -19,24 +19,8 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.jaxrs.methods.COPY;
-import net.java.dev.webdav.jaxrs.methods.LOCK;
-import net.java.dev.webdav.jaxrs.methods.MKCOL;
-import net.java.dev.webdav.jaxrs.methods.MOVE;
-import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
-import net.java.dev.webdav.jaxrs.methods.UNLOCK;
-import net.java.dev.webdav.jaxrs.xml.elements.ActiveLock;
-import net.java.dev.webdav.jaxrs.xml.elements.Depth;
-import net.java.dev.webdav.jaxrs.xml.elements.HRef;
-import net.java.dev.webdav.jaxrs.xml.elements.LockInfo;
-import net.java.dev.webdav.jaxrs.xml.elements.LockRoot;
-import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
-import net.java.dev.webdav.jaxrs.xml.elements.LockToken;
-import net.java.dev.webdav.jaxrs.xml.elements.LockType;
-import net.java.dev.webdav.jaxrs.xml.elements.Owner;
-import net.java.dev.webdav.jaxrs.xml.elements.Prop;
-import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
-import net.java.dev.webdav.jaxrs.xml.elements.TimeOut;
+import net.java.dev.webdav.jaxrs.methods.*;
+import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webdav.Constants;
-import org.nuxeo.ecm.webdav.locking.LockManager;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.locking.LockManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -78,6 +62,7 @@ public class ExistingResource extends AbstractResource {
         if (lockManager.isLocked(path)) {
             String token = getTokenFromHeaders("if");
             if (!lockManager.canUnlock(path, token)) {
+                Util.endTransaction();
                 return Response.status(423).build();
             }
         }
@@ -85,6 +70,7 @@ public class ExistingResource extends AbstractResource {
         DocumentRef ref = new PathRef(path);
         session.removeDocument(ref);
         session.save();
+        Util.endTransaction();
         return Response.ok().build();
     }
 
@@ -100,6 +86,7 @@ public class ExistingResource extends AbstractResource {
         if (lockManager.isLocked(path)) {
             String token = getTokenFromHeaders("if");
             if (!lockManager.canUnlock(path, token)) {
+                Util.endTransaction();                
                 return Response.status(423).build();
             }
         }
@@ -122,6 +109,7 @@ public class ExistingResource extends AbstractResource {
         if (lockManager.isLocked(destPath)) {
             String token = getTokenFromHeaders("if");
             if (!LockManager.getInstance().canUnlock(path, token)) {
+                Util.endTransaction();
                 return Response.status(423).build();
             }
         }
@@ -132,6 +120,7 @@ public class ExistingResource extends AbstractResource {
         String destParentPath = Util.getParentPath(destPath);
         PathRef destParentRef = new PathRef(destParentPath);
         if (!session.exists(destParentRef)) {
+            Util.endTransaction();
             return Response.status(409).build();
         }
 
@@ -151,6 +140,7 @@ public class ExistingResource extends AbstractResource {
         }
         session.save();
 
+        Util.endTransaction();
         return Response.status(status).build();
     }
 
@@ -159,18 +149,20 @@ public class ExistingResource extends AbstractResource {
     @PROPPATCH
     public Response proppatch(@Context UriInfo uriInfo) throws Exception {
         if (lockManager.isLocked(path)) {
+            Util.endTransaction();
             return Response.status(423).build();
         }
 
         JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
-        PropertyUpdate propertyUpdate;
         try {
-            propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
+            PropertyUpdate propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
+            Util.endTransaction();
             return Response.status(400).build();
         }
         //printXml(propertyUpdate);
+        Util.endTransaction();
         return Response.ok().build();
     }
 
@@ -178,6 +170,7 @@ public class ExistingResource extends AbstractResource {
     public Response lock() throws Exception {
         String token = getTokenFromHeaders("if");
         if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
+            Util.endTransaction();
             return Response.status(423).build();
         }
 
@@ -190,21 +183,24 @@ public class ExistingResource extends AbstractResource {
                 token = lockManager.lock(path);
             } catch (JAXBException e) {
                 log.error(e);
+                Util.endTransaction();
                 // FIXME: check this is the right response code
                 return Response.status(400).build();
             }
         } else if (token != null) {
             // OK
         } else {
+            Util.endTransaction();
             return Response.status(400).build();
         }
 
         Prop prop = new Prop(new LockDiscovery(new ActiveLock(
                 LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
                 new Owner("toto"),
-                new TimeOut(10000), new LockToken(new HRef("urn:uuid:" + token)),
+                new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
                 new LockRoot(new HRef("http://asdasd/"))
         )));
+        Util.endTransaction();
         return Response.ok().entity(prop)
                 .header("Lock-Token", "urn:uuid:" + token).build();
     }
@@ -214,12 +210,15 @@ public class ExistingResource extends AbstractResource {
         if (lockManager.isLocked(path)) {
             String token = getTokenFromHeaders("lock-token");
             if (!lockManager.canUnlock(path, token)) {
+                Util.endTransaction();
                 return Response.status(423).build();
             }
             lockManager.unlock(path);
+            Util.endTransaction();
             return Response.status(204).build();
         } else {
             // TODO: return an error
+            Util.endTransaction();
             return Response.status(204).build();
         }
     }
@@ -229,6 +228,7 @@ public class ExistingResource extends AbstractResource {
      */
     @MKCOL
     public Response mkcol() {
+        Util.endTransaction();
         return Response.status(405).build();
     }
 

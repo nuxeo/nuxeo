@@ -28,6 +28,8 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.provider.TransactionAwareBlob;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,12 +52,14 @@ public class FileResource extends ExistingResource {
     }
 
     @GET
-    public Response get() throws Exception {
+    public Object get() throws Exception {
         Blob content = (Blob) doc.getPropertyValue("file:content");
         if (content == null) {
+            Util.endTransaction();
             return Response.ok("").build();
         } else {
-            return Response.ok(content.getStream()).type(content.getMimeType()).build();
+            return new TransactionAwareBlob(null, content, true);
+            //return Response.ok(content.getStream()).type(content.getMimeType()).build();
         }
     }
 
@@ -63,6 +67,7 @@ public class FileResource extends ExistingResource {
     public Response put() throws Exception {
         String token = getTokenFromHeaders("if");
         if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
+            Util.endTransaction();
             return Response.status(423).build();
         }
 
@@ -74,6 +79,7 @@ public class FileResource extends ExistingResource {
         session.saveDocument(doc);
         session.save();
 
+        Util.endTransaction();
         return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
     }
 
@@ -93,6 +99,7 @@ public class FileResource extends ExistingResource {
                         new Status(OK)));
 
 		MultiStatus st = new MultiStatus(response);
+        Util.endTransaction();
 		return Response.status(207).entity(st).build();
 	}
 

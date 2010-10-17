@@ -52,6 +52,7 @@ public class AbstractResource {
 
     @OPTIONS
     public Response options() throws Exception {
+        Util.endTransaction();
         return Response.status(204).entity("")
             .header("DAV", "1,2") // not 1,2 for now.
             .header("Allow", "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "
