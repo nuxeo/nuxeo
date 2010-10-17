@@ -25,20 +25,27 @@ import java.io.InputStreamReader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LitmusTest extends AbstractServerTest {
 
     /**
      * Runs the litmus test, a third-party WebDAV compliance testing tool (must be installed separately).
+     * <p>
+     * Only only the "basic" and "copymove" tests are supposed to pass at this point.
      */
     @Test
     public void testWithLitmus() throws Exception {
-        Process p = Runtime.getRuntime().exec("litmus -k " + ROOT_URI);
+        String[] envp = { "TESTS=basic copymove"};
+        Process p = Runtime.getRuntime().exec("litmus -k " + ROOT_URI, envp);
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String s;
         while ((s = reader.readLine()) != null) {
             System.out.println(s);
             System.out.flush();
+            if (s.startsWith("<- summary for ")) {
+                assertTrue(s.contains(" 0 failed."));
+            }
         }
         assertEquals(0L, (long) p.waitFor());
     }
