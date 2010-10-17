@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.management.guards;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class GuardedServiceProvider extends AnnotatedServiceProvider {
 
     protected final Map<String, Boolean> activeStatuses = new HashMap<String, Boolean>();
 
-    public void checkIsActive(String id) {
+    public void checkIsActive(Method method, String id) {
         if (!activeStatuses.containsKey(id)) {
             return;
         }
@@ -55,7 +56,7 @@ public class GuardedServiceProvider extends AnnotatedServiceProvider {
         if (Boolean.TRUE.equals(isActive)) {
             return;
         }
-        throw new IllegalStateException("Server is not active");
+        throw new PassivatedServiceException(method, id);
     }
 
  }
