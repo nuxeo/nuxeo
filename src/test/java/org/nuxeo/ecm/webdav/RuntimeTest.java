@@ -42,7 +42,7 @@ public class RuntimeTest {
     }
 
     @Test
-    public void testRuntimeStarts() throws Exception {
+    public void runtimeStarts() throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getDefaultRepository();
         assertNotNull(repo);
@@ -54,8 +54,8 @@ public class RuntimeTest {
         assertEquals("Root", doc.getType());
     }
 
-    // Don't run for now.
-    public void testModifyDoc() throws Exception {
+    @Test
+    public void repositoryIsUsable() throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getDefaultRepository();
         assertNotNull(repo);
@@ -65,6 +65,7 @@ public class RuntimeTest {
 
         DocumentModel doc = session.getDocument(new PathRef("/"));
         assertEquals("Root", doc.getType());
+
         doc.setPropertyValue("dc:title", "test");
         session.saveDocument(doc);
         session.save();

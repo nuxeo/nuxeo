@@ -13,12 +13,10 @@ import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
+import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
-import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -61,9 +59,8 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         //Not quite nice, but for a example ok
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
-        Collection<DefaultDavProperty> propertyColl = props.getContent();
-        for (DefaultDavProperty prop : propertyColl) {
-            System.out.println(prop.getName() + "  " + prop.getValue());
+        for (DavPropertyName propName : props.getPropertyNames()) {
+            System.out.println(propName + "  " + props.get(propName).getValue());
         }
     }
 
@@ -77,9 +74,8 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         //Not quite nice, but for a example ok
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
-        Collection<DefaultDavProperty> propertyColl = props.getContent();
-        for (DefaultDavProperty prop : propertyColl) {
-            System.out.println(prop.getName() + "  " + prop.getValue());
+        for (DavPropertyName propName : props.getPropertyNames()) {
+            System.out.println(propName + "  " + props.get(propName).getValue());
         }
     }
 
