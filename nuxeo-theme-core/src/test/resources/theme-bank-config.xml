@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
-    <import src="test-bank.zip" bank="test" />
+    <import src="test-bank.zip" bank="test" collection="Test" />
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="banks">

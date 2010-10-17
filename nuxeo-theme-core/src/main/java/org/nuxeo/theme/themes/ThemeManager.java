@@ -118,7 +118,7 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, byte[]> cachedBinaries = new HashMap<String, byte[]>();
 
-    private List<String> resourceOrdering = new ArrayList<String>();
+    private final List<String> resourceOrdering = new ArrayList<String>();
 
     private static final File CUSTOM_THEME_DIR;
 
@@ -134,6 +134,7 @@ public final class ThemeManager implements Registrable {
         CUSTOM_THEME_DIR.mkdirs();
     }
 
+    @Override
     public void clear() {
         themes.clear();
         pages.clear();
@@ -172,6 +173,10 @@ public final class ThemeManager implements Registrable {
             files.add(f);
         }
         return files;
+    }
+
+    public static void customizeTheme(ThemeDescriptor themeDescriptor) {
+
     }
 
     public static void updateThemeDescriptors() {

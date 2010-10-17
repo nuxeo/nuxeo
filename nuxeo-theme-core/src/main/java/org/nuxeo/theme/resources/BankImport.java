@@ -23,6 +23,9 @@ public final class BankImport {
     @XNode("@bank")
     private String bankName;
 
+    @XNode("@collection")
+    private String collection;
+
     @XNode("@src")
     private String srcFilePath;
 
@@ -43,6 +46,14 @@ public final class BankImport {
 
     public void setSrcFilePath(String srcFilePath) {
         this.srcFilePath = srcFilePath;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
     }
 
 }

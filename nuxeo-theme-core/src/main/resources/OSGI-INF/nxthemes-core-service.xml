@@ -131,24 +131,20 @@
 
       The XML syntax on the server side is:
       <code>
-        <import src="bank-resources.zip" bank="bank name" />
+        <import src="bank-resources.zip" bank="bank name" collection="collection name" />
       </code>
 
       The zip archive is deployed into the bank.
       The archive's structure is:
 
       style/
-      style/collection name/
-      ...
       image/
-      image/collection name/
-      ...
       preset/
-      preset/collection name/
-      preset/collection name/border/
-      preset/collection name/font/
-      preset/collection name/background/
-      preset/collection name/color/
+      preset/
+      preset/border/
+      preset/font/
+      preset/background/
+      preset/color/
       ...
 
     </documentation>

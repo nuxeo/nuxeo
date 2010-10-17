@@ -62,11 +62,9 @@ public class BankManager {
     /*
      * Collections
      */
-    public static List<String> getCollections(String bank, String typeName)
-            throws IOException {
+    public static List<String> getCollections(String bank) throws IOException {
         List<String> names = new ArrayList<String>();
-        String path = String.format("%s/%s", bank, typeName);
-        File file = getFile(path);
+        File file = getBankDir(bank);
         if (file.exists()) {
             for (File collectionFile : BankUtils.listFilesSorted(file)) {
                 names.add(collectionFile.getName());
@@ -76,9 +74,9 @@ public class BankManager {
     }
 
     public static List<String> getItemsInCollection(String bank,
-            String typeName, String collection) throws IOException {
+            String collection, String typeName) throws IOException {
         List<String> names = new ArrayList<String>();
-        String path = String.format("%s/%s/%s", bank, typeName, collection);
+        String path = String.format("%s/%s/%s", bank, collection, typeName);
         File file = getFile(path);
         if (file.exists()) {
             for (File item : BankUtils.listFilesSorted(file)) {
@@ -94,14 +92,14 @@ public class BankManager {
 
     public static File getStyleFile(String bank, String collection,
             String resource) throws IOException {
-        String path = String.format("%s/style/%s/%s", bank, collection,
+        String path = String.format("%s/%s/style/%s", bank, collection,
                 resource);
         return getFile(path);
     }
 
     public static File getImageFile(String bank, String collection,
             String resource) throws IOException {
-        String path = String.format("%s/image/%s/%s", bank, collection,
+        String path = String.format("%s/%s/image/%s", bank, collection,
                 resource);
         return getFile(path);
     }
@@ -114,16 +112,19 @@ public class BankManager {
     @SuppressWarnings("rawtypes")
     public static File getStylePreviewFile(String bank, String collection,
             String resource) throws IOException {
-        Map<String, Object> info = getInfo(bank, "style", collection);
+        Map<String, Object> info = getInfo(bank, collection, "style");
+
         if (!info.containsKey(resource)) {
             throw new IOException("Style preview not found: " + resource);
         }
+
         Map value = (Map) info.get(resource);
         if (!value.containsKey("preview")) {
             throw new IOException("Style preview not found: " + resource);
         }
+
         String preview = (String) value.get("preview");
-        String path = String.format("%s/style/%s/%s", bank, collection, preview);
+        String path = String.format("%s/%s/style/%s", bank, collection, preview);
 
         File file = getFile(path);
         if (!file.exists()) {
@@ -132,17 +133,17 @@ public class BankManager {
         return file;
     }
 
-    public static File getInfoFile(String bank, String typeName,
-            String collection) throws IOException {
-        String path = String.format("%s/%s/%s/info.txt", bank, typeName,
-                collection);
+    public static File getInfoFile(String bank, String collection,
+            String typeName) throws IOException {
+        String path = String.format("%s/%s/%s/info.txt", bank, collection,
+                typeName);
         return getFile(path);
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> getInfo(String bank, String typeName,
-            String collection) throws IOException {
-        File file = getInfoFile(bank, typeName, collection);
+    public static Map<String, Object> getInfo(String bank, String collection,
+            String typeName) throws IOException {
+        File file = getInfoFile(bank, collection, typeName);
         Yaml yaml = new Yaml();
         return (Map<String, Object>) yaml.load(BankUtils.getFileContent(file));
     }
@@ -150,11 +151,16 @@ public class BankManager {
     /*
      * I/O
      */
-    public static void importBankData(String bankName, URL srcFileUrl)
-            throws IOException {
+    public static void importBankData(String bankName, String collection,
+            URL srcFileUrl) throws IOException {
         InputStream in = null;
         in = srcFileUrl.openStream();
-        ZipUtils.unzip(in, getBankDir(bankName));
+        String path = String.format("%s/%s", bankName, collection);
+        File folder = getFile(path);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        ZipUtils.unzip(in, folder);
         if (in != null) {
             in.close();
         }

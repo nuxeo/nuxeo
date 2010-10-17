@@ -70,11 +70,11 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     public void testGetCollections() throws IOException {
         assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME, "style").get(0));
+                BankManager.getCollections(BANK_NAME).get(0));
         assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME, "preset").get(0));
+                BankManager.getCollections(BANK_NAME).get(0));
         assertEquals(COLLECTION_NAME,
-                BankManager.getCollections(BANK_NAME, "image").get(0));
+                BankManager.getCollections(BANK_NAME).get(0));
     }
 
     public void testGetBankLogoFile() throws IOException {
@@ -85,12 +85,12 @@ public class TestResourceBank extends NXRuntimeTestCase {
     public void testGetImageFile() throws IOException {
         assertTrue(BankManager.getImageFile(BANK_NAME, COLLECTION_NAME,
                 "emoticon_smile.png").getPath().endsWith(
-                "/test/image/Test/emoticon_smile.png"));
+                "/test/Test/image/emoticon_smile.png"));
     }
 
     public void testGetStyleInfo() throws IOException {
-        Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, "style",
-                COLLECTION_NAME).get("test.css");
+        Map styleInfo = (Map) BankManager.getInfo(BANK_NAME, COLLECTION_NAME,
+                "style").get("test.css");
         assertEquals(styleInfo.get("description"), "Test skin");
         assertEquals(styleInfo.get("skin"), true);
     }

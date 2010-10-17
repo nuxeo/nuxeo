@@ -557,10 +557,11 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             } else if (contrib instanceof BankImport) {
                 BankImport bankImport = (BankImport) contrib;
                 String bankName = bankImport.getBankName();
+                String collection = bankImport.getCollection();
                 String srcFilePath = bankImport.getSrcFilePath();
                 URL srcFileUrl = extensionContext.getResource(srcFilePath);
                 try {
-                    BankManager.importBankData(bankName, srcFileUrl);
+                    BankManager.importBankData(bankName, collection, srcFileUrl);
                 } catch (IOException e) {
                     log.error("Could not import bank resources: " + srcFileUrl,
                             e);
