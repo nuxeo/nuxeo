@@ -47,7 +47,7 @@
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
+      <groupId>org.jboss.naming</groupId>
       <artifactId>jnp-client</artifactId>
       <scope>test</scope>
     </dependency>
