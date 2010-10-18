@@ -632,8 +632,6 @@
         <version>5.0.3.GA</version>
         <scope>provided</scope>
       </dependency>
-      <!-- <dependency> <groupId>jboss</groupId> <artifactId>jnp-client</artifactId> 
-        <version>4.0.2</version> <scope>provided</scope> </dependency> -->
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-spi</artifactId>
