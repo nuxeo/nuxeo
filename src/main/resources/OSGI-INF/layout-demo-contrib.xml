@@ -4,13 +4,13 @@
   <extension target="org.nuxeo.ecm.platform.forms.layoutDemo.framework"
     point="widgettypes">
 
-    <widgetType name="string">
-      <label>String widget</label>
-      <viewId>stringWidget</viewId>
+    <widgetType name="text">
+      <label>Text widget</label>
+      <viewId>textWidget</viewId>
       <category>standard</category>
       <layouts>
-        <layout name="stringWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-string-widget.xml" />
+        <layout name="textWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
       </layouts>
     </widgetType>
 

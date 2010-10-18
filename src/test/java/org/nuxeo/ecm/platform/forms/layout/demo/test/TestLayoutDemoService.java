@@ -60,19 +60,19 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     }
 
     public void testRegistration() throws Exception {
-        DemoWidgetType stringWidget = service.getWidgetType("string");
-        assertEquals("string", stringWidget.getName());
-        assertEquals("String widget", stringWidget.getLabel());
-        assertEquals("stringWidget", stringWidget.getViewId());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH + "stringWidget",
-                stringWidget.getUrl());
-        assertEquals("standard", stringWidget.getCategory());
-        List<DemoLayout> demoLayouts = stringWidget.getDemoLayouts();
+        DemoWidgetType textWidget = service.getWidgetType("text");
+        assertEquals("text", textWidget.getName());
+        assertEquals("Text widget", textWidget.getLabel());
+        assertEquals("textWidget", textWidget.getViewId());
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "textWidget",
+                textWidget.getUrl());
+        assertEquals("standard", textWidget.getCategory());
+        List<DemoLayout> demoLayouts = textWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
         assertEquals(1, demoLayouts.size());
-        assertEquals("stringWidgetLayout", demoLayouts.get(0).getName());
+        assertEquals("textWidgetLayout", demoLayouts.get(0).getName());
         assertEquals(LayoutDemoManager.APPLICATION_PATH
-                + "sources/OSGI-INF/demo/layout-demo-string-widget.xml",
+                + "sources/OSGI-INF/demo/layout-demo-text-widget.xml",
                 demoLayouts.get(0).getSourcePath());
 
         DemoWidgetType textareaWidget = service.getWidgetType("textarea");
@@ -92,19 +92,18 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     }
 
     public void testGetWidgetTypeByViewId() throws Exception {
-        DemoWidgetType stringWidget = service.getWidgetTypeByViewId("stringWidget");
-        assertEquals("string", stringWidget.getName());
+        DemoWidgetType textWidget = service.getWidgetTypeByViewId("textWidget");
+        assertEquals("text", textWidget.getName());
         DemoWidgetType textareaWidget = service.getWidgetTypeByViewId("textareaWidget");
         assertEquals("textarea", textareaWidget.getName());
-
     }
 
     public void testGetWidgetTypesByCategory() throws Exception {
         List<DemoWidgetType> widgets = service.getWidgetTypes("standard");
         assertNotNull(widgets);
         assertTrue(widgets.size() >= 2);
-        DemoWidgetType stringWidget = widgets.get(0);
-        assertEquals("string", stringWidget.getName());
+        DemoWidgetType textWidget = widgets.get(0);
+        assertEquals("text", textWidget.getName());
         DemoWidgetType textareaWidget = widgets.get(1);
         assertEquals("textarea", textareaWidget.getName());
     }

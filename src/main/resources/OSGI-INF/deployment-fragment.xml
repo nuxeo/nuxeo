@@ -17,8 +17,8 @@
 
     <!-- pages mapping -->
     <navigation-case>
-      <from-outcome>stringWidget</from-outcome>
-      <to-view-id>/layoutDemo/widgets/stringWidget.xhtml</to-view-id>
+      <from-outcome>textWidget</from-outcome>
+      <to-view-id>/layoutDemo/widgets/textWidget.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
