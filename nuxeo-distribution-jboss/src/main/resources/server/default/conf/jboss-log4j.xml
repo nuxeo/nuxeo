@@ -272,16 +272,13 @@
   <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
     <priority value="INFO" />
   </category>
+  <category name="org.nuxeo.runtime.jboss.deployer">
+    <priority value="INFO" />
+  </category>
   <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
     <priority value="INFO" />
   </category>
   <category name="org.nuxeo.osgi.application.StandaloneApplication">
-    <priority value="INFO" />
-  </category>
-  <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
-    <priority value="INFO" />
-  </category>
-  <category name="org.nuxeo.runtime.jboss.deployment.NuxeoDeployer">
     <priority value="INFO" />
   </category>
 
