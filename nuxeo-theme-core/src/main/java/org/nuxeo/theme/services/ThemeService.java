@@ -563,8 +563,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
                 try {
                     BankManager.importBankData(bankName, collection, srcFileUrl);
                 } catch (IOException e) {
-                    log.error("Could not import bank resources: " + srcFileUrl,
-                            e);
+                    log.error("Could not import bank resources: " + srcFilePath
+                            + " (" + e.getMessage() + ")");
                 }
             }
         }

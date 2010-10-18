@@ -35,6 +35,8 @@ import org.yaml.snakeyaml.Yaml;
 public class BankManager {
     private static final File BANKS_DIR;
 
+    private static final String CUSTOM_COLLECTION_DIRNAME = "custom";
+
     static {
         BANKS_DIR = new File(Framework.getRuntime().getHome(), "theme-banks");
         BANKS_DIR.mkdirs();
@@ -153,13 +155,18 @@ public class BankManager {
      */
     public static void importBankData(String bankName, String collection,
             URL srcFileUrl) throws IOException {
+        if (CUSTOM_COLLECTION_DIRNAME.equals(collection)) {
+            throw new IOException("Resource bank collection name not allowed: "
+                    + CUSTOM_COLLECTION_DIRNAME);
+        }
         InputStream in = null;
         in = srcFileUrl.openStream();
         String path = String.format("%s/%s", bankName, collection);
         File folder = getFile(path);
-        if (!folder.exists()) {
-            folder.mkdir();
+        if (folder.exists()) {
+            FileUtils.deleteTree(folder);
         }
+        folder.mkdir();
         ZipUtils.unzip(in, folder);
         if (in != null) {
             in.close();
