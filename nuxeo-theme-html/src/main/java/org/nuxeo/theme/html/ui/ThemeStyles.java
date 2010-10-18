@@ -52,7 +52,7 @@ public class ThemeStyles {
 
         // Load theme if needed
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+        if (!themeDescriptor.isLoaded()) {
             ThemeManager.loadTheme(themeDescriptor);
         }
 
@@ -85,7 +85,8 @@ public class ThemeStyles {
                     resourceBank = ThemeManager.getResourceBank(resourceBankName);
                     for (String imagePath : resourceBank.getImages()) {
                         rendered = rendered.replace(imagePath, String.format(
-                                "'/nuxeo/nxthemes-images/%s'", imagePath));
+                                "'/nuxeo/nxthemes-images/%s/%s'",
+                                resourceBankName, imagePath));
                     }
                 } catch (ThemeException e) {
                     log.warn("Could not get the list of bank images in: "

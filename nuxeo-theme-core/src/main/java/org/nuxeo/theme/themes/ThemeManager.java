@@ -1360,6 +1360,9 @@ public final class ThemeManager implements Registrable {
         byte[] data = cachedBinaries.get(key);
         if (data == null) {
             String[] parts = path.split("/");
+            if (parts.length != 3) {
+                throw new ThemeException("Incorrect image path: " + path);
+            }
             String resourceBankName = parts[0];
             String collectionName = parts[1];
             String resourceName = parts[2];

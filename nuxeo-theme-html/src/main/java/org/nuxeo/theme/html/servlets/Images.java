@@ -22,12 +22,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.themes.ThemeException;
 
 public final class Images extends HttpServlet implements Serializable {
+
+    private static final Log log = LogFactory.getLog(Images.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -41,12 +45,15 @@ public final class Images extends HttpServlet implements Serializable {
     protected void doPost(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
 
-        OutputStream os = response.getOutputStream();
         final String path = request.getPathInfo().substring(1);
-        byte[] data;
+        byte[] data = null;
         try {
             data = Manager.getThemeManager().getImageResource(path);
-
+        } catch (ThemeException e) {
+            log.error("Image not found: " + path);
+        }
+        if (data != null) {
+            OutputStream os = response.getOutputStream();
             String ext = FileUtils.getFileExtension(path);
             String mimeType = Utils.getImageMimeType(ext);
             response.addHeader("content-type", mimeType);
@@ -58,10 +65,8 @@ public final class Images extends HttpServlet implements Serializable {
             response.addHeader("Cache-Control", "must-revalidate");
             response.setDateHeader("Last-Modified", now);
             response.setDateHeader("Expires", now + new Long(lifetime) * 1000L);
+
             os.write(data);
-        } catch (ThemeException e) {
-            response.sendError(404);
-        } finally {
             os.close();
         }
     }

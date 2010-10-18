@@ -65,10 +65,18 @@ public final class Styles extends HttpServlet implements Serializable {
         response.addHeader("content-type", "text/css");
 
         final String themeName = request.getParameter("theme");
+        if (themeName == null) {
+            response.sendError(404);
+            log.error("Theme name not set");
+            return;
+        }
 
         // Load theme if needed
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+        if (themeDescriptor == null) {
+            throw new IOException("Theme not found: " + themeName);
+        }
+        if (!themeDescriptor.isLoaded()) {
             ThemeManager.loadTheme(themeDescriptor);
         }
 
@@ -123,7 +131,8 @@ public final class Styles extends HttpServlet implements Serializable {
                     resourceBank = ThemeManager.getResourceBank(resourceBankName);
                     for (String path : resourceBank.getImages()) {
                         rendered = rendered.replace(path, String.format(
-                                "'/nuxeo/nxthemes-images/%s'", path));
+                                "'/nuxeo/nxthemes-images/%s/%s'",
+                                resourceBankName, path));
                     }
                 } catch (ThemeException e) {
                     log.warn("Could not get the list of bank images in: "
