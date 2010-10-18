@@ -164,13 +164,13 @@
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
-        <version>1.2_09_jboss</version>
+        <version>1.2_12</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-impl</artifactId>
-        <version>1.2_09_jboss</version>
+        <version>1.2_12</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -557,37 +557,37 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>2.0.3.CR1-NX3</version>
+        <version>2.1.0.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-remoting</artifactId>
-        <version>2.0.3.CR1</version>
+        <version>2.1.0.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-ui</artifactId>
-        <version>2.0.3.CR1</version>
+        <version>2.1.0.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-mail</artifactId>
-        <version>2.0.3.CR1</version>
+        <version>2.1.0.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-debug</artifactId>
-        <version>2.0.3.CR1</version>
+        <version>2.1.0.SP1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.el</groupId>
         <artifactId>jboss-el</artifactId>
-        <version>2.0.1.GA</version>
+        <version>1.0_02.CR2</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -602,10 +602,23 @@
         <version>${jboss.version}</version>
         <scope>provided</scope>
       </dependency>
+
       <dependency>
-        <groupId>jboss</groupId>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-security-spi</artifactId>
+        <version>2.0.3.SP1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
         <artifactId>jbosssx</artifactId>
-        <version>${jboss.version}</version>
+        <version>2.0.3.SP1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-security</artifactId>
+        <version>5.1.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -690,31 +703,31 @@
 
       <dependency>
         <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.4.SP1_CP01-brew_NXP-5104</version>
+        <artifactId>hibernate-core</artifactId>
+        <version>3.3.1.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
-        <version>3.2.1.ga</version>
+        <version>3.4.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>3.2.1.ga</version>
+        <version>3.4.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-commons-annotations</artifactId>
-        <version>3.3.0.ga</version>
+        <version>3.1.0.GA</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>4.0.2.GA</version>
+        <version>3.1.0.GA</version>
       </dependency>
 
       <dependency>
@@ -789,7 +802,7 @@
       <dependency>
         <groupId>com.sun.facelets</groupId>
         <artifactId>jsf-facelets</artifactId>
-        <version>1.1.11</version>
+        <version>1.1.15.B1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1174,6 +1187,12 @@
         <groupId>javax.ws.rs</groupId>
         <artifactId>jsr311-api</artifactId>
         <version>1.1.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.ws</groupId>
+        <artifactId>jbossws-spi</artifactId>
+        <version>1.1.2.GA</version>
       </dependency>
 
       <dependency>
@@ -1598,6 +1617,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>catalina</artifactId>
         <version>6.0.20</version>
+        <scope>provided</scope>
         <exclusions>
           <exclusion>
             <groupId>org.apache.tomcat</groupId>
@@ -2129,7 +2149,7 @@
           <executions>
             <execution>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m</extraJvmArgs>
               </configuration>
               <goals>
                 <goal>compile</goal>
@@ -2388,8 +2408,8 @@
   </reporting>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module> 
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
+      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module>
       <module>nuxeo-gwt</module> </modules> </profile> -->
     <profile>
       <id>pde</id>
@@ -2518,11 +2538,11 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <!-- aggregate parameter is deprecated since 2.5. use the aggregate 
+              <!-- aggregate parameter is deprecated since 2.5. use the aggregate
                 goal instead of -->
               <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
-              <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css 
+              <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
                 </stylesheetfile -->
               <windowtitle>
                 Nuxeo Enterprise Platform 5.4 API Documentation
