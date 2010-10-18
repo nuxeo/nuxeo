@@ -33,7 +33,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.DialectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -293,18 +292,18 @@ public class SQLDirectory extends AbstractDirectory {
     private Dialect buildDialect() throws DirectoryException {
         String dialectName = config.getDialectName();
         if (dialectName != null) {
-            return DialectFactory.buildDialect(dialectName);
+            return HibernateDialectHelper.buildDialect(dialectName);
         }
         // find a dialect from the datasource meta information
-        String dbname;
-        int dbmajor;
+        Dialect dialect;
         Connection connection = getConnection();
         try {
             DatabaseMetaData metadata = connection.getMetaData();
-            dbname = metadata.getDatabaseProductName();
-            dbmajor = metadata.getDatabaseMajorVersion();
-        } catch (SQLException e) {
-            throw new DirectoryException(e);
+            dialect = HibernateDialectHelper.determineDialect(metadata);
+            return dialect;
+        }
+        catch (SQLException e) {
+            throw new DirectoryException("Unable to resolve Dialect", e);
         } finally {
             if (connection != null) {
                 try {
@@ -314,7 +313,6 @@ public class SQLDirectory extends AbstractDirectory {
                 }
             }
         }
-        return DialectFactory.determineDialect(dbname, dbmajor);
     }
 
 }

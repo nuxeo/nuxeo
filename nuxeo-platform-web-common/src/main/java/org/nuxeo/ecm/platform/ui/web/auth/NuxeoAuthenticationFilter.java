@@ -217,7 +217,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            // TODO Auto-generated catch block
+            log.error("Login failed for " + cachableUserIdent.getUserInfo().getUserName(), e);
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             return null;
         }
@@ -306,6 +306,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+
+        doInitIfNeeded();
 
         // NXP-5555: set encoding to UTF-8 in case this method is called before
         // encoding is set to UTF-8 on the request
@@ -547,6 +549,20 @@ public class NuxeoAuthenticationFilter implements Filter {
         return anonymous;
     }
 
+
+    protected void doInitIfNeeded() throws ServletException {
+        if (service==null && Framework.getRuntime()!=null) {
+            service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                    PluggableAuthenticationService.NAME);
+            if (service == null) {
+                log.error("Unable to get Service "
+                        + PluggableAuthenticationService.NAME);
+                throw new ServletException(
+                        "Can't initialize Nuxeo Pluggable Authentication Service");
+            }
+        }
+    }
+
     public void init(FilterConfig config) throws ServletException {
         String val = config.getInitParameter("byPassAuthenticationLog");
         if (val != null && Boolean.parseBoolean(val)) {
@@ -557,14 +573,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             securityDomain = val;
         }
 
-        service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
-        if (service == null) {
-            log.error("Unable to get Service "
-                    + PluggableAuthenticationService.NAME);
-            throw new ServletException(
-                    "Can't initialize Nuxeo Pluggable Authentication Service");
-        }
     }
 
     /**

@@ -7,6 +7,7 @@
     @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
 
+  <require>org.nuxeo.ecm.platform.login.default.config</require>
   <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
     <domain name="nuxeo-ecm-web">
       <login-module code="org.nuxeo.ecm.platform.login.NuxeoLoginModule"
@@ -21,12 +22,6 @@
       </login-module>
     </domain>
 
-    <domain name="nuxeo-ecm">
-      <login-module code="org.nuxeo.ecm.platform.login.NuxeoLoginModule" flag="required">
-        <option name="principalClassName">org.nuxeo.ecm.platform.login.NuxeoPrincipal</option>
-        <option name="useUserIdentificationInfoCB">true</option>
-      </login-module>
-    </domain>
   </extension>
 
 </component>
