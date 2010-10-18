@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.4.0-I20101018_1103</version>
   </parent>
 
   <artifactId>nuxeo-chemistry</artifactId>
@@ -29,7 +29,7 @@
 
   <properties>
     <chemistry.version>0.5-NX</chemistry.version>
-    <nuxeo.webengine.version>5.4.0-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.webengine.version>5.4.0-I20101018_1103</nuxeo.webengine.version>
     <metro.version>1.4</metro.version>
   </properties>
 
