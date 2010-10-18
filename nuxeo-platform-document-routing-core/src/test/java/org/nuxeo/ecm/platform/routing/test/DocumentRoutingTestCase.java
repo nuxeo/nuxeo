@@ -38,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
+
     public static final String WORKSPACES_PATH = "/default-domain/workspaces";
 
     public static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.routing.core.test";
@@ -49,8 +50,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROUTE1 = "route1";
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
         // deploy and test content template
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.automation.core");
@@ -60,15 +61,19 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         openSession();
         DocumentModel root = session.getRootDocument();
         ContentTemplateService ctService = Framework.getService(ContentTemplateService.class);
         ctService.executeFactoryForType(root);
-        assertEquals(
-                3,
-                session.getChildren(
-                        session.getChildren(root.getRef()).get(0).getRef()).size());
-        DocumentModel workspaces = session.getDocument(new PathRef(WORKSPACES_PATH));
+        assertEquals(3, session.getChildren(
+                session.getChildren(root.getRef()).get(0).getRef()).size());
+        DocumentModel workspaces = session.getDocument(new PathRef(
+                WORKSPACES_PATH));
         assertNotNull(workspaces);
         ACP acp = workspaces.getACP();
         ACL acl = acp.getOrCreateACL("local");
@@ -110,6 +115,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         createDocumentModel(session, "step32",
                 DocumentRoutingConstants.STEP_DOCUMENT_TYPE,
                 parallelFolder1.getPathAsString());
+        session.save();
         return route;
     }
 
@@ -123,7 +129,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public DocumentRoute createDocumentRoute(CoreSession session, String name)
             throws ClientException {
-        DocumentModel model = createDocumentRouteModel(session, name, WORKSPACES_PATH);
+        DocumentModel model = createDocumentRouteModel(session, name,
+                WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 

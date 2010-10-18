@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 
 /**
  * The DocumentRoutingService allows manipulate {@link DocumentRoute}.
@@ -113,7 +114,7 @@ public interface DocumentRoutingService {
      * @return The validated route.
      * */
     DocumentRoute validateRouteModel(DocumentRoute routeModel,
-            CoreSession session) throws ClientException;
+            CoreSession session) throws DocumentRouteNotLockedException, ClientException;
 
     /**
      * Computes the list of elements {@link LocalizableDocumentRouteElement} for
@@ -170,7 +171,7 @@ public interface DocumentRoutingService {
      * @throws ClientException
      */
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
-            DocumentModel routeElement, CoreSession session) throws ClientException;
+            DocumentModel routeElement, CoreSession session) throws DocumentRouteNotLockedException, ClientException;
 
     /**
      * Add a route element in another route element.
@@ -183,7 +184,7 @@ public interface DocumentRoutingService {
      */
     public void addRouteElementToRoute(DocumentRef parentDocumentRef,
             String sourceName, DocumentModel routeElement, CoreSession session)
-            throws ClientException;
+            throws DocumentRouteNotLockedException, ClientException;
 
     /**
      * Remove the given route element
@@ -193,7 +194,7 @@ public interface DocumentRoutingService {
      * @throws ClientException
      */
     public void removeRouteElement(DocumentModel routeElement, CoreSession session)
-            throws ClientException;
+            throws DocumentRouteNotLockedException, ClientException;
 
     /**
      * Get the children of the given stepFolder ordered by
@@ -220,14 +221,34 @@ public interface DocumentRoutingService {
             throws DocumentRouteAlredayLockedException, ClientException;
 
     /**
-     * Unlocks this {@link DocumentRoute}
+     * Unlocks this {@link DocumentRoute}.If the document is not locked
+     * throws a {@link DocumentRouteNotLockedException}
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
      * @throws {@link ClientException}
      */
     void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session)
-            throws ClientException;
+            throws DocumentRouteNotLockedException, ClientException;
 
+    /**
+     * Update the given route element
+     *
+     * @param The route element document.
+     * @param session
+     * @throws ClientException
+     */
+    void updateRouteElement(DocumentRouteElement routeModel, CoreSession session)
+            throws DocumentRouteNotLockedException, ClientException;
+
+    /**
+     * Verify is this {@link DocumentRoute} is already locked by another user.
+     *
+     * @param routeDocument {@link DocumentRoute}.
+     * @param session
+     * @throws ClientException
+     */
+    boolean isLocked(DocumentRoute routeModel, CoreSession session)
+            throws ClientException;
 
 }

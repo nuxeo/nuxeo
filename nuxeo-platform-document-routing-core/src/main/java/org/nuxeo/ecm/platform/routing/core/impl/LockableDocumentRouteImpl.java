@@ -47,8 +47,19 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public boolean isLocked() throws ClientException {
-        return doc.isLocked();
+    public boolean isLocked(CoreSession session) throws ClientException {
+        return session.getDocument(doc.getRef()).isLocked();
+    }
+
+    @Override
+    public boolean isLockedByCurrentUser(CoreSession session)
+            throws ClientException {
+        if(!isLocked(session)){
+            return false;
+        }
+        String lockOwner = session.getLock(doc.getRef()).split(":")[0];
+        NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
+        return userName.getName().equals(lockOwner);
     }
 
     @Override
