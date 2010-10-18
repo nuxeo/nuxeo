@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 
 /**
@@ -47,8 +46,19 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public boolean isLocked() throws ClientException {
-        return doc.isLocked();
+    public boolean isLocked(CoreSession session) throws ClientException {
+        return session.getDocument(doc.getRef()).isLocked();
+    }
+
+    @Override
+    public boolean isLockedByCurrentUser(CoreSession session)
+            throws ClientException {
+        if (!isLocked(session)) {
+            return false;
+        }
+        String lockOwner = session.getLock(doc.getRef()).split(":")[0];
+        NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
+        return userName.getName().equals(lockOwner);
     }
 
     @Override
@@ -63,19 +73,8 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     @Override
     public void unlockDocument(CoreSession session) throws ClientException {
         DocumentRef ref = doc.getRef();
-        String lockOwner = session.getLock(ref).split(":")[0];
-        NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
-        if (userName.isAdministrator()
-                || session.hasPermission(ref, SecurityConstants.EVERYTHING)
-                || userName.getName().equals(lockOwner)) {
-            if (session.hasPermission(ref, SecurityConstants.WRITE_PROPERTIES)) {
-                doc.unlock();
-                session.save();
-            } else {
-                log.error("Cannot unlock document " + doc.getName());
-            }
-        }
-
+        session.unlock(ref);
+        session.save();
     }
 
     @Override

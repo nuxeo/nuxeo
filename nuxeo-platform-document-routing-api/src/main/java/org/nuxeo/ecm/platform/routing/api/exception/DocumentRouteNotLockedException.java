@@ -14,27 +14,36 @@
  * Contributors:
  *     mcedica
  */
-package org.nuxeo.ecm.platform.routing.api;
-
-import java.io.Serializable;
+package org.nuxeo.ecm.platform.routing.api.exception;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- *
- * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
- *
- */
-public interface LockableDocumentRoute extends Serializable {
+*
+* @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
+*
+*/
+public class DocumentRouteNotLockedException extends ClientException {
 
-    void lockDocument(CoreSession session) throws ClientException;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-    void unlockDocument(CoreSession session) throws ClientException;
+    public DocumentRouteNotLockedException() {
 
-    boolean isLocked(CoreSession session) throws ClientException;
+    }
 
-    boolean isLockedByCurrentUser(CoreSession session) throws ClientException;
+    public DocumentRouteNotLockedException(String message) {
+        super(message);
+    }
 
-    String getLockOwner(CoreSession session);
+    public DocumentRouteNotLockedException(Throwable th) {
+        super(th);
+    }
+
+    public DocumentRouteNotLockedException(String message, Throwable th) {
+        super(message, th);
+    }
+
 }

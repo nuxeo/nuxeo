@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
@@ -163,7 +164,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public DocumentRoute validateRouteModel(final DocumentRoute routeModel,
-            CoreSession userSession) throws ClientException {
+            CoreSession userSession) throws DocumentRouteNotLockedException,
+            ClientException {
+        if (!isLockedByCurrentUser(routeModel, userSession)) {
+            throw new DocumentRouteNotLockedException();
+        }
         new UnrestrictedSessionRunner(userSession) {
             @Override
             public void run() throws ClientException {
@@ -249,11 +254,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
-            DocumentModel routeElement, CoreSession session)
-            throws ClientException {
-        DocumentModel parentDoc = session.getDocument(parentDocumentRef);
+            DocumentRouteElement routeElement, CoreSession session)
+            throws DocumentRouteNotLockedException, ClientException {
+        DocumentRoute route = getParentRouteModel(parentDocumentRef, session);
+        if (!isLockedByCurrentUser(route, session)) {
+            throw new DocumentRouteNotLockedException();
+        }
         DocumentModelList children = session.query(String.format(
-                ORDERED_CHILDREN_QUERY, parentDoc.getId()));
+                ORDERED_CHILDREN_QUERY,
+                session.getDocument(parentDocumentRef).getId()));
         DocumentModel sourceDoc;
         try {
             sourceDoc = children.get(idx);
@@ -267,28 +276,39 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void addRouteElementToRoute(DocumentRef parentDocumentRef,
-            String sourceName, DocumentModel routeElement, CoreSession session)
-            throws ClientException {
-        DocumentModel parentDoc = session.getDocument(parentDocumentRef);
+            String sourceName, DocumentRouteElement routeElement,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException {
+        DocumentRoute parentRoute = getParentRouteModel(parentDocumentRef,
+                session);
+        if (!isLockedByCurrentUser(parentRoute, session)) {
+            throw new DocumentRouteNotLockedException();
+        }
         PathSegmentService pss;
         try {
             pss = Framework.getService(PathSegmentService.class);
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
-        String parentDocumentPath = parentDoc.getPathAsString();
-        routeElement.setPathInfo(parentDocumentPath,
-                pss.generatePathSegment(routeElement));
-        routeElement = session.createDocument(routeElement);
+        DocumentModel docRouteElement = routeElement.getDocument();
+        docRouteElement.setPathInfo(
+                session.getDocument(parentDocumentRef).getPathAsString(),
+                pss.generatePathSegment(docRouteElement));
+        docRouteElement = session.createDocument(docRouteElement);
         session.orderBefore(parentDocumentRef, routeElement.getName(),
                 sourceName);
         session.save();
     }
 
     @Override
-    public void removeRouteElement(DocumentModel routeElement,
-            CoreSession session) throws ClientException {
-        session.removeDocument(routeElement.getRef());
+    public void removeRouteElement(DocumentRouteElement routeElement,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException {
+        DocumentRoute parentRoute = routeElement.getDocumentRoute(session);
+        if (!isLockedByCurrentUser(parentRoute, session)) {
+            throw new DocumentRouteNotLockedException();
+        }
+        session.removeDocument(routeElement.getDocument().getRef());
         session.save();
     }
 
@@ -305,20 +325,54 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throws DocumentRouteAlredayLockedException, ClientException {
         LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(
                 LockableDocumentRoute.class);
-        if (lockableRoute.isLocked()) {
+        boolean lockedByCurrent = isLockedByCurrentUser(routeModel, session);
+        if (lockableRoute.isLocked(session) && !lockedByCurrent) {
             throw new DocumentRouteAlredayLockedException();
         }
-        lockableRoute.lockDocument(session);
+        if (!lockedByCurrent) {
+            lockableRoute.lockDocument(session);
+        }
     }
 
     @Override
     public void unlockDocumentRoute(DocumentRoute routeModel,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException {
+        LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(
+                LockableDocumentRoute.class);
+        if (!lockableRoute.isLockedByCurrentUser(session)) {
+            throw new DocumentRouteNotLockedException();
+        }
+        lockableRoute.unlockDocument(session);
+    }
+
+    @Override
+    public boolean isLockedByCurrentUser(DocumentRoute routeModel,
             CoreSession session) throws ClientException {
         LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(
                 LockableDocumentRoute.class);
-        if (lockableRoute.isLocked()) {
-            lockableRoute.unlockDocument(session);
-        }
+        return lockableRoute.isLockedByCurrentUser(session);
     }
 
+    @Override
+    public void updateRouteElement(DocumentRouteElement routeElement,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException {
+        if (!isLockedByCurrentUser(routeElement.getDocumentRoute(session),
+                session)) {
+            throw new DocumentRouteNotLockedException();
+        }
+        routeElement.save(session);
+    }
+
+    private DocumentRoute getParentRouteModel(DocumentRef documentRef,
+            CoreSession session) throws ClientException {
+        DocumentModel parentDoc = session.getDocument(documentRef);
+        if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(parentDoc.getType())) {
+            return parentDoc.getAdapter(DocumentRoute.class);
+        }
+        DocumentRouteElement rElement = parentDoc.getAdapter(DocumentRouteElement.class);
+        return rElement.getDocumentRoute(session);
+
+    }
 }
