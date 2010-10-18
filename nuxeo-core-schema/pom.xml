@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>5.4.0-SNAPSHOT</version>
+    <version>5.4.0-I20101018_1103</version>
   </parent>
 
   <artifactId>nuxeo-core-schema</artifactId>
