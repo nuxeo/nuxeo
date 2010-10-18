@@ -535,11 +535,10 @@
         <version>${jboss.version}</version>
         <scope>provided</scope>
       </dependency>
-      <!-- Jetty package use 4.2.3.GA -->
       <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.3.GA</version>
+        <version>3.9.0.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -628,9 +627,23 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
+        <groupId>org.jboss.naming</groupId>
         <artifactId>jnp-client</artifactId>
-        <version>4.0.2</version>
+        <version>5.0.3.GA</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- <dependency> <groupId>jboss</groupId> <artifactId>jnp-client</artifactId> 
+        <version>4.0.2</version> <scope>provided</scope> </dependency> -->
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-spi</artifactId>
+        <version>2.1.0.GA</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-common-core</artifactId>
+        <version>2.2.14.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -2408,8 +2421,8 @@
   </reporting>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
-      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+      <activation> <file> <exists>pom.xml</exists> </file> </activation> <modules> <module>nuxeo-dm</module> 
       <module>nuxeo-gwt</module> </modules> </profile> -->
     <profile>
       <id>pde</id>
@@ -2538,11 +2551,11 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <!-- aggregate parameter is deprecated since 2.5. use the aggregate
+              <!-- aggregate parameter is deprecated since 2.5. use the aggregate 
                 goal instead of -->
               <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
-              <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css
+              <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css 
                 </stylesheetfile -->
               <windowtitle>
                 Nuxeo Enterprise Platform 5.4 API Documentation
