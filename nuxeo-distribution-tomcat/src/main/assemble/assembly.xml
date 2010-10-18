@@ -129,7 +129,7 @@
                      type="jar" />
     </copy>
 
-    <!-- Tomcat equivalent ? 
+    <!-- Tomcat equivalent ?
     <antcall target="add-jbossws-bundle">
         <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
@@ -210,7 +210,7 @@
       <fileset dir="src/main/resources-coreserver" />
     </copy>
 
-    <delete>
+    <delete failonerror="false">
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-opensocial*" />
         <include name="nuxeo-platform-annotations*" />
