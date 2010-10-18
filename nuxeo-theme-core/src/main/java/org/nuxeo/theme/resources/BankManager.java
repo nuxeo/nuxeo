@@ -19,6 +19,7 @@
 
 package org.nuxeo.theme.resources;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,6 +172,19 @@ public class BankManager {
         if (in != null) {
             in.close();
         }
+    }
+
+    public static byte[] exportBankData(String bankName, String collection)
+            throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        String path = String.format("%s/%s", bankName, collection);
+        File folder = getFile(path);
+        if (!folder.exists()) {
+            throw new IOException("Folder not found: " + path);
+        }
+        ZipUtils.zip(folder.listFiles(), out, null);
+        out.close();
+        return out.toByteArray();
     }
 
     public static void createFile(String path, String fileName, String content)

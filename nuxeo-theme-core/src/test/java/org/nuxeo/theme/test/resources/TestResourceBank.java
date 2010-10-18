@@ -14,9 +14,13 @@
 
 package org.nuxeo.theme.test.resources;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.BankManager;
@@ -136,6 +140,20 @@ public class TestResourceBank extends NXRuntimeTestCase {
         }
         assertTrue(thrown);
 
+    }
+
+    public void testExportBankCollecton() throws IOException {
+        byte[] data = BankManager.exportBankData(BANK_NAME, COLLECTION_NAME);
+        ByteArrayInputStream is = new ByteArrayInputStream(data);
+        String[] filelist = { "image/", "image/emoticon_smile.png", "style/",
+                "style/style.css", "style/main.css", "style/test.css",
+                "style/test.png", "style/style-with-preview.css",
+                "style/info.txt", "style/style-preview.png", "preset/",
+                "preset/font/", "preset/color/", "preset/background/",
+                "preset/background/bg.properties", "preset/border/" };
+        List<String> foundFiles = ZipUtils.getEntryNames(is);
+        assertTrue(foundFiles.containsAll(Arrays.asList(filelist)));
+        is.close();
     }
 
     public void testCheckFilePath() {
