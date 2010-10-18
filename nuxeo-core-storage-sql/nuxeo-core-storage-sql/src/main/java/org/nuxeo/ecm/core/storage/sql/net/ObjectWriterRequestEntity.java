@@ -45,10 +45,12 @@ public class ObjectWriterRequestEntity implements RequestEntity {
         queue.add(MapperClient.EOF);
     }
 
+    @Override
     public boolean isRepeatable() {
         return true;
     }
 
+    @Override
     public void writeRequest(OutputStream out) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(out);
         for (Object object : queue) {
@@ -57,10 +59,12 @@ public class ObjectWriterRequestEntity implements RequestEntity {
         oos.flush();
     }
 
+    @Override
     public long getContentLength() {
         return -1;
     }
 
+    @Override
     public String getContentType() {
         return "application/octet-stream";
     }

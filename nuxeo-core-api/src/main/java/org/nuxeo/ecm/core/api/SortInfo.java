@@ -97,6 +97,14 @@ public class SortInfo implements Serializable {
         }
     }
 
+    /**
+     * Returns a map for given sort info, or null if sort info is null.
+     * <p>
+     * The map keys are {@link #SORT_COLUMN_NAME} and
+     * {@link #SORT_ASCENDING_NAME}.
+     *
+     * @since 5.4.0
+     */
     public static Map<String, Serializable> asMap(SortInfo sortInfo) {
         if (sortInfo == null) {
             return null;
@@ -108,6 +116,13 @@ public class SortInfo implements Serializable {
         return res;
     }
 
+    /**
+     * Returns a sort info for given map, or null if map is null or does not
+     * contain both keys {@link #SORT_COLUMN_NAME} and
+     * {@link #SORT_ASCENDING_NAME}.
+     *
+     * @since 5.4.0
+     */
     public static SortInfo asSortInfo(Map<String, Serializable> map) {
         if (map == null) {
             return null;

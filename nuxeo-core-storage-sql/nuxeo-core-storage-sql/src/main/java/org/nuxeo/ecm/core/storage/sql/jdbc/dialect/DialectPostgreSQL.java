@@ -485,51 +485,62 @@ public class DialectPostgreSQL extends Dialect {
             return string;
         }
 
+        @Override
         public int getBaseType() {
             return type;
         }
 
+        @Override
         public String getBaseTypeName() {
             return typeName;
         }
 
+        @Override
         public Object getArray() {
             return elements;
         }
 
+        @Override
         public Object getArray(Map<String, Class<?>> map) throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public Object getArray(long index, int count) throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public Object getArray(long index, int count, Map<String, Class<?>> map)
                 throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public ResultSet getResultSet() throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public ResultSet getResultSet(Map<String, Class<?>> map)
                 throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public ResultSet getResultSet(long index, int count)
                 throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
+        @Override
         public ResultSet getResultSet(long index, int count,
                 Map<String, Class<?>> map) throws SQLException {
             throw new SQLException(NOT_SUPPORTED);
         }
 
         // this is needed by JDBC 4 (Java 6)
+        @Override
         public void free() {
         }
     }

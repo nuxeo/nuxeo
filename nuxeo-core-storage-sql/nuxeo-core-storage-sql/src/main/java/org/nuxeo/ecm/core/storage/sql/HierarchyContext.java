@@ -581,12 +581,13 @@ public class HierarchyContext {
      * The restored node is checked in.
      *
      * @param node the node
-     * @param versionId the version id to restore on this node
+     * @param version the version to restore on this node
      */
-    public void restoreVersion(Node node, Serializable versionId)
+    public void restoreVersion(Node node, Node version)
             throws StorageException {
         String typeName = node.getPrimaryType();
         Serializable versionableId = node.getId();
+        Serializable versionId = version.getId();
 
         // clear complex properties
         List<SimpleFragment> children = getChildren(versionableId, null, true);
@@ -598,7 +599,7 @@ public class HierarchyContext {
 
         // copy the version values
         Row overwriteRow = new Row(model.HIER_TABLE_NAME, versionableId);
-        SimpleFragment versionHier = getHier(versionId, false);
+        SimpleFragment versionHier = version.getHierFragment();
         for (String key : model.getFragmentKeysType(model.HIER_TABLE_NAME).keySet()) {
             if (key.equals(model.HIER_PARENT_KEY)
                     || key.equals(model.HIER_CHILD_NAME_KEY)

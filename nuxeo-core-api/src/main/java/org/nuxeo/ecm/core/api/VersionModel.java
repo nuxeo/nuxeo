@@ -31,6 +31,10 @@ import java.util.Calendar;
  */
 public interface VersionModel extends Serializable {
 
+    String getId();
+
+    void setId(String id);
+
     Calendar getCreated();
 
     void setCreated(Calendar created);

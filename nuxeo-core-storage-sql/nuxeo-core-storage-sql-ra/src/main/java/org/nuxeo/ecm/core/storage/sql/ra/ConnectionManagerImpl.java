@@ -40,6 +40,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     /*
      * This method is called by the RA's connection factory.
      */
+    @Override
     public Object allocateConnection(
             ManagedConnectionFactory managedConnectionFactory,
             ConnectionRequestInfo connectionRequestInfo)

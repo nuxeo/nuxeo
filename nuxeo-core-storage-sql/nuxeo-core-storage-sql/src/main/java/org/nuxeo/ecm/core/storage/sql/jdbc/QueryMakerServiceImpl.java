@@ -60,6 +60,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void registerQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
             log.info(String.format("Registering QueryMaker '%s': %s",
@@ -71,6 +72,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
         queryMakers = null;
     }
 
+    @Override
     public void unregisterQueryMaker(QueryMakerDescriptor descriptor) {
         if (descriptor.enabled) {
             log.info(String.format("Unregistering QueryMaker '%s': %s",
@@ -83,6 +85,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
         queryMakers = null;
     }
 
+    @Override
     public synchronized List<Class<? extends QueryMaker>> getQueryMakers() {
         if (queryMakers == null) {
             // recompute queryMakers

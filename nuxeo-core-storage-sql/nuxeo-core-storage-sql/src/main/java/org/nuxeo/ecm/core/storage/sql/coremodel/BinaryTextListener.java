@@ -73,6 +73,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
     }
 
+    @Override
     public void handleEvent(EventBundle eventBundle) throws ClientException {
         if (!(eventBundle instanceof ReconnectedEventBundle)) {
             log.error("Incorrect event bundle type: " + eventBundle);

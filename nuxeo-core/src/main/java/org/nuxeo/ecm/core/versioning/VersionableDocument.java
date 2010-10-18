@@ -35,18 +35,11 @@ public interface VersionableDocument {
      * Creates a new version.
      *
      * @param label the version label
-     * @throws DocumentException
-     */
-    void checkIn(String label) throws DocumentException;
-
-    /**
-     * Creates a new version.
-     *
-     * @param label the version label
      * @param description the version description
+     * @return the created version
      * @throws DocumentException
      */
-    void checkIn(String label, String description)
+    Document checkIn(String label, String description)
             throws DocumentException;
 
     void checkOut() throws DocumentException;
@@ -86,12 +79,12 @@ public interface VersionableDocument {
     Document getSourceDocument() throws DocumentException;
 
     /**
-     * Replaces current version with version specified by given label.
+     * Replaces current version with version specified.
      *
-     * @param label the version label
+     * @param version the version to replace with
      * @throws DocumentException
      */
-    void restore(String label) throws DocumentException;
+    void restore(Document version) throws DocumentException;
 
     /**
      * Gets a version of this document, given its label.

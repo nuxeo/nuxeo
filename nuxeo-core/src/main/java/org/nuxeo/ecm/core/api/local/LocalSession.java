@@ -104,6 +104,7 @@ public class LocalSession extends AbstractSession {
         }
     }
 
+    @Override
     public boolean supportsTags(String repositoryName) throws ClientException {
         try {
             Repository repo = lookupRepository(repositoryName);
@@ -114,6 +115,7 @@ public class LocalSession extends AbstractSession {
         }
     }
 
+    @Override
     public boolean supportsTags() throws ClientException {
         if (supportsTags != null) {
             return supportsTags.booleanValue();
@@ -169,6 +171,7 @@ public class LocalSession extends AbstractSession {
         }
     }
 
+    @Override
     public boolean isStateSharedByAllThreadSessions() {
         // each new LocalSession has its own state even in the same thread
         return false;

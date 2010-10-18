@@ -325,10 +325,10 @@ public interface Session extends Connection {
      * The restored node is checked in.
      *
      * @param node the node to restore
-     * @param label the version label
+     * @param version the version to restore from
      * @throws StorageException
      */
-    void restoreByLabel(Node node, String label) throws StorageException;
+    void restore(Node node, Node version) throws StorageException;
 
     /**
      * Gets a version given its versionable id and label.

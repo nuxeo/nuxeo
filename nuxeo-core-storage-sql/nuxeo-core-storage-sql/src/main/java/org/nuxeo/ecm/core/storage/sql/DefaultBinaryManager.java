@@ -72,6 +72,7 @@ public class DefaultBinaryManager implements BinaryManager {
 
     protected BinaryManagerDescriptor descriptor;
 
+    @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
         String path = repositoryDescriptor.binaryStorePath;
@@ -145,6 +146,7 @@ public class DefaultBinaryManager implements BinaryManager {
         return NullBinaryScrambler.INSTANCE;
     }
 
+    @Override
     public Binary getBinary(InputStream in) throws IOException {
         /*
          * First, write the input stream to a temporary file, while computing a
@@ -174,6 +176,7 @@ public class DefaultBinaryManager implements BinaryManager {
         return getBinaryScrambler().getUnscrambledBinary(file, digest);
     }
 
+    @Override
     public Binary getBinary(String digest) {
         File file = getFileForDigest(digest, false);
         if (file == null || !file.exists()) {
@@ -264,19 +267,24 @@ public class DefaultBinaryManager implements BinaryManager {
     public static class NullBinaryScrambler implements BinaryScrambler {
         public static final BinaryScrambler INSTANCE = new NullBinaryScrambler();
 
+        @Override
         public void scrambleBuffer(byte[] buf, int off, int n) {
         }
 
+        @Override
         public void unscrambleBuffer(byte[] buf, int off, int n) {
         }
 
+        @Override
         public Binary getUnscrambledBinary(File file, String digest) {
             return new Binary(file, digest);
         }
 
+        @Override
         public void skip(long n) {
         }
 
+        @Override
         public void reset() {
         }
     }

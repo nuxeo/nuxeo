@@ -105,6 +105,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public int getTableSize(String tableName) {
         return sqlInfo.getDatabase().getTable(tableName).getColumns().size();
     }
@@ -113,6 +114,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- Root -----
      */
 
+    @Override
     public void createDatabase() throws StorageException {
         try {
             sqlInfo.initSQLStatements();
@@ -283,6 +285,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return tableNames;
     }
 
+    @Override
     public void createClusterNode() throws StorageException {
         try {
             sqlInfo.executeSQLStatements("addClusterNode", this);
@@ -292,6 +295,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void removeClusterNode() throws StorageException {
         try {
             sqlInfo.executeSQLStatements("removeClusterNode", this);
@@ -301,6 +305,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void insertClusterInvalidations(Invalidations invalidations)
             throws StorageException {
         String sql = sqlInfo.dialect.getClusterInsertInvalidations();
@@ -384,6 +389,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return buf.toString();
     }
 
+    @Override
     public Invalidations getClusterInvalidations() throws StorageException {
         Invalidations invalidations = new Invalidations();
         String sql = sqlInfo.dialect.getClusterGetInvalidations();
@@ -439,6 +445,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public Serializable getRootId(Serializable repositoryId)
             throws StorageException {
         String sql = sqlInfo.getSelectRootIdSql();
@@ -476,6 +483,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void setRootId(Serializable repositoryId, Serializable id)
             throws StorageException {
         String sql = sqlInfo.getInsertRootIdSql();
@@ -519,6 +527,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     // uses JDBCRowMapper
+    @Override
     public Serializable getVersionIdByLabel(Serializable versionableId,
             String label) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByLabel;
@@ -531,6 +540,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     // uses JDBCRowMapper
+    @Override
     public Serializable getLastVersionId(Serializable versionableId)
             throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
@@ -556,6 +566,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return null;
     }
 
+    @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
@@ -675,6 +686,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     // queryFilter used for principals and permissions
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         QueryMaker queryMaker = findQueryMaker(queryType);
@@ -692,6 +704,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void updateReadAcls() throws StorageException {
         if (!sqlInfo.dialect.supportsReadAcl()) {
             return;
@@ -718,6 +731,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         log.debug("updateReadAcls: done.");
     }
 
+    @Override
     public void rebuildReadAcls() throws StorageException {
         if (!sqlInfo.dialect.supportsReadAcl()) {
             return;
@@ -748,6 +762,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- XAResource -----
      */
 
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         try {
             xaresource.start(xid, flags);
@@ -761,6 +776,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
@@ -777,6 +793,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public int prepare(Xid xid) throws XAException {
         try {
             return xaresource.prepare(xid);
@@ -786,6 +803,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
         try {
             xaresource.commit(xid, onePhase);
@@ -797,22 +815,27 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     // rollback interacts with caches so is in RowMapper
 
+    @Override
     public void forget(Xid xid) throws XAException {
         xaresource.forget(xid);
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
         return xaresource.recover(flag);
     }
 
+    @Override
     public boolean setTransactionTimeout(int seconds) throws XAException {
         return xaresource.setTransactionTimeout(seconds);
     }
 
+    @Override
     public int getTransactionTimeout() throws XAException {
         return xaresource.getTransactionTimeout();
     }
 
+    @Override
     public boolean isSameRM(XAResource xares) throws XAException {
         throw new UnsupportedOperationException();
     }

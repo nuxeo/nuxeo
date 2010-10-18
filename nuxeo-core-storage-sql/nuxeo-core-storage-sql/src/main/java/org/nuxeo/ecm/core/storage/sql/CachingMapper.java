@@ -46,113 +46,138 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
         this.mapper = mapper;
     }
 
+    @Override
     public Identification getIdentification() throws StorageException {
         return mapper.getIdentification();
     }
 
+    @Override
     public void close() throws StorageException {
         mapper.close();
     }
 
+    @Override
     public int getTableSize(String tableName) throws StorageException {
         return mapper.getTableSize(tableName);
     }
 
+    @Override
     public void createDatabase() throws StorageException {
         mapper.createDatabase();
     }
 
+    @Override
     public Serializable getRootId(Serializable repositoryId)
             throws StorageException {
         return mapper.getRootId(repositoryId);
     }
 
+    @Override
     public void setRootId(Serializable repositoryId, Serializable id)
             throws StorageException {
         mapper.setRootId(repositoryId, id);
     }
 
+    @Override
     public Serializable getVersionIdByLabel(Serializable versionableId,
             String label) throws StorageException {
         return mapper.getVersionIdByLabel(versionableId, label);
     }
 
+    @Override
     public Serializable getLastVersionId(Serializable versionableId)
             throws StorageException {
         return mapper.getLastVersionId(versionableId);
     }
 
+    @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return mapper.query(query, queryFilter, countTotal);
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
+    @Override
     public void updateReadAcls() throws StorageException {
         mapper.updateReadAcls();
     }
 
+    @Override
     public void rebuildReadAcls() throws StorageException {
         mapper.rebuildReadAcls();
     }
 
+    @Override
     public void createClusterNode() throws StorageException {
         mapper.createClusterNode();
     }
 
+    @Override
     public void removeClusterNode() throws StorageException {
         mapper.removeClusterNode();
     }
 
+    @Override
     public void insertClusterInvalidations(Invalidations invalidations)
             throws StorageException {
         mapper.insertClusterInvalidations(invalidations);
     }
 
+    @Override
     public Invalidations getClusterInvalidations() throws StorageException {
         return mapper.getClusterInvalidations();
     }
 
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         mapper.start(xid, flags);
     }
 
+    @Override
     public void end(Xid xid, int flags) throws XAException {
         mapper.end(xid, flags);
 
     }
 
+    @Override
     public int prepare(Xid xid) throws XAException {
         return mapper.prepare(xid);
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
         mapper.commit(xid, onePhase);
     }
 
     // rollback interacts with caches so is in RowMapper
 
+    @Override
     public void forget(Xid xid) throws XAException {
         mapper.forget(xid);
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
         return mapper.recover(flag);
     }
 
+    @Override
     public boolean setTransactionTimeout(int seconds) throws XAException {
         return mapper.setTransactionTimeout(seconds);
     }
 
+    @Override
     public int getTransactionTimeout() throws XAException {
         return mapper.getTransactionTimeout();
     }
 
+    @Override
     public boolean isSameRM(XAResource xares) throws XAException {
         return mapper.isSameRM(xares);
     }

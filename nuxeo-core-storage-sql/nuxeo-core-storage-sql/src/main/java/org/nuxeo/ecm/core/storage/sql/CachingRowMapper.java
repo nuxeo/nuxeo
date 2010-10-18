@@ -179,6 +179,7 @@ public class CachingRowMapper implements RowMapper {
      * ----- Invalidations / Cache Management -----
      */
 
+    @Override
     public InvalidationsPair receiveInvalidations() throws StorageException {
         // invalidations from the underlying mapper (remote, cluster)
         InvalidationsPair invals = rowMapper.receiveInvalidations();
@@ -215,6 +216,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     // propagate invalidations
+    @Override
     public void sendInvalidations(Invalidations invalidations)
             throws StorageException {
         // add local invalidations
@@ -262,12 +264,14 @@ public class CachingRowMapper implements RowMapper {
         this.session = session;
     }
 
+    @Override
     public void clearCache() {
         cache.clear();
         localInvalidations.clear();
         rowMapper.clearCache();
     }
 
+    @Override
     public void rollback(Xid xid) throws XAException {
         try {
             rowMapper.rollback(xid);
@@ -284,6 +288,7 @@ public class CachingRowMapper implements RowMapper {
     /*
      * Use those from the cache if available, read from the mapper for the rest.
      */
+    @Override
     public List<? extends RowId> read(Collection<RowId> rowIds)
             throws StorageException {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
@@ -313,6 +318,7 @@ public class CachingRowMapper implements RowMapper {
     /*
      * Save in the cache then pass all the writes to the mapper.
      */
+    @Override
     public void write(RowBatch batch) throws StorageException {
         // we avoid gathering invalidations for a write-only table: fulltext
         for (Row row : batch.creates) {
@@ -348,6 +354,7 @@ public class CachingRowMapper implements RowMapper {
      * ----- Read -----
      */
 
+    @Override
     public Row readSimpleRow(RowId rowId) throws StorageException {
         Row row = cacheGet(rowId);
         if (row == null) {
@@ -361,6 +368,7 @@ public class CachingRowMapper implements RowMapper {
         }
     }
 
+    @Override
     public Serializable[] readCollectionRowArray(RowId rowId)
             throws StorageException {
         Row row = cacheGet(rowId);
@@ -378,6 +386,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     // TODO this API isn't cached well...
+    @Override
     public Row readChildHierRow(Serializable parentId, String childName,
             boolean complexProp) throws StorageException {
         Row row = rowMapper.readChildHierRow(parentId, childName, complexProp);
@@ -388,6 +397,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     // TODO this API isn't cached well...
+    @Override
     public List<Row> readChildHierRows(Serializable parentId,
             boolean complexProp) throws StorageException {
         List<Row> rows = rowMapper.readChildHierRows(parentId, complexProp);
@@ -398,6 +408,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     // TODO this API isn't cached well...
+    @Override
     public List<Row> getVersionRows(Serializable versionableId)
             throws StorageException {
         List<Row> rows = rowMapper.getVersionRows(versionableId);
@@ -408,6 +419,7 @@ public class CachingRowMapper implements RowMapper {
     }
 
     // TODO this API isn't cached well...
+    @Override
     public List<Row> getProxyRows(Serializable searchId, boolean byTarget,
             Serializable parentId) throws StorageException {
         List<Row> rows = rowMapper.getProxyRows(searchId, byTarget, parentId);
@@ -421,6 +433,7 @@ public class CachingRowMapper implements RowMapper {
      * ----- Copy -----
      */
 
+    @Override
     public CopyHierarchyResult copyHierarchy(Serializable sourceId,
             String typeName, Serializable destParentId, String destName,
             Row overwriteRow) throws StorageException {

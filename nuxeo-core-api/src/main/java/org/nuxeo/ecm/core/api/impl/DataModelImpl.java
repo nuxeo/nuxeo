@@ -86,35 +86,43 @@ public class DataModelImpl implements DataModel {
         return dp;
     }
 
+    @Override
     public String getSchema() {
         return dp.getSchema().getName();
     }
 
+    @Override
     public Object getData(String key) throws PropertyException {
         return dp.getValue(key);
     }
 
+    @Override
     public void setData(String key, Object value) throws PropertyException {
         dp.setValue(key, value);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> getMap() throws PropertyException {
         return (Map<String, Object>) dp.getValue();
     }
 
+    @Override
     public void setMap(Map<String, Object> data) throws PropertyException {
         dp.setValue(data);
     }
 
+    @Override
     public boolean isDirty() {
         return dp.isDirty();
     }
 
+    @Override
     public boolean isDirty(String name) throws PropertyNotFoundException {
         return dp.get(name).isDirty();
     }
 
+    @Override
     public Collection<String> getDirtyFields() {
         Collection<String> dirtyFields = new ArrayList<String>();
         for (Property prop : dp.getChildren()) {
@@ -136,14 +144,17 @@ public class DataModelImpl implements DataModel {
         return buf.toString();
     }
 
+    @Override
     public void setDirty(String name) throws PropertyNotFoundException {
         ((AbstractProperty) dp.get(name)).setIsModified();
     }
 
+    @Override
     public Object getValue(String path) throws PropertyException {
         return dp.getValue(path);
     }
 
+    @Override
     public Object setValue(String path, Object value) throws PropertyException {
         Property prop = dp.resolvePath(path);
         Object oldValue = prop.getValue();

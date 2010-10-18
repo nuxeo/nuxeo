@@ -57,20 +57,24 @@ public class ResourceAdapterImpl implements ResourceAdapter {
      * ----- javax.resource.spi.ResourceAdapter -----
      */
 
+    @Override
     public void start(BootstrapContext serverContext) {
         log.debug("----------- starting resource adapter");
     }
 
+    @Override
     public void stop() {
         log.debug("----------- stopping resource adapter");
     }
 
+    @Override
     public void endpointActivation(MessageEndpointFactory factory,
             ActivationSpec spec) {
         throw new UnsupportedOperationException(
                 "Message endpoints not supported");
     }
 
+    @Override
     public void endpointDeactivation(MessageEndpointFactory factory,
             ActivationSpec spec) {
         throw new UnsupportedOperationException(
@@ -80,6 +84,7 @@ public class ResourceAdapterImpl implements ResourceAdapter {
     /*
      * Used during crash recovery.
      */
+    @Override
     public XAResource[] getXAResources(ActivationSpec[] specs) {
         return new XAResource[0];
     }

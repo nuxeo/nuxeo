@@ -33,6 +33,7 @@ public class ACLCollectionIO implements CollectionIO {
 
     public static final CollectionIO INSTANCE = new ACLCollectionIO();
 
+    @Override
     public ACLRow getCurrentFromResultSet(ResultSet rs, List<Column> columns,
             Model model, Serializable[] returnId, int[] returnPos)
             throws SQLException {
@@ -70,6 +71,7 @@ public class ACLCollectionIO implements CollectionIO {
         return new ACLRow(pos, name, grant, permission, user, group);
     }
 
+    @Override
     public void setToPreparedStatement(Serializable id, Serializable[] array,
             List<Column> columns, PreparedStatement ps, Model model,
             List<Serializable> debugValues, String sql, JDBCMapperLogger logger)

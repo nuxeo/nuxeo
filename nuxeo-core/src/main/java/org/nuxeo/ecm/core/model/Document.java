@@ -62,9 +62,8 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * Gets this document's UUID.
      *
      * @return the document UUID (cannot be null)
-     * @throws DocumentException
      */
-    String getUUID() throws DocumentException;
+    String getUUID();
 
     /**
      * Gets the parent document or null if this is the root document.

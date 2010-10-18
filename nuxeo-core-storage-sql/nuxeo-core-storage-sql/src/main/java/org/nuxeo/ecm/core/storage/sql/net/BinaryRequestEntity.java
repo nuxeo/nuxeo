@@ -35,19 +35,23 @@ public class BinaryRequestEntity implements RequestEntity {
         this.binary = binary;
     }
 
+    @Override
     public boolean isRepeatable() {
         return true;
     }
 
+    @Override
     public void writeRequest(OutputStream out) throws IOException {
         IOUtils.copy(binary.getStream(), out);
         out.flush();
     }
 
+    @Override
     public long getContentLength() {
         return binary.getLength();
     }
 
+    @Override
     public String getContentType() {
         return "application/octet-stream";
     }

@@ -60,10 +60,12 @@ public class SQLComplexListProperty extends SQLBaseProperty {
      * ----- org.nuxeo.ecm.core.model.Property -----
      */
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public List<Object> getValue() throws DocumentException {
         List<Property> properties = session.makeProperties(node, name, type, readonly, -1);
         List<Object> list = new ArrayList<Object>(properties.size());
@@ -73,6 +75,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
         return list;
     }
 
+    @Override
     public void setValue(Object value) throws DocumentException {
         checkWritable();
         if (value instanceof ListDiff) {

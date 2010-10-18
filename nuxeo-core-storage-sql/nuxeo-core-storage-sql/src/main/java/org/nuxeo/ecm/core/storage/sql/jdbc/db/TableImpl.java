@@ -68,38 +68,47 @@ public class TableImpl implements Table {
         fulltextIndexedColumns = new HashMap<String[], String>();
     }
 
+    @Override
     public boolean isAlias() {
         return false;
     }
 
+    @Override
     public Table getRealTable() {
         return this;
     }
 
+    @Override
     public Dialect getDialect() {
         return dialect;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getQuotedName() {
         return dialect.openQuote() + name + dialect.closeQuote();
     }
 
+    @Override
     public String getQuotedSuffixedName(String suffix) {
         return dialect.openQuote() + name + suffix + dialect.closeQuote();
     }
 
+    @Override
     public Column getColumn(String name) {
         return columns.get(name);
     }
 
+    @Override
     public Collection<Column> getColumns() {
         return columns.values();
     }
 
+    @Override
     public Column addColumn(String name, ColumnType type, String key,
             Model model) {
         String physicalName = database.getColumnPhysicalName(name);
@@ -117,15 +126,18 @@ public class TableImpl implements Table {
      *
      * @param columnNames the column names
      */
+    @Override
     public void addIndex(String... columnNames) {
         indexedColumns.add(columnNames);
     }
 
+    @Override
     public void addFulltextIndex(String indexName, String... columnNames) {
         addIndex(columnNames);
         fulltextIndexedColumns.put(columnNames, indexName);
     }
 
+    @Override
     public boolean hasFulltextIndex() {
         return !fulltextIndexedColumns.isEmpty();
     }
@@ -135,6 +147,7 @@ public class TableImpl implements Table {
      *
      * @return the SQL create string.
      */
+    @Override
     public String getCreateSql() {
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
@@ -159,6 +172,7 @@ public class TableImpl implements Table {
      * @param column the column to add
      * @return the SQL alter table string
      */
+    @Override
     public String getAddColumnSql(Column column) {
         StringBuilder buf = new StringBuilder();
         buf.append("ALTER TABLE ");
@@ -196,6 +210,7 @@ public class TableImpl implements Table {
         // check
     }
 
+    @Override
     public List<String> getPostCreateSqls(Model model) {
         List<String> sqls = new LinkedList<String>();
         for (Column column : columns.values()) {
@@ -204,6 +219,7 @@ public class TableImpl implements Table {
         return sqls;
     }
 
+    @Override
     public List<String> getPostAddSqls(Column column, Model model) {
         List<String> sqls = new LinkedList<String>();
         postAddColumn(column, sqls, model);
@@ -304,6 +320,7 @@ public class TableImpl implements Table {
      *
      * @return the SQL drop string.
      */
+    @Override
     public String getDropSql() {
         StringBuilder buf = new StringBuilder();
         buf.append("DROP TABLE ");

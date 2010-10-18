@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.repository.RepositoryFactory;
  */
 public class SQLRepositoryFactory implements RepositoryFactory {
 
+    @Override
     public Repository createRepository(RepositoryDescriptor descriptor)
             throws Exception {
         return new SQLRepository(descriptor);

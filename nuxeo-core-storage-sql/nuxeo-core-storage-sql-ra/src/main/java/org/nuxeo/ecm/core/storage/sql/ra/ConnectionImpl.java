@@ -99,6 +99,7 @@ public class ConnectionImpl implements Session {
      * ----- javax.resource.cci.Connection -----
      */
 
+    @Override
     public void close() throws ResourceException {
         if (managedConnection == null) {
             log.error("Closing an already closed connection: " + this);
@@ -111,18 +112,22 @@ public class ConnectionImpl implements Session {
         }
     }
 
+    @Override
     public Interaction createInteraction() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ConnectionMetaData getMetaData() throws ResourceException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ResultSetInfo getResultSetInfo() throws ResourceException {
         throw new UnsupportedOperationException();
     }
@@ -139,73 +144,89 @@ public class ConnectionImpl implements Session {
         return session;
     }
 
+    @Override
     public Mapper getMapper() throws StorageException {
         return getSession().getMapper();
     }
 
+    @Override
     public boolean isLive() {
         return session != null && session.isLive();
     }
 
+    @Override
     public String getRepositoryName() throws StorageException {
         return getSession().getRepositoryName();
     }
 
+    @Override
     public Binary getBinary(InputStream in) throws StorageException {
         return getSession().getBinary(in);
     }
 
+    @Override
     public Model getModel() throws StorageException {
         return getSession().getModel();
     }
 
+    @Override
     public void save() throws StorageException {
         getSession().save();
     }
 
+    @Override
     public Node getRootNode() throws StorageException {
         return getSession().getRootNode();
     }
 
+    @Override
     public Node getNodeById(Serializable id) throws StorageException {
         return getSession().getNodeById(id);
     }
 
+    @Override
     public List<Node> getNodesByIds(List<Serializable> ids)
             throws StorageException {
         return getSession().getNodesByIds(ids);
     }
 
+    @Override
     public Node getNodeByPath(String path, Node node) throws StorageException {
         return getSession().getNodeByPath(path, node);
     }
 
+    @Override
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         return getSession().hasChildNode(parent, name, complexProp);
     }
 
+    @Override
     public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         return getSession().getChildNode(parent, name, complexProp);
     }
 
+    @Override
     public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
         return getSession().hasChildren(parent, complexProp);
     }
 
+    @Override
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
         return getSession().getChildren(parent, name, complexProp);
     }
 
+    @Override
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
         return getSession().addChildNode(parent, name, pos, typeName,
                 complexProp);
     }
 
+    @Override
     public Node addChildNode(Serializable id, Node parent, String name,
             Long pos, String typeName, boolean complexProp)
             throws StorageException {
@@ -213,90 +234,109 @@ public class ConnectionImpl implements Session {
                 complexProp);
     }
 
+    @Override
     public void removeNode(Node node) throws StorageException {
         getSession().removeNode(node);
     }
 
+    @Override
     public Node getParentNode(Node node) throws StorageException {
         return getSession().getParentNode(node);
     }
 
+    @Override
     public String getPath(Node node) throws StorageException {
         return getSession().getPath(node);
     }
 
+    @Override
     public void orderBefore(Node node, Node src, Node dest)
             throws StorageException {
         getSession().orderBefore(node, src, dest);
     }
 
+    @Override
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         return getSession().move(source, parent, name);
     }
 
+    @Override
     public Node copy(Node source, Node parent, String name)
             throws StorageException {
         return getSession().copy(source, parent, name);
     }
 
+    @Override
     public Node checkIn(Node node, String label, String description)
             throws StorageException {
         return getSession().checkIn(node, label, description);
     }
 
+    @Override
     public void checkOut(Node node) throws StorageException {
         getSession().checkOut(node);
     }
 
-    public void restoreByLabel(Node node, String label) throws StorageException {
-        getSession().restoreByLabel(node, label);
+    @Override
+    public void restore(Node node, Node version) throws StorageException {
+        getSession().restore(node, version);
     }
 
+    @Override
     public Node getVersionByLabel(Serializable versionableId, String label)
             throws StorageException {
         return getSession().getVersionByLabel(versionableId, label);
     }
 
+    @Override
     public List<Node> getVersions(Node node) throws StorageException {
         return getSession().getVersions(node);
     }
 
+    @Override
     public Node getLastVersion(Node node) throws StorageException {
         return getSession().getLastVersion(node);
     }
 
+    @Override
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         return getSession().getProxies(document, parent);
     }
 
+    @Override
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
         return getSession().addProxy(targetId, versionableId, parent, name, pos);
     }
 
+    @Override
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
         return getSession().query(query, queryFilter, countTotal);
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return getSession().queryAndFetch(query, queryType, queryFilter, params);
     }
 
+    @Override
     public void requireReadAclsUpdate() {
         if (session != null) {
             session.requireReadAclsUpdate();
         }
     }
 
+    @Override
     public void updateReadAcls() throws StorageException {
         getSession().updateReadAcls();
     }
 
+    @Override
     public void rebuildReadAcls() throws StorageException {
         getSession().rebuildReadAcls();
     }

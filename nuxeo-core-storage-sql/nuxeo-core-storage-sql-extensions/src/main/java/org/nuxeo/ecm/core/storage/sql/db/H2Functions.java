@@ -344,6 +344,7 @@ public class H2Functions extends EmbeddedFunctions {
         /**
          * Trigger interface: initialization.
          */
+        @Override
         public void init(Connection conn, String schema, String triggerName,
                 String table, boolean before, int opType) throws SQLException {
             ResultSet rs = null;
@@ -366,6 +367,7 @@ public class H2Functions extends EmbeddedFunctions {
         /**
          * Trigger interface.
          */
+        @Override
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
             String id = null;
@@ -391,9 +393,11 @@ public class H2Functions extends EmbeddedFunctions {
             }
         }
 
+        @Override
         public void close() throws SQLException {
         }
 
+        @Override
         public void remove() {
         }
 
@@ -418,6 +422,7 @@ public class H2Functions extends EmbeddedFunctions {
         /**
          * Trigger interface: initialization.
          */
+        @Override
         public void init(Connection conn, String schema, String triggerName,
                 String table, boolean before, int opType) throws SQLException {
             ResultSet rs = null;
@@ -452,6 +457,7 @@ public class H2Functions extends EmbeddedFunctions {
         /**
          * Trigger interface.
          */
+        @Override
         public void fire(Connection conn, Object[] oldRow, Object[] newRow)
                 throws SQLException {
             if (newRow != null && ! ((Boolean) newRow[isPropertyIndex])) {
@@ -476,9 +482,11 @@ public class H2Functions extends EmbeddedFunctions {
             }
         }
 
+        @Override
         public void close() throws SQLException {
         }
 
+        @Override
         public void remove() {
         }
 

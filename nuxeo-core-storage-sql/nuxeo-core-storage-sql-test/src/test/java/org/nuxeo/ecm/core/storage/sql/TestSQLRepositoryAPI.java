@@ -1956,15 +1956,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         file.setProperty("dublincore", "title", "the title");
         file = session.saveDocument(file);
 
-        VersionModel version = new VersionModelImpl();
-        version.setCreated(Calendar.getInstance());
-        version.setLabel("v1");
-        session.checkIn(file.getRef(), version);
-        session.save();
-
         // create a proxy in folder2
-        DocumentModel proxy = session.createProxy(folder2.getRef(),
-                file.getRef(), version, true);
+        DocumentModel proxy = session.publishDocument(file, folder2);
         assertTrue(proxy.isProxy());
 
         // copy proxy into folder3
@@ -2288,15 +2281,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNotNull(sourceId);
         assertEquals(childFile.getId(), sourceId);
 
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-        version.setDescription("d1");
-        // only label and description are currently supported
-        // Calendar cal = Calendar.getInstance();
-        // version.setCreated(cal);
-
         session.save();
-        session.checkIn(childFile.getRef(), version);
+        session.checkIn(childFile.getRef(), (String) null);
 
         // Different source ids now.
         assertNotNull(childFile.getSourceId());
@@ -2812,29 +2798,19 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "title", "the title");
         doc = session.saveDocument(doc);
 
-        VersionModel version = new VersionModelImpl();
-        version.setCreated(Calendar.getInstance());
-        version.setLabel("v1");
-        session.checkIn(doc.getRef(), version);
+        DocumentModel proxy = session.publishDocument(doc, root);
+        session.save();
 
-        // checkout the doc to modify it
-        session.checkOut(doc.getRef());
+        // re-modify doc
         doc.setProperty("dublincore", "title", "the title modified");
         doc = session.saveDocument(doc);
 
-        DocumentModel proxy = session.createProxy(root.getRef(), doc.getRef(),
-                version, true);
-        session.save();
         assertEquals("the title", proxy.getProperty("dublincore", "title"));
         assertEquals("the title modified", doc.getProperty("dublincore",
                 "title"));
 
-        // make another new version
-        VersionModel version2 = new VersionModelImpl();
-        version2.setCreated(Calendar.getInstance());
-        version2.setLabel("v2");
-        session.checkIn(doc.getRef(), version2);
-        session.checkOut(doc.getRef());
+        // make another proxy
+        session.publishDocument(doc, root);
 
         DocumentModelList list = session.getChildren(root.getRef());
         assertEquals(2, list.size());
@@ -3092,9 +3068,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "issued", cal1);
         doc = session.saveDocument(doc);
 
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-        session.checkIn(doc.getRef(), version);
+        session.checkIn(doc.getRef(), (String) null);
         session.checkOut(doc.getRef());
         doc.setProperty("dublincore", "title", "t2");
         doc.setProperty("dublincore", "issued", cal2);
@@ -3140,9 +3114,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "title", "t1");
         doc = session.saveDocument(doc);
 
-        VersionModel version = new VersionModelImpl();
-        version.setLabel("v1");
-        session.checkIn(doc.getRef(), version);
+        session.checkIn(doc.getRef(), (String) null);
         session.checkOut(doc.getRef());
         doc.setProperty("dublincore", "title", "t2");
         doc = session.saveDocument(doc);

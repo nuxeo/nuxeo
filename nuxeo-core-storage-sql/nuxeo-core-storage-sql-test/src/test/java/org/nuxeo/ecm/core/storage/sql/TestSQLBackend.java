@@ -1183,7 +1183,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * Restore.
          */
-        session.restoreByLabel(nodea, "foolab");
+        session.restore(nodea, version);
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
         assertEquals(

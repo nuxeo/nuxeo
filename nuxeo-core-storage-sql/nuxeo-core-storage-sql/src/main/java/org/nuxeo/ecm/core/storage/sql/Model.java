@@ -960,8 +960,8 @@ public class Model {
                     + getTypePrefetchedFragments(typeName));
 
             // record doc type and facets, super type, sub types
-            documentTypesFacets.put(typeName, new HashSet<String>(
-                    documentType.getFacets()));
+            documentTypesFacets.put(typeName,
+                    new HashSet<String>(documentType.getFacets()));
             Type superType = documentType.getSuperType();
             if (superType != null) {
                 String superTypeName = superType.getName();
@@ -1068,11 +1068,11 @@ public class Model {
      */
     private void initProxiesModel() {
         addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, null,
+                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, StringType.INSTANCE,
                 ColumnType.NODEIDFKNP);
         addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, null,
-                ColumnType.NODEVAL);
+                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false,
+                StringType.INSTANCE, ColumnType.NODEVAL);
         addTypeSimpleFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 

@@ -759,9 +759,9 @@ public class PersistenceContext {
         hierContext.checkOut(node);
     }
 
-    protected void restoreVersion(Node node, Serializable versionId)
+    protected void restoreVersion(Node node, Node version)
             throws StorageException {
-        hierContext.restoreVersion(node, versionId);
+        hierContext.restoreVersion(node, version);
     }
 
 }

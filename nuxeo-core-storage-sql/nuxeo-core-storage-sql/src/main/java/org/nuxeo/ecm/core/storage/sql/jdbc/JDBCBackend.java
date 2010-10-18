@@ -59,6 +59,7 @@ public class JDBCBackend implements RepositoryBackend {
     public JDBCBackend() {
     }
 
+    @Override
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -110,6 +111,7 @@ public class JDBCBackend implements RepositoryBackend {
      * Opens a connection to get the dialect and finish initializing the
      * {@link ModelSetup}.
      */
+    @Override
     public void initializeModelSetup(ModelSetup modelSetup)
             throws StorageException {
         try {
@@ -137,10 +139,12 @@ public class JDBCBackend implements RepositoryBackend {
      * <p>
      * Creates the {@link SQLInfo} from the model and the dialect.
      */
+    @Override
     public void initializeModel(Model model) throws StorageException {
         sqlInfo = new SQLInfo(repository, model, dialect);
     }
 
+    @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
             Credentials credentials, boolean create) throws StorageException {
         Mapper mapper = createMapper(model, pathResolver);
@@ -168,6 +172,7 @@ public class JDBCBackend implements RepositoryBackend {
                 clusterNodeHandler);
     }
 
+    @Override
     public void shutdown() throws StorageException {
         if (clusterNodeHandler != null) {
             clusterNodeHandler.close();

@@ -223,6 +223,7 @@ public class DocumentManagerBean extends AbstractSession implements
         return session;
     }
 
+    @Override
     public boolean supportsTags(String repositoryName) throws ClientException {
         try {
             Repository repo = NXCore.getRepository(repositoryName);
@@ -233,6 +234,7 @@ public class DocumentManagerBean extends AbstractSession implements
         }
     }
 
+    @Override
     public boolean supportsTags() throws ClientException {
         if (supportsTags != null) {
             return supportsTags.booleanValue();
@@ -248,6 +250,7 @@ public class DocumentManagerBean extends AbstractSession implements
         return repo.getSession(context);
     }
 
+    @Override
     public boolean isStateSharedByAllThreadSessions() {
         // we have an underlying JCA pool that shares state for all connections
         // in the same thread
@@ -443,10 +446,21 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    public void checkIn(DocumentRef docRef, VersionModel version)
+    public DocumentModel checkIn(DocumentRef docRef, String description)
             throws ClientException {
         try {
-            super.checkIn(docRef, version);
+            return super.checkIn(docRef, description);
+        } catch (Throwable e) {
+            throw new RollbackClientException(e);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel version)
+            throws ClientException {
+        try {
+            return super.checkIn(docRef, version);
         } catch (Throwable e) {
             throw new RollbackClientException(e);
         }

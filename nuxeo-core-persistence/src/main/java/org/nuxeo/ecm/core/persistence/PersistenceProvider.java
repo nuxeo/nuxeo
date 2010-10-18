@@ -78,6 +78,10 @@ public class PersistenceProvider {
         }
     }
 
+    public EntityManager acquireEntityManager() {
+        return doAcquireEntityManager();
+    }
+
     public EntityManager acquireEntityManagerWithActiveTransaction() {
         EntityManager em = doAcquireEntityManager();
         doBegin(em);

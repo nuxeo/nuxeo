@@ -46,7 +46,7 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
      * This way the blob will use the default serialization (file serialization) that is optimized for
      * servers that are using a shared file system (and not nuxeo streaming)
      */
-    public static final boolean IS_STREAMING_ENABLED = Boolean.valueOf(
+    public static final boolean IS_STREAMING_ENABLED = Boolean.parseBoolean(
             Framework.getProperty("org.nuxeo.ecm.core.storage.sql.blob_streaming", "true"));
 
     protected final Binary binary;
@@ -65,14 +65,17 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
         return binary.getLength();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return binary.getStream();
     }
 
+    @Override
     public boolean isPersistent() {
         return true;
     }
 
+    @Override
     public Blob persist() {
         return this;
     }

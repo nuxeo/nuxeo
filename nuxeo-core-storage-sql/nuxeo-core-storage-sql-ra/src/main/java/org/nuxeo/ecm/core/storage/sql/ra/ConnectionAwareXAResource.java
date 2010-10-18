@@ -39,6 +39,7 @@ public class ConnectionAwareXAResource implements XAResource {
         this.managedConnection = managedConnection;
     }
 
+    @Override
     public boolean isSameRM(XAResource other) throws XAException {
         if (!(other instanceof ConnectionAwareXAResource)) {
             return false;
@@ -46,6 +47,7 @@ public class ConnectionAwareXAResource implements XAResource {
         return xaresource.isSameRM(((ConnectionAwareXAResource) other).xaresource);
     }
 
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         xaresource.start(xid, flags);
     }
@@ -56,6 +58,7 @@ public class ConnectionAwareXAResource implements XAResource {
     // XAResourceRecord#topLevelAbort
     // is suspected of calling this in parallel in several threads, thus the
     // synchronized keyword
+    @Override
     public synchronized void end(Xid xid, int flags) throws XAException {
         try {
             xaresource.end(xid, flags);
@@ -64,30 +67,37 @@ public class ConnectionAwareXAResource implements XAResource {
         }
     }
 
+    @Override
     public int prepare(Xid xid) throws XAException {
         return xaresource.prepare(xid);
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
         xaresource.commit(xid, onePhase);
     }
 
+    @Override
     public void rollback(Xid xid) throws XAException {
         xaresource.rollback(xid);
     }
 
+    @Override
     public void forget(Xid xid) throws XAException {
         xaresource.forget(xid);
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
         return xaresource.recover(flag);
     }
 
+    @Override
     public boolean setTransactionTimeout(int seconds) throws XAException {
         return xaresource.setTransactionTimeout(seconds);
     }
 
+    @Override
     public int getTransactionTimeout() throws XAException {
         return xaresource.getTransactionTimeout();
     }

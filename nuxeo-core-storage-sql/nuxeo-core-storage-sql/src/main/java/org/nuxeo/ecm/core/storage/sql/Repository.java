@@ -34,6 +34,7 @@ public interface Repository extends ConnectionFactory, RepositoryManagement {
      * @return the session
      * @throws StorageException
      */
+    @Override
     Session getConnection() throws StorageException;
 
     /**
@@ -44,6 +45,7 @@ public interface Repository extends ConnectionFactory, RepositoryManagement {
      * @return the session
      * @throws StorageException
      */
+    @Override
     Session getConnection(ConnectionSpec connectionSpec)
             throws StorageException;
 

@@ -27,7 +27,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.ProtocolException;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.storage.Credentials;
@@ -95,6 +94,7 @@ public class MapperClient implements InvocationHandler {
         return sd.getUrl() + '/' + RepositoryImpl.SERVER_PATH_VCS;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         String methodName = method.getName();

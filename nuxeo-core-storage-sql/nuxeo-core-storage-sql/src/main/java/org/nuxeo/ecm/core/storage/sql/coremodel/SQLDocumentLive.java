@@ -74,6 +74,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     // checkWritable in SQLBaseProperty
 
+    @Override
     public org.nuxeo.ecm.core.model.Property getACLProperty()
             throws DocumentException {
         return session.makeACLProperty(getNode());
@@ -90,43 +91,53 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return (DocumentType) type;
     }
 
+    @Override
     public Session getSession() {
         return session;
     }
 
+    @Override
     public boolean isFolder() {
         return type == null // null document
                 || ((DocumentType) type).isFolder();
     }
 
+    @Override
     public String getUUID() {
         return getNode().getId().toString();
     }
 
+    @Override
     public Document getParent() throws DocumentException {
         return session.getParent(getNode());
     }
 
+    @Override
     public String getPath() throws DocumentException {
         return session.getPath(getNode());
     }
 
+    @Override
     public Calendar getLastModified() {
         throw new UnsupportedOperationException("unused");
     }
 
+    @Override
     public boolean isProxy() {
         return false;
     }
 
+    @Override
     public Repository getRepository() {
         return session.getRepository();
     }
 
+    @Override
     public void remove() throws DocumentException {
         session.remove(getNode());
     }
 
+    @Override
     public void save() throws DocumentException {
         session.save();
     }
@@ -135,6 +146,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * Checks if the document is "dirty", which means that a change on it was
      * made since the last time a snapshot of it was done (for publishing).
      */
+    @Override
     public boolean isDirty() throws DocumentException {
         Boolean value = (Boolean) getProperty(Model.MISC_DIRTY_PROP).getValue();
         // not set implies new => dirty
@@ -145,6 +157,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * Marks the document "dirty", which means that a change on it was made
      * since the last time a snapshot of it was done (for publishing).
      */
+    @Override
     public void setDirty(boolean value) throws DocumentException {
         setBoolean(Model.MISC_DIRTY_PROP, value);
     }
@@ -153,6 +166,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * Reads into the {@link DocumentPart} the values from this
      * {@link SQLDocument}.
      */
+    @Override
     public void readDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
             property.init((Serializable) getPropertyValue(property.getName()));
@@ -163,6 +177,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * Writes into this {@link SQLDocument} the values from the
      * {@link DocumentPart}.
      */
+    @Override
     public void writeDocumentPart(DocumentPart dp) throws Exception {
         for (Property property : dp) {
             String name = property.getName();
@@ -232,6 +247,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                 Model.FULLTEXT_BINARYTEXT_PROP);
     }
 
+    @Override
     public <T extends Serializable> void setSystemProp(String name, T value)
             throws DocumentException {
         String propertyName = systemPropNameMap.get(name);
@@ -241,6 +257,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         getProperty(propertyName).setValue(value);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
@@ -263,6 +280,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * ----- LifeCycle -----
      */
 
+    @Override
     public String getLifeCyclePolicy() throws LifeCycleException {
         try {
             return getString(Model.MISC_LIFECYCLE_POLICY_PROP);
@@ -271,6 +289,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         }
     }
 
+    @Override
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         try {
             setString(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
@@ -279,6 +298,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         }
     }
 
+    @Override
     public String getCurrentLifeCycleState() throws LifeCycleException {
         try {
             return getString(Model.MISC_LIFECYCLE_STATE_PROP);
@@ -287,6 +307,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         }
     }
 
+    @Override
     public void setCurrentLifeCycleState(String state)
             throws LifeCycleException {
         try {
@@ -296,6 +317,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         }
     }
 
+    @Override
     public boolean followTransition(String transition)
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
@@ -306,6 +328,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return true;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions()
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
@@ -323,10 +346,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * ----- org.nuxeo.ecm.core.model.Lockable -----
      */
 
+    @Override
     public boolean isLocked() throws DocumentException {
         return getLock() != null;
     }
 
+    @Override
     public String getLock() throws DocumentException {
         if (lock != null) {
             return lock == Constants.EMPTY_STRING ? null : lock;
@@ -336,6 +361,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return l;
     }
 
+    @Override
     public void setLock(String key) throws DocumentException {
         if (key == null) {
             throw new IllegalArgumentException("Lock key cannot be null");
@@ -347,6 +373,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         lock = key;
     }
 
+    @Override
     public String unlock() throws DocumentException {
         String l = getLock();
         setString(Model.LOCK_PROP, null);
@@ -358,35 +385,42 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * ----- org.nuxeo.ecm.core.versioning.VersionableDocument -----
      */
 
+    @Override
     public boolean isVersion() {
         return false;
     }
 
+    @Override
     public Document getSourceDocument() throws DocumentException {
         return this;
     }
 
-    public void checkIn(String label) throws DocumentException {
-        checkIn(label, null);
-    }
-
-    public void checkIn(String label, String description)
+    @Override
+    public Document checkIn(String label, String description)
             throws DocumentException {
-        session.checkIn(getNode(), label, description);
+        return session.checkIn(getNode(), label, description);
     }
 
+    @Override
     public void checkOut() throws DocumentException {
         session.checkOut(getNode());
     }
 
+    @Override
     public boolean isCheckedOut() throws DocumentException {
         return !getBoolean(Model.MAIN_CHECKED_IN_PROP);
     }
 
-    public void restore(String label) throws DocumentException {
-        session.restoreByLabel(getNode(), label);
+    @Override
+    public void restore(Document version) throws DocumentException {
+        if (!version.isVersion()) {
+            throw new DocumentException("Cannot restore a non-version: "
+                    + version);
+        }
+        session.restore(getNode(), ((SQLDocument) version).getNode());
     }
 
+    @Override
     public List<String> getVersionsIds() throws DocumentException {
         Collection<DocumentVersion> versions = session.getVersions(getNode());
         List<String> ids = new ArrayList<String>(versions.size());
@@ -396,18 +430,22 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return ids;
     }
 
+    @Override
     public Document getVersion(String label) throws DocumentException {
         return session.getVersionByLabel(getNode(), label);
     }
 
+    @Override
     public DocumentVersionIterator getVersions() throws DocumentException {
         return new SQLDocumentVersionIterator(session.getVersions(getNode()));
     }
 
+    @Override
     public DocumentVersion getLastVersion() throws DocumentException {
         return session.getLastVersion(getNode());
     }
 
+    @Override
     public boolean hasVersions() throws DocumentException {
         log.error("hasVersions unimplemented, returning false");
         return false;
@@ -419,6 +457,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * ----- org.nuxeo.ecm.core.model.DocumentContainer -----
      */
 
+    @Override
     public Document resolvePath(String path) throws DocumentException {
         if (path == null) {
             throw new IllegalArgumentException();
@@ -434,14 +473,17 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return session.resolvePath(getNode(), path);
     }
 
+    @Override
     public Document getChild(String name) throws DocumentException {
         return session.getChild(getNode(), name);
     }
 
+    @Override
     public Iterator<Document> getChildren() throws DocumentException {
         return getChildren(0);
     }
 
+    @Override
     public DocumentIterator getChildren(int start) throws DocumentException {
         if (!isFolder()) {
             return EmptyDocumentIterator.INSTANCE;
@@ -457,6 +499,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                 children.size()));
     }
 
+    @Override
     public List<String> getChildrenIds() throws DocumentException {
         if (!isFolder()) {
             return Collections.emptyList();
@@ -470,6 +513,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return ids;
     }
 
+    @Override
     public boolean hasChild(String name) throws DocumentException {
         if (!isFolder()) {
             return false;
@@ -477,6 +521,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return session.hasChild(getNode(), name);
     }
 
+    @Override
     public boolean hasChildren() throws DocumentException {
         if (!isFolder()) {
             return false;
@@ -484,6 +529,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return session.hasChildren(getNode());
     }
 
+    @Override
     public Document addChild(String name, String typeName)
             throws DocumentException {
         if (!isFolder()) {
@@ -492,6 +538,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return session.addChild(getNode(), name, null, typeName);
     }
 
+    @Override
     public void orderBefore(String src, String dest) throws DocumentException {
         SQLDocument srcDoc = (SQLDocument) getChild(src);
         if (srcDoc == null) {
@@ -512,6 +559,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                 : destDoc.getNode());
     }
 
+    @Override
     public void removeChild(String name) throws DocumentException {
         if (!isFolder()) {
             return; // ignore non folder documents XXX urgh
@@ -567,18 +615,22 @@ class SQLDocumentListIterator implements DocumentIterator {
         iterator = list.iterator();
     }
 
+    @Override
     public long getSize() {
         return size;
     }
 
+    @Override
     public boolean hasNext() {
         return iterator.hasNext();
     }
 
+    @Override
     public Document next() {
         return iterator.next();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
@@ -593,18 +645,22 @@ class SQLDocumentVersionIterator implements DocumentVersionIterator {
         iterator = list.iterator();
     }
 
+    @Override
     public boolean hasNext() {
         return iterator.hasNext();
     }
 
+    @Override
     public DocumentVersion next() {
         return iterator.next();
     }
 
+    @Override
     public DocumentVersion nextDocumentVersion() {
         return iterator.next();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

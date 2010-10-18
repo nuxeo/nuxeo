@@ -40,6 +40,7 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Null;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -159,6 +160,7 @@ public abstract class AbstractSession implements CoreSession,
      */
     public abstract Session getSession() throws ClientException;
 
+    @Override
     public String connect(String repositoryName,
             Map<String, Serializable> context) throws ClientException {
         if (null == context) {
@@ -249,6 +251,7 @@ public abstract class AbstractSession implements CoreSession,
         return repositoryName + '-' + SIDGenerator.next();
     }
 
+    @Override
     public DocumentType getDocumentType(String type) {
         return NXSchema.getSchemaManager().getDocumentType(type);
     }
@@ -259,6 +262,7 @@ public abstract class AbstractSession implements CoreSession,
      * @return the String representation of an auto-incremented counter that not
      *         used in any label of docRef
      */
+    @Override
     public String generateVersionLabelFor(DocumentRef docRef)
             throws ClientException {
         // find the biggest label that is castable to an int
@@ -274,10 +278,12 @@ public abstract class AbstractSession implements CoreSession,
         return Integer.toString(max + 1);
     }
 
+    @Override
     public String getSessionId() {
         return sessionId;
     }
 
+    @Override
     public Principal getPrincipal() {
         return ANONYMOUS;
     }
@@ -324,6 +330,7 @@ public abstract class AbstractSession implements CoreSession,
         return eventService;
     }
 
+    @Override
     public void afterBegin() {
         if (log.isTraceEnabled()) {
             log.trace("Transaction started");
@@ -335,9 +342,11 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void beforeCompletion() {
     }
 
+    @Override
     public void afterCompletion(boolean committed) {
         if (log.isTraceEnabled()) {
             log.trace("Transaction "
@@ -436,6 +445,7 @@ public abstract class AbstractSession implements CoreSession,
                 false, false);
     }
 
+    @Override
     public boolean hasPermission(DocumentRef docRef, String permission)
             throws ClientException {
         try {
@@ -518,6 +528,7 @@ public abstract class AbstractSession implements CoreSession,
         part.iterator();
     }
 
+    @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name)
             throws ClientException {
         try {
@@ -561,6 +572,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
             throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
@@ -572,6 +584,7 @@ public abstract class AbstractSession implements CoreSession,
         return newDocuments;
     }
 
+    @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
             String name) throws ClientException {
         try {
@@ -613,6 +626,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
             DocumentRef dst) throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
@@ -624,6 +638,7 @@ public abstract class AbstractSession implements CoreSession,
         return newDocuments;
     }
 
+    @Override
     public DocumentModel move(DocumentRef src, DocumentRef dst, String name)
             throws ClientException {
         try {
@@ -661,6 +676,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void move(List<DocumentRef> src, DocumentRef dst)
             throws ClientException {
         for (DocumentRef ref : src) {
@@ -668,6 +684,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public ACP getACP(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -678,6 +695,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite)
             throws ClientException {
         try {
@@ -702,6 +720,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void cancel() throws ClientException {
         try {
             getSession().cancel();
@@ -734,12 +753,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel createDocumentModel(String typeName)
             throws ClientException {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
+    @Override
     public DocumentModel createDocumentModel(String parentPath, String id,
             String typeName) throws ClientException {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -750,6 +771,7 @@ public abstract class AbstractSession implements CoreSession,
         return model;
     }
 
+    @Override
     public DocumentModel createDocumentModel(String typeName,
             Map<String, Object> options) throws ClientException {
 
@@ -762,6 +784,7 @@ public abstract class AbstractSession implements CoreSession,
         return createDocumentModelFromTypeName(typeName, serializableOptions);
     }
 
+    @Override
     public DocumentModel createDocument(DocumentModel docModel)
             throws ClientException {
         String typeName = docModel.getType();
@@ -827,6 +850,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void importDocuments(List<DocumentModel> docModels)
             throws ClientException {
         try {
@@ -902,6 +926,7 @@ public abstract class AbstractSession implements CoreSession,
         return name;
     }
 
+    @Override
     public DocumentModel[] createDocument(DocumentModel[] docModels)
             throws ClientException {
         DocumentModel[] models = new DocumentModel[docModels.length];
@@ -915,6 +940,7 @@ public abstract class AbstractSession implements CoreSession,
 
     public abstract boolean isSessionAlive();
 
+    @Override
     public void disconnect() throws ClientException {
         if (isSessionAlive()) {
             getSession().dispose();
@@ -927,6 +953,7 @@ public abstract class AbstractSession implements CoreSession,
         repositoryName = null;
     }
 
+    @Override
     public boolean exists(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -939,6 +966,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getChild(DocumentRef parent, String name)
             throws ClientException {
         try {
@@ -952,11 +980,13 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent)
             throws ClientException {
         return getChildren(parent, null, READ, null, null);
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -965,11 +995,13 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, READ, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException {
         return getChildren(parent, type, READ, null, null);
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type) throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -978,16 +1010,19 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, type, null, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             String perm) throws ClientException {
         return getChildren(parent, type, perm, null, null);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             Filter filter, Sorter sorter) throws ClientException {
         return getChildren(parent, type, null, filter, sorter);
     }
 
+    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type,
             String perm, Filter filter, Sorter sorter) throws ClientException {
         try {
@@ -1020,6 +1055,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm)
             throws ClientException {
         if (perm != null) {
@@ -1043,6 +1079,7 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Method used internally to retrieve frames of a long result.
      */
+    @Override
     public DocumentModelsChunk getDocsResultChunk(DocsQueryProviderDef def,
             String type, String perm, Filter filter, final int start,
             final int max) throws ClientException {
@@ -1106,6 +1143,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type, String perm, Filter filter) throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1114,6 +1152,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, type, perm, filter);
     }
 
+    @Override
     public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1125,6 +1164,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException {
         try {
@@ -1136,6 +1176,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>(docRefs.length);
@@ -1153,6 +1194,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelListImpl(docs);
     }
 
+    @Override
     public DocumentModelList getFiles(DocumentRef parent)
             throws ClientException {
         try {
@@ -1173,6 +1215,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getFilesIterator(DocumentRef parent)
             throws ClientException {
 
@@ -1182,6 +1225,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
     }
 
+    @Override
     public DocumentModelList getFiles(DocumentRef parent, Filter filter,
             Sorter sorter) throws ClientException {
         try {
@@ -1208,6 +1252,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList getFolders(DocumentRef parent)
             throws ClientException {
         try {
@@ -1227,6 +1272,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1235,6 +1281,7 @@ public abstract class AbstractSession implements CoreSession,
         return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
     }
 
+    @Override
     public DocumentModelList getFolders(DocumentRef parent, Filter filter,
             Sorter sorter) throws ClientException {
         try {
@@ -1261,6 +1308,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getParentDocument(DocumentRef docRef)
             throws ClientException {
         try {
@@ -1281,6 +1329,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> getParentDocuments(final DocumentRef docRef)
             throws ClientException {
 
@@ -1310,6 +1359,7 @@ public abstract class AbstractSession implements CoreSession,
         return docsList;
     }
 
+    @Override
     public DocumentModel getRootDocument() throws ClientException {
         try {
             return readModel(getSession().getRootDocument(), null);
@@ -1318,6 +1368,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean hasChildren(DocumentRef docRef) throws ClientException {
         try {
             // TODO: validate permission check with td
@@ -1330,25 +1381,30 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelList query(String query) throws ClientException {
         return query(query, null, 0, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, int max)
             throws ClientException {
         return query(query, null, max, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, Filter filter)
             throws ClientException {
         return query(query, filter, 0, 0, false);
     }
 
+    @Override
     public DocumentModelList query(String query, Filter filter, int max)
             throws ClientException {
         return query(query, filter, max, 0, false);
     }
 
+    @Override
     @SuppressWarnings("null")
     public DocumentModelList query(String query, Filter filter, long limit,
             long offset, boolean countTotal) throws ClientException {
@@ -1440,6 +1496,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             Object... params) throws ClientException {
         try {
@@ -1472,6 +1529,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1491,12 +1549,14 @@ public abstract class AbstractSession implements CoreSession,
         return t.getMessage();
     }
 
+    @Override
     @Deprecated
     public DocumentModelList querySimpleFts(String keywords)
             throws ClientException {
         return querySimpleFts(keywords, null);
     }
 
+    @Override
     @Deprecated
     public DocumentModelList querySimpleFts(String keywords, Filter filter)
             throws ClientException {
@@ -1529,12 +1589,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     @Deprecated
     public DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
             int pageSize) throws ClientException {
         return querySimpleFtsIt(query, null, filter, pageSize);
     }
 
+    @Override
     @Deprecated
     public DocumentModelIterator querySimpleFtsIt(String query,
             String startingPath, Filter filter, int pageSize)
@@ -1547,6 +1609,7 @@ public abstract class AbstractSession implements CoreSession,
                 filter);
     }
 
+    @Override
     public void removeChildren(DocumentRef docRef) throws ClientException {
         // TODO: check req permissions with td
         try {
@@ -1566,6 +1629,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1608,6 +1672,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void removeDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1628,14 +1693,8 @@ public abstract class AbstractSession implements CoreSession,
             removeNotifyOneDoc(doc);
 
         } catch (DocumentException e) {
-            try {
-                throw new ClientException("Failed to remove document "
-                        + doc.getUUID(), e);
-            } catch (DocumentException e2) {
-                log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and "
-                        + "even to get UUID " + doc.toString());
-            }
+            throw new ClientException("Failed to remove document "
+                    + doc.getUUID(), e);
         }
     }
 
@@ -1674,6 +1733,7 @@ public abstract class AbstractSession implements CoreSession,
      * Implementation uses the fact that the lexicographic ordering of paths is
      * a refinement of the "contains" partial ordering.
      */
+    @Override
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         Document[] docs = new Document[docRefs.length];
 
@@ -1706,6 +1766,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void save() throws ClientException {
         try {
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -1717,6 +1778,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel saveDocument(DocumentModel docModel)
             throws ClientException {
         try {
@@ -1784,6 +1846,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean isDirty(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1799,31 +1862,27 @@ public abstract class AbstractSession implements CoreSession,
      * <p>
      * Passed options are propagated to the checked out event.
      *
-     * @return the last version (that was just created)
+     * @return the last version
      */
     private DocumentModel createDocumentSnapshot(DocumentModel docModel,
             Document doc, Map<String, Serializable> options, boolean pendingSave)
             throws ClientException {
         DocumentRef docRef = docModel.getRef();
-        if (!isDirty(docRef) && getLastVersion(docRef) != null) {
-            log.debug("Document not dirty and has a last version "
-                    + "-> avoid creating a new version");
-            return null;
+        DocumentModel version;
+        if (!isDirty(docRef)
+                && (version = getLastDocumentVersion(docRef)) != null) {
+            return version;
         }
 
         // Do a checkin / checkout of the edited version
-        VersionModel newVersion = new VersionModelImpl();
-        String vlabel = generateVersionLabelFor(docRef);
-        newVersion.setLabel(vlabel);
-
-        checkIn(docRef, newVersion);
+        version = checkIn(docRef, (String) null);
         log.debug("doc checked in " + docModel.getTitle());
         checkOut(docModel, doc, options, pendingSave);
         log.debug("doc checked out " + docModel.getTitle());
-
-        return getDocumentWithVersion(docRef, newVersion);
+        return version;
     }
 
+    @Override
     public void saveDocuments(DocumentModel[] docModels) throws ClientException {
         // TODO: optimize this - avoid calling at each iteration saveDoc...
         for (DocumentModel docModel : docModels) {
@@ -1831,6 +1890,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getSourceDocument(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1849,6 +1909,17 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    protected VersionModel getVersionModel(DocumentVersion version)
+            throws DocumentException {
+        VersionModel versionModel = new VersionModelImpl();
+        versionModel.setId(version.getUUID());
+        versionModel.setCreated(version.getCreated());
+        versionModel.setDescription(version.getDescription());
+        versionModel.setLabel(version.getLabel());
+        return versionModel;
+    }
+
+    @Override
     public VersionModel getLastVersion(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1861,16 +1932,13 @@ public abstract class AbstractSession implements CoreSession,
             if (version == null) {
                 return null;
             }
-            VersionModel versionModel = new VersionModelImpl();
-            versionModel.setCreated(version.getCreated());
-            versionModel.setDescription(version.getDescription());
-            versionModel.setLabel(version.getLabel());
-            return versionModel;
+            return getVersionModel(version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
     }
 
+    @Override
     public DocumentModel getLastDocumentVersion(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1889,6 +1957,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentRef> getVersionsRefs(DocumentRef docRef)
             throws ClientException {
         try {
@@ -1905,6 +1974,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<DocumentModel> getVersions(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1939,6 +2009,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<VersionModel> getVersionsForDocument(DocumentRef docRef)
             throws ClientException {
         assert null != docRef;
@@ -1953,19 +2024,11 @@ public abstract class AbstractSession implements CoreSession,
 
             while (versionIterator.hasNext()) {
                 DocumentVersion docVersion = versionIterator.nextDocumentVersion();
-
                 if (null == docVersion.getLabel()) {
                     // TODO: the root default version - discard
                     continue;
                 }
-
-                VersionModel versionModel = new VersionModelImpl();
-
-                versionModel.setCreated(docVersion.getCreated());
-                versionModel.setDescription(docVersion.getDescription());
-                versionModel.setLabel(docVersion.getLabel());
-
-                versions.add(versionModel);
+                versions.add(getVersionModel(docVersion));
             }
 
             log.debug("Retrieved the versions of the document " + doc.getPath());
@@ -1978,19 +2041,57 @@ public abstract class AbstractSession implements CoreSession,
 
     }
 
+    @Override
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            DocumentRef versionRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            Document ver = resolveReference(versionRef);
+            return restoreToVersion(doc, ver, false, false);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    @Override
+    @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
         return restoreToVersion(docRef, version, false);
     }
 
+    @Override
+    @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef,
             VersionModel version, boolean skipSnapshotCreation)
             throws ClientException {
-        assert docRef != null;
-        assert version != null;
-
         try {
             Document doc = resolveReference(docRef);
+            Document ver = doc.getVersion(version.getLabel());
+            return restoreToVersion(doc, ver, skipSnapshotCreation, false);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    @Override
+    public DocumentModel restoreToVersion(DocumentRef docRef,
+            DocumentRef versionRef, boolean skipSnapshotCreation,
+            boolean skipCheckout) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            Document ver = resolveReference(versionRef);
+            return restoreToVersion(doc, ver, skipSnapshotCreation,
+                    skipCheckout);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to restore document", e);
+        }
+    }
+
+    protected DocumentModel restoreToVersion(Document doc, Document version,
+            boolean skipSnapshotCreation, boolean skipCheckout)
+            throws ClientException {
+        try {
             checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
 
@@ -2017,8 +2118,7 @@ public abstract class AbstractSession implements CoreSession,
                         minorVer);
             }
             // add the uuid of the version being restored
-            Document docVersion = doc.getVersion(version.getLabel());
-            String versionUUID = docVersion.getUUID();
+            String versionUUID = version.getUUID();
             options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY,
                     versionUUID);
 
@@ -2026,9 +2126,12 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true, true);
             writeModel(doc, docModel);
 
-            doc.restore(version.getLabel());
-            // restore gives us a checked in document, so do a checkout
-            doc.checkOut();
+            doc.restore(version);
+
+            if (!skipCheckout) {
+                // restore gives us a checked in document, so do a checkout
+                doc.checkOut();
+            }
 
             // re-read doc model after restoration
             docModel = readModel(doc, null);
@@ -2036,15 +2139,22 @@ public abstract class AbstractSession implements CoreSession,
                     options, null, null, true, false);
             docModel = writeModel(doc, docModel);
 
-            log.debug("Document restored to version:" + version.getLabel());
+            log.debug("Document restored to version:" + version.getUUID());
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document " + docRef, e);
+            throw new ClientException("Failed to restore document " + doc, e);
         }
-
     }
 
-    public void checkIn(DocumentRef docRef, VersionModel version)
+    @Override
+    @Deprecated
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver)
+            throws ClientException {
+        return checkIn(docRef, ver.getDescription());
+    }
+
+    @Override
+    public DocumentModel checkIn(DocumentRef docRef, String description)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2058,19 +2168,13 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true, true);
             writeModel(doc, docModel);
 
-            String description = version.getDescription();
-            if (description != null) {
-                doc.checkIn(version.getLabel(), description);
-            } else {
-                doc.checkIn(version.getLabel());
-            }
-
-            Document versionDocument = doc.getVersion(version.getLabel());
-            DocumentModel versionModel = readModel(versionDocument, null);
+            String label = generateVersionLabelFor(docRef);
+            Document versionDocument = doc.checkIn(label, description);
+            DocumentModel version = readModel(versionDocument, null);
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
-                    options, null, null, true, false);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, version, options,
+                    null, null, true, false);
 
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
@@ -2083,13 +2187,14 @@ public abstract class AbstractSession implements CoreSession,
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
                     options, null, null, true, false);
-            writeModel(versionDocument, versionModel);
+            return writeModel(versionDocument, version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
                     e);
         }
     }
 
+    @Override
     public void checkOut(DocumentRef docRef) throws ClientException {
         Document doc;
         try {
@@ -2136,6 +2241,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public boolean isCheckedOut(DocumentRef docRef) throws ClientException {
         assert null != docRef;
 
@@ -2149,27 +2255,34 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getVersion(String versionableId,
             VersionModel versionModel) throws ClientException {
-        if (!isAdministrator()) {
-            throw new DocumentSecurityException(
-                    "Only Administrator can fetch versions directly");
+        String id = versionModel.getId();
+        if (id != null) {
+            return getDocument(new IdRef(id));
         }
-        String label = versionModel.getLabel();
         try {
             Document doc = getSession().getVersion(versionableId, versionModel);
-            return doc == null ? null : readModel(doc, null);
+            if (doc == null) {
+                return null;
+            }
+            checkPermission(doc, READ_PROPERTIES);
+            checkPermission(doc, READ_VERSION);
+            return readModel(doc, null);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get version " + label
-                    + " for " + versionableId, e);
+            throw new ClientException("Failed to get version "
+                    + versionModel.getLabel() + " for " + versionableId, e);
         }
     }
 
+    @Override
     public DocumentModel getDocumentWithVersion(DocumentRef docRef,
             VersionModel version) throws ClientException {
-        assert docRef != null;
-        assert version != null;
-
+        String id = version.getId();
+        if (id != null) {
+            return getDocument(new IdRef(id));
+        }
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_PROPERTIES);
@@ -2190,25 +2303,28 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    /**
-     * Creates a generic proxy to a document.
-     * <p>
-     * The document may be a version, or a working copy (live document) in which
-     * case the proxy will be a "shortcut".
-     */
+    @Override
     public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            Document folder = resolveReference(folderRef);
+            Document fold = resolveReference(folderRef);
             checkPermission(doc, READ);
-            checkPermission(folder, ADD_CHILDREN);
+            checkPermission(fold, ADD_CHILDREN);
+            return createProxyInternal(doc, fold,
+                    new HashMap<String, Serializable>());
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
 
+    protected DocumentModel createProxyInternal(Document doc, Document folder,
+            Map<String, Serializable> options) throws ClientException {
+        try {
             // create the new proxy
             Document proxy = getSession().createProxy(doc, folder);
             DocumentModel proxyModel = readModel(proxy, null);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
                     options, null, null, true, false);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
@@ -2218,23 +2334,21 @@ public abstract class AbstractSession implements CoreSession,
                     folderModel, options, null, null, true, false);
             return proxyModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to create proxy for doc: "
-                    + docRef, e);
+            throw new ClientException("Failed to create proxy for doc: " + doc,
+                    e);
         }
     }
 
+    @Override
+    @Deprecated
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy)
             throws ClientException {
-        assert null != parentRef;
-        assert null != docRef;
-        assert null != version;
-
         try {
             Document doc = resolveReference(docRef);
-            Document section = resolveReference(parentRef);
+            Document sec = resolveReference(parentRef);
             checkPermission(doc, READ);
-            checkPermission(section, ADD_CHILDREN);
+            checkPermission(sec, ADD_CHILDREN);
 
             DocumentModel proxyModel = null;
             Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -2247,7 +2361,7 @@ public abstract class AbstractSession implements CoreSession,
                     throw new ClientException("Document " + docRef
                             + " has no version " + vlabel);
                 }
-                proxyModel = updateExistingProxies(doc, section, target);
+                proxyModel = updateExistingProxies(doc, sec, target);
                 // proxyModel is null is update fails
                 if (proxyModel != null) {
                     // notify for proxy updates
@@ -2255,7 +2369,7 @@ public abstract class AbstractSession implements CoreSession,
                             proxyModel, options, null, null, true, false);
                 } else {
                     List<String> removedProxyIds = Collections.emptyList();
-                    removedProxyIds = removeExistingProxies(doc, section);
+                    removedProxyIds = removeExistingProxies(doc, sec);
                     options.put(CoreEventConstants.REPLACED_PROXY_IDS,
                             (Serializable) removedProxyIds);
                 }
@@ -2263,8 +2377,8 @@ public abstract class AbstractSession implements CoreSession,
 
             if (proxyModel == null) {
                 // create the new proxy
-                Document proxy = getSession().createProxyForVersion(section,
-                        doc, vlabel);
+                Document proxy = getSession().createProxyForVersion(sec, doc,
+                        vlabel);
                 log.debug("Created proxy for version " + vlabel
                         + " of the document " + doc.getPath());
                 // notify for reindexing
@@ -2278,7 +2392,7 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true, false);
 
-            DocumentModel sectionModel = readModel(section, null);
+            DocumentModel sectionModel = readModel(sec, null);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     sectionModel, options, null, null, true, false);
 
@@ -2307,7 +2421,11 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Update the proxy while republishing.
+     * Update the proxy for doc in the given section to point to the new target.
+     * Do nothing if there are several proxies.
+     *
+     * @return the proxy if it was updated, or {@code null} if none or several
+     *         were found
      */
     protected DocumentModel updateExistingProxies(Document doc,
             Document folder, Document target) throws DocumentException,
@@ -2328,6 +2446,7 @@ public abstract class AbstractSession implements CoreSession,
         return null;
     }
 
+    @Override
     public DocumentModelList getProxies(DocumentRef docRef,
             DocumentRef folderRef) throws ClientException {
         try {
@@ -2351,6 +2470,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException {
         try {
@@ -2380,12 +2500,14 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<String> getAvailableSecurityPermissions()
             throws ClientException {
         // XXX: add security check?
         return Arrays.asList(getSecurityService().getPermissionProvider().getPermissions());
     }
 
+    @Override
     public DataModel getDataModel(DocumentRef docRef, String schema)
             throws ClientException {
         try {
@@ -2401,6 +2523,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public Object getDataModelField(DocumentRef docRef, String schema,
             String field) throws ClientException {
         try {
@@ -2427,6 +2550,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public Object[] getDataModelFields(DocumentRef docRef, String schema,
             String[] fields) throws ClientException {
         try {
@@ -2454,6 +2578,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public SerializableInputStream getContentData(String key)
             throws ClientException {
         try {
@@ -2464,6 +2589,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String getStreamURI(String blobPropertyId) throws ClientException {
         String uri;
         try {
@@ -2482,6 +2608,7 @@ public abstract class AbstractSession implements CoreSession,
         return uri;
     }
 
+    @Override
     public String getCurrentLifeCycleState(DocumentRef docRef)
             throws ClientException {
         String currentLifeCycleState;
@@ -2501,6 +2628,7 @@ public abstract class AbstractSession implements CoreSession,
         return currentLifeCycleState;
     }
 
+    @Override
     public String getLifeCyclePolicy(DocumentRef docRef) throws ClientException {
         String lifecyclePolicy;
         try {
@@ -2519,6 +2647,7 @@ public abstract class AbstractSession implements CoreSession,
         return lifecyclePolicy;
     }
 
+    @Override
     public boolean followTransition(DocumentRef docRef, String transition)
             throws ClientException {
         boolean operationResult;
@@ -2559,6 +2688,7 @@ public abstract class AbstractSession implements CoreSession,
         return operationResult;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions(DocumentRef docRef)
             throws ClientException {
         Collection<String> allowedStateTransitions;
@@ -2579,6 +2709,7 @@ public abstract class AbstractSession implements CoreSession,
         return allowedStateTransitions;
     }
 
+    @Override
     public Object[] getDataModelsField(DocumentRef[] docRefs, String schema,
             String field) throws ClientException {
 
@@ -2596,6 +2727,7 @@ public abstract class AbstractSession implements CoreSession,
         return values;
     }
 
+    @Override
     public DocumentRef[] getParentDocumentRefs(DocumentRef docRef)
             throws ClientException {
 
@@ -2619,6 +2751,7 @@ public abstract class AbstractSession implements CoreSession,
         return docRefs.toArray(refs);
     }
 
+    @Override
     public Object[] getDataModelsFieldUp(DocumentRef docRef, String schema,
             String field) throws ClientException {
 
@@ -2630,6 +2763,7 @@ public abstract class AbstractSession implements CoreSession,
         return getDataModelsField(allRefs, schema, field);
     }
 
+    @Override
     public String getLock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2640,6 +2774,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public void setLock(DocumentRef docRef, String key) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2656,6 +2791,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String unlock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -2702,6 +2838,7 @@ public abstract class AbstractSession implements CoreSession,
         return false;
     }
 
+    @Override
     public void applyDefaultPermissions(String userOrGroupName)
             throws ClientException {
         if (null == userOrGroupName) {
@@ -2722,6 +2859,7 @@ public abstract class AbstractSession implements CoreSession,
         setACP(rootDocument.getRef(), acp, false);
     }
 
+    @Override
     public void destroy() {
         log.debug("Destroying core session ...");
         try {
@@ -2731,65 +2869,67 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel publishDocument(DocumentModel docToPublish,
             DocumentModel section) throws ClientException {
         return publishDocument(docToPublish, section, true);
     }
 
-    public DocumentModel publishDocument(DocumentModel docToPublish,
+    public DocumentModel publishDocument(DocumentModel document,
             DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
+        try {
+            Document doc = resolveReference(document.getRef());
+            Document sec = resolveReference(section.getRef());
 
-        DocumentRef docRef = docToPublish.getRef();
-        DocumentRef sectionRef = section.getRef();
-        if (docToPublish.isProxy()) {
-            try {
-                Document doc = resolveReference(docRef);
-                Document sec = resolveReference(sectionRef);
-                checkPermission(doc, READ);
-                checkPermission(sec, ADD_CHILDREN);
+            checkPermission(doc, READ);
+            checkPermission(sec, ADD_CHILDREN);
 
-                List<String> removedProxyIds = Collections.emptyList();
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            DocumentModel proxy = null;
+            Document target;
+            if (document.isProxy()) {
                 if (overwriteExistingProxy) {
-                    removedProxyIds = removeExistingProxies(doc, sec);
+                    // remove previous
+                    List<String> removedProxyIds = removeExistingProxies(doc,
+                            sec);
+                    options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                            (Serializable) removedProxyIds);
                 }
-
-                // publishing a proxy is just a copy
-                // TODO copy also copies security. just recreate a proxy
-                DocumentModel newDocument = copy(docRef, sectionRef,
-                        docToPublish.getName());
-
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(CoreEventConstants.REPLACED_PROXY_IDS,
-                        (Serializable) removedProxyIds);
-                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                        newDocument, options, null, null, true, false);
-
-                notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                        section, options, null, null, true, false);
-
-                return newDocument;
-            } catch (DocumentException e) {
-                throw new ClientException(e);
+                target = doc;
+            } else {
+                // snapshot the document
+                DocumentModel version = createDocumentSnapshot(document, null,
+                        null, false);
+                target = resolveReference(version.getRef());
+                if (overwriteExistingProxy) {
+                    proxy = updateExistingProxies(doc, sec, target);
+                    if (proxy == null) {
+                        // no or several proxies, remove them
+                        List<String> removedProxyIds = removeExistingProxies(
+                                doc, sec);
+                        options.put(CoreEventConstants.REPLACED_PROXY_IDS,
+                                (Serializable) removedProxyIds);
+                    } else {
+                        // notify proxy updates
+                        notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED,
+                                proxy, options, null, null, true, false);
+                        notifyEvent(
+                                DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+                                proxy, options, null, null, true, false);
+                        notifyEvent(
+                                DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
+                                section, options, null, null, true, false);
+                    }
+                }
             }
-        } else {
-            // snapshot the document
-            createDocumentSnapshot(docToPublish, null, null, false);
-            VersionModel version = getLastVersion(docRef);
-            if (version == null) {
-                throw new ClientException("Cannot create proxy: "
-                        + "there is no version to point to");
+            if (proxy == null) {
+                proxy = createProxyInternal(target, sec, options);
             }
-            DocumentModel newProxy = createProxy(sectionRef, docRef, version,
-                    overwriteExistingProxy);
-            return newProxy;
+            return proxy;
+        } catch (DocumentException e) {
+            throw new ClientException(e);
         }
-    }
-
-    public VersionModel isPublished(DocumentModel document,
-            DocumentModel section) {
-        // FIXME: this is very useful API
-        return null;
     }
 
     public String getSuperParentType(DocumentModel doc) throws ClientException {
@@ -2995,9 +3135,9 @@ public abstract class AbstractSession implements CoreSession,
         // service.fireOperationTerminated(operation);
     }
 
-    public Object[] refreshDocument(DocumentRef ref, int refreshFlags,
-            String[] schemas) throws ClientException {
-        Object[] result = new Object[6];
+    public DocumentModelRefresh refreshDocument(DocumentRef ref,
+            int refreshFlags, String[] schemas) throws ClientException {
+        DocumentModelRefresh refresh = new DocumentModelRefresh();
 
         try {
 
@@ -3030,28 +3170,27 @@ public abstract class AbstractSession implements CoreSession,
                                     value == null ? Null.VALUE
                                             : (Serializable) value);
                         }
-                        result[0] = prefetch;
+                        refresh.prefetch = prefetch;
                     }
                 }
             }
 
-            if ((refreshFlags & DocumentModel.REFRESH_LOCK) != 0) {
+            if ((refreshFlags & DocumentModel.REFRESH_STATE) != 0) {
                 if (!readPermChecked) {
                     checkPermission(doc, READ);
+                    // checkPermission(doc, READ_LIFE_CYCLE);
                     readPermChecked = true;
                 }
-                result[1] = doc.getLock();
-            }
-
-            if ((refreshFlags & DocumentModel.REFRESH_LIFE_CYCLE) != 0) {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                result[2] = doc.getCurrentLifeCycleState();
-                result[3] = doc.getLifeCyclePolicy();
+                refresh.lock = doc.getLock();
+                refresh.checkedOut = doc.isCheckedOut();
+                refresh.lifeCycleState = doc.getCurrentLifeCycleState();
+                refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
             }
 
             if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
                 checkPermission(doc, READ_SECURITY);
-                result[4] = getSession().getSecurityManager().getMergedACP(doc);
+                refresh.acp = getSession().getSecurityManager().getMergedACP(
+                        doc);
             }
 
             if ((refreshFlags & DocumentModel.REFRESH_CONTENT) != 0) {
@@ -3070,7 +3209,7 @@ public abstract class AbstractSession implements CoreSession,
                     doc.readDocumentPart(part);
                     parts[i] = part;
                 }
-                result[5] = parts;
+                refresh.documentParts = parts;
             }
 
         } catch (ClientException e) {
@@ -3078,7 +3217,7 @@ public abstract class AbstractSession implements CoreSession,
         } catch (Exception e) {
             throw new ClientException("Failed to get refresh data", e);
         }
-        return result;
+        return refresh;
 
     }
 

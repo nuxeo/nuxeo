@@ -61,10 +61,12 @@ public class SQLSimpleProperty extends SQLBaseProperty {
      * ----- org.nuxeo.ecm.core.model.Property -----
      */
 
+    @Override
     public String getName() {
         return property.getName();
     }
 
+    @Override
     public Serializable getValue() throws DocumentException {
         try {
             return property.getValue();
@@ -73,6 +75,7 @@ public class SQLSimpleProperty extends SQLBaseProperty {
         }
     }
 
+    @Override
     public void setValue(Object value) throws DocumentException {
         if (!VERSION_WRITABLE_PROPS.contains(getName())) {
             checkWritable();

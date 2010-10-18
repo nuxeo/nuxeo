@@ -104,6 +104,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         }
     }
 
+    @Override
     public void close() {
         if (rs != null) {
             try {
@@ -128,6 +129,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         close();
     }
 
+    @Override
     public long size() {
         if (size != -1) {
             return size;
@@ -153,10 +155,12 @@ public class ResultSetQueryResult implements IterableQueryResult,
         }
     }
 
+    @Override
     public long pos() {
         return pos;
     }
 
+    @Override
     public void skipTo(long pos) {
         if (rs == null || pos < 0) {
             this.pos = -1;
@@ -179,6 +183,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         }
     }
 
+    @Override
     public Iterator<Map<String, Serializable>> iterator() {
         return this;
     }
@@ -205,6 +210,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         return map;
     }
 
+    @Override
     public boolean hasNext() {
         if (next != null) {
             return true;
@@ -221,6 +227,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         return !eof;
     }
 
+    @Override
     public Map<String, Serializable> next() {
         if (!hasNext()) {
             pos = -1;
@@ -232,6 +239,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         return n;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }

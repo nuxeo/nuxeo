@@ -31,11 +31,21 @@ public class VersionModelImpl implements VersionModel {
 
     private static final long serialVersionUID = -3477379611354288798L;
 
+    protected String id;
+
     protected Calendar created;
 
     protected String label;
 
     protected String description;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Calendar getCreated() {
         return created;
