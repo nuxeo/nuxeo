@@ -99,23 +99,11 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     private static final Log log = LogFactory.getLog(NavigationContextBean.class);
 
-    @In
-    protected transient Context conversationContext;
-
-    @In
-    protected transient Context eventContext;
-
-    @In(create = true)
-    protected transient QueryModelActions queryModelActions;
-
     // --------------------------------------------
     // fields managed by this class
     // These fields can be accessed by 2 ways
     // - simple getters
     // - via the context thanks to @Factory
-
-    @In(create = true, required = false)
-    private ServerContextBean serverLocator;
 
     private DocumentModel currentDomain;
 
@@ -209,8 +197,8 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
         // update all depending variables
         updateContextVariables();
-        resetCurrentPath();
-        eventContext.remove("currentDocument");
+        resetCurrentPath();        
+        Contexts.getEventContext().remove("currentDocument");
 
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
     }
@@ -222,7 +210,7 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     public void setChangeableDocument(DocumentModel changeableDocument) {
         this.changeableDocument = changeableDocument;
-        eventContext.set("changeableDocument", changeableDocument);
+        Contexts.getEventContext().set("changeableDocument", changeableDocument);
     }
 
     public DocumentModelList getCurrentPath() throws ClientException {
@@ -257,6 +245,7 @@ public class NavigationContextBean implements NavigationContextLocal,
             return new DocumentModelListImpl();
         }
 
+        QueryModelActions queryModelActions = (QueryModelActions) Component.getInstance("queryModelActions");
         QueryModelDescriptor queryDescriptor = queryModelActions.get(
                 DocumentChildrenStdFarm.CHILDREN_BY_COREAPI).getDescriptor();
         String query = queryDescriptor.getQuery(new Object[] { currentDocument.getId() });
@@ -308,7 +297,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
 
         currentDomain = domainDocModel;
-        eventContext.remove("currentDomain");
+        Contexts.getEventContext().remove("currentDomain");
 
         if (domainDocModel == null) {
             Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED,
@@ -375,8 +364,12 @@ public class NavigationContextBean implements NavigationContextLocal,
         return parents;
     }
 
+    protected ServerContextBean getServerLocator() {
+	return (ServerContextBean) Component.getInstance("serverLocator");
+    }
+    
     public RepositoryLocation getCurrentServerLocation() {
-        return serverLocator.getCurrentServerLocation();
+        return getServerLocator().getCurrentServerLocation();
     }
 
     /**
@@ -384,7 +377,7 @@ public class NavigationContextBean implements NavigationContextLocal,
      */
     @Deprecated
     public RepositoryLocation getSelectedServerLocation() {
-        return serverLocator.getCurrentServerLocation();
+        return getServerLocator().getCurrentServerLocation();
     }
 
     /**
@@ -398,9 +391,9 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
 
         RepositoryLocation currentServerLocation = serverLocation;
-        serverLocator.setRepositoryLocation(serverLocation);
+        getServerLocator().setRepositoryLocation(serverLocation);
         resetCurrentContext();
-        eventContext.set("currentServerLocation", currentServerLocation);
+        Contexts.getEventContext().set("currentServerLocation", currentServerLocation);
 
         // update the documentManager
         documentManager = null;
@@ -438,8 +431,8 @@ public class NavigationContextBean implements NavigationContextLocal,
         if (documentManagerBD == null) {
             // this is the first time we select the location, create a
             // DocumentManagerBusinessDelegate instance
-            documentManagerBD = new DocumentManagerBusinessDelegate();
-            conversationContext.set("documentManager", documentManagerBD);
+            documentManagerBD = new DocumentManagerBusinessDelegate();            
+            Contexts.getConversationContext().set("documentManager", documentManagerBD);
         }
         documentManager = documentManagerBD.getDocumentManager(getCurrentServerLocation());
         return documentManager;
@@ -531,14 +524,14 @@ public class NavigationContextBean implements NavigationContextLocal,
     protected void updateContextVariables() throws ClientException {
 
         // XXX flush method is not implemented for Event context :)
-        eventContext.set("currentDocument", currentDocument);
+	Contexts.getEventContext().set("currentDocument", currentDocument);
 
         if (currentDocument != null) {
             changeableDocument = currentDocument;
-            eventContext.set("changeableDocument", changeableDocument);
+            Contexts.getEventContext().set("changeableDocument", changeableDocument);
         } else {
             changeableDocument = currentDocument;
-            eventContext.remove("changeableDocument");
+            Contexts.getEventContext().remove("changeableDocument");
         }
 
         if (currentDocument == null) {
@@ -622,6 +615,7 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     public void resetCurrentContext() {
         // flush event context
+	Context eventContext = Contexts.getEventContext();
         eventContext.remove("currentDocument");
         eventContext.remove("changeableDocument");
         eventContext.remove("currentDocumentChildren");
@@ -650,7 +644,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         if (UserAction.CREATE == action) {
             // the given document is a changeable document
             changeableDocument = doc;
-            eventContext.set("changeableDocument", doc);
+            Contexts.getEventContext().set("changeableDocument", doc);
         } else {
             updateDocumentContext(doc);
         }
@@ -914,7 +908,7 @@ public class NavigationContextBean implements NavigationContextLocal,
             return;
         }
         currentContentRoot = crDocumentModel;
-        eventContext.remove("currentContentRoot");
+        Contexts.getEventContext().remove("currentContentRoot");
 
         if (crDocumentModel == null) {
             return;

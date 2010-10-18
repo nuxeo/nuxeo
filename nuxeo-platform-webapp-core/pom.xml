@@ -139,6 +139,10 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-remoting</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
     </dependency>
