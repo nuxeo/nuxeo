@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -24,10 +30,14 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.lf5.util.StreamUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
@@ -54,8 +64,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
     public void setUp() throws Exception {
         repoName = CLIENT_REPO_NAME;
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
-                "OSGI-INF/test-listeners-invalidations-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-listeners-invalidations-contrib.xml");
         deployRepositoryContrib();
         serverVCS = new ServerVCS(SERVER_REPO_NAME);
         serverVCS.start();
@@ -70,17 +79,14 @@ public class TestSQLBackendNet extends TestSQLBackend {
             String contrib = "OSGI-INF/test-server-postgresql-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
         } else {
-            deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                    DatabaseHelper.DATABASE.getDeploymentContrib());
+            deployContrib("org.nuxeo.ecm.core.storage.sql.test", DatabaseHelper.DATABASE.getDeploymentContrib());
         }
     }
 
     // descriptor used by client
     @Override
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
-        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
-                fulltextDisabled);
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay, boolean fulltextDisabled) {
+        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay, fulltextDisabled);
         descriptor.name = repoName;
         descriptor.binaryStorePath = "clientbinaries";
         descriptor.binaryManagerConnect = true;
@@ -107,11 +113,9 @@ public class TestSQLBackendNet extends TestSQLBackend {
 
         protected Repository repository;
 
-        protected final BlockingQueue<String> methodCall = new LinkedBlockingQueue<String>(
-                1);
+        protected final BlockingQueue<String> methodCall = new LinkedBlockingQueue<String>(1);
 
-        protected final BlockingQueue<Object> methodResult = new LinkedBlockingQueue<Object>(
-                1);
+        protected final BlockingQueue<Object> methodResult = new LinkedBlockingQueue<Object>(1);
 
         public ServerVCS(String repositoryName) {
             super("Nuxeo-VCS-Server-Test");
@@ -131,8 +135,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
                 Object res = methodResult.take();
                 if (res instanceof AssertionError) {
                     AssertionError e = (AssertionError) res;
-                    throw (AssertionError) new AssertionError("Server Error: "
-                            + e).initCause(e);
+                    throw (AssertionError) new AssertionError("Server Error: " + e).initCause(e);
                 }
                 return res;
             } catch (InterruptedException e) {
@@ -149,8 +152,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
                 // SQLRepository which creates a RepositoryImpl,
                 // which is configured to spawn a server to listen for remote
                 // connections.
-                repo = (SQLRepository) NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                        repositoryName);
+                repo = (SQLRepository) NXCore.getRepositoryService().getRepositoryManager().getRepository(repositoryName);
                 // init root
                 repo.getSession(null).close();
                 repository = repo.repository;
@@ -304,10 +306,43 @@ public class TestSQLBackendNet extends TestSQLBackend {
         checkEvent(1, false, CLIENT_REPO_NAME_2, nodeId);
     }
 
-    protected static void checkEvent(int i, boolean local, String repo,
-            Serializable id) {
+    protected SimpleProperty getBlob(Session session) throws StorageException, IOException {
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "pff", null, "content", false);
+        SimpleProperty prop = node.getSimpleProperty("data");
+        assertNotNull(prop);
+        return prop;
+    }
+
+    public void testSerializeRepoBinaries() throws IOException, ClassNotFoundException {
+        BinaryManager binMgr = ((RepositoryImpl) repository).binaryManager;
+        StringBlob blob = new StringBlob("dummy");
+        Binary data = binMgr.getBinary(blob.getStream());
+        checkSerialization(data);
+    }
+
+    protected void checkSerialization(Binary data) throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(data);
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Binary unmarshalled = (Binary) ois.readObject();
+        String unmarshalledString = new String(StreamUtils.getBytes(unmarshalled.getStream()));
+        String originalString = new String(StreamUtils.getBytes(data.getStream()));
+        assertEquals(unmarshalledString, originalString);
+    }
+
+    public void testSerializeDisconnectedBinaries() throws IOException, ClassNotFoundException {
+        File file = File.createTempFile("nuxeo-test-", ".blob");
+        file.deleteOnExit();
+        Binary data = new Binary(file, "abc");
+        checkSerialization(data);
+    }
+
+    protected static void checkEvent(int i, boolean local, String repo, Serializable id) {
         assertTrue("size=" + EVENTS.size() + ", i=" + i, i < EVENTS.size());
-        assertEquals(EVENTS.size() - 1, i);
+        assertEquals(i, EVENTS.size() - 1);
         Event event = EVENTS.get(i);
         assertEquals(EventConstants.EVENT_VCS_INVALIDATIONS, event.getName());
         EventContext ctx = event.getContext();

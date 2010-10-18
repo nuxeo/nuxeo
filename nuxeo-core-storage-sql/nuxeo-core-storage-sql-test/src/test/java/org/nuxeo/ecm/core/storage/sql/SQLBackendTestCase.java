@@ -55,7 +55,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
             boolean fulltextDisabled) throws Exception {
         RepositoryDescriptor descriptor = newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        return new RepositoryImpl(descriptor);
+        RepositoryImpl repo = new RepositoryImpl(descriptor);
+        RepositoryResolver.registerTestRepository(repo);
+        return repo;
     }
 
     protected RepositoryDescriptor newDescriptor(long clusteringDelay,

@@ -18,9 +18,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 
 /**
@@ -37,6 +40,12 @@ public class RepositoryResolver {
 
     }
 
+    public static Map<String,RepositoryImpl> repositories = new HashMap<String,RepositoryImpl>();
+
+    public static void registerTestRepository(RepositoryImpl repo) {
+        repositories.put(repo.getName(), repo);
+    }
+
     public static List<Repository> getRepositories() {
         List<Repository> repositories = new ArrayList<Repository>();
         for (org.nuxeo.ecm.core.repository.RepositoryDescriptor desc:NXCore.getRepositoryService().getRepositoryManager().getDescriptors()) {
@@ -46,16 +55,22 @@ public class RepositoryResolver {
     }
 
     public static Repository getRepository(String repositoryName) {
-        Object repo;
+        Object repo = null;
         try {
+            repo = NXCore.getRepository(repositoryName);
+        } catch (NoSuchRepositoryException e) {
+            // No JNDI binding (embedded or unit tests)
             try {
-                repo = NXCore.getRepository(repositoryName);
-            } catch (NoSuchRepositoryException e) {
-                // No JNDI binding (embedded or unit tests)
                 repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(repositoryName);
+            } catch (Exception e1) {
+                ;
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot resolve repository " + repositoryName, e);
+            if (repo == null) {
+                repo = repositories.get(repositoryName);
+            }
+            if (repo == null) {
+                throw new ClientRuntimeException("Cannot find repository " + repositoryName);
+            }
         }
         if (repo instanceof Repository) {
             // (JCA) ConnectionFactoryImpl already implements Repository

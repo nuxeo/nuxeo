@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -44,11 +46,18 @@ public class Binary implements Serializable {
 
     private final String repoName;
 
-    public Binary(File file, String digest, String repoName) {
-        this.repoName = repoName;
+   public Binary(File file, String digest) {
         this.file = file;
         this.digest = digest;
         length = file.length();
+        this.repoName = null;
+    }
+
+    public Binary(File file, String digest, String repoName) {
+        this.file = file;
+        this.digest = digest;
+        length = file.length();
+        this.repoName = repoName;
     }
 
     /**
@@ -88,15 +97,21 @@ public class Binary implements Serializable {
         return new FileSource(file);
     }
 
-        private void readObject(java.io.ObjectInputStream ois) throws IOException, ClassNotFoundException {
-            ois.defaultReadObject();
-            file = fetchBinary(repoName, getDigest());
+    private void writeObject(java.io.ObjectOutputStream oos) throws IOException, ClassNotFoundException {
+        oos.defaultWriteObject();
+        if (repoName == null) {
+            oos.writeObject(file);
         }
+    }
 
-        protected static File fetchBinary(String repoName, String digest) {
-            BinaryManager  mgr = RepositoryResolver.getBinaryManager(repoName);
-            Binary binary = mgr.getBinary(digest);
-            return binary.file;
-        }
+    private void readObject(java.io.ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        file = repoName == null ?  (File)ois.readObject() : fetchData();
+    }
+
+    protected File fetchData() {
+        BinaryManager mgr = RepositoryResolver.getBinaryManager(repoName);
+        return mgr.getBinary(digest).file;
+    }
 
 }
