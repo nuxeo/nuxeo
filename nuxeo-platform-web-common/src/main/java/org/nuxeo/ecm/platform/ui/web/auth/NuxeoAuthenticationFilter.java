@@ -217,7 +217,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            // TODO Auto-generated catch block
+            log.error("Login failed for " + cachableUserIdent.getUserInfo().getUserName(), e);
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             return null;
         }
