@@ -1,0 +1,144 @@
+.calendar {
+background:#fff none repeat scroll 0 0;
+border:1px solid #878A9C;
+color:#6f6f6f;
+cursor:default;
+display:none;
+font:normal 11px "Lucida Grande",Verdana, sans-serif;
+position:relative;
+z-index: 1000;
+}
+
+.calendar .combo {
+  z-index: 100;
+}
+
+.calendar table {
+background-color:#fff;
+border:none;
+}
+
+
+.calendar .button {
+border:none;
+padding:2px;
+text-align:center;
+background:none;
+}
+
+.calendar thead .title {
+background-color:#c9dcf4;
+color:#333333;
+font-weight:bold;
+padding:2px;
+text-align:center;
+border:none;
+}
+
+.calendar table .wn {
+background:#EBEFFF none repeat scroll 0 0;
+padding:2px 3px 2px 2px;
+border:none;
+}
+
+.calendar thead .name {
+background:#EBEFFF none repeat scroll 0 0;
+padding:2px;
+text-align:center;
+border:none;
+}
+
+.calendar thead .weekend {
+color:#a08f8c;
+}
+
+.calendar tbody .day {
+color:#585858;
+padding:2px 4px 2px 2px;
+text-align:right;
+width:2em;
+}
+.calendar tbody td.weekend {
+color:#a08f8c;
+}
+
+.calendar tbody td.today {
+color:#7d7d7d;
+font-weight:bold;
+}
+
+.calendar tbody td.selected {
+background-color:#4e9ae1;
+color:#fff;
+font-weight:bold;
+padding:2px 2px 0;
+border:none;
+}
+
+.calendar td.time {
+background-color:#c9dcf4;
+padding:2px;
+text-align:center;
+border:none;
+}
+
+.calendar td.time .hour, .calendar td.time .minute, .calendar td.time .ampm {
+background-color:#FFFFFF;
+padding:0 3px 0 4px;
+border:none;
+}
+
+.calendar tfoot .ttip {
+background:#4e9ae1 none repeat scroll 0 0;
+color:#FFFFFF;
+padding:2px;
+text-align:center;
+border:none;
+}
+
+
+.calendar td.time span.active {
+color:#EBEFFF;
+border:none;
+}
+
+
+.hilite, .rowhilite, .daysrow .rowhilite {
+background-color:#4e9ae1;
+border:none;
+padding:0;
+color:#FFF;
+}
+
+.calendar td.time span.hilite {
+background-color:#4e9ae1;
+border:none;
+padding:0 3px 0 4px;
+color:#FFF;
+}
+
+.calendar thead .hilite, .name .day .hilite, .button .hilite, .day hilite, .weekend .day .hilite {
+background-color:#4e9ae1;
+border:none;
+padding:0;
+color:#FFF;
+}
+
+.calendar thead .name .hilite {
+background-color:#4e9ae1;
+border:none;
+padding:0;
+color:#FFF;
+}
+
+.daysrow .rowhilite {
+background-color:#4e9ae1;
+border:none;
+color:#FFF;
+}
+
+.calendar .tbody td.hilite {
+background-color:#4e9ae1;
+border:none;
+color:#FFF;
+}
