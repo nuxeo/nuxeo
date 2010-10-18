@@ -132,7 +132,7 @@
         <servlet-mapping>
             <servlet-name>Nuxeo Ajax Proxy</servlet-name>
             <url-pattern>/proxy/feedProxy.php</url-pattern>
-        </servlet-mapping>s
+        </servlet-mapping>
 
     </extension>
 

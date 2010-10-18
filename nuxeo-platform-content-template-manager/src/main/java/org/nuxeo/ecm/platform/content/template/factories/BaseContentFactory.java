@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.content.template.factories;
 
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.ContentFactory;
@@ -29,8 +28,7 @@ public abstract class BaseContentFactory implements ContentFactory {
     protected CoreSession session;
 
     protected boolean initSession(DocumentModel eventDoc) {
-        String sessionId = eventDoc.getSessionId();
-        session = CoreInstance.getInstance().getSession(sessionId);
+        session = eventDoc.getCoreSession();
         return session != null;
     }
 

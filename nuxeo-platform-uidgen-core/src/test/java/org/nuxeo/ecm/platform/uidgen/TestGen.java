@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestGen extends NXRuntimeTestCase {
 
