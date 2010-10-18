@@ -1,8 +1,8 @@
 @echo off
 rem This script will checkout the needed sources
 
-set CV=5.4
-set PV=5.4
+set CV=release-release-5.4.0-I20101018_1103.0-I20101018_1103
+set PV=release-release-5.4.0-I20101018_1103.0-I20101018_1103
 
 hg clone -r %CV% http://hg.nuxeo.org/nuxeo/nuxeo-common
 hg clone -r %CV% http://hg.nuxeo.org/nuxeo/nuxeo-runtime
