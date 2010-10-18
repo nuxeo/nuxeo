@@ -39,7 +39,7 @@ public interface BinaryScrambler {
     /**
      * Gets an unscrambled {@link Binary} for the given file.
      */
-    Binary getUnscrambledBinary(File file, String digets);
+    Binary getUnscrambledBinary(File file, String digets, String repoName);
 
     /**
      * Skips n bytes during unscrambling.

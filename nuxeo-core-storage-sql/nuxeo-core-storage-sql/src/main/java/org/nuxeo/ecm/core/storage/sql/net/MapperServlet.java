@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Repository;
+import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
 /**
@@ -92,29 +93,7 @@ public class MapperServlet extends HttpServlet {
             return;
         }
         initialized = true;
-        org.nuxeo.ecm.core.model.Repository repo;
-        try {
-            try {
-                repo = NXCore.getRepository(repositoryName);
-            } catch (NoSuchRepositoryException e) {
-                // No JNDI binding (embedded or unit tests)
-                repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                        repositoryName);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        if (repo instanceof Repository) {
-            // (JCA) ConnectionFactoryImpl already implements Repository
-            repository = (Repository) repo;
-        } else if (repo instanceof SQLRepository) {
-            // (LocalSession not pooled) SQLRepository
-            // from SQLRepositoryFactory called by descriptor at registration
-            repository = ((SQLRepository) repo).repository;
-        } else {
-            throw new RuntimeException("Unknown repository class: "
-                    + repo.getClass().getName());
-        }
+        repository = RepositoryResolver.getRepository(repositoryName);
         invokers = Collections.synchronizedMap(new HashMap<String, MapperInvoker>());
     }
 
