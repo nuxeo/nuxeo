@@ -74,10 +74,13 @@ For JBoss 4.2.3, the target file is :
 The wss-handler jar should be in the classpath of the Root webapp
 => $JBOSS/server/default/lib for JBoss
 
-2 additionnal jars are needed :
+3 additionnal jars are needed :
  - apache commons-lang-2.2
  - freemarker-2.3.11
+ - nuxeo-generic-wss-front
 => $JBOSS/server/default/lib for JBoss
+
+In order to minimize lib externalization, you can also bind a front filter that is a pure.
 
 Nuxeo setup
 ===========
@@ -117,7 +120,7 @@ You should be able to create a WebFolder or to open from MSOffice using :
  - http://server:8080/ : to access directly server root
 
 
-About VirtualHosting 
+About VirtualHosting
 ====================
 For general information about Nuxeo Virtual Hosting, please see :
 http://doc.nuxeo.org/5.2/books/nuxeo-book/html-single/index-admin.html#admin-virtualhosting
@@ -133,13 +136,13 @@ Because WSS has specific URL managament, it requires additionnal reverse proxy c
  ProxyPassReverse /_vti_inf.html http://127.0.0.1:8080/_vti_inf.html
 
 
-Deployment in Tomcat 6 
+Deployment in Tomcat 6
 ======================
 
 Update of Root WebApp
 ---------------------
 
-Edit webapps/ROOT/WEB-INF/web.xml 
+Edit webapps/ROOT/WEB-INF/web.xml
   <filter>
        <display-name>WSS ROOT Filter</display-name>
        <filter-name>WSSROOTFilter</filter-name>

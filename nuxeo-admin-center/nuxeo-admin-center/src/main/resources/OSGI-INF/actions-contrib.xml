@@ -11,7 +11,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="SystemInfo" link="view_sysinfo.xhtml" label="admcommand.systeminfo"
+    <action id="SystemInfo" link="view_admin-fragment.xhtml" label="admcommand.systeminfo"
       order="10">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
@@ -55,7 +55,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectClient" link="view_connect.xhtml" label="admcommand.nuxeoconnect"
+    <action id="ConnectClient" link="view_admin-fragment.xhtml" label="admcommand.nuxeoconnect"
       order="20">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
@@ -73,7 +73,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectApps" link="view_appcenter.xhtml" label="admcommand.appstore"
+    <action id="ConnectApps" link="view_admin-fragment.xhtml" label="admcommand.appstore"
       order="30">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
@@ -104,9 +104,10 @@
     </action>
 
 
-    <action id="adm_logout" link="logout" label="command.logout">
+    <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>
+    
     <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>

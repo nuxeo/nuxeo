@@ -75,8 +75,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     private CoreSession getSession() throws ClientException {
-        if (session == null && doc != null && doc.getSessionId() != null) {
-            session = CoreInstance.getInstance().getSession(doc.getSessionId());
+        if (session == null && doc != null ) {
+            session = doc.getCoreSession();
         }
         if (session == null) {
             try {

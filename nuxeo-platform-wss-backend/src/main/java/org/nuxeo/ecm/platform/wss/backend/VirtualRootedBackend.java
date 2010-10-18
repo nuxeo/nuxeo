@@ -138,6 +138,11 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
 
     }
 
+    public void begin() throws WSSException {
+        realBackend.begin();
+    }
+
+
     public void saveChanges() throws WSSException {
         realBackend.saveChanges();
     }

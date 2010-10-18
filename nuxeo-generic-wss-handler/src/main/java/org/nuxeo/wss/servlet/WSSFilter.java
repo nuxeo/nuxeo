@@ -17,15 +17,10 @@
 
 package org.nuxeo.wss.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
-import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,98 +37,47 @@ import org.nuxeo.wss.handlers.fprpc.FPRPCRouter;
 import org.nuxeo.wss.handlers.get.SimpleGetHandler;
 import org.nuxeo.wss.handlers.resources.ResourcesHandler;
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
-import org.nuxeo.wss.servlet.config.FilterBindingResolver;
 import org.nuxeo.wss.spi.Backend;
 import org.nuxeo.wss.spi.WSSBackend;
 
-public class WSSFilter implements Filter {
+/**
+ * This filter can be used either as a Front End of BackEnd filter
+ * It is designed to be either :
+ *  - instanciated twice :
+ *    - on / in rootFilter mode
+ *    - on /nuxeo in backend mode
+ *  - instanciated once in backend mode but behind a WSSFrontFilter
+ *
+ * @author tiry
+ *
+ */
+public class WSSFilter extends BaseWSSFilter implements Filter {
 
-    protected SimpleGetHandler simpleGetHandler;
-    protected ResourcesHandler resourcesHandler;
-    protected FilterConfig filterConfig;
     protected Boolean rootFilter = null;
-    protected String rootFilterTarget = null;
-    protected ServletContext ctx;
-    public static final String ROOT_FILTER_PARAM = "org.nuxeo.wss.rootFilter";
-    public static final String BACKEND_FACTORY_PARAM = "org.nuxeo.wss.backendFactory";
-    public static final String FILTER_FORWARD_PARAM = "org.nuxeo.wss.forwardedFilter";
-    public static final String WSSFORWARD_KEY = "WSSForward";
-    private static final Log log = LogFactory.getLog(WSSFilter.class);
 
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    protected SimpleGetHandler simpleGetHandler = null;
 
-        if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            String uri = httpRequest.getRequestURI();
+    protected ResourcesHandler resourcesHandler = null;
 
-            if (isRootFilter()) {
-                String forward = httpRequest.getParameter(WSSFORWARD_KEY);
-                if (forward !=null) {
-                    httpResponse.sendRedirect(forward);
-                    return;
-                }
-            }
+    protected static final Log log = LogFactory.getLog(WSSFilter.class);
 
-            try {
-                if ("OPTIONS".equals(httpRequest.getMethod())) {
-                    handleOptionCall(httpRequest, httpResponse);
-                    return;
-                }
-            } catch (Exception e) {
-                throw new ServletException("error processing request", e);
-            }
-
-            // let back filter do the job if any
-            if (isRootFilter() && uri.startsWith(getRootFilterTarget())) {
-                log.debug("let WSS request to to back filter");
-                chain.doFilter(request, response);
-                return;
-            }
-
-            Object forwardedConfig = httpRequest.getAttribute(FILTER_FORWARD_PARAM);
-            try {
-
-                // check if we have behind a root filter
-                if (forwardedConfig!=null) {
-                    log.debug("handle call forwarded by root filter");
-                    handleWSSCall(httpRequest, httpResponse, (FilterBindingConfig) forwardedConfig);
-                     return;
-                }
-
-
-                FilterBindingConfig config = FilterBindingResolver.getBinding(httpRequest);
-                if (config!=null) {
-                    if (isRootFilter()) {
-                        log.debug("Forward call to backend filter");
-                        httpRequest.setAttribute(FILTER_FORWARD_PARAM, config);
-                        // To forward to the backend filter, we need to change context
-                        // but on some App Server (ex: Tomcat 6) default config prohibit this
-                        ServletContext targetContext =ctx.getContext(getRootFilterTarget());
-                        if (targetContext!=null) {
-                            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(request, response);
-                        } else {
-                            String newTarget = getRootFilterTarget() + httpRequest.getRequestURI() + "?" + httpRequest.getQueryString();
-                            if ("VtiHandler".equals(config.getTargetService()) || "SHtmlHandler".equals(config.getTargetService())) {
-                                handleWSSCall(httpRequest, httpResponse, config);
-                            } else {
-                                // try to redirect, but this won't work for all cases
-                                // since MS http libs don't seem to handle redirect transparently
-                                httpResponse.sendRedirect(newTarget);
-                            }
-                        }
-                    } else {
-                        handleWSSCall(httpRequest, httpResponse, config);
-                    }
-                    return;
-                }
-            } catch (Exception e) {
-                throw new ServletException("error processing request", e);
-            }
-        }
-        chain.doFilter(request, response);
-    }
+    protected void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterBindingConfig config)  throws Exception {
+       // To forward to the backend filter, we need to change context
+       // but on some App Server (ex: Tomcat 6) default config prohibit this
+       ServletContext targetContext =ctx.getContext(getRootFilterTarget());
+       if (targetContext!=null) {
+           targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(httpRequest, httpResponse);
+       } else {
+           String newTarget = getRootFilterTarget() + httpRequest.getRequestURI() + "?" + httpRequest.getQueryString();
+           if ("VtiHandler".equals(config.getTargetService()) || "SHtmlHandler".equals(config.getTargetService())) {
+               handleWSSCall(httpRequest, httpResponse, config);
+           } else {
+               // try to redirect, but this won't work for all cases
+               // since MS http libs don't seem to handle redirect transparently
+               httpResponse.sendRedirect(newTarget);
+           }
+       }
+   }
 
     protected void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterBindingConfig config) throws Exception {
 
@@ -144,6 +88,8 @@ public class WSSFilter implements Filter {
         WSSResponse response = null;
 
         WSSBackend backend = Backend.get(request);
+
+        backend.begin();
 
         log.debug("Handling WSS call : " + httpRequest.getRequestURL().toString());
 
@@ -175,35 +121,16 @@ public class WSSFilter implements Filter {
 
             backend.saveChanges();
         }
-        catch (Exception e) {
+        catch (Throwable t) {
             if (backend!=null) {
                 backend.discardChanges();
             }
-            log.error("Error during WSS call processing", e);
-            throw new WSSException("Error while processing WSS request", e);
+            log.error("Error during WSS call processing", t);
+            throw new WSSException("Error while processing WSS request", t);
         }
     }
 
-    protected void handleOptionCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
-
-        WSSResponse response = new WSSResponse(httpResponse);
-
-        httpResponse.setHeader("MS-Author-Via", "MS-FP/4.0,DAV");
-        httpResponse.setHeader("MicrosoftOfficeWebServer", "5.0_Collab");
-        httpResponse.setHeader("X-MSDAVEXT","1");
-        httpResponse.setHeader("DocumentManagementServer", "Properties Schema;Source Control;Version History;");
-        httpResponse.setHeader("DAV","1,2");
-        httpResponse.setHeader("Accept-Ranges","none");
-        httpResponse.setHeader("Allow", "GET, POST, OPTIONS, HEAD, MKCOL, PUT, PROPFIND, PROPPATCH, DELETE, MOVE, COPY, GETLIB, LOCK, UNLOCK");
-
-        response.process();
-
-    }
-
-    protected String getRootFilterTarget()  {
-        return rootFilterTarget;
-    }
-
+    @Override
     protected boolean isRootFilter() {
         if (rootFilter==null) {
             if (filterConfig!=null ) {
@@ -221,32 +148,29 @@ public class WSSFilter implements Filter {
         return rootFilter;
     }
 
+    @Override
     public void  init(FilterConfig filterConfig) throws ServletException {
-
-        if (filterConfig!=null) { // For Testing
-            this.ctx = filterConfig.getServletContext();
-        }
-
-        synchronized (this.getClass()) {
-            simpleGetHandler = new SimpleGetHandler();
-            resourcesHandler = new ResourcesHandler();
-            this.filterConfig = filterConfig;
-
-            if (filterConfig!=null) {
-                String factoryName = filterConfig.getInitParameter(BACKEND_FACTORY_PARAM);
-                if (factoryName!=null) {
-                    WSSConfig.instance().setWssBackendFactoryClassName(factoryName);
-                    Class factoryKlass = Backend.getFactory().getClass();
-                    FreeMarkerRenderer.addLoader(factoryKlass);
-                }
-            }
-            if (isRootFilter()) {
-                WSSConfig.instance().setContextPath(rootFilterTarget);
-            }
+        super.init(filterConfig);
+        if (isRootFilter()) {
+            WSSConfig.instance().setContextPath(rootFilterTarget);
         }
     }
 
-    public void destroy() {
+    @Override
+    protected void initBackend(FilterConfig filterConfig) {
+        String factoryName = filterConfig.getInitParameter(BACKEND_FACTORY_PARAM);
+        if (factoryName!=null) {
+            WSSConfig.instance().setWssBackendFactoryClassName(factoryName);
+            Class factoryKlass = Backend.getFactory().getClass();
+            FreeMarkerRenderer.addLoader(factoryKlass);
+        }
+    }
+
+    @Override
+    protected void initHandlers(FilterConfig filterConfig) {
+      simpleGetHandler = new SimpleGetHandler();
+      resourcesHandler = new ResourcesHandler();
+
     }
 
 }

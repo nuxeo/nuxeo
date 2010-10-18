@@ -17,19 +17,32 @@
 
 package org.nuxeo.ecm.platform.wss.backend;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.wss.WSSException;
+import org.nuxeo.wss.WSSSecurityException;
 import org.nuxeo.wss.spi.AbstractWSSBackend;
 
-public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implements NuxeoWSSBackend {
+public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend
+        implements NuxeoWSSBackend {
+
+    protected static final Log log = LogFactory.getLog(AbstractNuxeoCoreBackend.class);
 
     protected CoreSession session;
 
+    public void begin() throws WSSException {
+        TransactionHelper.startTransaction();
+    }
+
     protected CoreSession getCoreSession() throws Exception {
+
         if (session == null) {
             RepositoryManager rm;
             rm = Framework.getService(RepositoryManager.class);
@@ -50,15 +63,20 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
     }
 
     public void discardChanges(boolean release) throws WSSException {
-        if (session != null) {
-            try {
-                session.cancel();
-                if (release) {
-                    close();
+        TransactionHelper.setTransactionRollbackOnly();
+        try {
+            if (session != null) {
+                try {
+                    session.cancel();
+                    if (release) {
+                        close();
+                    }
+                } catch (Exception e) {
+                    throw new WSSException("Error during discard", e);
                 }
-            } catch (Exception e) {
-                throw new WSSException("Error during discard", e);
             }
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
@@ -67,14 +85,34 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend implem
     }
 
     public void saveChanges(boolean release) throws WSSException {
-        if (session != null) {
-            try {
-                session.save();
-                if (release) {
-                    close();
+        try {
+            if (session != null) {
+                try {
+                    session.save();
+                    if (release) {
+                        close();
+                    }
+                } catch (ClientException e) {
+                    throw new WSSException("Error during save", e);
                 }
-            } catch (ClientException e) {
-                throw new WSSException("Error during save", e);
+            }
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+    }
+
+    protected void checkAccess(DocumentRef targetRef, String perm) throws WSSSecurityException {
+        boolean granted = false;
+        try {
+            granted = getCoreSession().hasPermission(targetRef, perm);
+            }
+        catch (Exception e) {
+            log.error("Errir while checking permissions on " + targetRef.toString(), e);
+            granted=false;
+        } finally {
+            if (!granted) {
+                throw new WSSSecurityException("Perm " + perm + " not granted on document ("+ targetRef.toString() + ")");
             }
         }
     }

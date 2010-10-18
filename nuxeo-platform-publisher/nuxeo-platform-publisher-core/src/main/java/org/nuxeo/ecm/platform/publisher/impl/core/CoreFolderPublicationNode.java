@@ -104,7 +104,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     protected CoreSession getCoreSession() {
-        return CoreInstance.getInstance().getSession(folder.getSessionId());
+        return folder.getCoreSession();
     }
 
     public List<PublishedDocument> getChildrenDocuments()

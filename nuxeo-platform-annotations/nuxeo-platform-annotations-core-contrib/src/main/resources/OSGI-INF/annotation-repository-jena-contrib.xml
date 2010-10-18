@@ -7,8 +7,6 @@
     <graph name="versionned-annotation" type="jena">
       <option name="backend">sql</option>
       <option name="databaseType"> ${org.nuxeo.ecm.sql.jena.databaseType}</option>
-      <option name="databaseTransactionEnabled"> ${org.nuxeo.ecm.sql.jena.databaseTransactionEnabled}
-      </option>
       <option name="datasource">java:/nxrelations-default-jena
       </option>
       <namespaces>

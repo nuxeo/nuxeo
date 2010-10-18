@@ -11,7 +11,7 @@
   </extension>
 
   <extension target="faces-config#CONVERTER">
-  
+
     <converter>
       <converter-id>org.nuxeo.ecm.platform.mail.web.converter.mailconverter</converter-id>
       <converter-class>org.nuxeo.ecm.platform.mail.web.converter.MailAddressConverter
@@ -38,10 +38,10 @@
 
   <install>
     <!--  unzip the war template -->
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
     </unzip>
   </install>
-    
+
 </fragment>
 
