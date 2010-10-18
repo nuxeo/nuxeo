@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -116,7 +117,7 @@ public class UserSuggestionActionsBean implements Serializable {
     protected void addSearchOverflowMessage() {
         if (userSuggestionMessageId != null) {
             facesMessages.addToControl(userSuggestionMessageId,
-                    FacesMessage.SEVERITY_ERROR,
+                    StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.security.searchOverFlow"));
         } else {

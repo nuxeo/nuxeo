@@ -101,6 +101,10 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-remoting</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
@@ -209,6 +213,10 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

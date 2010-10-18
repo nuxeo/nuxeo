@@ -1,15 +1,15 @@
-/*
- * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Contributors:
- *     Jean-Marc Orliaguet, Chalmers
- *
- * $Id$
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.nuxeo.theme.jsf.facelets;
@@ -40,7 +40,7 @@ import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.types.TypeFamily;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.FaceletException;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
@@ -49,6 +49,11 @@ import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.DefineHandler;
 import com.sun.facelets.tag.ui.ParamHandler;
 
+/**
+ * @author Jacob Hookom
+ * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll Exp
+ *          $
+ */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
 
@@ -58,9 +63,9 @@ public final class CompositionHandler extends TagHandler implements
 
     protected final Map<String, DefineHandler> handlers;
 
-    protected final ParamHandler[] params;
-
     protected final TagAttribute strategyAttribute;
+
+    protected final ParamHandler[] params;
 
     static {
         Manager.initializeProtocols();
@@ -69,45 +74,54 @@ public final class CompositionHandler extends TagHandler implements
     /**
      * @param config
      */
-    @SuppressWarnings("unchecked")
     public CompositionHandler(TagConfig config) {
-
         super(config);
 
         handlers = new HashMap<String, DefineHandler>();
-        Iterator itr = findNextByType(DefineHandler.class);
+        Iterator<DefineHandler> itr = this.findNextByType(DefineHandler.class);
+        DefineHandler d = null;
         while (itr.hasNext()) {
-            DefineHandler d = (DefineHandler) itr.next();
-            handlers.put(d.getName(), d);
-            log.debug(tag + " found Define[" + d.getName() + ']');
+            d = itr.next();
+            this.handlers.put(d.getName(), d);
+            log.debug(tag + " found Define[" + d.getName() + "]");
         }
         final List paramC = new ArrayList();
-        itr = findNextByType(ParamHandler.class);
+        itr = this.findNextByType(ParamHandler.class);
         while (itr.hasNext()) {
             paramC.add(itr.next());
         }
-        if (!paramC.isEmpty()) {
-            params = new ParamHandler[paramC.size()];
-            for (int i = 0; i < params.length; i++) {
-                params[i] = (ParamHandler) paramC.get(i);
+        if (paramC.size() > 0) {
+            this.params = new ParamHandler[paramC.size()];
+            for (int i = 0; i < this.params.length; i++) {
+                this.params[i] = (ParamHandler) paramC.get(i);
             }
         } else {
-            params = null;
+            this.params = null;
         }
 
         strategyAttribute = getAttribute("strategy");
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
+     * javax.faces.component.UIComponent)
+     */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
-        final VariableMapper orig = ctx.getVariableMapper();
-        if (params != null) {
+            throws IOException, FacesException, FaceletException, ELException {
+
+        VariableMapper orig = ctx.getVariableMapper();
+        if (this.params != null) {
             VariableMapper vm = new VariableMapperWrapper(orig);
             ctx.setVariableMapper(vm);
-            for (ParamHandler element : params) {
-                element.apply(ctx, parent);
+            for (int i = 0; i < this.params.length; i++) {
+                this.params[i].apply(ctx, parent);
             }
         }
+
         ctx.extendClient(this);
 
         try {
@@ -136,13 +150,12 @@ public final class CompositionHandler extends TagHandler implements
             if (strategyAttribute != null) {
                 strategy = strategyAttribute.getValue(ctx);
             }
-
-            String contextPath =  BaseURL.getContextPath()
-                + "/site";
+            String contextPath = BaseURL.getContextPath() + "/site";
             if (strategy == null) {
                 log.error("Could not obtain the negotiation strategy for "
                         + root);
-                external.redirect(contextPath + "/nxthemes/error/negotiationStrategyNotSet.faces");
+                external.redirect(contextPath
+                        + "/nxthemes/error/negotiationStrategyNotSet.faces");
 
             } else {
                 try {
@@ -153,7 +166,8 @@ public final class CompositionHandler extends TagHandler implements
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);
-                    external.redirect(contextPath + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
+                    external.redirect(contextPath
+                            + "/nxthemes/error/negotiationDefaultValuesNotSet.faces");
                 }
             }
 
@@ -161,20 +175,27 @@ public final class CompositionHandler extends TagHandler implements
             ctx.popClient(this);
             ctx.setVariableMapper(orig);
         }
+
     }
 
+    @Override
     public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, ELException {
+            throws IOException, FacesException, FaceletException, ELException {
         if (name != null) {
-            final FaceletHandler handler = handlers.get(name);
-            if (handler != null) {
-                handler.apply(ctx, parent);
-                return true;
+            if (this.handlers == null) {
+                return false;
             }
-            return false;
+            DefineHandler handler = this.handlers.get(name);
+            if (handler != null) {
+                handler.applyDefinition(ctx, parent);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            this.nextHandler.apply(ctx, parent);
+            return true;
         }
-        nextHandler.apply(ctx, parent);
-        return true;
     }
 
 }

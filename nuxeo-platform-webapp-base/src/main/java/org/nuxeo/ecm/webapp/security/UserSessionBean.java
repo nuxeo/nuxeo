@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.security.Principal;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +58,8 @@ public class UserSessionBean implements Serializable, UserSession {
                         "Can not fetch user principal from FacesContext: "
                         + "there is no FacesContext attached to the current request");
             } else {
+        	// if seam identify filter is available, we can not get the UserPrincipal directly from the request
+                //currentUser = ((HttpServletRequest)((HttpServletRequestWrapper)(fContext.getExternalContext().getRequest())).getRequest()).getUserPrincipal();
                 currentUser = fContext.getExternalContext().getUserPrincipal();
             }
         }
