@@ -5,6 +5,8 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
+        <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
+        <binaryStore path="${repository.binary.store}" />
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">webp:content</field>
@@ -31,8 +33,8 @@
           -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- Shouldn't be jdbc:h2:${nuxeo.data.dir}${file.separator}h2${file.separator}${nuxeo.db.name} ? -->
-        <property name="URL">jdbc:h2:data${file.separator}h2${file.separator}vcsh2repo</property>
+        <!-- Shouldn't be jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name} ? -->
+        <property name="URL">jdbc:h2:data/h2/vcsh2repo</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
       </repository>

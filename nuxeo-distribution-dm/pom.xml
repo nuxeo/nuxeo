@@ -240,6 +240,10 @@
       <artifactId>nuxeo-core-storage-sql-ra</artifactId>
       <type>rar</type>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
+    </dependency>
 
     <!-- CMIS -->
     <dependency>
@@ -254,6 +258,7 @@
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>

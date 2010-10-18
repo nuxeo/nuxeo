@@ -58,3 +58,9 @@ opensocial.proxy.proxyHost=
 opensocial.proxy.proxyPort=
 opensocial.proxy.user=
 opensocial.proxy.password=
+
+# Clustering
+repository.clustering.enabled=false
+repository.clustering.delay=1000
+# If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
+repository.binary.store=

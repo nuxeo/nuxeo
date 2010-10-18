@@ -73,14 +73,14 @@
       </modules>
     </profile>
     <profile>
-      <!-- Build all JBoss distributions -->
+      <!-- Build JBoss distributions -->
       <id>jboss</id>
       <modules>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
     <profile>
-      <!-- Build all Jetty distributions -->
+      <!-- Build Jetty distributions -->
       <id>jetty</id>
       <modules>
         <module>nuxeo-distribution-base</module>
@@ -99,9 +99,6 @@
     <profile>
       <id>tomcat</id>
       <modules>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-server</module>
-        <module>nuxeo-distribution-jetty</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -117,9 +114,9 @@
         <module>nuxeo-platform-ear</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
+        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-server</module>
         <module>nuxeo-distribution-jetty</module>
-        <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-distribution-jetty-base</module>
       </modules>
     </profile>

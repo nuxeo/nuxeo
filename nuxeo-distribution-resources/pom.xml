@@ -26,7 +26,7 @@
       <!-- profile for building all classifiers -->
     </profile>
   </profiles>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>

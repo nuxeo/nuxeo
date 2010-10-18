@@ -146,7 +146,7 @@
         version="3.2.1.ga-NXP-3881"/> <artifact group="org.hibernate"
         name="hibernate-annotations" version="3.2.1.ga" />
       -->
-      <artifact group="org.hibernate" name="hibernate" />
+      <artifact group="org.hibernate" name="hibernate-core" />
       <artifact group="org.hibernate" name="hibernate-annotations" />
       <artifact group="org.slf4j" name="slf4j-api" />
       <artifact group="org.slf4j" name="slf4j-log4j12" />
