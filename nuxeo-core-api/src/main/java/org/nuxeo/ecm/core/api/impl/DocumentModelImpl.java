@@ -163,6 +163,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected static Boolean strictSessionManagement = null;
 
+    // ThreadLocal CoreSession used when DocumenModelImpl uses the CoreSession from within the DocumentManagerBean
+    // to avoid reentrant calls to the Stateful Bean
+    public static ThreadLocal<CoreSession> reentrantCoreSession = new ThreadLocal<CoreSession>();
+
     protected DocumentModelImpl() {
     }
 
@@ -380,6 +384,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public CoreSession getCoreSession() {
+        if (reentrantCoreSession.get()!=null) {
+            return reentrantCoreSession.get();
+        }
         if (sid == null) {
             return null;
         }
@@ -417,6 +424,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /** @deprecated use {@link #getCoreSession} instead. */
     @Deprecated
     public final CoreSession getClient() throws ClientException {
+        if (reentrantCoreSession.get()!=null) {
+            return reentrantCoreSession.get();
+        }
         if (sid == null) {
             throw new UnsupportedOperationException(
                     "Cannot load data models for client defined models");
