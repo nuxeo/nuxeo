@@ -16,3 +16,4 @@ nuxeo-*/OSGI-INF
 *.gpd.*
 *cpJar*
 *.bak
+NXP-*.diff
