@@ -193,15 +193,38 @@
   </target>
 
   <target name="reorganize-libs">
+    <!-- Add JBoss specific requirements -->
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    
+    <!-- Remove duplicates -->
+    <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
+    
     <!-- remove libraries already provided by JBoss or unneeded -->
-    <delete failonerror="false">
+    <delete>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
         <include name="nuxeo-runtime-jetty-*" />
         <include name="nuxeo-runtime-jtajca*" />
       </fileset>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-        <exclude name="jboss-seam*" />
-        <include name="jboss*" />
+        <include name="jboss-cache*" />
+        <include name="jboss-common*" />
+        <include name="jboss-remoting*" />
+        <!-- keep seam debug ?
+        <include name="jboss-seam-debug*" />
+        -->
         <include name="hibernate*" />
         <include name="javaassist*" />
         <include name="commons-collections*" />
@@ -215,8 +238,7 @@
         <include name="jca-api-*" />
         <include name="el-*" />
         <include name="catalina-*" />
-        <!-- TODO should we removed the following? -->
-        <!--
+        <!-- should remove the following?
         <include name="javacc-*" />
         <include name="jaxb-api-*" />
         <include name="jaxen-*" />
@@ -225,25 +247,5 @@
         -->
       </fileset>
     </delete>
-
-    <!-- Add missing libraries (should already be in nuxeo.ear ?) -->
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles2" overwrite="true">
-      <artifact:set>
-        <includes>
-          <artifact groupId="org.nuxeo*" />
-        </includes>
-      </artifact:set>
-    </copy>
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib2" overwrite="true">
-      <artifact:set>
-        <includes>
-          <artifact groupId="!org.nuxeo*" />
-        </includes>
-      </artifact:set>
-    </copy>
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-      <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
-      <artifact:file groupId="commons-el" artifactId="commons-el" />
-    </copy>
   </target>
 </project>
