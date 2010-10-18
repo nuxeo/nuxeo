@@ -18,14 +18,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Registrable;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -126,37 +125,33 @@ public final class ResourceManager implements Registrable {
         }
     }
 
-    public static byte[] getBinaryBankResource(String typeName,
-            String collectionName, String resourceName) {
+    public static byte[] getBinaryBankResource(String resourceBankName,
+            String collectionName, String typeName, String resourceName)
+            throws ThemeException {
         byte[] data = null;
-        for (ResourceBank resourceBank : ThemeManager.getResourceBanks()) {
-            data = resourceBank.getResourceContent(typeName, collectionName,
-                    resourceName);
-            if (data != null) {
-                break;
-            }
+        ResourceBank resourceBank = ThemeManager.getResourceBank(resourceBankName);
+        data = resourceBank.getResourceContent(collectionName, typeName,
+                resourceName);
+        if (data == null) {
+            throw new ThemeException(
+                    "Resource bank content could not be read: " + resourceName);
         }
         return data;
     }
 
-    public static String getBankResource(String typeName,
-            String collectionName, String resourceName) {
-        byte[] data = getBinaryBankResource(typeName, collectionName,
-                resourceName);
+    public static String getBankResource(String resourceBankName,
+            String collectionName, String typeName, String resourceName)
+            throws ThemeException {
+        byte[] data = getBinaryBankResource(resourceBankName, collectionName,
+                typeName, resourceName);
         if (data == null) {
-            return null;
+            throw new ThemeException("Could not get bank resource: "
+                    + resourceName);
         }
         return new String(data);
     }
 
-    public static List<String> getBankImagePaths() {
-        Set<String> paths = new HashSet<String>();
-        for (ResourceBank resourceBank : ThemeManager.getResourceBanks()) {
-            paths.addAll(resourceBank.getImages());
-        }
-        return new ArrayList<String>(paths);
-    }
-
+    @Override
     public void clear() {
         // TODO Auto-generated method stub
     }

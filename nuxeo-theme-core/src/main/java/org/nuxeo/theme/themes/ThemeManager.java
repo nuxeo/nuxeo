@@ -576,6 +576,7 @@ public final class ThemeManager implements Registrable {
         Style style = (Style) ElementFormatter.getFormatByType(element,
                 styleType);
 
+        ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         if (style == null) {
             throw new ThemeException("Element has no assigned style: "
                     + element.computeXPath());
@@ -592,7 +593,13 @@ public final class ThemeManager implements Registrable {
                 inheritedStyle.setName(inheritedName);
                 registerFormat(inheritedStyle);
                 setNamedObject(themeName, "style", inheritedStyle);
-                loadRemoteStyle(inheritedStyle);
+                ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+                if (themeDescriptor != null) {
+                    String resourceBankName = themeDescriptor.getResourceBankName();
+                    if (resourceBankName != null) {
+                        loadRemoteStyle(resourceBankName, inheritedStyle);
+                    }
+                }
             }
 
             if (preserveInheritance) {
@@ -616,7 +623,7 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void loadRemoteStyle(Style style) {
+    public static void loadRemoteStyle(String resourceBankName, Style style) {
         if (!style.isNamed()) {
             return;
         }
@@ -626,8 +633,12 @@ public final class ThemeManager implements Registrable {
         if (resourceNameMatcher.find()) {
             String collectionName = resourceNameMatcher.group(2);
             String resourceId = resourceNameMatcher.group(1) + ".css";
-            cssSource = ResourceManager.getBankResource("style",
-                    collectionName, resourceId);
+            try {
+                cssSource = ResourceManager.getBankResource(resourceBankName,
+                        collectionName, "style", resourceId);
+            } catch (ThemeException e) {
+                e.printStackTrace();
+            }
         }
         if (cssSource == null) {
             log.error("Unknown style: " + styleName);
@@ -920,10 +931,11 @@ public final class ThemeManager implements Registrable {
         try {
             final boolean load = true;
             ThemeParser.registerTheme(themeDescriptor, load);
+            themeDescriptor.setLoadingFailed(false);
+            themeDescriptor.setLastLoaded(new Date());
         } catch (ThemeIOException e) {
             themeDescriptor.setLoadingFailed(true);
             log.error("Could not register theme: " + src + " " + e.getMessage());
-            return;
         }
     }
 
@@ -1343,15 +1355,16 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public byte[] getImageResource(String path) {
+    public byte[] getImageResource(String path) throws ThemeException {
         String key = String.format("image/%s", path);
         byte[] data = cachedBinaries.get(key);
         if (data == null) {
             String[] parts = path.split("/");
-            String collectionName = parts[0];
-            String resourceName = parts[1];
-            data = ResourceManager.getBinaryBankResource("image",
-                    collectionName, resourceName);
+            String resourceBankName = parts[0];
+            String collectionName = parts[1];
+            String resourceName = parts[2];
+            data = ResourceManager.getBinaryBankResource(resourceBankName,
+                    collectionName, "image", resourceName);
             cachedBinaries.put(key, data);
         }
         return data;
@@ -1392,16 +1405,19 @@ public final class ThemeManager implements Registrable {
     }
 
     // Resource banks
-    public static ResourceBank getResourceBank(String name) {
+    public static ResourceBank getResourceBank(String name)
+            throws ThemeException {
+        if (name == null) {
+            throw new ThemeException("Resource bank name not set");
+        }
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ResourceBank resourceBank = (ResourceBank) typeRegistry.lookup(
                 TypeFamily.RESOURCE_BANK, name);
         if (resourceBank != null) {
             return resourceBank;
         } else {
-            log.warn("Resource bank not found: " + name);
+            throw new ThemeException("Resource bank not found: " + name);
         }
-        return null;
     }
 
     public static List<ResourceBank> getResourceBanks() {

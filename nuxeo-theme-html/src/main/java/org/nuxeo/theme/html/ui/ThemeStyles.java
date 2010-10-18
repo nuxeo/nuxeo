@@ -18,14 +18,20 @@ import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
-import org.nuxeo.theme.resources.ResourceManager;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
+
+    private static final Log log = LogFactory.getLog(ThemeStyles.class);
 
     private static final boolean RESOLVE_PRESETS = true;
 
@@ -43,6 +49,12 @@ public class ThemeStyles {
 
         String cssPath = VirtualHostHelper.getContextPathProperty()
                 + "/nxthemes-css";
+
+        // Load theme if needed
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+            ThemeManager.loadTheme(themeDescriptor);
+        }
 
         if (inline) {
             final StringBuilder sb = new StringBuilder();
@@ -66,9 +78,19 @@ public class ThemeStyles {
             }
 
             // Replace images from resource banks
-            for (String imagePath : ResourceManager.getBankImagePaths()) {
-                rendered = rendered.replace(imagePath,
-                        String.format("'/nuxeo/nxthemes-images/%s'", imagePath));
+            String resourceBankName = themeDescriptor.getResourceBankName();
+            if (resourceBankName != null) {
+                ResourceBank resourceBank;
+                try {
+                    resourceBank = ThemeManager.getResourceBank(resourceBankName);
+                    for (String imagePath : resourceBank.getImages()) {
+                        rendered = rendered.replace(imagePath, String.format(
+                                "'/nuxeo/nxthemes-images/%s'", imagePath));
+                    }
+                } catch (ThemeException e) {
+                    log.warn("Could not get the list of bank images in: "
+                            + resourceBankName);
+                }
             }
             return rendered;
         }

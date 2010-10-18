@@ -82,9 +82,9 @@ public final class Connection extends URLConnection {
             // Theme not loaded yet?
             if (rendered == null) {
                 String themeName = ThemeManager.getThemeNameByUrl(url);
-                ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(themeName);
-                if (!themeDef.isLoaded()) {
-                    ThemeManager.loadTheme(themeDef);
+                ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+                if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+                    ThemeManager.loadTheme(themeDescriptor);
                     rendered = themeManager.getThemeByUrl(url);
                 }
             }

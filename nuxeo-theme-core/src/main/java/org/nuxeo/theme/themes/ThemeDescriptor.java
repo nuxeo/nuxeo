@@ -46,6 +46,8 @@ public class ThemeDescriptor implements Type {
 
     private List<String> templateEngines;
 
+    private String resourceBankName;
+
     @XNode("src")
     public String src = "";
 
@@ -57,10 +59,12 @@ public class ThemeDescriptor implements Type {
         return ctx;
     }
 
+    @Override
     public TypeFamily getTypeFamily() {
         return TypeFamily.THEME;
     }
 
+    @Override
     public String getTypeName() {
         return src;
     }
@@ -184,6 +188,14 @@ public class ThemeDescriptor implements Type {
             return true;
         }
         return false;
+    }
+
+    public String getResourceBankName() {
+        return resourceBankName;
+    }
+
+    public void setResourceBankName(String resourceBankName) {
+        this.resourceBankName = resourceBankName;
     }
 
 }

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.Utils;
+import org.nuxeo.theme.themes.ThemeException;
 
 public final class Images extends HttpServlet implements Serializable {
 
@@ -40,24 +41,28 @@ public final class Images extends HttpServlet implements Serializable {
     protected void doPost(final HttpServletRequest request,
             final HttpServletResponse response) throws IOException {
 
-        final String path = request.getPathInfo().substring(1);
-
-        String ext = FileUtils.getFileExtension(path);
-        String mimeType = Utils.getImageMimeType(ext);
-        response.addHeader("content-type", mimeType);
-
-        // Cache headers
-        final String lifetime = "604800"; // 1 week
-        final long now = System.currentTimeMillis();
-        response.addHeader("Cache-Control", "max-age=" + lifetime);
-        response.addHeader("Cache-Control", "must-revalidate");
-        response.setDateHeader("Last-Modified", now);
-        response.setDateHeader("Expires", now + new Long(lifetime) * 1000L);
-
-        byte[] data = Manager.getThemeManager().getImageResource(path);
-
         OutputStream os = response.getOutputStream();
-        os.write(data);
-        os.close();
+        final String path = request.getPathInfo().substring(1);
+        byte[] data;
+        try {
+            data = Manager.getThemeManager().getImageResource(path);
+
+            String ext = FileUtils.getFileExtension(path);
+            String mimeType = Utils.getImageMimeType(ext);
+            response.addHeader("content-type", mimeType);
+
+            // Cache headers
+            final String lifetime = "604800"; // 1 week
+            final long now = System.currentTimeMillis();
+            response.addHeader("Cache-Control", "max-age=" + lifetime);
+            response.addHeader("Cache-Control", "must-revalidate");
+            response.setDateHeader("Last-Modified", now);
+            response.setDateHeader("Expires", now + new Long(lifetime) * 1000L);
+            os.write(data);
+        } catch (ThemeException e) {
+            response.sendError(404);
+        } finally {
+            os.close();
+        }
     }
 }

@@ -24,16 +24,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.resources.ResourceManager;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 
 public final class Styles extends HttpServlet implements Serializable {
+
+    private static final Log log = LogFactory.getLog(Styles.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -59,6 +65,12 @@ public final class Styles extends HttpServlet implements Serializable {
         response.addHeader("content-type", "text/css");
 
         final String themeName = request.getParameter("theme");
+
+        // Load theme if needed
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+            ThemeManager.loadTheme(themeDescriptor);
+        }
 
         // cache control
         final String applicationPath = request.getParameter("path");
@@ -104,9 +116,19 @@ public final class Styles extends HttpServlet implements Serializable {
             }
 
             // Replace images from resource banks
-            for (String path : ResourceManager.getBankImagePaths()) {
-                rendered = rendered.replace(path,
-                        String.format("'/nuxeo/nxthemes-images/%s'", path));
+            String resourceBankName = themeDescriptor.getResourceBankName();
+            if (resourceBankName != null) {
+                ResourceBank resourceBank;
+                try {
+                    resourceBank = ThemeManager.getResourceBank(resourceBankName);
+                    for (String path : resourceBank.getImages()) {
+                        rendered = rendered.replace(path, String.format(
+                                "'/nuxeo/nxthemes-images/%s'", path));
+                    }
+                } catch (ThemeException e) {
+                    log.warn("Could not get the list of bank images in: "
+                            + resourceBankName);
+                }
             }
             themeManager.setCachedStyles(themeName, basePath, rendered);
         }

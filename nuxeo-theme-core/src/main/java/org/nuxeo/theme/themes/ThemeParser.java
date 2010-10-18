@@ -197,6 +197,14 @@ public class ThemeParser {
             theme.setDescription(description.getNodeValue());
         }
 
+        String resourceBankName = null;
+        Node resourceBankNode = docElem.getAttributes().getNamedItem(
+                "resource-bank");
+        if (resourceBankNode != null) {
+            resourceBankName = resourceBankNode.getNodeValue();
+            themeDescriptor.setResourceBankName(resourceBankName);
+        }
+
         Node templateEngines = docElem.getAttributes().getNamedItem(
                 "template-engines");
         if (templateEngines != null) {
@@ -224,10 +232,10 @@ public class ThemeParser {
 
         // Look for presets in remote resources
         for (Style style : themeManager.getNamedStyles(themeName)) {
-            PresetManager.loadPresetsUsedInStyle(style);
+            PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
         }
         for (Style style : themeManager.getStyles(themeName)) {
-            PresetManager.loadPresetsUsedInStyle(style);
+            PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
         }
 
         themeManager.registerTheme(theme);
@@ -352,6 +360,13 @@ public class ThemeParser {
             ThemeException {
         Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
+
+        String resourceBankName = null;
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor != null) {
+            resourceBankName = themeDescriptor.getResourceBankName();
+        }
+
         ThemeManager themeManager = Manager.getThemeManager();
 
         Map<Style, Map<String, Properties>> newStyles = new LinkedHashMap<Style, Map<String, Properties>>();
@@ -410,7 +425,8 @@ public class ThemeParser {
                         themeManager.registerFormat(inheritedStyle);
                         themeManager.setNamedObject(themeName, "style",
                                 inheritedStyle);
-                        ThemeManager.loadRemoteStyle(inheritedStyle);
+                        ThemeManager.loadRemoteStyle(resourceBankName,
+                                inheritedStyle);
                     }
                     if (inheritedStyle != null) {
                         themeManager.makeFormatInherit(style, inheritedStyle);
@@ -431,7 +447,7 @@ public class ThemeParser {
 
                 // Try to retrieve the style from the resource bank
                 if (style.isNamed()) {
-                    ThemeManager.loadRemoteStyle(style);
+                    ThemeManager.loadRemoteStyle(resourceBankName, style);
                     if (style.isRemote() && !selectorNodes.isEmpty()) {
                         style.setCustomized(true);
                     }

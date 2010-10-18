@@ -98,6 +98,12 @@ public class ThemeSerializer {
             root.setAttribute("template-engines", sb.toString());
         }
 
+        // Resource bank
+        String resourceBankName = themeDef.getResourceBankName();
+        if (resourceBankName != null) {
+            root.setAttribute("resource-bank", resourceBankName);
+        }
+
         doc.appendChild(root);
 
         // layout

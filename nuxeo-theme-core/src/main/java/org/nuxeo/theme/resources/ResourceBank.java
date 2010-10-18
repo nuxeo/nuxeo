@@ -64,10 +64,11 @@ public class ResourceBank implements Type {
         return TypeFamily.RESOURCE_BANK;
     }
 
-    public byte[] getResourceContent(String typeName, String collectionName,
+    public byte[] getResourceContent(String collectionName, String typeName,
             String resourceId) {
-        String src = String.format("%s/%s/%s/%s", connectionUrl, typeName,
+        String src = String.format("%s/%s/%s/%s", connectionUrl,
                 URIUtils.quoteURIPathComponent(collectionName, true),
+                URIUtils.quoteURIPathComponent(typeName, true),
                 URIUtils.quoteURIPathComponent(resourceId, true));
         log.debug("Loading THEME " + typeName + " from: " + src);
         try {
