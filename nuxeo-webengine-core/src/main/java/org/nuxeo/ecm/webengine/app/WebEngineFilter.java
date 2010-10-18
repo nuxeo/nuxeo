@@ -41,26 +41,33 @@ import org.nuxeo.runtime.api.Framework;
 public class WebEngineFilter implements Filter {
 
     protected WebEngine engine;
-    
-    
+
+
 //    protected boolean enableJsp = false;
 //    private static boolean isTaglibLoaded = false;
 
-    
+
     public void init(FilterConfig filterConfig) throws ServletException {
-        engine = Framework.getLocalService(WebEngine.class);
+          initIfNeeded();
 //        String v = Framework.getProperty("org.nuxeo.ecm.webengine.enableJsp");
 //        if ("true".equals(v)) {
 //            enableJsp = true;
 //        }
    }
 
+    protected void initIfNeeded() {
+        if (engine==null && Framework.getRuntime()!=null) {
+            engine = Framework.getLocalService(WebEngine.class);
+        }
+    }
+
     public void destroy() {
         engine = null;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {        
+            FilterChain chain) throws IOException, ServletException {
+        initIfNeeded();
         if (request instanceof HttpServletRequest) {
             HttpServletRequest req = (HttpServletRequest)request;
             HttpServletResponse resp = (HttpServletResponse)response;
@@ -84,15 +91,15 @@ public class WebEngineFilter implements Filter {
             chain.doFilter(request, response);
         }
     }
-    
-    
+
+
     public void preRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // need to set the encoding of characters manually
         if (null == request.getCharacterEncoding()) {
             request.setCharacterEncoding("UTF-8");
         }
         //response.setCharacterEncoding("UTF-8");
-//TODO: remove this        
+//TODO: remove this
 //        if (enableJsp) {
 //            WebEngine engine = Framework.getLocalService(WebEngine.class);
 //            if (!isTaglibLoaded) {
@@ -119,9 +126,9 @@ public class WebEngineFilter implements Filter {
             response.addHeader("Cache-Control", "must-revalidate");
             response.addHeader("Expires", "0");
             response.setDateHeader("Expires", 0); // prevents caching
-        }        
+        }
     }
-    
+
     public void cleanup(AbstractWebContext ctx, HttpServletRequest request, HttpServletResponse response) {
         if (ctx != null) {
             UserSession us = UserSession.tryGetCurrentSession(request);
@@ -131,6 +138,6 @@ public class WebEngineFilter implements Filter {
         }
         WebEngine.setActiveContext(null);
     }
-    
-    
+
+
 }
