@@ -287,6 +287,9 @@
     <delete failonerror="false">
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-runtime-jetty-*" />
+        <include name="nuxeo-platform-login-jboss*" />
+        <include name="nuxeo-platform-auth-web-jboss*" />
+        <include name="nuxeo*facade*" />
         <!-- temporary removal of wss -->
         <include name="*wss*" />
       </fileset>
@@ -313,13 +316,26 @@
               commons-logging:commons-logging:1.1.1:jar:
                 org.hibernate:hibernate:3.2.6.ga:jar:
         -->
-
         <!-- temporary removal of wss -->
         <include name="*wss*" />
       </fileset>
     </delete>
 
     <!-- Add missing libraries (should already be in nuxeo.ear ?) -->
+    <copy todir="${distribution.dir}/nxserver/bundles2" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <copy todir="${distribution.dir}/nxserver/lib2" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
     <copy todir="${distribution.dir}/nxserver/lib">
       <artifact:resolveFile key="jstl:jstl:1.1.2:jar" />
       <artifact:resolveFile key="org.jboss.naming:jnp-client:5.0.3.GA" />

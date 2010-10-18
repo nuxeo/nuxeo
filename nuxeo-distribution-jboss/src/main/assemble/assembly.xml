@@ -227,6 +227,20 @@
     </delete>
 
     <!-- Add missing libraries (should already be in nuxeo.ear ?) -->
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles2" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib2" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+        </includes>
+      </artifact:set>
+    </copy>
     <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
       <artifact:file groupId="org.jboss.el" artifactId="jboss-el" />
       <artifact:file groupId="commons-el" artifactId="commons-el" />
