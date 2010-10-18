@@ -36,7 +36,9 @@ import javax.el.VariableMapper;
  * it when evaluated as a standard value expression.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated method resolution is now supported by jboss-el
  */
+@Deprecated
 public class MethodValueExpression extends ValueExpression implements
         Externalizable {
 

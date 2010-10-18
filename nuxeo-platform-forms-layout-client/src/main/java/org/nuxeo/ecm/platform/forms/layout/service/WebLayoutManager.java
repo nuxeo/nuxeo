@@ -67,7 +67,6 @@ public interface WebLayoutManager extends LayoutManager {
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
      * @return a layout computed in this context.
-     * @since 5.4
      */
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName);
@@ -96,6 +95,7 @@ public interface WebLayoutManager extends LayoutManager {
      *            considered selected by default in case parameter selectedRows
      *            resolves to null.
      * @return a layout computed in this context.
+     * @since 5.4
      */
     Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
