@@ -318,9 +318,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                             "feedback.document.route.no.creation.rights"));
             return "";
         }
-        DocumentModel relatedRouteModel = documentManager.getDocument(new IdRef(
-                getRelatedRouteModelDocument()));
-        // set currentDocumentId to participatingDocuments on the route
+        DocumentModel relatedRouteModel = navigationContext.getCurrentDocument();
         DocumentRoute routeModel = relatedRouteModel.getAdapter(DocumentRoute.class);
         try {
             getDocumentRoutingService().lockDocumentRoute(routeModel,
@@ -335,7 +333,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentRef docRef = new IdRef(docId);
         DocumentModel stepToDelete = documentManager.getDocument(docRef);
         try {
-            getDocumentRoutingService().removeRouteElement(stepToDelete,
+            getDocumentRoutingService().removeRouteElement(
+                    stepToDelete.getAdapter(DocumentRouteElement.class),
                     documentManager);
         } catch (DocumentRouteNotLockedException e) {
             facesMessages.add(
@@ -451,8 +450,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String saveRouteElement() throws ClientException {
-        DocumentModel relatedRouteModel = documentManager.getDocument(new IdRef(
-                getRelatedRouteModelDocument()));
+        DocumentModel relatedRouteModel = navigationContext.getCurrentDocument();
         DocumentRoute routeModel = relatedRouteModel.getAdapter(DocumentRoute.class);
         try {
             getDocumentRoutingService().lockDocumentRoute(routeModel,
@@ -484,7 +482,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             try {
                 getDocumentRoutingService().addRouteElementToRoute(
                         new PathRef(parentDocumentPath), sourceDocumentName,
-                        newDocument, documentManager);
+                        newDocument.getAdapter(DocumentRouteElement.class), documentManager);
             } catch (DocumentRouteNotLockedException e) {
                 facesMessages.add(
                         FacesMessage.SEVERITY_WARN,

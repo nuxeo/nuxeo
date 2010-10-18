@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -114,7 +113,8 @@ public interface DocumentRoutingService {
      * @return The validated route.
      * */
     DocumentRoute validateRouteModel(DocumentRoute routeModel,
-            CoreSession session) throws DocumentRouteNotLockedException, ClientException;
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException;
 
     /**
      * Computes the list of elements {@link LocalizableDocumentRouteElement} for
@@ -171,7 +171,8 @@ public interface DocumentRoutingService {
      * @throws ClientException
      */
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
-            DocumentModel routeElement, CoreSession session) throws DocumentRouteNotLockedException, ClientException;
+            DocumentRouteElement routeElement, CoreSession session)
+            throws DocumentRouteNotLockedException, ClientException;
 
     /**
      * Add a route element in another route element.
@@ -183,8 +184,9 @@ public interface DocumentRoutingService {
      * @throws ClientException
      */
     public void addRouteElementToRoute(DocumentRef parentDocumentRef,
-            String sourceName, DocumentModel routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException;
+            String sourceName, DocumentRouteElement routeElement,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException;
 
     /**
      * Remove the given route element
@@ -193,12 +195,12 @@ public interface DocumentRoutingService {
      * @param session
      * @throws ClientException
      */
-    public void removeRouteElement(DocumentModel routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException;
+    public void removeRouteElement(DocumentRouteElement routeElement,
+            CoreSession session) throws DocumentRouteNotLockedException,
+            ClientException;
 
     /**
-     * Get the children of the given stepFolder ordered by
-     * the ecm:pos metadata.
+     * Get the children of the given stepFolder ordered by the ecm:pos metadata.
      *
      * @param stepFolderId
      * @param session
@@ -209,7 +211,8 @@ public interface DocumentRoutingService {
             CoreSession session) throws ClientException;
 
     /**
-     * Locks this {@link DocumentRoute}. If the document is already locked and
+     * Locks this {@link DocumentRoute} if not already locked by the current
+     * user. If the document is already locked by another user and
      * {@link DocumentRouteAlredayLockedException} is thrown
      *
      * @param routeDocument {@link DocumentRoute}.
@@ -221,8 +224,8 @@ public interface DocumentRoutingService {
             throws DocumentRouteAlredayLockedException, ClientException;
 
     /**
-     * Unlocks this {@link DocumentRoute}.If the document is not locked
-     * throws a {@link DocumentRouteNotLockedException}
+     * Unlocks this {@link DocumentRoute}.If the document is not locked throws a
+     * {@link DocumentRouteNotLockedException}
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
@@ -242,13 +245,14 @@ public interface DocumentRoutingService {
             throws DocumentRouteNotLockedException, ClientException;
 
     /**
-     * Verify is this {@link DocumentRoute} is already locked by another user.
+     * Verify is this {@link DocumentRoute} is already locked by the current
+     * user.
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session
      * @throws ClientException
      */
-    boolean isLocked(DocumentRoute routeModel, CoreSession session)
+    boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session)
             throws ClientException;
 
 }

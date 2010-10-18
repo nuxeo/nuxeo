@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
@@ -57,7 +58,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(1, stepFolders.size());
         DocumentModel parallel1 = stepFolders.get(0);
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), "step32", step,
+        service.addRouteElementToRoute(parallel1.getRef(), "step32", step.getAdapter(DocumentRouteElement.class),
                 session);
         service.unlockDocumentRoute(route, session);
         DocumentModelList parallel1Childs = service.getOrderedRouteElement(
@@ -72,7 +73,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step33");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), null, step, session);
+        service.addRouteElementToRoute(parallel1.getRef(), null, step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
@@ -86,7 +87,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step30");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 0, step, session);
+        service.addRouteElementToRoute(parallel1.getRef(), 0, step.getAdapter(DocumentRouteElement.class), session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
         service.unlockDocumentRoute(route, session);
@@ -100,7 +101,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step34");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 5, step, session);
+        service.addRouteElementToRoute(parallel1.getRef(), 5, step.getAdapter(DocumentRouteElement.class), session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
         service.unlockDocumentRoute(route, session);
@@ -114,7 +115,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
                 "step33bis");
         service.lockDocumentRoute(route, session);
-        service.addRouteElementToRoute(parallel1.getRef(), 5, step, session);
+        service.addRouteElementToRoute(parallel1.getRef(), 5, step.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         parallel1Childs = service.getOrderedRouteElement(parallel1.getId(),
                 session);
@@ -137,7 +138,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 + "/" + ROUTE1 + "/parallel1/step32"));
         assertNotNull(step32);
         service.lockDocumentRoute(route, session);
-        service.removeRouteElement(step32, session);
+        service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         childs = service.getOrderedRouteElement(stepFolder.getId(), session);
         assertEquals(1, childs.size());
@@ -181,7 +182,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         closeSession();
         openSession();
         // service.lockDocumentRoute(route, session);
-        service.removeRouteElement(step32, session);
+        service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
         e = null;
         session = openSessionAs("jdoe");
