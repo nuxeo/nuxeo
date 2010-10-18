@@ -11,8 +11,23 @@
 
   <artifactId>nuxeo-distribution-jboss</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo JBoss Distribution</name>
-  <description>Package Nuxeo EP or DM EAR with JBoss</description>
+  <name>Nuxeo JBoss5 Distribution</name>
+  <description>Package Nuxeo EP or DM EAR with JBoss5</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.el</groupId>
+      <artifactId>jboss-el</artifactId>
+    </dependency>
+  </dependencies>
 
   <profiles>
     <profile>
@@ -64,36 +79,6 @@
           <outputDirectory>${jboss.lib}</outputDirectory>
           <artifactItems>
             <artifactItem>
-              <groupId>org.nuxeo.common</groupId>
-              <artifactId>nuxeo-common</artifactId>
-              <version>${nuxeo.common.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-deploy</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-launcher</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.ecm.core</groupId>
-              <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
-              <version>${nuxeo.core.version}</version>
-              <overWrite>true</overWrite>
-            </artifactItem>
-            <artifactItem>
               <groupId>com.h2database</groupId>
               <artifactId>h2</artifactId>
             </artifactItem>
@@ -111,7 +96,7 @@
             </artifactItem>
             <artifactItem>
               <groupId>org.nuxeo.ecm.platform</groupId>
-              <artifactId>nuxeo-generic-wss-handler</artifactId>
+              <artifactId>nuxeo-generic-wss-front</artifactId>
             </artifactItem>
             <artifactItem>
               <groupId>org.freemarker</groupId>

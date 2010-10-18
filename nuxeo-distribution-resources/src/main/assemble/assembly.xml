@@ -6,8 +6,6 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-
-
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
@@ -15,30 +13,27 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
-    <antcall target="build-resources">
-      <param name="distribution" value="jetty-base" />
-    </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <antcall target="build-resources">
       <param name="distribution" value="doc" />
     </antcall>
-    <delete dir="${outdir}/bin" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="bin" />
+    </antcall>
     <unzip dest="${outdir}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${nuxeo.windows.version}:zip" />
     </unzip>
     <antcall target="build-resources">
-      <param name="distribution" value="bin" />
+      <param name="distribution" value="jetty-base" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-common" />
+    </antcall>
+    <antcall target="build-resources">
+      <param name="distribution" value="templates-common-dm" />
+    </antcall>
     <antcall target="build-resources">
       <param name="distribution" value="templates-jboss" />
     </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
-    <antcall target="build-resources">
-      <param name="distribution" value="templates-jboss-dm" />
-    </antcall>
-    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <antcall target="build-resources">
       <param name="distribution" value="templates-tomcat" />
     </antcall>
@@ -51,6 +46,7 @@
           depends="init"
           description="Build resources package for ${distribution}"
           unless="no.alternate.build">
+    <delete dir="${outdir}/${distribution}" failonerror="false" />
     <copy todir="${outdir}/${distribution}" overwrite="true">
       <fileset dir="src/main/resources/${distribution}" />
     </copy>

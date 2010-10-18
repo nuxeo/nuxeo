@@ -220,32 +220,21 @@ fi
 # JBOSS
 #
 if [ "$jboss" = "true" ]; then
-
-  # TODO: remove since Nuxeo is no more compliant with Java 1.5
-  # Fix JRE 1.5/1.6 issue with script-api.jar
   IS_JRE_6=`"$JAVA" -version 2>&1|grep "version \"1\.6"`
   NUXEO_EAR="$NUXEO_HOME/server/default/deploy/nuxeo.ear"
-  JAVA5_APIS="script-api"
-  for java5_api in $JAVA5_APIS;
-  do
   if [ ! -z "$IS_JRE_6" ]; then
     #echo "Java 1.6 detected"
-    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
-    if [ -f "$JAVA5_API" ]; then
-      echo "Moving $JAVA5_API out of classpath (already provided by Java6)"
-      mkdir "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
-      mv "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/
-    fi
+    JAVA5_APIS="script-api"
+    for java5_api in $JAVA5_APIS; do
+      JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
+      if [ -f "$JAVA5_API" ]; then
+        echo "Removing $JAVA5_API (already provided by Java6)"
+        rm -rf "$JAVA5_API" "$NUXEO_EAR"/lib-jre1.5/ 2>/dev/null
+      fi
+    done
   else
-    #echo "Assumed Java 1.5"
-    JAVA5_API=`ls "$NUXEO_EAR"/lib/$java5_api*.jar 2>/dev/null || echo "null"`
-    if [ ! -f "$JAVA5_API" ]; then
-      echo "Moving $JAVA5_API into classpath"
-      mv "$NUXEO_EAR"/lib-jre1.5/$java5_api*.jar "$NUXEO_EAR"/lib/ 2>/dev/null || \
-      echo "Missing $java5_api in $NUXEO_EAR/lib/ or $NUXEO_EAR/lib-jre1.5/" >&2
-    fi
+    die "Nuxeo 5.4 requires Java 6."
   fi
-  done
 
   # Paths and specific options
   TMP_OVERRIDE="false"
@@ -258,7 +247,7 @@ if [ "$jboss" = "true" ]; then
   JBOSS_DATA_DIR=${JBOSS_DATA_DIR:-"$NUXEO_HOME"/server/default/data}
   NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
   NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
-  NUXEO_BOOTJAR_PATH="$NUXEO_HOME/server/default/lib/*"
+  NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
   LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #
@@ -329,12 +318,31 @@ fi
 # Check old paths (NXP-5370, NXP-5460)
 ## look for h2 and derby directories (JBoss)
 check_old_paths() {
+  # Check JBoss paths
   if [ "$jboss" = "true" ] && \
     ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e "$NUXEO_HOME"/server/default/data/derby ] ); then
     echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
-    die "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME\"/server/default/data/ to \"$DATA_DIR\""
+    die "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME/server/default/data/\" to \"$DATA_DIR\""
     exit 1
   fi
+  if [ "$jboss" = "true" ] && [ -e "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
+    echo ERROR: Deprecated paths used \(NXP-5460\).
+    die "Please move 'binaries' directory from \"$NUXEO_HOME/server/default/data/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+    exit 1
+  fi
+  if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ]; then
+    echo ERROR: Deprecated paths used \(NXP-5460\).
+    die "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+    exit 1
+  fi
+  # Check Tomcat paths
+  if [ "$jboss" = "true" ] && \
+    ( [ -e "$NUXEO_HOME"/vcsh2repo ] ); then
+    echo ERROR: Deprecated paths used \(NXP-5370, NXP-5460\).
+    die "Please rename 'vcsh2repo' directory from \"$DATA_DIR/h2/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
+    exit 1
+  fi
+
 }
 
 # Check if nuxeo.conf used has not changed since last run (if not first run)
@@ -373,7 +381,7 @@ checkalive() {
     return 1
   fi
   MYPID=`cat "$PID"`
-  JPS=`$JAVA_HOME/bin/jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
   if [ "x$JPS" = "x" ]; then
     return 1
   else
@@ -558,6 +566,15 @@ console() {
   fi
 }
 
+pack() {
+    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+      -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Dlog4j.configuration="$LOG4J_CONF" \
+      org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
+}
+
+
 if check_nuxeo_conf; then
   # warning
   # pause / question / timer
@@ -592,7 +609,10 @@ case "$1" in
   configure)
     generate_configuration console
     ;;
+  pack)
+    pack $NUXEO_EAR $2
+    ;;
   *)
-    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure)"
+    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure|pack)"
     ;;
 esac

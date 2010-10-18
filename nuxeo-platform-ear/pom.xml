@@ -25,8 +25,6 @@
     <nuxeo.jsf.version>5.4.0-SNAPSHOT</nuxeo.jsf.version>
     <nuxeo.dm.version>5.4.0-SNAPSHOT</nuxeo.dm.version>
     <nuxeo.addons.version>5.4.0-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-    <nuxeo.ear>${nuxeo.ear.assembly}.ear</nuxeo.ear>
   </properties>
 
   <dependencies>
@@ -400,11 +398,6 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
-      <type>jboss-sar</type>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-core</artifactId>
     </dependency>
@@ -586,28 +579,18 @@
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
     </dependency>
-  </dependencies>
 
-  <profiles>
-    <profile>
-      <!-- Visible Storage Content -->
-      <id>vcs-profile</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.core</groupId>
-          <artifactId>nuxeo-core-storage-sql</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.nuxeo.ecm.core</groupId>
-          <artifactId>nuxeo-core-storage-sql-ra</artifactId>
-          <type>rar</type>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
+    <!-- Visible Storage Content -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+      <type>rar</type>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -617,40 +600,14 @@
         <artifactId>jboss-packaging-maven-plugin</artifactId>
         <extensions>true</extensions>
       </plugin>
-      <!-- TODO NXP-5459 - use nuxeo-distribution-tools instead -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <extensions>false</extensions>
-        <executions>
-          <execution>
-            <id>assemble-ear</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-            <configuration>
-              <runPreprocessor>false</runPreprocessor>
-              <format>directory,zip</format>
-              <outputDirectory>target</outputDirectory>
-              <targetFile>${nuxeo.ear}</targetFile>
-              <descriptor>
-                ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
-              </descriptor>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-app</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach</goal>
-            </goals>
-            <configuration>
-              <file>${build.directory}/${nuxeo.ear}.zip</file>
-              <type>zip</type>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>

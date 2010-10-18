@@ -25,18 +25,26 @@
       <fileset dir="${basedir}/target/templates-jboss-dm" />
       <fileset dir="${basedir}/target/templates-jboss" />
     </copy>
-    <copy file="${jboss.home}/bin/nuxeo.conf" tofile="${jboss.home}/bin/nuxeo.conf.bak" overwrite="true" />
+    <copy file="${jboss.home}/bin/nuxeo.conf"
+          tofile="${jboss.home}/bin/nuxeo.conf.bak"
+          overwrite="true" />
     <copy todir="${jboss.home}/bin" overwrite="true">
       <fileset dir="${basedir}/target/bin" />
     </copy>
-    <copy file="${jboss.home}/bin/nuxeo.conf" tofile="${jboss.home}/bin/nuxeo.conf.sample" overwrite="true" />
-    <copy file="${jboss.home}/bin/nuxeo.conf.bak" tofile="${jboss.home}/bin/nuxeo.conf" overwrite="true" />
+    <copy file="${jboss.home}/bin/nuxeo.conf"
+          tofile="${jboss.home}/bin/nuxeo.conf.sample"
+          overwrite="true" />
+    <copy file="${jboss.home}/bin/nuxeo.conf.bak"
+          tofile="${jboss.home}/bin/nuxeo.conf"
+          overwrite="true" />
   </target>
   <target name="clean-resources" depends="setproperties">
     <delete dir="${jboss.home}/templates" failonerror="false" />
+    <!--
     <delete>
       <fileset dir="${jboss.home}/bin" includes="**/*" excludes="**/nuxeo.conf" />
     </delete>
+    -->
   </target>
 
 </project>
