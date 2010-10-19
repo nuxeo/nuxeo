@@ -6,7 +6,7 @@
                  http://jboss.com/products/seam/framework http://jboss.com/products/seam/framework-2.1.xsd" >
 
 
-    <core:init debug="true">
+    <core:init debug="false">
      <core:interceptors>
 
          <value>org.jboss.seam.core.SynchronizationInterceptor</value>
