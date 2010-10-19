@@ -1,10 +1,5 @@
 <?xml version="1.0"?>
 <fragment>
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
 
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
@@ -33,18 +28,21 @@
   </extension>
 
   <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
     <!--  be sure no directory with that name exists -->
     <delete path="${bundle.fileName}.tmp" />
     <!--  create a temporary directory -->
-    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
-      <include>nuxeo.war/**</include>
-      <include>i18n/**</include>
-    </unzip>
-    <copy from="${bundle.fileName}.tmp/nuxeo.war" to="/" />
-    <append from="${bundle.fileName}.tmp/i18n/messages_en.properties"
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+    <append from="${bundle.fileName}.tmp/l10n/messages_en.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-    <append from="${bundle.fileName}.tmp/i18n/messages_fr.properties"
+    <append from="${bundle.fileName}.tmp/l10n/messages_fr.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
   </install>
+
 </fragment>
