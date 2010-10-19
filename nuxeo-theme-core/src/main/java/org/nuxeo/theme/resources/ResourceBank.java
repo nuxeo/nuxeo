@@ -97,6 +97,23 @@ public class ResourceBank implements Type {
         return paths;
     }
 
+    public List<String> getCollections() {
+        List<String> paths = new ArrayList<String>();
+        String src = String.format("%s/json/collections", connectionUrl);
+        String list = "";
+        try {
+            list = new String(Utils.fetchUrl(new URL(src)));
+        } catch (Exception e) {
+            log.error("Could not retrieve collection list: " + src
+                    + " from THEME BANK: " + name);
+            return paths;
+        }
+        for (Object path : JSONArray.fromObject(list)) {
+            paths.add((String) path);
+        }
+        return paths;
+    }
+
     @SuppressWarnings("unchecked")
     public List<Map<String, String>> getSkins() {
         List<Map<String, String>> skins = new ArrayList<Map<String, String>>();
