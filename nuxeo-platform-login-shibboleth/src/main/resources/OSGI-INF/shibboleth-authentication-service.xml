@@ -22,6 +22,23 @@
       Hold configuration for the Shibboleth Authentication Service. Contains:
       * the mapping between request headers and user fields
       * the login / logout URLs for Shibboleth
+
+      A sample configuration could be:
+      <code>
+        <extension
+          target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+          point="config">
+          <config>
+            <uidHeader>uid</uidHeader>
+
+            <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+            <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+
+            <fieldMapping header="uid">username</fieldMapping>
+            <fieldMapping header="mail">email</fieldMapping>
+          </config>
+        </extension>
+      </code>
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig" />

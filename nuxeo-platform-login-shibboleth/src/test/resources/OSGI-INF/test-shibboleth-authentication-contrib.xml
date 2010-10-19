@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.shibboleth.authentication.testContrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+      point="config">
+      <config>
+        <uidHeader>uid</uidHeader>
+
+        <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+        <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+
+        <fieldMapping header="uid">username</fieldMapping>
+        <fieldMapping header="mail">email</fieldMapping>
+      </config>
+  </extension>
+
+</component>
