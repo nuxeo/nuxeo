@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -14,6 +15,9 @@
   <name>Nuxeo JBoss 5 Deployer</name>
 
   <description>Nuxeo deployer for JBoss 5 servers</description>
+  <properties>
+    <jboss.version>5.1.0.GA</jboss.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -75,11 +79,31 @@
       <groupId>org.jboss.jbossas</groupId>
       <artifactId>jboss-as-j2se</artifactId>
       <scope>provided</scope>
+      <version>${jboss.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.jbossas</groupId>
       <artifactId>jboss-as-system-jmx</artifactId>
       <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-jmx</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-mbeans</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-system</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.security</groupId>
@@ -87,53 +111,95 @@
       <scope>provided</scope>
     </dependency>
     <!-- for tests -->
-	<dependency>
+    <dependency>
       <groupId>junit</groupId>
-	  <artifactId>junit</artifactId>
-	  <scope>test</scope>
-	</dependency>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- for debug -->
     <dependency>
       <groupId>org.jboss.jbossas</groupId>
       <artifactId>jboss-as-server</artifactId>
       <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-deployment</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-security</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.jbossas</groupId>
       <artifactId>jboss-as-ejb3</artifactId>
       <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-connector</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-profileservice</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-aspects</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-main</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-iiop</artifactId>
+      <scope>provided</scope>
+      <version>${jboss.version}</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3</version>
-          <configuration>
-            <archive>
-              <manifestFile>
-                src/main/resources/META-INF/MANIFEST.MF
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <archive>
+            <manifestFile>
+              src/main/resources/META-INF/MANIFEST.MF
               </manifestFile>
-              <manifestEntries>
-                <Bundle-Version>
-                  ${version}
+            <manifestEntries>
+              <Bundle-Version>
+                ${version}
                 </Bundle-Version>
-                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-              </manifestEntries>
-            </archive>
-          </configuration>
-        </plugin>
+              <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-  <!-- JBoss5 Repositories -->
   <repositories>
     <repository>
-      <id>repository.jboss.org</id>
-      <name>JBoss Releases Repository</name>
-      <url>http://repository.jboss.org/maven2</url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -142,16 +208,42 @@
       </snapshots>
     </repository>
     <repository>
-      <id>snapshots.jboss.org</id>
-      <name>JBoss Snapshots Repository</name>
-      <url>http://snapshots.jboss.org/maven2</url>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>

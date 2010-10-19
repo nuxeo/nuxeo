@@ -120,7 +120,8 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-runtime</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-runtime</developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-runtime
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-runtime</url>
   </scm>
 
@@ -138,7 +139,7 @@
       </roles>
     </developer>
   </developers>
-
+  
   <repositories>
     <repository>
       <id>public</id>
