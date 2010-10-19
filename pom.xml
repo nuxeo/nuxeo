@@ -10,6 +10,7 @@
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
+  <version>5.4.0-I20101011_0115-CP03</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -137,7 +138,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -159,7 +160,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-test</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <version>${nuxeo.core.version}-CP03</version>
         <scope>test</scope>
       </dependency>
       <dependency>
