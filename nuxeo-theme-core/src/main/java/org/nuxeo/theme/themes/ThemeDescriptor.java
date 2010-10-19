@@ -198,4 +198,8 @@ public class ThemeDescriptor implements Type {
         this.resourceBankName = resourceBankName;
     }
 
+    public boolean isCustomizable() {
+        return (isXmlConfigured() && !isCustomized());
+    }
+
 }

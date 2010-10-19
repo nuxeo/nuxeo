@@ -16,11 +16,9 @@ package org.nuxeo.theme;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
@@ -34,6 +32,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.formats.styles.Style;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.InputSource;
@@ -162,18 +161,7 @@ public final class Utils {
         if (url.getProtocol().equals("file")) {
             String filepath = url.getFile();
             File file = new File(filepath);
-            PrintWriter out = null;
-            try {
-                out = new PrintWriter(new FileWriter(file));
-                out.write(text);
-            } catch (IOException e) {
-                throw e;
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-            }
-
+            FileUtils.writeFile(file, text);
         } else {
             OutputStream os = null;
             URLConnection urlc;

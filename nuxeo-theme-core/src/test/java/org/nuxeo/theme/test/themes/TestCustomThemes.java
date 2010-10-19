@@ -19,7 +19,9 @@ import java.io.FilenameFilter;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.CustomThemeNameFilter;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.themes.ThemeDescriptor;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -36,7 +38,6 @@ public class TestCustomThemes extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-
         themeManager = Manager.getThemeManager();
         typeRegistry = Manager.getTypeRegistry();
     }
@@ -114,4 +115,22 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         assertFalse(theme3.isCustomized());
     }
 
+    public void testCreateCustomTheme() throws ThemeException {
+        final String THEME_NAME = "custom";
+        assertTrue(ThemeManager.getCustomThemeFiles().isEmpty());
+        assertEquals(THEME_NAME + "/default",
+                ThemeManager.createCustomTheme(THEME_NAME));
+        ThemeElement theme = themeManager.getThemeByName(THEME_NAME);
+        assertNotNull(theme);
+        assertEquals(THEME_NAME, theme.getName());
+        assertEquals(1, theme.getChildren().size());
+        ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(THEME_NAME);
+        assertNotNull(themeDef);
+        assertEquals(THEME_NAME, themeDef.getName());
+        assertTrue(themeDef.isCustom());
+        assertFalse(themeDef.isCustomizable());
+        assertFalse(themeDef.isCustomized());
+        assertFalse(themeDef.isXmlConfigured());
+        assertEquals(1, ThemeManager.getCustomThemeFiles().size());
+    }
 }

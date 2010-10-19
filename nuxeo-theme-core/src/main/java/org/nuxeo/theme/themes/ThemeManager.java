@@ -120,7 +120,7 @@ public final class ThemeManager implements Registrable {
 
     private final List<String> resourceOrdering = new ArrayList<String>();
 
-    private static final File CUSTOM_THEME_DIR;
+    private static File CUSTOM_THEME_DIR;
 
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
@@ -129,9 +129,16 @@ public final class ThemeManager implements Registrable {
     private static final Pattern styleResourceNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
-    static {
+    public static void createCustomThemeDir() {
         CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
         CUSTOM_THEME_DIR.mkdirs();
+    }
+
+    public static File getCustomThemeDir() {
+        if (CUSTOM_THEME_DIR == null || !CUSTOM_THEME_DIR.exists()) {
+            createCustomThemeDir();
+        }
+        return CUSTOM_THEME_DIR;
     }
 
     @Override
@@ -158,7 +165,7 @@ public final class ThemeManager implements Registrable {
     public static String getCustomThemePath(String themeName)
             throws ThemeIOException {
         String themeFileName = String.format("theme-%s.xml", themeName);
-        File file = new File(CUSTOM_THEME_DIR, themeFileName);
+        File file = new File(getCustomThemeDir(), themeFileName);
         try {
             return file.getCanonicalPath();
         } catch (IOException e) {
@@ -169,14 +176,68 @@ public final class ThemeManager implements Registrable {
 
     public static List<File> getCustomThemeFiles() {
         List<File> files = new ArrayList<File>();
-        for (File f : CUSTOM_THEME_DIR.listFiles(CUSTOM_THEME_FILENAME_FILTER)) {
+        for (File f : getCustomThemeDir().listFiles(
+                CUSTOM_THEME_FILENAME_FILTER)) {
             files.add(f);
         }
         return files;
     }
 
-    public static void customizeTheme(ThemeDescriptor themeDescriptor) {
+    public static String customizeTheme(ThemeDescriptor themeDescriptor)
+            throws ThemeException {
+        String themeName = themeDescriptor.getName();
+        if (!themeDescriptor.isCustomizable()) {
+            throw new ThemeException("Theme : " + themeName
+                    + " cannot be customized.");
+        }
+        return createCustomTheme(themeName);
+    }
 
+    public static String createCustomTheme(String name) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName(name);
+        Format themeWidget = themeManager.createWidget();
+        themeWidget.setName("theme view");
+        ElementFormatter.setFormat(theme, themeWidget);
+        // default page
+        PageElement page = (PageElement) ElementFactory.create("page");
+        page.setName("default");
+        Format pageWidget = themeManager.createWidget();
+        pageWidget.setName("page frame");
+        Format pageLayout = themeManager.createLayout();
+        Format pageStyle = themeManager.createStyle();
+        ElementFormatter.setFormat(page, pageWidget);
+        ElementFormatter.setFormat(page, pageStyle);
+        ElementFormatter.setFormat(page, pageLayout);
+        try {
+            theme.addChild(page);
+        } catch (NodeException e) {
+            throw new ThemeException(e.getMessage(), e);
+        }
+        // create a theme descriptor
+        ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+        themeDescriptor.setName(name);
+        String path;
+        try {
+            path = ThemeManager.getCustomThemePath(name);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not get file path for theme: "
+                    + name);
+        }
+        final String src = String.format("file://%s", path);
+        themeDescriptor.setSrc(src);
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        typeRegistry.register(themeDescriptor);
+        // register the theme
+        themeManager.registerTheme(theme);
+        // save the theme
+        try {
+            ThemeManager.saveTheme(themeDescriptor.getSrc());
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not save theme: " + name, e);
+        }
+        return String.format("%s/%s", name, "default");
     }
 
     public static void updateThemeDescriptors() {
@@ -1009,7 +1070,7 @@ public final class ThemeManager implements Registrable {
         }
 
         final String themeFileName = String.format("theme-%s.bak", themeName);
-        final File backupFile = new File(CUSTOM_THEME_DIR, themeFileName);
+        final File backupFile = new File(getCustomThemeDir(), themeFileName);
         if (backupFile.exists()) {
             if (!backupFile.delete()) {
                 throw new ThemeIOException("Error while deleting backup file: "
