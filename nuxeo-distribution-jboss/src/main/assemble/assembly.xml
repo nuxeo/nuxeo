@@ -141,7 +141,7 @@
            includes="*.sh,*ctl,*.command" />
     <!-- Nuxeo EP EAR -->
     <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jboss/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}-CP01:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}-CP03:zip" />
     </unzip>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
