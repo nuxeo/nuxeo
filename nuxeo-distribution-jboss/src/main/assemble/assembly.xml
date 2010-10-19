@@ -88,7 +88,7 @@
     </unzip>
 
     <copy todir="${jboss}/server/default/deployers">
-      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:5.1.0.GA" />
+      <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-jboss-deployer:${nuxeo.runtime.version}" />
     </copy>
     <copy todir="${jboss}/server/default/lib">
       <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
