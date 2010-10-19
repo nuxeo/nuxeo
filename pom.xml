@@ -98,8 +98,6 @@
 
   <properties>
     <webdriver.version>0.9.7376</webdriver.version>
-    <jboss.version>4.0.4.GA</jboss.version>
-    <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
@@ -109,6 +107,15 @@
     <apache.chemistry.version>0.5-NX</apache.chemistry.version>
     <apache.abdera.version>0.4.0-incubating</apache.abdera.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
+    <!-- JBoss properties -->
+    <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
+    <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
+    <version.org.jboss.cache.pojo>3.0.0.GA</version.org.jboss.cache.pojo>
+    <version.org.jboss.microcontainer>2.0.6.GA</version.org.jboss.microcontainer>
+    <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
+    <!-- should use same property name as JBoss to ease upgrades -->
+    <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
+    <javax.ejb.version>3.0-RC8</javax.ejb.version>
   </properties>
 
   <dependencyManagement>
@@ -142,11 +149,10 @@
         <version>1.0</version>
         <scope>provided</scope>
       </dependency>
-      <!-- TODO: remove. It's the same as the two preceding ones -->
       <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb</artifactId>
-        <version>${jboss.ejb.version}</version>
+        <version>${javax.ejb.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -472,6 +478,92 @@
 
       <!-- jboss (+ hibernate, richfaces...) -->
       <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-vfs-spi</artifactId>
+        <version>${version.org.jboss.deployers}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-vfs</artifactId>
+        <version>${version.org.jboss.vfs}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>jboss-common-core</artifactId>
+            <groupId>jboss</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.javaee</groupId>
+        <artifactId>jboss-ejb-api</artifactId>
+        <version>${version.org.jboss.cache.pojo}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.microcontainer</groupId>
+        <artifactId>jboss-dependency</artifactId>
+        <version>${version.org.jboss.microcontainer}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-spi</artifactId>
+        <version>${version.org.jboss.deployers}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-structure-spi</artifactId>
+        <version>${version.org.jboss.deployers}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-vfs</artifactId>
+        <version>${version.org.jboss.deployers}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.microcontainer</groupId>
+        <artifactId>jboss-kernel</artifactId>
+        <version>${version.org.jboss.microcontainer}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-core-spi</artifactId>
+        <version>${version.org.jboss.deployers}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-j2se</artifactId>
+        <version>${version.org.jboss.integration}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-system-jmx</artifactId>
+        <version>${version.org.jboss.integration}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-server</artifactId>
+        <version>${version.org.jboss.integration}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-ejb3</artifactId>
+        <version>${version.org.jboss.integration}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- JBoss dependencies to check, upgrade or remove -->
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>ejb3</artifactId>
         <version>${jboss.ejb.version}</version>
@@ -490,7 +582,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
-        <version>${jboss.version}</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -526,13 +618,13 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-common</artifactId>
-        <version>${jboss.version}</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-j2ee</artifactId>
-        <version>${jboss.version}</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -544,7 +636,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-jmx</artifactId>
-        <version>${jboss.version}</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -598,10 +690,9 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-system</artifactId>
-        <version>${jboss.version}</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
-
       <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-security-spi</artifactId>
@@ -617,7 +708,7 @@
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
         <artifactId>jboss-as-security</artifactId>
-        <version>5.1.0.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -647,7 +738,7 @@
       <dependency>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-as</artifactId>
-        <version>4.2.3.GA</version>
+        <version>${version.org.jboss.integration}</version>
         <type>zip</type>
         <classifier>light</classifier>
       </dependency>
@@ -659,7 +750,13 @@
       <dependency>
         <groupId>org.jboss.client</groupId>
         <artifactId>jbossall-client</artifactId>
+        <version>5.0.0.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.services</groupId>
+        <artifactId>logging-monitor</artifactId>
         <version>4.2.3.GA</version>
+        <scope>provided</scope>
       </dependency>
 
       <!-- Jetty mortbay -->
@@ -990,12 +1087,6 @@
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>5.1.6</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.services</groupId>
-        <artifactId>logging-monitor</artifactId>
-        <version>4.2.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
