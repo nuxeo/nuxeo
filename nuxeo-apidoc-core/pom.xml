@@ -6,7 +6,8 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-apidoc-server-parent</artifactId>
-    <version>5.3.2</version>
+    <version>5.3.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -14,7 +15,6 @@
   <name>Nuxeo Documentation Server Core</name>
   <description>Documentation Server for Nuxeo API</description>
   <packaging>jar</packaging>
-
 
   <build>
     <plugins>
@@ -31,161 +31,96 @@
           </execution>
         </executions>
       </plugin>
-      <!-- end APT plugin -->
-
     </plugins>
   </build>
-  <dependencies>
 
-  <dependency>
+  <dependencies>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
-      <version>${nuxeo.core.version}</version>
     </dependency>
-  <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-io</artifactId>
-      <version>${nuxeo.core.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-event</artifactId>
-      <version>${nuxeo.core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-api</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>1.4</version>
-        <scope>test</scope>
-      </dependency>
-
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-plugins</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
-
-
-    <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-    </dependency>
-
-
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi-core</artifactId>
-      <version>4.1</version>
-    </dependency>
-
-
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <version>${nuxeo.core.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-   <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
-      <version>${nuxeo.features.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
-      <version>${nuxeo.features.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
-      <version>${nuxeo.features.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-api</artifactId>
-      <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-core</artifactId>
-      <version>${nuxeo.features.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public
-      </url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot
-      </url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>vendor-release</id>
-      <url>http://maven.nuxeo.org/vendor-release
-      </url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>
