@@ -618,7 +618,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-common</artifactId>
-        <version>${version.org.jboss.integration}</version>
+        <version>4.2.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
