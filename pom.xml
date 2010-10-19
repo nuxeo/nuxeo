@@ -2083,16 +2083,14 @@
         <!-- <version>1.0</version> -->
         <!-- </dependency> -->
         <!-- </dependencies> -->
-        <configuration>
-          <downloadSources>false</downloadSources>
-          <downloadJavadocs>false</downloadJavadocs>
-          <!-- <additionalConfig> -->
-          <!-- <file> -->
-          <!-- <name>.checkstyle</name> -->
-          <!-- <location>checkstyle/checkstyle.xml</location> -->
-          <!-- </file> -->
-          <!-- </additionalConfig> -->
-        </configuration>
+        <!-- <configuration> -->
+        <!-- <additionalConfig> -->
+        <!-- <file> -->
+        <!-- <name>.checkstyle</name> -->
+        <!-- <location>checkstyle/checkstyle.xml</location> -->
+        <!-- </file> -->
+        <!-- </additionalConfig> -->
+        <!-- </configuration> -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
