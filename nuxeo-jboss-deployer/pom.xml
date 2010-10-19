@@ -78,11 +78,8 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- for debug -->
-    <dependency>
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-server</artifactId>
-    </dependency>
+    <!-- for debug <dependency> <groupId>org.jboss.jbossas</groupId> <artifactId>jboss-as-server</artifactId> 
+      <classifier>sources</classifier> </dependency> -->
     <dependency>
       <groupId>org.jboss.jbossas</groupId>
       <artifactId>jboss-as-ejb3</artifactId>
