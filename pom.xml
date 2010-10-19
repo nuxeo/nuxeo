@@ -25,8 +25,7 @@
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>
-    <!--module>nuxeo-runtime-jboss-adapter</module>
-    <module>nuxeo-runtime-jboss-extensions</module-->
+    <!--module>nuxeo-runtime-jboss-adapter</module> <module>nuxeo-runtime-jboss-extensions</module -->
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>
     <module>nuxeo-runtime-jetty-adapter</module>
@@ -43,7 +42,7 @@
 
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
       <modules> <module>nuxeo-runtime-test</module> </modules> </profile> -->
   </profiles>
 
@@ -111,13 +110,10 @@
         <artifactId>nuxeo-runtime-datasource</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-
-      <!-- scope provided -->
       <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>osgi-core</artifactId>
-        <version>4.1</version>
-        <scope>provided</scope>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-jboss-deployer</artifactId>
+        <version>${nuxeo.runtime.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
