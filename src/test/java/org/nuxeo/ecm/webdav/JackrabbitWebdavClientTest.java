@@ -66,7 +66,6 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked"})
     public void testPropFindOnFolderDepthInfinity() throws Exception {
         DavMethod pFind = new PropFindMethod(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_INFINITY);
         client.executeMethod(pFind);

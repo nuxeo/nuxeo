@@ -57,11 +57,16 @@ public class UnknownResource extends AbstractResource {
     public Response put() throws Exception {
 
         // Special case: ignore magic MacOS files.
+        // Actually, we shouldn't do this. This breaks drag'n'drop of files downloaded from the
+        // Internet (Finder fails with error "Unable to quarantine" in the logs).
+        // TODO: find a better way.
+        /*
         if (name.startsWith("._")) {
             Util.endTransaction();
             // Not sure if it's the right error code.
             throw new WebApplicationException(409);
         }
+        */
 
         Util.startTransaction();
         ensureParentExists();

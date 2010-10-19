@@ -19,7 +19,6 @@ package org.nuxeo.ecm.webdav;
 
 import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
 import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -49,7 +48,6 @@ public class JaxbTest {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmlsamples/" + name);
         assertNotNull(is);
         Object o = u.unmarshal(is);
-        //System.out.println(o);
         assertSame(o.getClass(), class_);
     }
 
