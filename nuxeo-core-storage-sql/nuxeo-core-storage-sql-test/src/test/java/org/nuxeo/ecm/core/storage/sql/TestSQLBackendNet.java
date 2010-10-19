@@ -350,8 +350,9 @@ public class TestSQLBackendNet extends TestSQLBackend {
         @SuppressWarnings("unchecked")
         Set<String> set = (Set<String>) ctx.getProperty(EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(Collections.singleton(id), set);
-        Boolean loc = (Boolean) ctx.getProperty(EventConstants.INVAL_LOCAL);
-        assertEquals(Boolean.valueOf(local), loc);
+// NXP-5808 cannot distinguish local/cluster invalidations
+//        Boolean loc = (Boolean) ctx.getProperty(EventConstants.INVAL_LOCAL);
+//        assertEquals(Boolean.valueOf(local), loc);
     }
 
 }

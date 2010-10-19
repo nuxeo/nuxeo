@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
@@ -440,6 +441,41 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /**
+     * Collect modified document IDs into two separate set, one for the docs and the other for parents
+     *
+     * @param invalidations
+     * @param docs
+     * @param parents
+     */
+    protected void collectModified(Invalidations invalidations, Set<String> docs, Set<String> parents) {
+        if (invalidations == null || invalidations.modified == null) {
+            return;
+        }
+        for (RowId rowId : invalidations.modified) {
+            String id = (String) rowId.id;
+            String docId;
+            try {
+                docId = (String) getContainingDocument(id);
+            } catch (StorageException e) {
+                log.error("Cannot get containing document for: " + id, e);
+                docId = null;
+            }
+            if (docId == null) {
+                continue;
+            }
+            if (Invalidations.PARENT.equals(rowId.tableName)) {
+                if (docId.equals(id)) {
+                    parents.add(docId);
+                } else { // complex prop added/removed
+                    docs.add(docId);
+                }
+            } else {
+                docs.add(docId);
+            }
+        }
+    }
+
+    /**
      * Sends a Core Event about the invalidations.
      * <p>
      * Containing documents are looked up in this session.
@@ -449,8 +485,16 @@ public class SessionImpl implements Session, XAResource {
      *            node (one of this repository's sessions), {@code false} if
      *            they come from a remote cluster node
      */
-    protected void sendInvalidationEvent(Invalidations invalidations,
-            boolean local) {
+    protected void sendInvalidationEvent(Invalidations invalidations, boolean local) {
+        sendInvalidationEvent(new InvalidationsPair(invalidations, null));
+    }
+
+    /**
+     * Send a core event about the merged invalidations (NXP-5808)
+     *
+     * @param pair
+     */
+    protected void sendInvalidationEvent(InvalidationsPair pair) {
         if (!repository.repositoryDescriptor.sendInvalidationEvents) {
             return;
         }
@@ -458,41 +502,20 @@ public class SessionImpl implements Session, XAResource {
         HashSet<String> modifiedDocIds = new HashSet<String>();
         HashSet<String> modifiedParentIds = new HashSet<String>();
 
-        if (invalidations.modified != null) {
-            for (RowId rowId : invalidations.modified) {
-                String id = (String) rowId.id;
-                String docId;
-                try {
-                    docId = (String) getContainingDocument(id);
-                } catch (StorageException e) {
-                    log.error("Cannot get containing document for: " + id, e);
-                    docId = null;
-                }
-                if (docId == null) {
-                    continue;
-                }
-                if (Invalidations.PARENT.equals(rowId.tableName)) {
-                    if (docId.equals(id)) {
-                        modifiedParentIds.add(docId);
-                    } else { // complex prop added/removed
-                        modifiedDocIds.add(docId);
-                    }
-                } else {
-                    modifiedDocIds.add(docId);
-                }
-            }
-        }
+        // merge cache and events because of clustering (NXP-5808)
+        collectModified(pair.cacheInvalidations, modifiedDocIds, modifiedParentIds);
+        collectModified(pair.eventInvalidations, modifiedDocIds, modifiedParentIds);
+
         // TODO check what we can do about invalidations.deleted
 
         if (modifiedDocIds.isEmpty() && modifiedParentIds.isEmpty()) {
             return;
         }
+
         EventContext ctx = new EventContextImpl(null, null);
         ctx.setRepositoryName(repository.getName());
         ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);
-        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS,
-                modifiedParentIds);
-        ctx.setProperty(EventConstants.INVAL_LOCAL, Boolean.valueOf(local));
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS, modifiedParentIds);
         Event event = new EventImpl(EventConstants.EVENT_VCS_INVALIDATIONS, ctx);
         try {
             repository.eventService.fireEvent(event);
