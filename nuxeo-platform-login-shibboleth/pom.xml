@@ -51,10 +51,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.faces</groupId>
-      <artifactId>jsf-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
@@ -198,7 +194,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+	  <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
       <scope>test</scope>
     </dependency>

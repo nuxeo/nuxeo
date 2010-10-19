@@ -161,7 +161,7 @@ public class TestShibbolethComputedGroup {
         assertTrue(ELGroupComputerHelper.isValidEL("currentUser.user.email != \"test\""));
         assertFalse(ELGroupComputerHelper.isValidEL("fdsfds ! fdsf^6"));
         assertFalse(ELGroupComputerHelper.isValidEL("testMethodCall == hello"));
-        assertTrue(ELGroupComputerHelper.isValidEL("currentUser"));
+        assertTrue(ELGroupComputerHelper.isValidEL("empty currentUser"));
     }
 
     protected DocumentModel createUser(String username) throws Exception {

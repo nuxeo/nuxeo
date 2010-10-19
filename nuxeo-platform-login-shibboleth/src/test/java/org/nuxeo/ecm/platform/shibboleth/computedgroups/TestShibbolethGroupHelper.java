@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -48,6 +47,8 @@ import static org.junit.Assert.assertSame;
 @LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
+    protected static final String CORRECT_EL = "empty currentUser";
+
     @Inject
     protected CoreSession session;
 
@@ -58,7 +59,7 @@ public class TestShibbolethGroupHelper {
 
         group.setPropertyValue("shibbGroup:groupName", "group1");
         group.setPropertyValue("shibbGroup:expressionLanguage",
-                ShibbolethConstants.EL_CURRENT_USER_NAME);
+                CORRECT_EL);
         ShibbolethGroupHelper.createGroup(group);
 
         assertSame(1, ShibbolethGroupHelper.getGroups().size());
@@ -82,7 +83,7 @@ public class TestShibbolethGroupHelper {
             throws Exception {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
         group.setPropertyValue("shibbGroup:groupName", name);
-        group.setPropertyValue("shibbGroup:expressionLanguage", "currentUser");
+        group.setPropertyValue("shibbGroup:expressionLanguage", CORRECT_EL);
 
         if (createIt) {
             group = ShibbolethGroupHelper.createGroup(group);

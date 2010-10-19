@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
+import javax.el.ELException;
 import javax.el.PropertyNotFoundException;
 
 import org.apache.commons.logging.Log;
@@ -63,10 +64,12 @@ public class ELGroupComputerHelper {
         try {
             ee.bindValue(ec, ShibbolethConstants.EL_CURRENT_USER_NAME,
                     new DocumentModelImpl("user"));
-            ee.evaluateExpression(ec, "${" + el + "}", String.class);
+            ee.evaluateExpression(ec, "${" + el + "}", Boolean.class);
         } catch (TreeBuilderException e) {
             return false;
         } catch (PropertyNotFoundException e) {
+            return false;
+        } catch (ELException e) {
             return false;
         }
         return true;
