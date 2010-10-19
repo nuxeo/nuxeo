@@ -582,7 +582,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
-        <version>${version.org.jboss.integration}</version>
+        <version>4.2.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -624,7 +624,7 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-j2ee</artifactId>
-        <version>${version.org.jboss.integration}</version>
+        <version>4.2.3.GA</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
