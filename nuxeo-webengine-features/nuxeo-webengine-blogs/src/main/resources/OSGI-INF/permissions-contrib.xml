@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.blogs.permissions">
+
+  <require>org.nuxeo.ecm.platform.comment.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="Write">
+      <include>Comment</include>
+    </permission>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+      point="permissionsVisibility">
+    <visibility type="BlogSite">
+      <item show="true" order="200">Comment</item>
+      <item show="true" order="200">Moderate</item>
+    </visibility>
+
+  </extension>
+
+</component>
