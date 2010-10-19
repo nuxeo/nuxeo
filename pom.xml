@@ -554,6 +554,7 @@
         <artifactId>jboss-as-server</artifactId>
         <version>${version.org.jboss.integration}</version>
         <scope>provided</scope>
+        <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.jbossas</groupId>
