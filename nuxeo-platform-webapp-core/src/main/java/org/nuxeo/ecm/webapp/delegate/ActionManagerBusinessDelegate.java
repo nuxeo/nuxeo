@@ -37,7 +37,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("actionManager")
 @Scope(CONVERSATION)
@@ -45,8 +44,7 @@ public class ActionManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = -4778456059717447736L;
 
-    private static final Log log = LogFactory
-            .getLog(ActionManagerBusinessDelegate.class);
+    private static final Log log = LogFactory.getLog(ActionManagerBusinessDelegate.class);
 
     protected ActionManager actionManager;
 
@@ -65,14 +63,18 @@ public class ActionManagerBusinessDelegate implements Serializable {
 
             // Access directly the Runtime Service !!!
             // from the web layer, it is useful to have conditions that can use
-            // the SeamContext because SeamContext is not serializable, it can't
-            // be passed to the ActionManagerBean ejb interface
+            // the SeamContext because SeamContext is not serializable, it
+            // can't be passed to the ActionManagerBean ejb interface
             //
-            // This means the Action Service must be deployed on the same JVM than the WebLayer
+            // This means the Action Service must be deployed on the same JVM
+            // than the WebLayer
             // This is not a problem since that's what we want
             //
-            // Remote EJB3 interface is still available, but won't be able to resolve Seam based EL
-            actionManager = (ActionManager) Framework.getRuntime().getComponent(ActionService.ID);
+            // Remote EJB3 interface is still available, but won't be able to
+            // resolve Seam based EL
+
+            actionManager = (ActionManager) Framework.getRuntime().getComponent(
+                    ActionService.ID);
         }
 
         return actionManager;
