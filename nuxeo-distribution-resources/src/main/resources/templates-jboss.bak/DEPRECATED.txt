@@ -1,2 +1,0 @@
-DEPRECATED: those are old templates from JBoss 4
-This directory content is emptied while resources are migrated to JBoss 5.
