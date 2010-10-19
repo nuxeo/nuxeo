@@ -340,15 +340,15 @@ public class PersistenceContext {
             return;
         }
 
-        // send remote events
-        if (invals.eventInvalidations != null) {
-            session.sendInvalidationEvent(invals.eventInvalidations, false);
-        }
+        processCacheInvalidations(invals.cacheInvalidations);
 
-        if (invals.cacheInvalidations == null) {
+        session.sendInvalidationEvent(invals);
+    }
+
+    protected void processCacheInvalidations(Invalidations invalidations) throws StorageException {
+        if (invalidations == null) {
             return;
         }
-        Invalidations invalidations = invals.cacheInvalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 Fragment fragment = pristine.remove(rowId);
