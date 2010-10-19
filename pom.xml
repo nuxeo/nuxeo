@@ -11,7 +11,7 @@
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>5.4.0-I20101011_0115</version>
+  <version>5.4.0-I20101011_0115-CP01</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 
@@ -56,7 +56,7 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version>
+        <version>${nuxeo.runtime.version}-CP01</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
