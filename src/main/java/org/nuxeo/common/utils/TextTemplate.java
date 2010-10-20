@@ -27,14 +27,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO Please document me.
- *
+ * Text template processing.
+ * Copy files or directories replacing parameters matching pattern
+ * '${[a-zA-Z_0-9\-\.]+}'
+ * with values from a {@link Map} (deprecated) or a {@link Properties}.
+ * Method {@link #setParsingExtensions(String)} allow to set list of files being
+ * processed when using {@link #processDirectory(File, File)} or #pro, others
+ * are simply
+ * copied.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
@@ -45,12 +55,15 @@ public class TextTemplate {
 
     private boolean trim = false;
 
+    private List<String> extensions = null;
+
     public boolean isTrim() {
         return trim;
     }
 
     /**
      * Set to true in order to trim invisible characters (spaces) from values
+     * 
      * @param trim
      */
     public void setTrim(boolean trim) {
@@ -121,14 +134,13 @@ public class TextTemplate {
     }
 
     public void process(InputStream in, OutputStream out) throws IOException {
-        String text = FileUtils.read(in);
-        out.write(process(text).getBytes());
+        process(in, out, true);
     }
 
     /**
-     * Recursive call {@link #process(InputStream, OutputStream)} on each file
-     * from "in" directory to "out" directory
-     *
+     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
+     * each file from "in" directory to "out" directory
+     * 
      * @param in Directory to read files from
      * @param out Directory to write files to
      */
@@ -138,11 +150,16 @@ public class TextTemplate {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
             }
+
+            int extIndex = in.getName().lastIndexOf('.');
+            String extension = extIndex == -1 ? "" : in.getName().substring(
+                    extIndex + 1).toLowerCase();
             FileInputStream is = null;
             FileOutputStream os = new FileOutputStream(out);
             try {
                 is = new FileInputStream(in);
-                process(is, os);
+                process(is, os,
+                        extensions == null || extensions.contains(extension));
             } finally {
                 if (is != null) {
                     is.close();
@@ -161,6 +178,30 @@ public class TextTemplate {
             for (File file : in.listFiles()) {
                 processDirectory(file, out);
             }
+        }
+    }
+
+    /**
+     * @param processText if true, text is processed for parameters replacement
+     * @throws IOException
+     */
+    public void process(InputStream is, OutputStream os, boolean processText)
+            throws IOException {
+        String text = FileUtils.read(is);
+        if (processText) {
+            text = process(text);
+        }
+        os.write(text.getBytes());
+    }
+
+    /**
+     * @param extensionsList Comma separated list of files extensions to parse
+     */
+    public void setParsingExtensions(String extensionsList) {
+        StringTokenizer st = new StringTokenizer(extensionsList, ",");
+        extensions = new ArrayList<String>();
+        while (st.hasMoreTokens()) {
+            extensions.add(st.nextToken());
         }
     }
 
