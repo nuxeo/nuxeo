@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.collections.ScopedMap;
@@ -113,6 +114,9 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(required = true, create = false)
     protected NuxeoPrincipal currentUser;
 
+    @RequestParameter("stepId")
+    protected String stepId;
+
     protected String relatedRouteModelDocumentId;
 
     protected String hiddenSourceDocId;
@@ -150,23 +154,38 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    public String saveRouteAsNewInstance() {
-        return null;
-    }
-
-    public String getRelatedRouteModelDocument() {
-        if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
-            List<DocumentModel> relatedRoute;
-            try {
-                relatedRoute = findRelatedRouteDocument();
-            } catch (ClientException e) {
-                return "";
-            }
-            if (relatedRoute.size() > 0) {
-                relatedRouteModelDocumentId = relatedRoute.get(0).getId();
-            }
+    public DocumentRoute getRelatedRoute() {
+        // try to see if actually the current document is a route
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentRoute relatedRoute = currentDocument.getAdapter(DocumentRoute.class);
+        if (relatedRoute != null) {
+            return relatedRoute;
         }
-        return relatedRouteModelDocumentId;
+        // try to see if the current document is a routeElement
+        DocumentRouteElement relatedRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
+        if (relatedRouteElement != null) {
+            return relatedRouteElement.getDocumentRoute(documentManager);
+        }
+        // else we must be in a document attached to a route
+        String relatedRouteModelDocumentId;
+        List<DocumentModel> relatedRoutes;
+        try {
+            relatedRoutes = findRelatedRouteDocument();
+        } catch (ClientException e) {
+            return null;
+        }
+        if (relatedRoutes.size() <= 0) {
+            return null;
+        }
+        relatedRouteModelDocumentId = relatedRoutes.get(0).getId();
+        DocumentModel docRoute;
+        try {
+            docRoute = documentManager.getDocument(new IdRef(
+                    relatedRouteModelDocumentId));
+        } catch (ClientException e) {
+            return null;
+        }
+        return docRoute.getAdapter(DocumentRoute.class);
     }
 
     public String cancelRoute() throws ClientException {
@@ -176,10 +195,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         webActions.resetTabList();
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
+    public String saveRouteAsNewInstance() {
+        //place holder for futur implementation
+        return null;
+    }
 
     public String validateRouteModel() throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentRoute currentRouteModel = currentDocument.getAdapter(DocumentRoute.class);
+        DocumentRoute currentRouteModel = getRelatedRoute();
         try {
             getDocumentRoutingService().lockDocumentRoute(currentRouteModel,
                     documentManager);
@@ -201,7 +223,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                currentDocument);
+                currentRouteModel.getDocument());
         getDocumentRoutingService().unlockDocumentRoute(currentRouteModel,
                 documentManager);
         return null;
@@ -260,10 +282,6 @@ public class DocumentRoutingActionsBean implements Serializable {
         return docs;
     }
 
-    public void setRelatedRouteModelDocument(String relatedRouteModelDocumentId) {
-        this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
-    }
-
     /**
      * Check if the related route to this case is started (ready or running) or
      * no
@@ -275,26 +293,35 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String startRouteRelatedToCurrentDocument() throws ClientException {
+        DocumentRoute route = getRelatedRoute();
         // if no relatedRouteModelDocumentId
-        if (getRelatedRouteModelDocument() != null
-                && getRelatedRouteModelDocument().isEmpty()) {
+        if (route == null) {
             facesMessages.add(
                     FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get(
                             "feedback.casemanagement.document.route.no.valid.route"));
             return null;
         }
-        DocumentModel relatedRouteModel = documentManager.getDocument(new IdRef(
-                getRelatedRouteModelDocument()));
-        // set currentDocumentId to participatingDocuments on the route
-        DocumentRoute route = relatedRouteModel.getAdapter(DocumentRoute.class);
+
         List<String> documentIds = new ArrayList<String>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
         getDocumentRoutingService().createNewInstance(route,
                 route.getAttachedDocuments(), documentManager);
-        setRelatedRouteModelDocument(null);
         return null;
+    }
+
+    /**
+     * returns true if the routeStarted on the current Document is editable (is
+     * Ready )
+     * */
+    public boolean routeRelatedToCurrentDocumentIsRunning()
+            throws ClientException {
+        DocumentRoute route = getRelatedRoute();
+        if (route == null) {
+            return false;
+        }
+        return route.isRunning();
     }
 
     public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
@@ -319,23 +346,17 @@ public class DocumentRoutingActionsBean implements Serializable {
         return (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET));
     }
 
-    public boolean isUpdatableStep(DocumentModel stepDoc) {
-        if (!isStep(stepDoc)) {
-            return false;
-        }
-        DocumentRouteElement docRouteElement = stepDoc.getAdapter(DocumentRouteElement.class);
-        return (docRouteElement.isDraft() || docRouteElement.isReady());
-    }
-
-    public String removeStep(String docId) throws ClientException {
-        if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.document.route.no.creation.rights"));
-            return "";
-        }
+    public boolean currentRouteModelIsDraft() {
         DocumentModel relatedRouteModel = navigationContext.getCurrentDocument();
         DocumentRoute routeModel = relatedRouteModel.getAdapter(DocumentRoute.class);
+        if (routeModel == null) {
+            return false;
+        }
+        return routeModel.isDraft();
+    }
+
+    public String removeStep() throws ClientException {
+        DocumentRoute routeModel = getRelatedRoute();
         try {
             getDocumentRoutingService().lockDocumentRoute(routeModel,
                     documentManager);
@@ -346,7 +367,10 @@ public class DocumentRoutingActionsBean implements Serializable {
                             "feedback.casemanagement.document.route.already.locked"));
             return null;
         }
-        DocumentRef docRef = new IdRef(docId);
+        if (StringUtils.isEmpty(stepId)) {
+            return null;
+        }
+        DocumentRef docRef = new IdRef(stepId);
         DocumentModel stepToDelete = documentManager.getDocument(docRef);
         try {
             getDocumentRoutingService().removeRouteElement(
@@ -360,14 +384,45 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                navigationContext.getCurrentDocument());
+                routeModel.getDocument());
         getDocumentRoutingService().unlockDocumentRoute(routeModel,
                 documentManager);
-        return "";
+        return null;
     }
 
-    public String editDocument(DocumentModel doc) throws ClientException {
-        return navigationContext.navigateToDocument(doc, "edit");
+    /**
+     * Returns true if the givenDoc is a step that can be edited
+     * */
+    public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
+        DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
+        // if fork, is not simple editable step
+        if(stepDoc.hasFacet("Folderish")){
+            return false;
+        }
+        return stepElement.isModifiable();
+    }
+
+
+    /**
+     * Returns true if the givenDoc is an routeElement that can be edited
+     * */
+    public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
+        DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
+        return stepElement.isModifiable();
+    }
+
+    public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
+        return forkDoc.hasFacet("Folderish")
+                && !documentManager.hasChildren(forkDoc.getRef());
+    }
+
+    public String editStep() throws ClientException {
+        if (StringUtils.isEmpty(stepId)) {
+            return null;
+        }
+        DocumentRef stepRef = new IdRef(stepId);
+        return navigationContext.navigateToDocument(
+                documentManager.getDocument(stepRef), "edit");
     }
 
     public String updateRouteElement() throws ClientException {
@@ -466,8 +521,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String saveRouteElement() throws ClientException {
-        DocumentModel relatedRouteModel = navigationContext.getCurrentDocument();
-        DocumentRoute routeModel = relatedRouteModel.getAdapter(DocumentRoute.class);
+        DocumentRoute routeModel = getRelatedRoute();
         try {
             getDocumentRoutingService().lockDocumentRoute(routeModel,
                     documentManager);
@@ -498,7 +552,8 @@ public class DocumentRoutingActionsBean implements Serializable {
             try {
                 getDocumentRoutingService().addRouteElementToRoute(
                         new PathRef(parentDocumentPath), sourceDocumentName,
-                        newDocument.getAdapter(DocumentRouteElement.class), documentManager);
+                        newDocument.getAdapter(DocumentRouteElement.class),
+                        documentManager);
             } catch (DocumentRouteNotLockedException e) {
                 facesMessages.add(
                         FacesMessage.SEVERITY_WARN,
@@ -535,5 +590,13 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public void setHiddenDocOrder(String hiddenDocOrder) {
         this.hiddenDocOrder = hiddenDocOrder;
+    }
+
+    public String getRelatedRouteModelDocumentId() {
+        return relatedRouteModelDocumentId;
+    }
+
+    public void setRelatedRouteModelDocumentId(String relatedRouteModelDocumentId) {
+        this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
     }
 }

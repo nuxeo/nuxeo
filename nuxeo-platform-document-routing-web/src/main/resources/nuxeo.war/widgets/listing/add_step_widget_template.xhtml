@@ -1,24 +1,26 @@
 <f:subview id="#{widget.id}"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
 
 
-  <div>
-    <a4j:commandLink id="before_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion" 
-      onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
-      value ="#{messages['command.add.routeelement.before']}" />
-  </div>
-
-  <div>
-    <a4j:commandLink id="in_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion" rendered="#{field_1}"
-      onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
-      value ="#{messages['command.add.routeelement.in']}" />
-  </div>
-
-  <div>
-    <a4j:commandLink  id="after_#{layoutListingStatus.index}" reRender="selectRouteElementsTypeForCreationRegion"
-    onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'after';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_0}';Richfaces.showModalPanel('selectRouteElementsTypePanel');"
-    value ="#{messages['command.add.routeelement.after']}" />
-  </div>
+  <h:form id="addSteps">
+     <nxu:dataList var="action" value="#{getAddStepInForkActions}" id ="addStepInForkActionList" rowIndexVar="rowIndex" rowCountVar="rowCount">
+         <a4j:commandLink  id="step_#{rowCount%1}" onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"  value="#{messages[action.label]}"
+         reRender="selectRouteElementsTypeForCreationRegion" rendered="#{routingActions.isEmptyFork(field_0)}">
+             <f:param name="stepId" value="#{field_1}" />
+         </a4j:commandLink>
+       </nxu:dataList>
+      <nxu:dataList var="action" value="#{getAddStepActions}" id ="addStepInForActionList" rowIndexVar="rowIndex">
+         <a4j:commandLink  id="step_#{rowCount%2}" onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"  value="#{messages[action.label]}"
+         reRender="selectRouteElementsTypeForCreationRegion" rendered="#{routingActions.isEditableRouteElement(field_0)}">
+             <f:param name="stepId" value="#{field_1}" />
+         </a4j:commandLink>
+        </nxu:dataList>        
+  </h:form>
 
 </f:subview>

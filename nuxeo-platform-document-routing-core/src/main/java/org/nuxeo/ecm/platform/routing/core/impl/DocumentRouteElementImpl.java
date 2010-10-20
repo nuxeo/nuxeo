@@ -371,4 +371,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     public void setCancelled(CoreSession session) {
         followTransition(ElementLifeCycleTransistion.toCancelled, session, false);
     }
+
+    public boolean isModifiable() {
+        return (isDraft() || isReady());
+    }
 }

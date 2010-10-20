@@ -1,13 +1,31 @@
 <f:subview id="#{widget.id}"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div class="popupTarget">
-	<h:commandButton value="edit" action="#{routingActions.editDocument(field_0)}" rendered="#{routingActions.isUpdatableStep(field_0) and routeSecurityChecker.canCreateRoute()}"/>
-  </div>
+   <nxu:set var="actions"
+      value="#{getEditStepActions}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList layout="unorderedList"
+            var="action"
+            value="#{actions}"
+            id="editStepListTable">
+            <nxh:commandLink action="#{action.getLink()}"
+              id="documentActionSubviewUpperListLink" rendered="#{routingActions.isEditableStep(field_0) and !routingActions.isEmptyFork(field_0)}">
+              <h:outputText value="#{messages[action.label]}" />
+              <f:param name="stepId" value="#{field_1}" />
+            </nxh:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
 
 </f:subview>

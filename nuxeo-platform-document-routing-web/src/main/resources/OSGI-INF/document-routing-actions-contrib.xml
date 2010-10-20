@@ -42,6 +42,32 @@
       <category>ATTACHED_ROUTE_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
+    
+    <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before" link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+     <category>ADD_STEP_ACTIONS_LIST</category>
+     <filter-id>isEditableRoute</filter-id>
+    </action>
+    
+    <action id="ADD_STEP_AFTER" label="command.add.routeelement.after" link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'after';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+     <category>ADD_STEP_ACTIONS_LIST</category>
+     <filter-id>isEditableRoute</filter-id>
+    </action>
+    
+    <action id="ADD_STEP_BETWEEN" label="command.add.routeelement.in" link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+     <category>ADD_STEP_IN_FORK_ACTIONS_LIST</category>
+     <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="REMOVE_STEP" label="command.delete" link="#{routingActions.removeStep}">
+     <category>REMOVE_STEP_ACTIONS_LIST</category>
+     <filter-id>isEditableRoute</filter-id>
+    </action>
+
+    <action id="UPDATE_STEP" label="command.edit" link="#{routingActions.editStep}">
+     <category>EDIT_STEP_ACTIONS_LIST</category>
+     <filter-id>isEditableRoute</filter-id>
+    </action>
+    
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -67,7 +93,7 @@
       </rule>
     </filter>
 
-    <filter id="isUnvalidatedRouteModel">
+    <filter id="isDraftRouteModel">
       <rule grant="true">
         <condition>
           document.getCurrentLifeCycleState().equals("draft")
@@ -75,6 +101,22 @@
         <type>DocumentRoute</type>
       </rule>
     </filter>
+
+    <filter id="isEditableRoute">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("draft")
+        </condition>
+        <type>DocumentRoute</type>
+      </rule>
+       <rule grant="true">
+        <condition>
+          #{routingActions.routeRelatedToCurrentDocumentIsRunning()}
+        </condition>
+        <group>routeManagers</group>
+      </rule>
+    </filter>
+
 
     <filter id="isValidatedRouteModel">
       <rule grant="true">

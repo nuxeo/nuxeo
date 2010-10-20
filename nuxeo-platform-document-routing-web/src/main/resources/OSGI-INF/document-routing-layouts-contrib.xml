@@ -68,7 +68,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>relatedRouteModelDocument</field>
+        <field>relatedRouteModelDocumentId</field>
       </fields>
       <properties mode="any">
         <property name="template">

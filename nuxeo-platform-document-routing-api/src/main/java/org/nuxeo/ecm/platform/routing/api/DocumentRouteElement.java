@@ -241,4 +241,9 @@ public interface DocumentRouteElement extends Serializable {
      * @return
      */
     boolean isCancelled();
+
+    /**
+     * @return true
+     */
+    boolean isModifiable();
 }
