@@ -77,6 +77,8 @@ public class FolderResource extends ExistingResource {
         }
         Prop prop = propFind.getProp();
 
+        //Util.printAsXml(prop);
+
         // Get key properties from doc
         Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();

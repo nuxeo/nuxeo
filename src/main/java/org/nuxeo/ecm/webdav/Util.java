@@ -38,12 +38,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Utility functions.
  */
 public class Util {
+
+    private static final boolean USE_TRANSACTION = true;
 
     private static final Log log = LogFactory.getLog(Util.class);
 
@@ -76,6 +81,9 @@ public class Util {
     }
 
     public static void startTransaction() {
+        if (!USE_TRANSACTION) {
+            return;
+        }
         try {
             TransactionHelper.lookupTransactionManager();
             TransactionHelper.startTransaction();
@@ -85,6 +93,9 @@ public class Util {
     }
 
     public static void endTransaction() {
+        if (!USE_TRANSACTION) {
+            return;
+        }
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -113,13 +124,11 @@ public class Util {
     // For debugging.
 
     public static void printAsXml(Object o) throws JAXBException {
-/*
-        StringWriter sw = new StringWriter();
-        Marshaller marshaller = Util.getJaxbContext().createMarshaller();
+        Writer sw = new StringWriter();
+        Marshaller marshaller = getJaxbContext().createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(o, sw);
         System.out.println(sw);
-*/
     }
 
     public static String normalizePath(String path) {

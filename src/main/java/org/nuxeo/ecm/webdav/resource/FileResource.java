@@ -38,6 +38,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Calendar;
@@ -85,6 +87,19 @@ public class FileResource extends ExistingResource {
 
     @PROPFIND
     public Response propfind(@Context UriInfo uriInfo) throws Exception {
+
+        Unmarshaller u = Util.getUnmarshaller();
+
+        PropFind propFind;
+        try {
+            propFind = (PropFind) u.unmarshal(request.getInputStream());
+        } catch (JAXBException e) {
+            return Response.status(400).build();
+        }
+        Prop prop = propFind.getProp();
+        //Util.printAsXml(prop);
+
+
         Date lastModified = ((Calendar) doc.getPropertyValue("dc:modified")).getTime();
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
         Blob content = (Blob) doc.getPropertyValue("file:content");

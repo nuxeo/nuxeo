@@ -71,7 +71,7 @@ public class ExistingResource extends AbstractResource {
         session.removeDocument(ref);
         session.save();
         Util.endTransaction();
-        return Response.ok().build();
+        return Response.status(204).build();
     }
 
     @COPY
@@ -155,13 +155,14 @@ public class ExistingResource extends AbstractResource {
 
         JAXBContext jc = Util.getJaxbContext();
         Unmarshaller u = jc.createUnmarshaller();
+        PropertyUpdate propertyUpdate;
         try {
-            PropertyUpdate propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
+            propertyUpdate = (PropertyUpdate) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
             Util.endTransaction();
             return Response.status(400).build();
         }
-        //printXml(propertyUpdate);
+        //Util.printAsXml(propertyUpdate);
         Util.endTransaction();
         return Response.ok().build();
     }
@@ -179,7 +180,7 @@ public class ExistingResource extends AbstractResource {
             try {
                 Unmarshaller u = Util.getUnmarshaller();
                 lockInfo = (LockInfo) u.unmarshal(request.getInputStream());
-                Util.printAsXml(lockInfo);
+                //Util.printAsXml(lockInfo);
                 token = lockManager.lock(path);
             } catch (JAXBException e) {
                 log.error(e);
