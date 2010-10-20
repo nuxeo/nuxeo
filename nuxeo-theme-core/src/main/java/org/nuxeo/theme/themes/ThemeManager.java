@@ -183,17 +183,36 @@ public final class ThemeManager implements Registrable {
         return files;
     }
 
-    public static String customizeTheme(ThemeDescriptor themeDescriptor)
+    public static ThemeDescriptor customizeTheme(ThemeDescriptor themeDescriptor)
             throws ThemeException {
         String themeName = themeDescriptor.getName();
         if (!themeDescriptor.isCustomizable()) {
             throw new ThemeException("Theme : " + themeName
                     + " cannot be customized.");
         }
-        return createCustomTheme(themeName);
+
+        ThemeSerializer serializer = new ThemeSerializer();
+        String xmlSource;
+        try {
+            xmlSource = serializer.serializeToXml(themeDescriptor.getSrc(), 0);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not serialize theme: " + themeName,
+                    e);
+        }
+
+        ThemeDescriptor newThemeDescriptor = createCustomTheme(themeName);
+        try {
+            Manager.getThemeManager().loadTheme(newThemeDescriptor.getSrc(),
+                    xmlSource);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not load theme", e);
+        }
+
+        return newThemeDescriptor;
     }
 
-    public static String createCustomTheme(String name) throws ThemeException {
+    public static ThemeDescriptor createCustomTheme(String name)
+            throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName(name);
@@ -237,7 +256,7 @@ public final class ThemeManager implements Registrable {
         } catch (ThemeIOException e) {
             throw new ThemeException("Could not save theme: " + name, e);
         }
-        return String.format("%s/%s", name, "default");
+        return themeDescriptor;
     }
 
     public static void updateThemeDescriptors() {

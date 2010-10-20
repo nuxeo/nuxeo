@@ -118,13 +118,12 @@ public class TestCustomThemes extends NXRuntimeTestCase {
     public void testCreateCustomTheme() throws ThemeException {
         final String THEME_NAME = "custom";
         assertTrue(ThemeManager.getCustomThemeFiles().isEmpty());
-        assertEquals(THEME_NAME + "/default",
-                ThemeManager.createCustomTheme(THEME_NAME));
+        ThemeDescriptor themeDef = ThemeManager.createCustomTheme(THEME_NAME);
+        assertEquals(THEME_NAME, themeDef.getName());
         ThemeElement theme = themeManager.getThemeByName(THEME_NAME);
         assertNotNull(theme);
         assertEquals(THEME_NAME, theme.getName());
         assertEquals(1, theme.getChildren().size());
-        ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(THEME_NAME);
         assertNotNull(themeDef);
         assertEquals(THEME_NAME, themeDef.getName());
         assertTrue(themeDef.isCustom());
