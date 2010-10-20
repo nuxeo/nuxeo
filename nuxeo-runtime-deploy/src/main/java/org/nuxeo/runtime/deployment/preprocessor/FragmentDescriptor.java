@@ -37,12 +37,18 @@ import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.w3c.dom.DocumentFragment;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("fragment")
 public class FragmentDescriptor {
 
     private static final Log log = LogFactory.getLog(FragmentDescriptor.class);
+
+    /**
+     * Marker used for better control on requirements. see "all" marker in
+     * FragmentRegistry
+     */
+    public final static FragmentDescriptor ALL = new FragmentDescriptor();
 
     // the name is the name of the XML fragment file for XML fragments
     // or the name of the JAR container for archive or directory fragments
@@ -50,20 +56,21 @@ public class FragmentDescriptor {
     public String name;
 
     public String fileName;
+
     public String filePath;
 
     /**
      * The start level is used to control bundle start order. The following
      * levels are defined:
      * <ul>
-     * <li> 0 - system level - used by the OSGi framework itself
-     * <li> 1 - runtime level - used by nuxeo-runtime bundles
-     * <li> 2 - core level - used for core bundles
-     * <li> 3 - platform level - used for platform service bundles
-     * <li> 4 - presentation level - used for UI service bundles (e.g. seam
+     * <li>0 - system level - used by the OSGi framework itself
+     * <li>1 - runtime level - used by nuxeo-runtime bundles
+     * <li>2 - core level - used for core bundles
+     * <li>3 - platform level - used for platform service bundles
+     * <li>4 - presentation level - used for UI service bundles (e.g. seam
      * components etc)
-     * <li> 5 - UI level -used for UI bundles (e.g. war / web, widgets contribs)
-     * <li> 6 - user level
+     * <li>5 - UI level -used for UI bundles (e.g. war / web, widgets contribs)
+     * <li>6 - user level
      * </ul>
      * The start level is overwritten by the one specified at MANIFEST level
      * using the Nuxeo-StartLevel header. If the start header is missing it will

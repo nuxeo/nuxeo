@@ -26,10 +26,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +58,8 @@ public class DeploymentPreprocessor {
 
     public static final String CONTAINER_FILE_COMPAT = "OSGI-INF/deployment-container.xml";
 
+    private static Pattern ARTIFACT_NAME_PATTERN = Pattern.compile("-[0-9]+");
+
     private static final Log log = LogFactory.getLog(DeploymentPreprocessor.class);
 
     private final File dir;
@@ -63,7 +68,9 @@ public class DeploymentPreprocessor {
 
     private ContainerDescriptor root;
 
-    // map jar names to bundle symbolic ids
+    // map jar names to bundle symbolic ids - WARN: no more used - will be
+    // removed in future,
+    @Deprecated
     private final Map<String, String> jar2Id = new HashMap<String, String>();
 
     public DeploymentPreprocessor(File dir) {
@@ -73,6 +80,7 @@ public class DeploymentPreprocessor {
         xmap.register(FragmentDescriptor.class);
     }
 
+    @Deprecated
     public String getJarId(String jarName) {
         return jar2Id.get(jarName);
     }
@@ -185,15 +193,28 @@ public class DeploymentPreprocessor {
         }
     }
 
+    protected static void printInfo(
+            List<DependencyTree.Entry<String, FragmentDescriptor>> entries) {
+        StringBuilder buf = new StringBuilder();
+        for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
+            buf.append("\n\t" + entry.getKey());
+        }
+        log.info("Preprocessing order: " + buf.toString());
+    }
+
     protected static void predeploy(ContainerDescriptor cd) throws Exception {
         if (cd.context == null) {
             cd.context = new CommandContextImpl(cd.directory);
         }
 
         // run installer and register contributions for each fragment
-        for (DependencyTree.Entry<String, FragmentDescriptor> entry : cd.fragments.getResolvedEntries()) {
+        List<DependencyTree.Entry<String, FragmentDescriptor>> entries = cd.fragments.getResolvedEntries();
+        printInfo(entries);
+        for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
             FragmentDescriptor fd = entry.get();
-
+            if (fd instanceof FragmentDescriptor == false) {
+                continue; // should be a marker entry like the "all" one.
+            }
             cd.context.put("bundle.fileName", fd.filePath);
             cd.context.put("bundle.shortName", fd.fileName);
             cd.context.put("bundle", fd.name);
@@ -289,56 +310,71 @@ public class DeploymentPreprocessor {
         }
     }
 
+    protected void processBundleForCompat(FragmentDescriptor fd, File file) {
+        // TODO disable for now the warning
+        // log.warn("Entering compatibility mode - deprecated dependency managent will be used. Please update your deployment-fragment.xml in "
+        // + file.getName());
+        Manifest mf = JarUtils.getManifest(file);
+        if (mf != null) {
+            fd.name = file.getName();
+            processManifest(fd, fd.name, mf);
+        } else {
+            throw new Error(
+                    "Compat: Fragments without a name must reside in an OSGi bundle");
+        }
+    }
+
     protected FragmentDescriptor getDirectoryFragment(File directory)
             throws Exception {
         FragmentDescriptor fd = null;
         File file = new File(directory.getAbsolutePath() + '/' + FRAGMENT_FILE);
-        String fileName = directory.getName();
         if (file.isFile()) {
             fd = (FragmentDescriptor) xmap.load(file.toURI().toURL());
         } else {
-            log.warn("No " + FRAGMENT_FILE + " found in directory:" + directory
-                    + " (must exist, must have exact name)");
-        }
-        if (fd == null) {
-            fd = new FragmentDescriptor();
+            return null; // don't need preprocessing
         }
         if (fd.name == null) {
-            fd.name = fileName;
-        }
-        Manifest mf = JarUtils.getManifest(directory);
-        if (mf != null) {
-            processManifest(fd, fileName, mf);
+            // fallback on manifest
+            processBundleForCompat(fd, directory);
+        } else if (fd.name.length() == 0) {
+            fd.name = getJarArtifactName(directory.getName());
         }
 
         return fd;
     }
 
+    public String getJarArtifactName(String name) {
+        if (name.endsWith(".jar")) {
+            name = name.substring(0, name.length() - 4);
+        }
+        Matcher m = ARTIFACT_NAME_PATTERN.matcher(name);
+        if (m.find()) {
+            name = name.substring(0, m.start());
+        }
+        return name;
+    }
+
     protected FragmentDescriptor getJARFragment(File file) throws Exception {
         FragmentDescriptor fd = null;
         JarFile jar = new JarFile(file);
-        ZipEntry ze = jar.getEntry(FRAGMENT_FILE);
-        if (ze != null) {
-            InputStream in = new BufferedInputStream(jar.getInputStream(ze));
-            try {
-                fd = (FragmentDescriptor) xmap.load(in);
-            } finally {
-                in.close();
+        try {
+            ZipEntry ze = jar.getEntry(FRAGMENT_FILE);
+            if (ze != null) {
+                InputStream in = new BufferedInputStream(jar.getInputStream(ze));
+                try {
+                    fd = (FragmentDescriptor) xmap.load(in);
+                } finally {
+                    in.close();
+                }
+                if (fd.name == null) {
+                    // fallback on manifest
+                    processBundleForCompat(fd, file);
+                } else if (fd.name.length() == 0) {
+                    fd.name = getJarArtifactName(file.getName());
+                }
             }
-            String fileName = file.getName();
-            if (fd == null) {
-                fd = new FragmentDescriptor();
-            }
-            if (fd.name == null) {
-                fd.name = fileName;
-            }
-            Manifest mf = JarUtils.getManifest(file);
-            if (mf != null) {
-                processManifest(fd, fileName, mf);
-            }
-        } else {
-            log.warn("No " + FRAGMENT_FILE + " found in " + file.getPath()
-                    + " (must exist, must have exact name)");
+        } finally {
+            jar.close();
         }
         return fd;
     }
@@ -356,7 +392,7 @@ public class DeploymentPreprocessor {
             fd.name = id;
             if (fd.requires != null && !fd.requires.isEmpty()) {
                 throw new Error(
-                        "You must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
+                        "In compatibility mode you must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
                                 + fileName);
             }
             // needed to control start-up order (which differs from

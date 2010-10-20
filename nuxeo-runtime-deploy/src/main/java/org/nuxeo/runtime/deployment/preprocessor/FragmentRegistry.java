@@ -28,9 +28,10 @@ import java.util.Map;
 import org.nuxeo.common.collections.DependencyTree;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor> {
+public class FragmentRegistry extends
+        DependencyTree<String, FragmentDescriptor> {
 
     // this is needed to handle requiredBy dependencies
     protected final Map<String, FragmentDescriptor> fragments = new HashMap<String, FragmentDescriptor>();
@@ -87,7 +88,6 @@ public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor>
         return super.getPendingObjects();
     }
 
-
     @Override
     public Entry<String, FragmentDescriptor> getEntry(String key) {
         if (!fragments.isEmpty()) {
@@ -107,26 +107,29 @@ public class FragmentRegistry extends DependencyTree<String, FragmentDescriptor>
     protected void commitFragments() {
 
         // update requires depending on requiredBy
-       for (FragmentDescriptor fd : fragments.values()) {
-           if (fd.requiredBy != null && fd.requiredBy.length > 0) {
-               for (String reqBy : fd.requiredBy) {
-                   FragmentDescriptor fdRegBy = fragments.get(reqBy);
-                   if (fdRegBy != null) {
-                       if (fdRegBy.requires == null) {
-                           fdRegBy.requires = new ArrayList<String>();
-                       }
-                       fdRegBy.requires.add(fd.name);
-                   }
-               }
-           }
-       }
+        for (FragmentDescriptor fd : fragments.values()) {
+            if (fd.requiredBy != null && fd.requiredBy.length > 0) {
+                for (String reqBy : fd.requiredBy) {
+                    FragmentDescriptor fdRegBy = fragments.get(reqBy);
+                    if (fdRegBy != null) {
+                        if (fdRegBy.requires == null) {
+                            fdRegBy.requires = new ArrayList<String>();
+                        }
+                        fdRegBy.requires.add(fd.name);
+                    }
+                }
+            }
+        }
 
-       // add fragments to the dependency tree
-       for (FragmentDescriptor fd : fragments.values()) {
-           add(fd.name, fd, fd.requires);
-       }
+        // add fragments to the dependency tree
+        for (FragmentDescriptor fd : fragments.values()) {
+            add(fd.name, fd, fd.requires);
+        }
 
-       fragments.clear();
+        // add the "all" marker fragment
+        add("all", FragmentDescriptor.ALL, (Collection<String>) null);
+
+        fragments.clear();
     }
 
 }
