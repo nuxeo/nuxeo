@@ -116,6 +116,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     @RequestParameter("stepId")
     protected String stepId;
 
+    protected String relatedRouteModelDocumentId;
+
     protected String hiddenSourceDocId;
 
     protected String hiddenDocOrder;
@@ -375,7 +377,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         if(stepDoc.hasFacet("Folderish")){
             return false;
         }
-        return (stepElement.isDraft() || stepElement.isReady());
+        return stepElement.isModifiable();
     }
 
 
@@ -384,7 +386,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * */
     public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
-        return (stepElement.isDraft() || stepElement.isReady());
+        return stepElement.isModifiable();
     }
 
     public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
@@ -566,5 +568,13 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public void setHiddenDocOrder(String hiddenDocOrder) {
         this.hiddenDocOrder = hiddenDocOrder;
+    }
+
+    public String getRelatedRouteModelDocumentId() {
+        return relatedRouteModelDocumentId;
+    }
+
+    public void setRelatedRouteModelDocumentId(String relatedRouteModelDocumentId) {
+        this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
     }
 }
