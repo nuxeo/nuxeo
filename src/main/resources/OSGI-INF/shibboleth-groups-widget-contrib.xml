@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.shibboleth.groups.web.widgets">
+
+  <require>
+    org.nuxeo.ecm.platform.forms.layout.WebLayoutManager
+  </require>
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+    <widget name="userSuggestionWithGroupTree" type="template">
+      <translated>true</translated>
+      <labels>
+        <label mode="any">label.widget.shibboleth.userTree</label>
+      </labels>
+      <fields>
+        <field/>
+      </fields>
+      <properties widgetMode="any">
+        <property name="styleClass">dataInputText</property>
+        <property name="template">
+          /widgets/user_tree_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+  </extension>
+</component>
