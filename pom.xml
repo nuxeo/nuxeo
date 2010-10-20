@@ -11,13 +11,16 @@
     <version>5.4.0-I20101018_1103</version>
   </parent>
   
-  
+  <version>5.4.0-SNAPSHOT</version>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
   <packaging>pom</packaging>
   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
-  
+
+  <properties>
+    <routing.version>5.4.0-SNAPSHOT</routing.version>
+  </properties>
   <modules>
     <module>nuxeo-platform-document-routing-api</module>
     <module>nuxeo-platform-document-routing-core</module>
@@ -35,17 +38,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${routing.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${routing.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${routing.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.nuxeo.ecm.automation</groupId>
