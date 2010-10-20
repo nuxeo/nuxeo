@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- *
+ * 
  */
 public class JBossConfiguratorTest {
 
@@ -128,6 +128,13 @@ public class JBossConfiguratorTest {
                 "datasources/default-repository-ds_2.xml");
         generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
+        // ignored extension must not be parsed
+        generatedFile = new File(configDir.getParentFile(),
+                "config/extension.ignored");
+        generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
+        String originalProperty = new BufferedReader(new FileReader(new File(
+                nuxeoHome, "templates/common/config/extension.ignored"))).readLine();
+        assertEquals(generatedProperty, originalProperty, generatedProperty);
     }
 
     @Test

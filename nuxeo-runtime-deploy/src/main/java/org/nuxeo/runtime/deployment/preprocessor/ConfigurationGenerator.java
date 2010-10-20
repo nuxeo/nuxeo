@@ -41,7 +41,7 @@ import org.nuxeo.common.Environment;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- *
+ * 
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -58,7 +58,7 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     *
+     * 
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
@@ -73,6 +73,8 @@ public class ConfigurationGenerator {
     public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
 
     public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
+
+    public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
     /**
      * Absolute or relative PATH to the included templates (comma separated
@@ -200,7 +202,7 @@ public class ConfigurationGenerator {
     /**
      * Initialize configurator, check requirements and load current
      * configuration
-     *
+     * 
      * @return returns true if current install is configurable, else returns
      *         false
      */
@@ -380,7 +382,7 @@ public class ConfigurationGenerator {
 
     /**
      * Save changed parameters in {@code nuxeo.conf}.
-     *
+     * 
      * @param changedParameters Map of modified parameters
      */
     public void saveConfiguration(Map<String, String> changedParameters)
