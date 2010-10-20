@@ -88,7 +88,6 @@ public class AutoConfigurationService {
                 config = server.getConfiguration(locator, version);
                 config.install();
             } catch (Exception e) { // compatibility code - for runtime that doesn't supports ServerConfiguration
-                // e.printStackTrace();
                 loadCompat(server, locator);
             }
         } finally {

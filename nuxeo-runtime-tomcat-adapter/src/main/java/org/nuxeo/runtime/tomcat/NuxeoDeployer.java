@@ -100,7 +100,6 @@ public class NuxeoDeployer implements LifecycleListener {
                 System.out.println("# Preprocessing done.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to handle event", e);
         }
     }

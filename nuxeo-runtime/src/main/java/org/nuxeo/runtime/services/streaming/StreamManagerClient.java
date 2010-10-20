@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.remoting.transporter.TransporterClient;
 
 /**
@@ -30,6 +32,8 @@ import org.nuxeo.runtime.remoting.transporter.TransporterClient;
  *
  */
 public class StreamManagerClient implements StreamManager {
+
+    private static final Log log = LogFactory.getLog(StreamManagerClient.class);
 
     protected final StreamingServer server;
 
@@ -82,7 +86,7 @@ public class StreamManagerClient implements StreamManager {
             try {
                 in.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
             server.closeUploadSession(uri);
         }
@@ -157,7 +161,7 @@ public class StreamManagerClient implements StreamManager {
 
             System.out.println("Done.");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

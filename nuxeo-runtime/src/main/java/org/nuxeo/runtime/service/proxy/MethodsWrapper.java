@@ -24,12 +24,17 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Define wrappers for some methods on the target class.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class MethodsWrapper implements InvocationHandler {
+
+    private static final Log log = LogFactory.getLog(MethodsWrapper.class);
 
     protected Map<Method, Method> methods;
     protected Class<?> wrapee;
@@ -46,8 +51,9 @@ public abstract class MethodsWrapper implements InvocationHandler {
                 try {
                     Method m = wrapee.getMethod(method.getName(), method.getParameterTypes());
                     this.methods.put(m , method);
-                } catch (NoSuchMethodException e) { // malformed wrapper
-                    e.printStackTrace(); //TODO
+                } catch (NoSuchMethodException e) {
+                    // malformed wrapper
+                    log.error(e, e);
                 }
             }
         }

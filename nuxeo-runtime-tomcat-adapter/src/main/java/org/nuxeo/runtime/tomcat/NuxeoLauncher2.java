@@ -76,7 +76,6 @@ public class NuxeoLauncher2 implements LifecycleListener {
                 bootstrap.stop();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to handle event", e);
         }
     }
