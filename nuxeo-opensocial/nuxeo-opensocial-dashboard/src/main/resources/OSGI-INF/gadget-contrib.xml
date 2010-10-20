@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.opensocial.dashboard.gadget" version="1.0">
 
-  <extension target="org.nuxeo.opensocial.gadgets.service"
-    point="gadget">
+  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
 
     <internalGadget name="tasks">
       <mountPoint>/tasks</mountPoint>

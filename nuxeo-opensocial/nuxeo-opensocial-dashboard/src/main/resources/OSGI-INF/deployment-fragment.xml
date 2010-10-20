@@ -16,7 +16,7 @@
 
 
   <extension target="faces-config#NAVIGATION">
-      <navigation-case>
+    <navigation-case>
       <from-outcome>opensocial_dashboard</from-outcome>
       <to-view-id>/opensocial-dashboard.xhtml</to-view-id>
       <redirect />

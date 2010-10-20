@@ -13,13 +13,13 @@
       <filter-id>user_dashboard_enabled</filter-id>
     </action>
 
-<!--
-    <action id="opensocial_dashboard" link="opensocial_dashboard" label="OpenSocial"
+    <!--
+      <action id="opensocial_dashboard" link="opensocial_dashboard" label="OpenSocial"
       order="10">
       <category>USER_SERVICES</category>
       <filter-id>user_dashboard_enabled</filter-id>
-    </action>
--->
+      </action>
+    -->
   </extension>
 
 </component>

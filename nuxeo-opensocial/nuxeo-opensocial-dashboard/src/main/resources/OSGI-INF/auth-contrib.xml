@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.opensocial.OAuthFilter">
 
-<!--
+  <!--
     <extension
-        target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-        point="authenticators">
-
-        <authenticationPlugin name="NONCE_OPENSOCIAL" enabled="true"
-            class="org.nuxeo.opensocial.auth.NonceSessionFilter">
-            <needStartingURLSaving>true</needStartingURLSaving>
-            <loginModulePlugin>Trusting_LM</loginModulePlugin>
-        </authenticationPlugin>
-
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    
+    <authenticationPlugin name="NONCE_OPENSOCIAL" enabled="true"
+    class="org.nuxeo.opensocial.auth.NonceSessionFilter">
+    <needStartingURLSaving>true</needStartingURLSaving>
+    <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+    
     </extension>
--->
-     <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="chain">
+  -->
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
 
     <authenticationChain>
       <plugins>
@@ -31,32 +31,38 @@
 
   </extension>
 
-     <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="openUrl">
-       <!-- needs to be sync with opensocial.properties -->
-       <openUrl name="OpenSocialJS">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.js</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialCSS">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.css</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialXML">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.xml</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialRPCInquiry">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialRestInquiry">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialRPC">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc/*</grantPattern>
-       </openUrl>
-       <openUrl name="OpenSocialRest">
-            <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest/*</grantPattern>
-       </openUrl>
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="openUrl">
+    <!-- needs to be sync with opensocial.properties -->
+    <openUrl name="OpenSocialJS">
+      <grantPattern>
+        ${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.js
+      </grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialCSS">
+      <grantPattern>
+        ${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.css
+      </grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialXML">
+      <grantPattern>
+        ${org.nuxeo.ecm.contextPath}/.*/gadgets/.*\.xml
+      </grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialRPCInquiry">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc</grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialRestInquiry">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest</grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialRPC">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rpc/*</grantPattern>
+    </openUrl>
+    <openUrl name="OpenSocialRest">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/social/rest/*</grantPattern>
+    </openUrl>
 
-     </extension>
+  </extension>
 
 </component>
