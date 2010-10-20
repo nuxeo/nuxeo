@@ -5,7 +5,7 @@
 nuxeo.data.dir=server/default/data/NXRuntime/data
 
 # Default template to use if not defined in nuxeo.conf
-nuxeo.template=default
+nuxeo.templates=default
 
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0

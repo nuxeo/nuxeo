@@ -13,7 +13,7 @@ Edit nuxeo.conf and set the name of the template(s) to use (default template is 
 
 Set the properties you want to customize, see nuxeo.defaults files for available parameters.
 For example, recommended changes are:
-  nuxeo.template=default
+  nuxeo.templates=default
   nuxeo.bind.address=0.0.0.0
 And, for example, if you use a database template:
   nuxeo.db.host=localhost
@@ -40,7 +40,7 @@ Values for parameters replacement are calculated by this way:
   * The ${nuxeo.templates} value is used for determining the chosen template(s).
   * For each value "nuxeo.template" of ${nuxeo.templates} (comma separated values,
     relative to "templates/" directory or absolute path), the corresponding file
-    templates/${nuxeo.templates}/nuxeo.defaults is read for defining new default values
+    ${nuxeo.template}/nuxeo.defaults is read for defining new default values
     and eventually including other templates which are recursively parsed.
   * The file templates/nuxeo.defaults is read for default values not already defined. 
   * The file nuxeo.conf is read for custom values (overwriting default values).
