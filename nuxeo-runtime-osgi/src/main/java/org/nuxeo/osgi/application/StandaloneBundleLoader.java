@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.OSGiAdapter;
@@ -34,6 +36,8 @@ import org.osgi.framework.BundleException;
  *
  */
 public class StandaloneBundleLoader extends ApplicationLoader {
+
+    private static final Log log = LogFactory.getLog(StandaloneBundleLoader.class);
 
     protected SharedClassLoader loader;
 
@@ -95,7 +99,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
 //            loader.installAll(bundles);
             System.out.println(">>>> Loading done!!!!");
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e, e);
             for (URL url : loader.loader.getURLs()) {
                 System.err.println("url> " + url);
             }

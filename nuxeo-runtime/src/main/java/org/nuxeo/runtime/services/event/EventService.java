@@ -81,7 +81,7 @@ public class EventService implements Component, Adaptable {
                         addListener(topic, lDesc.listener);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
             contributions.put(name, descriptors);

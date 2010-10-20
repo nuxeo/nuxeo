@@ -18,6 +18,8 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -33,6 +35,8 @@ import org.w3c.dom.ranges.Range;
  */
 @XObject("config")
 public class ConfigurationDescriptorImpl {
+
+    private static final Log log = LogFactory.getLog(ConfigurationDescriptorImpl.class);
 
     private static final Object NULL = new Object();
 
@@ -68,7 +72,7 @@ public class ConfigurationDescriptorImpl {
                     config = xmap.load(element);
                 } catch (Exception e) {
                     config = NULL;
-                    e.printStackTrace(); //TODO
+                    log.error(e, e);
                 }
             } else {
                 config = NULL;

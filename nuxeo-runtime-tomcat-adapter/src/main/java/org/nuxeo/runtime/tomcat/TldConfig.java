@@ -53,10 +53,10 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.startup.DigesterFactory;
-import org.apache.catalina.util.StringManager;
 import org.apache.catalina.startup.Constants;
+import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.TldRuleSet;
+import org.apache.catalina.util.StringManager;
 import org.apache.tomcat.util.digester.Digester;
 import org.xml.sax.InputSource;
 
@@ -322,7 +322,7 @@ public final class TldConfig  implements LifecycleListener {
                 oos.writeObject( list );
                 oos.close();
             } catch( IOException ex ) {
-                ex.printStackTrace();
+                log.error(ex, ex);
             }
         }
 
@@ -404,7 +404,7 @@ public final class TldConfig  implements LifecycleListener {
             }
             ois.close();
         } catch( ClassNotFoundException ex ) {
-            ex.printStackTrace();
+            log.error(ex, ex);
         }
     }
 

@@ -28,6 +28,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Constants;
@@ -36,6 +38,8 @@ import org.osgi.framework.Constants;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class BundleManifestReader {
+
+    private static final Log log = LogFactory.getLog(BundleManifestReader.class);
 
     private static final Pattern PARAMS_PATTERN
             = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
@@ -59,7 +63,7 @@ public final class BundleManifestReader {
             try {
                 return getHeaders(mf);
             } catch (Exception e) {
-                e.printStackTrace(); //TODO
+                log.error(e, e);
             }
         }
         // not an osgi bundle
@@ -72,7 +76,7 @@ public final class BundleManifestReader {
             try {
                 return getHeaders(mf);
             } catch (Exception e) {
-                e.printStackTrace(); //TODO
+                log.error(e, e);
             }
         }
         // not an osgi bundle

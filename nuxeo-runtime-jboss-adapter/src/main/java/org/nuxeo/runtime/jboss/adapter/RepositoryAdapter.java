@@ -61,7 +61,7 @@ public class RepositoryAdapter implements EventListener {
                 undeployRepository(name);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

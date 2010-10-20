@@ -107,7 +107,6 @@ public class RuntimeFeature extends SimpleFeature {
                         harness.deployContrib(bundle.substring(0, p), bundle.substring(p+1));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     log.error("Unable to deploy artifact: " + bundle, e);
                 }
             }

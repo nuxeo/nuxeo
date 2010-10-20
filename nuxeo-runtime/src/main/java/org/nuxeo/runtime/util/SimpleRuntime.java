@@ -22,6 +22,8 @@ package org.nuxeo.runtime.util;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
@@ -36,6 +38,8 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  */
 public class SimpleRuntime extends AbstractRuntimeService {
 
+    private static final Log log = LogFactory.getLog(SimpleRuntime.class);
+
     public static final String NAME = "Simple Runtime";
 
     public static final Version VERSION = Version.parseString("1.0.0");
@@ -48,7 +52,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
             workingDir = File.createTempFile("NXTestFramework", generateId());
             workingDir.delete();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

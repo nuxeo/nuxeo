@@ -343,7 +343,7 @@ public class StandaloneApplication extends OSGiAdapter {
                 mainTask.run();
             }
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e, e);
             System.exit(13);
             // this should not be called here because it will stop the server if
             // the main thread is not blocking
@@ -354,7 +354,6 @@ public class StandaloneApplication extends OSGiAdapter {
             // }
             // } catch (Exception e) {
             // System.err.println("Failed to stop framework");
-            // e.printStackTrace();
             // }
         }
     }

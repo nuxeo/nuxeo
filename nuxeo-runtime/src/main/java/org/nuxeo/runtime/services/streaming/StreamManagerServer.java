@@ -28,6 +28,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.remoting.InvokerLocator;
 import org.nuxeo.runtime.remoting.transporter.TransporterServer;
 
@@ -36,6 +38,8 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
  *
  */
 public class StreamManagerServer implements StreamingServer, StreamManager {
+
+    private static final Log log = LogFactory.getLog(StreamManagerServer.class);
 
     private static long uploadCount = 0;
     private static long downloadCount = 0;
@@ -278,7 +282,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
             //System.out.println("stream server started");
             while (true) { Thread.sleep(1000000); }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

@@ -25,13 +25,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class CommandProcessorImpl implements CommandProcessor {
 
     final List<Command> commands = new ArrayList<Command>();
-    Log log;
 
+    Log log;
 
     public List<Command> getCommands() {
         return commands;
@@ -47,7 +47,7 @@ public class CommandProcessorImpl implements CommandProcessor {
                 cmd.exec(ctx);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

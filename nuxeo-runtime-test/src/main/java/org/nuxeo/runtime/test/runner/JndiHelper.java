@@ -26,10 +26,15 @@ import javax.naming.Name;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * helper for common jndi operations copied from jboss Util class
  */
 public class JndiHelper {
+
+    private static final Log log = LogFactory.getLog(JndiHelper.class);
 
     /**
      * Create a subcontext including any intermediate contexts.
@@ -160,7 +165,7 @@ public class JndiHelper {
             try {
                 ctx.destroySubcontext(pname);
             } catch (NamingException e) {
-                e.printStackTrace();
+                log.error(e, e);
                 break;
             }
         }

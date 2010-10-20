@@ -29,10 +29,15 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class MulticastDetector<T> {
+
+    private static final Log log = LogFactory.getLog(MulticastDetector.class);
 
     protected final InetAddress groupAddr;
     protected final int groupPort;
@@ -214,7 +219,7 @@ public class MulticastDetector<T> {
                 } catch (SocketTimeoutException e) {
                     // socket timeout -> continue
                 } catch (Throwable e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
         }
@@ -227,7 +232,7 @@ public class MulticastDetector<T> {
             try {
                 socket.send(createHeartBeat());
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
     }

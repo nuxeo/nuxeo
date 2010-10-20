@@ -22,17 +22,23 @@ package org.nuxeo.runtime.api;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A service provider.
  * <p>
- * A service provider is used by the framework to be able to change the local services are found
+ * A service provider is used by the framework to be able to change the local
+ * services are found
  * <p>
- * For example, you may want to use a simple service provider for testing purpose to avoid loading
- * the nuxeo runtime framework to register services.
+ * For example, you may want to use a simple service provider for testing
+ * purpose to avoid loading the nuxeo runtime framework to register services.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DefaultServiceProvider implements ServiceProvider {
+
+    private static final Log log = LogFactory.getLog(DefaultServiceProvider.class);
 
     private static ServiceProvider provider;
 
@@ -50,7 +56,7 @@ public class DefaultServiceProvider implements ServiceProvider {
     public <T> T getService(Class<T> serviceClass) {
         ServiceRef ref = registry.get(serviceClass);
         if (ref != null) {
-            return (T)ref.getService();
+            return (T) ref.getService();
         }
         return null;
     }
@@ -65,6 +71,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 
     public static class ServiceRef {
         final Class<?> type;
+
         Object service;
 
         public ServiceRef(Object service) {
@@ -86,7 +93,7 @@ public class DefaultServiceProvider implements ServiceProvider {
                 try {
                     service = type.newInstance();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
             return service;

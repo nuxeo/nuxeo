@@ -524,7 +524,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
         try {
             return debug || isFirstRun(di);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return false;
         }
     }
