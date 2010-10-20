@@ -58,25 +58,36 @@ public abstract class BaseWSSFilter implements Filter {
                     return;
                 }
             } catch (Exception e) {
-                throw new ServletException("error processing request", e);
+                throw new ServletException("Error processing request", e);
             }
 
             // let back filter do the job if any
             if (isRootFilter() && uri.startsWith(getRootFilterTarget())) {
-                log.debug("let WSS request to to back filter");
+                log.debug("Let WSS request to back filter");
                 chain.doFilter(request, response);
                 return;
             }
 
             Object forwardedConfig = httpRequest.getAttribute(FILTER_FORWARD_PARAM);
 
-            try {
-                if (forwardedConfig != null) {
+            if (forwardedConfig != null) {
+                try {
                     handleForwardedCall(httpRequest, httpResponse,
                             (FilterBindingConfig) forwardedConfig);
-                } else {
-                    FilterBindingConfig config = FilterBindingResolver.getBinding(httpRequest);
-                    if (config != null) {
+                } catch (Exception e) {
+                    throw new ServletException("Error processing WSS request",
+                            e);
+                }
+            } else {
+                FilterBindingConfig config = null;
+                try {
+                    config = FilterBindingResolver.getBinding(httpRequest);
+                } catch (Exception e) {
+                    throw new ServletException("Error processing WSS request",
+                            e);
+                }
+                if (config != null) {
+                    try {
                         if (isRootFilter()) {
                             log.debug("Forward call to backend filter");
                             httpRequest.setAttribute(FILTER_FORWARD_PARAM,
@@ -85,14 +96,15 @@ public abstract class BaseWSSFilter implements Filter {
                         } else {
                             handleWSSCall(httpRequest, httpResponse, config);
                         }
-                        return;
-                    } else {
-                        // NOT a WSS request
-                        chain.doFilter(request, response);
+                    } catch (Exception e) {
+                        throw new ServletException(
+                                "Error processing WSS request", e);
                     }
+                    return;
+                } else {
+                    // NOT a WSS request
+                    chain.doFilter(request, response);
                 }
-            } catch (Exception e) {
-                throw new ServletException("Error processing WSS request", e);
             }
         }
     }
