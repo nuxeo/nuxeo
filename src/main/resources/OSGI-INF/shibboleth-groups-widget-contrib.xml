@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
-    <widget name="userSuggestionWithGroupTree" type="template">
+    <widget name="shibbolethUserSuggestionWithGroupTree" type="template">
       <translated>true</translated>
       <labels>
         <label mode="any">label.widget.shibboleth.userTree</label>
@@ -14,7 +14,7 @@
       <properties widgetMode="any">
         <property name="styleClass">dataInputText</property>
         <property name="template">
-          /widgets/user_tree_widget_template.xhtml
+          /widgets/shibboleth_user_tree_widget_template.xhtml
         </property>
       </properties>
     </widget>

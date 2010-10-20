@@ -34,7 +34,7 @@ import java.util.*;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
-@Name("userSuggestionWithGroupTree")
+@Name("shibbUserSuggestionWithGroupTree")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class UserSuggestionWithGroupTreeActionsBean extends

@@ -12,7 +12,7 @@
       var="item" rendered="#{not empty field_0}">
       <h:column>
       <nxu:methodResult name="info"
-        value="#{userSuggestionWithGroupTree.getUserInfo(item)}">
+        value="#{shibbUserSuggestionWithGroupTree.getUserInfo(item)}">
         <f:subview rendered="#{info.type == 'USER_TYPE'}">
           <h:graphicImage value="/icons/user.gif" alt="user.gif" />
           <h:commandLink
@@ -67,7 +67,7 @@
           </a4j:status>
           <rich:suggestionbox id="#{widget.id}_suggestionBox"
             for="#{widget.id}_suggest" tokens=""
-            suggestionAction="#{userSuggestionWithGroupTree.getSuggestions}"
+            suggestionAction="#{shibbUserSuggestionWithGroupTree.getSuggestions}"
             var="result"
             fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
@@ -110,7 +110,7 @@
         <h:panelGroup>
         <rich:tree id="#{widget.id}_tree">
           <rich:recursiveTreeNodesAdaptor
-            roots="#{userSuggestionWithGroupTree.treeRoot}"
+            roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"
             nodes="#{node.childrens}"
             var="node">
             <rich:treeNode iconLeaf="/icons/group.gif">
@@ -153,7 +153,7 @@
                     <f:param name="index" value="#{model.rowIndex}" />
                     <f:param name="type" value="remove" />
                   </a4j:commandLink>
-                  <nxu:methodResult name="info" value="#{userSuggestionWithGroupTree.getUserInfo(model.rowData)}">
+                  <nxu:methodResult name="info" value="#{shibbUserSuggestionWithGroupTree.getUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.gif" alt="user.gif" />
                       <h:outputText value="#{nxu:userDisplayName(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName)}" />

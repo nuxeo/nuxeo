@@ -12,7 +12,7 @@
       </templates>
       <rows>
         <row>
-          <widget>userSuggestionWithGroupTree</widget>
+          <widget>shibbolethUserSuggestionWithGroupTree</widget>
         </row>
       </rows>
     </layout>
