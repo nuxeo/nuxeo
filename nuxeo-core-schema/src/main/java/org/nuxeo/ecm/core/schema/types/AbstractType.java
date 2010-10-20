@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.schema.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -32,6 +34,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @SuppressWarnings({ "SuppressionAnnotation" })
 public abstract class AbstractType implements Type {
+
+    private static final Log log = LogFactory.getLog(AbstractType.class);
 
     public static final Type[] EMPTY_SUPERTYPES = new Type[0];
 
@@ -74,7 +78,7 @@ public abstract class AbstractType implements Type {
                 SchemaManager sm = Framework.getService(SchemaManager.class);
                 helper = sm.getHelper(schema, name);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         return helper;

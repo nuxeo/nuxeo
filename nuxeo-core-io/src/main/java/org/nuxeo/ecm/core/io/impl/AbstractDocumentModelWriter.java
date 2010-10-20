@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
@@ -63,6 +65,8 @@ import org.nuxeo.runtime.services.streaming.ByteArraySource;
 // modify core session to add a batch create method and use it
 public abstract class AbstractDocumentModelWriter extends
         AbstractDocumentWriter {
+
+    private static final Log log = LogFactory.getLog(AbstractDocumentModelWriter.class);
 
     protected CoreSession session;
 
@@ -112,7 +116,7 @@ public abstract class AbstractDocumentModelWriter extends
             try {
                 session.save();
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         session = null;

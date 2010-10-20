@@ -22,12 +22,16 @@ import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class URLScript extends Script {
+
+    private static final Log log = LogFactory.getLog(URLScript.class);
 
     protected final URL url;
 
@@ -76,7 +80,7 @@ public class URLScript extends Script {
         try {
             return new InputStreamReader(conn.getInputStream());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }
