@@ -144,9 +144,7 @@ public class ThemeSerializer {
             for (Identifiable object : themeManager.getNamedObjects(themeName,
                     formatTypeName)) {
                 Format format = (Format) object;
-                if (!format.isRemote() || format.isCustomized()) {
-                    serializeFormat(format, formatNode);
-                }
+                serializeFormat(format, formatNode);
             }
             for (Format format : themeManager.getFormatsByTypeName(formatTypeName)) {
                 if (format.isRemote() && !format.isCustomized()) {
@@ -300,42 +298,44 @@ public class ThemeSerializer {
             if (ancestor != null) {
                 domElement.setAttribute("inherit", ancestor.getName());
             }
-            for (String viewName : style.getSelectorViewNames()) {
-                for (String path : style.getPathsForView(viewName)) {
-                    Properties styleProperties = style.getPropertiesFor(
-                            viewName, path);
-                    if (styleProperties.isEmpty()) {
-                        continue;
-                    }
-                    org.w3c.dom.Element domSelector = doc.createElement("selector");
-                    path = Utils.cleanUp(path);
-                    domSelector.setAttribute("path", path);
-                    if (!"*".equals(viewName)) {
-                        domSelector.setAttribute("view", viewName);
-                    }
-
-                    for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
-                        org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
-                        String value = (String) entry.getValue();
-                        String presetName = PresetManager.extractPresetName(
-                                null, value);
-                        if (presetName != null) {
-                            domProperty.setAttribute("preset", presetName);
-                        } else {
-                            domProperty.appendChild(doc.createTextNode(Utils.cleanUp(value)));
+            if (!style.isRemote() || style.isCustomized()) {
+                for (String viewName : style.getSelectorViewNames()) {
+                    for (String path : style.getPathsForView(viewName)) {
+                        Properties styleProperties = style.getPropertiesFor(
+                                viewName, path);
+                        if (styleProperties.isEmpty()) {
+                            continue;
                         }
-                        domSelector.appendChild(domProperty);
-                    }
+                        org.w3c.dom.Element domSelector = doc.createElement("selector");
+                        path = Utils.cleanUp(path);
+                        domSelector.setAttribute("path", path);
+                        if (!"*".equals(viewName)) {
+                            domSelector.setAttribute("view", viewName);
+                        }
 
-                    // Set selector description
-                    String selectorDescription = style.getSelectorDescription(
-                            path, viewName);
-                    if (selectorDescription != null) {
-                        domElement.appendChild(doc.createComment(String.format(
-                                " %s ", selectorDescription)));
-                    }
+                        for (Map.Entry<Object, Object> entry : styleProperties.entrySet()) {
+                            org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
+                            String value = (String) entry.getValue();
+                            String presetName = PresetManager.extractPresetName(
+                                    null, value);
+                            if (presetName != null) {
+                                domProperty.setAttribute("preset", presetName);
+                            } else {
+                                domProperty.appendChild(doc.createTextNode(Utils.cleanUp(value)));
+                            }
+                            domSelector.appendChild(domProperty);
+                        }
 
-                    domElement.appendChild(domSelector);
+                        // Set selector description
+                        String selectorDescription = style.getSelectorDescription(
+                                path, viewName);
+                        if (selectorDescription != null) {
+                            domElement.appendChild(doc.createComment(String.format(
+                                    " %s ", selectorDescription)));
+                        }
+
+                        domElement.appendChild(domSelector);
+                    }
                 }
             }
         }

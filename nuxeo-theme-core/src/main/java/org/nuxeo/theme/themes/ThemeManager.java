@@ -199,15 +199,18 @@ public final class ThemeManager implements Registrable {
             throw new ThemeException("Could not serialize theme: " + themeName,
                     e);
         }
-
         ThemeDescriptor newThemeDescriptor = createCustomTheme(themeName);
+        String newSrc = newThemeDescriptor.getSrc();
         try {
-            Manager.getThemeManager().loadTheme(newThemeDescriptor.getSrc(),
-                    xmlSource);
+            Manager.getThemeManager().loadTheme(newSrc, xmlSource);
         } catch (ThemeIOException e) {
-            throw new ThemeException("Could not load theme", e);
+            throw new ThemeException("Could not update theme: " + newSrc, e);
         }
-
+        try {
+            saveTheme(newSrc);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not save theme: " + newSrc, e);
+        }
         return newThemeDescriptor;
     }
 
