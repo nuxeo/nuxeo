@@ -33,9 +33,11 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.ldap.management.LDAPDirectoriesProbe;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
@@ -1184,6 +1186,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         filter.put("cn", "");
         List<DocumentModel> docs = session.query(filter);
         assertNotNull(docs);
+    }
+
+    public void testProbe() {
+        LDAPDirectoriesProbe probe = new LDAPDirectoriesProbe();
+        ProbeStatus status = probe.run();
+        assertTrue(status.isSuccess());
     }
 
 }
