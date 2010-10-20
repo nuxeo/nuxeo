@@ -126,6 +126,8 @@ public class FancyURLFilter implements Filter {
             // view has not been set in the request yet => always wrap
             chain.doFilter(request, wrapResponse(httpRequest, httpResponse));
 
+        } catch (ServletException e) {
+            throw e;
         } catch (Throwable t) {
             // interrupt chain and throw exception
             throw new ServletException(t);
