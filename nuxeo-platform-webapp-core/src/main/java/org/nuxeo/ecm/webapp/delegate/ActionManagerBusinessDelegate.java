@@ -33,6 +33,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.platform.actions.ActionService;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -73,8 +74,10 @@ public class ActionManagerBusinessDelegate implements Serializable {
             // Remote EJB3 interface is still available, but won't be able to
             // resolve Seam based EL
 
-            actionManager = (ActionManager) Framework.getRuntime().getComponent(
-                    ActionService.ID);
+            RuntimeService runtime = Framework.getRuntime();
+            if (runtime != null) {
+                actionManager = (ActionManager) runtime.getComponent(ActionService.ID);
+            }
         }
 
         return actionManager;
