@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.platform.shibboleth.web.service;
 
 /**
+ * Interface handling Shibboleth Groups Service methods
+ *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public interface ShibbolethGroupsService {

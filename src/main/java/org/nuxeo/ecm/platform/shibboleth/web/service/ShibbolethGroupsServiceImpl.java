@@ -20,6 +20,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
+ * Shibboleth Group service component implementation
+ *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class ShibbolethGroupsServiceImpl extends DefaultComponent

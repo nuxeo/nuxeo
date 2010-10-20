@@ -16,6 +16,14 @@
 
 package org.nuxeo.ecm.platform.shibboleth.web;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -23,17 +31,20 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
+import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNode;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
-import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNode;
 import org.richfaces.component.UITree;
-
-import java.io.Serializable;
-import java.util.*;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+/**
+ * Action bean handling tree's nodes generation and filling them with groups
+ *
+ * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
+ * @see org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean
+ */
 @Name("shibbUserSuggestionWithGroupTree")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)

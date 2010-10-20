@@ -22,6 +22,11 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+/**
+ * Tree node class handling node information and Nodes operation
+ *
+ * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
+ */
 public class UserTreeNode {
 
     public static final String USER = "user";
@@ -64,6 +69,12 @@ public class UserTreeNode {
         return document == null ? name : document.getId();
     }
 
+    /**
+     * Get the displayed name, if instantiate with a documentModel it
+     * will be the document Id
+     *
+     * @return name defined with the constructor, or Document Id
+     */
     public String getDisplayedName() {
         if (name.equals("") && document != null) {
             String id = document.getId();
@@ -80,6 +91,7 @@ public class UserTreeNode {
 
     /**
      * Factory method to build a collection of UserTReeNode.
+     *
      * @return empty list if no docs passed
      */
     public static List<UserTreeNode> constructNodes(Collection<DocumentModel> docs) {

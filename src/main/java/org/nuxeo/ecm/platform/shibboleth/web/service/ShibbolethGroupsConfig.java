@@ -20,7 +20,10 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Config file for ShibbolethGroupsService
+ *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
+ * @see org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService
  */
 @XObject("config")
 public class ShibbolethGroupsConfig {
