@@ -82,7 +82,10 @@
         It requires the following fields configuration:
         <ul>
           <li>
-            the documentRouteElement
+            the route documuent model
+          </li>
+          <li>
+            the route documuent model id
           </li>
         </ul>
       </documentation>
@@ -138,12 +141,14 @@
        <translated>true</translated>
        <fields>
          <field>data.document</field>
+         <field>data.document.id</field>
        </fields>
      </widget>
 
     <widget name="dr_listing_add_step" type="add_step">
       <translated>true</translated>
       <fields>
+        <field>data.document</field>
         <field>data.document.id</field>
         <field>data.document.hasFacet('Folderish')</field>
       </fields>
@@ -152,6 +157,7 @@
     <widget name="dr_listing_remove_step" type="remove_step">
       <translated>true</translated>
       <fields>
+        <field>data.document</field>
         <field>data.document.id</field>
       </fields>
     </widget>

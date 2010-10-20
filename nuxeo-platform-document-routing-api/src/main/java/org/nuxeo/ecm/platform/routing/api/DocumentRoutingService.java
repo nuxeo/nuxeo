@@ -157,6 +157,11 @@ public interface DocumentRoutingService {
     boolean canUserCreateRoute(NuxeoPrincipal currentUser);
 
     /**
+     * if the user can create a route.
+     */
+    boolean canUserModifyRoute(NuxeoPrincipal currentUser);
+
+    /**
      * if the user can validate a route.
      */
     boolean canUserValidateRoute(NuxeoPrincipal currentUser);

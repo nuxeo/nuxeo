@@ -1,9 +1,32 @@
 <f:subview id="#{widget.id}"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div>
-    <h:commandLink value="#{messages['command.delete']}" action="#{routingActions.removeStep(field_0)}"/>
-  </div>
+    <nxu:set var="actions"
+      value="#{getRemoveStepActions}"
+      cache="true">
+      <c:if test="#{!empty actions}">
+        <div class="action_bar">
+          <nxu:dataList layout="unorderedList"
+            var="action"
+            value="#{actions}"
+            id="removeStepListTable">
+            <nxh:commandLink action="#{action.getLink()}"
+              id="documentActionSubviewUpperListLink" rendered="#{routingActions.isEditableRouteElement(field_0)}">
+              <h:outputText value="#{messages[action.label]}" />
+              <f:param name="stepId" value="#{field_1}" />
+            </nxh:commandLink>
+          </nxu:dataList>
+        </div>
+      </c:if>
+    </nxu:set>
+  
 
 </f:subview>

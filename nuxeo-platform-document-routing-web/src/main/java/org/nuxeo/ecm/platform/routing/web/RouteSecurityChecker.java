@@ -40,6 +40,10 @@ public class RouteSecurityChecker {
         return getDocumentRoutingService().canUserCreateRoute(currentUser);
     }
 
+    public boolean canModifyRoute() {
+        return getDocumentRoutingService().canUserModifyRoute(currentUser);
+    }
+
     public boolean canValidateRoute() {
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
     }

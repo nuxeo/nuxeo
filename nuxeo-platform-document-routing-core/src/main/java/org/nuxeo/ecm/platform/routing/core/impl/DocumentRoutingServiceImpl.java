@@ -247,6 +247,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public boolean canUserModifyRoute(NuxeoPrincipal currentUser) {
+        return currentUser.getGroups().contains(
+                DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
+    }
+
+    @Override
     public boolean canUserValidateRoute(NuxeoPrincipal currentUser) {
         return currentUser.getGroups().contains(
                 DocumentRoutingConstants.ROUTE_MANAGERS_GROUP_NAME);
