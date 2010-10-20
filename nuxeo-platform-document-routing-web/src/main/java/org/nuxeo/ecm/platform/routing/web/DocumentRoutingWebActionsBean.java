@@ -100,6 +100,8 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     public void resetTabList() {
         addStepActions = null;
         removeStepActions = null;
+        addStepInForkActions = null;
+        editStepActions = null;
     }
 
 }

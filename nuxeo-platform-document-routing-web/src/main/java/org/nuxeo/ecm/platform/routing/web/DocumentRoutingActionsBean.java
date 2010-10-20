@@ -497,8 +497,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String saveRouteElement() throws ClientException {
-        DocumentModel relatedRouteModel = navigationContext.getCurrentDocument();
-        DocumentRoute routeModel = relatedRouteModel.getAdapter(DocumentRoute.class);
+        DocumentRoute routeModel = getRelatedRoute();
         try {
             getDocumentRoutingService().lockDocumentRoute(routeModel,
                     documentManager);
