@@ -14,6 +14,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectory;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory;
+import org.nuxeo.ecm.directory.ldap.LDAPDirectoryProxy;
 import org.nuxeo.runtime.api.Framework;
 
 public class LDAPDirectoriesProbe implements Probe {
@@ -29,15 +30,17 @@ public class LDAPDirectoriesProbe implements Probe {
         for (Directory dir:factory.getDirectories()) {
             long startTime = Calendar.getInstance().getTimeInMillis();
             String dirName=null;
+            LDAPDirectory ldap = null;
             try {
                 Session dirSession = dir.getSession();
                 dirSession.close();
                 dirName = dir.getName();
+                ldap = ((LDAPDirectoryProxy)dir).getDirectory();
             } catch (DirectoryException e) {
                 success = false;
             }
             long endTime = Calendar.getInstance().getTimeInMillis();
-            Properties props = ((LDAPDirectory)dir).getContextProperties();
+            Properties props = ldap.getContextProperties();
             String bindDN = (String)props.get(Context.SECURITY_PRINCIPAL);
 
             infos.put(dirName + "-bind", bindDN);
