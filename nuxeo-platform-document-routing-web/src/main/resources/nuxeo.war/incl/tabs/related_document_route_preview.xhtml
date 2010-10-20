@@ -9,7 +9,17 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-
+  <h:form>
+    <nxu:methodResult name="actions"
+      value="#{webActions.getActionsList('ATTACHED_ROUTE_LIST')}">
+      <f:subview rendered="#{!empty actions}">
+        <nxu:dataList layout="simple" var="action"
+          value="#{actions}">
+          <nxh:commandButton action="#{action.getLink()}" value="#{messages[action.label]}" />
+        </nxu:dataList>
+      </f:subview>
+    </nxu:methodResult>
+  </h:form>
    <nxu:set var="documents"  value="#{relatedRouteElementsSelectModel}" >
     <ui:decorate template="/incl/documents_layout_table.xhtml">
      <ui:param name="documents" value="#{documents}" />

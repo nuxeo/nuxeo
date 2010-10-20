@@ -150,6 +150,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
+    public String saveRouteAsNewInstance() {
+        return null;
+    }
+
     public String getRelatedRouteModelDocument() {
         if (StringUtils.isEmpty(relatedRouteModelDocumentId)) {
             List<DocumentModel> relatedRoute;
@@ -163,6 +167,14 @@ public class DocumentRoutingActionsBean implements Serializable {
             }
         }
         return relatedRouteModelDocumentId;
+    }
+
+    public String cancelRoute() throws ClientException {
+        DocumentModel doc = findRelatedRouteDocument().get(0);
+        DocumentRoute route = doc.getAdapter(DocumentRoute.class);
+        route.cancel(documentManager);
+        webActions.resetTabList();
+        return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
     public String validateRouteModel() throws ClientException {
@@ -204,8 +216,12 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     protected ArrayList<LocalizableDocumentRouteElement> computeRelatedRouteElements()
             throws ClientException {
+        List<DocumentModel> routes = findRelatedRouteDocument();
+        if(routes == null || routes.isEmpty())   {
+            return new ArrayList<LocalizableDocumentRouteElement>();
+        }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
-                findRelatedRouteDocument().get(0).getId()));
+                routes.get(0).getId()));
         DocumentRouteElement currentRouteModelElement = relatedRouteDocumentModel.getAdapter(DocumentRouteElement.class);
         return getElements(currentRouteModelElement);
     }

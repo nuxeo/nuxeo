@@ -28,6 +28,20 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
+
+    <action id="CANCEL_RELATED_ROUTE"
+      link="#{routingActions.cancelRoute()}"
+      order="10" label="label.document.routing.cancel.route">
+      <category>ATTACHED_ROUTE_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
+      link="#{routingActions.saveRouteAsNewInstance()}"
+      order="10" label="label.document.routing.saveAsNew">
+      <category>ATTACHED_ROUTE_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

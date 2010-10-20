@@ -7,7 +7,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
    <ui:include src="/select_route_elements_type.xhtml" />
    <nxu:set var="documents"  value="#{routeElementsSelectModel}" >
