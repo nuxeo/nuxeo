@@ -49,12 +49,11 @@ public abstract class ServerConfigurator {
     /**
      * Generate configuration files from templates and given configuration
      * parameters
-     *
+     * 
      * @param config Properties with configuration parameters for template
      *            replacement
      */
-    protected void parseAndCopy(Properties config)
-            throws IOException {
+    protected void parseAndCopy(Properties config) throws IOException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
         final FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -67,13 +66,13 @@ public abstract class ServerConfigurator {
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
             if (includedTemplate.listFiles(filter) != null) {
+                // Retrieve optional target directory if defined
+                String outputDirectoryStr = config.getProperty(includedTemplate.getName()
+                        + ".target");
+                File outputDirectory = (outputDirectoryStr != null) ? new File(
+                        generator.getNuxeoHome(), outputDirectoryStr)
+                        : getOutputDirectory();
                 for (File in : includedTemplate.listFiles(filter)) {
-                    // Retrieve optional target directory if defined
-                    String outputDirectoryStr = config.getProperty(includedTemplate.getName()
-                            + ".target");
-                    File outputDirectory = (outputDirectoryStr != null) ? new File(
-                            generator.getNuxeoHome(), outputDirectoryStr)
-                            : getOutputDirectory();
                     // copy template(s) directories parsing properties
                     templateParser.processDirectory(in, new File(
                             outputDirectory, in.getName()));
