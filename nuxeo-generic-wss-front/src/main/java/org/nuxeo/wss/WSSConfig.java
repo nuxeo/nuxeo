@@ -26,12 +26,15 @@ public class WSSConfig {
     protected static WSSConfig instance;
 
     public static final String DEFAULT_TS_SERVER_VERSION = "12.0.0.6219";
+
     protected String TSServerVersion = DEFAULT_TS_SERVER_VERSION;
 
     public static final String DEFAULT_WSS_SERVER_VERSION = "12.0.0.6421";
+
     protected String WSSServerVersion = DEFAULT_WSS_SERVER_VERSION;
 
     public static final String DEFAULT_FP_SERVER_VERSION = "12.0.0.000";
+
     protected String FPServerVersion = DEFAULT_FP_SERVER_VERSION;
 
     protected String wssBackendFactoryClassName = "org.nuxeo.wss.spi.dummy.DummyBackendFactory";

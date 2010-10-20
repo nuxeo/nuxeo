@@ -35,12 +35,17 @@ public class XmlConfigHandler extends DefaultHandler {
     protected FilterBindingConfig currentConfig = null;
 
     public static final String FILTERMAPPING_TAG = "filtermapping";
+
     public static final String URL_ATTRIBUTE = "url";
+
     public static final String REDIRECT_ATTRIBUTE = "redirect";
+
     public static final String SERVICE_ATTRIBUTE = "service";
+
     public static final String TYPE_ATTRIBUTE = "type";
 
     protected static String configName = "wssdefaultbindings-config.xml";
+
     protected static XmlConfigHandler instance;
 
     @Override
@@ -50,7 +55,7 @@ public class XmlConfigHandler extends DefaultHandler {
             currentConfig = new FilterBindingConfig();
 
             currentConfig.setUrl(attributes.getValue(URL_ATTRIBUTE));
-            currentConfig.setRedirectURL(attributes .getValue(REDIRECT_ATTRIBUTE));
+            currentConfig.setRedirectURL(attributes.getValue(REDIRECT_ATTRIBUTE));
             currentConfig.setTargetService(attributes.getValue(SERVICE_ATTRIBUTE));
             currentConfig.setRequestType(attributes.getValue(TYPE_ATTRIBUTE));
         }
@@ -88,8 +93,8 @@ public class XmlConfigHandler extends DefaultHandler {
     }
 
     public static void loadConfig(String configName) throws Exception {
-        InputStream in = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(configName);
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+                configName);
 
         XMLReader reader;
         reader = XMLReaderFactory.createXMLReader();

@@ -29,10 +29,13 @@ import org.nuxeo.wss.fprpc.FPRPCConts;
 
 public class FilterBindingResolver {
 
-    protected static final Map<String, FilterBindingConfig> bindingCache = new LRUCachingMap<String, FilterBindingConfig>(50);
+    protected static final Map<String, FilterBindingConfig> bindingCache = new LRUCachingMap<String, FilterBindingConfig>(
+            50);
+
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
-    public static FilterBindingConfig getBinding(HttpServletRequest request) throws Exception {
+    public static FilterBindingConfig getBinding(HttpServletRequest request)
+            throws Exception {
 
         String UA = request.getHeader("User-Agent");
         if (FPRPCConts.MSOFFICE_USERAGENT.equals(UA)) {
@@ -51,8 +54,7 @@ public class FilterBindingResolver {
         try {
             cacheLock.readLock().lock();
             binding = bindingCache.get(uri);
-        }
-        finally {
+        } finally {
             cacheLock.readLock().unlock();
         }
         if (binding == null) {
@@ -60,15 +62,15 @@ public class FilterBindingResolver {
             try {
                 cacheLock.writeLock().lock();
                 bindingCache.put(uri, binding);
-            }
-            finally {
+            } finally {
                 cacheLock.writeLock().unlock();
             }
         }
         return binding;
     }
 
-    protected static FilterBindingConfig computeBindingForRequest(String uri) throws Exception {
+    protected static FilterBindingConfig computeBindingForRequest(String uri)
+            throws Exception {
         List<FilterBindingConfig> bindings = XmlConfigHandler.getConfigEntries();
         for (FilterBindingConfig binding : bindings) {
             Pattern pat = binding.getUrlPattern();

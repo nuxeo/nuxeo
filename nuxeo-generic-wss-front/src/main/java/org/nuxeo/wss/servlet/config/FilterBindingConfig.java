@@ -21,16 +21,19 @@ import java.util.regex.Pattern;
 
 public class FilterBindingConfig {
 
-
     public static final String FP_REQUEST_TYPE = "FP";
+
     public static final String WS_REQUEST_TYPE = "WS";
+
     public static final String FAKEWS_REQUEST_TYPE = "FakeWS";
+
     public static final String GET_REQUEST_TYPE = "GET";
+
     public static final String RESOURCES_REQUEST_TYPE = "RESOURCES";
 
     /*
-    * url binding
-    */
+     * url binding
+     */
     protected String url;
 
     /**
@@ -52,7 +55,6 @@ public class FilterBindingConfig {
 
     protected String siteName;
 
-
     public FilterBindingConfig() {
         //
     }
@@ -64,7 +66,6 @@ public class FilterBindingConfig {
         this.url = binding.url;
         this.siteName = siteName;
     }
-
 
     public String getUrl() {
         return url;

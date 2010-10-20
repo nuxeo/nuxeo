@@ -1,6 +1,5 @@
 package org.nuxeo.wss.servlet;
 
-
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -10,28 +9,35 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.wss.servlet.config.FilterBindingConfig;
 
 /**
- * Root filter that must handle requests sent directly on /.
- * Outside of the OPTIONS calls, all other calls are forwarded to the backend filter.
+ * Root filter that must handle requests sent directly on /. Outside of the
+ * OPTIONS calls, all other calls are forwarded to the backend filter.
  *
  * @author tiry
- *
  */
 public class WSSFrontFilter extends BaseWSSFilter implements Filter {
 
     @Override
-    protected void handleWSSCall(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterBindingConfig config) throws Exception {
-        throw new UnsupportedOperationException("This filter is not intended to receive actual WSS calls, check your configuration");
+    protected void handleWSSCall(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse, FilterBindingConfig config)
+            throws Exception {
+        throw new UnsupportedOperationException(
+                "This filter is not intended to receive actual WSS calls, check your configuration");
     }
 
     @Override
-    protected void doForward(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterBindingConfig config)  throws Exception {
+    protected void doForward(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse, FilterBindingConfig config)
+            throws Exception {
         // To forward to the backend filter, we need to change context
         // but on some App Server (ex: Tomcat 6) default config prohibit this
-        ServletContext targetContext =ctx.getContext(getRootFilterTarget());
-        if (targetContext!=null) {
-            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(httpRequest, httpResponse);
+        ServletContext targetContext = ctx.getContext(getRootFilterTarget());
+        if (targetContext != null) {
+            targetContext.getRequestDispatcher(httpRequest.getRequestURI()).forward(
+                    httpRequest, httpResponse);
         } else {
-            String newTarget = getRootFilterTarget() + httpRequest.getRequestURI() + "?" + httpRequest.getQueryString();
+            String newTarget = getRootFilterTarget()
+                    + httpRequest.getRequestURI() + "?"
+                    + httpRequest.getQueryString();
             httpResponse.sendRedirect(newTarget);
         }
     }
@@ -39,10 +45,9 @@ public class WSSFrontFilter extends BaseWSSFilter implements Filter {
     @Override
     protected boolean isRootFilter() {
         String target = filterConfig.getInitParameter(ROOT_FILTER_PARAM);
-        if (target!=null && !"".equals(target)) {
+        if (target != null && !"".equals(target)) {
             rootFilterTarget = target;
-        }
-        else {
+        } else {
             rootFilterTarget = "/nuxeo";
         }
         return true;

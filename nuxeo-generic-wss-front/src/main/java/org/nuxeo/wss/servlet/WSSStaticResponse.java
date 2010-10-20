@@ -12,15 +12,14 @@ public class WSSStaticResponse {
 
     protected HttpServletResponse httpResponse;
 
-    protected boolean processed=false;
+    protected boolean processed = false;
 
-    protected String contentType=null;
+    protected String contentType = null;
 
     protected InputStream additionnalStream;
 
-
     public WSSStaticResponse(HttpServletResponse httpResponse) {
-        this.httpResponse=httpResponse;
+        this.httpResponse = httpResponse;
     }
 
     public void processIfNeeded() throws Exception {
@@ -35,24 +34,24 @@ public class WSSStaticResponse {
         }
         processHeaders();
         processRender();
-        processed=true;
+        processed = true;
     }
 
-
     public void addBinaryStream(InputStream stream) {
-        this.additionnalStream=stream;
+        this.additionnalStream = stream;
     }
 
     protected void processHeaders() throws Exception {
-        getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER, WSSConfig.instance().getTSServerVersion());
-        getHttpResponse().setHeader("Set-Cookie","WSS_KeepSessionAuthenticated=80; path=/");
-        //getHttpResponse().setHeader("Server","Microsoft-IIS/6.0");
+        getHttpResponse().setHeader(MSWSSConsts.TSSERVER_VERSION_HEADER,
+                WSSConfig.instance().getTSServerVersion());
+        getHttpResponse().setHeader("Set-Cookie",
+                "WSS_KeepSessionAuthenticated=80; path=/");
+        // getHttpResponse().setHeader("Server","Microsoft-IIS/6.0");
         getHttpResponse().setHeader("X-Powered-By", "ASP.NET");
 
-        if (contentType==null) {
+        if (contentType == null) {
             getHttpResponse().setHeader("Content-type", getDefaultContentType());
-        }
-        else {
+        } else {
             getHttpResponse().setHeader("Content-type", contentType);
         }
     }
@@ -61,7 +60,8 @@ public class WSSStaticResponse {
         return "text/plain";
     }
 
-    protected void processRender() throws Exception {}
+    protected void processRender() throws Exception {
+    }
 
     public HttpServletResponse getHttpResponse() {
         return httpResponse;
@@ -76,8 +76,7 @@ public class WSSStaticResponse {
     }
 
     public void setContentType(String ct) {
-        this.contentType=ct;
+        this.contentType = ct;
     }
-
 
 }
