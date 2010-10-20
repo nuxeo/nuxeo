@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.shibboleth.groups.web.widgets">
 
-  <require>
-    org.nuxeo.ecm.platform.forms.layout.WebLayoutManager
-  </require>
-  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
-
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
     <widget name="userSuggestionWithGroupTree" type="template">
