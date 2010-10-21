@@ -547,7 +547,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-management</artifactId>
-        <version>${nuxeo.services.version}</version>
+        <version>${nuxeo.services.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
