@@ -26,25 +26,22 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
-import org.nuxeo.ecm.core.client.NuxeoClient;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDirectoryWriter;
-import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.CommandLine;
+import org.nuxeo.ecm.shell.commands.repository.AbstractCommand;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ExportCommand implements Command {
+public class ExportCommand extends AbstractCommand {
 
     private static final Log log = LogFactory.getLog(ExportCommand.class);
-
-    private final NuxeoClient client = NuxeoClient.getInstance();
 
     private RepositoryInstance repository;
 
@@ -59,7 +56,8 @@ public class ExportCommand implements Command {
         File file = new File(elements[1]);
 
         // open a session
-        repository = client.openRepository();
+        repository = context.getRepositoryInstance();
+        
         try {
             // run export
             exportTree(path, file);
