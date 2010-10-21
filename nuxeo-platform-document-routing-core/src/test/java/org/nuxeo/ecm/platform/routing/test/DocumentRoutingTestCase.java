@@ -63,6 +63,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
+        CounterListener.resetCouner();
     }
 
     @Override

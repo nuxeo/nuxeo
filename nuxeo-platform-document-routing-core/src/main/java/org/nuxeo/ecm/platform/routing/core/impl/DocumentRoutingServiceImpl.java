@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -297,9 +298,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new ClientRuntimeException(e);
         }
         DocumentModel docRouteElement = routeElement.getDocument();
-        docRouteElement.setPathInfo(
-                session.getDocument(parentDocumentRef).getPathAsString(),
+        DocumentModel parentDocument = session.getDocument(parentDocumentRef);
+        docRouteElement.setPathInfo(parentDocument.getPathAsString(),
                 pss.generatePathSegment(docRouteElement));
+        String lifecycleState = parentDocument.getCurrentLifeCycleState().equals(
+                DocumentRouteElement.ElementLifeCycleState.draft.name()) ? DocumentRouteElement.ElementLifeCycleState.draft.name()
+                : DocumentRouteElement.ElementLifeCycleState.ready.name();
+        docRouteElement.putContextData(
+                LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
+                lifecycleState);
         docRouteElement = session.createDocument(docRouteElement);
         session.orderBefore(parentDocumentRef, routeElement.getName(),
                 sourceName);
@@ -383,15 +390,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public DocumentRoute saveRouteAsNewModel(DocumentRoute instance, CoreSession session) {
+    public DocumentRoute saveRouteAsNewModel(DocumentRoute instance,
+            CoreSession session) {
         DocumentModel instanceModel = instance.getDocument();
-        DocumentModel parent = persister.getParentFolderForNewModel(session, instanceModel);
+        DocumentModel parent = persister.getParentFolderForNewModel(session,
+                instanceModel);
         String newName = persister.getNewModelName(instanceModel);
         try {
-            DocumentModel newmodel = session.copy(instanceModel.getRef(), parent.getRef(), newName);
-            newmodel.setPropertyValue("dc:title",  newName);
+            DocumentModel newmodel = session.copy(instanceModel.getRef(),
+                    parent.getRef(), newName);
+            newmodel.setPropertyValue("dc:title", newName);
             DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
-            newRoute.followTransition(DocumentRouteElement.ElementLifeCycleTransistion.toDraft, session, false);
+            newRoute.followTransition(
+                    DocumentRouteElement.ElementLifeCycleTransistion.toDraft,
+                    session, false);
             newRoute.setAttachedDocuments(new ArrayList<String>());
             newRoute.save(session);
             return newRoute;

@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
-    public void testAddStepToRouteElement() throws Exception {
+    public void testAddStepToDraftRoute() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         session.save();
         assertNotNull(route);
@@ -123,6 +123,52 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals(7, parallel1Childs.size());
         step = parallel1Childs.get(5);
         assertEquals("step33bis", step.getTitle());
+    }
+
+    public void testAddStepToRunningRoute() throws Exception {
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        service.lockDocumentRoute(route, session);
+        service.validateRouteModel(route, session);
+        service.unlockDocumentRoute(route, session);
+        route = service.createNewInstance(route, new ArrayList<String>(), session);
+        session.save();
+        assertNotNull(route);
+        DocumentModel step = session.createDocumentModel(
+                route.getDocument().getPathAsString(), "step31bis",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        step.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME,
+                "step31bis");
+        DocumentModelList stepFolders = session.query("Select * From Document WHERE dc:title = 'parallel1' and ecm:currentLifeCycleState = 'ready'");
+        assertEquals(1, stepFolders.size());
+        DocumentModel parallel1 = stepFolders.get(0);
+        service.lockDocumentRoute(route, session);
+        service.addRouteElementToRoute(parallel1.getRef(), "step32", step.getAdapter(DocumentRouteElement.class),
+                session);
+        service.unlockDocumentRoute(route, session);
+        assertNotNull(route);
+        assertFalse(route.isDone());
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(3, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(2, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        assertFalse(route.isDone());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), session);
+        assertEquals(0, waiting.size());
+        route = session.getDocument(
+                route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
     }
 
     public void testRemoveStep() throws Exception {

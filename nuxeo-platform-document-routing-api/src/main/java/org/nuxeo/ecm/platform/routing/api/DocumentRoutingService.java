@@ -195,6 +195,9 @@ public interface DocumentRoutingService {
     /**
      * Add a route element in another route element.
      *
+     * If the parent element is in draft state, the routeElement is kept in
+     * draft state. Otherwise, the element is set to 'ready' state.
+     *
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param sourceName the name of the previous document in the container.
      * @param routeElement the document to add.
