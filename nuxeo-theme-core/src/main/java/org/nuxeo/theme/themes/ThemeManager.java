@@ -1005,19 +1005,17 @@ public final class ThemeManager implements Registrable {
     }
 
     public static void loadTheme(ThemeDescriptor themeDescriptor) {
+        themeDescriptor.setLoadingFailed(true);
         String src = themeDescriptor.getSrc();
         if (src == null) {
-            themeDescriptor.setLoadingFailed(true);
             log.error("Could not load theme, source not set. ");
             return;
         }
         try {
-            final boolean load = true;
-            ThemeParser.registerTheme(themeDescriptor, load);
+            final boolean preload = false;
+            ThemeParser.registerTheme(themeDescriptor, preload);
             themeDescriptor.setLoadingFailed(false);
-            themeDescriptor.setLastLoaded(new Date());
         } catch (ThemeIOException e) {
-            themeDescriptor.setLoadingFailed(true);
             log.error("Could not register theme: " + src + " " + e.getMessage());
         }
     }
@@ -1031,8 +1029,8 @@ public final class ThemeManager implements Registrable {
         }
         final String oldThemeName = themeDescriptor.getName();
         themeDescriptor.setLoadingFailed(true);
-        final boolean load = true;
-        ThemeParser.registerTheme(themeDescriptor, xmlSource, load);
+        final boolean preload = false;
+        ThemeParser.registerTheme(themeDescriptor, xmlSource, preload);
         String themeName = themeDescriptor.getName();
         themeDescriptor.setName(themeName);
 
@@ -1049,11 +1047,6 @@ public final class ThemeManager implements Registrable {
                 }
             }
         }
-
-        themeDescriptor.setLoadingFailed(false);
-        themeDescriptor.setLastLoaded(new Date());
-
-        log.debug("Loaded theme: " + src);
     }
 
     public void loadTheme(String src) throws ThemeIOException, ThemeException {

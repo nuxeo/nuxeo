@@ -368,8 +368,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             return;
         }
         try {
-            final boolean load = false;
-            ThemeParser.registerTheme(themeDescriptor, load);
+            final boolean preload = true;
+            ThemeParser.registerTheme(themeDescriptor, preload);
         } catch (ThemeIOException e) {
             log.error("Could not register theme: " + src + " " + e.getMessage());
         }
@@ -423,8 +423,8 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             themeDescriptor.setSrc(src);
 
             try {
-                final boolean load = false;
-                ThemeParser.registerTheme(themeDescriptor, load);
+                final boolean preload = true;
+                ThemeParser.registerTheme(themeDescriptor, preload);
             } catch (ThemeIOException e) {
                 log.error("Could not register theme: " + src + " "
                         + e.getMessage());

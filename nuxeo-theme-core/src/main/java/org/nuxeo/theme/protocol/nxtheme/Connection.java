@@ -78,17 +78,13 @@ public final class Connection extends URLConnection {
 
         // render the entire theme
         else if (host.equals("theme")) {
-            rendered = themeManager.getThemeByUrl(url);
             // Theme not loaded yet?
-            if (rendered == null) {
-                String themeName = ThemeManager.getThemeNameByUrl(url);
-                ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-                if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
-                    ThemeManager.loadTheme(themeDescriptor);
-                    rendered = themeManager.getThemeByUrl(url);
-                }
+            String themeName = ThemeManager.getThemeNameByUrl(url);
+            ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+            if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
+                ThemeManager.loadTheme(themeDescriptor);
             }
-
+            rendered = themeManager.getThemeByUrl(url);
         }
 
         if (rendered == null) {

@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,12 +75,13 @@ public class ThemeParser {
     private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
     public static void registerTheme(final ThemeDescriptor themeDescriptor,
-            final boolean load) throws ThemeIOException {
-        registerTheme(themeDescriptor, null, load);
+            final boolean preload) throws ThemeIOException {
+        registerTheme(themeDescriptor, null, preload);
     }
 
     public static void registerTheme(final ThemeDescriptor themeDescriptor,
-            final String xmlSource, final boolean load) throws ThemeIOException {
+            final String xmlSource, final boolean preload)
+            throws ThemeIOException {
         final String src = themeDescriptor.getSrc();
         InputStream in = null;
         try {
@@ -102,7 +104,7 @@ public class ThemeParser {
             } else {
                 in = new ByteArrayInputStream(xmlSource.getBytes());
             }
-            registerThemeFromInputStream(themeDescriptor, in, load);
+            registerThemeFromInputStream(themeDescriptor, in, preload);
         } catch (FileNotFoundException e) {
             throw new ThemeIOException("File not found: " + src, e);
         } catch (IOException e) {
@@ -124,7 +126,7 @@ public class ThemeParser {
 
     private static void registerThemeFromInputStream(
             final ThemeDescriptor themeDescriptor, final InputStream in,
-            boolean load) throws ThemeIOException, ThemeException {
+            boolean preload) throws ThemeIOException, ThemeException {
         String themeName = null;
 
         final InputSource is = new InputSource(in);
@@ -166,14 +168,13 @@ public class ThemeParser {
                             + themeName);
         }
         themeDescriptor.setName(themeName);
-        if (load) {
-            loadTheme(themeDescriptor, docElem);
-        }
+
+        loadTheme(themeDescriptor, docElem, preload);
     }
 
     private static void loadTheme(ThemeDescriptor themeDescriptor,
-            org.w3c.dom.Element docElem) throws ThemeException,
-            ThemeIOException {
+            org.w3c.dom.Element docElem, boolean preload)
+            throws ThemeException, ThemeIOException {
         final ThemeManager themeManager = Manager.getThemeManager();
         // remove old theme
         String themeName = themeDescriptor.getName();
@@ -212,34 +213,80 @@ public class ThemeParser {
                     ",")));
         }
 
-        // register custom presets
-        for (Node n : getChildElementsByTagName(docElem, "presets")) {
-            parsePresets(theme, n);
+        if (preload) {
+            // Only register pages
+            registerThemePages(theme, baseNode);
+
+        } else {
+            // register custom presets
+            for (Node n : getChildElementsByTagName(docElem, "presets")) {
+                parsePresets(theme, n);
+            }
+
+            // register formats
+            for (Node n : getChildElementsByTagName(docElem, "formats")) {
+                parseFormats(theme, docElem, n);
+            }
+
+            // register element properties
+            for (Node n : getChildElementsByTagName(docElem, "properties")) {
+                parseProperties(docElem, n);
+            }
+
+            parseLayout(theme, baseNode);
+
+            // Look for presets in remote resources
+            for (Style style : themeManager.getNamedStyles(themeName)) {
+                PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
+            }
+            for (Style style : themeManager.getStyles(themeName)) {
+                PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
+            }
+
         }
 
-        // register formats
-        for (Node n : getChildElementsByTagName(docElem, "formats")) {
-            parseFormats(theme, docElem, n);
+        if (preload) {
+            log.info("Pre-loaded THEME: " + themeName);
+            themeDescriptor.setLastLoaded(null);
+        } else {
+            log.info("Loaded THEME: " + themeName);
+            themeDescriptor.setLastLoaded(new Date());
         }
 
-        // register element properties
-        for (Node n : getChildElementsByTagName(docElem, "properties")) {
-            parseProperties(docElem, n);
-        }
-
-        // parse layout
-        parseLayout(theme, baseNode);
-
-        // Look for presets in remote resources
-        for (Style style : themeManager.getNamedStyles(themeName)) {
-            PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
-        }
-        for (Style style : themeManager.getStyles(themeName)) {
-            PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
-        }
-
+        // Register in the type registry
         themeManager.registerTheme(theme);
-        log.info("Loaded THEME: " + themeName);
+    }
+
+    public static void checkElementName(String name) throws ThemeIOException {
+        if (!name.matches("[a-z0-9_\\-]+")) {
+            throw new ThemeIOException(
+                    "Element names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
+        }
+    }
+
+    public static void registerThemePages(final Element parent, Node node)
+            throws ThemeIOException, ThemeException {
+        for (Node n : getChildElements(node)) {
+            String nodeName = n.getNodeName();
+            NamedNodeMap attributes = n.getAttributes();
+            Element elem;
+            if ("page".equals(nodeName)) {
+                elem = ElementFactory.create(nodeName);
+
+                Node nameAttr = attributes.getNamedItem("name");
+                if (nameAttr != null) {
+                    String elementName = nameAttr.getNodeValue();
+                    checkElementName(elementName);
+                    elem.setName(elementName);
+                }
+
+                try {
+                    parent.addChild(elem);
+                } catch (NodeException e) {
+                    throw new ThemeIOException("Failed to parse layout.", e);
+                }
+            }
+        }
     }
 
     public static void parseLayout(final Element parent, Node node)

@@ -395,8 +395,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
             ThemeException {
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setSrc("theme.xml");
-        final boolean load = true;
-        ThemeParser.registerTheme(themeDef, load);
+        final boolean preload = false;
+        ThemeParser.registerTheme(themeDef, preload);
         List<Format> formatsBefore = themeManager.listFormats();
         themeManager.removeOrphanedFormats();
         List<Format> formatsAfter = themeManager.listFormats();

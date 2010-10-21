@@ -52,8 +52,8 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         themeDef.setSrc("roundtrip-theme.xml");
         themeDef.setLastLoaded(new Date());
         Manager.getTypeRegistry().register(themeDef);
-        final boolean load = true;
-        ThemeParser.registerTheme(themeDef, load);
+        final boolean preload = false;
+        ThemeParser.registerTheme(themeDef, preload);
         final String output = new ThemeSerializer().serializeToXml(
                 "roundtrip-theme.xml", 2);
         final String input = Utils.readResourceAsString("roundtrip-theme.xml");
