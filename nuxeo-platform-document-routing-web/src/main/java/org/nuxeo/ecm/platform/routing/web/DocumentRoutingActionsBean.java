@@ -196,7 +196,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
     public String saveRouteAsNewInstance() {
-        //place holder for futur implementation
+        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(), documentManager);
         return null;
     }
 

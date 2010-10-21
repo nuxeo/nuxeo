@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>

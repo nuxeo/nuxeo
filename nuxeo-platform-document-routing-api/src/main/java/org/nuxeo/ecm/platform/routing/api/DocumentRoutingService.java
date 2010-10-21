@@ -68,6 +68,19 @@ public interface DocumentRoutingService {
             CoreSession session);
 
     /**
+     * Save a route instance as a new model of route.
+     *
+     * The place in which the new instance is persisted and its name depends on
+     * {@link DocumentRoutingPersister}. The route instance should be in either
+     * running, done or ready state. The new route model will be in draft state
+     * and won't have any attached documents.
+     *
+     * @param route the instance from which we create a new model.
+     * @return the new model in draft state.
+     */
+    DocumentRoute saveRouteAsNewModel(DocumentRoute route, CoreSession session);
+
+    /**
      * Return the list of available {@link DocumentRoute} model the user can
      * start.
      *

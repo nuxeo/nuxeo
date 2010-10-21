@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.text.DateFormat;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,9 +32,6 @@ import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
  *
  */
 public class LockableDocumentRouteImpl implements LockableDocumentRoute {
-
-    private static final Log log = LogFactory.getLog(LockableDocumentRouteImpl.class);
-
     protected final DocumentModel doc;
 
     public LockableDocumentRouteImpl(DocumentModel document) {

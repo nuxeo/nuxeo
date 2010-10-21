@@ -55,6 +55,21 @@
 	<artifactId>nuxeo-automation-core</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+	<groupId>org.nuxeo.ecm.platform</groupId>
+	<artifactId>nuxeo-platform-userworkspace-api</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.nuxeo.ecm.platform</groupId>
+	<artifactId>nuxeo-platform-userworkspace-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.nuxeo.ecm.platform</groupId>
+	<artifactId>nuxeo-platform-userworkspace-types</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
     </dependencies>  
   </dependencyManagement>
 

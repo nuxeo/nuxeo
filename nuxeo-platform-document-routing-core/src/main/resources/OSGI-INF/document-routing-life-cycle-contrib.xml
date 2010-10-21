@@ -24,6 +24,9 @@
         <transition name="toCancelled" destinationState="cancelled">
           <description>cancel this element</description>
         </transition>
+        <transition name="toDraft" destinationState="draft">
+          <description>go to the draft state, this is done when creating a new instance from a model</description>
+        </transition>
       </transitions>
       <states>
         <state name="draft" description="Default state" initial="true">
@@ -40,6 +43,7 @@
           <transitions>
             <transition>toRunning</transition>
             <transition>toCancelled</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
         <state name="running" description="The element is running">
@@ -47,12 +51,14 @@
             <transition>toDone</transition>
             <transition>backToReady</transition>
             <transition>toCancelled</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
         <state name="done" description="The element is done">
           <transitions>
             <transition>backToReady</transition>
             <transition>toCancelled</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
       </states>

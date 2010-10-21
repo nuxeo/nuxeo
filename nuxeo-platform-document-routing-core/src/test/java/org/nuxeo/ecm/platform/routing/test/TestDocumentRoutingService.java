@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -142,6 +143,24 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.unlockDocumentRoute(route, session);
         childs = service.getOrderedRouteElement(stepFolder.getId(), session);
         assertEquals(1, childs.size());
+    }
+
+    public void testSaveInstanceAsNewModel() throws Exception {
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        service.lockDocumentRoute(route, session);
+        route = service.validateRouteModel(route, session);
+        service.unlockDocumentRoute(route, session);
+        route = service.createNewInstance(route, new ArrayList<String>(), session);
+        assertNotNull(route);
+        session.save();
+        session = openSessionAs("routeManagers");
+        DocumentModel step = session.getChildren(route.getDocument().getRef()).get(0);
+        service.lockDocumentRoute(route, session);
+        service.removeRouteElement(step.getAdapter(DocumentRouteElement.class), session);
+        service.unlockDocumentRoute(route, session);
+        DocumentRoute newModel = service.saveRouteAsNewModel(route, session);
+        assertNotNull(newModel);
+        assertEquals("(COPY) route1", (String) newModel.getDocument().getPropertyValue("dc:title"));
     }
 
     public void testRemoveStepFromLockedRoute() throws Exception {

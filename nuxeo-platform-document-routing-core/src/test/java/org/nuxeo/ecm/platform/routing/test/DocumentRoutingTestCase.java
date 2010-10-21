@@ -59,6 +59,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
+        deployBundle("org.nuxeo.ecm.platform.userworkspace.core");
+        deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
     }

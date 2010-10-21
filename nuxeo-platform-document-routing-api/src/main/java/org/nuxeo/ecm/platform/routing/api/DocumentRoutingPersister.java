@@ -14,11 +14,10 @@
  * Contributors:
  *     arussel
  */
-package org.nuxeo.ecm.platform.routing.core.api;
+package org.nuxeo.ecm.platform.routing.api;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**
  * The DocumentRoutingPersister is responsible creating a folder structure to
@@ -77,4 +76,21 @@ public interface DocumentRoutingPersister {
      */
     DocumentModel getOrCreateRootOfDocumentRouteInstanceStructure(
             CoreSession session);
+
+    /**
+     * Returns a folder in which new model, created from an instance of route
+     * will be stored.
+     *
+     * @param session the session of the user
+     * @param instance the instance that will be persisted as new model.
+     */
+    DocumentModel getParentFolderForNewModel(CoreSession session, DocumentModel instance);
+
+    /**
+     * Return the new name of a model when it is created from an instance.
+     *
+     * @see DocumentRoutingService#saveRouteAsNewModel(DocumentRoute, String, CoreSession)
+     * @return the new name
+     */
+    String getNewModelName(DocumentModel instance);
 }

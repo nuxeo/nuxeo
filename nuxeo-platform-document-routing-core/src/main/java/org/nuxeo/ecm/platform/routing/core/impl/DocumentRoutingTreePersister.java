@@ -33,14 +33,16 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.persistence.TreeHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * The default persister. It persists the {@link DocumentRoute} in a tree
- * hierarchy ressembling the current date.
+ * hierarchy ressembling the current date. New model created from instance are
+ * stored in the personal workspace of the user.
  *
  * @author arussel
  *
@@ -172,5 +174,25 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             }
         }
         return res.get(0);
+    }
+
+    @Override
+    public DocumentModel getParentFolderForNewModel(CoreSession session,
+            DocumentModel instance) {
+        try {
+            UserWorkspaceService service = Framework.getService(UserWorkspaceService.class);
+            return service.getCurrentUserPersonalWorkspace(session, instance);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getNewModelName(DocumentModel instance) {
+        try {
+            return "(COPY) " + instance.getPropertyValue("dc:title");
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

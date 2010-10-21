@@ -34,13 +34,13 @@ import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
-import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -380,5 +380,23 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRouteElement rElement = parentDoc.getAdapter(DocumentRouteElement.class);
         return rElement.getDocumentRoute(session);
 
+    }
+
+    @Override
+    public DocumentRoute saveRouteAsNewModel(DocumentRoute instance, CoreSession session) {
+        DocumentModel instanceModel = instance.getDocument();
+        DocumentModel parent = persister.getParentFolderForNewModel(session, instanceModel);
+        String newName = persister.getNewModelName(instanceModel);
+        try {
+            DocumentModel newmodel = session.copy(instanceModel.getRef(), parent.getRef(), newName);
+            newmodel.setPropertyValue("dc:title",  newName);
+            DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
+            newRoute.followTransition(DocumentRouteElement.ElementLifeCycleTransistion.toDraft, session, false);
+            newRoute.setAttachedDocuments(new ArrayList<String>());
+            newRoute.save(session);
+            return newRoute;
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

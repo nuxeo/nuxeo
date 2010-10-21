@@ -45,7 +45,7 @@ public interface DocumentRouteElement extends Serializable {
      *
      */
     enum ElementLifeCycleTransistion {
-        toValidated, toReady, toRunning, toDone, backToReady, toCancelled
+        toValidated, toReady, toRunning, toDone, backToReady, toCancelled, toDraft
     }
 
     /**
