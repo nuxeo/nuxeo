@@ -82,7 +82,7 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.ressource</groupId>
+      <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
     </dependency>
 
