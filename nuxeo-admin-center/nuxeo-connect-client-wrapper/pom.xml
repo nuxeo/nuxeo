@@ -72,7 +72,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ressource</groupId>
+      <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
       <scope>test</scope>
     </dependency>
