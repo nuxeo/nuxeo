@@ -1205,9 +1205,16 @@
         <artifactId>bsh-engine</artifactId>
         <version>1.0</version>
       </dependency>
+      <!-- Prefer use of javax.resource:connector-api:1.5 -->
       <dependency>
         <groupId>javax.ressource</groupId>
         <artifactId>jca-api</artifactId>
+        <version>1.5</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.ressource</groupId>
+        <artifactId>connector-api</artifactId>
         <version>1.5</version>
         <scope>provided</scope>
       </dependency>
