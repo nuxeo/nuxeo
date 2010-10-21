@@ -122,7 +122,7 @@ class Nuxeo(NuxeoTestCase):
 
         p.dashboard()
         p.getRootWorkspaces()
-        p.dashboardNew()
+        # p.dashboardNew()
         p.getRootWorkspaces()
         p.personalWorkspace()
         if self.search:
