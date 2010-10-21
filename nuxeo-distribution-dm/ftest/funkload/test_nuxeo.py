@@ -124,7 +124,7 @@ class Nuxeo(NuxeoTestCase):
         p.getRootWorkspaces()
         # p.dashboardNew()
         p.getRootWorkspaces()
-        p.personalWorkspace()
+        # p.personalWorkspace()
         if self.search:
             p.getRootWorkspaces()
             p = (p.search('scrum', 'Search with empty results')
