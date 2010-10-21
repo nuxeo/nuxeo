@@ -23,7 +23,7 @@
       <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ressource</groupId>
+      <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
     </dependency>
     <dependency>
