@@ -236,6 +236,7 @@
         <include name="servlet-api-*" />
         <include name="script-api-*" />
         <include name="jca-api-*" />
+        <include name="connector-api-*" />
         <include name="el-*" />
         <include name="catalina-*" />
         <!-- should remove the following?
