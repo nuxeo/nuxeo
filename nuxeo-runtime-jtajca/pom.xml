@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <artifactId>connector-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.components</groupId>
