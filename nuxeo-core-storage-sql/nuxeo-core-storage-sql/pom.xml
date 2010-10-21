@@ -83,7 +83,7 @@
 
     <dependency>
       <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <artifactId>connector-api</artifactId>
     </dependency>
 
     <dependency>
@@ -151,36 +151,14 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- needed for database-specific tests
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.6</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.jtds</groupId>
-      <artifactId>jtds</artifactId>
-      <version>1.2.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc14</artifactId>
-      <version>10.2.0.3.0</version>
-      <scope>test</scope>
-    </dependency>
-    -->
+    <!-- needed for database-specific tests <dependency> <groupId>org.apache.derby</groupId> 
+      <artifactId>derby</artifactId> <scope>test</scope> </dependency> <dependency> <groupId>postgresql</groupId> 
+      <artifactId>postgresql</artifactId> <scope>test</scope> </dependency> <dependency> 
+      <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> <version>5.1.6</version> 
+      <scope>test</scope> </dependency> <dependency> <groupId>net.sourceforge.jtds</groupId> 
+      <artifactId>jtds</artifactId> <version>1.2.2</version> <scope>test</scope> </dependency> 
+      <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId> <version>10.2.0.3.0</version> 
+      <scope>test</scope> </dependency> -->
   </dependencies>
 
   <build>

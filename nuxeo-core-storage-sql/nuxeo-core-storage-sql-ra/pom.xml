@@ -66,10 +66,9 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- TODO: Use the dep from the central repo -->
     <dependency>
       <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <artifactId>connector-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
