@@ -137,7 +137,7 @@
     </dependency>
     <dependency>
       <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <artifactId>connector-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
