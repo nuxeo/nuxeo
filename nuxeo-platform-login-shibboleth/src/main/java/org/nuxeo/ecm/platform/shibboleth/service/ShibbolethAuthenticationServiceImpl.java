@@ -73,7 +73,12 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
 
     @Override
     public String getUserID(HttpServletRequest httpRequest) {
-        return httpRequest.getHeader(config.getUidHeader());
+        String idpUrl = httpRequest.getHeader(config.getIdpHeader());
+        String uidHeader = config.getUidHeaders().get(idpUrl);
+        if (uidHeader == null) {
+            uidHeader = config.getDefaultUidHeader();
+        }
+        return httpRequest.getHeader(uidHeader);
     }
 
     @Override

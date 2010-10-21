@@ -73,4 +73,21 @@ public class TestShibbolethAuthenticationService {
         assertEquals("https://host/Shibboleth.sso/Logout?return=" + encodedRedirectUrl, logoutURL);
     }
 
+    @Test
+    public void testUidHeader() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setHeader("uid", "test");
+        request.setHeader("uid1", "test1");
+        request.setHeader("uid2", "test2");
+
+        request.setHeader("shib-identity-provider", "url1");
+        assertEquals("test1", service.getUserID(request));
+
+        request.setHeader("shib-identity-provider", "url2");
+        assertEquals("test2", service.getUserID(request));
+
+        request.setHeader("shib-identity-provider", "another.url");
+        assertEquals("test", service.getUserID(request));
+    }
+
 }

@@ -5,7 +5,11 @@
       target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
       point="config">
       <config>
-        <uidHeader>uid</uidHeader>
+        <uidHeaders>
+          <uidHeader idpUrl="url1">uid1</uidHeader>
+          <uidHeader idpUrl="url2">uid2</uidHeader>
+          <default>uid</default>
+        </uidHeaders>
 
         <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
         <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>

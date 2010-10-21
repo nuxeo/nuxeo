@@ -21,6 +21,7 @@
     <documentation>
       Hold configuration for the Shibboleth Authentication Service. Contains:
       * the mapping between request headers and user fields
+      * which header is used as user Id depending of the chosen IdP
       * the login / logout URLs for Shibboleth
 
       A sample configuration could be:
@@ -29,7 +30,10 @@
           target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
           point="config">
           <config>
-            <uidHeader>uid</uidHeader>
+            <uidHeaders>
+              <uidHeader idpUrl="https://specific.idp">differentUid</uidHeader>
+              <default>uid</default>
+            </uidHeaders>
 
             <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
             <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
