@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.shibboleth.auth;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +30,10 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class ShibbolethAuthenticationPlugin implements
@@ -44,20 +41,17 @@ public class ShibbolethAuthenticationPlugin implements
 
     private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
 
-    protected ShibbolethAuthenticationConfig config;
+    protected ShibbolethAuthenticationService service;
 
-    protected ShibbolethAuthenticationConfig getConfig() {
-        if (config == null) {
+    protected ShibbolethAuthenticationService getService() {
+        if (service == null) {
             try {
-                ShibbolethAuthenticationService service = Framework.getService(ShibbolethAuthenticationService.class);
-                config = service.getConfig();
+                service = Framework.getService(ShibbolethAuthenticationService.class);
             } catch (Exception e) {
-                log.error(
-                        "Failed to load Shibboleth authentication configuration",
-                        e);
+                log.error("Failed to get Shibboleth authentication service", e);
             }
         }
-        return config;
+        return service;
     }
 
     public List<String> getUnAuthenticatedURLPrefix() {
@@ -66,18 +60,15 @@ public class ShibbolethAuthenticationPlugin implements
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
-        ShibbolethAuthenticationConfig config = getConfig();
-        if (config == null) {
+        if (getService() == null) {
             return false;
         }
-        String loginURL = config.getLoginURL();
+        String loginURL = getService().getLoginURL(httpRequest);
+        if (loginURL == null) {
+            log.error("Unable to handle Shibboleth login, no loginURL registered");
+            return false;
+        }
         try {
-            if (loginURL == null) {
-                log.error("Unable to handle Shibboleth login, no loginURL registered");
-                return false;
-            }
-            loginURL = loginURL + "?target="
-                    + VirtualHostHelper.getBaseURL(httpRequest);
             httpResponse.sendRedirect(loginURL);
         } catch (IOException e) {
             String errorMessage = String.format(
@@ -91,17 +82,14 @@ public class ShibbolethAuthenticationPlugin implements
     @Override
     public Boolean handleLogout(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
-        ShibbolethAuthenticationConfig config = getConfig();
-        if (config == null) {
+        if (getService() == null) {
             return false;
         }
-        String logoutURL = config.getLogoutURL();
+        String logoutURL = getService().getLogoutURL(httpRequest);
         if (logoutURL == null) {
             return false;
         }
         try {
-            logoutURL = logoutURL + "?return="
-                    + VirtualHostHelper.getBaseURL(httpRequest);
             httpResponse.sendRedirect(logoutURL);
         } catch (IOException e) {
             log.error("Unable to handle Shibboleth logout", e);
@@ -112,13 +100,12 @@ public class ShibbolethAuthenticationPlugin implements
 
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        ShibbolethAuthenticationConfig config = getConfig();
-        if (config == null) {
+        if (getService() == null) {
             return null;
         }
 
-        String username = httpRequest.getHeader(config.getUidHeader());
-        if (username == null || "".equals(username)) {
+        String userId = getService().getUserID(httpRequest);
+        if (userId == null || "".equals(userId)) {
             return null;
         }
         Session userDir = null;
@@ -126,12 +113,8 @@ public class ShibbolethAuthenticationPlugin implements
             UserManager userManager = Framework.getService(UserManager.class);
             userDir = Framework.getService(DirectoryService.class).open(
                     userManager.getUserDirectoryName());
-            Map<String, Object> fieldMap = new HashMap<String, Object>();
-            for (String key : config.getFieldMapping().keySet()) {
-                fieldMap.put(config.getFieldMapping().get(key),
-                        httpRequest.getHeader(key));
-            }
-            DocumentModel entry = userDir.getEntry(username);
+            Map<String, Object> fieldMap = getService().getUserMetadata(httpRequest);
+            DocumentModel entry = userDir.getEntry(userId);
             if (entry == null) {
                 userDir.createEntry(fieldMap);
             } else {
@@ -152,7 +135,7 @@ public class ShibbolethAuthenticationPlugin implements
             }
         }
 
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(userId, userId);
     }
 
     public void initPlugin(Map<String, String> parameters) {

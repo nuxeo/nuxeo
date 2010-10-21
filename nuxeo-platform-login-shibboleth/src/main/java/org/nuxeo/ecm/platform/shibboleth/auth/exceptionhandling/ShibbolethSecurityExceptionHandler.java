@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.shibboleth.auth.exceptionhandling;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
@@ -25,11 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.seam.web.Session;
-import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoSecurityExceptionHandler;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -38,61 +35,51 @@ import org.nuxeo.runtime.api.Framework;
 public class ShibbolethSecurityExceptionHandler extends
         NuxeoSecurityExceptionHandler {
 
-    protected ShibbolethAuthenticationConfig config;
+    protected ShibbolethAuthenticationService service;
 
     @Override
     protected boolean handleAnonymousException(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
-        ShibbolethAuthenticationConfig config = getConfig();
-        if (config != null) {
-            String loginURL = config.getLoginURL();
-            try {
-                if (loginURL == null) {
-                    log.error("Unable to handle Shibboleth login, no loginURL registered");
-                }
-                String redirectURL = VirtualHostHelper.getBaseURL(request);
-                if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
-                    redirectURL += request.getAttribute(NXAuthConstants.REQUESTED_URL);
-                }
-                redirectURL = URLEncoder.encode(redirectURL, "UTF-8");
-
-                loginURL = loginURL + "?target=" + redirectURL;
-                if (!response.isCommitted()) {
-                    request.setAttribute(
-                            NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                    Session.instance().invalidate();
-                    response.sendRedirect(loginURL);
-                    FacesContext fContext = FacesContext.getCurrentInstance();
-                    if (fContext != null) {
-                        fContext.responseComplete();
-                    } else {
-                        log.error("Cannot set response complete: faces context is null");
-                    }
-                } else {
-                    log.error("Cannot redirect to login page: response is already commited");
-                }
-            } catch (IOException e) {
-                String errorMessage = String.format(
-                        "Unable to handle Shibboleth login on %s", loginURL);
-                log.error(errorMessage, e);
-            }
-            return true;
+        if (getService() == null) {
+            return false;
         }
-        return false;
+        String loginURL = getService().getLoginURL(request);
+        if (loginURL == null) {
+            log.error("Unable to handle Shibboleth login, no loginURL registered");
+            return false;
+        }
+        try {
+            if (!response.isCommitted()) {
+                request.setAttribute(
+                        NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                Session.instance().invalidate();
+                response.sendRedirect(loginURL);
+                FacesContext fContext = FacesContext.getCurrentInstance();
+                if (fContext != null) {
+                    fContext.responseComplete();
+                } else {
+                    log.error("Cannot set response complete: faces context is null");
+                }
+            } else {
+                log.error("Cannot redirect to login page: response is already commited");
+            }
+        } catch (IOException e) {
+            String errorMessage = String.format(
+                    "Unable to handle Shibboleth login on %s", loginURL);
+            log.error(errorMessage, e);
+        }
+        return true;
     }
 
-    protected ShibbolethAuthenticationConfig getConfig() {
-        if (config == null) {
+    protected ShibbolethAuthenticationService getService() {
+        if (service == null) {
             try {
-                ShibbolethAuthenticationService service = Framework.getService(ShibbolethAuthenticationService.class);
-                config = service.getConfig();
+                service = Framework.getService(ShibbolethAuthenticationService.class);
             } catch (Exception e) {
-                log.error(
-                        "Failed to load Shibboleth authentication configuration",
-                        e);
+                log.error("Failed to get Shibboleth authentication service", e);
             }
         }
-        return config;
+        return service;
     }
 
 }

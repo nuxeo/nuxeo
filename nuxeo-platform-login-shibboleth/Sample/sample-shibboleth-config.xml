@@ -29,4 +29,17 @@
     </config>
   </extension>
 
+  <!-- Add an Anonymous user -->
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Guest">
+          <property name="firstName">Guest</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+
 </component>

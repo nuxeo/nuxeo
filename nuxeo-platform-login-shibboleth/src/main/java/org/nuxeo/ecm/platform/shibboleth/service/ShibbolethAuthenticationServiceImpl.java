@@ -3,7 +3,11 @@ package org.nuxeo.ecm.platform.shibboleth.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -47,6 +51,39 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent
         Map<String, String> urlParameters = new HashMap<String, String>();
         urlParameters.put(config.getLogoutRedirectURLParameter(), redirectURL);
         return URIUtils.addParametersToURIQuery(config.getLogoutURL(), urlParameters);
+    }
+
+    protected String getRedirectUrl(HttpServletRequest request) {
+        String redirectURL = VirtualHostHelper.getBaseURL(request);
+        if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
+            redirectURL += request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        }
+        return redirectURL;
+    }
+
+    @Override
+    public String getLoginURL(HttpServletRequest request) {
+        return getLoginURL(getRedirectUrl(request));
+    }
+
+    @Override
+    public String getLogoutURL(HttpServletRequest request) {
+        return getLogoutURL(getRedirectUrl(request));
+    }
+
+    @Override
+    public String getUserID(HttpServletRequest httpRequest) {
+        return httpRequest.getHeader(config.getUidHeader());
+    }
+
+    @Override
+    public Map<String, Object> getUserMetadata(HttpServletRequest httpRequest) {
+        Map<String, Object> fieldMap = new HashMap<String, Object>();
+        for (String key : config.getFieldMapping().keySet()) {
+            fieldMap.put(config.getFieldMapping().get(key),
+                    httpRequest.getHeader(key));
+        }
+        return fieldMap;
     }
 
 }
