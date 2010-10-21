@@ -1213,7 +1213,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.ressource</groupId>
+        <groupId>javax.resource</groupId>
         <artifactId>connector-api</artifactId>
         <version>1.5</version>
         <scope>provided</scope>
