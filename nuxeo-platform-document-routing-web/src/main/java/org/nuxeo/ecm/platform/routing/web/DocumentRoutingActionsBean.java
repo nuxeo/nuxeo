@@ -294,7 +294,11 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String startRouteRelatedToCurrentDocument() throws ClientException {
         DocumentRoute route = getRelatedRoute();
-        // if no relatedRouteModelDocumentId
+        // check relatedRoutedoc id
+        if(relatedRouteModelDocumentId != null) {
+            DocumentModel model = documentManager.getDocument(new IdRef(relatedRouteModelDocumentId));
+            route = model.getAdapter(DocumentRoute.class);
+        }
         if (route == null) {
             facesMessages.add(
                     FacesMessage.SEVERITY_WARN,

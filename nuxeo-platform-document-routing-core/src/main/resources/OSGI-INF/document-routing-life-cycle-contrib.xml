@@ -39,7 +39,7 @@
             <transition>toReady</transition>
           </transitions>
         </state>
-        <state name="ready" description="The element is ready">
+        <state name="ready" description="The element is ready" initial="true">
           <transitions>
             <transition>toRunning</transition>
             <transition>toCancelled</transition>
