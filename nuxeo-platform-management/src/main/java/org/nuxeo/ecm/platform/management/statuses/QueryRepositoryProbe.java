@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.Probe {
 
-    protected static final String queryString = "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' LIMIT 10";
+    protected static final String queryString = "SELECT * FROM Document";
 
     public static class Runner extends UnrestrictedSessionRunner {
 
@@ -37,7 +37,7 @@ public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.P
 
         @Override
         public void run() throws ClientException {
-            DocumentModelList list = session.query(queryString);
+            DocumentModelList list = session.query(queryString, null, 1, 0, false);
             info =" selected " + list.size() + " documents";
         }
 
