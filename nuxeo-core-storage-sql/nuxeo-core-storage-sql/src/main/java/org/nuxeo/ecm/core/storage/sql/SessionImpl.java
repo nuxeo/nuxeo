@@ -821,11 +821,11 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node checkIn(Node node, String label, String description)
+    public Node checkIn(Node node, String label, String checkinComment)
             throws StorageException {
         checkLive();
         flush();
-        Serializable id = context.checkIn(node, label, description);
+        Serializable id = context.checkIn(node, label, checkinComment);
         requireReadAclsUpdate();
         // save to reflect changes immediately in database
         flush();

@@ -268,9 +268,9 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Node checkIn(Node node, String label, String description)
+    public Node checkIn(Node node, String label, String checkinComment)
             throws StorageException {
-        return getSession().checkIn(node, label, description);
+        return getSession().checkIn(node, label, checkinComment);
     }
 
     @Override

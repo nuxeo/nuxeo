@@ -97,22 +97,6 @@ public interface Document extends DocumentContainer, PropertyContainer,
     Calendar getLastModified() throws DocumentException;
 
     /**
-     * Sets the dirty flag on this document.
-     *
-     * @param value true to set the dirty flag, false otherwise
-     * @throws DocumentException
-     */
-    void setDirty(boolean value) throws DocumentException;
-
-    /**
-     * Checks if the dirty flag is set on this document.
-     *
-     * @return true if the dirty flag is set, false otherwise
-     * @throws DocumentException
-     */
-    boolean isDirty() throws DocumentException;
-
-    /**
      * Tests whether this document represent a folder or a leaf document.
      *
      * @return true if the document is a folder document, false otherwise

@@ -164,30 +164,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("c", "d"), participants);
     }
 
-    public void testSystemProperties() throws Exception {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
-        doc = session.createDocument(doc);
-        session.save();
-        Boolean bool = doc.getSystemProp("WfinProgress", Boolean.class);
-        assertEquals(Boolean.FALSE, bool);
-        String opt = doc.getSystemProp("WfIncOption", String.class);
-        assertNull(opt);
-
-        session.setDocumentSystemProp(doc.getRef(), "WfinProgress",
-                Boolean.TRUE);
-        session.setDocumentSystemProp(doc.getRef(), "WfIncOption", "option1");
-        session.save();
-        closeSession();
-        openSession();
-        root = session.getRootDocument();
-        doc = session.getChild(root.getRef(), "doc");
-        bool = doc.getSystemProp("WfinProgress", Boolean.class);
-        assertEquals(Boolean.TRUE, bool);
-        opt = doc.getSystemProp("WfIncOption", String.class);
-        assertEquals("option1", opt);
-    }
-
     public void testPathWithExtraSlash() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
         doc = session.createDocument(doc);
@@ -2282,7 +2258,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(childFile.getId(), sourceId);
 
         session.save();
-        session.checkIn(childFile.getRef(), (String) null);
+        session.checkIn(childFile.getRef(), null, null);
 
         // Different source ids now.
         assertNotNull(childFile.getSourceId());
@@ -3068,7 +3044,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "issued", cal1);
         doc = session.saveDocument(doc);
 
-        session.checkIn(doc.getRef(), (String) null);
+        session.checkIn(doc.getRef(), null, null);
         session.checkOut(doc.getRef());
         doc.setProperty("dublincore", "title", "t2");
         doc.setProperty("dublincore", "issued", cal2);
@@ -3114,7 +3090,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "title", "t1");
         doc = session.saveDocument(doc);
 
-        session.checkIn(doc.getRef(), (String) null);
+        session.checkIn(doc.getRef(), null, null);
         session.checkOut(doc.getRef());
         doc.setProperty("dublincore", "title", "t2");
         doc = session.saveDocument(doc);

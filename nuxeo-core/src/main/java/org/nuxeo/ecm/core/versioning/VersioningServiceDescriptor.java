@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
+package org.nuxeo.ecm.core.versioning;
 
-package org.nuxeo.ecm.core.api.adapter;
+import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Descriptor to contribute a new {@link VersioningService}.
  */
-public interface DocumentAdapterFactory {
+@XObject("service")
+public class VersioningServiceDescriptor implements Serializable {
 
-    Object getAdapter(DocumentModel doc, Class<?> itf);
+    private static final long serialVersionUID = 1L;
+
+    @XNode("@class")
+    protected String className;
 
 }

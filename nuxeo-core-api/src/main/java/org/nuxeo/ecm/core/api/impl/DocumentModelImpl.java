@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
@@ -50,7 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -61,6 +59,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
@@ -673,13 +672,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public void checkOut() throws ClientException {
         getCoreSession().checkOut(ref);
         checkedout = Boolean.TRUE;
+        refresh(REFRESH_CONTENT_IF_LOADED, null); // new version number
     }
 
     @Override
-    public DocumentModel checkIn(String description) throws ClientException {
-        DocumentModel version = getCoreSession().checkIn(ref, description);
+    public DocumentRef checkIn(VersioningOption option, String description)
+            throws ClientException {
+        DocumentRef versionRef = getCoreSession().checkIn(ref, option,
+                description);
         checkedout = Boolean.FALSE;
-        return version;
+        refresh(REFRESH_CONTENT_IF_LOADED, null); // new version number
+        return versionRef;
     }
 
     @Override
@@ -787,12 +790,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isFolder() {
-        return hasFacet("Folderish");
+        return hasFacet(FacetNames.FOLDERISH);
     }
 
     @Override
     public boolean isVersionable() {
-        return hasFacet("Versionable");
+        return hasFacet(FacetNames.VERSIONABLE);
     }
 
     @Override
@@ -1172,7 +1175,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getVersionLabel() {
-        return (String) contextData.getScopedValue("version.label");
+        try {
+            return getCoreSession().getVersionLabel(this);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public boolean isSchemaLoaded(String name) {
@@ -1243,37 +1250,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
-
-        buf.append(DocumentModelImpl.class.getSimpleName());
-        buf.append(" {");
-        buf.append(" -title: ");
+        String title;
         try {
-            buf.append(getProperty("dublincore", "title"));
+            title = getTitle();
         } catch (ClientException e) {
-            buf.append("ERROR GETTING THE TITLE: " + e);
+            title = "(ERROR: " + e + ')';
         }
-        buf.append(", sessionId: ");
-        buf.append(sid);
-        buf.append(", doc id: ");
-        buf.append(id);
-        buf.append(", name: ");
-        buf.append(getName());
-        buf.append(", path: ");
-        buf.append(path);
-        buf.append(", ref: ");
-        buf.append(ref);
-        buf.append(", parent ref: ");
-        buf.append(getParentRef());
-        buf.append(", data models: ");
-        buf.append(dataModels);
-        buf.append(", declaredFacets: ");
-        buf.append(declaredFacets);
-        buf.append(", declaredSchemas: ");
-        buf.append(declaredSchemas);
-        buf.append('}');
-
-        return buf.toString();
+        return getClass().getSimpleName() + '(' + id + ", path=" + path
+                + ", title=" + title + ')';
     }
 
     @Override

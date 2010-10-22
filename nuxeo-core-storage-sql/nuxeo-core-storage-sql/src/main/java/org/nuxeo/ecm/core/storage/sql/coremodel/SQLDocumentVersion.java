@@ -105,6 +105,11 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     @Override
+    public DocumentVersion getBaseVersion() throws DocumentException {
+        return null;
+    }
+
+    @Override
     public Document getSourceDocument() throws DocumentException {
         if (versionableNode == null) {
             return null;
@@ -185,7 +190,7 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
      */
 
     @Override
-    public Document checkIn(String label, String description) {
+    public DocumentVersion checkIn(String label, String description) {
         throw new VersionNotModifiableException();
     }
 

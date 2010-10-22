@@ -185,7 +185,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     @Override
     public String toString() {
-        return "ComplexType: " + name + "; " + ns;
+        return getClass().getSimpleName() + '(' + name + ')';
     }
 
     @Override

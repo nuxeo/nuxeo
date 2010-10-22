@@ -1183,7 +1183,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         /*
          * ecm:versionLabel
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1'");
         assertIdSet(dml, version.getId());
 
         /*

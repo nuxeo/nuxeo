@@ -324,10 +324,14 @@ public interface DocumentModel extends Serializable {
      * Only applicable to documents that are live (not versions and not
      * proxies).
      *
-     * @param description an optional version description (checkin comment)
+     * @param option whether to do create a new {@link VersioningOption#MINOR}
+     *            or {@link VersioningOption#MAJOR} version during check in
+     * @param checkinComment the checkin comment
+     * @return the version just created
      * @since 5.4
      */
-    DocumentModel checkIn(String description) throws ClientException;
+    DocumentRef checkIn(VersioningOption option, String checkinComment)
+            throws ClientException;
 
     /**
      * Gets the access control policy (ACP) for this document.

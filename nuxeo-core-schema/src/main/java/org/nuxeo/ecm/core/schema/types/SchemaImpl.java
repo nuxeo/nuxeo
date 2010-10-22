@@ -70,7 +70,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
 
     @Override
     public String toString() {
-        return name + "; " + ns;
+        return getClass().getSimpleName() + '(' + name + ')';
     }
 
     @Override

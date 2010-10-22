@@ -448,7 +448,7 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public String toString() {
-        return getPath();
+        return getClass().getSimpleName() + '(' + getPath() + ')';
     }
 
     // @Override

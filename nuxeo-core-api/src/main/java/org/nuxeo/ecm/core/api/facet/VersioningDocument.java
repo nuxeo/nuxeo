@@ -29,17 +29,19 @@ import org.nuxeo.ecm.core.api.DocumentException;
  */
 public interface VersioningDocument {
 
-    // TODO make a method shouldCreateSnapshotOnSave()...
-    // that looks into contextData of this object and
-    // reads the boolean with this key
-    // - make changes in AbstractSession afterwards
-
+    /**
+     * @deprecated use {@link VersioningService#VERSIONING_OPTION} instead
+     */
+    @Deprecated
     String CREATE_SNAPSHOT_ON_SAVE_KEY = "CREATE_SNAPSHOT_ON_SAVE";
 
     /**
-     * Key passed in options to event to inform it that the document was just
-     * snapshotted. Used to avoid incrementing versions twice.
+     * @deprecated use {@link VersioningService#VERSIONING_OPTION} instead
      */
+    @Deprecated
+    String KEY_FOR_INC_OPTION = "VersioningOption";
+
+    @Deprecated
     String DOCUMENT_WAS_SNAPSHOTTED = "DOCUMENT_WAS_SNAPSHOTTED";
 
     /**
@@ -56,40 +58,65 @@ public interface VersioningDocument {
      */
     String RESTORED_VERSION_UUID_KEY = "RESTORED_VERSION_UUID";
 
+    /**
+     * @deprecated use {@link VersioningService#getVersionLabel} instead
+     */
+    @Deprecated
     Long getMinorVersion() throws DocumentException;
 
-    void setMinorVersion(Long value);
-
+    /**
+     * @deprecated use {@link VersioningService#getVersionLabel} instead
+     */
+    @Deprecated
     Long getMajorVersion() throws DocumentException;
 
+    /**
+     * Returns a string representation of the version number.
+     *
+     * @return a string, like {@code "2.1"}
+     */
+    String getVersionLabel();
+
+    /**
+     * @deprecated let {@link VersioningService} do its work
+     */
+    @Deprecated
+    void setMinorVersion(Long value);
+
+    /**
+     * @deprecated let {@link VersioningService} do its work
+     */
+    @Deprecated
     void setMajorVersion(Long value);
 
     /**
-     * This will force the adapter to re-load document from repository. Useful
-     * when versioning data is broken.
-     *
-     * @throws DocumentException
+     * @deprecated let {@link VersioningService} do its work
      */
-    void refetchDoc() throws DocumentException;
-
-    /**
-     * Increments major, minor version fields according to the existing rules.
-     */
-    void incrementVersions();
-
+    @Deprecated
     void incrementMajor() throws DocumentException;
 
+    /**
+     * @deprecated let {@link VersioningService} do its work
+     */
+    @Deprecated
     void incrementMinor() throws DocumentException;
 
     /**
-     * Creates a string from minor and major formatted with specified number of
-     * digits.
-     *
-     * @param majorDigits
-     * @param minorDigits
-     * @param sep
-     * @return
+     * @deprecated unused
      */
+    @Deprecated
+    void refetchDoc() throws DocumentException;
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    void incrementVersions();
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     String getVersionAsString(int majorDigits, int minorDigits, char sep)
             throws DocumentException;
 

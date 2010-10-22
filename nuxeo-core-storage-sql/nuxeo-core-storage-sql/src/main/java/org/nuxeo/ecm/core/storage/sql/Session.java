@@ -304,11 +304,11 @@ public interface Session extends Connection {
      *
      * @param node the node to check in
      * @param label the label for the version
-     * @param description the description for the version
+     * @param checkinComment the description for the version
      * @return the created version
      * @throws StorageException
      */
-    Node checkIn(Node node, String label, String description)
+    Node checkIn(Node node, String label, String checkinComment)
             throws StorageException;
 
     /**

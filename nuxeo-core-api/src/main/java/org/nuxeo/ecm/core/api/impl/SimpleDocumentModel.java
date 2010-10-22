@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -578,7 +579,8 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DocumentModel checkIn(String description) throws ClientException {
+    public DocumentRef checkIn(VersioningOption option, String description)
+            throws ClientException {
         throw new UnsupportedOperationException();
     }
 

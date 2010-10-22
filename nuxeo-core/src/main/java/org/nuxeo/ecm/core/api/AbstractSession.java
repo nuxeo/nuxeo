@@ -92,6 +92,7 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
@@ -144,6 +145,19 @@ public abstract class AbstractSession implements CoreSession,
             securityService = NXCore.getSecurityService();
         }
         return securityService;
+    }
+
+    private transient VersioningService versioningService;
+
+    protected VersioningService getVersioningService() {
+        if (versioningService == null) {
+            try {
+                versioningService = Framework.getService(VersioningService.class);
+            } catch (Exception e) {
+                throw new RuntimeException("VersioningService not found", e);
+            }
+        }
+        return versioningService;
     }
 
     /**
@@ -324,7 +338,7 @@ public abstract class AbstractSession implements CoreSession,
             try {
                 eventService = Framework.getLocalService(EventService.class);
             } catch (Exception e) {
-                throw new Error("Core Event Service not found");
+                throw new RuntimeException("Core Event Service not found", e);
             }
         }
         return eventService;
@@ -515,17 +529,13 @@ public abstract class AbstractSession implements CoreSession,
             }
         }
 
-        if (changed) {
-            doc.setDirty(true);
+        if (!changed) {
+            return docModel;
         }
         // TODO: here we can optimize document part doesn't need to be read
         DocumentModel newModel = readModel(doc, null);
         newModel.copyContextData(docModel);
         return newModel;
-    }
-
-    protected void writeDocumentPart(DocumentPart part) {
-        part.iterator();
     }
 
     @Override
@@ -838,7 +848,14 @@ public abstract class AbstractSession implements CoreSession,
             // init document with data from doc model
             docModel = writeModel(doc, docModel);
 
-            // re-read docmodel
+            if (!Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST,
+                    VersioningService.SKIP_VERSIONING))) {
+                // during remote publishing we want to skip versioning
+                // to avoid overwriting the version number
+                getVersioningService().doPostCreate(doc);
+                docModel = readModel(doc, null);
+            }
+
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
                     null, null, true, false);
             docModel = writeModel(doc, docModel);
@@ -1793,52 +1810,54 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docModel.getRef());
             checkPermission(doc, WRITE_PROPERTIES);
 
-            // add document context data to core event
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-            // TODO make this configurable or put in other place
-            final ScopedMap ctxData = docModel.getContextData();
-            Boolean createSnapshot = (Boolean) ctxData.getScopedValue(
-                    ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
-            DocumentModel oldDoc = null;
-            if (Boolean.TRUE.equals(createSnapshot)) {
-                oldDoc = createDocumentSnapshot(docModel, doc, options, true);
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
-                if (oldDoc != null) {
-                    // pass that info to future events to avoid incrementing
-                    // versions twice
-                    options.put(VersioningDocument.DOCUMENT_WAS_SNAPSHOTTED,
-                            Boolean.TRUE);
-                }
-            }
-
             if (!docModel.isImmutable()) {
-                // version incrementing listeners mustn't dirty the doc,
-                // so use an alternate DocumentModel for the event
-                boolean dirty = doc.isDirty();
-                DocumentModel tmpDocModel = readModel(doc, null);
-                notifyEvent(DocumentEventTypes.INCREMENT_BEFORE_UPDATE,
-                        tmpDocModel, options, null, null, true, true);
-                // write potential number changes, reset old dirty flags
-                writeModel(doc, tmpDocModel);
-                doc.setDirty(dirty);
-
                 // regular event, last chance to modify docModel
                 notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                         options, null, null, true, true);
             }
 
+            VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
+            docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
+            String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+            docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+            // compat
+            boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(
+                    ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
+            docModel.putContextData(ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
+            boolean dirty = isDirty(docModel);
+            if (versioningOption == null && snapshot && dirty) {
+                String key = String.valueOf(docModel.getContextData(
+                        ScopeType.REQUEST,
+                        VersioningDocument.KEY_FOR_INC_OPTION));
+                docModel.putContextData(ScopeType.REQUEST,
+                        VersioningDocument.KEY_FOR_INC_OPTION, null);
+                versioningOption = "inc_major".equals(key) ? VersioningOption.MAJOR
+                        : VersioningOption.MINOR;
+            }
+
+            if (!docModel.isImmutable()) {
+                // pre-save versioning
+                versioningOption = getVersioningService().doPreSave(doc, dirty,
+                        versioningOption, checkinComment);
+            }
+
             // actual save
             docModel = writeModel(doc, docModel);
 
+            if (!docModel.isImmutable()) {
+                // post-save versioning
+                getVersioningService().doPostSave(doc, versioningOption,
+                        checkinComment);
+            }
+
+            // post-save event
+            docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true, false);
-
-            if (oldDoc != null) {
-                notifyVersionChange(oldDoc, docModel, options);
-            }
 
             return docModel;
         } catch (DocumentException e) {
@@ -1847,39 +1866,28 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
+    @Deprecated
     public boolean isDirty(DocumentRef docRef) throws ClientException {
         try {
-            Document doc = resolveReference(docRef);
-            return doc.isDirty();
+            return resolveReference(docRef).isCheckedOut();
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get dirty state on " + docRef,
-                    e);
+            throw new ClientException(e);
         }
     }
 
     /**
-     * Creates a snapshot (version) for the given DocumentModel.
+     * Checks if the document has actual data to write (dirty parts).
      * <p>
-     * Passed options are propagated to the checked out event.
-     *
-     * @return the last version
+     * Used to avoid doing an auto-checkout if there's nothing to update.
      */
-    private DocumentModel createDocumentSnapshot(DocumentModel docModel,
-            Document doc, Map<String, Serializable> options, boolean pendingSave)
-            throws ClientException {
-        DocumentRef docRef = docModel.getRef();
-        DocumentModel version;
-        if (!isDirty(docRef)
-                && (version = getLastDocumentVersion(docRef)) != null) {
-            return version;
+    protected boolean isDirty(DocumentModel doc) throws ClientException {
+        // get loaded data models
+        for (DocumentPart part : doc.getParts()) {
+            if (part.isDirty()) {
+                return true;
+            }
         }
-
-        // Do a checkin / checkout of the edited version
-        version = checkIn(docRef, (String) null);
-        log.debug("doc checked in " + docModel.getTitle());
-        checkOut(docModel, doc, options, pendingSave);
-        log.debug("doc checked out " + docModel.getTitle());
-        return version;
+        return false;
     }
 
     @Override
@@ -2047,7 +2055,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             Document ver = resolveReference(versionRef);
-            return restoreToVersion(doc, ver, false, false);
+            return restoreToVersion(doc, ver, false, true);
         } catch (DocumentException e) {
             throw new ClientException("Failed to restore document", e);
         }
@@ -2098,8 +2106,10 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
 
             // we're about to overwrite the document, make sure it's archived
-            if (!skipSnapshotCreation) {
-                createDocumentSnapshot(docModel, doc, null, false);
+            if (!skipSnapshotCreation && doc.isCheckedOut()) {
+                String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+                docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+                getVersioningService().doCheckIn(doc, null, checkinComment);
             }
 
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -2130,7 +2140,7 @@ public abstract class AbstractSession implements CoreSession,
 
             if (!skipCheckout) {
                 // restore gives us a checked in document, so do a checkout
-                doc.checkOut();
+                getVersioningService().doCheckOut(doc);
             }
 
             // re-read doc model after restoration
@@ -2147,47 +2157,69 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
-    @Deprecated
-    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver)
-            throws ClientException {
-        return checkIn(docRef, ver.getDescription());
-    }
-
-    @Override
-    public DocumentModel checkIn(DocumentRef docRef, String description)
+    public DocumentRef getBaseVersion(DocumentRef docRef)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            // TODO: add a new permission names CHECKIN and use it instead of
-            // WRITE_PROPERTIES
+            checkPermission(doc, READ);
+            DocumentVersion ver = doc.getBaseVersion();
+            if (ver == null) {
+                return null;
+            }
+            checkPermission(ver, READ);
+            return new IdRef(ver.getUUID());
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver)
+            throws ClientException {
+        try {
+            DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR,
+                    ver == null ? null : ver.getDescription());
+            return readModel(resolveReference(verRef), null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to check in document " + docRef,
+                    e);
+        }
+    }
+
+    @Override
+    public DocumentRef checkIn(DocumentRef docRef, VersioningOption option,
+            String checkinComment) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
-
             DocumentModel docModel = readModel(doc, null);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, null,
+
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
                     null, null, true, true);
             writeModel(doc, docModel);
 
-            String label = generateVersionLabelFor(docRef);
-            Document versionDocument = doc.checkIn(label, description);
-            DocumentModel version = readModel(versionDocument, null);
-            Map<String, Serializable> options = getContextMapEventInfo(docModel);
+            Document version = getVersioningService().doCheckIn(doc, option,
+                    checkinComment);
+            DocumentModel versionModel = readModel(version, null);
 
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, version, options,
-                    null, null, true, false);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
+                    options, null, null, true, false);
 
-            // FIXME: the fields are hardcoded. should be moved in versioning
-            // component
-            if (doc.getType().hasSchema("uid")) {
-                final Long majorVer = doc.getLong("major_version");
-                final Long minorVer = doc.getLong("minor_version");
-                String versionComment = majorVer + "." + minorVer;
-                options.put("comment", versionComment);
-            }
-
+            docModel = readModel(doc, null);
+            String label = getVersioningService().getVersionLabel(docModel);
+            options.put("versionLabel", label);
+            options.put("checkInComment", checkinComment);
+            String comment = checkinComment == null ? label : label + ' '
+                    + checkinComment;
+            options.put("comment", comment); // compat, used in audit
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
                     options, null, null, true, false);
-            return writeModel(versionDocument, version);
+            writeModel(doc, docModel);
+
+            return versionModel.getRef();
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
                     e);
@@ -2196,48 +2228,35 @@ public abstract class AbstractSession implements CoreSession,
 
     @Override
     public void checkOut(DocumentRef docRef) throws ClientException {
-        Document doc;
         try {
-            doc = resolveReference(docRef);
+            Document doc = resolveReference(docRef);
             // TODO: add a new permission names CHECKOUT and use it instead of
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
+            DocumentModel docModel = readModel(doc, null);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
+                    options, null, null, true, true);
+
+            getVersioningService().doCheckOut(doc);
+            docModel = readModel(doc, null);
+
+            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
+                    options, null, null, true, false);
+            writeModel(doc, docModel);
         } catch (DocumentException e) {
             throw new ClientException("Failed to check out document " + docRef,
                     e);
         }
-        checkOut(readModel(doc, null), doc, null, false);
     }
 
-    protected void checkOut(DocumentModel docModel, Document doc,
-            Map<String, Serializable> options, boolean pendingSave)
-            throws ClientException {
+    public void internalCheckOut(DocumentRef docRef) throws ClientException {
         try {
-            if (doc == null) {
-                doc = resolveReference(docModel.getRef());
-            }
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
-                    options, null, null, true, true);
-            doc.checkOut();
-
-            // notify listeners to increment the version number;
-            DocumentModel eventDocModel;
-            if (pendingSave) {
-                // save is pending and will want an untouched DocumentModel. so
-                // use a pristined DocumentModel to avoid interfering with it
-                eventDocModel = readModel(doc, null);
-            } else {
-                eventDocModel = docModel;
-            }
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, eventDocModel,
-                    options, null, null, true, false);
-            // write version number changes
-            writeModel(doc, eventDocModel);
-            // and reset the dirty flag
-            doc.setDirty(false);
+            Document doc = resolveReference(docRef);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to check out document "
-                    + docModel.getRef(), e);
+            throw new ClientException("Failed to check out document " + docRef,
+                    e);
         }
     }
 
@@ -2274,6 +2293,12 @@ public abstract class AbstractSession implements CoreSession,
             throw new ClientException("Failed to get version "
                     + versionModel.getLabel() + " for " + versionableId, e);
         }
+    }
+
+    @Override
+    public String getVersionLabel(DocumentModel docModel)
+            throws ClientException {
+        return getVersioningService().getVersionLabel(docModel);
     }
 
     @Override
@@ -2875,20 +2900,20 @@ public abstract class AbstractSession implements CoreSession,
         return publishDocument(docToPublish, section, true);
     }
 
-    public DocumentModel publishDocument(DocumentModel document,
+    @Override
+    public DocumentModel publishDocument(DocumentModel docModel,
             DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
         try {
-            Document doc = resolveReference(document.getRef());
+            Document doc = resolveReference(docModel.getRef());
             Document sec = resolveReference(section.getRef());
-
             checkPermission(doc, READ);
             checkPermission(sec, ADD_CHILDREN);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             DocumentModel proxy = null;
             Document target;
-            if (document.isProxy()) {
+            if (docModel.isProxy()) {
                 if (overwriteExistingProxy) {
                     // remove previous
                     List<String> removedProxyIds = removeExistingProxies(doc,
@@ -2898,10 +2923,18 @@ public abstract class AbstractSession implements CoreSession,
                 }
                 target = doc;
             } else {
-                // snapshot the document
-                DocumentModel version = createDocumentSnapshot(document, null,
-                        null, false);
-                target = resolveReference(version.getRef());
+                String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+                docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+                if (doc.isCheckedOut() || doc.getLastVersion() == null) {
+                    if (!doc.isCheckedOut()) {
+                        // last version was deleted while leaving a checked in
+                        // doc. recreate a version
+                        getVersioningService().doCheckOut(doc);
+                    }
+                    getVersioningService().doCheckIn(doc, null, checkinComment);
+                    docModel.refresh(DocumentModel.REFRESH_STATE, null);
+                }
+                target = doc.getLastVersion();
                 if (overwriteExistingProxy) {
                     proxy = updateExistingProxies(doc, sec, target);
                     if (proxy == null) {
