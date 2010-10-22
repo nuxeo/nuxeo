@@ -19,16 +19,12 @@
 
 package org.nuxeo.ecm.core.rest;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -85,17 +81,8 @@ public class DocumentHelper {
         try {
             FormData form = ctx.getForm();
             form.fillDocument(doc);
-            VersioningActions va = form.getVersioningOption();
-            if (va != null) {
-                ScopedMap ctxData = doc.getContextData();
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-                ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION, va);
-            } else {
-                ScopedMap ctxData = doc.getContextData();
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.FALSE);
-            }
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    form.getVersioningOption());
             Module module = ctx.getModule();
             Validator v = module.getValidator(doc.getType());
             if (v != null) {

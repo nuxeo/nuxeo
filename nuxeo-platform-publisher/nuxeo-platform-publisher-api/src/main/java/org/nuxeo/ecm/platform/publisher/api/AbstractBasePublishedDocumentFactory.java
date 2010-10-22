@@ -22,19 +22,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractBasePublishedDocumentFactory implements
@@ -106,12 +104,9 @@ public abstract class AbstractBasePublishedDocumentFactory implements
             throws ClientException {
 
         if (isSnapshotingEnabled() && needToVersionDocument(doc)) {
-            doc.putContextData(ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-            doc.putContextData(ScopeType.REQUEST,
-                    VersioningActions.KEY_FOR_INC_OPTION,
-                    VersioningActions.ACTION_INCREMENT_MINOR);
-            coreSession.saveDocument(doc);
+            if (doc.isCheckedOut()) {
+                doc.checkIn(VersioningOption.MINOR, null);
+            }
             coreSession.save();
             List<DocumentModel> versions = coreSession.getVersions(doc.getRef());
             return versions.get(versions.size() - 1);
