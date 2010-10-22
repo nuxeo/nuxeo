@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.versioning.ejb;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
@@ -31,21 +28,16 @@ import javax.ejb.Remove;
 import javax.ejb.Stateless;
 import javax.persistence.Transient;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.versioning.api.SnapshotOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
-import org.nuxeo.ecm.platform.versioning.service.ServiceHelper;
-import org.nuxeo.ecm.platform.versioning.service.VersioningService;
+import org.nuxeo.ecm.platform.versioning.service.VersioningManagerImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This is a versioning EJB facade.
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Stateless
@@ -53,78 +45,70 @@ import org.nuxeo.ecm.platform.versioning.service.VersioningService;
 @Remote(VersioningManager.class)
 public class VersioningManagerBean implements VersioningManager {
 
-    private static final Log log = LogFactory.getLog(VersioningManagerBean.class);
-
     @Transient
-    private VersioningService service;
+    private VersioningManager service;
 
     @PostConstruct
     public void ejbCreate() {
-        log.debug("PostConstruct");
         initService();
     }
 
     @PostActivate
     public void ejbActivate() {
-        log.debug("PostActivate");
         initService();
     }
 
     @PrePassivate
     public void ejbPassivate() {
-        log.debug("PrePassivate");
     }
 
     @Remove
     public void ejbRemove() {
-        log.debug("Remove");
     }
 
     private void initService() {
         if (service == null) {
-            service = ServiceHelper.getVersioningService();
+            service = (VersioningManager) Framework.getRuntime().getComponent(
+                    VersioningManagerImpl.COMPONENT_ID);
         }
     }
 
-    protected Map<String, Object> getDocumentManagerProperties() {
-        Map<String, Object> props = new HashMap<String, Object>();
-        // :XXX: use constants
-        props.put("participant", new UserPrincipal(
-                SecurityConstants.ADMINISTRATOR));
-        return props;
-    }
-
+    @Override
     public VersionIncEditOptions getVersionIncEditOptions(DocumentModel document)
             throws ClientException {
         return service.getVersionIncEditOptions(document);
     }
 
-    public DocumentModel incrementMajor(DocumentModel document)
-            throws ClientException {
-        return service.incrementMajor(document);
-    }
-
-    public DocumentModel incrementMinor(DocumentModel document)
-            throws ClientException {
-        return service.incrementMinor(document);
-    }
-
-    public String getMajorVersionPropertyName(String documentType) {
-        return service.getMajorVersionPropertyName(documentType);
-    }
-
-    public String getMinorVersionPropertyName(String documentType) {
-        return service.getMinorVersionPropertyName(documentType);
-    }
-
+    @Override
     public String getVersionLabel(DocumentModel document)
             throws ClientException {
         return service.getVersionLabel(document);
     }
 
-    public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
+    @Override
+    @Deprecated
+    public DocumentModel incrementMajor(DocumentModel document)
             throws ClientException {
-        return service.getCreateSnapshotOption(document);
+        return service.incrementMajor(document);
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModel incrementMinor(DocumentModel document)
+            throws ClientException {
+        return service.incrementMinor(document);
+    }
+
+    @Override
+    @Deprecated
+    public String getMajorVersionPropertyName(String documentType) {
+        return service.getMajorVersionPropertyName(documentType);
+    }
+
+    @Override
+    @Deprecated
+    public String getMinorVersionPropertyName(String documentType) {
+        return service.getMinorVersionPropertyName(documentType);
     }
 
 }

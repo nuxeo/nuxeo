@@ -273,8 +273,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         DocumentModel doc = rs.getDocumentManager().getLastDocumentVersion(
                 new IdRef(uuid));
         if (doc != null) {
-            return new DocumentDescriptor(doc,
-                    (String) doc.getContextData("version.label")); // TODO
+            return new DocumentDescriptor(doc, doc.getVersionLabel());
         }
         return null;
     }
@@ -309,7 +308,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         int i = 0;
         for (DocumentModel version : versions) {
             docs[i++] = new DocumentDescriptor(version,
-                    (String) version.getContextData("version.label"));
+                    version.getVersionLabel());
         }
         return null;
     }
