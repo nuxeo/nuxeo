@@ -24,7 +24,6 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
-import org.nuxeo.ecm.core.client.NuxeoClient;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -32,17 +31,15 @@ import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelUpdater;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDirectoryReader;
-import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.CommandLine;
+import org.nuxeo.ecm.shell.commands.repository.AbstractCommand;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ImportCommand implements Command {
+public class ImportCommand extends AbstractCommand {
     private static final Log log = LogFactory.getLog(ImportCommand.class);
-
-    private final NuxeoClient client = NuxeoClient.getInstance();
 
     private RepositoryInstance repository;
 
@@ -57,7 +54,7 @@ public class ImportCommand implements Command {
         File file = new File(elements[0]);
 
         // open a session
-        repository = client.openRepository();
+        repository = context.getRepositoryInstance();
         try {
             // run import
             if (cmdLine.isOptionSet("update")) {

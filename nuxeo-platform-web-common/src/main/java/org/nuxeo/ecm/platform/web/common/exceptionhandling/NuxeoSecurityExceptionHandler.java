@@ -49,7 +49,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
 
     protected static final Log log = LogFactory.getLog(NuxeoSecurityExceptionHandler.class);
 
-    private PluggableAuthenticationService service;
+    protected PluggableAuthenticationService service;
 
     @Override
     public void handleException(HttpServletRequest request,
@@ -62,50 +62,62 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
             return;
         }
 
-        Map<String, String> urlParameters = new HashMap<String, String>();
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal = null;
+        NuxeoPrincipal nuxeoPrincipal;
         if (principal instanceof NuxeoPrincipal) {
             nuxeoPrincipal = (NuxeoPrincipal) principal;
-            // redirect to login than to requested page
             if (nuxeoPrincipal.isAnonymous()) {
-                urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
-                urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
-                if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
-                    urlParameters.put(
-                            NXAuthConstants.REQUESTED_URL,
-                            (String) request.getAttribute(NXAuthConstants.REQUESTED_URL));
-                } else {
-                    urlParameters.put(NXAuthConstants.REQUESTED_URL,
-                            NuxeoAuthenticationFilter.getRequestedUrl(request));
+                // redirect to login than to requested page
+                if (handleAnonymousException(request, response)) {
+                    return;
                 }
-                // Redirect to login with urlParameters
-                if (!response.isCommitted()) {
-                    String baseURL = initAuthentificationService().getBaseURL(
-                            request)
-                            + NXAuthConstants.LOGOUT_PAGE;
-                    request.setAttribute(
-                            NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                    baseURL = URIUtils.addParametersToURIQuery(baseURL,
-                            urlParameters);
-                    response.sendRedirect(baseURL);
-                    FacesContext fContext = FacesContext.getCurrentInstance();
-                    if (fContext != null) {
-                        fContext.responseComplete();
-                    } else {
-                        log.error("Cannot set response complete: faces context is null");
-                    }
-                } else {
-                    log.error("Cannot redirect to login page: response is already commited");
-                }
-                return;
             }
         }
         // go back to default handler
         super.handleException(request, response, t);
     }
 
-    private PluggableAuthenticationService initAuthentificationService()
+    /**
+     * Handles the Security Error when the user is anonymous.
+     *
+     * @return {@code true} if the Security Error is handled so that the calling
+     *         method won't fallback on the default handler, {@code false}
+     *         otherwise.
+     */
+    protected boolean handleAnonymousException(HttpServletRequest request,
+            HttpServletResponse response) throws IOException, ServletException {
+        Map<String, String> urlParameters = new HashMap<String, String>();
+        urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
+        urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
+        if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
+            urlParameters.put(
+                    NXAuthConstants.REQUESTED_URL,
+                    (String) request.getAttribute(NXAuthConstants.REQUESTED_URL));
+        } else {
+            urlParameters.put(NXAuthConstants.REQUESTED_URL,
+                    NuxeoAuthenticationFilter.getRequestedUrl(request));
+        }
+        // Redirect to login with urlParameters
+        if (!response.isCommitted()) {
+            String baseURL = initAuthenticationService().getBaseURL(request)
+                    + NXAuthConstants.LOGOUT_PAGE;
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                    true);
+            baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
+            response.sendRedirect(baseURL);
+            FacesContext fContext = FacesContext.getCurrentInstance();
+            if (fContext != null) {
+                fContext.responseComplete();
+            } else {
+                log.error("Cannot set response complete: faces context is null");
+            }
+        } else {
+            log.error("Cannot redirect to login page: response is already commited");
+        }
+        return true;
+    }
+
+    protected PluggableAuthenticationService initAuthenticationService()
             throws ServletException {
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
@@ -117,4 +129,5 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         }
         return service;
     }
+
 }

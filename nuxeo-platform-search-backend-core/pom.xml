@@ -46,8 +46,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -57,7 +57,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate</artifactId>
+      <artifactId>hibernate-core</artifactId>
       <scope>test</scope>
     </dependency>
 
