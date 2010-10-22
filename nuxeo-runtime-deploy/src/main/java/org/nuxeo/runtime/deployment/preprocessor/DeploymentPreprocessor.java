@@ -284,8 +284,8 @@ public class DeploymentPreprocessor {
                         td.template = TemplateParser.parse(file);
                     }
                 } else {
-                    log.warn("No template found for deployment fragment:  "
-                            + fd.name);
+                    log.warn("No template '" + tc.getTemplate()
+                            + "' found for deployment fragment:  " + fd.name);
                     continue;
                 }
                 // get the marker where contribution should be inserted
@@ -350,8 +350,8 @@ public class DeploymentPreprocessor {
 
     protected void processBundleForCompat(FragmentDescriptor fd, File file) {
         // TODO disable for now the warning
-        // log.warn("Entering compatibility mode - deprecated dependency managent will be used. Please update your deployment-fragment.xml in "
-        // + file.getName());
+        log.warn("Entering compatibility mode - Please update the deployment-fragment.xml in "
+                + file.getName() + " to use new dependency management");
         Manifest mf = JarUtils.getManifest(file);
         if (mf != null) {
             fd.name = file.getName();
