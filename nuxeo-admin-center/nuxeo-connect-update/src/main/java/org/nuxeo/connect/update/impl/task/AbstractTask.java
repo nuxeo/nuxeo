@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class AbstractTask implements Task {
 
@@ -68,14 +68,14 @@ public abstract class AbstractTask implements Task {
 
     /**
      * The host application name.
-     *
+     * 
      * @see Environment#getHostApplicationName()
      */
     public final static String ENV_HOSTAPP_NAME = "env.hostapp.name";
 
     /**
      * The host application version
-     *
+     * 
      * @see Environment#getHostApplicationVersion()
      */
     public final static String ENV_HOSTAPP_VERSION = "env.hostapp.version";
@@ -103,8 +103,7 @@ public abstract class AbstractTask implements Task {
             File ear = config.getParentFile();
             env.put(ENV_EAR, ear.getAbsolutePath());
             env.put(ENV_LIB, new File(ear, "lib").getAbsolutePath());
-            env.put(ENV_BUNDLES, new File(ear, "system").getAbsolutePath());
-            env.put(ENV_LIB, new File(ear, "lib").getAbsolutePath());
+            env.put(ENV_BUNDLES, new File(ear, "bundles").getAbsolutePath());
             String v = System.getProperty("jboss.server.home.dir");
             if (v != null) {
                 env.put(ENV_SYSLIB, v + "/lib");
@@ -140,7 +139,7 @@ public abstract class AbstractTask implements Task {
     /**
      * Get a file given its key in the environment map. If no key exists then
      * null is returned.
-     *
+     * 
      * @param key
      * @return
      */

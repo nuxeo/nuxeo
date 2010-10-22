@@ -6,11 +6,6 @@
       <url-pattern>/Annotations/*</url-pattern>
     </filter-mapping>
   </extension>
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
   <extension target="web#SERVLET">
     <servlet>
       <servlet-name>Annotation Servlet</servlet-name>

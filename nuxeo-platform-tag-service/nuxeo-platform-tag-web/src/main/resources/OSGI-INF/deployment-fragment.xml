@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
+  <require>org.nuxeo.ecm.platform.lang</require>
 
   <extension target="application#MODULE">
     <module>

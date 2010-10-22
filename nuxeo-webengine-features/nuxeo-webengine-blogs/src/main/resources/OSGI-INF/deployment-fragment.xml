@@ -1,18 +1,12 @@
 <?xml version="1.0"?>
 <fragment>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-  
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">
       <include>nuxeo.war/**</include>
     </unzip>
-    
+
       <!--  Create a temp dir -->
       <mkdir path="blogs.tmp" />
 
@@ -28,7 +22,7 @@
         to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
 
       <delete path="blogs.tmp" />
-    
-  </install>  
+
+  </install>
 
 </fragment>

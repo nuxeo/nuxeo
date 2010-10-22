@@ -29,12 +29,6 @@
     </navigation-case>
   </extension>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
