@@ -11,6 +11,7 @@
     <navigation-case>
       <from-outcome>thread_create</from-outcome>
       <to-view-id>/thread_create.xhtml</to-view-id>
+      <redirect />
     </navigation-case>
   </extension>
 
