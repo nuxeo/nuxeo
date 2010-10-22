@@ -37,6 +37,7 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.FormManager;
@@ -89,7 +89,7 @@ public class FormData implements FormInstance {
 
     protected boolean getIsMultipartContent() {
         String method = request.getMethod().toLowerCase();
-		if (!"post".equals(method) && !"put".equals(method)) {
+        if (!"post".equals(method) && !"put".equals(method)) {
             return false;
         }
         String contentType = request.getContentType();
@@ -426,11 +426,11 @@ public class FormData implements FormInstance {
         }
     }
 
-    public VersioningActions getVersioningOption() {
+    public VersioningOption getVersioningOption() {
         String val = getString(VERSIONING);
         if (val != null) {
-            return val.equals(MAJOR) ? VersioningActions.ACTION_INCREMENT_MAJOR
-                    : val.equals(MINOR) ? VersioningActions.ACTION_INCREMENT_MINOR : null;
+            return val.equals(MAJOR) ? VersioningOption.MAJOR
+                    : val.equals(MINOR) ? VersioningOption.MINOR : null;
         }
         return null;
     }
@@ -453,5 +453,5 @@ public class FormData implements FormInstance {
             throw e;
         }
     }
-    
+
 }
