@@ -35,7 +35,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class VersioningManagerImpl extends DefaultComponent implements
         VersioningManager {
 
-    public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.service.VersioningService";
+    public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
     private static final Log log = LogFactory.getLog(VersioningManagerImpl.class);
 
