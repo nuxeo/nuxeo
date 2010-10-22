@@ -64,6 +64,10 @@ public class PathMatcher {
         }
     }
 
+    public boolean isEmpty() {
+        return patterns.isEmpty() && exactPaths.isEmpty();
+    }
+
     public PathPattern addPattern(PathPattern pattern) {
         PathPattern existing = patterns.get(pattern.getPath());
         if (existing != null) {
@@ -191,6 +195,33 @@ public class PathMatcher {
             } else {
                 log.warn("Path pattern not matched: " + path
                         + " in deployment " + root.getName());
+            }
+        }
+        return result;
+    }
+
+    public List<File> getAbsoluteMatches() throws IOException {
+        ArrayList<File> result = new ArrayList<File>();
+        for (String path : exactPaths) {
+            File file = new File(path);
+            if (file.exists()) {
+                result.add(file);
+            } else {
+                log.warn("Absolute path pattern not matched: " + path);
+            }
+        }
+        for (final PathPattern pattern : patterns.values()) {
+            String path = pattern.getPath();
+            File dir = path.length() == 0 ? new File("/") : new File(path);
+            String[] files = dir.list();
+            if (files != null) {
+                for (String file : files) {
+                    if (pattern.match(file)) {
+                        result.add(new File(dir, file));
+                    }
+                }
+            } else {
+                log.warn("Absolute path pattern not matched: " + path);
             }
         }
         return result;
