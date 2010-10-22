@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.model.Document;
@@ -327,15 +328,6 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    protected void removeDocument(Document doc) throws ClientException {
-        try {
-            super.removeDocument(doc);
-        } catch (Throwable e) {
-            throw new RollbackClientException(e);
-        }
-    }
-
-    @Override
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         try {
             super.removeDocuments(docRefs);
@@ -444,10 +436,10 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    public DocumentModel checkIn(DocumentRef docRef, String description)
-            throws ClientException {
+    public DocumentRef checkIn(DocumentRef docRef, VersioningOption option,
+            String checkinComment) throws ClientException {
         try {
-            return super.checkIn(docRef, description);
+            return super.checkIn(docRef, option, checkinComment);
         } catch (Throwable e) {
             throw new RollbackClientException(e);
         }

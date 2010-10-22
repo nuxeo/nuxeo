@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.storage.sql.SimpleFragment.PositionComparator;
  * hierarchy table.
  */
 public class HierarchyContext {
+
+    private static final Log log = LogFactory.getLog(HierarchyContext.class);
 
     private final Model model;
 
@@ -527,15 +531,27 @@ public class HierarchyContext {
      *
      * @param node the node to check in
      * @param label the version label
-     * @param description the version description
+     * @param checkinComment the version description
      * @return the created version id
      */
-    public Serializable checkIn(Node node, String label, String description)
+    public Serializable checkIn(Node node, String label, String checkinComment)
             throws StorageException {
         Boolean checkedIn = (Boolean) node.hierFragment.get(model.MAIN_CHECKED_IN_KEY);
         if (Boolean.TRUE.equals(checkedIn)) {
             throw new StorageException("Already checked in");
         }
+        if (label == null) {
+            // use version major + minor as label
+            try {
+                label = node.getSimpleProperty(model.MAIN_MAJOR_VERSION_PROP).getValue()
+                        + "."
+                        + node.getSimpleProperty(model.MAIN_MINOR_VERSION_PROP).getValue();
+            } catch (StorageException e) {
+                log.error("Cannot get version", e);
+                label = "";
+            }
+        }
+
         /*
          * Do the copy without non-complex children, with null parent.
          */
@@ -553,7 +569,7 @@ public class HierarchyContext {
         row.putNew(model.VERSION_VERSIONABLE_KEY, id);
         row.putNew(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
         row.putNew(model.VERSION_LABEL_KEY, label);
-        row.putNew(model.VERSION_DESCRIPTION_KEY, description);
+        row.putNew(model.VERSION_DESCRIPTION_KEY, checkinComment);
         SimpleFragment versionRow = context.createSimpleFragment(row);
         // update the original node to reflect that it's checked in
         node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
+package org.nuxeo.ecm.core.version.ejb;
 
-package org.nuxeo.ecm.core.api.adapter;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Local EJB interface for the versioning service.
  */
-public interface DocumentAdapterFactory {
-
-    Object getAdapter(DocumentModel doc, Class<?> itf);
+public interface VersioningServiceLocal extends VersioningService {
 
 }

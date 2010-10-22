@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.VersioningService">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.versioning.VersioningService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.versioning.VersioningComponent" />
+
+  <documentation>
+    The versioning service hold the versioning policy used
+    to define what happens to a document's version when it is created,
+    saved, checked in, checked out or restored, and what version
+    increment options (none, minor, major) are made available to the
+    user.
+
+    @Since 5.4
+  </documentation>
+
+  <extension-point name="versioningService">
+    <documentation>
+      Extension point defining the implementation of the versioning policy.
+      Example:
+
+      <code>
+        <service class="some-class" />
+      </code>
+
+      The provided class must implement org.nuxeo.ecm.core.versioning.VersioningService
+
+      The default implementation is org.nuxeo.ecm.core.versioning.StandardVersioningService
+      You can contribute org.nuxeo.ecm.core.versioning.CompatVersioningService
+      to get pre-Nuxeo 5.4 behavior.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.versioning.VersioningServiceDescriptor" />
+
+  </extension-point>
+</component>

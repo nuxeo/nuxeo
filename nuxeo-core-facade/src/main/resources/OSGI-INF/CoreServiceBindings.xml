@@ -24,6 +24,10 @@
     <locator>%TrashServiceBean</locator>
   </service>
 
+  <service class="org.nuxeo.ecm.core.versioning.VersioningService" group="core">
+    <locator>%VersioningServiceBean</locator>
+  </service>
+
   <!--
   The type provider service should be used only from remote
   So we won't declare the binding here

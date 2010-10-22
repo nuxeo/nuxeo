@@ -750,9 +750,9 @@ public class PersistenceContext {
         return hierContext.copy(source, parentId, name);
     }
 
-    protected Serializable checkIn(Node node, String label, String description)
+    protected Serializable checkIn(Node node, String label, String checkinComment)
             throws StorageException {
-        return hierContext.checkIn(node, label, description);
+        return hierContext.checkIn(node, label, checkinComment);
     }
 
     protected void checkOut(Node node) throws StorageException {

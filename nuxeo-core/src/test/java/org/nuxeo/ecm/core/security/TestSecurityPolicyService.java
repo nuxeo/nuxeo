@@ -99,6 +99,12 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 creatorPrincipal, permission, permissions, null));
 
         doc.checkedout = false;
+        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+                creatorPrincipal, permission, permissions, null));
+
+        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
+                "test-security-policy2-contrib.xml");
+
         assertEquals(Access.DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
     }

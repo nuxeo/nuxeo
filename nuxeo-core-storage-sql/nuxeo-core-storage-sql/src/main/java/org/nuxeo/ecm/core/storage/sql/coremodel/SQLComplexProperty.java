@@ -228,7 +228,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         } catch (DocumentException e) {
             // we log a debugging message here as it is a point where the
             // property name is known
-            log.error("Error setting property: " + name + " value: " + value);
+            log.debug("Error setting property: " + name + " value: " + value);
             throw e;
         }
     }

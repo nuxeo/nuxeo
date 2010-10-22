@@ -27,7 +27,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -78,11 +77,9 @@ public interface CoreSession {
 
     String IMPORT_LOCK = "ecm:lock";
 
-    String IMPORT_DIRTY = "ecm:dirty";
-
     String IMPORT_CHECKED_IN = "ecm:isCheckedIn";
 
-    String IMPORT_BASE_VERSION_ID = "ecm:baseVersion";
+    String IMPORT_BASE_VERSION_ID = "ecm:baseVersionId";
 
     /** The document type to use to create a proxy by import. */
     String IMPORT_PROXY_TYPE = "ecm:proxy";
@@ -627,9 +624,8 @@ public interface CoreSession {
      * {@link #IMPORT_CHECKED_IN} (Boolean).
      * <p>
      * For a live document or a version: {@link #IMPORT_LIFECYCLE_POLICY} ,
-     * {@link #IMPORT_LIFECYCLE_STATE}, {@link #IMPORT_DIRTY} (Boolean),
-     * {@link #IMPORT_VERSION_MAJOR} (Long) and {@link #IMPORT_VERSION_MINOR}
-     * (Long).
+     * {@link #IMPORT_LIFECYCLE_STATE}, {@link #IMPORT_VERSION_MAJOR} (Long) and
+     * {@link #IMPORT_VERSION_MINOR} (Long).
      *
      * @param docModels the documents to create
      * @throws ClientException
@@ -995,6 +991,15 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Gets the version label for a document, according to the versioning
+     * service.
+     *
+     * @param docModel the document
+     * @return the version label
+     */
+    String getVersionLabel(DocumentModel docModel) throws ClientException;
+
+    /**
      * Returns a document that represents the specified version of the document.
      *
      * @param docRef the reference to the document
@@ -1059,6 +1064,15 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Gets the version to which a checked in document is linked.
+     * <p>
+     * Returns {@code null} for a checked out document or a version or a proxy.
+     *
+     * @return the version, or {@code null}
+     */
+    DocumentRef getBaseVersion(DocumentRef docRef) throws ClientException;
+
+    /**
      * Checks out a versioned document.
      *
      * @param docRef the reference to the document
@@ -1083,13 +1097,15 @@ public interface CoreSession {
      * Checks in a modified document, creating a new version.
      *
      * @param docRef the reference to the document
-     * @param description the version description (checkin comment)
-     * @return the version document just created
+     * @param option whether to do create a new {@link VersioningOption#MINOR}
+     *            or {@link VersioningOption#MAJOR} version during check in
+     * @param checkinComment the checkin comment
+     * @return the version just created
      * @throws ClientException
      * @since 5.4
      */
-    DocumentModel checkIn(DocumentRef docRef, String description)
-            throws ClientException;
+    DocumentRef checkIn(DocumentRef docRef, VersioningOption option,
+            String checkinComment) throws ClientException;
 
     /**
      * Returns whether the current document is checked-out or not.
@@ -1401,7 +1417,10 @@ public interface CoreSession {
      * @param doc the doc reference
      * @return true if dirty false otherwise
      * @throws ClientException
+     *
+     * @deprecated since 5.4, use {@link #isCheckedOut} instead
      */
+    @Deprecated
     boolean isDirty(DocumentRef doc) throws ClientException;
 
     /**

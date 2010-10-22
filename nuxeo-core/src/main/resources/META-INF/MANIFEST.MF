@@ -28,7 +28,9 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/SecurityService.xml,
   OSGI-INF/permissions-contrib.xml,
   OSGI-INF/security-policy-contrib.xml,
-  OSGI-INF/trash-service.xml
+  OSGI-INF/trash-service.xml,
+  OSGI-INF/versioning-service.xml,
+  OSGI-INF/versioning-document-adapter.xml
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.nuxeo.ecm.core.NXCoreActivator
 Import-Package: javax.naming,

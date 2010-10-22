@@ -107,6 +107,11 @@ public class MockDocument implements Document {
     }
 
     @Override
+    public DocumentVersion getBaseVersion() throws DocumentException {
+        return null;
+    }
+
+    @Override
     public String getCurrentLifeCycleState() throws LifeCycleException {
         return null;
     }
@@ -133,11 +138,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public boolean isDirty() throws DocumentException {
-        return false;
-    }
-
-    @Override
     public boolean isFolder() {
         return false;
     }
@@ -156,16 +156,12 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void setDirty(boolean value) throws DocumentException {
-    }
-
-    @Override
     public <T extends Serializable> void setSystemProp(String name, T value)
             throws DocumentException {
     }
 
     @Override
-    public Document checkIn(String label, String description)
+    public DocumentVersion checkIn(String label, String description)
             throws DocumentException {
         return null;
     }

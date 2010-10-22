@@ -307,4 +307,11 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         return false;
     }
 
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getName()
+                + (isDirty() ? "*" : "") + ", " + children + ')';
+    }
+
 }
