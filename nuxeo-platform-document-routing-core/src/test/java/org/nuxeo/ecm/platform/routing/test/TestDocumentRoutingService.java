@@ -365,11 +365,11 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
         assertEquals(1, waiting.size());
         routeInstance.cancel(session);
-        assertTrue(routeInstance.isCancelled());
+        assertTrue(routeInstance.isCanceled());
         DocumentModelList children = session.getChildren(routeInstance.getDocument().getRef());
         while (true) {
             for (DocumentModel doc : children) {
-                assertTrue(doc.getCurrentLifeCycleState().equals("cancelled"));
+                assertTrue(doc.getCurrentLifeCycleState().equals("canceled"));
             }
             children = new DocumentModelListImpl();
             for (DocumentModel doc : children) {

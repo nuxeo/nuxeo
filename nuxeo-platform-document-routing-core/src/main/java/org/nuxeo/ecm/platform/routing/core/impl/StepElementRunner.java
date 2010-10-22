@@ -113,12 +113,12 @@ public class StepElementRunner implements ElementRunner {
     @Override
     public void cancel(CoreSession session, DocumentRouteElement element) {
         if (element.isReady() || element.isDone()) {
-            element.setCancelled(session);
+            element.setCanceled(session);
         } else if (element.isRunning()) {
             try {
                 undo(session, element);
             } finally {
-                element.setCancelled(session);
+                element.setCanceled(session);
             }
         } else {
             throw new RuntimeException(

@@ -21,7 +21,7 @@
         <transition name="backToReady" destinationState="ready">
           <description>the element finishes</description>
         </transition>
-        <transition name="toCancelled" destinationState="cancelled">
+        <transition name="toCanceled" destinationState="canceled">
           <description>cancel this element</description>
         </transition>
         <transition name="toDraft" destinationState="draft">
@@ -42,7 +42,7 @@
         <state name="ready" description="The element is ready" initial="true">
           <transitions>
             <transition>toRunning</transition>
-            <transition>toCancelled</transition>
+            <transition>toCanceled</transition>
             <transition>toDraft</transition>
           </transitions>
         </state>
@@ -50,14 +50,14 @@
           <transitions>
             <transition>toDone</transition>
             <transition>backToReady</transition>
-            <transition>toCancelled</transition>
+            <transition>toCanceled</transition>
             <transition>toDraft</transition>
           </transitions>
         </state>
         <state name="done" description="The element is done">
           <transitions>
             <transition>backToReady</transition>
-            <transition>toCancelled</transition>
+            <transition>toCanceled</transition>
             <transition>toDraft</transition>
           </transitions>
         </state>
@@ -68,8 +68,8 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
-      <type name="DocumentRoute" noRecursionForTransitions="toReady,toRunning,toDone,toCancelled">documentRouteElement</type>
-      <type name="StepFolder" noRecursionForTransitions="toReady,toRunning,toDone,toCancelled">documentRouteElement</type>
+      <type name="DocumentRoute" noRecursionForTransitions="toReady,toRunning,toDone,toCanceled">documentRouteElement</type>
+      <type name="StepFolder" noRecursionForTransitions="toReady,toRunning,toDone,toCanceled">documentRouteElement</type>
       <type name="DocumentRouteStep">documentRouteElement</type>
     </types>
   </extension>

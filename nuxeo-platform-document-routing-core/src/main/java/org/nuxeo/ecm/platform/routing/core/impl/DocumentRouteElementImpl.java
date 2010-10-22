@@ -143,8 +143,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
-    public boolean isCancelled() {
-        return checkLifeCycleState(ElementLifeCycleState.cancelled);
+    public boolean isCanceled() {
+        return checkLifeCycleState(ElementLifeCycleState.canceled);
     }
 
     @Override
@@ -368,8 +368,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     @Override
-    public void setCancelled(CoreSession session) {
-        followTransition(ElementLifeCycleTransistion.toCancelled, session, false);
+    public void setCanceled(CoreSession session) {
+        followTransition(ElementLifeCycleTransistion.toCanceled, session, false);
     }
 
     public boolean isModifiable() {

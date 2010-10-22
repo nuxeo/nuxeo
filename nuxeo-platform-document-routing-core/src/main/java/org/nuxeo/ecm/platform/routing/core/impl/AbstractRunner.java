@@ -58,6 +58,6 @@ public abstract class AbstractRunner implements ElementRunner {
         for (DocumentRouteElement child : children) {
             child.cancel(session);
         }
-        element.setCancelled(session);
+        element.setCanceled(session);
     }
 }
