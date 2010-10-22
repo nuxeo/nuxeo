@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning.api;
@@ -23,52 +22,64 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Remote/Local interface for VersioningManager EJB.
- *
- * @author DM
+ * Interface for the Versioning Manager (a service).
  */
 public interface VersioningManager {
 
     /**
-     * Get document incrementation options as defined by versioning rules.
+     * Get document increment options as defined by versioning rules.
      *
-     * @param document the document
-     * @return a list of version incrementation options available for the given
-     *         document ref
-     *
-     * @throws ClientException
+     * @param doc the document
+     * @return a list of version increment options available for the given
+     *         document
      */
-    VersionIncEditOptions getVersionIncEditOptions(DocumentModel document)
+    VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc)
             throws ClientException;
 
     /**
      * Gets the label for the current version of a document, for the UI.
      *
-     * @param document the document
+     * @param doc the document
      * @return the version label
-     * @throws ClientException
      */
-    String getVersionLabel(DocumentModel document) throws ClientException;
+    String getVersionLabel(DocumentModel doc) throws ClientException;
 
     /**
      * Returns the property name to use when setting the major version for this
      * document type.
+     *
+     * @deprecated since 5.4, use {@link DocumentModel#MAJOR_VERSION} directly
      */
+    @Deprecated
     String getMajorVersionPropertyName(String documentType);
 
     /**
      * Returns the property name to use when setting the minor version for this
      * document type.
+     *
+     * @deprecated since 5.4, use {@link DocumentModel#MINOR_VERSION} directly
      */
+    @Deprecated
     String getMinorVersionPropertyName(String documentType);
 
-    SnapshotOptions getCreateSnapshotOption(DocumentModel document)
-            throws ClientException;
+    /**
+     * Increments the minor version of a document.
+     *
+     * @param doc the document
+     *
+     * @deprecated since 5.4
+     */
+    @Deprecated
+    DocumentModel incrementMinor(DocumentModel doc) throws ClientException;
 
-    DocumentModel incrementMinor(DocumentModel document)
-            throws ClientException;
-
-    DocumentModel incrementMajor(DocumentModel document)
-            throws ClientException;
+    /**
+     * Increments the major version of a document and sets the minor to 0.
+     *
+     * @param doc the document
+     *
+     * @deprecated since 5.4
+     */
+    @Deprecated
+    DocumentModel incrementMajor(DocumentModel doc) throws ClientException;
 
 }

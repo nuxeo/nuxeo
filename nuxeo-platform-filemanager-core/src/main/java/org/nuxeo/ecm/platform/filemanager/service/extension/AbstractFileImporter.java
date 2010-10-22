@@ -15,6 +15,9 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +28,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.common.collections.ScopeType.REQUEST;
-import static org.nuxeo.ecm.core.api.facet.VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
-import static org.nuxeo.ecm.platform.versioning.api.VersioningActions.ACTION_INCREMENT_MINOR;
-import static org.nuxeo.ecm.platform.versioning.api.VersioningActions.KEY_FOR_INC_OPTION;
 
 /**
  * File importer abstract class.
@@ -162,8 +160,8 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager,
             DocumentModel doc) throws ClientException {
-        doc.putContextData(REQUEST, CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-        doc.putContextData(REQUEST, KEY_FOR_INC_OPTION, ACTION_INCREMENT_MINOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
         return documentManager.saveDocument(doc);
     }
 
