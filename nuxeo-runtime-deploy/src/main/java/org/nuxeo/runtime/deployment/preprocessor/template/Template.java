@@ -147,9 +147,9 @@ public class Template {
     }
 
     /*
-     * TODO: Remove the following methods when deployment-fragment.xml files will
-     * be fixed. These files must not contain <modue><java>...</java></module>
-     * declarations.
+     * TODO: Remove the following methods when deployment-fragment.xml files
+     * will be fixed. These files must not contain
+     * <modue><java>...</java></module> declarations.
      */
 
     /**
@@ -163,9 +163,12 @@ public class Template {
         if (runningOnJBoss5 && "application".equals(tc.getTemplate())
                 && "MODULE".equals(tc.getMarker())) {
             // remove JEE java modules
+            String oldcontent = content;
             content = removeJavaModules(content);
-            log.warn("The deployment-fragment contains illegal JEE java module contribution: "
-                    + context.get("bundle.shortName"));
+            if (oldcontent != content) {
+                log.warn("The deployment-fragment contains illegal JEE java module contribution: "
+                        + context.get("bundle.shortName"));
+            }
             if (content.length() == 0) {
                 return "";
             }
@@ -173,14 +176,13 @@ public class Template {
         return "\n" + content.trim() + "\n";
     }
 
-    protected static final Pattern JAVA_MODULE
-            = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
+    protected static final Pattern JAVA_MODULE = Pattern.compile("<\\s*module\\s*>\\s*<\\s*java\\s*>.+<\\s*/\\s*java\\s*>\\s*<\\s*/\\s*module\\s*>");
 
     /**
-     * Remove {@code <module><java>...</java></module>} from {@code application.xml}
-     * contributions. This a temporary fix to remove incorrect java module
-     * declarations from deployment-fragments - this should be fixed in each
-     * fragment.
+     * Remove {@code <module><java>...</java></module>} from
+     * {@code application.xml} contributions. This a temporary fix to remove
+     * incorrect java module declarations from deployment-fragments - this
+     * should be fixed in each fragment.
      */
     protected static String removeJavaModules(String content) {
         Matcher m = JAVA_MODULE.matcher(content);
