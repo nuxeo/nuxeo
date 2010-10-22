@@ -1,15 +1,10 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.webengine.jsfwebconfig">
-  <fragment>
-
+<fragment version="1">
     <install>
       <!--  Unzip the war template -->
       <unzip from="${bundle.fileName}" to="/" prefix="web">
         <include>web/nuxeo.war/**</include>
       </unzip>
-
     </install>
-
-  </fragment>
-</component>
+</fragment>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
 
   <!-- comment that to disable filter based auth -->
   <extension target="web#STD-AUTH-FILTER">

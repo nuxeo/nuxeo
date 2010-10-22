@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
 
   <!-- For MDB we need topics deployed -->
   <extension target="application#MODULE">

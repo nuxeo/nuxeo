@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
   <extension target="web#FILTER-MAPPING">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
