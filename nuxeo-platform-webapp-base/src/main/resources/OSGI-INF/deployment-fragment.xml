@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
 
   <extension target="pages#PAGES">
     <page view-id="/view_users.xhtml">breadcrumb=command.manageMembers</page>
