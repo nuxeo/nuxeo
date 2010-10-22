@@ -120,6 +120,11 @@ public class FakeDocument implements Document {
     }
 
     @Override
+    public DocumentVersion getBaseVersion() throws DocumentException {
+        return null;
+    }
+
+    @Override
     public Document getParent() throws DocumentException {
         return null;
     }
@@ -128,11 +133,6 @@ public class FakeDocument implements Document {
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
         return null;
-    }
-
-    @Override
-    public boolean isDirty() throws DocumentException {
-        return false;
     }
 
     @Override
@@ -154,16 +154,12 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public void setDirty(boolean value) throws DocumentException {
-    }
-
-    @Override
     public <T extends Serializable> void setSystemProp(String name, T value)
             throws DocumentException {
     }
 
     @Override
-    public Document checkIn(String label, String description)
+    public DocumentVersion checkIn(String label, String description)
             throws DocumentException {
         return null;
     }

@@ -190,6 +190,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
             notifyEvent(PublishingEvent.documentPublished.name(), null,
                     comment, null, currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
+            // publish may checkin the document -> change
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
             facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_published"),
                     resourcesAccessor.getMessages().get(

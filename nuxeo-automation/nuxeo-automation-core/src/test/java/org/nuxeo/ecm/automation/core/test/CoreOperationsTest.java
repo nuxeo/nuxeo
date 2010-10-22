@@ -511,19 +511,16 @@ public class CoreOperationsTest {
         chain.add(UpdateDocument.ID).set("properties", "dc:title=MyDoc3");
         chain.add(CreateVersion.ID).set("increment", "Minor");
         chain.add(SetVar.ID).set("name", "versionLabel_3").set("value", expr);
-        // update document to test if version change (it should no change)
+        // update document to test if version change (auto-checkout)
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
                 "MyDoc4");
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
-        assertEquals("1.0", ctx.get("versionLabel_1"));
-        assertEquals("2.0", ctx.get("versionLabel_2"));
-        assertEquals("2.1", ctx.get("versionLabel_3"));
-        assertEquals(
-                "2.1",
-                Framework.getLocalService(VersioningManager.class).getVersionLabel(
-                        doc));
+        assertEquals("0.0", ctx.get("versionLabel_1"));
+        assertEquals("1.0", ctx.get("versionLabel_2"));
+        assertEquals("1.1", ctx.get("versionLabel_3"));
+        assertEquals("1.1+", doc.getVersionLabel());
         assertEquals("MyDoc4", doc.getTitle());
     }
 
@@ -538,17 +535,14 @@ public class CoreOperationsTest {
         chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set(
                 "properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
-        // update document to test if version change (it should no change)
+        // update document to test if version change (it should not change)
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
                 "MyDoc2");
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
-        assertEquals("1.0", ctx.get("versionLabel_1"));
-        assertEquals(
-                "1.0",
-                Framework.getLocalService(VersioningManager.class).getVersionLabel(
-                        doc));
+        assertEquals("0.0", ctx.get("versionLabel_1"));
+        assertEquals("0.0", doc.getVersionLabel());
         assertEquals("MyDoc2", doc.getTitle());
     }
 
@@ -565,7 +559,7 @@ public class CoreOperationsTest {
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(SetDocumentLifeCycle.ID).set("value", "approve");
         chain.add(SetVar.ID).set("name", "versionLabel_2").set("value", expr);
-        // update document to test if version change (it should no change)
+        // update document to test if version change (it should not change)
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
                 "MyDoc2");
         chain.add(SetVar.ID).set("name", "versionLabel_3").set("value", expr);
@@ -574,13 +568,10 @@ public class CoreOperationsTest {
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
-        assertEquals("1.0", ctx.get("versionLabel_1"));
-        assertEquals("1.0", ctx.get("versionLabel_2"));
+        assertEquals("0.0", ctx.get("versionLabel_1"));
+        assertEquals("0.0", ctx.get("versionLabel_2"));
         assertEquals("1.0", ctx.get("versionLabel_3"));
-        assertEquals(
-                "1.0",
-                Framework.getLocalService(VersioningManager.class).getVersionLabel(
-                        doc));
+        assertEquals("2.0", doc.getVersionLabel());
         assertEquals("MyDoc3", doc.getTitle());
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
