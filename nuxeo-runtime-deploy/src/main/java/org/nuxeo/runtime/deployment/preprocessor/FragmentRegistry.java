@@ -127,7 +127,8 @@ public class FragmentRegistry extends
         }
 
         // add the "all" marker fragment
-        add("all", FragmentDescriptor.ALL, (Collection<String>) null);
+        add(FragmentDescriptor.ALL.name, FragmentDescriptor.ALL,
+                (Collection<String>) null);
 
         fragments.clear();
     }

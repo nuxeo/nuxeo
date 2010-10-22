@@ -138,6 +138,7 @@ public class DeploymentPreprocessor {
             throws Exception {
         String fileName = file.getName();
         FragmentDescriptor fd = null;
+        boolean isBundle = false;
         if (fileName.endsWith("-fragment.xml")) {
             fd = getXMLFragment(file);
         } else if (fileName.endsWith("-fragments.xml")) {
@@ -147,6 +148,7 @@ public class DeploymentPreprocessor {
             return;
         } else if (fileName.endsWith(".jar") || fileName.endsWith(".war")
                 || fileName.endsWith(".sar") || fileName.endsWith(".rar")) {
+            isBundle = true;
             if (file.isDirectory()) {
                 fd = getDirectoryFragment(file);
             } else {
@@ -165,7 +167,40 @@ public class DeploymentPreprocessor {
                     cd.templates.put(td.name, td);
                 }
             }
+        } else if (isBundle) {
+            // create markers - for compatibility with versions < 5.4
+            String name = getSymbolicName(file);
+            if (name != null) {
+                cd.fragments.add(new FragmentDescriptor(name, true));
+            }
         }
+    }
+
+    protected String getSymbolicName(File file) throws Exception {
+        Manifest mf = JarUtils.getManifest(file);
+        if (mf != null) {
+            Attributes attrs = mf.getMainAttributes();
+            String id = attrs.getValue("Bundle-SymbolicName");
+            if (id != null) {
+                int p = id.indexOf(';');
+                if (p > -1) { // remove properties part if any
+                    id = id.substring(0, p);
+                }
+                return id;
+            }
+        }
+        return null;
+    }
+
+    protected String getJarArtifactName(String name) {
+        if (name.endsWith(".jar")) {
+            name = name.substring(0, name.length() - 4);
+        }
+        Matcher m = ARTIFACT_NAME_PATTERN.matcher(name);
+        if (m.find()) {
+            name = name.substring(0, m.start());
+        }
+        return name;
     }
 
     protected void init(ContainerDescriptor cd, File[] files) throws Exception {
@@ -197,7 +232,10 @@ public class DeploymentPreprocessor {
             List<DependencyTree.Entry<String, FragmentDescriptor>> entries) {
         StringBuilder buf = new StringBuilder();
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
-            buf.append("\n\t" + entry.getKey());
+            FragmentDescriptor fd = entry.get();
+            if (fd != null && !fd.isMarker()) {
+                buf.append("\n\t" + entry.getKey());
+            }
         }
         log.info("Preprocessing order: " + buf.toString());
     }
@@ -212,7 +250,7 @@ public class DeploymentPreprocessor {
         printInfo(entries);
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
             FragmentDescriptor fd = entry.get();
-            if (fd instanceof FragmentDescriptor == false) {
+            if (fd == null || fd.isMarker()) {
                 continue; // should be a marker entry like the "all" one.
             }
             cd.context.put("bundle.fileName", fd.filePath);
@@ -334,24 +372,17 @@ public class DeploymentPreprocessor {
             return null; // don't need preprocessing
         }
         if (fd.name == null) {
-            // fallback on manifest
-            processBundleForCompat(fd, directory);
-        } else if (fd.name.length() == 0) {
+            // fallback on symbolic name
+            fd.name = getSymbolicName(directory);
+        }
+        if (fd.name == null) {
+            // fallback on artifact id
             fd.name = getJarArtifactName(directory.getName());
         }
-
+        if (fd.version == 0) { // compat with versions < 5.4
+            processBundleForCompat(fd, directory);
+        }
         return fd;
-    }
-
-    public String getJarArtifactName(String name) {
-        if (name.endsWith(".jar")) {
-            name = name.substring(0, name.length() - 4);
-        }
-        Matcher m = ARTIFACT_NAME_PATTERN.matcher(name);
-        if (m.find()) {
-            name = name.substring(0, m.start());
-        }
-        return name;
     }
 
     protected FragmentDescriptor getJARFragment(File file) throws Exception {
@@ -367,10 +398,15 @@ public class DeploymentPreprocessor {
                     in.close();
                 }
                 if (fd.name == null) {
-                    // fallback on manifest
-                    processBundleForCompat(fd, file);
-                } else if (fd.name.length() == 0) {
+                    // fallback on symbolic name
+                    fd.name = getSymbolicName(file);
+                }
+                if (fd.name == null) {
+                    // fallback on artifact id
                     fd.name = getJarArtifactName(file.getName());
+                }
+                if (fd.version == 0) { // compat with versions < 5.4
+                    processBundleForCompat(fd, file);
                 }
             }
         } finally {

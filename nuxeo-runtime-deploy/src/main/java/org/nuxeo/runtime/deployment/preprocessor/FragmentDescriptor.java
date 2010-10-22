@@ -48,12 +48,16 @@ public class FragmentDescriptor {
      * Marker used for better control on requirements. see "all" marker in
      * FragmentRegistry
      */
-    public final static FragmentDescriptor ALL = new FragmentDescriptor();
+    public final static FragmentDescriptor ALL = new FragmentDescriptor("all",
+            true);
 
     // the name is the name of the XML fragment file for XML fragments
     // or the name of the JAR container for archive or directory fragments
     @XNode("@name")
     public String name;
+
+    @XNode("@version")
+    public int version = 0;
 
     public String fileName;
 
@@ -91,6 +95,7 @@ public class FragmentDescriptor {
      * may change (this header has the advantage of using symbolic names)
      */
     @XNode("@startLevel")
+    @Deprecated
     public int startLevel;
 
     @XNodeList(value = "extension", type = TemplateContribution[].class, componentType = TemplateContribution.class)
@@ -108,6 +113,24 @@ public class FragmentDescriptor {
     public CommandProcessor install;
 
     public CommandProcessor uninstall;
+
+    protected boolean isMarker;
+
+    /**
+     * 
+     */
+    public FragmentDescriptor() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public FragmentDescriptor(String name, boolean isMarker) {
+        this.name = name;
+        this.isMarker = isMarker;
+    }
+
+    public boolean isMarker() {
+        return isMarker;
+    }
 
     @XContent("install")
     public void setInstallCommands(DocumentFragment df) {
