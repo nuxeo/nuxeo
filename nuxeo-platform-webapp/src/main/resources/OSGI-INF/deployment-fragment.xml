@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <fragment>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>editor_link_search_document</from-outcome>
