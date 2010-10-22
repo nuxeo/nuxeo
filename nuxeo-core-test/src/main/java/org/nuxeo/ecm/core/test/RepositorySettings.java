@@ -90,7 +90,7 @@ public class RepositorySettings implements Provider<CoreSession> {
             try {
                 initializer = clazz.newInstance();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
     }

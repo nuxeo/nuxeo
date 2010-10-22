@@ -83,7 +83,7 @@ public class TypeService extends DefaultComponent {
             schemaLoader = new XSDLoader(typeManager);
             schemaManagerInstance = typeManager;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 
@@ -113,7 +113,7 @@ public class TypeService extends DefaultComponent {
                     sbd.context = extension.getContext();
                     registerSchema(sbd);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
         } else if ("configuration".equals(xp)) {

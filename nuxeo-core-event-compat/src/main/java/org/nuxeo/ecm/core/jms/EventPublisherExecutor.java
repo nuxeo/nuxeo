@@ -25,11 +25,16 @@ import java.util.concurrent.Executors;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class EventPublisherExecutor {
+
+    private static final Log log = LogFactory.getLog(EventPublisherExecutor.class);
 
     ExecutorService executor;
     MessagePublisher publisher;
@@ -42,7 +47,7 @@ public class EventPublisherExecutor {
             try {
                 INSTANCE.start();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         return INSTANCE;
@@ -64,11 +69,11 @@ public class EventPublisherExecutor {
         executor.execute(new Runnable() {
             public void run() {
                 try {
-                    System.out.println("############ serial publishing from thread "
+                    log.info("############ serial publishing from thread "
                                     + Thread.currentThread());
                     publisher.publish(content);
                 } catch (Exception e) {
-                    e.printStackTrace(); // TODO
+                    log.error(e, e);
                 }
             }
         });

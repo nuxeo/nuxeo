@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeBindingException;
 import org.nuxeo.runtime.api.Framework;
@@ -31,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TypeRef<T extends Type> implements Serializable {
+
+    private static final Log log = LogFactory.getLog(TypeRef.class);
 
     private static final long serialVersionUID = -6701097679440511374L;
 
@@ -73,7 +77,7 @@ public class TypeRef<T extends Type> implements Serializable {
             try {
                 object = load();
             } catch (Exception e) {
-                e.printStackTrace(); //TODO handle errors
+                log.error(e, e);
             }
         }
         return object;
@@ -88,7 +92,7 @@ public class TypeRef<T extends Type> implements Serializable {
             object = load();
             return object;
         } catch (Exception e) {
-            e.printStackTrace(); // TODO handle errors
+            log.error(e, e);
             return null;
         }
     }

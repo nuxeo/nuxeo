@@ -15,10 +15,8 @@
 
   <properties>
     <server.shutdown.port>4432</server.shutdown.port>
-    <!--
-      You can run just the integration tests by passing
-      -DskipUnitTests=true on the command line
-    -->
+    <!-- You can run just the integration tests by passing -DskipUnitTests=true on 
+      the command line -->
     <skipUnitTests>false</skipUnitTests>
   </properties>
 
@@ -113,8 +111,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.ressource</groupId>
-      <artifactId>jca-api</artifactId>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -193,11 +191,8 @@
       <version>1.2.2</version>
       <scope>runtime</scope>
     </dependency>
-    <!--
-      <dependency> <groupId>com.oracle</groupId>
-      <artifactId>ojdbc14</artifactId> <version>10.2.0.3.0</version>
-      <scope>runtime</scope> </dependency>
-    -->
+    <!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId> 
+      <version>10.2.0.3.0</version> <scope>runtime</scope> </dependency> -->
   </dependencies>
 
   <profiles>
@@ -205,15 +200,13 @@
       <id>itest</id>
       <build>
         <plugins>
-          <!-- Make sure Surefire does NOT run integration tests  -->
+          <!-- Make sure Surefire does NOT run integration tests -->
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <skipExec>${skipUnitTests}</skipExec>
-              <!--
-                use the legacy parameter skipExec so that -DskipTests
-                will still skip all tests
-              -->
+              <!-- use the legacy parameter skipExec so that -DskipTests will still 
+                skip all tests -->
               <excludes>
                 <exclude>**/IT*.java</exclude>
                 <exclude>**/*IT.java</exclude>
@@ -242,10 +235,8 @@
                     <copy
                       file="${project.build.testOutputDirectory}/server.log4j.properties"
                       tofile="${project.build.testOutputDirectory}/log4j.properties" />
-                    <java
-                      classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner"
-                      classpathref="maven.test.classpath" fork="true"
-                      spawn="true">
+                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner"
+                      classpathref="maven.test.classpath" fork="true" spawn="true">
                       <arg value="-p" />
                       <arg value="${server.shutdown.port}" />
                       <jvmarg value="-Xdebug" />

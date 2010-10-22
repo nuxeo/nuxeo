@@ -27,6 +27,7 @@ import java.util.Properties;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
@@ -91,9 +92,17 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     protected Ejb3Configuration cfg;
 
     public Ejb3Configuration setupConfiguration() {
+        return setupConfiguration(null);
+    }
+
+    public Ejb3Configuration setupConfiguration(Map<String, String> properties) {
         cfg = new Ejb3Configuration();
 
-        cfg.configure(name, Collections.emptyMap());
+        if (properties!=null) {
+            cfg.configure(name, properties);
+        } else {
+            cfg.configure(name, Collections.emptyMap());
+        }
 
         // Load hibernate properties
         cfg.setProperties(hibernateProperties);
@@ -110,9 +119,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     }
 
     public EntityManagerFactory getFactory(String txType) {
-        if (cfg == null) {
-            setupConfiguration();
-        }
         Map<String, String> properties = new HashMap<String, String>();
         if (txType == null) {
             txType = getTxType();
@@ -127,6 +133,9 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
                 properties.put(Environment.TRANSACTION_MANAGER_STRATEGY,
                         NuxeoTransactionManagerLookup.class.getName());
             }
+        }
+        if (cfg == null) {
+            setupConfiguration(properties);
         }
         return cfg.createEntityManagerFactory(properties);
     }
@@ -155,6 +164,10 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
 
         public String getUserTransactionName() {
             return TransactionHelper.getUserTransactionJNDIName();
+        }
+
+        public Object getTransactionIdentifier(Transaction transaction) {
+            return transaction;
         }
     }
 
