@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -85,10 +86,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     @In
     protected transient Context sessionContext;
 
-    @In(required = false)
-    @Out(required = false)
-    protected VersionModel newVersion;
-
     @In(create = true)
     protected transient DocumentVersioning documentVersioning;
 
@@ -97,18 +94,19 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     protected String checkedOut;
 
     @Create
+    @Override
     public void initialize() {
-        newVersion = new VersionModelImpl();
-        sessionContext.set("newVersion", newVersion);
     }
 
-    @Observer(value = {DOCUMENT_SELECTION_CHANGED, DOCUMENT_CHANGED,
-            DOCUMENT_SUBMITED_FOR_PUBLICATION, DOCUMENT_PUBLISHED}, create = false)
+    @Observer(value = { DOCUMENT_SELECTION_CHANGED, DOCUMENT_CHANGED,
+            DOCUMENT_SUBMITED_FOR_PUBLICATION, DOCUMENT_PUBLISHED }, create = false)
     @BypassInterceptors
+    @Override
     public void resetVersions() {
         versionModelList = null;
     }
 
+    @Override
     @Factory(value = "versionList", scope = EVENT)
     public List<VersionModel> getVersionList() throws ClientException {
         if (versionModelList == null || versionModelList.isEmpty()) {
@@ -117,6 +115,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         return versionModelList;
     }
 
+    @Override
     public void retrieveVersions() throws ClientException {
         /**
          * in case the document is a proxy,meaning is the result of a
@@ -126,16 +125,17 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
          * indicates,and then from that version we have to get to the root
          * document.
          */
-        if (navigationContext.getCurrentDocument().isProxy()) {
-            DocumentRef ref = navigationContext.getCurrentDocument().getRef();
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentModel doc;
+        if (currentDocument.isProxy()) {
+            DocumentRef ref = currentDocument.getRef();
             DocumentModel version = documentManager.getSourceDocument(ref);
-            DocumentModel doc = documentManager.getSourceDocument(version.getRef());
-            versionModelList = new ArrayList<VersionModel>(
-                    documentVersioning.getItemVersioningHistory(doc));
+            doc = documentManager.getSourceDocument(version.getRef());
         } else {
-            versionModelList = new ArrayList<VersionModel>(
-                    documentVersioning.getCurrentItemVersioningHistory());
+            doc = currentDocument;
         }
+        versionModelList = new ArrayList<VersionModel>(
+                documentVersioning.getItemVersioningHistory(doc));
     }
 
     /**
@@ -144,11 +144,12 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      *
      * @return the page that needs to be displayed next
      */
+    @Override
     public String restoreToVersion(VersionModel selectedVersion)
             throws ClientException {
         DocumentModel restoredDocument = documentManager.restoreToVersion(
-                navigationContext.getCurrentDocument().getRef(),
-                selectedVersion);
+                navigationContext.getCurrentDocument().getRef(), new IdRef(
+                        selectedVersion.getId()), true, true);
         documentManager.save();
 
         // same as edit basically
@@ -158,12 +159,14 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
                 "after-edit");
     }
 
+    @Override
     public String viewArchivedVersion(VersionModel selectedVersion)
             throws ClientException {
         return navigationContext.navigateToDocument(
                 navigationContext.getCurrentDocument(), selectedVersion);
     }
 
+    @Override
     public boolean getCanRestore() throws ClientException {
         // TODO: should check for a specific RESTORE permission instead
         return documentManager.hasPermission(
@@ -174,6 +177,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     /**
      * Tells if the current selected document is checked out or not.
      */
+    @Override
     public String getCheckedOut() throws ClientException {
         if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
             checkedOut = "Checked-out";
@@ -183,6 +187,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         return checkedOut;
     }
 
+    @Override
     public void setCheckedOut(String checkedOut) {
         this.checkedOut = checkedOut;
     }
@@ -192,6 +197,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      *
      * @return the next page
      */
+    @Override
     public String checkOut() throws ClientException {
         documentManager.checkOut(navigationContext.getCurrentDocument().getRef());
         return null;
@@ -200,18 +206,21 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     /**
      * Checks the selected document in, with the selected version.
      */
+    @Override
     public String checkIn() throws ClientException {
-        documentManager.checkIn(
-                navigationContext.getCurrentDocument().getRef(), newVersion);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        documentManager.checkIn(currentDocument.getRef(), null, null);
         retrieveVersions();
-        return navigationContext.getActionResult(
-                navigationContext.getCurrentDocument(), UserAction.AFTER_EDIT);
+        return navigationContext.getActionResult(currentDocument,
+                UserAction.AFTER_EDIT);
     }
 
+    @Override
     public DocumentModel getSourceDocument() throws ClientException {
         return documentManager.getSourceDocument(navigationContext.getCurrentDocument().getRef());
     }
 
+    @Override
     public boolean canRemoveArchivedVersion(VersionModel selectedVersion) {
         try {
             DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
@@ -231,6 +240,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         }
     }
 
+    @Override
     public String removeArchivedVersion(VersionModel selectedVersion)
             throws ClientException {
         DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
@@ -245,7 +255,8 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         documentManager.removeDocument(docVersion.getRef());
         documentManager.save();
         resetVersions();
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(
+                FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.versioning.versionRemoved"));
         return null;

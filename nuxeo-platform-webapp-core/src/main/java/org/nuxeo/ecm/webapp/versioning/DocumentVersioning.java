@@ -41,7 +41,10 @@ public interface DocumentVersioning {
      * Provides an explaining message of the inc options availability.
      *
      * @return key for the message (to be read from messages bundles)
+     *
+     * @deprecated since 5.4
      */
+    @Deprecated
     String getIncRulesResult();
 
     /**
@@ -58,6 +61,8 @@ public interface DocumentVersioning {
      * Returns the available versioning options for the currentItem and state.
      *
      * @return a collection of option names.
+     *
+     * @deprecated since 5.4
      */
     Collection<VersioningActions> getCurrentItemVersioningOptions();
 
@@ -72,25 +77,25 @@ public interface DocumentVersioning {
     /**
      * Creates a Map with versioning options (as keys) and labels (as map entry
      * values).
+     *
+     * @deprecated since 5.4
      */
+    @Deprecated
     Map<String, String> getVersioningOptionsMap(
             final DocumentModel documentModel);
 
+    Map<String, String> getAvailableVersioningOptionsMap();
+
     String getVersionLabel(DocumentModel document) throws ClientException;
 
-    /**
-     * Directs user decision.
-     *
-     */
-    void incrementVersions(DocumentModel documentModel,
-            VersioningActions selectedOption);
+    String getVersioningOptionInstanceId();
 
     String factoryForIncrementationRules();
 
     boolean factoryForRenderVersioningOption();
 
     /**
-     * Web action method to set version incrementation option to the current
+     * Web action method to set version increment option to the current
      * documentModel.
      */
     void setVersioningOptionInstanceId(String optionId) throws ClientException;
@@ -102,22 +107,34 @@ public interface DocumentVersioning {
             VersioningActions option) throws ClientException;
 
     /**
-     * Versioning incrementation options - select radio component validator
-     * method. Check if an option has been selected. This is mandatory since the
+     * Versioning increment options - select radio component validator method.
+     * Check if an option has been selected. This is mandatory since the
      * component is being displayed.
      */
     void validateOptionSelection(FacesContext context, UIComponent component,
             Object value);
 
     /**
-     * Web action method that specifies to create or not a document snapshot
-     * before update (and possible version incrementation).
+     * @deprecated since 5.4
      */
+    @Deprecated
     void setCreateSnapshot(boolean createSnapshot);
 
+    /**
+     * @deprecated since 5.4
+     */
+    @Deprecated
     boolean getCreateSnapshot() throws ClientException;
 
+    /**
+     * @deprecated since 5.4
+     */
+    @Deprecated
     boolean getDefaultCreateSnapshot() throws ClientException;
 
+    /**
+     * @deprecated since 5.4
+     */
+    @Deprecated
     boolean getDisplayCreateSnapshotOption() throws ClientException;
 }

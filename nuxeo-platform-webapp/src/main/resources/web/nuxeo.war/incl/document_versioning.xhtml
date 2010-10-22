@@ -6,9 +6,6 @@
 
 <br />
 
-  <h:outputText
-    value="#{currentDocumentIncrementationRules}" rendered="#{not empty currentDocumentIncrementationRules}"/>
-
   <h:panelGrid columns="2" styleClass="dataInput" rendered="#{renderVersioningOptionsForCurrentDocument}"
     columnClasses="labelColumn, fieldColumn">
 
@@ -16,7 +13,6 @@
       value="#{messages['label.versioning.selectVersioningOption']}" />
 
     <h:panelGroup class="dataInputGroup">
-
       <h:selectOneRadio id="versioningOptionInstanceId"
         value="#{documentVersioning.versioningOptionInstanceId}"
         required="true" layout="pageDirection"
@@ -28,18 +24,6 @@
       <h:message for="versioningOptionInstanceId" styleClass="errorMessage" />
     </h:panelGroup>
 
-    <h:outputText value="" />
-    <h:outputText value="" />
-
-    <h:selectBooleanCheckbox id="createSnapshot" 
-      label="#{messages['label.versioning.createSnapshot']}" 
-      value="#{documentVersioning.createSnapshot}"
-      rendered="#{documentVersioning.displayCreateSnapshotOption}">
-    </h:selectBooleanCheckbox>
-    <h:outputLabel for="createSnapshot" 
-      rendered="#{documentVersioning.displayCreateSnapshotOption}">#{messages['label.versioning.createSnapshot']}</h:outputLabel>
-    <br/>
-      
   </h:panelGrid>
 
 </div>
