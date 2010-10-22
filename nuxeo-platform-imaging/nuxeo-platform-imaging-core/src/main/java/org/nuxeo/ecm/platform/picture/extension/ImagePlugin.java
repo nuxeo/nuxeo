@@ -63,10 +63,11 @@ public class ImagePlugin extends AbstractFileImporter {
 
         if (overwrite && docModel != null) {
 
-            // Do a checkin / checkout of the current version first
+            // Do a snapshot of the current version first
             DocumentRef docRef = docModel.getRef();
-            documentManager.checkIn(docRef, (String) null);
-            documentManager.checkOut(docRef);
+            if (documentManager.isCheckedOut(docRef)) {
+                documentManager.checkIn(docRef, null, null);
+            }
 
             ((Map) ((List) docModel.getDataModel("picture").getData("views")).get(0)).put(
                     "content", content.persist());

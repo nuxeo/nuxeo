@@ -29,15 +29,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -143,19 +140,8 @@ public class FileService extends DefaultAdapter {
                 p.setValue(blob);
             }
             // make snapshot
-            VersioningActions va = form.getVersioningOption();
-            if (va != null) {
-                ScopedMap ctxData = doc.getContextData();
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningActions.KEY_FOR_INC_OPTION, va);
-            } else {
-                ScopedMap ctxData = doc.getContextData();
-                ctxData.putScopedValue(ScopeType.REQUEST,
-                        VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.FALSE);
-            }
-            // ------------------------
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    form.getVersioningOption());
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();

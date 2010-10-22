@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -27,9 +25,9 @@ import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Save the input document
@@ -50,22 +48,16 @@ public class CreateVersion {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        VersioningActions va = null;
+        VersioningOption vo;
         if ("Minor".equals(snapshot)) {
-            va = VersioningActions.ACTION_INCREMENT_MINOR;
+            vo = VersioningOption.MINOR;
         } else if ("Major".equals(snapshot)) {
-            va = VersioningActions.ACTION_INCREMENT_MAJOR;
-        }
-        if (va != null) {
-            ScopedMap ctxData = doc.getContextData();
-            ctxData.putScopedValue(ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-            ctxData.putScopedValue(ScopeType.REQUEST,
-                    VersioningActions.KEY_FOR_INC_OPTION, va);
+            vo = VersioningOption.MAJOR;
         } else {
-            ScopedMap ctxData = doc.getContextData();
-            ctxData.putScopedValue(ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
+            vo = null;
+        }
+        if (vo != null) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION, vo);
         }
         // return session.saveDocument(doc);
         return DocumentHelper.saveDocument(session, doc);
