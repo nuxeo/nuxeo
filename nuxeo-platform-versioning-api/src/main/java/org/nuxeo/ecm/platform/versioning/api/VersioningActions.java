@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,47 +12,41 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.versioning.api;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+
 /**
- * Defines actions to be taken in a document versioning incrementation process.
- *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * Defines actions to be taken in a document versioning increment process.
+ * <p>
+ * Used by UI.
  */
 public enum VersioningActions implements Serializable {
 
-    ACTION_UNDEFINED("undefined"),
-    ACTION_AUTO_INCREMENT("auto_inc"),
-    ACTION_NO_INCREMENT("no_inc"),
-    ACTION_INCREMENT_MINOR("inc_minor"),
-    ACTION_INCREMENT_MAJOR("inc_major"),
-    ACTION_INCREMENT_DEFAULT("inc_default"),
-    ACTION_CASE_DEPENDENT("ask_user"),
-    NO_VERSIONING("no_ver_doctype");
+    ACTION_NO_INCREMENT("no_inc"), //
+    ACTION_INCREMENT_MINOR("inc_minor"), //
+    ACTION_INCREMENT_MAJOR("inc_major");
 
-    public static final String KEY_FOR_INC_OPTION = "VersioningOption";
+    public static final String KEY_FOR_INC_OPTION = VersioningDocument.KEY_FOR_INC_OPTION;
 
+    /**
+     * @deprecated use
+     *             {@link org.nuxeo.ecm.core.versioning.VersioningService#SKIP_VERSIONING}
+     *             instead
+     */
+    @Deprecated
     public static final String SKIP_VERSIONING = "SKIP_VERSIONING";
 
     private final String name;
 
-    /**
-     * @deprecated an enum should not hold a state value: it is reset when
-     *             serializing it.
-     */
-    @Deprecated
-    private boolean isDefault;
-
     VersioningActions(String name) {
         this.name = name;
-        this.isDefault = false;
     }
 
     public static VersioningActions getByActionName(String actionName) {
@@ -62,24 +56,6 @@ public enum VersioningActions implements Serializable {
             }
         }
         return null;
-    }
-
-    /**
-     * @deprecated an enum should not hold a state value: it is reset when
-     *             serializing it, see NXP-2516.
-     */
-    @Deprecated
-    public boolean isDefault() {
-        return this.isDefault;
-    }
-
-    /**
-     * @deprecated an enum should not hold a state value: it is reset when
-     *             serializing it, see NXP-2516.
-     */
-    @Deprecated
-    public void setDefault(boolean isDefault) {
-        this.isDefault = isDefault;
     }
 
     @Override

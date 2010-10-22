@@ -79,22 +79,21 @@ public class TestVersionning extends RepositoryOSGITestCase {
 
         assertEquals("mytest.something", doc.getTitle());
 
-        VersioningManager vm = Framework
-                .getLocalService(VersioningManager.class);
+        VersioningManager vm = Framework.getLocalService(VersioningManager.class);
         String vl = vm.getVersionLabel(doc);
-        assertEquals("1.0", vl);
+        assertEquals("0.0", vl);
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest.something");
 
         String vl2 = vm.getVersionLabel(doc);
-        assertEquals("1.1", vl2);
+        assertEquals("0.1", vl2);
 
         blob.setFilename("mytest2.something");
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest2.something");
         vl = vm.getVersionLabel(doc);
-        assertEquals("1.0", vl);
+        assertEquals("0.0", vl);
 
         blob.setFilename("mytxt.txt");
         blob.setMimeType("text/plain");
@@ -102,12 +101,12 @@ public class TestVersionning extends RepositoryOSGITestCase {
                 destWS.getPathAsString(), true, "mytxt.txt");
         assertEquals("Note", doc.getType());
         vl = vm.getVersionLabel(doc);
-        assertEquals("1.0", vl);
+        assertEquals("0.0", vl);
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytxt.txt");
         vl = vm.getVersionLabel(doc);
-        assertEquals("1.1", vl);
+        assertEquals("0.1", vl);
     }
 
 }

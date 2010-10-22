@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.versioning.VersioningManager">
+  <documentation>
+    Component giving access to a few utility methods related to versioning.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.versioning.service.VersioningManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.versioning.api.VersioningManager" />
+  </service>
+
+</component>
