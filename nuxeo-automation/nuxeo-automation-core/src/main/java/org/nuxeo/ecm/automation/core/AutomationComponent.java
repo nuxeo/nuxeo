@@ -36,6 +36,8 @@ import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
+import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
+import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateVersion;
@@ -125,6 +127,8 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(CopyDocument.class);
         service.putOperation(CreateDocument.class);
         service.putOperation(CreateVersion.class);
+        service.putOperation(CheckInDocument.class);
+        service.putOperation(CheckOutDocument.class);
         service.putOperation(DeleteDocument.class);
         service.putOperation(FetchDocument.class);
         service.putOperation(LockDocument.class);

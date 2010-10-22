@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.VariableName;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,6 +54,10 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
     protected transient JbpmService jbpmService;
 
     protected ExecutionContext executionContext;
+
+    public static final String SUFFIX_MINOR = "_MINOR";
+
+    public static final String SUFFIX_MAJOR = "_MAJOR";
 
     public void execute(ExecutionContext executionContext) throws Exception {
         throw new UnsupportedOperationException();
@@ -133,12 +138,28 @@ public abstract class AbstractJbpmHandlerHelper implements ActionHandler,
         CoreInstance.getInstance().close(session);
     }
 
+    /** @deprecated since 5.4 */
+    @Deprecated
     protected void followTransition(NuxeoPrincipal principal,
             DocumentRef docRef, String transition) throws Exception {
+        followTransition(principal, docRef, transition, null);
+    }
+
+    protected void followTransition(NuxeoPrincipal principal,
+            DocumentRef docRef, String transition, VersioningOption option)
+            throws Exception {
         CoreSession coreSession = getCoreSession(principal);
-        coreSession.followTransition(docRef, transition);
-        coreSession.save();
-        closeCoreSession(coreSession);
+        try {
+            coreSession.followTransition(docRef, transition);
+            if (option != null) {
+                if (coreSession.isCheckedOut(docRef)) {
+                    coreSession.checkIn(docRef, option, null);
+                }
+            }
+            coreSession.save();
+        } finally {
+            closeCoreSession(coreSession);
+        }
     }
 
     protected String getStringVariable(String name) {

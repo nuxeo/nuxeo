@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.jbpm.core.helper;
 
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -49,9 +50,23 @@ public class LifecycleTransitionActionHandler extends AbstractJbpmHandlerHelper 
         if (nuxeoHasStarted()) {
             String endLifecycle = getEndLifecycleTransition();
             if (endLifecycle != null && !"".equals(endLifecycle)) {
+                String transition;
+                VersioningOption option;
+                if (endLifecycle.endsWith(SUFFIX_MINOR)) {
+                    transition = endLifecycle.substring(0,
+                            endLifecycle.length() - SUFFIX_MINOR.length());
+                    option = VersioningOption.MINOR;
+                } else if (endLifecycle.endsWith(SUFFIX_MAJOR)) {
+                    transition = endLifecycle.substring(0,
+                            endLifecycle.length() - SUFFIX_MAJOR.length());
+                    option = VersioningOption.MAJOR;
+                } else {
+                    transition = endLifecycle;
+                    option = null;
+                }
                 String user = getInitiator();
                 followTransition(getNuxeoPrincipal(user), getDocumentRef(),
-                        endLifecycle);
+                        transition, option);
             }
         }
         executionContext.getToken().signal();

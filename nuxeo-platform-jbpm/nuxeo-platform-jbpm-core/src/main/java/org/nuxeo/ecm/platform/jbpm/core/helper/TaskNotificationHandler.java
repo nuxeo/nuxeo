@@ -44,22 +44,25 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
                     JbpmService.VariableName.document.name());
             NuxeoPrincipal principal = (NuxeoPrincipal) getTransientVariable(
                     JbpmService.VariableName.principal.name());
-
-            CoreSession coreSession = getCoreSession(principal);
-            if (coreSession == null || documentModel == null) {
+            if (documentModel == null) {
                 return;
             }
-            EventProducer eventProducer;
+
+            CoreSession coreSession = getCoreSession(principal);
             try {
-                eventProducer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
+                EventProducer eventProducer;
+                try {
+                    eventProducer = Framework.getService(EventProducer.class);
+                } catch (Exception e) {
+                    throw new ClientException(e);
+                }
+                DocumentEventContext ctx = new DocumentEventContext(
+                        coreSession, principal, documentModel);
+                ctx.setProperty("recipients", getRecipients());
+                eventProducer.fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
+            } finally {
+                closeCoreSession(coreSession);
             }
-            DocumentEventContext ctx = new DocumentEventContext(coreSession,
-                    principal, documentModel);
-            ctx.setProperty("recipients", getRecipients());
-            eventProducer.fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
-            closeCoreSession(coreSession);
         }
     }
 

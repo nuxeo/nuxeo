@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -735,12 +736,27 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
         this.userComment = comment;
     }
 
+    protected static Set<String> CHECK_IN_TRANSITIONS = new HashSet<String>(
+            Arrays.asList("approve"));
+
+    protected boolean isCheckInTransition(String transition) {
+        return CHECK_IN_TRANSITIONS.contains(transition);
+    }
+
     public List<String> getAllowedStateTransitions(DocumentRef ref)
             throws ClientException {
         // break reference: core gives an unmodifiable collection unsuitable
         // for UI.
-        return new ArrayList<String>(
-                documentManager.getAllowedStateTransitions(ref));
+        List<String> res = new ArrayList<String>();
+        for (String transition : documentManager.getAllowedStateTransitions(ref)) {
+            if (isCheckInTransition(transition)) {
+                res.add(transition + AbstractJbpmHandlerHelper.SUFFIX_MINOR);
+                res.add(transition + AbstractJbpmHandlerHelper.SUFFIX_MAJOR);
+            } else {
+                res.add(transition);
+            }
+        }
+        return res;
     }
 
     public void resetCurrentData() {

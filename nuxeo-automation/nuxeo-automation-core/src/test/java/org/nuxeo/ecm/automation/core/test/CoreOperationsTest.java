@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.automation.core.operations.RunScriptFile;
 import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
+import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateVersion;
@@ -61,11 +63,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -79,7 +81,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
@@ -178,8 +180,8 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Same as before but tests relative paths Create | Copy | Set Property
-     * This is also testing {@link StringToProperties} adapter
+     * Same as before but tests relative paths Create | Copy | Set Property This
+     * is also testing {@link StringToProperties} adapter
      *
      * @throws Exception
      */
@@ -318,14 +320,15 @@ public class CoreOperationsTest {
         assertEquals("mydesc", out.getPropertyValue("dc:description"));
         assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
         assertTrue(out.isLocked());
-        assertEquals("parentdoc",
+        assertEquals(
+                "parentdoc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren |
-     * Delete.
+     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren
+     * | Delete.
      */
     @Test
     public void testChain4() throws Exception {
@@ -354,8 +357,8 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren |
-     * Delete.
+     * Context Fetch | Create | GetParent | Create. Context Fetch | GetChildren
+     * | Delete.
      */
     @Test
     public void testBlobChain() throws Exception {
@@ -407,10 +410,12 @@ public class CoreOperationsTest {
         assertEquals(2, list.size());
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        assertEquals("samedesc",
+        assertEquals(
+                "samedesc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
-        assertEquals("samedesc",
+        assertEquals(
+                "samedesc",
                 session.getDocument(dst.getRef()).getPropertyValue(
                         "dc:description"));
     }
@@ -558,6 +563,8 @@ public class CoreOperationsTest {
                 "properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(SetDocumentLifeCycle.ID).set("value", "approve");
+        chain.add(CheckInDocument.ID).set("version", "major").set("comment",
+                "yo").set("versionVarName", "ver");
         chain.add(SetVar.ID).set("name", "versionLabel_2").set("value", expr);
         // update document to test if version change (it should not change)
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value",
@@ -569,10 +576,12 @@ public class CoreOperationsTest {
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
 
         assertEquals("0.0", ctx.get("versionLabel_1"));
-        assertEquals("0.0", ctx.get("versionLabel_2"));
-        assertEquals("1.0", ctx.get("versionLabel_3"));
-        assertEquals("2.0", doc.getVersionLabel());
+        assertEquals("1.0", ctx.get("versionLabel_2"));
+        assertEquals("1.0+", ctx.get("versionLabel_3"));
+        assertEquals("1.0+", doc.getVersionLabel());
         assertEquals("MyDoc3", doc.getTitle());
+        DocumentRef ver = (DocumentRef) ctx.get("ver");
+        assertNotNull(ver);
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
