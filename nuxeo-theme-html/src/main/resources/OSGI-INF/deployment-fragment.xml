@@ -2,15 +2,6 @@
 
 <fragment>
 
-  <extension target="application#MODULE">
-
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-
-  </extension>
-  
-  
   <extension target="web#SERVLET">
 
     <servlet>
@@ -22,11 +13,11 @@
       <servlet-name>NXThemes CSS</servlet-name>
       <servlet-class>org.nuxeo.theme.html.servlets.Styles</servlet-class>
     </servlet>
-    
+
     <servlet>
       <servlet-name>NXThemes Images</servlet-name>
       <servlet-class>org.nuxeo.theme.html.servlets.Images</servlet-class>
-    </servlet>    
+    </servlet>
 
     <servlet>
       <servlet-name>NXThemes Negotiation Selector</servlet-name>
@@ -49,11 +40,11 @@
       <servlet-name>NXThemes CSS</servlet-name>
       <url-pattern>/nxthemes-css/*</url-pattern>
     </servlet-mapping>
-    
+
     <servlet-mapping>
       <servlet-name>NXThemes Images</servlet-name>
       <url-pattern>/nxthemes-images/*</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
 
     <servlet-mapping>
       <servlet-name>NXThemes Negotiation Selector</servlet-name>
@@ -61,8 +52,8 @@
     </servlet-mapping>
 
   </extension>
-  
-  
+
+
   <extension target="faces-config#MANAGED-BEAN">
 
     <managed-bean>
@@ -74,8 +65,8 @@
     </managed-bean>
 
   </extension>
-  
-  
+
+
   <install>
 
     <delete path="nxthemes-html.tmp" />
@@ -86,7 +77,7 @@
     </unzip>
 
     <delete path="nxthemes-html.tmp" />
-  </install>  
-  
+  </install>
+
 
 </fragment>
