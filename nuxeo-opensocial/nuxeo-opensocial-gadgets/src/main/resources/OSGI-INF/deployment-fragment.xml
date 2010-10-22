@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
 <fragment>
 
-	<extension target="application#MODULE">
-		<module>
-			<java>${bundle.fileName}</java>
-		</module>
-	</extension>
-	
-	  <install>
+  <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>

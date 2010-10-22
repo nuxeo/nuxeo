@@ -8,10 +8,6 @@
       <ejb>${bundle.fileName}</ejb>
     </module>
 
-    <module>
-      <java>datasources/nxwebwidgets-ds.xml</java>
-    </module>
-
   </extension>
 
 </fragment>

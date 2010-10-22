@@ -52,12 +52,6 @@
     </servlet-mapping>
   </extension>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
   <extension target="faces-config#COMPONENT">
     <component>
       <component-type>nxthemes.head</component-type>

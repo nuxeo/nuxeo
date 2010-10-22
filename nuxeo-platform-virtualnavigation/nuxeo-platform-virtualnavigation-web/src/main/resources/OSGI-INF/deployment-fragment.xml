@@ -2,14 +2,6 @@
 
 <fragment>
 
-  <extension target="application#MODULE">
-
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-
-  </extension>
-
   <install>
 
     <!--  Unzip the war template -->

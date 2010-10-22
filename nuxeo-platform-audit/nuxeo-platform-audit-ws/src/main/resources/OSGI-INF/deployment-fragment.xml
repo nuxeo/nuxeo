@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <fragment>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
  <!-- JBossWS Native EndPoint Declaration -->
  <extension target="web#JBOSSWS">
     <servlet>
