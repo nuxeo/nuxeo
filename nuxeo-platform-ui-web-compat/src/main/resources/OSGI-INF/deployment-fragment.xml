@@ -2,12 +2,6 @@
 
 <fragment>
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
   <extension target="faces-config#COMPONENT">
     <component>
       <component-type>nuxeo.web.tomahawk.disabled</component-type>
