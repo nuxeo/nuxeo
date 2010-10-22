@@ -93,6 +93,8 @@ public class SystemInfoManager implements Serializable {
         sb.append("\nJVM : ");
         sb.append(System.getProperty("java.runtime.name"));
         sb.append(" ");
+        sb.append(System.getProperty("java.runtime.version"));
+        sb.append(" - build ");
         sb.append(System.getProperty("java.vm.version"));
         sb.append(" (");
         sb.append(System.getProperty("java.vendor"));

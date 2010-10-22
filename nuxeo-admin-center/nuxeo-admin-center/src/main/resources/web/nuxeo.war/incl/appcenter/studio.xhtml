@@ -7,7 +7,7 @@
   <a4j:outputPanel id="connectAppListing">
     <div class="actionBar">
       <span><h:outputText value="#{messages['label.studio.update.title.devmode']}"/>: <a class="connectLink" target="_blank" href="http://doc.nuxeo.com/display/Studio/Nuxeo+Studio">Nuxeo Studio</a></span>
-      
+
       <h:panelGroup rendered="#{!appsViews.isStudioSnapshopUpdateInProgress()}">
         <div>
           <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
@@ -15,7 +15,7 @@
         </div>
       </h:panelGroup>
     </div>
-    
+
     <h:form>
       <a4j:poll interval="1000" enabled="#{appsViews.isStudioSnapshopUpdateInProgress()}" reRender="connectAppListing"/>
     </h:form>
@@ -42,7 +42,7 @@
        </h:form>
    </div>
 
-  <c:if test="#{connectServerReachable}">
+  <c:if test="#{connectServerReachable and registredConnectInstance}">
     <iframe src="/nuxeo/site/connectClient/packages/studio" frameborder="0" scrolling="auto" width="100%" height="300px">
       <img src="/nuxeo/img/big_loading.gif"/>
     </iframe>
@@ -50,6 +50,10 @@
 
   <c:if test="#{not connectServerReachable}">
      <h:outputText value="#{messages[adminsubtab.servernotreachable]}" />
+  </c:if>
+
+  <c:if test="#{not registredConnectInstance}">
+   <h:outputText value="#{messages[adminsubtab.registrationRequired]}" />
   </c:if>
 
   </a4j:outputPanel>

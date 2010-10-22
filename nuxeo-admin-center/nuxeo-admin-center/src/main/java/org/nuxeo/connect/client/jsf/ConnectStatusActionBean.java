@@ -21,6 +21,7 @@ package org.nuxeo.connect.client.jsf;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
+import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -295,4 +298,49 @@ public class ConnectStatusActionBean implements Serializable {
         return null;
     }
 
+    protected Blob packageToUpload;
+    protected String packageFileName;
+
+    public String getPackageFileName() {
+        return packageFileName;
+    }
+
+    public void setPackageFileName(String packageFileName) {
+        this.packageFileName = packageFileName;
+    }
+
+    public Blob getPackageToUpload() {
+        return packageToUpload;
+    }
+
+    public void setPackageToUpload(Blob packageToUpload) {
+        this.packageToUpload = packageToUpload;
+    }
+
+    public void uploadPackage() throws Exception {
+
+        if (packageToUpload==null) {
+            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            "label.connect.nofile");
+            return;
+        }
+
+        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+
+        File tmpFile = File.createTempFile("upload", "nxpkg");
+        packageToUpload.transferTo(tmpFile);
+
+        try {
+            pus.addPackage(tmpFile);
+        }
+        catch (Exception e) {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            "label.connect.wrong.package" + ":" + e.getMessage());
+            return;
+        } finally {
+            tmpFile.delete();
+            packageFileName=null;
+            packageToUpload=null;
+        }
+    }
 }

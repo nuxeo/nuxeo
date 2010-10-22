@@ -43,7 +43,7 @@
 
   </div>
 
-<c:if test="#{connectServerReachable}">
+<c:if test="#{connectServerReachable and registredConnectInstance}">
   <c:if test="#{!adminViews.hasExternalPackageDownloadRequest()}">
     <iframe src="/nuxeo/site/connectClient/packages/remote?type=#{appsViews.packageTypeFilter}&amp;onlyRemote=#{appsViews.onlyRemote}" frameborder="0" scrolling="auto" width="100%" height="500px">
       <img src="/nuxeo/img/big_loading.gif"/>
@@ -58,6 +58,10 @@
 
 <c:if test="#{not connectServerReachable}">
    <h:outputText value="#{messages[adminsubtab.servernotreachable]}" />
+</c:if>
+
+<c:if test="#{not registredConnectInstance}">
+   <h:outputText value="#{messages[adminsubtab.registrationRequired]}" />
 </c:if>
 
 </a4j:outputPanel>
