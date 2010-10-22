@@ -14,6 +14,7 @@
     <property name="stagedir" value="${outdir}/stage" />
     <property name="finaltarget" value="../target" />
     <property name="init.done" value="true" />
+    <artifact:expand depth="3"/>
   </target>
 
   <target name="build">

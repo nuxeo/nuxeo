@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # install library
 svn export --force https://svn.nuxeo.org/nuxeo/tools/qa/nuxeo-integration-release/trunk/integration-lib.sh
