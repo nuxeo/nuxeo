@@ -200,11 +200,9 @@ public class StandardVersioningService implements VersioningService {
         if (lifecycleState == null) {
             return Arrays.asList(NONE);
         }
-        if (APPROVED_STATE.equals(lifecycleState)
+        if (PROJECT_STATE.equals(lifecycleState)
+                || APPROVED_STATE.equals(lifecycleState)
                 || OBSOLETE_STATE.equals(lifecycleState)) {
-            return Arrays.asList(MAJOR, MINOR);
-        }
-        if (PROJECT_STATE.equals(lifecycleState)) {
             return Arrays.asList(NONE, MINOR, MAJOR);
         }
         if (FILE_TYPE.equals(type) || NOTE_TYPE.equals(type)) {
