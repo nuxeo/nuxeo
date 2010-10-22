@@ -2622,6 +2622,9 @@
             <inherited>true</inherited>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <show>public</show>
+            </configuration>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -2646,9 +2649,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
-              <!-- aggregate parameter is deprecated since 2.5. use the aggregate 
-                goal instead of -->
-              <aggregate>true</aggregate>
               <maxmemory>512m</maxmemory>
               <!-- stylesheetfile> ${basedir}/src/site/resources/css/jdstyle.css 
                 </stylesheetfile -->
@@ -2676,7 +2676,7 @@
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
-                <link>http://www.hibernate.org/hib_docs/v3/api/</link>
+                <link>http://docs.jboss.org/hibernate/core/3.3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
                 <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
                 <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
