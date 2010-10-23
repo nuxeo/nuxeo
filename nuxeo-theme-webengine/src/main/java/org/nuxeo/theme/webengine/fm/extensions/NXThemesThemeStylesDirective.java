@@ -41,7 +41,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- *
+ * 
  */
 public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
@@ -61,7 +61,14 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
 
         WebContext context = WebEngine.getActiveContext();
         HttpServletRequest request = context.getRequest();
-        final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
+
+        String themeName;
+        if (params.containsKey("theme")) {
+            themeName = params.get("theme").toString();
+        } else {
+            final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
+            themeName = ThemeManager.getThemeNameByUrl(themeUrl);
+        }
 
         Boolean cache = false;
         if (params.containsKey("cache")) {
@@ -74,7 +81,7 @@ public class NXThemesThemeStylesDirective implements TemplateDirectiveModel {
         }
 
         Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
+        attributes.put("themeName", themeName);
         attributes.put("path", context.getModulePath());
         attributes.put("basepath", context.getBasePath());
 
