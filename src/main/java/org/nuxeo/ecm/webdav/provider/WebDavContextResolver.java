@@ -25,6 +25,9 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+/**
+ * Injects the JAXBContext needed to parse our webdav XML payloads.
+ */
 @Provider
 @Produces("application/xml")
 public class WebDavContextResolver implements ContextResolver<JAXBContext> {

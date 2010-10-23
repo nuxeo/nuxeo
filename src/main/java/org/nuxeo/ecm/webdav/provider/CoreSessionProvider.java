@@ -18,16 +18,20 @@
 package org.nuxeo.ecm.webdav.provider;
 
 import com.sun.jersey.api.core.HttpContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.Util;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.lang.reflect.Type;
 
+/**
+ * Injecter to get CoreSessions from @Context-annotated injections.
+ */
 @Provider
 public class CoreSessionProvider extends AbstractInjectableProvider<CoreSession> {
+
+    private static final Log log = LogFactory.getLog(CoreSessionProvider.class);
 
     public CoreSessionProvider() {
         super(CoreSession.class);
@@ -39,6 +43,7 @@ public class CoreSessionProvider extends AbstractInjectableProvider<CoreSession>
             Util.startTransaction();
             return Util.getSession();
         } catch (Exception e) {
+            log.error(e);
             return null;
         }
     }

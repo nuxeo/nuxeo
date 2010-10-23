@@ -26,6 +26,9 @@ import org.w3c.dom.Element;
 import javax.ws.rs.core.Response.Status;
 import java.util.*;
 
+/**
+ * Copy-pasted then modified from jaxrs-webdav.
+ */
 public class PropStatBuilderExt {
     private List<Object> properties;
     private Status status;

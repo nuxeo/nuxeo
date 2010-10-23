@@ -17,46 +17,29 @@
 
 package org.nuxeo.ecm.webdav.provider;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.Util;
 
-public class TransactionAwareBlob {
+import java.io.Closeable;
+import java.io.IOException;
 
-    protected final Blob blob;
+/**
+ * Simple holder that will allow Jersey to close a core session at the
+ * end of a request, if registered by Jersey's CloseableService.
+ */
+public class CoreSessionCloser implements Closeable {
 
-    protected final CoreSession session;
+    private final CoreSession session;
 
-    protected boolean releaseSession = true;
-
-    public TransactionAwareBlob(CoreSession session, Blob blob) {
-        this.blob = blob;
+    public CoreSessionCloser(CoreSession session) {
         this.session = session;
     }
 
-    public TransactionAwareBlob(CoreSession session, Blob blob, boolean releaseSession) {
-        this.blob = blob;
-        this.session = session;
-        this.releaseSession = releaseSession;
-    }
-
-    public Blob getBlob() {
-        return blob;
-    }
-
-    public void commitOrRollback() {
-        if (session != null && releaseSession) {
-            CoreInstance.getInstance().close(session);
-        }
+    @Override
+    public void close() throws IOException {
+        CoreInstance.getInstance().close(session);
         Util.endTransaction();
-    }
-
-    public long getLength() {
-        if (blob != null) {
-            return blob.getLength();
-        }
-        return 0L;
     }
 
 }

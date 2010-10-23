@@ -52,36 +52,26 @@ public class Util {
 
     private static final Log log = LogFactory.getLog(Util.class);
 
-    private static CoreSession session;
-
     // Utility class.
     private Util() {
     }
 
     public static CoreSession getSession(HttpServletRequest request) throws Exception {
-        // Don't cache session at all.
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getDefaultRepository();
-        return repo.open();
+        return getSession();
 
-        //return getSession();
-
-        // FIXME
+        // This doesn't seem to work.
         //UserSession us = UserSession.getCurrentSession(request);
         //return us.getCoreSession();
     }
 
+    /**
+     * Gets a core session. Don't cache the code session because it doesn't seem to work with
+     * concurrent requests.
+     */
     public static CoreSession getSession() throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getDefaultRepository();
-        session = repo.open();
-
-        /*if (session == null) {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getDefaultRepository();
-            session = repo.open();
-        }*/
-        return session;
+        return repo.open();
     }
 
     public static void startTransaction() {

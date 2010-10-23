@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.provider.TransactionAwareBlob;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +46,9 @@ import java.util.Date;
 
 import static javax.ws.rs.core.Response.Status.OK;
 
+/**
+ * Resource representing a file-like object in the repository. (I.e. not a folder).
+ */
 public class FileResource extends ExistingResource {
 
     public FileResource(DocumentModel doc, HttpServletRequest request) throws Exception {
@@ -57,11 +59,9 @@ public class FileResource extends ExistingResource {
     public Object get() throws Exception {
         Blob content = (Blob) doc.getPropertyValue("file:content");
         if (content == null) {
-            Util.endTransaction();
             return Response.ok("").build();
         } else {
-            return new TransactionAwareBlob(null, content, true);
-            //return Response.ok(content.getStream()).type(content.getMimeType()).build();
+            return Response.ok(content.getStream()).type(content.getMimeType()).build();
         }
     }
 
@@ -69,7 +69,6 @@ public class FileResource extends ExistingResource {
     public Response put() throws Exception {
         String token = Util.getTokenFromHeaders("if", request);
         if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
-            Util.endTransaction();
             return Response.status(423).build();
         }
 
@@ -81,7 +80,6 @@ public class FileResource extends ExistingResource {
         session.saveDocument(doc);
         session.save();
 
-        Util.endTransaction();
         return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
     }
 
@@ -114,7 +112,6 @@ public class FileResource extends ExistingResource {
                         new Status(OK)));
 
         MultiStatus st = new MultiStatus(response);
-        Util.endTransaction();
         return Response.status(207).entity(st).build();
     }
 

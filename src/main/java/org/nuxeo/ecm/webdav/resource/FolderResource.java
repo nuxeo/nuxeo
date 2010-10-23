@@ -26,12 +26,14 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -47,6 +49,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
 
 /**
+ * A resource for folder-like objects in the repository.
  */
 public class FolderResource extends ExistingResource {
 
@@ -57,8 +60,19 @@ public class FolderResource extends ExistingResource {
     }
 
     @GET
-    public String get() {
-        return "Folder listing for " + path + "...";
+    @Produces("text/html")
+    public String get() throws ClientException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><p>Folder listing for " + path + ":</p>\n<ul>");
+        List<DocumentModel> children = session.getChildren(doc.getRef());
+        for (DocumentModel child : children) {
+            String childName = child.getName();
+            // TODO: properly escape.
+            sb.append("<li><a href='" + childName + "'>" + childName + "</a></li>\n");
+        }
+        sb.append("</ul></body>\n");
+
+        return sb.toString();
     }
 
     @PROPFIND
@@ -71,7 +85,6 @@ public class FolderResource extends ExistingResource {
             propFind = (PropFind) u.unmarshal(request.getInputStream());
         } catch (JAXBException e) {
             log.error(e);
-            Util.endTransaction();
             // FIXME: check this is the right response code
             return Response.status(400).build();
         }
@@ -91,7 +104,6 @@ public class FolderResource extends ExistingResource {
                         new Status(OK)));
 
         if (!doc.isFolder() || depth.equals("0")) {
-            Util.endTransaction();
             return Response.status(207).entity(new MultiStatus(response)).build();
         }
 
@@ -143,7 +155,6 @@ public class FolderResource extends ExistingResource {
         MultiStatus st = new MultiStatus(responses.toArray(
                 new net.java.dev.webdav.jaxrs.xml.elements.Response[responses.size()]));
         //printXml(st);
-        Util.endTransaction();
         return Response.status(207).entity(st).build();
     }
 
