@@ -36,6 +36,8 @@ public class UIThemeStyles extends UIOutput {
 
     private String inline;
 
+    private String theme;
+
     public String getCache() {
         return cache;
     }
@@ -52,24 +54,37 @@ public class UIThemeStyles extends UIOutput {
         this.inline = inline;
     }
 
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         Map<String, Object> attributes = getAttributes();
         cache = (String) attributes.get("cache");
         inline = (String) attributes.get("inline");
+        theme = (String) attributes.get("theme");
 
         final ResponseWriter writer = context.getResponseWriter();
         final ExternalContext externalContext = context.getExternalContext();
 
         Map<String, Object> requestMap = externalContext.getRequestMap();
-        final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+        if (theme == null) {
+            final URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
+            theme = ThemeManager.getThemeNameByUrl(themeUrl);
+        }
 
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
+        params.put("themeName", theme);
         params.put("path", externalContext.getRequestContextPath());
         // FIXME: use configuration
-        String basePath =  Framework.getProperty("org.nuxeo.ecm.contextPath" , "/nuxeo")
+        String basePath = Framework.getProperty("org.nuxeo.ecm.contextPath",
+                "/nuxeo")
                 + "/site";
         params.put("basepath", basePath);
 

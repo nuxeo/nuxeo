@@ -17,6 +17,11 @@ package org.nuxeo.theme.jsf.taglib;
 import javax.faces.webapp.UIComponentELTag;
 
 public class ThemeStylesTag extends UIComponentELTag {
+    private String cache;
+
+    private String inline;
+
+    private String theme;
 
     @Override
     public String getComponentType() {
@@ -26,6 +31,30 @@ public class ThemeStylesTag extends UIComponentELTag {
     @Override
     public String getRendererType() {
         return null;
+    }
+
+    public String getCache() {
+        return cache;
+    }
+
+    public void setCache(String cache) {
+        this.cache = cache;
+    }
+
+    public String getInline() {
+        return inline;
+    }
+
+    public void setInline(String inline) {
+        this.inline = inline;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
 }
