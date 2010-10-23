@@ -38,31 +38,40 @@ public final class NXThemesFaceletFactory extends DefaultFaceletFactory {
     protected boolean needsToBeRefreshed(DefaultFacelet facelet) {
         URL url = facelet.getSource();
 
+        // theme facelets
         if (url.getProtocol().equals("nxtheme")) {
             try {
-                if (url.openConnection().getLastModified() > facelet.getCreateTime()) {
+                // no cache if the refresh period is 0
+                if (refreshPeriod == 0) {
                     return true;
                 }
+
+                // refresh immediately if the facelet was modified after it was
+                // created
+                long modified = url.openConnection().getLastModified();
+                long created = facelet.getCreateTime();
+                if (modified > created) {
+                    return true;
+                }
+
+                // refresh after a given period
+                if (refreshPeriod > 0) {
+                    long now = System.currentTimeMillis();
+                    if (now > created + refreshPeriod) {
+                        return true;
+                    }
+                }
+
             } catch (Exception e) {
                 throw new FaceletException("Error Checking Last Modified for "
                         + facelet.getAlias(), e);
             }
 
-        } else if (refreshPeriod != -1) {
-            long ttl = facelet.getCreateTime() + refreshPeriod;
-            if (System.currentTimeMillis() > ttl) {
-                try {
-                    long atl = url.openConnection().getLastModified();
-                    return atl == 0 || atl > ttl;
-                } catch (Exception e) {
-                    throw new FaceletException(
-                            "Error Checking Last Modified for "
-                                    + facelet.getAlias(), e);
-                }
-            }
+        } else {
+            // Default facelets
+            return super.needsToBeRefreshed(facelet);
         }
 
         return false;
     }
-
 }
