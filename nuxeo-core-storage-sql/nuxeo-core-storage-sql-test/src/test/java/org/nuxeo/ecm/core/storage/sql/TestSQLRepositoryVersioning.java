@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,7 +31,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -261,6 +258,45 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertNotNull(restoredDoc.getRef());
         String pr = (String) restoredDoc.getProperty("file", "filename");
         assertEquals("second name", pr);
+    }
+
+    public void testRestoreInvalidations() throws Exception {
+        // open second session to receive invalidations
+        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+
+        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        doc.setPropertyValue("dc:title", "t1");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        DocumentRef v1 = session.checkIn(docRef, null, null);
+        session.checkOut(docRef);
+        doc.setPropertyValue("dc:title", "t2");
+        session.saveDocument(doc);
+        DocumentRef v2 = session.checkIn(docRef, null, null);
+        session.save();
+        session2.save(); // process invalidations
+
+        assertEquals("t2", doc.getPropertyValue("dc:title"));
+        DocumentModel doc2 = session2.getDocument(docRef);
+        assertEquals("t2", doc2.getPropertyValue("dc:title"));
+
+        // restore v1
+        DocumentModel restored = session.restoreToVersion(docRef, v1);
+        assertEquals("t1", restored.getPropertyValue("dc:title"));
+        session.save();
+        session2.save();
+        DocumentModel restored2 = session2.getDocument(docRef);
+        assertEquals("t1", restored2.getPropertyValue("dc:title"));
+
+        // restore v2
+        restored = session.restoreToVersion(docRef, v2);
+        assertEquals("t2", restored.getPropertyValue("dc:title"));
+        session.save();
+        session2.save();
+        restored2 = session2.getDocument(docRef);
+        assertEquals("t2", restored2.getPropertyValue("dc:title"));
+
+        closeSession(session2);
     }
 
     public void testGetDocumentWithVersion() throws Exception {

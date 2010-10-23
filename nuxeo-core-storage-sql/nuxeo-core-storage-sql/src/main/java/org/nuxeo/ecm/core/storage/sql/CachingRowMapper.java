@@ -443,11 +443,13 @@ public class CachingRowMapper implements RowMapper {
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);
+                localInvalidations.addModified(new RowId(rowId));
             }
         }
         if (invalidations.deleted != null) {
             for (RowId rowId : invalidations.deleted) {
                 cacheRemove(rowId);
+                localInvalidations.addDeleted(rowId);
             }
         }
         return result;
