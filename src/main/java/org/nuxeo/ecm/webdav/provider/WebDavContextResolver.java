@@ -31,8 +31,12 @@ public class WebDavContextResolver implements ContextResolver<JAXBContext> {
 
     private final JAXBContext ctx;
 
-    public WebDavContextResolver() throws JAXBException {
-        ctx = Util.getJaxbContext();
+    public WebDavContextResolver() {
+        try {
+            ctx = Util.getJaxbContext();
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

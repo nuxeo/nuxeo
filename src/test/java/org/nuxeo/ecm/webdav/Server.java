@@ -122,8 +122,8 @@ public class Server {
         jerseyAdapter.setContextPath("");
 
         // For debugging
-        jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
-                "com.sun.jersey.api.container.filter.LoggingFilter");
+        //jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
+        //        "com.sun.jersey.api.container.filter.LoggingFilter");
         //jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
         //        "com.sun.jersey.api.container.filter.LoggingFilter");
         jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");

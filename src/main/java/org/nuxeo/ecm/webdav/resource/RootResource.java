@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
+import com.sun.jersey.spi.CloseableService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.provider.CoreSessionWrapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -35,6 +37,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Providers;
 import java.security.Principal;
 
 @Path("dav")
@@ -44,7 +47,17 @@ public class RootResource {
 
     private static final Log log = LogFactory.getLog(RootResource.class);
 
-    public RootResource(@Context HttpServletRequest request) {
+    private CoreSession session;
+
+    private HttpServletRequest request;
+
+    public RootResource(@Context CoreSession session, @Context HttpServletRequest request,
+            @Context CloseableService closeableService) {
+        this.session = session;
+        this.request = request;
+        closeableService.add(new CoreSessionWrapper(session));
+
+        log.info("Session = " + session);
         log.info(request.getMethod() + " " + request.getRequestURI());
         if (rootPath == null) {
             rootPath = request.getContextPath() + request.getServletPath();
@@ -61,9 +74,7 @@ public class RootResource {
     @GET
     @Path("debug")
     @Produces("text/plain")
-    public String debug(@Context HttpServletRequest request) throws Exception {
-        CoreSession session = Util.getSession(request);
-
+    public String debug() throws Exception {
         Principal principal = session.getPrincipal();
 
         String result = "DEBUG:\n\n"
@@ -74,16 +85,11 @@ public class RootResource {
     }
 
     @Path("{path:.+}")
-    public Object findResource(@PathParam("path") String path,
-            @Context HttpServletRequest request) throws Exception {
-
-        Util.startTransaction();
-        CoreSession session = Util.getSession(request);
-
+    public Object findResource(@PathParam("path") String path) throws Exception {
         DocumentRef ref = new PathRef("/" + path);
         if (!session.exists(ref)) {
             Util.endTransaction();
-            return new UnknownResource(path, request);
+            return new UnknownResource(path, request, session);
         }
 
         // Send 401 error if not authorised to read.
@@ -94,9 +100,9 @@ public class RootResource {
 
         DocumentModel doc = session.getDocument(ref);
         if (doc.isFolder()) {
-            return new FolderResource(path, doc, request);
+            return new FolderResource(doc, request);
         } else {
-            return new FileResource(path, doc, request);
+            return new FileResource(doc, request);
         }
     }
 

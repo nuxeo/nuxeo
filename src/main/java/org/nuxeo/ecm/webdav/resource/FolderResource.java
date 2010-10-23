@@ -52,8 +52,8 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(path, doc, request);
+    public FolderResource(DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(doc, request);
     }
 
     @GET

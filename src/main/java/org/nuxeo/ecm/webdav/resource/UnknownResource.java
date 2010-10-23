@@ -22,10 +22,7 @@ package org.nuxeo.ecm.webdav.resource;
 import net.java.dev.webdav.jaxrs.methods.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
@@ -35,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 /**
@@ -45,9 +44,8 @@ public class UnknownResource extends AbstractResource {
 
     private static final Log log = LogFactory.getLog(UnknownResource.class);
 
-
-    public UnknownResource(String path, HttpServletRequest request) throws Exception {
-        super(path, request);
+    public UnknownResource(String path, HttpServletRequest request, CoreSession session) throws Exception {
+        super(path, request, session);
     }
 
     /**

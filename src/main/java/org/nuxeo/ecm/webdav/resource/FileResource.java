@@ -49,8 +49,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 public class FileResource extends ExistingResource {
 
-    public FileResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(path, doc, request);
+    public FileResource(DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(doc, request);
     }
 
     @GET
@@ -67,7 +67,7 @@ public class FileResource extends ExistingResource {
 
     @PUT
     public Response put() throws Exception {
-        String token = getTokenFromHeaders("if");
+        String token = Util.getTokenFromHeaders("if", request);
         if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
             Util.endTransaction();
             return Response.status(423).build();

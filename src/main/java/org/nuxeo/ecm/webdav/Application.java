@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webdav;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.webdav.provider.CoreSessionProvider;
 import org.nuxeo.ecm.webdav.provider.ExceptionHandler;
 import org.nuxeo.ecm.webdav.provider.TransactionAwareBlobWriter;
 import org.nuxeo.ecm.webdav.provider.WebDavContextResolver;
@@ -48,12 +49,8 @@ public class Application extends javax.ws.rs.core.Application {
         Set<Object> singletons = new HashSet<Object>();
         singletons.add(new ExceptionHandler());
         singletons.add(new TransactionAwareBlobWriter());
-
-        try {
-            singletons.add(new WebDavContextResolver());
-        } catch (JAXBException e) {
-            log.error(e);
-        }
+        singletons.add(new CoreSessionProvider());
+        singletons.add(new WebDavContextResolver());
         return singletons;
     }
 

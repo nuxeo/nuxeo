@@ -71,12 +71,16 @@ public class Util {
         //return us.getCoreSession();
     }
 
-    private static CoreSession getSession() throws Exception {
-        if (session == null) {
+    public static CoreSession getSession() throws Exception {
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        Repository repo = rm.getDefaultRepository();
+        session = repo.open();
+
+        /*if (session == null) {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
             Repository repo = rm.getDefaultRepository();
             session = repo.open();
-        }
+        }*/
         return session;
     }
 

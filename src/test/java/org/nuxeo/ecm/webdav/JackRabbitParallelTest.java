@@ -30,8 +30,8 @@ public class JackRabbitParallelTest implements Runnable {
     //private static final String PASSWD = "admin";
 
     private static final int PORT = 8080;
-    private static final int NUM_THREADS = 10;
-    private static final int NUM_DOCS = 100;
+    private static final int NUM_THREADS = 100;
+    private static final int NUM_DOCS = 10;
 
     private static volatile boolean keepLooping = true;
 
@@ -58,6 +58,7 @@ public class JackRabbitParallelTest implements Runnable {
             long numOps = NUM_THREADS * NUM_DOCS;
             System.out.println(String.format("Completed %d operations in %f sec: %f ops/sec",
                      numOps, elapsed / 1000.0, numOps * 1000.0 / elapsed));
+            break;
         }
     }
 

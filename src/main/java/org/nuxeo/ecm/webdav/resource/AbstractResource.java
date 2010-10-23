@@ -25,6 +25,7 @@ import org.nuxeo.ecm.webdav.locking.LockManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.OPTIONS;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -36,18 +37,17 @@ public class AbstractResource {
     protected String parentPath;
     protected String name;
 
+    protected HttpServletRequest request;
     protected CoreSession session;
 
-    protected HttpServletRequest request;
     protected LockManager lockManager = LockManager.getInstance();
 
-    protected AbstractResource(String path, HttpServletRequest request) throws Exception {
-        assert request != null;
-        this.request = request;
+    protected AbstractResource(String path, HttpServletRequest request, CoreSession session) throws Exception {
         this.path = path;
+        this.request = request;
+        this.session = session;
         parentPath = Util.getParentPath(path);
         name = Util.getNameFromPath(path);
-        session = Util.getSession(request);
     }
 
     @OPTIONS
@@ -57,12 +57,6 @@ public class AbstractResource {
             .header("DAV", "1,2") // not 1,2 for now.
             .header("Allow", "GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, "
                     + "PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK").build();
-    }
-
-    // Util methods.
-
-    String getTokenFromHeaders(String headerName) {
-        return Util.getTokenFromHeaders(headerName, request);
     }
 
 }

@@ -52,15 +52,16 @@ public class ExistingResource extends AbstractResource {
 
     protected DocumentModel doc;
 
-    protected ExistingResource(String path, DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(path, request);
+    protected ExistingResource(DocumentModel doc, HttpServletRequest request) throws Exception {
+        super(doc.getPathAsString(), request, doc.getCoreSession());
         this.doc = doc;
+        session = doc.getCoreSession();
     }
 
     @DELETE
     public Response delete() throws Exception {
         if (lockManager.isLocked(path)) {
-            String token = getTokenFromHeaders("if");
+            String token = Util.getTokenFromHeaders("if", request);
             if (!lockManager.canUnlock(path, token)) {
                 Util.endTransaction();
                 return Response.status(423).build();
@@ -70,6 +71,7 @@ public class ExistingResource extends AbstractResource {
         DocumentRef ref = new PathRef(path);
         session.removeDocument(ref);
         session.save();
+        session.destroy();
         Util.endTransaction();
         return Response.status(204).build();
     }
@@ -84,7 +86,7 @@ public class ExistingResource extends AbstractResource {
     public Response move(@HeaderParam("Destination") String dest,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
         if (lockManager.isLocked(path)) {
-            String token = getTokenFromHeaders("if");
+            String token = Util.getTokenFromHeaders("if", request);
             if (!lockManager.canUnlock(path, token)) {
                 Util.endTransaction();
                 return Response.status(423).build();
@@ -107,7 +109,7 @@ public class ExistingResource extends AbstractResource {
         log.info("to " + destPath);
 
         if (lockManager.isLocked(destPath)) {
-            String token = getTokenFromHeaders("if");
+            String token = Util.getTokenFromHeaders("if", request);
             if (!LockManager.getInstance().canUnlock(path, token)) {
                 Util.endTransaction();
                 return Response.status(423).build();
@@ -169,7 +171,7 @@ public class ExistingResource extends AbstractResource {
 
     @LOCK
     public Response lock() throws Exception {
-        String token = getTokenFromHeaders("if");
+        String token = Util.getTokenFromHeaders("if", request);
         if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
             Util.endTransaction();
             return Response.status(423).build();
@@ -209,7 +211,7 @@ public class ExistingResource extends AbstractResource {
     @UNLOCK
     public Response unlock() {
         if (lockManager.isLocked(path)) {
-            String token = getTokenFromHeaders("lock-token");
+            String token = Util.getTokenFromHeaders("lock-token", request);
             if (!lockManager.canUnlock(path, token)) {
                 Util.endTransaction();
                 return Response.status(423).build();
