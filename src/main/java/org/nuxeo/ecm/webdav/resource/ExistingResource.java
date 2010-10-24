@@ -160,56 +160,6 @@ public class ExistingResource extends AbstractResource {
         return Response.ok().build();
     }
 
-    @LOCK
-    public Response lock() throws Exception {
-        String token = Util.getTokenFromHeaders("if", request);
-        if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
-            return Response.status(423).build();
-        }
-
-        LockInfo lockInfo;
-        if (request.getHeader("content-length") != null) {
-            try {
-                Unmarshaller u = Util.getUnmarshaller();
-                lockInfo = (LockInfo) u.unmarshal(request.getInputStream());
-                //Util.printAsXml(lockInfo);
-                token = lockManager.lock(path);
-            } catch (JAXBException e) {
-                log.error(e);
-                // FIXME: check this is the right response code
-                return Response.status(400).build();
-            }
-        } else if (token != null) {
-            // OK
-        } else {
-            return Response.status(400).build();
-        }
-
-        Prop prop = new Prop(new LockDiscovery(new ActiveLock(
-                LockScope.EXCLUSIVE, LockType.WRITE, Depth.ZERO,
-                new Owner("toto"),
-                new TimeOut(10000L), new LockToken(new HRef("urn:uuid:" + token)),
-                new LockRoot(new HRef("http://asdasd/"))
-        )));
-        return Response.ok().entity(prop)
-                .header("Lock-Token", "urn:uuid:" + token).build();
-    }
-
-    @UNLOCK
-    public Response unlock() {
-        if (lockManager.isLocked(path)) {
-            String token = Util.getTokenFromHeaders("lock-token", request);
-            if (!lockManager.canUnlock(path, token)) {
-                return Response.status(423).build();
-            }
-            lockManager.unlock(path);
-            return Response.status(204).build();
-        } else {
-            // TODO: return an error
-            return Response.status(204).build();
-        }
-    }
-
     /**
      * We can't MKCOL over an existing resource.
      */
