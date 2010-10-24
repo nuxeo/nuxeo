@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.BankManager;
@@ -38,10 +39,15 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     private final String BANK_NAME = "test";
 
+    private final String BANK_WITH_NUXEO_URL_NAME = "bank with nuxeo url";
+
     private final String COLLECTION_NAME = "Test";
+
+    private final String NUXEO_URL_PROPERTY = "http://localhost:8090/nuxeo";
 
     @Override
     public void setUp() throws Exception {
+        System.setProperty("nuxeo.url", "http://localhost:8090/nuxeo");
         super.setUp();
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-service.xml");
@@ -64,9 +70,15 @@ public class TestResourceBank extends NXRuntimeTestCase {
 
     public void testGetRegisteredBanks() throws ThemeException {
         ResourceBank bank = ThemeManager.getResourceBank(BANK_NAME);
-        assertEquals("test", bank.getName());
+        assertEquals(BANK_NAME, bank.getName());
         assertEquals("http://localhost:8080/nuxeo/site/theme-banks/test",
                 bank.getConnectionUrl());
+
+        assertEquals(NUXEO_URL_PROPERTY, Framework.getProperty("nuxeo.url"));
+        ResourceBank bankWithNuxeoUrl = ThemeManager.getResourceBank(BANK_WITH_NUXEO_URL_NAME);
+        assertEquals(BANK_WITH_NUXEO_URL_NAME, bankWithNuxeoUrl.getName());
+        assertEquals(String.format("%s/site/theme-banks/test",
+                NUXEO_URL_PROPERTY), bankWithNuxeoUrl.getConnectionUrl());
     }
 
     public void testGetBankNames() throws IOException {
@@ -101,14 +113,10 @@ public class TestResourceBank extends NXRuntimeTestCase {
     }
 
     public void testGetStylePreviewFile() throws IOException {
-        assertEquals(
-                "test.png",
-                BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
-                        "test.css").getName());
-        assertEquals(
-                "style-preview.png",
-                BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,
-                        "style-with-preview.css").getName());
+        assertEquals("test.png", BankManager.getStylePreviewFile(BANK_NAME,
+                COLLECTION_NAME, "test.css").getName());
+        assertEquals("style-preview.png", BankManager.getStylePreviewFile(
+                BANK_NAME, COLLECTION_NAME, "style-with-preview.css").getName());
     }
 
     public void testGetStylePreviewFileNotFound() throws IOException {
