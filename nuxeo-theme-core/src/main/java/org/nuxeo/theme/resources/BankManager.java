@@ -30,24 +30,27 @@ import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.themes.ThemeManager;
 import org.yaml.snakeyaml.Yaml;
 
 public class BankManager {
-    private static final File BANKS_DIR;
+    private static File BANKS_DIR;
 
     private static final String CUSTOM_COLLECTION_DIRNAME = "custom";
 
-    static {
-        BANKS_DIR = new File(Framework.getRuntime().getHome(), "theme-banks");
-        BANKS_DIR.mkdirs();
+    public static File getBanksDir() {
+        if (BANKS_DIR == null) {
+            BANKS_DIR = new File(ThemeManager.getThemeDir(), "banks");
+            BANKS_DIR.mkdirs();
+        }
+        return BANKS_DIR;
     }
 
     public static File getFile(String path) throws IOException {
         if (!BankUtils.checkFilePath(path)) {
             throw new IOException("File path not allowed: " + path);
         }
-        return new File(BANKS_DIR, path);
+        return new File(getBanksDir(), path);
     }
 
     public static File getBankDir(String bankName) throws IOException {
@@ -56,7 +59,7 @@ public class BankManager {
 
     public static List<String> getBankNames() {
         List<String> names = new ArrayList<String>();
-        for (File bankFile : BankUtils.listFilesSorted(BANKS_DIR)) {
+        for (File bankFile : BankUtils.listFilesSorted(getBanksDir())) {
             names.add(bankFile.getName());
         }
         return names;

@@ -120,7 +120,7 @@ public final class ThemeManager implements Registrable {
 
     private final List<String> resourceOrdering = new ArrayList<String>();
 
-    private static File CUSTOM_THEME_DIR;
+    private static File THEME_DIR;
 
     private static final FilenameFilter CUSTOM_THEME_FILENAME_FILTER = new CustomThemeNameFilter();
 
@@ -129,16 +129,16 @@ public final class ThemeManager implements Registrable {
     private static final Pattern styleResourceNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\)$", Pattern.DOTALL);
 
-    public static void createCustomThemeDir() {
-        CUSTOM_THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
-        CUSTOM_THEME_DIR.mkdirs();
+    public static void createThemeDir() {
+        THEME_DIR = new File(Framework.getRuntime().getHome(), "themes");
+        THEME_DIR.mkdirs();
     }
 
-    public static File getCustomThemeDir() {
-        if (CUSTOM_THEME_DIR == null || !CUSTOM_THEME_DIR.exists()) {
-            createCustomThemeDir();
+    public static File getThemeDir() {
+        if (THEME_DIR == null || !THEME_DIR.exists()) {
+            createThemeDir();
         }
-        return CUSTOM_THEME_DIR;
+        return THEME_DIR;
     }
 
     @Override
@@ -165,7 +165,7 @@ public final class ThemeManager implements Registrable {
     public static String getCustomThemePath(String themeName)
             throws ThemeIOException {
         String themeFileName = String.format("theme-%s.xml", themeName);
-        File file = new File(getCustomThemeDir(), themeFileName);
+        File file = new File(getThemeDir(), themeFileName);
         try {
             return file.getCanonicalPath();
         } catch (IOException e) {
@@ -176,8 +176,7 @@ public final class ThemeManager implements Registrable {
 
     public static List<File> getCustomThemeFiles() {
         List<File> files = new ArrayList<File>();
-        for (File f : getCustomThemeDir().listFiles(
-                CUSTOM_THEME_FILENAME_FILTER)) {
+        for (File f : getThemeDir().listFiles(CUSTOM_THEME_FILENAME_FILTER)) {
             files.add(f);
         }
         return files;
@@ -1085,7 +1084,7 @@ public final class ThemeManager implements Registrable {
         }
 
         final String themeFileName = String.format("theme-%s.bak", themeName);
-        final File backupFile = new File(getCustomThemeDir(), themeFileName);
+        final File backupFile = new File(getThemeDir(), themeFileName);
         if (backupFile.exists()) {
             if (!backupFile.delete()) {
                 throw new ThemeIOException("Error while deleting backup file: "
