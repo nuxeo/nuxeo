@@ -37,7 +37,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 /**
- * Base class for all resources.
+ * Base class for all resources (existing or not).
  */
 public class AbstractResource {
 
