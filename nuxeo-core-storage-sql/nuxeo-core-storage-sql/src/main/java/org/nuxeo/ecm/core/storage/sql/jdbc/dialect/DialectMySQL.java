@@ -276,8 +276,14 @@ public class DialectMySQL extends Dialect {
                     buf.append('+');
                 }
             }
-            // TODO phrase
+            boolean isPhrase = ft.word.contains(" ");
+            if (isPhrase) {
+                buf.append('"');
+            }
             buf.append(ft.word);
+            if (isPhrase) {
+                buf.append('"');
+            }
         }
     }
 

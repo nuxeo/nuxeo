@@ -280,7 +280,7 @@ public class DialectSQLServer extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltextOrAndAndNot(ft, "|", "&", "&!");
+        return translateFulltext(ft, "OR", "AND", "AND NOT", "\"");
     }
 
     // SELECT ..., FTTBL.RANK / 1000.0

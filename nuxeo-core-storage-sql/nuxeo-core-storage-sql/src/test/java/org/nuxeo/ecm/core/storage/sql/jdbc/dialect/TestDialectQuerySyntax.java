@@ -101,8 +101,14 @@ public class TestDialectQuerySyntax extends TestCase {
             if (ft.op == Op.NOTWORD) {
                 buf.append('~');
             }
-            // TODO phrase
+            boolean isPhrase = ft.word.contains(" ");
+            if (isPhrase) {
+                buf.append('{');
+            }
             buf.append(ft.word);
+            if (isPhrase) {
+                buf.append('}');
+            }
         }
     }
 
@@ -167,6 +173,37 @@ public class TestDialectQuerySyntax extends TestCase {
         assertFulltextQuery(null, "-foo OR -bar");
         assertFulltextQuery("foo", "foo OR -bar -baz");
         assertFulltextQuery("baz", "-foo -bar OR baz");
+
+        // query with phrases
+
+        assertFulltextException("\"foo");
+        assertFulltextException("\"foo bar");
+        assertFulltextException("\"fo\"o\"");
+
+        assertFulltextQuery(null, "\"\"");
+        assertFulltextQuery(null, " \" \" ");
+        assertFulltextQuery("foo", "\"foo\"");
+        assertFulltextQuery("foo", "+\"foo\"");
+        assertFulltextQuery(null, "-\"foo\"");
+        assertFulltextQuery("foo", "\" foo\"");
+        assertFulltextQuery("foo", "\"foo \"");
+        assertFulltextQuery("foo", "\" foo \"");
+        assertFulltextQuery("OR", "\"OR\"");
+        assertFulltextQuery("{foo bar}", "\"foo bar\"");
+        assertFulltextQuery("{foo bar}", "\" foo bar\"");
+        assertFulltextQuery("{foo bar}", "\"foo bar \"");
+        assertFulltextQuery("{foo bar}", "\" foo  bar \"");
+        assertFulltextQuery("{foo bar}", "+\"foo bar\"");
+        assertFulltextQuery("{foo or bar}", "\"foo or bar\"");
+        assertFulltextQuery(null, "-\"foo bar\"");
+        assertFulltextQuery("[foo AND {bar baz}]", "foo \"bar baz\"");
+        assertFulltextQuery("[foo AND {bar baz}]", "foo +\"bar baz\"");
+        assertFulltextQuery("[foo AND ~{bar baz}]", "foo -\"bar baz\"");
+        assertFulltextQuery("[{foo bar} AND baz]", "\"foo bar\" baz");
+        assertFulltextQuery("[{foo bar} AND baz]", "+\"foo bar\" baz");
+        assertFulltextQuery("[baz AND ~{foo bar}]", "-\"foo bar\" baz");
+        assertFulltextQuery("[{foo bar} AND ~{baz gee}]",
+                "\"foo bar\" -\"baz gee\"");
     }
 
     protected void assertDialectFT(String expected, String query) {
@@ -185,6 +222,11 @@ public class TestDialectQuerySyntax extends TestCase {
         assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
         assertDialectFT("((bar NOT foo) OR baz)", "-foo bar OR baz");
         assertDialectFT("((foo NOT bar) OR baz)", "foo -bar OR baz");
+        assertDialectFT("\"foo bar\"", "\"foo bar\"");
+        assertDialectFT("(\"foo bar\" AND baz)", "\"foo bar\" baz");
+        assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
+        assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")",
+                "\"foo bar\" baz OR \"gee man\"");
     }
 
     public void testPostgreSQL() throws Exception {
@@ -216,6 +258,11 @@ public class TestDialectQuerySyntax extends TestCase {
         assertDialectFT("((+foo +bar) baz)", "foo bar OR baz");
         assertDialectFT("((+bar -foo) baz)", "-foo bar OR baz");
         assertDialectFT("((+foo -bar) baz)", "foo -bar OR baz");
+        assertDialectFT("\"foo bar\"", "\"foo bar\"");
+        assertDialectFT("(+\"foo bar\" +baz)", "\"foo bar\" baz");
+        assertDialectFT("(\"foo bar\" baz)", "\"foo bar\" OR baz");
+        assertDialectFT("((+\"foo bar\" +baz) \"gee man\")",
+                "\"foo bar\" baz OR \"gee man\"");
     }
 
     public void testOracle() throws Exception {
@@ -232,6 +279,11 @@ public class TestDialectQuerySyntax extends TestCase {
         assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
         assertDialectFT("((bar NOT foo) OR baz)", "-foo bar OR baz");
         assertDialectFT("((foo NOT bar) OR baz)", "foo -bar OR baz");
+        assertDialectFT("foo bar", "\"foo bar\"");
+        assertDialectFT("(foo bar AND baz)", "\"foo bar\" baz");
+        assertDialectFT("(foo bar OR baz)", "\"foo bar\" OR baz");
+        assertDialectFT("((foo bar AND baz) OR gee man)",
+                "\"foo bar\" baz OR \"gee man\"");
     }
 
     public void testSQLServer() throws Exception {
@@ -239,14 +291,19 @@ public class TestDialectQuerySyntax extends TestCase {
                 repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
-        assertDialectFT("(foo & bar)", "foo bar");
-        assertDialectFT("(foo &! bar)", "foo -bar");
-        assertDialectFT("(bar &! foo)", "-foo bar");
-        assertDialectFT("(foo | bar)", "foo OR bar");
+        assertDialectFT("(foo AND bar)", "foo bar");
+        assertDialectFT("(foo AND NOT bar)", "foo -bar");
+        assertDialectFT("(bar AND NOT foo)", "-foo bar");
+        assertDialectFT("(foo OR bar)", "foo OR bar");
         assertDialectFT("foo", "foo OR -bar");
-        assertDialectFT("((foo & bar) | baz)", "foo bar OR baz");
-        assertDialectFT("((bar &! foo) | baz)", "-foo bar OR baz");
-        assertDialectFT("((foo &! bar) | baz)", "foo -bar OR baz");
+        assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
+        assertDialectFT("((bar AND NOT foo) OR baz)", "-foo bar OR baz");
+        assertDialectFT("((foo AND NOT bar) OR baz)", "foo -bar OR baz");
+        assertDialectFT("\"foo bar\"", "\"foo bar\"");
+        assertDialectFT("(\"foo bar\" AND baz)", "\"foo bar\" baz");
+        assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
+        assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")",
+                "\"foo bar\" baz OR \"gee man\"");
     }
 
 }

@@ -28,7 +28,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -298,6 +300,16 @@ public abstract class Dialect {
 
     public static class FulltextQueryAnalyzer {
 
+        public static final String PLUS = "+";
+
+        public static final String MINUS = "-";
+
+        public static final String SPACE = " ";
+
+        public static final char CSPACE = ' ';
+
+        public static final String DOUBLE_QUOTES = "\"";
+
         public FulltextQuery ft = new FulltextQuery();
 
         public List<FulltextQuery> terms = new LinkedList<FulltextQuery>();
@@ -311,8 +323,55 @@ public abstract class Dialect {
             ft.terms = new LinkedList<FulltextQuery>();
             // current sequence of ANDed terms
             boolean wasOr = false;
-            for (String word : StringUtils.split(query, ' ', true)) {
-                if (word.equalsIgnoreCase("OR")) {
+            String[] words = StringUtils.split(query, CSPACE, true);
+            for (Iterator<String> it = Arrays.asList(words).iterator(); it.hasNext();) {
+                boolean plus = false;
+                boolean minus = false;
+                String word = it.next();
+                if (word.startsWith(PLUS)) {
+                    plus = true;
+                    word = word.substring(1);
+                } else if (word.startsWith(MINUS)) {
+                    minus = true;
+                    word = word.substring(1);
+                }
+                if (word.startsWith(DOUBLE_QUOTES)) {
+                    // read phrase
+                    word = word.substring(1);
+                    StringBuilder phrase = null;
+                    while (true) {
+                        boolean end = word.endsWith(DOUBLE_QUOTES);
+                        if (end) {
+                            word = word.substring(0, word.length() - 1).trim();
+                        }
+                        if (word.contains(DOUBLE_QUOTES)) {
+                            throw new QueryMakerException(
+                                    "Invalid fulltext query (double quotes in word): "
+                                            + query);
+                        }
+                        if (word.length() != 0) {
+                            if (phrase == null) {
+                                phrase = new StringBuilder();
+                            } else {
+                                phrase.append(CSPACE);
+                            }
+                            phrase.append(word);
+                        }
+                        if (end) {
+                            break;
+                        }
+                        if (!it.hasNext()) {
+                            throw new QueryMakerException(
+                                    "Invalid fulltext query (unterminated phrase): "
+                                            + query);
+                        }
+                        word = it.next();
+                    }
+                    if (phrase == null) {
+                        continue;
+                    }
+                    word = phrase.toString();
+                } else if (word.equalsIgnoreCase("OR")) {
                     if (wasOr) {
                         throw new QueryMakerException(
                                 "Invalid fulltext query (OR OR): " + query);
@@ -323,34 +382,32 @@ public abstract class Dialect {
                                         + query);
                     }
                     wasOr = true;
+                    continue;
+                }
+                FulltextQuery w = new FulltextQuery();
+                if (minus) {
+                    if (word.length() == 0) {
+                        throw new QueryMakerException(
+                                "Invalid fulltext query (standalone -): "
+                                        + query);
+                    }
+                    w.op = FulltextQuery.Op.NOTWORD;
                 } else {
-                    FulltextQuery w = new FulltextQuery();
-                    if (word.startsWith("-")) {
-                        word = word.substring(1);
+                    if (plus) {
                         if (word.length() == 0) {
                             throw new QueryMakerException(
-                                    "Invalid fulltxt query (standalone -): "
+                                    "Invalid fulltext query (standalone +): "
                                             + query);
                         }
-                        w.op = FulltextQuery.Op.NOTWORD;
-                    } else {
-                        if (word.startsWith("+")) {
-                            word = word.substring(1);
-                            if (word.length() == 0) {
-                                throw new QueryMakerException(
-                                        "Invalid fulltxt query (standalone +): "
-                                                + query);
-                            }
-                        }
-                        w.op = FulltextQuery.Op.WORD;
                     }
-                    if (wasOr) {
-                        endAnd();
-                        wasOr = false;
-                    }
-                    w.word = word;
-                    terms.add(w);
+                    w.op = FulltextQuery.Op.WORD;
                 }
+                if (wasOr) {
+                    endAnd();
+                    wasOr = false;
+                }
+                w.word = word;
+                terms.add(w);
             }
             if (wasOr) {
                 throw new QueryMakerException(
@@ -395,46 +452,72 @@ public abstract class Dialect {
             }
             terms = new LinkedList<FulltextQuery>();
         }
+
+        public static void translate(FulltextQuery ft, StringBuilder buf,
+                String or, String and, String andNot, String phraseQuote) {
+            if (ft.op == Op.AND || ft.op == Op.OR) {
+                buf.append('(');
+                for (int i = 0; i < ft.terms.size(); i++) {
+                    FulltextQuery term = ft.terms.get(i);
+                    if (i > 0) {
+                        buf.append(' ');
+                        if (ft.op == Op.OR) {
+                            buf.append(or);
+                        } else { // Op.AND
+                            if (term.op == Op.NOTWORD) {
+                                buf.append(andNot);
+                            } else {
+                                buf.append(and);
+                            }
+                        }
+                        buf.append(' ');
+                    }
+                    translate(term, buf, or, and, andNot, phraseQuote);
+                }
+                buf.append(')');
+                return;
+            } else {
+                boolean isPhrase = ft.word.contains(SPACE);
+                if (isPhrase) {
+                    buf.append(phraseQuote);
+                }
+                buf.append(ft.word);
+                if (isPhrase) {
+                    buf.append(phraseQuote);
+                }
+            }
+        }
+
+        public static boolean hasPhrase(FulltextQuery ft) {
+            if (ft.op == Op.AND || ft.op == Op.OR) {
+                for (FulltextQuery term : ft.terms) {
+                    if (hasPhrase(term)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return ft.word.contains(SPACE);
+            }
+        }
+
     }
 
     /**
      * Translate fulltext into a common pattern used by many servers.
      */
-    public static String translateFulltextOrAndAndNot(FulltextQuery ft,
-            String or, String and, String andNot) {
+    public static String translateFulltext(FulltextQuery ft,
+            String or, String and, String andNot, String phraseQuote) {
         StringBuilder buf = new StringBuilder();
-        translateFulltextOrAndAndNot(ft, buf, or, and, andNot);
+        FulltextQueryAnalyzer.translate(ft, buf, or, and, andNot, phraseQuote);
         return buf.toString();
     }
 
-    protected static void translateFulltextOrAndAndNot(FulltextQuery ft,
-            StringBuilder buf, String or, String and, String andNot) {
-
-        if (ft.op == Op.AND || ft.op == Op.OR) {
-            buf.append('(');
-            for (int i = 0; i < ft.terms.size(); i++) {
-                FulltextQuery term = ft.terms.get(i);
-                if (i > 0) {
-                    buf.append(' ');
-                    if (ft.op == Op.OR) {
-                        buf.append(or);
-                    } else { // Op.AND
-                        if (term.op == Op.NOTWORD) {
-                            buf.append(andNot);
-                        } else {
-                            buf.append(and);
-                        }
-                    }
-                    buf.append(' ');
-                }
-                translateFulltextOrAndAndNot(term, buf, or, and, andNot);
-            }
-            buf.append(')');
-            return;
-        } else {
-            // TODO phrase
-            buf.append(ft.word);
-        }
+    /**
+     * Checks if a fulltext search has a phrase in it.
+     */
+    public static boolean fulltextHasPhrase(FulltextQuery ft) {
+        return FulltextQueryAnalyzer.hasPhrase(ft);
     }
 
     /**

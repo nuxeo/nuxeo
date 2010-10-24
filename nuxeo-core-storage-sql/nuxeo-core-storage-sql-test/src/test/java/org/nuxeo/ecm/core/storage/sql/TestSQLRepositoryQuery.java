@@ -76,6 +76,16 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         super.testFulltextSecondary();
     }
 
+    @Override
+    public void testFulltextExpressionPhrase() throws Exception {
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
+            System.out.println("Skipping fulltext phrase test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        super.testFulltextExpressionPhrase();
+    }
+
     public void testQueryIterable() throws Exception {
         createDocs();
 

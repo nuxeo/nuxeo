@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -281,7 +282,11 @@ public class DialectPostgreSQL extends Dialect {
         if (ft == null) {
             return ""; // won't match anything
         }
-        return translateFulltextOrAndAndNot(ft, "|", "&", "& !");
+        if (fulltextHasPhrase(ft)) {
+            throw new QueryMakerException(
+                    "Invalid fulltext query (phrase search): " + query);
+        }
+        return translateFulltext(ft, "|", "&", "& !", "");
     }
 
     // SELECT ..., TS_RANK_CD(fulltext, nxquery, 32) as nxscore

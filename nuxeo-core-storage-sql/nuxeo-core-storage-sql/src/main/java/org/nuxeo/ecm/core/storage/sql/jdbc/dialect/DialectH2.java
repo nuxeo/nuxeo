@@ -231,7 +231,7 @@ public class DialectH2 extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltextOrAndAndNot(ft, "OR", "AND", "NOT");
+        return translateFulltext(ft, "OR", "AND", "NOT", "\"");
     }
 
     // SELECT ..., 1 as nxscore
