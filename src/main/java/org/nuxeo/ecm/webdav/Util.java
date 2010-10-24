@@ -71,7 +71,18 @@ public class Util {
     public static CoreSession getSession() throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getDefaultRepository();
-        return repo.open();
+        CoreSession session = repo.open();
+        return session;
+
+        /*
+        if (sharedSession != null) {
+            return sharedSession;
+        }
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        Repository repo = rm.getDefaultRepository();
+        sharedSession = repo.open();
+        return sharedSession;
+        */
     }
 
     public static void startTransaction() {
@@ -123,6 +134,7 @@ public class Util {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(o, sw);
         System.out.println(sw);
+        System.out.flush();
     }
 
     public static String normalizePath(String path) {

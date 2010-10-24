@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 ROOT = "/Volumes/workspaces/"
+ROOT = "/Volumes/default/"
 MY_STUFF = "/Users/fermigier/Music/"
 
 import random, time, os, string, threading

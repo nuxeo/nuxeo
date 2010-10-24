@@ -17,9 +17,6 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webdav.provider.CoreSessionProvider;
 import org.nuxeo.ecm.webdav.provider.ExceptionHandler;
 import org.nuxeo.ecm.webdav.provider.WebDavContextResolver;
 import org.nuxeo.ecm.webdav.resource.RootResource;
@@ -33,8 +30,6 @@ import java.util.Set;
  */
 public class Application extends javax.ws.rs.core.Application {
 
-    private static final Log log = LogFactory.getLog(Application.class);
-
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -46,7 +41,6 @@ public class Application extends javax.ws.rs.core.Application {
     public Set<Object> getSingletons() {
         Set<Object> singletons = new HashSet<Object>();
         singletons.add(new ExceptionHandler());
-        singletons.add(new CoreSessionProvider());
         singletons.add(new WebDavContextResolver());
         return singletons;
     }

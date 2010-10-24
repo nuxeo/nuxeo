@@ -46,6 +46,8 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  */
 public class Server {
 
+    static boolean DEBUG = true;
+
     // Constants: TODO externalize them to a property file.
     static String BASE_URI = "http://localhost/";
     static int PORT = 9998;
@@ -121,12 +123,14 @@ public class Server {
         jerseyAdapter.setServletInstance(new ServletContainer());
         jerseyAdapter.setContextPath("");
 
-        // For debugging
-        //jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
-        //        "com.sun.jersey.api.container.filter.LoggingFilter");
-        //jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
-        //        "com.sun.jersey.api.container.filter.LoggingFilter");
-        jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");
+        if (DEBUG) {
+            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerRequestFilters",
+                "com.sun.jersey.api.container.filter.LoggingFilter");
+            jerseyAdapter.addInitParameter("com.sun.jersey.spi.container.ContainerResponseFilters",
+                "com.sun.jersey.api.container.filter.LoggingFilter");
+        } else {
+            jerseyAdapter.addInitParameter("com.sun.jersey.config.feature.logging.DisableEntitylogging", "true");
+        }
 
         gws.addGrizzlyAdapter(jerseyAdapter, new String[] { "" });
 

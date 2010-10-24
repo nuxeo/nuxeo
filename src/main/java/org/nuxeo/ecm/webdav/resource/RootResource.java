@@ -51,12 +51,13 @@ public class RootResource {
 
     private HttpServletRequest request;
 
-    public RootResource(@Context CoreSession session, @Context HttpServletRequest request,
-            @Context CloseableService closeableService) {
+    public RootResource(@Context HttpServletRequest request,
+            @Context CloseableService closeableService) throws Exception {
         log.debug(request.getMethod() + " " + request.getRequestURI());
 
-        this.session = session;
         this.request = request;
+        Util.startTransaction();
+        session = Util.getSession();
         closeableService.add(new CoreSessionCloser(session));
 
         if (rootPath == null) {
