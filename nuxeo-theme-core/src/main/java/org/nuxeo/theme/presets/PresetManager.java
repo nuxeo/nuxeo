@@ -15,6 +15,7 @@
 package org.nuxeo.theme.presets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,6 +49,9 @@ public class PresetManager {
 
     private static final Pattern remotePresetNamePattern = Pattern.compile(
             "(.*?)\\s\\((.*?)\\s(\\w*?)\\)$", Pattern.DOTALL);
+
+    private static final List<String> PRESET_CATEGORIES = Arrays.asList(
+            "color", "background", "font", "border");
 
     public static String extractPresetName(final String themeName,
             final String str) {
@@ -186,8 +190,11 @@ public class PresetManager {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final Matcher resourceNameMatcher = remotePresetNamePattern.matcher(presetName);
         if (resourceNameMatcher.find()) {
-            String collectionName = resourceNameMatcher.group(2);
             String category = resourceNameMatcher.group(3);
+            if (!PRESET_CATEGORIES.contains(category)) {
+                return;
+            }
+            String collectionName = resourceNameMatcher.group(2);
             String resourceId = category;
             String content;
             try {
