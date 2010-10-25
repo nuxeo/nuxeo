@@ -40,6 +40,7 @@ import org.nuxeo.connect.update.impl.task.Command;
 import org.nuxeo.connect.update.impl.task.commands.Copy;
 import org.nuxeo.connect.update.impl.task.commands.Delete;
 import org.nuxeo.connect.update.impl.task.commands.Deploy;
+import org.nuxeo.connect.update.impl.task.commands.DeployConfig;
 import org.nuxeo.connect.update.impl.task.commands.Flush;
 import org.nuxeo.connect.update.impl.task.commands.FlushCoreCache;
 import org.nuxeo.connect.update.impl.task.commands.FlushJaasCache;
@@ -47,6 +48,7 @@ import org.nuxeo.connect.update.impl.task.commands.Install;
 import org.nuxeo.connect.update.impl.task.commands.ParametrizedCopy;
 import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
 import org.nuxeo.connect.update.impl.task.commands.Undeploy;
+import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
 import org.nuxeo.connect.update.impl.task.commands.Uninstall;
 import org.nuxeo.connect.update.impl.xml.FormsDefinition;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
@@ -145,6 +147,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
         addCommand(ReloadProperties.ID, ReloadProperties.class);
         addCommand(Deploy.ID, Deploy.class);
         addCommand(Undeploy.ID, Undeploy.class);
+        addCommand(DeployConfig.ID, DeployConfig.class);
+        addCommand(UndeployConfig.ID, UndeployConfig.class);
         startInstalledPackages();
     }
 

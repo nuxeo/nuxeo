@@ -26,7 +26,6 @@ import org.nuxeo.connect.update.impl.task.Command;
 import org.nuxeo.connect.update.impl.xml.XmlWriter;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.w3c.dom.Element;
 
 /**
@@ -38,17 +37,17 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Undeploy extends AbstractCommand {
+public class UndeployConfig extends AbstractCommand {
 
-    public final static String ID = "undeploy";
+    public final static String ID = "undeploy-config";
 
     protected File file;
 
-    public Undeploy() {
+    public UndeployConfig() {
         super(ID);
     }
 
-    public Undeploy(File file) {
+    public UndeployConfig(File file) {
         super(ID);
         this.file = file;
     }
@@ -63,12 +62,10 @@ public class Undeploy extends AbstractCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
-            new Uninstall(file).doRun(task, prefs);
-            // TODO is this really needed - anyway a complete flush is made
-            // after an install/uninstall - see CommandsTask.doRun
-            Framework.getLocalService(ReloadService.class).reloadRepository();
+            Framework.getRuntime().getContext().undeploy(file.toURI().toURL());
         } catch (Exception e) {
-            throw new PackageException("Failed to undeploy bundle " + file, e);
+            throw new PackageException("Failed to undeploy configuration file "
+                    + file, e);
         }
         return new Deploy(file);
     }
