@@ -39,7 +39,6 @@ import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
-import org.apache.chemistry.opencmis.server.support.query.AbstractQueryConditionProcessor;
 import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
 import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
 import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
@@ -48,6 +47,7 @@ import org.apache.chemistry.opencmis.server.support.query.FunctionReference.Cmis
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.JoinSpec;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
+import org.apache.chemistry.opencmis.server.support.query.QueryUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
@@ -177,11 +177,11 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         hierTable = database.getTable(model.HIER_TABLE_NAME);
 
-        query = new QueryObject(typeManager, null);
+        query = new QueryObject(typeManager);
         CmisQueryWalker walker;
         try {
-            walker = AbstractQueryConditionProcessor.getWalker(statement);
-            walker.query(query);
+            walker = QueryUtil.getWalker(statement);
+            walker.query(query, new AnalyzingWalker());
         } catch (Exception e) {
             throw new QueryMakerException("Cannot parse query: "
                     + e.getMessage(), e);
@@ -189,13 +189,6 @@ public class CMISQLQueryMaker implements QueryMaker {
         String err = walker.getErrorMessageString();
         if (err != null) {
             throw new QueryMakerException("Cannot parse query: " + err);
-        }
-
-        Tree whereNode = query.getWhereTree() == null ? null
-                : query.getWhereTree().getChild(0);
-        if (whereNode != null) {
-            AnalyzingWalker analyzer = new AnalyzingWalker();
-            analyzer.walkPredicate(whereNode);
         }
 
         // now resolve column selectors to actual database columns
@@ -415,6 +408,7 @@ public class CMISQLQueryMaker implements QueryMaker {
          * WHERE clause.
          */
 
+        Tree whereNode = walker.getWherePredicateTree();
         if (whereNode != null) {
             GeneratingWalker generator = new GeneratingWalker();
             generator.walkPredicate(whereNode);
@@ -891,7 +885,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         public boolean hasContains;
 
         @Override
-        public boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
+        public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
             if (hasContains) {
                 throw new QueryMakerException(
                         "At most one CONTAINS() is allowed");
@@ -903,7 +897,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
             fulltextMatchInfo = dialect.getFulltextScoredMatchInfo(statement,
                     Model.FULLTEXT_DEFAULT_INDEX, 1, column, model, database);
-            return false;
+            return null;
         }
     }
 
@@ -920,116 +914,116 @@ public class CMISQLQueryMaker implements QueryMaker {
         public final List<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join> ftJoins = new LinkedList<org.nuxeo.ecm.core.storage.sql.jdbc.db.Join>();
 
         @Override
-        public boolean walkNot(Tree opNode, Tree node) {
+        public Boolean walkNot(Tree opNode, Tree node) {
             whereBuf.append("NOT ");
             walkPredicate(node);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkAnd(Tree opNode, Tree leftNode, Tree rightNode) {
+        public Boolean walkAnd(Tree opNode, Tree leftNode, Tree rightNode) {
             whereBuf.append("(");
             walkPredicate(leftNode);
             whereBuf.append(" AND ");
             walkPredicate(rightNode);
             whereBuf.append(")");
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkOr(Tree opNode, Tree leftNode, Tree rightNode) {
+        public Boolean walkOr(Tree opNode, Tree leftNode, Tree rightNode) {
             whereBuf.append("(");
             walkPredicate(leftNode);
             whereBuf.append(" OR ");
             walkPredicate(rightNode);
             whereBuf.append(")");
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+        public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" = ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
+        public Boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" <> ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkGreaterThan(Tree opNode, Tree leftNode,
+        public Boolean walkGreaterThan(Tree opNode, Tree leftNode,
                 Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" > ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkGreaterOrEquals(Tree opNode, Tree leftNode,
+        public Boolean walkGreaterOrEquals(Tree opNode, Tree leftNode,
                 Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" >= ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkLessThan(Tree opNode, Tree leftNode, Tree rightNode) {
+        public Boolean walkLessThan(Tree opNode, Tree leftNode, Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" < ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkLessOrEquals(Tree opNode, Tree leftNode,
+        public Boolean walkLessOrEquals(Tree opNode, Tree leftNode,
                 Tree rightNode) {
             walkExpr(leftNode);
             whereBuf.append(" <= ");
             walkExpr(rightNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkIn(Tree opNode, Tree colNode, Tree listNode) {
+        public Boolean walkIn(Tree opNode, Tree colNode, Tree listNode) {
             walkExpr(colNode);
             whereBuf.append(" IN ");
             walkExpr(listNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkNotIn(Tree opNode, Tree colNode, Tree listNode) {
+        public Boolean walkNotIn(Tree opNode, Tree colNode, Tree listNode) {
             walkExpr(colNode);
             whereBuf.append(" NOT IN ");
             walkExpr(listNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
+        public Boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
             walkAny(colNode, "IN", listNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
+        public Boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
             walkAny(colNode, "NOT IN", listNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
+        public Boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
             // note that argument order is reversed
             walkAny(colNode, "=", literalNode);
-            return false;
+            return null;
         }
 
         protected void walkAny(Tree colNode, String op, Tree exprNode) {
@@ -1063,37 +1057,37 @@ public class CMISQLQueryMaker implements QueryMaker {
         }
 
         @Override
-        public boolean walkIsNull(Tree opNode, Tree colNode) {
+        public Boolean walkIsNull(Tree opNode, Tree colNode) {
             walkExpr(colNode);
             whereBuf.append(" IS NULL");
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkIsNotNull(Tree opNode, Tree colNode) {
+        public Boolean walkIsNotNull(Tree opNode, Tree colNode) {
             walkExpr(colNode);
             whereBuf.append(" IS NOT NULL");
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkLike(Tree opNode, Tree colNode, Tree stringNode) {
+        public Boolean walkLike(Tree opNode, Tree colNode, Tree stringNode) {
             walkExpr(colNode);
             whereBuf.append(" LIKE ");
             walkExpr(stringNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkNotLike(Tree opNode, Tree colNode, Tree stringNode) {
+        public Boolean walkNotLike(Tree opNode, Tree colNode, Tree stringNode) {
             walkExpr(colNode);
             whereBuf.append(" NOT LIKE ");
             walkExpr(stringNode);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
+        public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
             if (fulltextMatchInfo.joins != null) {
                 ftJoins.addAll(fulltextMatchInfo.joins);
             }
@@ -1101,11 +1095,11 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (fulltextMatchInfo.whereExprParam != null) {
                 whereBufParams.add(fulltextMatchInfo.whereExprParam);
             }
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkInFolder(Tree opNode, Tree qualNode, Tree paramNode) {
+        public Boolean walkInFolder(Tree opNode, Tree qualNode, Tree paramNode) {
             String qual = qualNode == null ? null : qualNode.getText();
             // this is from the hierarchy table which is always present
             Column column = getSystemColumn(qual, PropertyIds.PARENT_ID);
@@ -1113,18 +1107,18 @@ public class CMISQLQueryMaker implements QueryMaker {
             whereBuf.append(" = ?");
             String id = (String) super.walkString(paramNode);
             whereBufParams.add(id);
-            return false;
+            return null;
         }
 
         @Override
-        public boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
+        public Boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
             String qual = qualNode == null ? null : qualNode.getText();
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
             String sql = dialect.getInTreeSql(column.getFullQuotedName());
             String id = (String) super.walkString(paramNode);
             whereBuf.append(sql);
             whereBufParams.add(id);
-            return false;
+            return null;
         }
 
         @Override
