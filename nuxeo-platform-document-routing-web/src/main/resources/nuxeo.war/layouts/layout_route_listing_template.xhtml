@@ -115,6 +115,9 @@
 				<c:otherwise>
 					<td class="#{layoutColumn.properties.columnStyleClass}"><nxl:layoutColumnWidget>
 						<nxl:widget widget="#{widget}" value="#{value}" />
+						<c:if test="#{layoutColumnIndex == 1}">
+						<span id="#{layoutListingStatus.index}_#{value.data.depth}_#{value.data.getFirstChildFolders().size()}_#{value.data.document.title}" />
+						</c:if>
 						<c:if
 							test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
 							<br />
