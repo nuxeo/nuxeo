@@ -1,0 +1,59 @@
+<html>
+  <head></head>
+  <body>
+    <!--
+    traverse the route to get a data structure that represent the folders with link from each step or empty folder to its parents
+    traverse the data structure to mark the younger son of each folder
+
+    compute the max number folder depth, empty folder count as a step => $mxd
+    compute the number of steps (empty folder counts as a step) => $mxs
+    Create a data array [$mxd +1 , $mxs]
+    For a: 0 -> $mxs   // this is for each row <tr></tr>
+      For b: 0 -> $ $mxd // this is for each column, for step or empty folder this is the final <td>
+                         //                          for entry first column that have folder this is a nothing <td> with a colspan
+                         //                          for non empty folder that are younger son, this is a <td> with rowspan information
+                         //                          for non empty folder, non younger son, this is nothing
+        put stepa in [a, $mxd +1]
+        $prta is the nubmer of parent for step a: put N in all value in [a, $mxd -> $mxd - $prta]
+        for each value from 0 => $prta: if parent is younger sun, put folder in [a, $prta]
+                                        otherwise put A in [a, $prta]
+      We have a group of at most $mxd column. There are in this order:
+      - a group of cells representing folder. Each cell has a rowspan
+    the size of the total number of steps or empty folder in it and
+    its children. This group can be empty if the line correspond to a
+    step contained directly in the route (see first 2 lines of the
+    following table)
+      - a group of empty cells. It is there so the cell with contents
+    are all aligned. The number of folder cell + number of empty cell
+    == $mxd. So the number of empty cell depends of the depts of the
+    step of the line. (first line has 3 empty, marked nothing, 5th
+    line has no empty cell).
+     
+      When we have:
+      - the ordered list of steps or empty folder
+      - for each step, the parent folder if this step is the first child of
+      this folder, and the parent of this folder if this is the first
+      child and so on
+      - for each step the depth of folder.
+
+      To create the table we, for each step:
+      - add a <tr>
+      - for each parent folder referenced in the step, add a <td colspan=""> </td> with
+      colspan value the total number of steps or empty folder
+      - add ($mxd - steps deph number of folder) <td>Nothing</td> with colspan
+    -->
+    <table border="1">
+          <!--            this $mxd                                               +1                -->
+      <tr><td colspan="3">Nothing</td>                                         <td>distribution step</td></tr>
+      <tr><td colspan="3">Nothing</td>                                         <td>distribution task</td></tr>
+      <tr><td rowspan="6">PF</td><td rowspan="2">SF</td><td>Nothing       </td><td>Distribution task</td></tr>
+      <tr>                                              <td>Nothing       </td><td>Distribution step</td></tr>
+      <tr>                       <td rowspan="4">SF</td><td>Nothing       </td><td>Distribution step</td></tr>
+      <tr>                                              <td rowspan="2">PF</td><td>Distributio Personal Task</td></tr>
+      <tr>                                                                     <td>Distribution General Task</td></tr>
+      <tr>                                              <td>Nothing       </td><td>Distributio General Task</td></tr>
+      <tr><td colspan="3">Nothing</td><td>Distriubtion General Task</td></tr>
+      <tr><td colspan="3">Nothing</td><td>Distriubtion Step</td></tr>
+    </table>
+  </body>
+</html>
