@@ -2154,6 +2154,17 @@
           <linkJavadoc>true</linkJavadoc>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jvnet.maven.incrementalbuild</groupId>
+        <artifactId>incremental-build-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>incremental-build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -2466,6 +2477,11 @@
           <groupId>net.sf.alchim</groupId>
           <artifactId>yuicompressor-maven-plugin</artifactId>
           <version>0.7.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jvnet.maven.incrementalbuild</groupId>
+          <artifactId>incremental-build-plugin</artifactId>
+          <version>1.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
