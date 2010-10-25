@@ -112,7 +112,7 @@ public class NotificationEventListener implements PostCommitEventListener {
             } else {
                 String[] recipients = (String[]) properties.get(NotificationConstants.RECIPIENTS_KEY);
                 if (recipients == null) {
-                    return;
+                    continue;
                 }
                 Set<String> users = new HashSet<String>();
                 for (String recipient : recipients) {
