@@ -123,6 +123,8 @@
         version="${nuxeo.webengine.version}" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-editor"
         version="${nuxeo.features.version}" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-theme-bank"
+        version="${nuxeo.features.version}" />
     </artifacts>
   </artifactSet>
 
