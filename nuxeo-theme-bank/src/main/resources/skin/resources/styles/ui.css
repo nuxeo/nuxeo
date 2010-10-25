@@ -1,0 +1,211 @@
+
+body {
+  font: 12px Arial, sans-serif;
+}
+
+h1 {
+  font: bold 12px Tahoma, sans-serif;
+  background-color: #ccc;
+  padding: 4px 9px;
+  -moz-border-radius: 4px;
+}
+
+h1 span {
+  color: #000;
+  background-color: #fff;
+  -moz-border-radius: 3px;
+  padding: 0 4px;
+  text-decoration: none;
+}
+
+h1 a {
+  color: #000;
+  background-color: #f6f6f6;
+  -moz-border-radius: 3px;
+  padding: 0 6px;
+  text-decoration: none;
+}
+
+h1 a:hover {
+  background-color: #fff;
+}
+
+h2 {
+  font: bold 12px Tahoma, sans-serif;
+  border-bottom: 1px solid #ddd;
+  padding: 3px 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #003;
+  font:  11px Tahoma, sans-serif;
+}
+
+img {
+  border: none;
+  vertical-align: bottom;
+}
+
+ul {
+  margin: 10px;
+  padding: 0;
+  list-style-position: inside;
+  list-style: none;
+}
+
+table.properties {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+}
+
+table.properties td {
+  padding: 5px 7px;
+  font: 11px monospace, sans-serif;
+  border-bottom: 1px dashed #ddd;
+}
+
+table.properties tr.odd td {
+}
+
+table.properties td.key {
+  text-align: right;
+  font-weight: bold;
+  width: 10%;
+}
+
+table.properties td.value {
+  font-weight: normal;
+  text-align: left;
+  width: 80%;
+}
+
+table.properties td.preview {
+  text-align: left;
+  width: 10%;
+}
+
+
+/* Image browser */
+.album {
+  width: 100%;
+  padding: 0;
+  float: left;
+  background-color: #f6f6f6;
+  -moz-border-radius: 8px;
+}
+
+.album .imageSingle {
+  float: left;
+  margin: 10px;
+  width: 212px;
+  text-align: center;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  background-color: #fff;
+}
+
+.album .imageSingle .image {
+  width: 200px;
+  height: 135px;
+  margin: 5px;
+ }
+
+.album .imageSingle:hover {
+  border: 1px solid #666;
+  cursor: pointer;
+}
+
+.album .imageSingle:hover .footer {
+  color: #666;
+  text-decoration: none;
+}
+
+.album .footer {
+  text-align: center;
+  color: #999;
+  padding-bottom: 2px;
+  font: bold 11px tahoma;
+}
+
+.album .imageSingle img {
+  max-width: 200px;
+  max-height: 135px;
+  border: none;
+}
+
+
+/* Action bar */
+
+.actionBar {
+  text-align: right;
+}
+
+.actionBar img {
+  border: none;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.actionBar span {
+  color: #eee;
+}
+
+.actionBar a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 5px;
+}
+
+.window {
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #999;
+  padding: 10px 20px;
+  -moz-border-radius: 10px;
+  background-color: #f3f3f3;
+  margin-top: 30px;
+}
+
+textarea {
+  border: 1px solid #999;
+  font: 11px monospace, sans-serif;
+}
+
+textarea:focus {
+  background-color: #ffc;
+  border-color: #fc0;
+}
+
+input.textInput {
+  border: 1px solid #eee;
+  border-top: 1px solid #ccc;
+  text-align: right;
+  font-weight: bold;
+}
+
+input.textInput:focus {
+  background-color: #ffc;
+  border-top: 1px solid #fc0;
+  border: 1px solid #fc0;
+}
+
+.tree li a:hover {
+  background-color: #ffc;
+}
+
+.tree li a.clicked {
+  background-color: #fff !important;
+  border-color: #eee !important;
+  color: #333 !important;
+  font-weight: bold;
+}
+
+form {
+  padding: 10px 15px;
+}

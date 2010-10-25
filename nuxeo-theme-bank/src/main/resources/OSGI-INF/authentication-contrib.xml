@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.bank.authConfig">
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+
+    <openUrl name="ThemeBanks">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/theme-banks</grantPattern>
+    </openUrl>
+
+    <openUrl name="ThemeBanksUI">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/.*/theme-banks/.*</grantPattern>
+    </openUrl>
+
+  </extension>
+
+</component>

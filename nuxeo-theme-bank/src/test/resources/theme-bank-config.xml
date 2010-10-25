@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.theme.bank.tests.banks">
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="resources">
+    <import src="test-bank.zip" bank="test" collection="Test" />
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="banks">
+    <bank name="test" url="http://localhost:8080/nuxeo/site/theme-banks/test" />
+  </extension>
+
+</component>
