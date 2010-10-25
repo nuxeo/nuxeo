@@ -658,7 +658,6 @@ public final class ThemeManager implements Registrable {
         Style style = (Style) ElementFormatter.getFormatByType(element,
                 styleType);
 
-        ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         if (style == null) {
             throw new ThemeException("Element has no assigned style: "
                     + element.computeXPath());

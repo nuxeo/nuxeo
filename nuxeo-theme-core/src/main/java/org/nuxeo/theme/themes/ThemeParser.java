@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -190,6 +191,9 @@ public class ThemeParser {
 
         Node baseNode = getBaseNode(docElem);
 
+        final Map<Integer, String> inheritanceMap = new HashMap<Integer, String>();
+        final Map<Style, Map<String, Properties>> commonStyles = new LinkedHashMap<Style, Map<String, Properties>>();
+
         // create a new theme
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName(themeName);
@@ -225,8 +229,26 @@ public class ThemeParser {
 
             // register formats
             for (Node n : getChildElementsByTagName(docElem, "formats")) {
-                parseFormats(theme, docElem, n);
+                parseFormats(theme, docElem, commonStyles, inheritanceMap, n);
             }
+
+            // setup style inheritance
+            for (Map.Entry<Integer, String> entry : inheritanceMap.entrySet()) {
+                Integer styleUid = entry.getKey();
+                String inheritedStyleName = entry.getValue();
+                Format style = ThemeManager.getFormatById(styleUid);
+                Format inheritedStyle = (Format) themeManager.getNamedObject(
+                        themeName, "style", inheritedStyleName);
+                if (inheritedStyle == null) {
+                    log.warn("Cannot make style inherit from unknown style : "
+                            + inheritedStyleName);
+                    continue;
+                }
+                themeManager.makeFormatInherit(style, inheritedStyle);
+            }
+
+            // styles created by the parser
+            createCommonStyles(themeName, commonStyles);
 
             // register element properties
             for (Node n : getChildElementsByTagName(docElem, "properties")) {
@@ -403,8 +425,10 @@ public class ThemeParser {
     }
 
     public static void parseFormats(final ThemeElement theme,
-            org.w3c.dom.Element doc, Node node) throws ThemeIOException,
-            ThemeException {
+            org.w3c.dom.Element doc,
+            Map<Style, Map<String, Properties>> commonStyles,
+            Map<Integer, String> inheritanceMap, Node node)
+            throws ThemeIOException, ThemeException {
         Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
 
@@ -415,8 +439,6 @@ public class ThemeParser {
         }
 
         ThemeManager themeManager = Manager.getThemeManager();
-
-        Map<Style, Map<String, Properties>> newStyles = new LinkedHashMap<Style, Map<String, Properties>>();
 
         for (Node n : getChildElements(node)) {
             String nodeName = n.getNodeName();
@@ -451,7 +473,6 @@ public class ThemeParser {
 
             } else if ("style".equals(nodeName)) {
                 Node nameAttr = attributes.getNamedItem("name");
-                Node inheritedAttr = attributes.getNamedItem("inherit");
 
                 // register the style name
                 String styleName = null;
@@ -462,24 +483,13 @@ public class ThemeParser {
                     themeManager.setNamedObject(themeName, "style", style);
                 }
 
+                Node inheritedAttr = attributes.getNamedItem("inherit");
                 if (inheritedAttr != null) {
                     String inheritedName = inheritedAttr.getNodeValue();
-                    Style inheritedStyle = (Style) themeManager.getNamedObject(
-                            themeName, "style", inheritedName);
-                    if (inheritedStyle == null) {
-                        inheritedStyle = (Style) FormatFactory.create("style");
-                        inheritedStyle.setName(inheritedName);
-                        themeManager.registerFormat(inheritedStyle);
-                        themeManager.setNamedObject(themeName, "style",
-                                inheritedStyle);
-                        ThemeManager.loadRemoteStyle(resourceBankName,
-                                inheritedStyle);
+                    if ("".equals(inheritedName)) {
+                        continue;
                     }
-                    if (inheritedStyle != null) {
-                        themeManager.makeFormatInherit(style, inheritedStyle);
-                        log.debug("Made style " + style + " inherit from "
-                                + inheritedName);
-                    }
+                    inheritanceMap.put(style.getUid(), inheritedName);
                 }
 
                 if (styleName != null && elementXPath != null) {
@@ -493,7 +503,7 @@ public class ThemeParser {
                         "selector");
 
                 // Try to retrieve the style from the resource bank
-                if (style.isNamed()) {
+                if (style.isNamed() && resourceBankName != null) {
                     ThemeManager.loadRemoteStyle(resourceBankName, style);
                     if (style.isRemote() && !selectorNodes.isEmpty()) {
                         style.setCustomized(true);
@@ -524,17 +534,18 @@ public class ThemeParser {
                                 selectorDescription);
                     }
 
+                    // BBB: remove in a later release
                     if (elementXPath != null
                             && (viewName == null || viewName.equals("*"))) {
-                        log.info("Style parser: trying to guess the view name for: "
+                        log.warn("Style parser: trying to guess the view name for: "
                                 + elementXPath);
                         viewName = guessViewNameFor(doc, elementXPath);
                         if (viewName == null) {
-                            if (!newStyles.containsKey(style)) {
-                                newStyles.put(style,
+                            if (!commonStyles.containsKey(style)) {
+                                commonStyles.put(style,
                                         new LinkedHashMap<String, Properties>());
                             }
-                            newStyles.get(style).put(path,
+                            commonStyles.get(style).put(path,
                                     getPropertiesFromNode(selectorNode));
                         }
                     }
@@ -567,9 +578,14 @@ public class ThemeParser {
             }
         }
 
-        // styles created by the parser
+    }
+
+    public static void createCommonStyles(String themeName,
+            Map<Style, Map<String, Properties>> commonStyles)
+            throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         int count = 1;
-        for (Style parent : newStyles.keySet()) {
+        for (Style parent : commonStyles.keySet()) {
             Style s = (Style) FormatFactory.create("style");
             String name = "";
             while (true) {
@@ -582,7 +598,7 @@ public class ThemeParser {
             s.setName(name);
             themeManager.registerFormat(s);
             themeManager.setNamedObject(themeName, "style", s);
-            Map<String, Properties> map = newStyles.get(parent);
+            Map<String, Properties> map = commonStyles.get(parent);
             for (Map.Entry<String, Properties> entry : map.entrySet()) {
                 s.setPropertiesFor("*", entry.getKey(), entry.getValue());
             }
@@ -699,6 +715,7 @@ public class ThemeParser {
         return null;
     }
 
+    // BBB shouldn't have to guess view names
     private static String guessViewNameFor(org.w3c.dom.Element doc,
             String elementXPath) {
         NodeList widgetNodes = doc.getElementsByTagName("widget");
