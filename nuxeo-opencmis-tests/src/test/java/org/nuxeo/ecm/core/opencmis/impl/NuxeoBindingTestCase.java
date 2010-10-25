@@ -55,6 +55,7 @@ public class NuxeoBindingTestCase {
         nuxeotc.setUp();
         // QueryMaker registration
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
+        // MyDocType
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.tests");
 
         Map<String, String> params = new HashMap<String, String>();

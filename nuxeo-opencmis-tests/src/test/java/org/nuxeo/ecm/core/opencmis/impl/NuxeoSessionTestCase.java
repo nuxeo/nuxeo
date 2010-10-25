@@ -84,6 +84,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
+        // MyDocType
+        deployBundle("org.nuxeo.ecm.core.opencmis.tests");
 
         openSession(); // nuxeo
 

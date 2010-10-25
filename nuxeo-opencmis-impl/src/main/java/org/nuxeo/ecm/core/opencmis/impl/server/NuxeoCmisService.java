@@ -97,7 +97,6 @@ import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -112,6 +111,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
@@ -412,15 +412,16 @@ public class NuxeoCmisService extends AbstractCmisService {
                 }
             }
             // set path segment from title
-            String pathSegment = IdUtils.generatePathSegment(doc.getTitle());
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
+            String pathSegment = pss.generatePathSegment(doc);
             doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
                     pathSegment);
             data.doc = coreSession.createDocument(doc);
             coreSession.save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException("Cannot create", e);
         } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
+        } catch (Exception e) {
+            throw new CmisRuntimeException("Cannot create", e);
         }
         return data;
     }
