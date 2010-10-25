@@ -265,9 +265,6 @@
     <widget element="page[1]/section[2]/cell[1]/fragment[2]">
       <view>nuxeo5 clip board</view>
     </widget>
-    <widget element="page[1]/section[2]/cell[1]/fragment[3]">
-      <view>nuxeo5 calendar actions</view>
-    </widget>
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">
       <view>nuxeo5 breadcrumbs</view>
     </widget>
