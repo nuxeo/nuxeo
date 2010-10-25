@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<server>
-  <mbean code="${jmxService}" name="${jmxName}">
-    <constructor>
-      <arg type="java.lang.String" value="${serviceName}"/>
-    </constructor>
-  </mbean>
-</server>
