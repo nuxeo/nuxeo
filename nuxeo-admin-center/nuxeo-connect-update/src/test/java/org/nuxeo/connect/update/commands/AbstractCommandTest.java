@@ -17,6 +17,8 @@
 package org.nuxeo.connect.update.commands;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -145,14 +147,19 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         return builder.build();
     }
 
+    protected Map<String, String> getUserProperties() {
+        return new HashMap<String, String>();
+    }
+
     public boolean install(LocalPackage pkg) throws Exception {
+        Map<String, String> props = getUserProperties();
         Task task = pkg.getInstallTask();
         ValidationStatus status = task.validate();
         if (!validateInstall(task, status)) {
             return false;
         }
         try {
-            task.run(null);
+            task.run(props);
             installDone(task, null);
             return true;
         } catch (Throwable t) {
@@ -163,13 +170,14 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     public boolean uninstall(LocalPackage pkg) throws Exception {
+        Map<String, String> props = getUserProperties();
         Task task = pkg.getUninstallTask();
         ValidationStatus status = task.validate();
         if (!validateUninstall(task, status)) {
             return false;
         }
         try {
-            task.run(null);
+            task.run(props);
             uninstallDone(task, null);
             return true;
         } catch (Throwable t) {

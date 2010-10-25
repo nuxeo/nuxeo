@@ -34,19 +34,19 @@ import org.w3c.dom.Element;
  * Copy a file to the given target directory or file. If the target is a
  * directory the file name is preserved. If the target file exists it will be
  * replaced if overwrite is true otherwise the command validation fails.
- *
+ * 
  * If md5 is set then the copy command will be validated only if the target file
  * has the same md5 as the one specified in the command.
- *
+ * 
  * The Copy command has as inverse either Delete either another Copy command. If
  * the file was copied without overwriting then Delete is the inverse (with a
  * md5 set to the one of the copied file). If the file was overwritten then the
  * Copy command has an inverse another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class Copy extends AbstractCommand {
 
@@ -90,8 +90,6 @@ public class Copy extends AbstractCommand {
         File bak = null;
         File dst = null;
         try {
-            // get the md5 for the file to copy.
-            md5 = IOUtils.createMd5(file);
             // backup the destination file if exist.
             if (tofile.isFile()) {
                 if (!overwrite) { // force a rollback
@@ -101,6 +99,11 @@ public class Copy extends AbstractCommand {
                 }
                 bak = IOUtils.backup(task.getPackage(), tofile);
                 dst = tofile;
+            } else if (tofile.isDirectory()) {
+                dst = new File(tofile, file.getName());
+                if (dst.isFile()) {
+                    bak = IOUtils.backup(task.getPackage(), dst);
+                }
             } else { // target file doesn't exists - it will be created
                 tofile.getParentFile().mkdirs();
                 dst = tofile;
@@ -113,6 +116,8 @@ public class Copy extends AbstractCommand {
             } else {
                 FileUtils.copy(file, dst);
             }
+            // get the md5 of the copied file.
+            md5 = IOUtils.createMd5(dst);
         } catch (Exception e) {
             throw new PackageException("Failed to copy " + dst, e);
         }
