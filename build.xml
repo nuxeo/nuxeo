@@ -78,12 +78,7 @@
   <target name="web" description="Copy web files to a live JBoss"
     depends="setproperties">
     <copy todir="${deploy.dir}/nuxeo.ear/nuxeo.war" failonerror="false">
-      <fileset dir="${basedir}/src/main/resources/nuxeo.war/" />
-    </copy>
-    <copy
-      todir="${jboss.server}/data/NXRuntime/web/modules/org.nuxeo.ecm.platform.error.web/"
-      failonerror="true">
-      <fileset dir="${basedir}/src/main/resources/" includes="skin/" />
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war/" />
     </copy>
   </target>
 

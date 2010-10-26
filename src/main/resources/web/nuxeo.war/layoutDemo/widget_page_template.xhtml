@@ -22,6 +22,11 @@
         <li class="#{nxu:test(layoutDemoCurrentTabId == 'reference', 'selected', '')}">
           <a href="#{baseURL}#{currentWidgetType.url}?tabId=reference">Reference</a>
         </li>
+        <c:if test="#{currentWidgetType.previewEnabled}">
+          <li class="#{nxu:test(layoutDemoCurrentTabId == 'preview', 'selected', '')}">
+            <a href="#{baseURL}#{currentWidgetType.url}?tabId=preview">Preview</a>
+          </li>
+        </c:if>
       </ul>
     </div>
     <div style="clear:both"></div>
@@ -29,13 +34,16 @@
 
       <c:if test="#{empty layoutDemoCurrentTabId}">
         <c:forEach var="demoLayout" items="#{currentWidgetType.demoLayouts}" varStatus="demoLayoutStatus">
-
-          <ui:include src="/layoutDemo/widget_demo_template.xhtml" />
-    
+          <ui:include src="/layoutDemo/widget_demo_template.xhtml" />    
         </c:forEach>
       </c:if>
+
       <c:if test="#{layoutDemoCurrentTabId == 'reference'}">
-        REFERENCE: TODO
+        <ui:include src="/layoutDemo/widget_reference_template.xhtml" />
+      </c:if>
+
+      <c:if test="#{layoutDemoCurrentTabId == 'preview'}">
+        <ui:include src="/layoutDemo/widget_preview_template.xhtml" />
       </c:if>
       
     </div>

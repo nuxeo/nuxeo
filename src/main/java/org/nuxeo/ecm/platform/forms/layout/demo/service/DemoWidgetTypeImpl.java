@@ -35,15 +35,22 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     protected String category;
 
+    protected Boolean previewEnabled;
+
+    protected List<String> fields;
+
     protected List<DemoLayout> demoLayouts;
 
     public DemoWidgetTypeImpl(String name, String label, String viewId,
-            String category, List<DemoLayout> demoLayouts) {
+            String category, Boolean previewEnabled, List<String> fields,
+            List<DemoLayout> demoLayouts) {
         super();
         this.name = name;
         this.label = label;
         this.viewId = viewId;
         this.category = category;
+        this.previewEnabled = previewEnabled;
+        this.fields = fields;
         this.demoLayouts = demoLayouts;
     }
 
@@ -65,6 +72,14 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     public String getCategory() {
         return category;
+    }
+
+    public Boolean getPreviewEnabled() {
+        return previewEnabled;
+    }
+
+    public List<String> getFields() {
+        return fields;
     }
 
     public List<DemoLayout> getDemoLayouts() {

@@ -31,8 +31,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,6 +60,9 @@ public class LayoutDemoActions implements Serializable {
     @In(create = true)
     protected LayoutDemoManager layoutDemoManager;
 
+    @In(create = true)
+    protected WebLayoutManager webLayoutManager;
+
     protected DocumentModel bareDemoDocument;
 
     protected DocumentModel demoDocument;
@@ -60,6 +70,16 @@ public class LayoutDemoActions implements Serializable {
     protected DemoWidgetType currentWidgetType;
 
     protected String currentTabId;
+
+    protected String currentSubTabId;
+
+    protected Boolean showViewPreview;
+
+    protected PreviewLayoutDefinition viewPreviewLayoutDef;
+
+    protected Boolean showEditPreview;
+
+    protected PreviewLayoutDefinition editPreviewLayoutDef;
 
     @Factory(value = "layoutDemoDocument", scope = EVENT)
     public DocumentModel getDemoDocument() throws ClientException {
@@ -114,6 +134,8 @@ public class LayoutDemoActions implements Serializable {
                 && !currentWidgetType.equals(newWidgetType)) {
             // reset demo doc too
             demoDocument = null;
+            viewPreviewLayoutDef = null;
+            editPreviewLayoutDef = null;
         }
         currentWidgetType = newWidgetType;
     }
@@ -123,6 +145,24 @@ public class LayoutDemoActions implements Serializable {
         return currentWidgetType;
     }
 
+    @Factory(value = "currentWidgetTypeDef", scope = EVENT)
+    public WidgetTypeDefinition getCurrentWidgetTypeDefinition() {
+        if (currentWidgetType != null) {
+            String type = currentWidgetType.getName();
+            return webLayoutManager.getWidgetTypeDefinition(type);
+        }
+        return null;
+    }
+
+    @Factory(value = "currentWidgetTypeConf", scope = EVENT)
+    public WidgetTypeConfiguration getCurrentWidgetTypeConfiguration() {
+        WidgetTypeDefinition def = getCurrentWidgetTypeDefinition();
+        if (def != null) {
+            return def.getConfiguration();
+        }
+        return null;
+    }
+
     @Factory(value = "layoutDemoCurrentTabId", scope = EVENT)
     public String getCurrentTabId() {
         return currentTabId;
@@ -130,6 +170,63 @@ public class LayoutDemoActions implements Serializable {
 
     public void setCurrentTabId(String currentTabId) {
         this.currentTabId = currentTabId;
+    }
+
+    @Factory(value = "layoutDemoCurrentSubTabId", scope = EVENT)
+    public String getCurrentSubTabId() {
+        return currentSubTabId;
+    }
+
+    public void setCurrentSubTabId(String currentSubTabId) {
+        this.currentSubTabId = currentSubTabId;
+    }
+
+    public Boolean getShowViewPreview() {
+        return showViewPreview;
+    }
+
+    public void setShowViewPreview(Boolean showViewPreview) {
+        this.showViewPreview = showViewPreview;
+    }
+
+    @Factory(value = "viewPreviewLayoutDef", scope = EVENT)
+    public PreviewLayoutDefinition getViewPreviewLayoutDefinition() {
+        if (viewPreviewLayoutDef == null && currentWidgetType != null) {
+            viewPreviewLayoutDef = new PreviewLayoutDefinition(
+                    currentWidgetType.getName(), currentWidgetType.getFields());
+        }
+        return viewPreviewLayoutDef;
+    }
+
+    @Factory(value = "editPreviewLayoutDef", scope = EVENT)
+    public PreviewLayoutDefinition getEditPreviewLayoutDefinition() {
+        if (editPreviewLayoutDef == null && currentWidgetType != null) {
+            editPreviewLayoutDef = new PreviewLayoutDefinition(
+                    currentWidgetType.getName(), currentWidgetType.getFields());
+        }
+        return editPreviewLayoutDef;
+    }
+
+    public LayoutDefinition getLayoutDefinition(
+            PreviewLayoutDefinition previewLayoutDef) {
+        if (previewLayoutDef == null) {
+            return null;
+        }
+        WidgetDefinition widgetDef = new WidgetDefinitionImpl("preview_widget",
+                previewLayoutDef.getWidgetType(), previewLayoutDef.getLabel(),
+                previewLayoutDef.getHelpLabel(),
+                Boolean.TRUE.equals(previewLayoutDef.getTranslated()), null,
+                previewLayoutDef.getFieldDefinitions(),
+                previewLayoutDef.getProperties(), null);
+        return new LayoutDefinitionImpl("preview_layout", null, widgetDef);
+    }
+
+    public Boolean getShowEditPreview() {
+        return showEditPreview;
+    }
+
+    public void setShowEditPreview(Boolean showEditPreview) {
+        this.showEditPreview = showEditPreview;
     }
 
 }

@@ -8,6 +8,11 @@
       <label>Text widget</label>
       <viewId>textWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="textWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />

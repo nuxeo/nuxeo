@@ -29,6 +29,7 @@
       </actionBinding>
       <bindings>
         <binding name="tabId">#{layoutDemoActions.currentTabId}</binding>
+        <binding name="subTabId">#{layoutDemoActions.currentSubTabId}</binding>
       </bindings>
     </urlPattern>
 

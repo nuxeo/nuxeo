@@ -34,5 +34,9 @@ public interface DemoWidgetType extends Serializable {
 
     String getCategory();
 
+    Boolean getPreviewEnabled();
+
+    List<String> getFields();
+
     List<DemoLayout> getDemoLayouts();
 }

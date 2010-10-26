@@ -5,7 +5,6 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<a4j:log />
 <c:if test="false">
 Displays a widget demo in edit and view modes, with sources.
 
@@ -13,6 +12,8 @@ Needed parameters:
 - layoutDemoDocument
 - demoLayout  
 </c:if>
+
+<a4j:region id="#{demoLayout.name}_region">
   <table class="dataOutput">
     <thead>
       <tr>
@@ -51,6 +52,11 @@ Needed parameters:
                   styleClass="button"
                   id="#{demoLayout.name}_edit_form_submitButton"
                   reRender="#{demoLayout.name}_view_form, #{demoLayout.name}_edit_form" />
+                <a4j:status>
+                  <f:facet name="start">
+                    <h:graphicImage value="/img/standart_waiter.gif" />
+                  </f:facet>
+                </a4j:status>
               </p>
             </a4j:form>
           </c:if>
@@ -74,7 +80,7 @@ Needed parameters:
       </tr>
     </tbody>
   </table>
-
+</a4j:region>
   
   <ui:include src="/layoutDemo/show_xml_source_template.xhtml">
     <ui:param name="sourcePath" value="#{demoLayout.sourcePath}" />

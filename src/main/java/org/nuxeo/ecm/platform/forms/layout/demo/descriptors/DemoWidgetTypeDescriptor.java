@@ -45,6 +45,12 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     @XNode("category")
     protected String category;
 
+    @XNode("preview@enabled")
+    protected Boolean previewEnabled = Boolean.FALSE;
+
+    @XNodeList(value = "preview/fields/field", type = ArrayList.class, componentType = String.class)
+    protected List<String> fields;
+
     @XNodeList(value = "layouts/layout", type = ArrayList.class, componentType = DemoLayoutDescriptor.class)
     protected List<DemoLayoutDescriptor> demoLayouts;
 
@@ -62,6 +68,14 @@ public class DemoWidgetTypeDescriptor implements Serializable {
 
     public String getCategory() {
         return category;
+    }
+
+    public Boolean getPreviewEnabled() {
+        return previewEnabled;
+    }
+
+    public List<String> getFields() {
+        return fields;
     }
 
     public List<DemoLayout> getDemoLayouts() {
