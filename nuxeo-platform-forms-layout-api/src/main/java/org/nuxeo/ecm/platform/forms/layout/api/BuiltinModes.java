@@ -45,4 +45,18 @@ public class BuiltinModes {
     private BuiltinModes() {
     }
 
+    /**
+     * Returns true if given layout mode is mapped by default to the edit
+     * widget mode.
+     */
+    public static final boolean isBoundToEditMode(String layoutMode) {
+        if (layoutMode != null
+                && (layoutMode.startsWith(BuiltinModes.CREATE)
+                        || layoutMode.startsWith(BuiltinModes.EDIT)
+                        || layoutMode.startsWith(BuiltinModes.SEARCH) || layoutMode.startsWith(BuiltinModes.BULK_EDIT))) {
+            return true;
+        }
+        return false;
+    }
+
 }

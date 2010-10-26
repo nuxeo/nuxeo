@@ -150,4 +150,25 @@ public class LayoutImpl implements Layout {
         properties.put(name, value);
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append(LayoutImpl.class.getSimpleName());
+        buf.append(" {");
+        buf.append(" name=");
+        buf.append(name);
+        buf.append(", id=");
+        buf.append(id);
+        buf.append(", mode=");
+        buf.append(mode);
+        buf.append(", template=");
+        buf.append(template);
+        buf.append(", properties=");
+        buf.append(properties);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }

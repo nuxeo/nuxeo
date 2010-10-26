@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.platform.forms.layout.api.service;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 
 /**
  * Layout manager interface.
@@ -40,6 +42,21 @@ public interface LayoutManager extends Serializable {
      * If the no widget type is found with this name, return null.
      */
     WidgetType getWidgetType(String typeName);
+
+    /**
+     * Returns the widget type definition with given name, or null if no widget
+     * type with this name is found.
+     *
+     * @since 5.4
+     */
+    WidgetTypeDefinition getWidgetTypeDefinition(String typeName);
+
+    /**
+     * Returns the widget type definitions for all the registered widget types.
+     *
+     * @since 5.4
+     */
+    List<WidgetTypeDefinition> getWidgetTypeDefinitions();
 
     /**
      * Returns the registered layout definition for this name.

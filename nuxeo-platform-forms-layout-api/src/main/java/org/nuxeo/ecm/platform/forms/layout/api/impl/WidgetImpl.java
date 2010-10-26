@@ -169,4 +169,39 @@ public class WidgetImpl implements Widget {
         return level;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append(WidgetImpl.class.getSimpleName());
+        buf.append(" {");
+        buf.append(" name=");
+        buf.append(name);
+        buf.append(", layoutName=");
+        buf.append(layoutName);
+        buf.append(", id=");
+        buf.append(id);
+        buf.append(", mode=");
+        buf.append(mode);
+        buf.append(", type=");
+        buf.append(type);
+        buf.append(", label=");
+        buf.append(label);
+        buf.append(", helpLabel=");
+        buf.append(helpLabel);
+        buf.append(", translated=");
+        buf.append(translated);
+        buf.append(", required=");
+        buf.append(required);
+        buf.append(", properties=");
+        buf.append(properties);
+        buf.append(", valueName=");
+        buf.append(valueName);
+        buf.append(", level=");
+        buf.append(level);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }

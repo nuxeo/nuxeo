@@ -102,4 +102,19 @@ public class LayoutRowImpl implements LayoutRow {
         return null;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append(LayoutRowImpl.class.getSimpleName());
+        buf.append(" {");
+        buf.append(" name=");
+        buf.append(name);
+        buf.append(", properties=");
+        buf.append(properties);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }
