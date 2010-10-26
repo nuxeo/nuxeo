@@ -23,11 +23,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.FacesException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.facelets.DocumentLayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowWidgetTagHandler;
@@ -35,6 +39,8 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.SubWidgetTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeTagHandler;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.tag.AbstractTagLibrary;
 
@@ -62,6 +68,14 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         addTagHandler("layoutColumnWidget", LayoutRowWidgetTagHandler.class);
         addTagHandler("subWidget", SubWidgetTagHandler.class);
         addTagHandler("documentLayout", DocumentLayoutTagHandler.class);
+
+        try {
+            addFunction("widgetTypeDefinition",
+                    LayoutTagLibrary.class.getMethod("getWidgetTypeDefinition",
+                            new Class[] { String.class }));
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
 
         try {
             addFunction("fieldDefinitionsAsString",
@@ -103,9 +117,31 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             log.error(e, e);
         }
 
+        try {
+            Method isBoundToEditMode = BuiltinModes.class.getMethod(
+                    "isBoundToEditMode", new Class[] { String.class });
+            addFunction("isBoundToEditMode", isBoundToEditMode);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
     }
 
     // JSF functions
+
+    public static WidgetTypeDefinition getWidgetTypeDefinition(String typeName) {
+        WebLayoutManager layoutService;
+        try {
+            layoutService = Framework.getService(WebLayoutManager.class);
+        } catch (Exception e) {
+            throw new FacesException(e);
+        }
+        if (layoutService == null) {
+            throw new FacesException("Layout service not found");
+        }
+
+        return layoutService.getWidgetTypeDefinition(typeName);
+    }
 
     /**
      * Returns a String representing each of the field definitions property
@@ -150,8 +186,7 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
                 if (selectedRowNames == null && !row.isSelectedByDefault()
                         && !row.isAlwaysSelected()) {
                     notSelectedRows.add(row);
-                } else if (selectedRowNames != null
-                        && !row.isAlwaysSelected()
+                } else if (selectedRowNames != null && !row.isAlwaysSelected()
                         && !selectedRowNames.contains(row.getName())) {
                     notSelectedRows.add(row);
                 }

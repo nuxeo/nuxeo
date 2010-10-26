@@ -36,7 +36,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  * Layout definition descriptor.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("layout")
 public class LayoutDescriptor implements LayoutDefinition {
@@ -60,8 +59,6 @@ public class LayoutDescriptor implements LayoutDefinition {
 
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
-
-    String[][] stringRows;
 
     Integer columns;
 

@@ -23,7 +23,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
@@ -60,6 +62,7 @@ public interface WebLayoutManager extends LayoutManager {
      * will hold a null value instead. As well, when a row does not hold any
      * non-null widget in this mode, the layout will not hold it.
      *
+     * @see #getLayout(FaceletContext, String, String, String, List, boolean)
      * @param ctx the facelet context this layout will be computed in. If
      *            context is null, no expressions can be resolved during
      *            computing.
@@ -74,6 +77,22 @@ public interface WebLayoutManager extends LayoutManager {
     /**
      * Returns the computed layout for this name, mode and list of selected
      * rows in given context, or null if no layout with this name is found.
+     *
+     * @see LayoutManager#getLayoutDefinition(String)
+     * @see #getLayout(FaceletContext, LayoutDefinition, String, String, List,
+     *      boolean)
+     * @param layoutName the layout definition name.
+     * @return a layout computed in this context.
+     * @since 5.4
+     */
+    Layout getLayout(FaceletContext ctx, String layoutName, String mode,
+            String valueName, List<String> selectedRows,
+            boolean selectAllRowsByDefault);
+
+    /**
+     * Returns the computed layout for this definition, mode and list of
+     * selected rows in given context, or null if the layout definition is
+     * null.
      * <p>
      * When a widget is configured not to be rendered in this mode, the layout
      * will hold a null value instead. As well, when a row does not hold any
@@ -87,7 +106,7 @@ public interface WebLayoutManager extends LayoutManager {
      * @param ctx the facelet context this layout will be computed in. If
      *            context is null, no expressions can be resolved during
      *            computing.
-     * @param layoutName the layout definition name.
+     * @param layoutDef the layout definition instance.
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
      * @param selectedRows the list of selected rows names
@@ -97,8 +116,8 @@ public interface WebLayoutManager extends LayoutManager {
      * @return a layout computed in this context.
      * @since 5.4
      */
-    Layout getLayout(FaceletContext ctx, String layoutName, String mode,
-            String valueName, List<String> selectedRows,
+    Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
+            String mode, String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault);
 
     /**
@@ -124,9 +143,34 @@ public interface WebLayoutManager extends LayoutManager {
      * @param properties optional properties to use when computing the widget.
      * @param subWidgets optional sub widgets for this widget.
      * @return a widget computed in this context.
+     * @see #createWidget(FaceletContext, String, String, String, List, String,
+     *      String, Boolean, Map, Widget[])
      */
     Widget createWidget(FaceletContext ctx, String type, String mode,
             String valueName, Map<String, Serializable> properties,
             Widget[] subWidgets);
+
+    /**
+     * Returns a widget computed from given information.
+     *
+     * @param ctx the facelet context this layout will be computed in. If
+     *            context is null, no expressions can be resolved during
+     *            computing.
+     * @param type the widget type name.
+     * @param mode the mode.
+     * @param valueName the value name to use when computing tag attributes.
+     * @param fieldDefinitions
+     * @param label the widget label
+     * @param helpLabel the widget help label
+     * @param translated if true, the labels will be translated
+     * @param properties optional properties to use when computing the widget.
+     * @param subWidgets optional sub widgets for this widget.
+     * @return a widget computed in this context.
+     * @since 5.4
+     */
+    Widget createWidget(FaceletContext ctx, String type, String mode,
+            String valueName, List<FieldDefinition> fieldDefinitions,
+            String label, String helpLabel, Boolean translated,
+            Map<String, Serializable> properties, Widget[] subWidgets);
 
 }

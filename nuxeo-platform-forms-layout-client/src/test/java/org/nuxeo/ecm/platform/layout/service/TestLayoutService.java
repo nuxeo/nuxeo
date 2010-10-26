@@ -27,9 +27,14 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -49,6 +54,38 @@ public class TestLayoutService extends NXRuntimeTestCase {
                 "layouts-test-framework.xml");
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
+    }
+
+    public void testWidgetType() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        WidgetType wType = service.getWidgetType("test");
+        assertEquals("test", wType.getName());
+        assertEquals(2, wType.getProperties().size());
+        assertEquals(DummyWidgetTypeHandler.class.getName(),
+                wType.getWidgetTypeClass().getName());
+
+        WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition("test");
+        assertEquals("test", wTypeDef.getName());
+        assertEquals(2, wTypeDef.getProperties().size());
+        assertEquals(DummyWidgetTypeHandler.class.getName(),
+                wTypeDef.getHandlerClassName());
+        WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
+        assertNotNull(conf);
+        assertEquals("Test widget type", conf.getTitle());
+        assertEquals("This is a test widget type", conf.getDescription());
+        List<String> categories = conf.getCategories();
+        assertNotNull(categories);
+        assertEquals(2, categories.size());
+        List<LayoutDefinition> layouts = conf.getPropertyLayouts(
+                BuiltinModes.EDIT, BuiltinModes.ANY);
+        assertNotNull(layouts);
+        assertEquals(2, layouts.size());
+
+        List<WidgetTypeDefinition> wTypeDefs = service.getWidgetTypeDefinitions();
+        assertNotNull(wTypeDefs);
+        assertEquals(1, wTypeDefs.size());
+        assertEquals(wTypeDef, wTypeDefs.get(0));
     }
 
     public void testLayout() throws Exception {

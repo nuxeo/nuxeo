@@ -21,11 +21,12 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -38,7 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -68,8 +68,7 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "widget",
-            "value" };
+    protected final String[] reservedVarsArray = { "id", "widget", "value" };
 
     public WidgetTagHandler(TagConfig config) {
         super(config);
@@ -148,26 +147,25 @@ public class WidgetTagHandler extends MetaTagHandler {
             return;
         }
         if (fillVariables) {
-            // expose widget variables to the variable mapper
-            VariableMapper orig = ctx.getVariableMapper();
-            VariableMapper vm = new VariableMapperWrapper(orig);
-            ctx.setVariableMapper(vm);
-            try {
-                ValueExpression valueExpr = value.getValueExpression(ctx,
-                        Object.class);
-                vm.setVariable(RenderVariables.globalVariables.value.name(),
-                        valueExpr);
-                vm.setVariable(String.format("%s_%s",
-                        RenderVariables.globalVariables.value.name(),
-                        widget.getLevel()), valueExpr);
-                // document as alias to value
-                vm.setVariable(RenderVariables.globalVariables.document.name(),
-                        valueExpr);
-                // apply
-                handler.apply(ctx, parent);
-            } finally {
-                ctx.setVariableMapper(orig);
-            }
+            // expose widget variables
+            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+
+            ValueExpression valueExpr = value.getValueExpression(ctx,
+                    Object.class);
+            variables.put(RenderVariables.globalVariables.value.name(),
+                    valueExpr);
+            variables.put(String.format("%s_%s",
+                    RenderVariables.globalVariables.value.name(),
+                    widget.getLevel()), valueExpr);
+            // document as alias to value
+            variables.put(RenderVariables.globalVariables.document.name(),
+                    valueExpr);
+
+            FaceletHandler handlerWithVars = helper.getAliasTagHandler(
+                    variables, handler);
+            // apply
+            handlerWithVars.apply(ctx, parent);
+
         } else {
             // just apply
             handler.apply(ctx, parent);

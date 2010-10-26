@@ -12,6 +12,50 @@
       </handler-class>
       <property name="foo1">bar1</property>
       <property name="foo2">bar2</property>
+      <configuration>
+        <title>Test widget type</title>
+        <description>This is a test widget type</description>
+        <categories>
+          <category>foo</category>
+          <category>bar</category>
+        </categories>
+        <properties>
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget>required_property</widget>
+                </row>
+              </rows>
+              <widget name="required_property" type="text">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field schema="foo">bar</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout>
+              <rows>
+                <row>
+                  <widget>rendered_property</widget>
+                </row>
+              </rows>
+              <widget name="rendered_property" type="text">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field schema="foo">bar</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
     </widgetType>
 
   </extension>

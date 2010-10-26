@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,9 @@ import javax.faces.component.UIComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.FieldDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -69,9 +72,20 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute value;
 
+    protected final TagAttribute fields;
+
+    protected final TagAttribute label;
+
+    protected final TagAttribute helpLabel;
+
+    protected final TagAttribute translated;
+
+    protected final TagAttribute properties;
+
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "mode", "type" };
+    protected final String[] reservedVarsArray = { "id", "mode", "type",
+            "properties" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -79,6 +93,11 @@ public class WidgetTypeTagHandler extends TagHandler {
         name = getRequiredAttribute("name");
         mode = getRequiredAttribute("mode");
         value = getAttribute("value");
+        fields = getAttribute("fields");
+        label = getAttribute("label");
+        helpLabel = getAttribute("helpLabel");
+        translated = getAttribute("translated");
+        properties = getAttribute("properties");
         vars = tag.getAttributes().getAll();
     }
 
@@ -90,24 +109,64 @@ public class WidgetTypeTagHandler extends TagHandler {
         } catch (Exception e) {
             throw new FacesException(e);
         }
+        if (layoutService == null) {
+            throw new FacesException("Layout service not found");
+        }
 
         // build handler
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
+        if (properties != null) {
+            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(
+                    ctx, Map.class);
+            if (propertiesValue != null) {
+                widgetProps.putAll(propertiesValue);
+            }
+        }
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
             if (!reservedVars.contains(localName)) {
-                properties.put(localName, var.getValue());
+                widgetProps.put(localName, var.getValue());
             }
         }
         String typeValue = name.getValue(ctx);
         String modeValue = mode.getValue(ctx);
-        String valueName = value.getValue();
-        if (ComponentTagUtils.isValueReference(valueName)) {
-            valueName = valueName.substring(2, valueName.length() - 1);
+        String valueName = null;
+        if (value != null) {
+            valueName = value.getValue();
+            if (ComponentTagUtils.isValueReference(valueName)) {
+                valueName = valueName.substring(2, valueName.length() - 1);
+            }
         }
+        List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();
+        if (fields != null) {
+            List resolvedfields = (List) fields.getObject(ctx, List.class);
+            for (Object item : resolvedfields) {
+                if (item instanceof FieldDefinition) {
+                    fieldsValue.add((FieldDefinition) item);
+                } else if (item instanceof String) {
+                    fieldsValue.add(new FieldDescriptor(null, (String) item));
+                } else {
+                    log.error("Invalid field item => discard: " + item);
+                }
+            }
+        }
+        String labelValue = null;
+        if (label != null) {
+            labelValue = label.getValue();
+        }
+        String helpLabelValue = null;
+        if (helpLabel != null) {
+            helpLabelValue = helpLabel.getValue();
+        }
+        Boolean translatedValue = Boolean.FALSE;
+        if (translated != null) {
+            translatedValue = Boolean.valueOf(translated.getBoolean(ctx));
+        }
+
         Widget widget = layoutService.createWidget(ctx, typeValue, modeValue,
-                valueName, properties, null);
+                valueName, fieldsValue, labelValue, helpLabelValue,
+                translatedValue, widgetProps, null);
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();
@@ -126,5 +185,4 @@ public class WidgetTypeTagHandler extends TagHandler {
             ctx.setVariableMapper(orig);
         }
     }
-
 }

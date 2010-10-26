@@ -23,16 +23,19 @@ import java.io.IOException;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
+
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.TagException;
 
 /**
  * Tag handler that exposes a variable to the variable map. Behaviour is close
@@ -42,51 +45,57 @@ import com.sun.facelets.tag.TagConfig;
  * resolved the first time is is called and will be put in the context after</li>
  * <li>The resolved variable is removed from context when tag is closed to
  * avoid filling the context with it</li>
+ * <li>Since 5.4, variables are made available in the request context after
+ * the JSF component tree build thanks to a backing component.</li>
  * </ul>
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @since 5.3.1
  */
-public class SetTagHandler extends MetaTagHandler {
+public class SetTagHandler extends AliasTagHandler {
 
-    private final TagAttribute var;
+    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
 
-    private final TagAttribute value;
+    protected final TagAttribute var;
 
-    private final TagAttribute cache;
+    protected final TagAttribute value;
 
     public SetTagHandler(TagConfig config) {
-        super(config);
-        value = getRequiredAttribute("value");
+        super(config, null);
         var = getRequiredAttribute("var");
-        cache = getAttribute("cache");
+        value = getAttribute("value");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        String varStr = var.getValue(ctx);
+        // make sure our parent is not null
+        if (parent == null) {
+            throw new TagException(this.tag, "Parent UIComponent was null");
+        }
+
+        // our id
+        String id = ctx.generateUniqueId(this.tagId);
+
+        // handle variable expression
         boolean cacheValue = false;
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
         }
-
-        ValueExpression ve = value.getValueExpression(ctx, Object.class);
+        String varStr = var.getValue(ctx);
+        ValueExpression ve;
         if (cacheValue) {
             // resolve value and put it as is in variable mapper
-            Object res = ve.getValue(ctx);
+            Object res = value.getObject(ctx);
             ve = ctx.getExpressionFactory().createValueExpression(res,
                     Object.class);
+        } else {
+            ve = value.getValueExpression(ctx, Object.class);
         }
 
-        VariableMapper orig = ctx.getVariableMapper();
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        ctx.setVariableMapper(vm);
-        vm.setVariable(varStr, ve);
-        try {
-            nextHandler.apply(ctx, parent);
-        } finally {
-            ctx.setVariableMapper(orig);
-        }
+        AliasVariableMapper target = new AliasVariableMapper(id);
+        target.setVariable(varStr, ve);
+
+        apply(ctx, parent, target);
     }
 
 }

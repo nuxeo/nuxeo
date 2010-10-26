@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
@@ -43,6 +45,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.LayoutException;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutImpl;
@@ -86,11 +89,14 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     protected final Map<String, WidgetType> widgetTypeRegistry;
 
+    protected final Map<String, WidgetTypeDefinition> widgetTypeDefinitionRegistry;
+
     protected final Map<String, LayoutDefinition> layoutRegistry;
 
     protected final Map<String, WidgetDefinition> widgetRegistry;
 
     public WebLayoutManagerImpl() {
+        widgetTypeDefinitionRegistry = new HashMap<String, WidgetTypeDefinition>();
         widgetTypeRegistry = new HashMap<String, WidgetType>();
         layoutRegistry = new HashMap<String, LayoutDefinition>();
         widgetRegistry = new HashMap<String, WidgetDefinition>();
@@ -140,13 +146,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     // widget types
 
     protected void registerWidgetType(Object contribution) {
-        WidgetTypeDescriptor desc = (WidgetTypeDescriptor) contribution;
+        WidgetTypeDefinition desc = (WidgetTypeDefinition) contribution;
         String name = desc.getName();
-        if (widgetTypeRegistry.containsKey(name)) {
-            log.warn(String.format("Overriding definition for widget type %s",
-                    name));
-            widgetTypeRegistry.remove(name);
-        }
         String className = desc.getHandlerClassName();
         if (className == null) {
             log.error("Handler class missing " + "for widget type " + name);
@@ -161,9 +162,19 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             log.error("Caught error when instantiating widget type handler", e);
             return;
         }
+
+        // override only if handler class was resolved correctly
+        if (widgetTypeRegistry.containsKey(name)
+                || widgetTypeDefinitionRegistry.containsKey(name)) {
+            log.warn(String.format("Overriding definition for widget type %s",
+                    name));
+            widgetTypeRegistry.remove(name);
+            widgetTypeDefinitionRegistry.remove(name);
+        }
         WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,
                 desc.getProperties());
         widgetTypeRegistry.put(name, widgetType);
+        widgetTypeDefinitionRegistry.put(name, desc);
         log.info("Registered widget type: " + name);
     }
 
@@ -224,6 +235,21 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
 
     public WidgetType getWidgetType(String typeName) {
         return widgetTypeRegistry.get(typeName);
+    }
+
+    @Override
+    public WidgetTypeDefinition getWidgetTypeDefinition(String typeName) {
+        return widgetTypeDefinitionRegistry.get(typeName);
+    }
+
+    @Override
+    public List<WidgetTypeDefinition> getWidgetTypeDefinitions() {
+        List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
+        Collection<WidgetTypeDefinition> defs = widgetTypeDefinitionRegistry.values();
+        if (defs != null) {
+            res.addAll(defs);
+        }
+        return res;
     }
 
     public LayoutDefinition getLayoutDefinition(String layoutName) {
@@ -295,7 +321,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             return Boolean.valueOf((String) value);
         } else {
             log.error("Could not get boolean value for " + value);
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -317,10 +343,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             WidgetDefinition wDef, String layoutMode) {
         String wMode = getStringValue(context, wDef.getMode(layoutMode));
         if (wMode == null) {
-            if (layoutMode != null
-                    && (layoutMode.startsWith(BuiltinModes.CREATE)
-                            || layoutMode.startsWith(BuiltinModes.EDIT)
-                            || layoutMode.startsWith(BuiltinModes.SEARCH) || layoutMode.startsWith(BuiltinModes.BULK_EDIT))) {
+            if (BuiltinModes.isBoundToEditMode(layoutMode)) {
                 wMode = BuiltinWidgetModes.EDIT;
             } else {
                 wMode = BuiltinWidgetModes.VIEW;
@@ -370,8 +393,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             }
         }
 
-        boolean required = getBooleanValue(context, wDef.getRequired(
-                layoutMode, wMode));
+        boolean required = getBooleanValue(context,
+                wDef.getRequired(layoutMode, wMode)).booleanValue();
         Widget widget = new WidgetImpl(lDef.getName(), wDef.getName(), wMode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
@@ -388,16 +411,28 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault) {
-        LayoutDefinition lDef = getLayoutDefinition(layoutName);
-        if (lDef == null) {
+        LayoutDefinition layoutDef = getLayoutDefinition(layoutName);
+        if (layoutDef == null) {
             log.debug(String.format("Layout %s not found", layoutName));
             return null;
         }
+        return getLayout(ctx, layoutDef, mode, valueName, selectedRows,
+                selectAllRowsByDefault);
+    }
+
+    public Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
+            String mode, String valueName, List<String> selectedRows,
+            boolean selectAllRowsByDefault) {
+        if (layoutDef == null) {
+            log.debug("Layout definition is null");
+            return null;
+        }
+        String layoutName = layoutDef.getName();
         if (ctx == null) {
             log.warn("Layout creation computed in a null facelet context: expressions "
                     + "found in the layout definition will not be evaluated");
         }
-        LayoutRowDefinition[] rowsDef = lDef.getRows();
+        LayoutRowDefinition[] rowsDef = layoutDef.getRows();
         List<LayoutRow> rows = new ArrayList<LayoutRow>();
         Set<String> foundRowNames = new HashSet<String>();
         int rowIndex = -1;
@@ -429,7 +464,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     widgets.add(null);
                     continue;
                 }
-                WidgetDefinition wDef = lDef.getWidgetDefinition(widgetName);
+                WidgetDefinition wDef = layoutDef.getWidgetDefinition(widgetName);
                 if (wDef == null) {
                     // try in global registry
                     wDef = getWidgetDefinition(widgetName);
@@ -440,7 +475,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, lDef, wDef, mode, valueName, 0);
+                Widget widget = getWidget(ctx, layoutDef, wDef, mode,
+                        valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
@@ -465,9 +501,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 }
             }
         }
-        int columns = lDef.getColumns();
-        Layout layout = new LayoutImpl(lDef.getName(), mode,
-                lDef.getTemplate(mode), rows, columns, lDef.getProperties(mode));
+        int columns = layoutDef.getColumns();
+        Layout layout = new LayoutImpl(layoutDef.getName(), mode,
+                layoutDef.getTemplate(mode), rows, columns,
+                layoutDef.getProperties(mode));
         return layout;
     }
 
@@ -495,13 +532,25 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public Widget createWidget(FaceletContext ctx, String type, String mode,
             String valueName, Map<String, Serializable> properties,
             Widget[] subWidgets) {
+        return createWidget(ctx, type, mode, valueName, null, null, null, null,
+                properties, subWidgets);
+    }
+
+    @Override
+    public Widget createWidget(FaceletContext ctx, String type, String mode,
+            String valueName, List<FieldDefinition> fieldDefinitions,
+            String label, String helpLabel, Boolean translated,
+            Map<String, Serializable> properties, Widget[] subWidgets) {
         Serializable requiredProp = properties.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
         boolean required = false;
         if (requiredProp != null) {
-            if (requiredProp instanceof String) {
+            if (requiredProp instanceof Boolean) {
+                required = Boolean.valueOf((Boolean) requiredProp);
+            } else if (requiredProp instanceof String) {
                 required = getBooleanValue(ctx, (String) requiredProp);
             } else {
                 log.error(String.format(
@@ -510,8 +559,9 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             }
         }
         Widget widget = new WidgetImpl("layout", "widget", mode, type,
-                valueName, null, null, null, required, properties, required,
-                subWidgets, 0);
+                valueName, fieldDefinitions.toArray(new FieldDefinition[] {}),
+                label, helpLabel, Boolean.TRUE.equals(translated), properties,
+                required, subWidgets, 0);
         return widget;
     }
 }

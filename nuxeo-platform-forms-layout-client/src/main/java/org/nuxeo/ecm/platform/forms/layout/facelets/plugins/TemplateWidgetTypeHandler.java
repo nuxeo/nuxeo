@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -113,13 +114,19 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     "%s_%s",
                     RenderVariables.widgetVariables.widgetProperty.name(),
                     prop.getKey()));
-            TagAttribute value = helper.createAttribute("value",
-                    prop.getValue());
-            if (value == null) {
-                // create corresponding expression in case it's resolved
-                // correctly
+            TagAttribute value;
+            Object valueInstance = prop.getValue();
+            if ((valueInstance instanceof String)
+                    && ComponentTagUtils.isValueReference((String) valueInstance)) {
+                // FIXME: this will not be updated correctly using ajax
+                value = helper.createAttribute("value", (String) valueInstance);
+            } else {
+                // create a reference so that it's a real expression and it's
+                // not kept (cached) in a component value on ajax refresh
                 value = helper.createAttribute("value", String.format(
-                        "#{widget.properties.%s}", prop.getKey()));
+                        "#{%s.properties.%s}",
+                        RenderVariables.widgetVariables.widget.name(),
+                        prop.getKey()));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     FaceletHandlerHelper.getTagAttributes(name, value), leaf);

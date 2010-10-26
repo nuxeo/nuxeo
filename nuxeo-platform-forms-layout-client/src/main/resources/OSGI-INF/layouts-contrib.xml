@@ -12,15 +12,82 @@
     point="widgettypes">
 
     <widgetType name="text">
-      <documentation>
-        The text widget displays an input text in create or edit mode, with
-        additional message tag for errors, and a regular text output in any
-        other mode.
+      <configuration>
+        <title>Text widget</title>
+        <description>
+          The text widget displays an input text in create or edit mode, with
+          additional message tag for errors, and a regular text output in any
+          other mode.
 
-        Widgets using this type can provide properties accepted on a
-        &lt;h:inputText /&gt; tag in create or edit mode, and properties
-        accepted on a &lt;h:outputText /&gt; tag in other modes.
-      </documentation>
+          Widgets using this type can provide properties accepted on a
+          &lt;h:inputText /&gt; tag in create or edit mode, and properties
+          accepted on a &lt;h:outputText /&gt; tag in other modes.
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="text_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+              </rows>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="text_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>escape</widget>
+                </row>
+              </rows>
+              <widget name="escape" type="checkbox">
+                <labels>
+                  <label mode="any">Escape</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to false, the held value will not be escaped. For
+                    instance if it contains HTML tags, they will be rendered as
+                    part of the rendered HTML page instead of being rendered as
+                    text content. Defaults to true.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>escape</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="text_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+              </rows>
+              <widget name="required" type="text">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextWidgetTypeHandler
       </handler-class>

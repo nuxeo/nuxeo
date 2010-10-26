@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
@@ -32,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -46,7 +48,6 @@ import com.sun.facelets.tag.TagHandler;
  * Only works when used inside a tag using the {@link WidgetTagHandler}.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class SubWidgetTagHandler extends TagHandler {
 
@@ -92,33 +93,31 @@ public class SubWidgetTagHandler extends TagHandler {
             return;
         }
 
-        VariableMapper orig = ctx.getVariableMapper();
-        ctx.setVariableMapper(new VariableMapperWrapper(orig));
-        try {
-            int subWidgetCounter = 0;
-            for (Widget subWidget : subWidgets) {
-                // expose widget variables
-                VariableMapper vm = ctx.getVariableMapper();
-                ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
-                        subWidget, Widget.class);
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
-                        subWidgetVe);
-                vm.setVariable(String.format("%s_%s",
-                        RenderVariables.widgetVariables.widget.name(),
-                        subWidget.getLevel()), subWidgetVe);
-                ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                        subWidgetCounter, Integer.class);
-                vm.setVariable(
-                        RenderVariables.widgetVariables.widgetIndex.name(),
-                        subWidgetIndexVe);
-                vm.setVariable(String.format("%s_%s",
-                        RenderVariables.widgetVariables.widgetIndex.name(),
-                        subWidget.getLevel()), subWidgetIndexVe);
-                nextHandler.apply(ctx, parent);
-                subWidgetCounter++;
-            }
-        } finally {
-            ctx.setVariableMapper(orig);
+        int subWidgetCounter = 0;
+        for (Widget subWidget : subWidgets) {
+            // expose widget variables
+            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            VariableMapper vm = ctx.getVariableMapper();
+            ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
+                    subWidget, Widget.class);
+            variables.put(RenderVariables.widgetVariables.widget.name(),
+                    subWidgetVe);
+            variables.put(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widget.name(),
+                    subWidget.getLevel()), subWidgetVe);
+            ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
+                    subWidgetCounter, Integer.class);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
+                    subWidgetIndexVe);
+            variables.put(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetIndex.name(),
+                    subWidget.getLevel()), subWidgetIndexVe);
+
+            FaceletHandler handlerWithVars = helper.getAliasTagHandler(
+                    variables, nextHandler);
+            // apply
+            handlerWithVars.apply(ctx, parent);
+            subWidgetCounter++;
         }
     }
 }

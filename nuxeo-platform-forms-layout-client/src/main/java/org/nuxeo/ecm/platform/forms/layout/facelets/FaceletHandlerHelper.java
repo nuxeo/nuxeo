@@ -26,12 +26,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.ValueExpression;
 import javax.faces.component.html.HtmlMessage;
+import javax.faces.component.html.HtmlOutputText;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -182,7 +186,7 @@ public final class FaceletHandlerHelper {
 
     public static TagAttributes getTagAttributes(TagAttribute... attributes) {
         if (attributes == null || attributes.length == 0) {
-            return null;
+            return new TagAttributes(new TagAttribute[0]);
         }
         return new TagAttributes(attributes);
     }
@@ -246,18 +250,24 @@ public final class FaceletHandlerHelper {
         // fill with widget properties
         Map<String, Serializable> properties = widget.getProperties();
         if (properties != null) {
-            for (Map.Entry<String, Serializable> property : properties.entrySet()) {
-                TagAttribute attr = createAttribute(property.getKey(),
-                        property.getValue());
-                if (attr != null) {
-                    attrs.add(attr);
+            for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
+                TagAttribute attr;
+                Object valueInstance = prop.getValue();
+                if ((valueInstance instanceof String)
+                        && ComponentTagUtils.isValueReference((String) valueInstance)) {
+                    // FIXME: this will not be updated correctly using ajax
+                    attr = createAttribute(prop.getKey(),
+                            (String) valueInstance);
                 } else {
-                    // create corresponding expression in case it's resolved
-                    // correctly
-                    attr = createAttribute(property.getKey(), String.format(
-                            "#{widget.properties.%s}", property.getKey()));
-                    attrs.add(attr);
+                    // create a reference so that it's an real expression and
+                    // it's not kept (cached) in a component value on ajax
+                    // refresh
+                    attr = createAttribute(prop.getKey(), String.format(
+                            "#{%s.properties.%s}",
+                            RenderVariables.widgetVariables.widget.name(),
+                            prop.getKey()));
                 }
+                attrs.add(attr);
             }
         }
         return getTagAttributes(attrs);
@@ -275,6 +285,21 @@ public final class FaceletHandlerHelper {
         ComponentConfig config = TagConfigFactory.createComponentConfig(
                 tagConfig, attributes, nextHandler, componentType, rendererType);
         return new HtmlComponentHandler(config);
+    }
+
+    /**
+     * Component handler that displays an error on interface
+     */
+    public ComponentHandler getErrorComponentHandler(String errorMessage) {
+        FaceletHandler leaf = new LeafFaceletHandler();
+        TagAttribute valueAttr = createAttribute("value",
+                "<span style=\"color:red;font-weight:bold;\">ERROR: "
+                        + errorMessage + "</span><br />");
+        TagAttribute escapeAttr = createAttribute("escape", "false");
+        ComponentHandler output = getHtmlComponentHandler(
+                FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr),
+                leaf, HtmlOutputText.COMPONENT_TYPE, null);
+        return output;
     }
 
     /**
@@ -324,4 +349,17 @@ public final class FaceletHandlerHelper {
                 HtmlMessage.COMPONENT_TYPE, null);
         return new ComponentHandler(config);
     }
+
+    public FaceletHandler getAliasTagHandler(
+            Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
+        FaceletHandler currentHandler = nextHandler;
+        if (variables != null) {
+            // XXX also set id ? cache ?
+            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
+                    getTagAttributes(), nextHandler);
+            currentHandler = new AliasTagHandler(config, variables);
+        }
+        return currentHandler;
+    }
+
 }

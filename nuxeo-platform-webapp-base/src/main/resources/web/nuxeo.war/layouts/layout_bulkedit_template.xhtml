@@ -13,7 +13,7 @@
   DOM elements on the page.
 </c:if>
 
-<c:if test="#{layout.mode == 'edit' or layout.mode == 'create' or layout.mode == 'bulkEdit'}">
+<c:if test="#{nxl:isBoundToEditMode(layout.mode)}">
 
   <table class="dataInput">
     <tbody>

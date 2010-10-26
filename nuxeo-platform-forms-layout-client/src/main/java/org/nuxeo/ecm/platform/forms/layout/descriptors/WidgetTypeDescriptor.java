@@ -25,6 +25,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 
 /**
  * Widget type descriptor.
@@ -32,7 +34,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @XObject("widgetType")
-public class WidgetTypeDescriptor {
+public class WidgetTypeDescriptor implements WidgetTypeDefinition {
+
+    private static final long serialVersionUID = 1L;
 
     @XNode("@name")
     String name;
@@ -42,6 +46,9 @@ public class WidgetTypeDescriptor {
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties;
+
+    @XNode("configuration")
+    WidgetTypeConfigurationDescriptor configuration;
 
     public String getName() {
         return name;
@@ -53,6 +60,11 @@ public class WidgetTypeDescriptor {
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    @Override
+    public WidgetTypeConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

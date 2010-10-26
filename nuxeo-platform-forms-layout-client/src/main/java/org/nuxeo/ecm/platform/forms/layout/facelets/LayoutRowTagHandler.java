@@ -20,10 +20,11 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -42,10 +43,11 @@ import com.sun.facelets.tag.TagHandler;
 /**
  * Layout row recursion tag handler.
  * <p>
- * Iterate over the layout rows and apply next handlers as many times as needed.
+ * Iterate over the layout rows and apply next handlers as many times as
+ * needed.
  * <p>
- * Only works when used inside a tag using the {@link LayoutTagHandler} template
- * client.
+ * Only works when used inside a tag using the {@link LayoutTagHandler}
+ * template client.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -67,8 +69,8 @@ public class LayoutRowTagHandler extends TagHandler {
      * Needs layout to be exposed in context, so works in conjunction with
      * {@link LayoutTagHandler}.
      * <p>
-     * Row variables exposed: {@link RenderVariables.rowVariables#layoutRow} and
-     * {@link RenderVariables.rowVariables#layoutRowIndex}, as well as
+     * Row variables exposed: {@link RenderVariables.rowVariables#layoutRow}
+     * and {@link RenderVariables.rowVariables#layoutRowIndex}, as well as
      * {@link RenderVariables.columnVariables#layoutColumn} and
      * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are
      * aliases.
@@ -94,33 +96,27 @@ public class LayoutRowTagHandler extends TagHandler {
             return;
         }
 
-        VariableMapper orig = ctx.getVariableMapper();
-        ctx.setVariableMapper(new VariableMapperWrapper(orig));
-        try {
-            int rowCounter = 0;
-            for (LayoutRow row : rows) {
-                // expose row variables
-                VariableMapper vm = ctx.getVariableMapper();
-                ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(
-                        row, LayoutRow.class);
-                vm.setVariable(RenderVariables.rowVariables.layoutRow.name(),
-                        rowVe);
-                vm.setVariable(
-                        RenderVariables.columnVariables.layoutColumn.name(),
-                        rowVe);
-                ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
-                        rowCounter, Integer.class);
-                vm.setVariable(
-                        RenderVariables.rowVariables.layoutRowIndex.name(),
-                        rowIndexVe);
-                vm.setVariable(
-                        RenderVariables.columnVariables.layoutColumnIndex.name(),
-                        rowIndexVe);
-                nextHandler.apply(ctx, parent);
-                rowCounter++;
-            }
-        } finally {
-            ctx.setVariableMapper(orig);
+        int rowCounter = 0;
+        for (LayoutRow row : rows) {
+            // expose row variables
+            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(
+                    row, LayoutRow.class);
+            variables.put(RenderVariables.rowVariables.layoutRow.name(), rowVe);
+            variables.put(RenderVariables.columnVariables.layoutColumn.name(),
+                    rowVe);
+            ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(
+                    rowCounter, Integer.class);
+            variables.put(RenderVariables.rowVariables.layoutRowIndex.name(),
+                    rowIndexVe);
+            variables.put(
+                    RenderVariables.columnVariables.layoutColumnIndex.name(),
+                    rowIndexVe);
+
+            FaceletHandler handler = helper.getAliasTagHandler(variables,
+                    nextHandler);
+            handler.apply(ctx, parent);
+            rowCounter++;
         }
     }
 }

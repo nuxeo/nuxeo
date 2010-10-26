@@ -20,10 +20,11 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -62,8 +63,8 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
     }
 
     /**
-     * For each widget in current row, exposes widget variables and applies next
-     * handler.
+     * For each widget in current row, exposes widget variables and applies
+     * next handler.
      * <p>
      * Needs row to be exposed in context, so works in conjunction with
      * {@link LayoutRowTagHandler}.
@@ -94,40 +95,35 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             return;
         }
 
-        VariableMapper orig = ctx.getVariableMapper();
-        ctx.setVariableMapper(new VariableMapperWrapper(orig));
-        try {
-            int widgetCounter = 0;
-            for (Widget widget : widgets) {
-                // expose widget variables
-                VariableMapper vm = ctx.getVariableMapper();
-                ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
-                        widget, Widget.class);
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
-                        widgetVe);
-                Integer level = null;
-                if (widget != null) {
-                    level = widget.getLevel();
-                }
-                vm.setVariable(String.format("%s_%s",
-                        RenderVariables.widgetVariables.widget.name(), level),
-                        widgetVe);
-                ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
-                        widgetCounter, Integer.class);
-                vm.setVariable(
-                        RenderVariables.widgetVariables.widgetIndex.name(),
-                        widgetIndexVe);
-                vm.setVariable(String.format("%s_%s",
-                        RenderVariables.widgetVariables.widgetIndex.name(),
-                        level), widgetIndexVe);
-
-                // apply
-                nextHandler.apply(ctx, parent);
-                widgetCounter++;
+        int widgetCounter = 0;
+        for (Widget widget : widgets) {
+            // expose widget variables
+            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+            ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
+                    widget, Widget.class);
+            variables.put(RenderVariables.widgetVariables.widget.name(),
+                    widgetVe);
+            Integer level = null;
+            if (widget != null) {
+                level = widget.getLevel();
             }
+            variables.put(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widget.name(), level),
+                    widgetVe);
+            ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
+                    widgetCounter, Integer.class);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
+                    widgetIndexVe);
+            variables.put(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetIndex.name(), level),
+                    widgetIndexVe);
 
-        } finally {
-            ctx.setVariableMapper(orig);
+            FaceletHandler handler = helper.getAliasTagHandler(variables,
+                    nextHandler);
+
+            // apply
+            handler.apply(ctx, parent);
+            widgetCounter++;
         }
     }
 }
