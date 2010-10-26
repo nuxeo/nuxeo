@@ -16,6 +16,8 @@
   * Wine (from apt sources) or Darwine (on Mac OS X)\n
   * Framework .NET 3.x\n
   </description>
+  
+  <properties><noIncrementalBuild>true</noIncrementalBuild></properties>
 
   <build>
     <plugins>
@@ -30,5 +32,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
