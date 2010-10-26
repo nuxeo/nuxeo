@@ -29,7 +29,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -41,8 +40,6 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-
-import sun.security.acl.PrincipalImpl;
 
 public class TestSecurityPolicyService extends SQLRepositoryTestCase {
 
