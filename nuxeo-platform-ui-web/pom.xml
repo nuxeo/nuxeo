@@ -10,6 +10,8 @@
 
   <artifactId>nuxeo-platform-ui-web</artifactId>
   <name>Nuxeo Web Framework</name>
+  <version>5.3.2-NXP-5849</version>
+
   <description>
     Nuxeo Enterprise Platform: Web Framework, based on JBoss SEAM, to build web
     applications on top of Nuxeo EP. It includes JSF components for Nuxeo EP /
