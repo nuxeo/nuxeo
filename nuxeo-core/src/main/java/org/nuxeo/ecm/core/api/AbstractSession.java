@@ -458,7 +458,25 @@ public abstract class AbstractSession implements CoreSession,
                 DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, null,
                 false, false);
     }
+    
+    @Override
+    public boolean hasPermission(Principal principal, DocumentRef docRef, String permission)
+    throws ClientException {
+        try {
+            Session session = getSession();
+            Document doc = DocumentResolver.resolveReference(session, docRef);
+            return hasPermission(principal, doc, permission);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to resolve document ref: "
+                    + docRef.toString(), e);
+        }
+    }
 
+    protected final boolean hasPermission(Principal principal, Document doc,
+            String permission) throws DocumentException {
+        return getSecurityService().checkPermission(doc, principal, permission);
+    }
+    
     @Override
     public boolean hasPermission(DocumentRef docRef, String permission)
             throws ClientException {
@@ -471,7 +489,7 @@ public abstract class AbstractSession implements CoreSession,
                     + docRef.toString(), e);
         }
     }
-
+    
     protected final boolean hasPermission(Document doc, String permission)
             throws DocumentException {
         // TODO: optimize this - usually ACP is already available when calling

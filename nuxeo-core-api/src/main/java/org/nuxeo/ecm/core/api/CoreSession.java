@@ -200,6 +200,19 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Checks if a given principal has the given privilege on the referred
+     * document.
+     * 
+     * @param principal
+     * @param docRef
+     * @param permission
+     * @return
+     * @throws ClientException
+     */
+    boolean hasPermission(Principal principal, DocumentRef docRef,
+            String permission) throws ClientException;
+
+    /**
      * Gets the root document of this repository.
      *
      * @return the root document. cannot be null
