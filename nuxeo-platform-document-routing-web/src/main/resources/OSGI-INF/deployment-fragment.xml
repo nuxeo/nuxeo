@@ -24,6 +24,12 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>route_to_pdf</from-outcome>
+      <to-view-id>/view_pdf_route.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
     </extension>
   
   <install>

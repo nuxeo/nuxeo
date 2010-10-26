@@ -27,6 +27,10 @@
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
     <dependency>
+     <groupId>org.nuxeo.ecm.platform</groupId>
+     <artifactId>nuxeo-platform-forms-layout-client</artifactId>
+     </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
@@ -47,4 +51,59 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <!-- seam pdf dep -->
+                <artifactItem>
+                  <groupId>org.jboss.seam</groupId>
+                  <artifactId>jboss-seam-pdf</artifactId>
+                  <version>2.0.3.CR1</version>
+                </artifactItem>
+                <!-- seam pdf sample additional jar
+                  <artifactItem>
+                  <groupId>org.jboss.seam</groupId>
+                  <artifactId>jboss-seam-itext</artifactId>
+                  <version>2.0.3.CR1</version>
+                  </artifactItem>
+                -->
+                <!-- itext deps -->
+                <artifactItem>
+                  <groupId>com.lowagie</groupId>
+                  <artifactId>itext</artifactId>
+                  <version>2.0.7</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>bouncycastle</groupId>
+                  <artifactId>bcmail-jdk14</artifactId>
+                  <version>136</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>bouncycastle</groupId>
+                  <artifactId>bcprov-jdk14</artifactId>
+                  <version>136</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
 </project>
