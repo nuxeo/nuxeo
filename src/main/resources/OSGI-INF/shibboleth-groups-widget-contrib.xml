@@ -5,9 +5,6 @@
     point="widgets">
     <widget name="shibbolethUserSuggestionWithGroupTree" type="template">
       <translated>true</translated>
-      <labels>
-        <label mode="any">label.widget.shibboleth.userTree</label>
-      </labels>
       <fields>
         <field/>
       </fields>

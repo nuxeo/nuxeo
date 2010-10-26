@@ -7,7 +7,7 @@
     point="layouts">
     <layout name="user_group_suggestion">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml
+        <template mode="any">/layouts/shibboleth_user_tree_layout.xhtml
         </template>
       </templates>
       <rows>

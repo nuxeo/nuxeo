@@ -108,37 +108,6 @@
         </h:panelGroup>
 
         <h:panelGroup>
-        <rich:tree id="#{widget.id}_tree">
-          <rich:recursiveTreeNodesAdaptor
-            roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"
-            nodes="#{node.childrens}"
-            var="node">
-            <rich:treeNode iconLeaf="/icons/group.gif">
-              <div id="docRefTarget:#{node.id}">
-                <span>
-                  <h:outputText value="#{node.displayedName}" rendered="#{!empty node.childrens}"/>
-                  <a4j:commandLink value="#{node.displayedName}" rendered="#{empty node.childrens}">
-                    <a4j:support event="onclick"
-                      bypassUpdates="true"
-                      reRender="#{widget.id}_listRegion"
-                      id="#{widget.id}_tree_select">
-                      <f:setPropertyActionListener value="#{node.id}"
-                        target="#{suggestionActions.selectedValue}" />
-                      <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
-                      <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
-                      <f:param name="userSuggestionSearchType" value="#{searchType}" />
-                      <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
-                      <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-                    </a4j:support>
-                  </a4j:commandLink>
-                </span>
-              </div>
-            </rich:treeNode>
-          </rich:recursiveTreeNodesAdaptor>
-        </rich:tree>
-        </h:panelGroup>
-
-        <h:panelGroup>
           <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
             <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
               required="#{widget.required}">
@@ -172,6 +141,37 @@
             <h:message styleClass="errorMessage" for="#{widget.id}_list"
               id="#{widget.id}_message" />
           </a4j:outputPanel>
+        </h:panelGroup>
+
+        <h:panelGroup>
+        <rich:tree id="#{widget.id}_tree">
+          <rich:recursiveTreeNodesAdaptor
+            roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"
+            nodes="#{node.childrens}"
+            var="node">
+            <rich:treeNode iconLeaf="/icons/group.gif">
+              <div id="docRefTarget:#{node.id}">
+                <span>
+                  <h:outputText value="#{node.displayedName}" rendered="#{!empty node.childrens}"/>
+                  <a4j:commandLink value="#{node.displayedName}" rendered="#{empty node.childrens}">
+                    <a4j:support event="onclick"
+                      bypassUpdates="true"
+                      reRender="#{widget.id}_listRegion"
+                      id="#{widget.id}_tree_select">
+                      <f:setPropertyActionListener value="#{node.id}"
+                        target="#{suggestionActions.selectedValue}" />
+                      <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
+                      <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
+                      <f:param name="userSuggestionSearchType" value="#{searchType}" />
+                      <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
+                      <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
+                    </a4j:support>
+                  </a4j:commandLink>
+                </span>
+              </div>
+            </rich:treeNode>
+          </rich:recursiveTreeNodesAdaptor>
+        </rich:tree>
         </h:panelGroup>
 
       </h:panelGrid>
