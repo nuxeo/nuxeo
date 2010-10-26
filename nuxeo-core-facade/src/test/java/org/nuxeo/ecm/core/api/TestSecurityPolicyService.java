@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -76,7 +77,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         session.save();
 
         // test permission for 'foo' user using hasPermission
-        Principal fooUser = new PrincipalImpl("foo");
+        Principal fooUser = new UserPrincipal("foo");
         assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
         
         closeSession(session);
