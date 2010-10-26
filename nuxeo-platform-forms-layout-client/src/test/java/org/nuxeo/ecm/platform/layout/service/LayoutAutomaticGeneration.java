@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -64,7 +69,16 @@ public class LayoutAutomaticGeneration {
         Schema schema = sm.getSchema(schemaName);
         String schemaPrefix = schema.getNamespace().prefix;
 
-        for (Field field : schema.getFields()) {
+        List<Field> fields = new ArrayList<Field>();
+        fields.addAll(schema.getFields());
+        Collections.sort(fields, new Comparator<Field>() {
+            public int compare(Field f1, Field f2) {
+                return f1.getName().getLocalName().compareTo(
+                        f2.getName().getLocalName());
+            }
+        });
+
+        for (Field field : fields) {
             // add row element
             Element row = rows.addElement("row");
             Element rowWidget = row.addElement("widget");
@@ -107,8 +121,8 @@ public class LayoutAutomaticGeneration {
                             layoutName, fieldName));
                 }
 
-                Element fields = widget.addElement("fields");
-                Element fieldElement = fields.addElement("field");
+                Element fieldsElement = widget.addElement("fields");
+                Element fieldElement = fieldsElement.addElement("field");
                 if (schemaPrefix != null) {
                     fieldElement.setText(field.getName().getPrefixedName());
                 } else {

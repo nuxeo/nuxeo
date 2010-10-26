@@ -26,8 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -43,8 +41,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class TestHelpers extends NXRuntimeTestCase {
-
-    private static final Log log = LogFactory.getLog(TestHelpers.class);
 
     @Override
     public void setUp() throws Exception {
@@ -112,17 +108,7 @@ public class TestHelpers extends NXRuntimeTestCase {
         return res;
     }
 
-    // XXX TODO investigate this
-    protected boolean isJava5() {
-        return System.getProperty("java.version").startsWith("1.5.");
-    }
-
     public void testLayoutAutomaticGeneration() throws Exception {
-        if (!isJava5()) {
-            String msg = "testLayoutAutomaticGeneration disabled on non-Java 5";
-            log.error(msg);
-            return;
-        }
         SchemaManager sm = Framework.getService(SchemaManager.class);
         Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
                 "dublincore", false);
@@ -139,11 +125,6 @@ public class TestHelpers extends NXRuntimeTestCase {
     }
 
     public void testLayoutAutomaticGenerationWithLabel() throws Exception {
-        if (!isJava5()) {
-            String msg = "testLayoutAutomaticGenerationWithLabel disabled on non-Java 5";
-            log.error(msg);
-            return;
-        }
         SchemaManager sm = Framework.getService(SchemaManager.class);
         Document doc = LayoutAutomaticGeneration.generateLayoutOutput(sm,
                 "dublincore", true);
