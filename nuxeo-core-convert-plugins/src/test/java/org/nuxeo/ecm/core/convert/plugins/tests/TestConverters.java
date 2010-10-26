@@ -63,9 +63,10 @@ public class TestConverters extends BaseConverterTest {
     public void testOOWriterConverter() throws Exception {
         doTestTextConverter("application/vnd.sun.xml.writer", "oo2text", "hello.sxw");
         String textContent = doTestTextConverter("application/vnd.oasis.opendocument.text", "oo2text", "hello.odt");
-        assertTrue(textContent.contains("first"));
-        assertTrue(textContent.contains("second"));
-        assertTrue(textContent.contains("third"));
+        assertTrue(textContent.contains(" first "));
+        assertTrue(textContent.contains(" second "));
+        assertTrue(textContent.contains(" third "));
+        assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
     public void testOOWriterArabicConverter() throws Exception {
@@ -83,7 +84,11 @@ public class TestConverters extends BaseConverterTest {
     }
 
     public void testPDFConverter() throws Exception {
-        doTestTextConverter("application/pdf", "pdf2text", "hello.pdf");
+        String textContent = doTestTextConverter("application/pdf", "pdf2text", "hello.pdf");
+        assertTrue(textContent.contains(" first "));
+        assertTrue(textContent.contains(" second "));
+        assertTrue(textContent.contains(" third "));
+        assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
     // disabled: need to upgrade to version > 0.7.3 version of PDFBox with fix for:
