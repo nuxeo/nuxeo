@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.component.date;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -95,6 +96,9 @@ public class InputDateTimeRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("id", inputTextId, null);
         writer.writeAttribute("name", inputTextId, null);
         Object currentValue = getCurrentValue(dateTimeComp);
+        if (currentValue instanceof GregorianCalendar) {
+            currentValue = ((GregorianCalendar) currentValue).getTime();
+        }
         writer.writeAttribute("value", getFormattedValue(context, component,
                 currentValue), null);
         String styleClass = (String) component.getAttributes().get("styleClass");
