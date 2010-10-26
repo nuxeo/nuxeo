@@ -465,7 +465,7 @@ start() {
   count=0
   exit=0
   while [ $count -le $max_count ]; do
-    line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in")
+    line=$(tail -n80 "$LOG" 2>&1 | egrep "[Ss]tarted in|Component Loading Status")
     if [ $? = 0 ]; then
       countStatus=0
       countActive=false
