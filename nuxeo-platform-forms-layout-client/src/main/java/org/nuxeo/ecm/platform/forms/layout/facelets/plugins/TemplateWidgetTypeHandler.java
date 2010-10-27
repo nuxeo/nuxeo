@@ -34,7 +34,6 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -110,14 +109,13 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         // expose widget properties too
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
+            String key = prop.getKey();
             TagAttribute name = helper.createAttribute("name", String.format(
                     "%s_%s",
-                    RenderVariables.widgetVariables.widgetProperty.name(),
-                    prop.getKey()));
+                    RenderVariables.widgetVariables.widgetProperty.name(), key));
             TagAttribute value;
-            Object valueInstance = prop.getValue();
-            if ((valueInstance instanceof String)
-                    && ComponentTagUtils.isValueReference((String) valueInstance)) {
+            Serializable valueInstance = prop.getValue();
+            if (!helper.shouldCreateReferenceAttribute(key, valueInstance)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = helper.createAttribute("value", (String) valueInstance);
             } else {
@@ -125,8 +123,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 // not kept (cached) in a component value on ajax refresh
                 value = helper.createAttribute("value", String.format(
                         "#{%s.properties.%s}",
-                        RenderVariables.widgetVariables.widget.name(),
-                        prop.getKey()));
+                        RenderVariables.widgetVariables.widget.name(), key));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     FaceletHandlerHelper.getTagAttributes(name, value), leaf);

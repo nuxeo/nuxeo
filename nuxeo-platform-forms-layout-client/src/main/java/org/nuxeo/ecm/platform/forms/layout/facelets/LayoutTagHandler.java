@@ -297,14 +297,13 @@ public class LayoutTagHandler extends TagHandler {
 
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
+            String key = prop.getKey();
             TagAttribute name = helper.createAttribute("name", String.format(
                     "%s_%s",
-                    RenderVariables.layoutVariables.layoutProperty.name(),
-                    prop.getKey()));
+                    RenderVariables.layoutVariables.layoutProperty.name(), key));
             TagAttribute value;
-            Object valueInstance = prop.getValue();
-            if ((valueInstance instanceof String)
-                    && ComponentTagUtils.isValueReference((String) valueInstance)) {
+            Serializable valueInstance = prop.getValue();
+            if (!helper.shouldCreateReferenceAttribute(key, valueInstance)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = helper.createAttribute("value", (String) valueInstance);
             } else {
@@ -312,8 +311,7 @@ public class LayoutTagHandler extends TagHandler {
                 // not kept (cached) in a component value on ajax refresh
                 value = helper.createAttribute("value", String.format(
                         "#{%s.properties.%s}",
-                        RenderVariables.layoutVariables.layout.name(),
-                        prop.getKey()));
+                        RenderVariables.layoutVariables.layout.name(), key));
             }
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     FaceletHandlerHelper.getTagAttributes(name, value), leaf);

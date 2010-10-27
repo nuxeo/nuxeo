@@ -29,6 +29,8 @@ import java.util.Map;
 import javax.el.ValueExpression;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.convert.Converter;
+import javax.faces.validator.Validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -176,12 +178,37 @@ public final class FaceletHandlerHelper {
      * <p>
      * The attribute namespace is assumed to be empty.
      */
-    public TagAttribute createAttribute(String name, Serializable value) {
+    public TagAttribute createAttribute(String name, String value) {
         if (value == null || value instanceof String) {
             return new TagAttribute(tagConfig.getTag().getLocation(), "", name,
-                    name, (String) value);
+                    name, value);
         }
         return null;
+    }
+
+    /**
+     * Returns true if a reference tag attribute should be created for given
+     * property value.
+     * <p>
+     * Reference tag attributes are using a non-literal EL expression so that
+     * this property value is not kept (cached) in the component on ajax
+     * refresh.
+     * <p>
+     * Off course property values already representing an expression cannot be
+     * mapped as is because they would need to be resolved twice.
+     * <p>
+     * Converters and validators cannot be referenced either because components
+     * expect corresponding value expressions to resolve to a {@link Converter}
+     * or {@link Validator} instance (instead of the converter of validator
+     * id).
+     */
+    public boolean shouldCreateReferenceAttribute(String key, Serializable value) {
+        if ((value instanceof String)
+                && (ComponentTagUtils.isValueReference((String) value)
+                        || "converter".equals(key) || "validator".equals(key))) {
+            return false;
+        }
+        return true;
     }
 
     public static TagAttributes getTagAttributes(TagAttribute... attributes) {
@@ -253,9 +280,8 @@ public final class FaceletHandlerHelper {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
                 TagAttribute attr;
                 String key = prop.getKey();
-                Object valueInstance = prop.getValue();
-                if ((valueInstance instanceof String)
-                        && (ComponentTagUtils.isValueReference((String) valueInstance) || "converter".equals(key))) {
+                Serializable valueInstance = prop.getValue();
+                if (!shouldCreateReferenceAttribute(key, valueInstance)) {
                     // FIXME: this will not be updated correctly using ajax
                     attr = createAttribute(key, (String) valueInstance);
                 } else {

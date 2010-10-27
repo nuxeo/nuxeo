@@ -76,7 +76,7 @@
                   <widget>required</widget>
                 </row>
               </rows>
-              <widget name="required" type="text">
+              <widget name="required" type="checkbox">
                 <labels>
                   <label mode="any">Required</label>
                 </labels>

@@ -52,7 +52,6 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Select many directory widget
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class DirectorySelectManyWidgetTypeHandler extends
         AbstractWidgetTypeHandler {
@@ -86,7 +85,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
             TagAttribute valueAttr = null;
             if (properties.containsKey("value")) {
                 valueAttr = helper.createAttribute("value",
-                        properties.get("value"));
+                        (String) properties.get("value"));
             }
             FieldDefinition[] fields = widget.getFieldDefinitions();
             if (fields != null && fields.length > 0) {
@@ -109,7 +108,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
             for (Map.Entry<String, Serializable> property : properties.entrySet()) {
                 if (!"value".equals(property.getKey())) {
                     TagAttribute attr = helper.createAttribute(
-                            property.getKey(), property.getValue());
+                            property.getKey(), (String) property.getValue());
                     if (attr != null) {
                         attrs.add(attr);
                     }
