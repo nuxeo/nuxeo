@@ -37,8 +37,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
+import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
@@ -184,23 +186,59 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void getRouteElements(DocumentRouteElement routeElementDocument,
-            CoreSession session,
-            List<LocalizableDocumentRouteElement> routeElements, int depth)
-            throws ClientException {
-        if (depth > 0) {
-            routeElements.add(new LocalizableDocumentRouteElement(
-                    routeElementDocument, depth));
+    public List<DocumentRouteTableElement> getRouteElements(
+            DocumentRoute route, CoreSession session) {
+        RouteTable table = new RouteTable(route);
+        List<DocumentRouteTableElement> elements = new ArrayList<DocumentRouteTableElement>();
+        processElementsInFolder(route.getDocument(), elements, table, session,
+                0, null);
+        int maxDepth = 0;
+        for (DocumentRouteTableElement element : elements) {
+            int d = element.getDepth();
+            maxDepth = d > maxDepth ? d : maxDepth;
         }
-        DocumentModelList children = session.getChildren(routeElementDocument.getDocument().getRef());
-        if (children.size() > 0) {
-            depth = depth + 1;
-            for (DocumentModel documentModel : children) {
-                getRouteElements(
-                        documentModel.getAdapter(DocumentRouteElement.class),
-                        session, routeElements, depth);
+        table.setMaxDepth(maxDepth);
+        for (DocumentRouteTableElement element : elements) {
+            element.computeFirstChildList();
+        }
+        return elements;
+    }
+
+    protected void processElementsInFolder(DocumentModel doc,
+            List<DocumentRouteTableElement> elements, RouteTable table,
+            CoreSession session, int depth, RouteFolderElement folder) {
+        try {
+            DocumentModelList children = session.getChildren(doc.getRef());
+            boolean first = true;
+            for (DocumentModel child : children) {
+                if (child.isFolder()
+                        && !session.getChildren(child.getRef()).isEmpty()) {
+                    RouteFolderElement thisFolder = new RouteFolderElement(
+                            child.getAdapter(DocumentRouteElement.class),
+                            table, first, folder);
+                    processElementsInFolder(child, elements, table, session,
+                            depth + 1, thisFolder);
+                } else {
+                    if (folder != null) {
+                        folder.increaseTotalChildCount();
+                    } else {
+                        table.increaseTotalChildCount();
+                    }
+                    elements.add(new DocumentRouteTableElement(
+                            child.getAdapter(DocumentRouteElement.class),
+                            table, depth, folder, first));
+                }
+                first = false;
             }
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    protected List<DocumentRouteTableElement> getRouteElements(
+            DocumentRouteElement routeElementDocument, CoreSession session,
+            List<DocumentRouteTableElement> routeElements, int depth) {
+        return null;
     }
 
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(
