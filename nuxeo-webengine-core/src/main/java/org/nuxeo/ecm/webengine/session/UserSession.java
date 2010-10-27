@@ -106,10 +106,9 @@ public abstract class UserSession extends HashMap<String, Object> {
         us.defaultRepository = request.getHeader("X-NXRepository");
         if (us.defaultRepository == null) {
             us.defaultRepository = request.getParameter("nxrepository");
-            if (us.defaultRepository == null) {
-                us.defaultRepository = "default";
-            }
         }
+        // the default value of default repository name is null - this way the
+        // default regsitered repository will be used
         return us;
     }
 
@@ -135,6 +134,12 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     public abstract boolean isStateful();
 
+    /**
+     * Return the name of the default repository in the context of this request.
+     * Return null if the default registered repository should be used
+     * 
+     * @return
+     */
     public String getDefaultRepository() {
         return defaultRepository;
     }
