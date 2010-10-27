@@ -54,7 +54,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * Filter to handle Transactions and Requests synchronization. This filter is
  * useful when accessing web resources that are not protected by Seam Filter.
  * This is the case for specific Servlets, WebEngine, XML-RPC connector ...
- *
+ * 
  * @author tiry
  */
 public class NuxeoRequestControllerFilter implements Filter {
@@ -75,16 +75,15 @@ public class NuxeoRequestControllerFilter implements Filter {
         doInitIfNeeded();
     }
 
-
-    private void doInitIfNeeded()  {
-        if (rcm==null) {
-            if (Framework.getRuntime()!=null) {
+    private void doInitIfNeeded() {
+        if (rcm == null) {
+            if (Framework.getRuntime() != null) {
                 rcm = Framework.getLocalService(RequestControllerManager.class);
 
                 if (rcm == null) {
                     log.error("Unable to get RequestControlerManager service");
-                    //throw new ServletException(
-                    //        "RequestControlerManager can not be found");
+                    // throw new ServletException(
+                    // "RequestControlerManager can not be found");
                 }
                 log.debug("Staring NuxeoRequestControler filter");
             } else {
@@ -93,7 +92,8 @@ public class NuxeoRequestControllerFilter implements Filter {
         }
     }
 
-    protected String doFormatLogMessage(HttpServletRequest request, String info) {
+    public static String doFormatLogMessage(HttpServletRequest request,
+            String info) {
         String remoteHost = RemoteHostGuessExtractor.getRemoteHost(request);
         Principal principal = request.getUserPrincipal();
         String principalName = principal != null ? principal.getName() : "none";
@@ -101,8 +101,9 @@ public class NuxeoRequestControllerFilter implements Filter {
         HttpSession session = request.getSession(false);
         String sessionId = session != null ? session.getId() : "none";
         String threadName = Thread.currentThread().getName();
-        return "remote=" + remoteHost + ",principal=" + principalName
-                + ",uri=" + uri + ",session="+sessionId+",thread="+threadName+",info=" + info;
+        return "remote=" + remoteHost + ",principal=" + principalName + ",uri="
+                + uri + ",session=" + sessionId + ",thread=" + threadName
+                + ",info=" + info;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -112,7 +113,8 @@ public class NuxeoRequestControllerFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         if (log.isDebugEnabled()) {
-            log.debug(doFormatLogMessage(httpRequest, "Entering NuxeoRequestControler filter"));
+            log.debug(doFormatLogMessage(httpRequest,
+                    "Entering NuxeoRequestControler filter"));
         }
 
         doInitIfNeeded();
@@ -155,15 +157,19 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (useTx) {
                 txStarted = TransactionHelper.startTransaction();
                 if (txStarted) {
-                    response = new CommittingServletResponseWrapper(httpResponse);
+                    response = new CommittingServletResponseWrapper(
+                            httpResponse);
                 }
             }
             chain.doFilter(request, response);
         } catch (Exception e) {
-            log.error(doFormatLogMessage(httpRequest, "Unhandled error was cauth by the Filter"), e);
+            log.error(
+                    doFormatLogMessage(httpRequest,
+                            "Unhandled error was cauth by the Filter"), e);
             if (txStarted) {
                 if (log.isDebugEnabled()) {
-                    log.debug(doFormatLogMessage(httpRequest, "Marking transaction for RollBack"));
+                    log.debug(doFormatLogMessage(httpRequest,
+                            "Marking transaction for RollBack"));
                 }
                 TransactionHelper.setTransactionRollbackOnly();
             }
@@ -178,7 +184,8 @@ public class NuxeoRequestControllerFilter implements Filter {
                 simpleReleaseSyncOnSession(httpRequest);
             }
             if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(httpRequest,"Exiting NuxeoRequestControler filter"));
+                log.debug(doFormatLogMessage(httpRequest,
+                        "Exiting NuxeoRequestControler filter"));
             }
         }
     }
@@ -214,6 +221,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             commitTxIfNeeded();
             super.addHeader(name, value);
         }
+
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
             commitTxIfNeeded();
@@ -233,11 +241,12 @@ public class NuxeoRequestControllerFilter implements Filter {
      * Uses a {@link Lock} object in the HttpSession and locks it. If
      * HttpSession is not created, exits without locking anything.
      */
-    protected boolean simpleSyncOnSession(HttpServletRequest request) {
+    public static boolean simpleSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             if (log.isDebugEnabled()) {
-                log.debug(doFormatLogMessage(request, "HttpSession does not exist, this request won't be synched"));
+                log.debug(doFormatLogMessage(request,
+                        "HttpSession does not exist, this request won't be synched"));
             }
             return false;
         }
@@ -264,7 +273,9 @@ public class NuxeoRequestControllerFilter implements Filter {
         try {
             locked = lock.tryLock(LOCK_TIMOUT_S, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            log.error(doFormatLogMessage(request, "Unable to acuire lock for Session sync"), e);
+            log.error(
+                    doFormatLogMessage(request,
+                            "Unable to acuire lock for Session sync"), e);
             return false;
         }
 
@@ -286,7 +297,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     /**
      * Releases the {@link Lock} if present in the HttpSession.
      */
-    protected void simpleReleaseSyncOnSession(HttpServletRequest request) {
+    public static void simpleReleaseSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             if (log.isDebugEnabled()) {
@@ -320,15 +331,18 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     /**
      * Set cache parameters to httpReponse
-     *
+     * 
      * @param httpResponse
      * @param cacheTime
      */
-    public static void addCacheHeader(HttpServletResponse httpResponse, Boolean isPrivate, String cacheTime) {
-        if (isPrivate){
-            httpResponse.addHeader("Cache-Control", "private, max-age=" + cacheTime);
+    public static void addCacheHeader(HttpServletResponse httpResponse,
+            Boolean isPrivate, String cacheTime) {
+        if (isPrivate) {
+            httpResponse.addHeader("Cache-Control", "private, max-age="
+                    + cacheTime);
         } else {
-            httpResponse.addHeader("Cache-Control", "public, max-age=" + cacheTime);
+            httpResponse.addHeader("Cache-Control", "public, max-age="
+                    + cacheTime);
         }
 
         // Generating expires using current date and adding cache time.
@@ -337,8 +351,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         long newDate = date.getTime() + new Long(cacheTime) * 1000;
         date.setTime(newDate);
 
-        httpResponse.setHeader("Expires",
-                HTTP_EXPIRES_DATE_FORMAT.format(date));
+        httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
     public void destroy() {
