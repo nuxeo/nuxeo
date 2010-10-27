@@ -25,21 +25,21 @@ import org.nuxeo.ecm.webengine.util.PathMatcher;
 
 /**
  * Configure how a given path is handled by the WebEngine filter.
- * 
+ * <p>
  * If <b>autoTx</b> is true (which is the default) then a transaction will be
  * started each time a path matching the given path specification is requested.
  * (the transaction is started in a filter before the JAX-RS resource is called
  * and closed after the response is sent to the output stream). If false then no
  * transaction handling is done. The default is to start a transaction for any
  * path but: [^/]+/skin/.*
- * 
+ * <p>
  * If <b>stateful</b> flag is set (the default is false) then the core session
  * which is provided to the JAX-RS resource (through
  * {@link UserSession#getCoreSession()}) will be reused for each request in the
  * same HTPP session (i.e. the core session is stored in the HTTP Session and
  * closed when the session expires). By default the provided core session has a
  * REQUEST scope (it is closed automatically when request ends).
- * 
+ * <p>
  * The <b>value</b> attribute is required and must be used to specify the path
  * pattern. The path pattern is either a prefix or a regular expression. If the
  * <b>regex</b> parameter is true (the default is false) then the value will be

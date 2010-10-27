@@ -174,6 +174,9 @@ public class WebEngineFilter implements Filter {
             // log.warn("request locked for " + request.getPathInfo());
         }
         initTx(config, request);
+        // user session is registered even for static resources - because some
+        // static resources are served by JAX-RS resources that needs a user
+        // session
         UserSession.register(request, config.stateful);
         DefaultContext ctx = new DefaultContext((HttpServletRequest) request);
         WebEngine.setActiveContext(ctx);

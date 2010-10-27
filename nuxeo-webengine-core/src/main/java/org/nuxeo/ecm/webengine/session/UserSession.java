@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -64,18 +62,19 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     protected final Principal principal;
 
+    @Deprecated
     protected final Object credentials;
 
-    protected transient CoreSession coreSession;
+    protected String defaultRepository;
+
+    protected SessionProvider sessionProvider = new SessionProvider();
 
     public static UserSession tryGetCurrentSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         UserSession us = null;
-        if (session != null) {
+        us = (UserSession) request.getAttribute(WE_SESSION_KEY);
+        if (us == null && session != null) {
             us = (UserSession) session.getAttribute(WE_SESSION_KEY);
-        }
-        if (us == null) {
-            us = (UserSession) request.getAttribute(WE_SESSION_KEY);
         }
         return us;
     }
@@ -88,25 +87,30 @@ public abstract class UserSession extends HashMap<String, Object> {
         return us;
     }
 
-    public static void register(HttpServletRequest request, UserSession us) {
-        if (us.isStateful()) {
-            request.getSession(true).setAttribute(WE_SESSION_KEY, us);
+    public static UserSession register(HttpServletRequest request,
+            boolean stateful) {
+        UserSession us;
+        if (stateful) {
+            log.debug("Creating Stateful UserSession");
+            HttpSession session = request.getSession(true);
+            us = (UserSession) session.getAttribute(WE_SESSION_KEY);
+            if (us == null) {
+                us = new StatefulUserSession(request.getUserPrincipal());
+                session.setAttribute(WE_SESSION_KEY, us);
+            }
         } else {
+            log.debug("Creating Stateless UserSession");
+            us = new StatelessUserSession(request.getUserPrincipal());
             request.setAttribute(WE_SESSION_KEY, us);
         }
-    }
-
-    public static void register(HttpServletRequest request, boolean stateful) {
-        UserSession userSession;
-        if (stateful) {
-            userSession = new StatefulUserSession(request.getUserPrincipal());
-            log.debug("Creating Stateful UserSession");
-        } else {
-            userSession = new StatelessUserSession(request.getUserPrincipal());
-            log.debug("Creating Stateless UserSession");
+        us.defaultRepository = request.getHeader("X-NXRepository");
+        if (us.defaultRepository == null) {
+            us.defaultRepository = request.getParameter("nxrepository");
+            if (us.defaultRepository == null) {
+                us.defaultRepository = "default";
+            }
         }
-
-        UserSession.register(request, userSession);
+        return us;
     }
 
     protected UserSession(Principal principal) {
@@ -131,8 +135,8 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     public abstract boolean isStateful();
 
-    public void setCoreSession(CoreSession coreSession) {
-        this.coreSession = coreSession;
+    public String getDefaultRepository() {
+        return defaultRepository;
     }
 
     /**
@@ -145,20 +149,14 @@ public abstract class UserSession extends HashMap<String, Object> {
      * @return the core session
      */
     public CoreSession getCoreSession(String repoName) {
-        if (coreSession == null) {
-            synchronized (this) {
-                if (coreSession == null) {
-                    try {
-                        coreSession = openSession(repoName);
-                    } catch (Exception e) {
-                        log.error(
-                                "Failed to open core session for repository: "
-                                        + repoName, e);
-                    }
-                }
-            }
+        try {
+            return sessionProvider.getSession(repoName);
+        } catch (Exception e) {
+            log.error(
+                    "Failed to open core session for repository: " + repoName,
+                    e);
+            return null;
         }
-        return coreSession;
     }
 
     /**
@@ -168,7 +166,7 @@ public abstract class UserSession extends HashMap<String, Object> {
      * repository.
      */
     public CoreSession getCoreSession() {
-        return getCoreSession(null);
+        return getCoreSession(defaultRepository);
     }
 
     public Principal getPrincipal() {
@@ -218,23 +216,14 @@ public abstract class UserSession extends HashMap<String, Object> {
         }
         comps = new HashMap<Class<?>, ComponentMap<?>>();
         // destroy core session
-        if (coreSession != null) {
-            LoginContext lc = null;
-            try {
-                lc = Framework.loginAs(principal.getName());
-                coreSession.destroy();
-                coreSession = null;
-            } catch (LoginException e) {
-                log.error("Couldn't login with system user", e);
-            } finally {
-                if (lc != null) {
-                    try {
-                        lc.logout();
-                    } catch (LoginException e) {
-                    }
-                }
-            }
+        SessionProvider oldSessionProvider = sessionProvider;
+        sessionProvider = null;
+        try {
+            oldSessionProvider.destroy(principal);
+        } catch (Exception e) {
+            log.error("Failed to destroy regisered core sessions", e);
         }
+        oldSessionProvider = null;
     }
 
     /**
