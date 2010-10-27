@@ -115,7 +115,15 @@ public class AliasValueExpression extends ValueExpression {
     }
 
     public void setValue(ELContext context, Object value) {
-        // do nothing
+        ValueExpression ve = resolveExpression(context);
+        if (ve != null) {
+            ve.setValue(context, value);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Resolved expression var='%s' for mapper with id '%s' and set value: %s",
+                    var, id, value));
+        }
     }
 
     protected ValueExpression resolveExpression(ELContext context) {
