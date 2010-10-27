@@ -40,6 +40,11 @@ public class StatelessUserSession extends UserSession {
     }
 
     @Override
+    public boolean isStateful() {
+        return false;
+    }
+
+    @Override
     public void terminateRequest(HttpServletRequest request) {
         super.terminateRequest(request);
         uninstall();

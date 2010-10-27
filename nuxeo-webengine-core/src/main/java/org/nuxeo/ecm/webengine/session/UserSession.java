@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Used to store user session. This object is cached in a the HTTP session
  * Principal, subject and credentials are immutable per user session
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO: should be synchronized? concurrent access may happen for the same
@@ -71,10 +71,10 @@ public abstract class UserSession extends HashMap<String, Object> {
     public static UserSession tryGetCurrentSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         UserSession us = null;
-        if (session!=null) {
+        if (session != null) {
             us = (UserSession) session.getAttribute(WE_SESSION_KEY);
         }
-        if (us==null) {
+        if (us == null) {
             us = (UserSession) request.getAttribute(WE_SESSION_KEY);
         }
         return us;
@@ -82,19 +82,31 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     public static UserSession getCurrentSession(HttpServletRequest request) {
         UserSession us = tryGetCurrentSession(request);
-        if (us==null) {
+        if (us == null) {
             log.warn("Unable to find UserSession");
         }
         return us;
     }
 
     public static void register(HttpServletRequest request, UserSession us) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            request.setAttribute(WE_SESSION_KEY, us);
+        if (us.isStateful()) {
+            request.getSession(true).setAttribute(WE_SESSION_KEY, us);
         } else {
-            session.setAttribute(WE_SESSION_KEY, us);
+            request.setAttribute(WE_SESSION_KEY, us);
         }
+    }
+
+    public static void register(HttpServletRequest request, boolean stateful) {
+        UserSession userSession;
+        if (stateful) {
+            userSession = new StatefulUserSession(request.getUserPrincipal());
+            log.debug("Creating Stateful UserSession");
+        } else {
+            userSession = new StatelessUserSession(request.getUserPrincipal());
+            log.debug("Creating Stateless UserSession");
+        }
+
+        UserSession.register(request, userSession);
     }
 
     protected UserSession(Principal principal) {
@@ -117,6 +129,8 @@ public abstract class UserSession extends HashMap<String, Object> {
                 privateCredentials);
     }
 
+    public abstract boolean isStateful();
+
     public void setCoreSession(CoreSession coreSession) {
         this.coreSession = coreSession;
     }
@@ -126,7 +140,7 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * If it does not already exist, it will be opened against the given
      * repository.
-     *
+     * 
      * @param repoName
      * @return the core session
      */
@@ -137,7 +151,9 @@ public abstract class UserSession extends HashMap<String, Object> {
                     try {
                         coreSession = openSession(repoName);
                     } catch (Exception e) {
-                        e.printStackTrace(); // TODO
+                        log.error(
+                                "Failed to open core session for repository: "
+                                        + repoName, e);
                     }
                 }
             }
@@ -319,7 +335,7 @@ public abstract class UserSession extends HashMap<String, Object> {
 
     @SuppressWarnings("unchecked")
     public void terminateRequest(HttpServletRequest request) {
-        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>)request.getAttribute(CLEANUP_HANDLERS);
+        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>) request.getAttribute(CLEANUP_HANDLERS);
         if (handlers != null) {
             for (RequestCleanupHandler handler : handlers) {
                 handler.cleanup(request);
@@ -329,12 +345,13 @@ public abstract class UserSession extends HashMap<String, Object> {
     }
 
     /**
-     * Register a cleanup handler that will be invoked when HTTP request terminate.
-     * This method is not thread safe.
+     * Register a cleanup handler that will be invoked when HTTP request
+     * terminate. This method is not thread safe.
      */
     @SuppressWarnings("unchecked")
-    public static void addRequestCleanupHandler(HttpServletRequest request, RequestCleanupHandler handler) {
-        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>)request.getAttribute(CLEANUP_HANDLERS);
+    public static void addRequestCleanupHandler(HttpServletRequest request,
+            RequestCleanupHandler handler) {
+        List<RequestCleanupHandler> handlers = (List<RequestCleanupHandler>) request.getAttribute(CLEANUP_HANDLERS);
         if (handlers == null) {
             handlers = new ArrayList<RequestCleanupHandler>();
             request.setAttribute(CLEANUP_HANDLERS, handlers);

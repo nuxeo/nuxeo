@@ -134,6 +134,8 @@ public class WebEngine implements ResourceLocator {
 
     protected ReloadManager reloadMgr;
 
+    protected RequestConfiguration requestConfig;
+
     public WebEngine(File root) {
         this(new EmptyRegistry(), root);
     }
@@ -170,6 +172,12 @@ public class WebEngine implements ResourceLocator {
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
 
+        requestConfig = new RequestConfiguration();
+
+    }
+
+    public RequestConfiguration getRequestConfiguration() {
+        return requestConfig;
     }
 
     /**
@@ -193,8 +201,8 @@ public class WebEngine implements ResourceLocator {
             fm.setSharedVariable("Application", servletContextModel);
             fm.setSharedVariable("__FreeMarkerServlet.Application__",
                     servletContextModel);
-            fm.setSharedVariable("JspTaglibs", new TaglibFactory(
-                    servlet.getServletContext()));
+            fm.setSharedVariable("JspTaglibs",
+                    new TaglibFactory(servlet.getServletContext()));
         }
     }
 

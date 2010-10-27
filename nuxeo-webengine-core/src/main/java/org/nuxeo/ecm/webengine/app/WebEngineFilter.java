@@ -27,38 +27,69 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
+import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.impl.DefaultContext;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * This filter must be declared after the nuxeo authentication filter since it
+ * needs an authentication info.
+ * 
+ * The session synchronization is done only if NuxeoRequestControllerFilter was
+ * not already done it and stateful flag for the request path is true.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class WebEngineFilter implements Filter {
 
+    // private Log log = LogFactory.getLog(WebEngineFilter.class);
+
+    /**
+     * Framework property to control whether tx is started by webengine by
+     * default
+     */
+    public final static String TX_AUTO = "org.nuxeo.webengine.tx.auto";
+
+    /**
+     * Framework property giving the default session scope - stateful or
+     * stateles
+     */
+    public final static String STATEFULL = "org.nuxeo.webengine.session.stateful";
+
     protected WebEngine engine;
 
+    protected boolean isAutoTxEnabled;
 
-//    protected boolean enableJsp = false;
-//    private static boolean isTaglibLoaded = false;
+    protected boolean isStatefull;
 
+    // protected boolean enableJsp = false;
+    // private static boolean isTaglibLoaded = false;
 
     public void init(FilterConfig filterConfig) throws ServletException {
-          initIfNeeded();
-//        String v = Framework.getProperty("org.nuxeo.ecm.webengine.enableJsp");
-//        if ("true".equals(v)) {
-//            enableJsp = true;
-//        }
-   }
+        initIfNeeded();
+    }
 
     protected void initIfNeeded() {
-        if (engine==null && Framework.getRuntime()!=null) {
-            engine = Framework.getLocalService(WebEngine.class);
+        if (engine != null || Framework.getRuntime() == null) {
+            return;
         }
+        engine = Framework.getLocalService(WebEngine.class);
+        String v = Framework.getProperty(TX_AUTO, "true");
+        isAutoTxEnabled = Boolean.parseBoolean(v);
+        v = Framework.getProperty(STATEFULL, "false");
+        isStatefull = Boolean.parseBoolean(v);
+        // String v =
+        // Framework.getProperty("org.nuxeo.ecm.webengine.enableJsp");
+        // if ("true".equals(v)) {
+        // enableJsp = true;
+        // }
     }
 
     public void destroy() {
@@ -69,55 +100,61 @@ public class WebEngineFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         initIfNeeded();
         if (request instanceof HttpServletRequest) {
-            HttpServletRequest req = (HttpServletRequest)request;
-            HttpServletResponse resp = (HttpServletResponse)response;
-            DefaultContext ctx = new DefaultContext((HttpServletRequest)request);
-            WebEngine.setActiveContext(ctx);
-            request.setAttribute(WebContext.class.getName(), ctx);
+            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletResponse resp = (HttpServletResponse) response;
+            PathDescriptor pd = engine.getRequestConfiguration().getMatchingConfiguration(
+                    req);
+            Config config = new Config(req, pd, isAutoTxEnabled, isStatefull);
+            AbstractWebContext ctx = initRequest(config, req, resp);
             try {
                 preRequest(req, resp);
                 chain.doFilter(request, response);
                 postRequest(req, resp);
-            } catch (ServletException e) {
-                throw e;
-            } catch (IOException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new ServletException(e);
+            } catch (Throwable e) {
+                TransactionHelper.setTransactionRollbackOnly();
+                if (e instanceof ServletException) {
+                    throw (ServletException) e;
+                } else if (e instanceof IOException) {
+                    throw (IOException) e;
+                } else {
+                    throw new ServletException(e);
+                }
             } finally {
-                cleanup(ctx, req, resp);
+                cleanup(config, ctx, req, resp);
             }
         } else {
             chain.doFilter(request, response);
         }
     }
 
-
-    public void preRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void preRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
         // need to set the encoding of characters manually
         if (null == request.getCharacterEncoding()) {
             request.setCharacterEncoding("UTF-8");
         }
-        //response.setCharacterEncoding("UTF-8");
-//TODO: remove this
-//        if (enableJsp) {
-//            WebEngine engine = Framework.getLocalService(WebEngine.class);
-//            if (!isTaglibLoaded) {
-//                synchronized (this) {
-//                    if (!isTaglibLoaded) {
-//                        engine.loadJspTaglib(this);
-//                        isTaglibLoaded = true;
-//                    }
-//                }
-//            }
-//            engine.initJspRequestSupport(this, request,
-//                    response);
-//        }
+        // response.setCharacterEncoding("UTF-8");
+        // TODO: remove this
+        // if (enableJsp) {
+        // WebEngine engine = Framework.getLocalService(WebEngine.class);
+        // if (!isTaglibLoaded) {
+        // synchronized (this) {
+        // if (!isTaglibLoaded) {
+        // engine.loadJspTaglib(this);
+        // isTaglibLoaded = true;
+        // }
+        // }
+        // }
+        // engine.initJspRequestSupport(this, request,
+        // response);
+        // }
 
     }
 
-    public void postRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // check if the target resource don't want automatic headers to be inserted
+    public void postRequest(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        // check if the target resource don't want automatic headers to be
+        // inserted
         if (null != request.getAttribute("org.nuxeo.webengine.DisableAutoHeaders")) {
             // insert automatic headers
             response.addHeader("Pragma", "no-cache");
@@ -129,15 +166,92 @@ public class WebEngineFilter implements Filter {
         }
     }
 
-    public void cleanup(AbstractWebContext ctx, HttpServletRequest request, HttpServletResponse response) {
-        if (ctx != null) {
-            UserSession us = UserSession.tryGetCurrentSession(request);
-            if (us != null) {
-                us.terminateRequest(request);
-            }
+    public AbstractWebContext initRequest(Config config,
+            HttpServletRequest request, HttpServletResponse response) {
+        if (!config.isStatic && config.stateful) {
+            // log.warn("try request lock for " + request.getPathInfo());
+            config.locked = NuxeoRequestControllerFilter.simpleSyncOnSession(request);
+            // log.warn("request locked for " + request.getPathInfo());
         }
-        WebEngine.setActiveContext(null);
+        initTx(config, request);
+        UserSession.register(request, config.stateful);
+        DefaultContext ctx = new DefaultContext((HttpServletRequest) request);
+        WebEngine.setActiveContext(ctx);
+        request.setAttribute(WebContext.class.getName(), ctx);
+        return ctx;
     }
 
+    public void cleanup(Config config, AbstractWebContext ctx,
+            HttpServletRequest request, HttpServletResponse response) {
+        try {
+            try {
+                if (ctx != null) {
+                    UserSession us = UserSession.tryGetCurrentSession(request);
+                    if (us != null) {
+                        us.terminateRequest(request);
+                    }
+                }
+            } finally {
+                closeTx(config, request);
+            }
+        } finally {
+            try {
+                if (config.locked) {
+                    NuxeoRequestControllerFilter.simpleReleaseSyncOnSession(request);
+                    config.locked = false;
+                    // log.warn("request unlocked for " +
+                    // request.getPathInfo());
+                }
+            } finally {
+                WebEngine.setActiveContext(null);
+            }
+        }
+    }
 
+    public void initTx(Config config, HttpServletRequest req) {
+        if (!config.isStatic && config.autoTx
+                && !TransactionHelper.isTransactionActive()) {
+            config.txStarted = TransactionHelper.startTransaction();
+            // log.warn("tx started for " + req.getPathInfo());
+        }
+    }
+
+    public void closeTx(Config config, HttpServletRequest req) {
+        if (config.txStarted) {
+            TransactionHelper.commitOrRollbackTransaction();
+            config.txStarted = false;
+            // log.warn("tx closed for " + req.getPathInfo());
+        }
+    }
+
+    static class Config {
+        boolean autoTx;
+
+        boolean stateful;
+
+        boolean txStarted;
+
+        boolean locked;
+
+        boolean isStatic;
+
+        String pathInfo;
+
+        public Config(HttpServletRequest req, PathDescriptor pd,
+                boolean autoTx, boolean stateful) {
+            if (pd == null) {
+                this.autoTx = autoTx;
+                this.stateful = stateful;
+            } else {
+                this.autoTx = pd.isAutoTx(autoTx);
+                this.stateful = pd.isStateful(stateful);
+            }
+            pathInfo = req.getPathInfo();
+            if (pathInfo == null || pathInfo.length() == 0) {
+                pathInfo = "/";
+            }
+            String spath = req.getServletPath();
+            isStatic = spath.contains("/skin") || pathInfo.contains("/skin/");
+        }
+    }
 }

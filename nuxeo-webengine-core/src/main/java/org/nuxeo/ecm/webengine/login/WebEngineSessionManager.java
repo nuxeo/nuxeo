@@ -28,16 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.ecm.webengine.session.StatefulUserSession;
-import org.nuxeo.ecm.webengine.session.StatelessUserSession;
-import org.nuxeo.ecm.webengine.session.UserSession;
 
 public class WebEngineSessionManager extends DefaultSessionManager {
 
     // TODO work on skin request to avoid hardcoding paths
-    private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty() + "/site/files/";
-    private static final Log log = LogFactory
-            .getLog(WebEngineSessionManager.class);
+    private static final String RESOURCES_PATH = VirtualHostHelper.getContextPathProperty()
+            + "/site/files/";
+
+    private static final Log log = LogFactory.getLog(WebEngineSessionManager.class);
 
     @Override
     public boolean canBypassRequest(ServletRequest request) {
@@ -51,27 +49,7 @@ public class WebEngineSessionManager extends DefaultSessionManager {
             HttpSession httpSession,
             CachableUserIdentificationInfo cachableUserInfo) {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-
-        // check for a valid session
-        if (httpSession == null) {
-            httpSession = httpRequest.getSession(false);
-        }
-
-        UserSession userSession;
-        if (httpSession == null) {
-            // create WE custom UserSession
-            userSession = new StatelessUserSession(cachableUserInfo.getPrincipal(),
-                    cachableUserInfo.getUserInfo().getPassword());
-            log.debug("Creating Stateless UserSession");
-        } else {
-            // create WE custom UserSession
-            userSession = new StatefulUserSession(cachableUserInfo.getPrincipal(),
-                    cachableUserInfo.getUserInfo().getPassword());
-            log.debug("Creating Stateful UserSession");
-        }
-
-        UserSession.register(httpRequest, userSession);
+        // do nothing
     }
 
     @Override

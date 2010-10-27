@@ -21,11 +21,11 @@ package org.nuxeo.ecm.webengine.session;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-public class StatefulUserSession extends UserSession implements HttpSessionBindingListener {
+public class StatefulUserSession extends UserSession implements
+        HttpSessionBindingListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,6 +41,11 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
         super(principal, credentials);
     }
 
+    @Override
+    public boolean isStateful() {
+        return true;
+    }
+
     public void valueBound(HttpSessionBindingEvent event) {
         // the user session was bound to the HTTP session
         install();
@@ -50,6 +55,5 @@ public class StatefulUserSession extends UserSession implements HttpSessionBindi
         // the user session was removed from the HTTP session
         uninstall();
     }
-
 
 }

@@ -48,9 +48,9 @@ import org.osgi.framework.SynchronousBundleListener;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class WebEngineComponent extends DefaultComponent { // implements
     // ConfigurationChangedListener
@@ -60,13 +60,19 @@ public class WebEngineComponent extends DefaultComponent { // implements
             WebEngineComponent.class.getName());
 
     public static final String RENDERING_EXTENSION_XP = "rendering-extension";
+
     public static final String RESOURCE_BINDING_XP = "resource";
+
+    public static final String REQUEST_CONFIGURATION_XP = "request-configuration";
+
     public static final String GUARD_XP = "guard"; // global guards
+
     public static final String FORM_XP = "form";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     protected final Set<String> deployedBundles = new HashSet<String>();
+
     private WebEngine engine;
 
     @Override
@@ -79,8 +85,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
         Bundle bundle = context.getRuntimeContext().getBundle();
         bundle.getBundleContext().addBundleListener(
                 BundleAnnotationsLoader.getInstance());
-        BundleAnnotationsLoader.getInstance()
-                .loadAnnotationsFromDeployedBundles(bundle);
+        BundleAnnotationsLoader.getInstance().loadAnnotationsFromDeployedBundles(
+                bundle);
 
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
         File root = null;
@@ -92,17 +98,17 @@ public class WebEngineComponent extends DefaultComponent { // implements
         root = root.getCanonicalFile();
         log.info("Using web root: " + root);
 
-// this should be removed         
-//        ResourceRegistry registry = Framework
-//                .getLocalService(ResourceRegistry.class);
-//        if (registry == null) {
-//            throw new Error("Could not find a server implementation");
-//        }
-//        // use root.war as war directory
-//        engine = new WebEngine(registry, new File(root, "root.war"));
+        // this should be removed
+        // ResourceRegistry registry = Framework
+        // .getLocalService(ResourceRegistry.class);
+        // if (registry == null) {
+        // throw new Error("Could not find a server implementation");
+        // }
+        // // use root.war as war directory
+        // engine = new WebEngine(registry, new File(root, "root.war"));
 
         engine = new WebEngine(new File(root, "root.war"));
-        
+
         // start deploying web bundles
         final RuntimeContext ctx = context.getRuntimeContext();
         BundleContext bc = bundle.getBundleContext();
@@ -117,8 +123,10 @@ public class WebEngineComponent extends DefaultComponent { // implements
                                 }
                             }
                         } catch (Throwable e) {
-                            log.error("Failed to deploy web modules in bundle: "
-                                    + event.getBundle().getSymbolicName(), e);
+                            log.error(
+                                    "Failed to deploy web modules in bundle: "
+                                            + event.getBundle().getSymbolicName(),
+                                    e);
                         }
                     }
                 });
@@ -132,7 +140,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
                         deployModules(ctx, b);
                     } catch (Throwable t) {
                         log.error("Failed to deploy web modules in bundle: "
-                                + b.getSymbolicName(), t);                        
+                                + b.getSymbolicName(), t);
                     }
                 }
             }
@@ -141,8 +149,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         engine.start();
     }
 
-    protected void deployModules(RuntimeContext ctx, Bundle b)
-            throws Exception {
+    protected void deployModules(RuntimeContext ctx, Bundle b) throws Exception {
         String id = b.getSymbolicName();
         if (deployedBundles.contains(id)) {
             return; // already deployed
@@ -152,7 +159,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
             deployedBundles.add(id);
             return;
         }
-        // the following is deprecated and should be removed when old webengine deployment is removed
+        // the following is deprecated and should be removed when old webengine
+        // deployment is removed
         URL url = b.getEntry("module.xml");
         if (url == null) {// not a webengine module
             return;
@@ -166,7 +174,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         deployedBundles.add(id);
         deployModule(id, bf, url);
     }
-        
+
     protected void deployModule(String bundleId, File bundleFile,
             URL moduleConfig) throws IOException {
 
@@ -201,10 +209,9 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     protected boolean checkHasNuxeoService(String bundleId) {
-        ComponentManager cpManager = Framework.getRuntime()
-                .getComponentManager();
-        RegistrationInfo regInfo = cpManager
-                .getRegistrationInfo(new ComponentName(bundleId));
+        ComponentManager cpManager = Framework.getRuntime().getComponentManager();
+        RegistrationInfo regInfo = cpManager.getRegistrationInfo(new ComponentName(
+                bundleId));
         if (null == regInfo) {
             return false;
         }
@@ -217,8 +224,8 @@ public class WebEngineComponent extends DefaultComponent { // implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         // TODO: move this in runtime
-        context.getRuntimeContext().getBundle().getBundleContext()
-                .removeBundleListener(BundleAnnotationsLoader.getInstance());
+        context.getRuntimeContext().getBundle().getBundleContext().removeBundleListener(
+                BundleAnnotationsLoader.getInstance());
         engine.stop();
         engine = null;
         super.deactivate(context);
@@ -251,6 +258,9 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // } else if (extensionPoint.endsWith(FORM_XP)) {
             // Form form = (Form)contribution;
             // engine.getFormManager().registerForm(form);
+        } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
+            PathDescriptor pd = (PathDescriptor) contribution;
+            engine.getRequestConfiguration().addPathDescriptor(pd);
         }
     }
 
@@ -270,6 +280,9 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // } else if (extensionPoint.endsWith(FORM_XP)) {
             // Form form = (Form)contribution;
             // engine.getFormManager().unregisterForm(form.getId());
+        } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
+            PathDescriptor pd = (PathDescriptor) contribution;
+            engine.getRequestConfiguration().removePathDescriptor(pd);
         }
     }
 
