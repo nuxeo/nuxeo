@@ -61,7 +61,7 @@ public class FileResource extends ExistingResource {
         if (content == null) {
             return Response.ok("").build();
         } else {
-            return Response.ok(content.getStream()).type(content.getMimeType()).build();
+            return Response.ok(content).type(content.getMimeType()).build();
         }
     }
 

@@ -48,62 +48,28 @@ import java.io.Writer;
  */
 public class Util {
 
-    private static final boolean USE_TRANSACTION = true;
-
-    private static final Log log = LogFactory.getLog(Util.class);
-
     // Utility class.
     private Util() {
     }
 
     public static CoreSession getSession(HttpServletRequest request) throws Exception {
-        return getSession();
-
-        // This doesn't seem to work.
-        //UserSession us = UserSession.getCurrentSession(request);
-        //return us.getCoreSession();
+        UserSession userSession = UserSession.getCurrentSession(request);
+        if (userSession != null) {
+            return userSession.getCoreSession();
+        } else {
+            return getSession();
+        }
     }
 
     /**
-     * Gets a core session. Don't cache the code session because it doesn't seem to work with
-     * concurrent requests.
+     * Gets a core session directly from the RepositoryManager.
+     * Used for the test server.
      */
     public static CoreSession getSession() throws Exception {
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getDefaultRepository();
         CoreSession session = repo.open();
         return session;
-
-        /*
-        if (sharedSession != null) {
-            return sharedSession;
-        }
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getDefaultRepository();
-        sharedSession = repo.open();
-        return sharedSession;
-        */
-    }
-
-    public static void startTransaction() {
-        if (!USE_TRANSACTION) {
-            return;
-        }
-        try {
-            TransactionHelper.lookupTransactionManager();
-            TransactionHelper.startTransaction();
-        } catch (NamingException e) {
-            // pass
-        }
-    }
-
-    public static void endTransaction() {
-        if (!USE_TRANSACTION) {
-            return;
-        }
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
     }
 
     // utility methods related to JAXB marshalling

@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.provider.CoreSessionCloser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -37,7 +36,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.security.Principal;
 
 @Path("dav")
 public class RootResource {
@@ -56,9 +54,7 @@ public class RootResource {
         log.debug(request.getMethod() + " " + request.getRequestURI());
 
         this.request = request;
-        Util.startTransaction();
-        session = Util.getSession();
-        closeableService.add(new CoreSessionCloser(session));
+        session = Util.getSession(request);
 
         if (rootPath == null) {
             rootPath = request.getContextPath() + request.getServletPath();
