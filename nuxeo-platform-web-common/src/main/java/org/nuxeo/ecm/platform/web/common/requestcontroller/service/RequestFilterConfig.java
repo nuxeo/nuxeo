@@ -42,4 +42,5 @@ public interface RequestFilterConfig  extends Serializable{
     boolean isPrivate();
 
     String getCacheTime();
+
 }

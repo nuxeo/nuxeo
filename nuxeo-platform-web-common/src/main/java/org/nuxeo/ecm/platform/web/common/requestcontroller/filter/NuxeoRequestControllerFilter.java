@@ -63,6 +63,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
     protected static final String SYNCED_REQUEST_FLAG = "NuxeoSessionAlreadySync";
 
+    // FIXME: typo in constant name.
     protected static final int LOCK_TIMOUT_S = 120;
 
     public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
@@ -81,13 +82,13 @@ public class NuxeoRequestControllerFilter implements Filter {
                 rcm = Framework.getLocalService(RequestControllerManager.class);
 
                 if (rcm == null) {
-                    log.error("Unable to get RequestControlerManager service");
+                    log.error("Unable to get RequestControllerManager service");
                     // throw new ServletException(
-                    // "RequestControlerManager can not be found");
+                    // "RequestControllerManager can not be found");
                 }
-                log.debug("Staring NuxeoRequestControler filter");
+                log.debug("Staring NuxeoRequestController filter");
             } else {
-                log.debug("Postpone filter init since Runtime is not yet avalaible");
+                log.debug("Postpone filter init since Runtime is not yet available");
             }
         }
     }
@@ -126,8 +127,8 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         // Add cache header if needed
         if (httpRequest.getMethod().equals("GET")) {
-            boolean iscached = config.isCached();
-            if (iscached) {
+            boolean isCached = config.isCached();
+            if (isCached) {
                 addCacheHeader(httpResponse, config.isPrivate(),
                         config.getCacheTime());
             }
@@ -136,7 +137,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         if (!useSync && !useTx) {
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(httpRequest,
-                        "Existing NuxeoRequestControler filter : nothing to be done"));
+                        "Existing NuxeoRequestController filter: nothing to be done"));
             }
             chain.doFilter(request, response);
             return;
@@ -165,7 +166,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         } catch (Exception e) {
             log.error(
                     doFormatLogMessage(httpRequest,
-                            "Unhandled error was cauth by the Filter"), e);
+                            "Unhandled error was caught by the Filter"), e);
             if (txStarted) {
                 if (log.isDebugEnabled()) {
                     log.debug(doFormatLogMessage(httpRequest,
@@ -185,7 +186,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             }
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(httpRequest,
-                        "Exiting NuxeoRequestControler filter"));
+                        "Exiting NuxeoRequestController filter"));
             }
         }
     }
@@ -275,7 +276,7 @@ public class NuxeoRequestControllerFilter implements Filter {
         } catch (InterruptedException e) {
             log.error(
                     doFormatLogMessage(request,
-                            "Unable to acuire lock for Session sync"), e);
+                            "Unable to acquire lock for Session sync"), e);
             return false;
         }
 
@@ -303,7 +304,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(
                         request,
-                        "No more HttpSession : can not unlock !, HttpSession must have been invalidated"));
+                        "No more HttpSession: can not unlock !, HttpSession must have been invalidated"));
             }
             return;
         }
@@ -330,10 +331,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Set cache parameters to httpReponse
-     * 
-     * @param httpResponse
-     * @param cacheTime
+     * Set cache parameters to httpReponse.
      */
     public static void addCacheHeader(HttpServletResponse httpResponse,
             Boolean isPrivate, String cacheTime) {

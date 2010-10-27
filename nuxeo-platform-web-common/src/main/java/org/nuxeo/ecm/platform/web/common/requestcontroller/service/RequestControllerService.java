@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Runtime component that implements the {@link RequestControllerManager} interface.
- * Contains both the Extension point logic and the service immplementation.
+ * Contains both the Extension point logic and the service implementation.
  *
  * @author tiry
  */
@@ -61,7 +61,7 @@ public class RequestControllerService extends DefaultComponent implements
             registerFilterConfig(desc);
         }
         else {
-            log.error("Unknow ExtensionPoint " + extensionPoint);
+            log.error("Unknown ExtensionPoint " + extensionPoint);
         }
     }
 

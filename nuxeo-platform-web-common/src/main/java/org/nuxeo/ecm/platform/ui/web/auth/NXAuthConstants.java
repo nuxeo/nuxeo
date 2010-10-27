@@ -25,6 +25,7 @@ public final class NXAuthConstants {
 
     public static final String USERNAME_KEY = "user_name";
 
+    // FIXME: typo in constant name
     public static final String PASSORD_KEY = "user_password";
 
     public static final String FORM_SUBMITTED_MARKER = "form_submitted_marker";
@@ -62,6 +63,7 @@ public final class NXAuthConstants {
     public static final String SSO_INITIAL_URL_REQUEST_KEY = "sso.initial.url.request";
 
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
+
     // Constant utility class.
     private NXAuthConstants() {
     }
