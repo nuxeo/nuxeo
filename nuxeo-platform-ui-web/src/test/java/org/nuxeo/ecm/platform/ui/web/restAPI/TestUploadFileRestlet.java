@@ -241,8 +241,9 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
                 "The minor version should have been incremented as the document is in approved state",
                 new Long(minor + 1), doc.getPropertyValue("uid:minor_version"));
 
-        // The document should be back to project,
+        // Back to project state
         // it should not increment as the rule noincrement doesn't exist
+        session.followTransition(doc.getRef(), "backToProject");
         doc = session.getDocument(doc.getRef());
         assertEquals("The document should be in project state", "project",
                 doc.getCurrentLifeCycleState());

@@ -31,13 +31,12 @@ import java.util.List;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -150,22 +149,20 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         Blob blob = StreamingBlob.createFromStream(is).persist();
         blob.setFilename(filename);
 
-        // autoversioning see https://jira.nuxeo.org/browse/NXP-5849 for more
-        // details
-        String versioningPolicy = Framework.getProperty(LIVED_AUTOVERSIONING_PROP);
-        if (doAutoMinorIncrement(versioningPolicy, dm)) {
-            dm.putContextData(ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                    Boolean.TRUE);
-            dm.putContextData(ScopeType.REQUEST,
-                    VersioningActions.KEY_FOR_INC_OPTION,
-                    VersioningActions.ACTION_INCREMENT_MINOR);
-        }
-
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);
         dm.setPropertyValue(filenamePropertyName, filename);
 
         getDocumentManager().saveDocument(dm);
+        // autoversioning see https://jira.nuxeo.org/browse/NXP-5849 for more
+        // details
+        String versioningPolicy = Framework.getProperty(LIVED_AUTOVERSIONING_PROP);
+        if (doAutoMinorIncrement(versioningPolicy, dm)) {
+            if (dm.isCheckedOut()) {
+                dm.checkIn(VersioningOption.MINOR,
+                "Live edit (UploadFileRestlet) autoversioning");
+            }
+        }
+
         getDocumentManager().save();
     }
 
