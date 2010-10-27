@@ -48,6 +48,7 @@ public class TestConverters extends BaseConverterTest {
         String textResult = result.getBlob().getString().trim();
         //System.out.print(textResult);
         assertTrue(textResult.contains("Nuxeo propose aux organisations"));
+        assertTrue(textResult.contains("\u00c9v\u00e9nements \u00e0 venir"));
 
         // System.out.println(result.getBlob().getString());
     }
