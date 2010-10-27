@@ -26,20 +26,27 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
+import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -53,6 +60,12 @@ import org.restlet.data.Response;
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
         LiveEditConstants, Serializable {
+
+    public static final String LIVED_AUTOVERSIONING_PROP = "lived.autoversioning";
+
+    public static final String POLICY_MINOR_INCR = "minor";
+
+    public static final String POLICY_MINOR_INCR_ON_RULES = "minor_on_rules";
 
     private static final long serialVersionUID = -6167207806181917456L;
 
@@ -137,6 +150,18 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         Blob blob = StreamingBlob.createFromStream(is).persist();
         blob.setFilename(filename);
 
+        // autoversioning see https://jira.nuxeo.org/browse/NXP-5849 for more
+        // details
+        String versioningPolicy = Framework.getProperty(LIVED_AUTOVERSIONING_PROP);
+        if (doAutoMinorIncrement(versioningPolicy, dm)) {
+            dm.putContextData(ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
+                    Boolean.TRUE);
+            dm.putContextData(ScopeType.REQUEST,
+                    VersioningActions.KEY_FOR_INC_OPTION,
+                    VersioningActions.ACTION_INCREMENT_MINOR);
+        }
+
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);
         dm.setPropertyValue(filenamePropertyName, filename);
 
@@ -144,4 +169,35 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         getDocumentManager().save();
     }
 
+    /**
+     * According to the policy, decide to auto minor increment or not
+     *
+     * @param policy
+     * @return return true if the the version should be minor increment
+     */
+    protected boolean doAutoMinorIncrement(String policy, DocumentModel doc) {
+        if (POLICY_MINOR_INCR.equals(policy)) {
+            return true;
+        }
+        if (POLICY_MINOR_INCR_ON_RULES.equals(policy)) {
+
+            VersioningManager versioningService = Framework.getLocalService(VersioningManager.class);
+            VersionIncEditOptions options;
+            try {
+                options = versioningService.getVersionIncEditOptions(doc);
+            } catch (ClientException e) {
+                throw new Error(
+                        "An unexpected error occured while getting the version increment edit options",
+                        e);
+            }
+            List<VersioningActions> versioningActionsOptions = options.getOptions();
+            if (versioningActionsOptions.contains(VersioningActions.ACTION_INCREMENT_MINOR)
+                    && !versioningActionsOptions.contains(VersioningActions.ACTION_NO_INCREMENT)) {
+                return true;
+            }
+
+        }
+        return false;
+
+    }
 }
