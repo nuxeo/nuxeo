@@ -252,20 +252,19 @@ public final class FaceletHandlerHelper {
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
                 TagAttribute attr;
+                String key = prop.getKey();
                 Object valueInstance = prop.getValue();
                 if ((valueInstance instanceof String)
-                        && ComponentTagUtils.isValueReference((String) valueInstance)) {
+                        && (ComponentTagUtils.isValueReference((String) valueInstance) || "converter".equals(key))) {
                     // FIXME: this will not be updated correctly using ajax
-                    attr = createAttribute(prop.getKey(),
-                            (String) valueInstance);
+                    attr = createAttribute(key, (String) valueInstance);
                 } else {
                     // create a reference so that it's an real expression and
                     // it's not kept (cached) in a component value on ajax
                     // refresh
-                    attr = createAttribute(prop.getKey(), String.format(
+                    attr = createAttribute(key, String.format(
                             "#{%s.properties.%s}",
-                            RenderVariables.widgetVariables.widget.name(),
-                            prop.getKey()));
+                            RenderVariables.widgetVariables.widget.name(), key));
                 }
                 attrs.add(attr);
             }
