@@ -130,15 +130,17 @@ public interface DocumentRoutingService {
             ClientException;
 
     /**
-     * Computes the list of elements {@link DocumentRouteTableElement} for this
-     * {@link DocumentRoute}.
+     * Computes the list of elements {@link LocalizableDocumentRouteElement} for
+     * this {@link DocumentRoute}.
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to query the {@link DocumentRoute}.
      * @param A list of {@link DocumentRouteElement}
      */
-    List<DocumentRouteTableElement> getRouteElements(DocumentRoute route,
-            CoreSession session);
+    void getRouteElements(DocumentRouteElement routeElementDocument,
+            CoreSession session,
+            List<LocalizableDocumentRouteElement> routeElements, int depth)
+            throws ClientException;
 
     /**
      * Return the list of related {@link DocumentRoute} in a state for a given

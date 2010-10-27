@@ -6,7 +6,7 @@
     point="layouts">
     <layout name="document_routing_route_content">
       <templates>
-        <template mode="any">/layouts/layout_route_listing_template.xhtml</template>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>

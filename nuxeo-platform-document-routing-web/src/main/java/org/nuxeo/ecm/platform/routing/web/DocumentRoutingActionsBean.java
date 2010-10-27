@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
+import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -195,10 +195,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         webActions.resetTabList();
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
-
     public String saveRouteAsNewInstance() {
-        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
-                documentManager);
+        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(), documentManager);
         return null;
     }
 
@@ -231,29 +229,32 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    protected List<DocumentRouteTableElement> computeRouteElements()
+    protected ArrayList<LocalizableDocumentRouteElement> computeRouteElements()
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
-        return getElements(currentRoute);
+        DocumentRouteElement currentRouteModelElement = currentDocument.getAdapter(DocumentRouteElement.class);
+        return getElements(currentRouteModelElement);
     }
 
-    protected List<DocumentRouteTableElement> computeRelatedRouteElements()
+    protected ArrayList<LocalizableDocumentRouteElement> computeRelatedRouteElements()
             throws ClientException {
         List<DocumentModel> routes = findRelatedRouteDocument();
-        if (routes == null || routes.isEmpty()) {
-            return new ArrayList<DocumentRouteTableElement>();
+        if(routes == null || routes.isEmpty())   {
+            return new ArrayList<LocalizableDocumentRouteElement>();
         }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
                 routes.get(0).getId()));
-        DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
-        return getElements(currentRoute);
+        DocumentRouteElement currentRouteModelElement = relatedRouteDocumentModel.getAdapter(DocumentRouteElement.class);
+        return getElements(currentRouteModelElement);
     }
 
-    protected List<DocumentRouteTableElement> getElements(
-            DocumentRoute currentRoute) {
-        return getDocumentRoutingService().getRouteElements(
-                currentRoute, documentManager);
+    protected ArrayList<LocalizableDocumentRouteElement> getElements(
+            DocumentRouteElement currentRouteModelElement)
+            throws ClientException {
+        ArrayList<LocalizableDocumentRouteElement> routeElements = new ArrayList<LocalizableDocumentRouteElement>();
+        getDocumentRoutingService().getRouteElements(currentRouteModelElement,
+                documentManager, routeElements, 0);
+        return routeElements;
     }
 
     @Factory(value = "routeElementsSelectModel", scope = EVENT)
@@ -294,9 +295,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRouteRelatedToCurrentDocument() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
-        if (relatedRouteModelDocumentId != null) {
-            DocumentModel model = documentManager.getDocument(new IdRef(
-                    relatedRouteModelDocumentId));
+        if(relatedRouteModelDocumentId != null) {
+            DocumentModel model = documentManager.getDocument(new IdRef(relatedRouteModelDocumentId));
             route = model.getAdapter(DocumentRoute.class);
         }
         if (route == null) {
@@ -328,7 +328,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return route.isRunning();
     }
 
-    public String getTypeDescription(DocumentRouteTableElement localizable) {
+    public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
         return depthFormatter(localizable.getDepth(),
                 localizable.getElement().getDocument().getType());
     }
@@ -400,17 +400,17 @@ public class DocumentRoutingActionsBean implements Serializable {
     public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         // if fork, is not simple editable step
-        if (stepDoc.hasFacet("Folderish")) {
+        if(stepDoc.hasFacet("Folderish")){
             return false;
         }
         return stepElement.isModifiable();
     }
 
+
     /**
      * Returns true if the givenDoc is an routeElement that can be edited
      * */
-    public boolean isEditableRouteElement(DocumentModel stepDoc)
-            throws ClientException {
+    public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         return stepElement.isModifiable();
     }
@@ -454,8 +454,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(
                         changeableDocument.getType()));
@@ -478,8 +477,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String createRouteElement(String typeName) throws ClientException {
         if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "feedback.document.route.no.creation.rights"));
             return "";
@@ -602,8 +600,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return relatedRouteModelDocumentId;
     }
 
-    public void setRelatedRouteModelDocumentId(
-            String relatedRouteModelDocumentId) {
+    public void setRelatedRouteModelDocumentId(String relatedRouteModelDocumentId) {
         this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
     }
 }

@@ -23,15 +23,12 @@
   <ui:include src="/select_route_elements_type.xhtml" />
 
    <nxu:set var="documents"  value="#{relatedRouteElementsSelectModel}" >
-     <nxu:set var="routeTable" value="#{routeTable}" >
-       <ui:decorate template="/incl/documents_layout_table.xhtml">
-        <ui:param name="routeTable" value="#{routeTable}" />
-        <ui:param name="documents" value="#{documents}" />
-        <ui:param name="showCheckboxes" value="#{true}" />
-        <ui:param name="listName" value="CURRENT_SELECTION" />
-        <ui:param name="layoutName" value="document_routing_route_content" />
-      </ui:decorate>
-    </nxu:set>	
+    <ui:decorate template="/incl/documents_layout_table.xhtml">
+     <ui:param name="documents" value="#{documents}" />
+     <ui:param name="showCheckboxes" value="#{true}" />
+     <ui:param name="listName" value="CURRENT_SELECTION" />
+     <ui:param name="layoutName" value="document_routing_route_content" />
+    </ui:decorate>
    </nxu:set>
   </c:if>
   

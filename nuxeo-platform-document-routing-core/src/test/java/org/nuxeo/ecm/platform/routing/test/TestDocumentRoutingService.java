@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
@@ -560,21 +559,6 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertFalse(session.hasPermission(route.getRef(),
                 SecurityConstants.WRITE));
         assertTrue(session.hasPermission(route.getRef(), SecurityConstants.READ));
-    }
-
-    public void testGetRouteElements() throws ClientException {
-        DocumentRoute route = createDocumentRoute(session, ROUTE1);
-        assertNotNull(route);
-        List<DocumentRouteTableElement> elements = service.getRouteElements(route, session);
-        assertNotNull(elements);
-        assertEquals(4, elements.size());
-        for(DocumentRouteTableElement element : elements) {
-            assertEquals(1, element.getRouteMaxDepth());
-        }
-        assertEquals(1, elements.get(2).getFirstChildFolders().size());
-        assertEquals(0, elements.get(3).getFirstChildFolders().size());
-        assertEquals(2, elements.get(2).getFirstChildFolders().get(0).getTotalChildCount());
-        assertEquals(4, elements.get(0).getRouteTable().getTotalChildCount());
     }
 
     protected void setPermissionToUser(DocumentModel doc, String username,
