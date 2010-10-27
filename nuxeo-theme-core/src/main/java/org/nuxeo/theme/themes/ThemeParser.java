@@ -492,6 +492,17 @@ public class ThemeParser {
                     inheritanceMap.put(style.getUid(), inheritedName);
                 }
 
+                Node remoteAttr = attributes.getNamedItem("remote");
+                if (remoteAttr != null) {
+                    Boolean remote = Boolean.valueOf(remoteAttr.getNodeValue());
+                    if (style.isNamed()) {
+                        style.setRemote(remote);
+                    } else {
+                        log.warn("Only named styles can be remote, ignoring remote attribute on"
+                                + style.getUid());
+                    }
+                }
+
                 if (styleName != null && elementXPath != null) {
                     log.warn("Style parser: named style '" + styleName
                             + "' cannot have an 'element' attribute: '"
@@ -503,9 +514,9 @@ public class ThemeParser {
                         "selector");
 
                 // Try to retrieve the style from the resource bank
-                if (style.isNamed() && resourceBankName != null) {
+                if (style.isRemote() && resourceBankName != null) {
                     ThemeManager.loadRemoteStyle(resourceBankName, style);
-                    if (style.isRemote() && !selectorNodes.isEmpty()) {
+                    if (!selectorNodes.isEmpty()) {
                         style.setCustomized(true);
                     }
                 }

@@ -213,6 +213,29 @@ public final class ThemeManager implements Registrable {
         return newThemeDescriptor;
     }
 
+    public static ThemeDescriptor uncustomizeTheme(
+            ThemeDescriptor themeDescriptor) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        String themeName = themeDescriptor.getName();
+
+        // TODO make sure that the theme is a custom version of another theme
+        if (!themeDescriptor.isCustom()) {
+            throw new ThemeException("Theme : " + themeName
+                    + " cannot be uncustomized.");
+        }
+
+        String themeSrc = themeDescriptor.getSrc();
+        try {
+            themeManager.deleteTheme(themeSrc);
+        } catch (ThemeIOException e) {
+            throw new ThemeException("Could not remove theme: " + themeSrc, e);
+        }
+
+        ThemeDescriptor newThemeDescriptor = getThemeDescriptorByThemeName(themeName);
+        loadTheme(newThemeDescriptor);
+        return newThemeDescriptor;
+    }
+
     public static ThemeDescriptor createCustomTheme(String name)
             throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme description="Default theme" name="default" template-engines="freemarker,jsf-facelets">
+<theme description="Default theme" name="default" resource-bank="nuxeo" template-engines="freemarker,jsf-facelets">
   <layout>
     <!-- Page 1 -->
     <page name="page1">
@@ -103,7 +103,7 @@
         <color>brown</color>
       </selector>
     </style>
-    <style name="default fonts">
+    <style name="default fonts" remote="true">
       <!-- Level 3 header -->
       <selector path="h3">
         <color>green</color>
@@ -114,7 +114,7 @@
         <color>blue</color>
       </selector>
     </style>
-    <style name="basic (nuxeo DM)"/>
+    <style name="basic (nuxeo DM)" remote="true"/>
     <style inherit="basic (nuxeo DM)" name="galaxy1 (Galaxy)"/>
     <!-- style for the fragment -->
     <style element="page[1]/section[1]/cell[2]/fragment[2]" inherit="default fonts">

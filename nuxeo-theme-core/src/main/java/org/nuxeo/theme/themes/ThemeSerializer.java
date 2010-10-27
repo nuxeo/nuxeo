@@ -298,6 +298,9 @@ public class ThemeSerializer {
             if (ancestor != null) {
                 domElement.setAttribute("inherit", ancestor.getName());
             }
+            if (style.isRemote()) {
+                domElement.setAttribute("remote", "true");
+            }
             if (!style.isRemote() || style.isCustomized()) {
                 for (String viewName : style.getSelectorViewNames()) {
                     for (String path : style.getPathsForView(viewName)) {
