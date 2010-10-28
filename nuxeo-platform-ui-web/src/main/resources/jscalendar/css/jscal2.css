@@ -41,7 +41,7 @@ table.DynarchCalendar-titleCont {
   background-color: #fff;
   border: 1px solid #000;
   padding: 4px 16px;
-  background-image: url("img/drop-down.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/drop-down.gif");
   background-repeat: no-repeat;
   background-position: 100% 50%;
 }
@@ -50,7 +50,7 @@ table.DynarchCalendar-titleCont {
   padding: 4px 16px;
   background-color: #777;
   color: #fff;
-  background-image: url("img/drop-up.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/drop-up.gif");
   background-repeat: no-repeat;
   background-position: 100% 50%;
 }
@@ -180,19 +180,19 @@ table.DynarchCalendar-titleCont {
 }
 
 .DynarchCalendar-prevMonth div {
-  background-image: url("img/nav-left.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/nav-left.gif");
 }
 
 .DynarchCalendar-nextMonth div {
-  background-image: url("img/nav-right.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/nav-right.gif");
 }
 
 .DynarchCalendar-prevYear div {
-  background-image: url("img/nav-left-x2.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/nav-left-x2.gif");
 }
 
 .DynarchCalendar-nextYear div {
-  background-image: url("img/nav-right-x2.gif");
+  background-image: url("/nuxeo/jscalendar/css/img/nav-right-x2.gif");
 }
 
 .DynarchCalendar-menu {
@@ -245,8 +245,8 @@ table.DynarchCalendar-titleCont {
 
 .DynarchCalendar-time td { font-weight: bold; font-size: 120%; }
 .DynarchCalendar-time-hour, .DynarchCalendar-time-minute { padding: 1px 3px; }
-.DynarchCalendar-time-down { background: url("img/time-down.png") no-repeat 50% 50%; width: 11px; height: 8px; opacity: 0.5; }
-.DynarchCalendar-time-up { background: url("img/time-up.png") no-repeat 50% 50%; width: 11px; height: 8px; opacity: 0.5; }
+.DynarchCalendar-time-down { background: url("/nuxeo/jscalendar/css/img/time-down.png") no-repeat 50% 50%; width: 11px; height: 8px; opacity: 0.5; }
+.DynarchCalendar-time-up { background: url("/nuxeo/jscalendar/css/img/time-up.png") no-repeat 50% 50%; width: 11px; height: 8px; opacity: 0.5; }
 .DynarchCalendar-time-sep { padding: 0 2px; }
 .DynarchCalendar-hover-time { background-color: #444; color: #fff; opacity: 1; }
 .DynarchCalendar-pressed-time { background-color: #000; color: #fff; opacity: 1; }
