@@ -330,7 +330,8 @@ public class FrameworkLoader {
     protected static void printStartMessage() {
         String newline = System.getProperty("line.separator");
         Environment env = Environment.getDefault();
-        String hr = "======================================================================"
+        String hr = newline
+                + "======================================================================"
                 + newline;
         StringBuilder msg = new StringBuilder(hr);
         msg.append("= Starting Nuxeo Framework" + newline);
