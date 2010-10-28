@@ -227,42 +227,18 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
         restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
                 filenamePropertyName, new StringInputStream(
                         "Another Content of the file"));
-        // shouldn't have change as there is no rules version incr for the
-        // approved state, same checks as before
+
         versions = session.getVersions(doc.getRef());
         assertTrue(
-                "Should have one (more) version snapshotted as it is in approved state.",
-                versions != null && versions.size() == 1);
+                "Should have no version snapshotted as it is in approved state: \"no version incr\" is available in the versioning options",
+                versions != null && versions.size() == 0);
         doc = session.getDocument(doc.getRef());
         assertEquals(
                 "The major version shouldn't have been incremented as the document is in approved state",
                 major, doc.getPropertyValue("uid:major_version"));
         assertEquals(
-                "The minor version should have been incremented as the document is in approved state",
-                new Long(minor + 1), doc.getPropertyValue("uid:minor_version"));
-
-        // Back to project state
-        // it should not increment as the rule noincrement doesn't exist
-        session.followTransition(doc.getRef(), "backToProject");
-        doc = session.getDocument(doc.getRef());
-        assertEquals("The document should be in project state", "project",
-                doc.getCurrentLifeCycleState());
-
-        restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
-                filenamePropertyName, new StringInputStream(
-                        "Another Content of the file again"));
-        // shouldn't have change as there is no rules version incr for the
-        // approved state, same checks as before
-        versions = session.getVersions(doc.getRef());
-        assertTrue(
-                "Should still have one version snapshotted as the document is in project state",
-                versions != null && versions.size() == 1);
-        doc = session.getDocument(doc.getRef());
-        assertEquals("The major version shouldn't have been incremented",
-                major, doc.getPropertyValue("uid:major_version"));
-        assertEquals(
-                "The minor version shouldn't have been incremented as the document is in project state",
-                new Long(minor + 1), doc.getPropertyValue("uid:minor_version"));
+                "The minor version shouldn't have been incremented as the document is in approved state",
+                new Long(minor), doc.getPropertyValue("uid:minor_version"));
 
     }
 
