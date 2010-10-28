@@ -65,3 +65,6 @@ repository.clustering.delay=1000
 repository.binary.store=
 
 nuxeo.templates.parsing.extensions=xml,properties
+
+# JBoss configuration to run
+org.nuxeo.ecm.jboss.configuration=default
