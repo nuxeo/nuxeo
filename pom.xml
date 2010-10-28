@@ -278,12 +278,6 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-versioning-core</artifactId>
-        <version>${nuxeo.services.version}</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
