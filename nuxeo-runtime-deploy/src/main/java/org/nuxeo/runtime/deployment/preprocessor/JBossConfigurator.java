@@ -26,7 +26,13 @@ import java.io.File;
  */
 public class JBossConfigurator extends ServerConfigurator {
 
+    /**
+     * @deprecated Use {@link #getJBossConfig()}
+     */
+    @Deprecated
     public static final String JBOSS_CONFIG = "server/default/deploy/nuxeo.ear/config";
+
+    public static final String DEFAULT_CONFIGURATION = "default";
 
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
@@ -38,13 +44,19 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public boolean isConfigured() {
         log.info("Detected JBoss server.");
-        return new File(generator.getNuxeoHome(), JBOSS_CONFIG).exists();
+        return new File(generator.getNuxeoHome(), getJBossConfig()).exists();
     }
 
     @Override
     protected File getOutputDirectory() {
         return new File(generator.getNuxeoHome(),
-                new File(JBOSS_CONFIG).getParent());
+                new File(getJBossConfig()).getParent());
+    }
+
+    public String getJBossConfig() {
+        String configuration = generator.getUserConfig().getProperty(
+                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
+        return "server/" + configuration + "/deploy/nuxeo.ear/config";
     }
 
 }

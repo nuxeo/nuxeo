@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class JBossConfiguratorTest {
 
@@ -116,7 +116,9 @@ public class JBossConfiguratorTest {
     public void testGenerateFiles() throws Exception {
         configGenerator.run();
         log.debug(configGenerator.getIncludedTemplates());
-        File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
+        File configDir = new File(nuxeoHome, "server/"
+                + JBossConfigurator.DEFAULT_CONFIGURATION
+                + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
@@ -157,7 +159,9 @@ public class JBossConfiguratorTest {
                 config.getProperty("test.nuxeo.conf.override.defaults.template"));
         assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
         assertEquals("sa", config.getProperty("nuxeo.db.user"));
-        File configDir = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
+        File configDir = new File(nuxeoHome, "server/"
+                + JBossConfigurator.DEFAULT_CONFIGURATION
+                + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
@@ -169,7 +173,9 @@ public class JBossConfiguratorTest {
     @Test
     public void testForceGeneration() throws ConfigurationException {
         configGenerator2.run();
-        File testFile = new File(nuxeoHome, JBossConfigurator.JBOSS_CONFIG);
+        File testFile = new File(nuxeoHome, "server/"
+                + JBossConfigurator.DEFAULT_CONFIGURATION
+                + "/deploy/nuxeo.ear/config");
         testFile = new File(testFile, "test2");
         testFile.delete();
         configGenerator2.setForceGeneration(true);
