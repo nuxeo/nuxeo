@@ -125,11 +125,11 @@
       <echo message="Available distributions are:" />
       <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
       <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-      <echo message="jboss                - build JBoss distributions with Nuxeo EP and DM" />
-      <echo message="jetty                - build Jetty distributions with Nuxeo EP and DM" />
-      <echo message="tomcat               - build Tomcat distribution" />
+      <echo message="jboss                - build all JBoss distributions" />
+      <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
+      <echo message="tomcat               - build all Tomcat distributions" />
       <echo message="shell                - build Nuxeo Shell" />
-      <echo message="all-distributions    - build all available distributions" />
+      <echo message="all-distributions    - build all distributions" />
     </target>
     <input message="Which distribution do you want to build?"
            validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
