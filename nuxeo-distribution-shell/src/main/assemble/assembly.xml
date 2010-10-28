@@ -10,7 +10,8 @@
   <target name="init" unless="init.done">
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="stagedir" value="${outdir}/stage" />
-    <property name="shelldir" value="${stagedir}/nuxeo-shell-${maven.project.version}" />
+    <property name="shelldir"
+              value="${stagedir}/nuxeo-shell-${maven.project.version}" />
 
     <antcall target="expand" />
     <property name="init.done" value="true" />
@@ -32,7 +33,7 @@
       <fileset dir="src/main/resources" />
       <artifact:file artifactId="nuxeo-runtime-launcher" />
     </copy>
-    
+
     <copy todir="${shelldir}/bundles" overwrite="true">
       <artifact:set>
         <includes>
@@ -63,26 +64,8 @@
         </includes>
       </artifact:set>
     </copy>
-    <delete>
-      <fileset dir="${shelldir}/lib">
-        <include name="backport-util-concurrent-*" />
-        <include name="commons-collections-*" />
-        <include name="commons-logging-*" />
-        <include name="jline-*" />
-        <include name="junit-*" />
-        <include name="log4j-*" />
-        <include name="xml-apis-*" />
-      </fileset>
-    </delete>
-    <copy todir="${shelldir}/lib" overwrite="true">
-      <artifact:resolveFile key="backport-util-concurrent:backport-util-concurrent" />
-      <artifact:resolveFile key="commons-collections:commons-collections" />
-      <artifact:resolveFile key="commons-logging:commons-logging" />
-      <artifact:resolveFile key="jline:jline" />
-      <artifact:resolveFile key="junit:junit" />
-      <artifact:resolveFile key="log4j:log4j" />
-      <artifact:resolveFile key="xml-apis:xml-apis" />
-    </copy>
+    <!-- Remove duplicates -->
+    <nx:rmdups dir="${shelldir}/lib" />
   </target>
 
   <target name="clean">
