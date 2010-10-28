@@ -148,22 +148,24 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
         if (regex != o.regex) {
             return regex ? 1 : -1;
         }
-        return -value.compareTo(o.value);
+        int len1 = value.length();
+        int len2 = o.value.length();
+        if (len1 == len2) {
+            return value.compareTo(o.value);
+        }
+        return len2 - len1;
     }
 
     public static void main(String[] args) {
         PathDescriptor[] pds = new PathDescriptor[] {
+                new PathDescriptor("/a/b/d/.*\\.gif", true, false, false),
                 new PathDescriptor("/a", false, false, false),
+                new PathDescriptor("/a/b/c", false, false, false),
                 new PathDescriptor("/b", false, false, false),
-                new PathDescriptor("/", false, false, false),
-                new PathDescriptor("/b/c", false, false, false),
-                new PathDescriptor("/b/c/d", false, false, false),
-                new PathDescriptor("/a/b", false, false, false),
-                new PathDescriptor(".*", true, false, false),
-                new PathDescriptor("/a/.*", true, false, false) };
+                new PathDescriptor("/b/c", false, false, false) };
         Arrays.sort(pds);
         for (PathDescriptor pd : pds) {
-            System.out.println("> " + pd.value);
+            System.out.println(pd.value);
         }
     }
 }
