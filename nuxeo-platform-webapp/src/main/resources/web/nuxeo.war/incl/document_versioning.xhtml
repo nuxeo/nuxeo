@@ -4,6 +4,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<c:if test="#{currentDocument.isVersionable()}">
+
   <table class="dataInput">
     <tr>
       <td class="iconColumn" style="vertical-align:top;" />
@@ -31,5 +33,5 @@
     </tr>
     </c:if>
   </table>
-
+</c:if>
 </div>

@@ -18,10 +18,6 @@
  */
 package org.nuxeo.ecm.webapp.versioning;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +58,10 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 /**
  * Web action bean for document versioning. Used also by other seam components
  * through injection.
@@ -83,7 +83,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     private static final String VER_INFO_UNDEF_KEY = "message.versioning.editoptionsinfo.undefined";
 
-    /** The schema containing version info. */
+    /**
+     * The schema containing version info.
+     */
     private static final String UID_SCHEMA = "uid";
 
     @In(create = true)
@@ -345,7 +347,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             rendered = Boolean.FALSE;
             if (navigationContext.getCurrentDocument() != null) {
                 Map<String, String> options = getAvailableVersioningOptionsMap();
-                if (options != null && !options.isEmpty()) {
+                // do not display the versioning options if there is only one
+                // choice
+                if (options != null && options.size() > 1) {
                     rendered = Boolean.TRUE;
                 }
             }
