@@ -33,8 +33,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
@@ -71,7 +71,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
@@ -452,7 +451,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             for (String fqn : entry.getValue()) {
                 Column col = columns.get(fqn);
-                tables.put(col.getTable().getName(), col.getTable());
+                tables.put(col.getTable().getPhysicalName(), col.getTable());
             }
         }
         // per qualifier, include hier in fragments
@@ -533,7 +532,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             // join other fragments for qualifier
 
             for (Table t : qualTables.get(qual)) {
-                if (t.getName().equals(table.getName())) {
+                if (t.getKey().equals(table.getKey())) {
                     // this one was the first, already done
                     continue;
                 }
@@ -953,7 +952,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     protected String getTableAlias(Table table, String qual) {
-        return "_" + qual + "_" + table.getName();
+        return "_" + qual + "_" + table.getPhysicalName();
     }
 
     protected static Map<String, String> systemPropNames = new HashMap<String, String>();

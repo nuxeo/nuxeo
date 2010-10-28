@@ -295,7 +295,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             String tableMainId = table.getColumn(model.MAIN_KEY).getFullQuotedName();
 
             for (Table t : allTables.get(qual).values()) {
-                if (t.getName().equals(table.getName())) {
+                if (t.getKey().equals(table.getKey())) {
                     // this one was the first, already done
                     continue;
                 }
@@ -548,7 +548,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         // per qualifier, include hier in fragments
         for (String qual : allTables.keySet()) {
             Table table = getTable(hierTable, qual);
-            String fragment = table.getName();
+            String fragment = table.getKey();
             Map<String, Table> tablesByFragment = allTables.get(qual);
             if (!tablesByFragment.containsKey(fragment)) {
                 tablesByFragment.put(fragment, table);
@@ -670,7 +670,7 @@ public class CMISQLQueryMaker implements QueryMaker {
      */
     protected void recordColumnFragment(String qual, Column column) {
         Table table = column.getTable();
-        String fragment = table.getRealTable().getName();
+        String fragment = table.getKey();
         Map<String, Table> tablesByFragment = allTables.get(qual);
         if (tablesByFragment == null) {
             tablesByFragment = new HashMap<String, Table>();
@@ -779,7 +779,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     }
 
     protected String getTableAlias(Table table, String qual) {
-        return "_" + qual + "_" + table.getName();
+        return "_" + qual + "_" + table.getPhysicalName();
     }
 
     /**
