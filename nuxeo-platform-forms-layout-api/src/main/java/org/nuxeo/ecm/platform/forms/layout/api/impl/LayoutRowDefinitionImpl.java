@@ -94,6 +94,11 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     }
 
     @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return properties;
+    }
+
+    @Override
     public int getSize() {
         return widgets.length;
     }

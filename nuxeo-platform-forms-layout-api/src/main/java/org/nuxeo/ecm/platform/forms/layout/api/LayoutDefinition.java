@@ -40,6 +40,11 @@ public interface LayoutDefinition extends Serializable {
     String getTemplate(String mode);
 
     /**
+     * Returns templates by mode
+     */
+    Map<String, String> getTemplates();
+
+    /**
      * Returns the widget definition with given name.
      * <p>
      * Returns null if a widget with this name is not found within the layout.
@@ -64,4 +69,8 @@ public interface LayoutDefinition extends Serializable {
      */
     Map<String, Serializable> getProperties(String layoutMode);
 
+    /**
+     * Returns a map of properties by mode.
+     */
+    Map<String, Map<String, Serializable>> getProperties();
 }

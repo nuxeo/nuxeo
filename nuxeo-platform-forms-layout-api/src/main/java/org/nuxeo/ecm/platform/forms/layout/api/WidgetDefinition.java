@@ -75,9 +75,19 @@ public interface WidgetDefinition extends Serializable {
     String getLabel(String mode);
 
     /**
+     * Returns labels by mode.
+     */
+    Map<String, String> getLabels();
+
+    /**
      * Returns the help label to use in a given mode.
      */
     String getHelpLabel(String mode);
+
+    /**
+     * Returns help labels by mode.
+     */
+    Map<String, String> getHelpLabels();
 
     /**
      * Returns true if all labels are messages that need to be translated.
@@ -95,6 +105,16 @@ public interface WidgetDefinition extends Serializable {
      * by the widget type.
      */
     Map<String, Serializable> getProperties(String layoutMode, String mode);
+
+    /**
+     * Returns properties by mode.
+     */
+    Map<String, Map<String, Serializable>> getProperties();
+
+    /**
+     * Returns properties by widget mode.
+     */
+    Map<String, Map<String, Serializable>> getWidgetModeProperties();
 
     /**
      * Returns sub widget definitions.

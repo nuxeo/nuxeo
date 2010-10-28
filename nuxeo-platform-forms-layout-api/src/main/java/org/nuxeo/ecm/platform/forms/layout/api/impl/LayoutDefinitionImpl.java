@@ -129,6 +129,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     }
 
     @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return properties;
+    }
+
+    @Override
     public LayoutRowDefinition[] getRows() {
         return rows;
     }
@@ -143,6 +148,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
             return template;
         }
         return null;
+    }
+
+    @Override
+    public Map<String, String> getTemplates() {
+        return templates;
     }
 
     @Override

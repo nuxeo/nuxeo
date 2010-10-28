@@ -159,12 +159,22 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
+    public Map<String, String> getHelpLabels() {
+        return helpLabels;
+    }
+
+    @Override
     public String getLabel(String mode) {
         String label = labels.get(mode);
         if (label == null) {
             label = labels.get(BuiltinModes.ANY);
         }
         return label;
+    }
+
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
     }
 
     @Override
@@ -204,6 +214,16 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             res.putAll(widgetModeProps);
             return res;
         }
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return properties;
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getWidgetModeProperties() {
+        return widgetModeProperties;
     }
 
     @Override
@@ -255,4 +275,5 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         return res;
     }
+
 }

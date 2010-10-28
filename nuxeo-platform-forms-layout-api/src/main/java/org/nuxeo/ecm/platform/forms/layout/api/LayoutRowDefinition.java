@@ -61,4 +61,9 @@ public interface LayoutRowDefinition extends Serializable {
      * Returns a map of properties to use in a given mode.
      */
     Map<String, Serializable> getProperties(String layoutMode);
+
+    /**
+     * Returns properties by mode.
+     */
+    Map<String, Map<String, Serializable>> getProperties();
 }

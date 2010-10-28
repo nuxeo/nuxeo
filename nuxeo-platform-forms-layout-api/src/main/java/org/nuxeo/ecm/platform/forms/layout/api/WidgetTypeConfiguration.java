@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Widget configuration interface
@@ -34,6 +35,8 @@ public interface WidgetTypeConfiguration extends Serializable {
     List<String> getCategories();
 
     List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode);
+
+    Map<String, List<LayoutDefinition>> getPropertyLayouts();
 
     // TODO: provide layout definitions for fields?
 }
