@@ -38,7 +38,6 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.versioning");
         deployBundle("org.nuxeo.ecm.platform.ui");
         openSession();
     }
