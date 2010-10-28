@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
@@ -65,6 +67,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @SuppressWarnings("unchecked")
 public class ExportedDocumentImpl implements ExportedDocument {
+
+    private static final Log log = LogFactory.getLog(ExportedDocumentImpl.class);
 
     private static final Random random = new Random();
 
@@ -230,7 +234,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
                         lifeCyclePolicy);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         } // end of lifecycle
 
         // write security

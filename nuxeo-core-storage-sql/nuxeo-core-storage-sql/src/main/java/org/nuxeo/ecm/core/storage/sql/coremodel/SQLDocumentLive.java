@@ -143,26 +143,6 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     /**
-     * Checks if the document is "dirty", which means that a change on it was
-     * made since the last time a snapshot of it was done (for publishing).
-     */
-    @Override
-    public boolean isDirty() throws DocumentException {
-        Boolean value = (Boolean) getProperty(Model.MISC_DIRTY_PROP).getValue();
-        // not set implies new => dirty
-        return value == null ? true : value.booleanValue();
-    }
-
-    /**
-     * Marks the document "dirty", which means that a change on it was made
-     * since the last time a snapshot of it was done (for publishing).
-     */
-    @Override
-    public void setDirty(boolean value) throws DocumentException {
-        setBoolean(Model.MISC_DIRTY_PROP, value);
-    }
-
-    /**
      * Reads into the {@link DocumentPart} the values from this
      * {@link SQLDocument}.
      */
@@ -241,8 +221,6 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     static {
         systemPropNameMap = new HashMap<String, String>();
-        systemPropNameMap.put("WfinProgress", Model.MISC_WF_IN_PROGRESS_PROP);
-        systemPropNameMap.put("WfIncOption", Model.MISC_WF_INC_OPTION_PROP);
         systemPropNameMap.put(BINARY_TEXT_SYS_PROP,
                 Model.FULLTEXT_BINARYTEXT_PROP);
     }
@@ -391,14 +369,27 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
+    public DocumentVersion getBaseVersion() throws DocumentException {
+        if (isCheckedOut()) {
+            return null;
+        }
+        String id = getString(Model.MAIN_BASE_VERSION_PROP);
+        if (id == null) {
+            // shouldn't happen
+            return null;
+        }
+        return (DocumentVersion) session.getDocumentByUUID(id);
+    }
+
+    @Override
     public Document getSourceDocument() throws DocumentException {
         return this;
     }
 
     @Override
-    public Document checkIn(String label, String description)
+    public DocumentVersion checkIn(String label, String checkinComment)
             throws DocumentException {
-        return session.checkIn(getNode(), label, description);
+        return session.checkIn(getNode(), label, checkinComment);
     }
 
     @Override

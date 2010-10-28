@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.repository;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -37,6 +39,8 @@ import org.nuxeo.runtime.api.Framework;
 // name is required by config
 @XObject(value = "repository", order = { "@name" })
 public class RepositoryDescriptor {
+
+    private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
     @XNode("@name")
     private String name;
@@ -103,7 +107,7 @@ public class RepositoryDescriptor {
         try {
             FileUtils.writeFile(configFile, content);
         } catch (IOException e) {
-            e.printStackTrace(); // TODO
+            log.error(e, e);
         }
     }
 

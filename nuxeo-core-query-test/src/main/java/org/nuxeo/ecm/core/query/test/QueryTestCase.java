@@ -422,14 +422,14 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile1_description", dml.get(0).getPropertyValue(
-                "dc:description"));
+        assertEquals("testfile1_description",
+                dml.get(0).getPropertyValue("dc:description"));
 
         sql = "SELECT * FROM Document WHERE dc:title LIKE 'testfile%' ORDER BY dc:description DESC";
         dml = session.query(sql);
         assertEquals(4, dml.size());
-        assertEquals("testfile4_DESCRIPTION4", dml.get(0).getPropertyValue(
-                "dc:description"));
+        assertEquals("testfile4_DESCRIPTION4",
+                dml.get(0).getPropertyValue("dc:description"));
     }
 
     public void testOrderBySeveralColumns() throws Exception {
@@ -1183,7 +1183,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         /*
          * ecm:versionLabel
          */
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '1'");
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1'");
         assertIdSet(dml, version.getId());
 
         /*
@@ -1465,6 +1465,26 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster world OR pete'";
         dml = session.query(query);
         assertEquals(1, dml.size());
+    }
+
+    public void testFulltextExpressionPhrase() throws Exception {
+        String query;
+        DocumentModelList dml;
+
+        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        file1.setPropertyValue("dc:title",
+                "you can learn international law easily");
+        file1 = session.createDocument(file1);
+        session.save();
+        sleepForFulltext();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '\"international law\"'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = '\"learn law\"'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
     }
 
     public void testFulltextSecondary() throws Exception {

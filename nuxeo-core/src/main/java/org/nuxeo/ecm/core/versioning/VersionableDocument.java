@@ -35,11 +35,11 @@ public interface VersionableDocument {
      * Creates a new version.
      *
      * @param label the version label
-     * @param description the version description
+     * @param checkinComment the checkin comment
      * @return the created version
      * @throws DocumentException
      */
-    Document checkIn(String label, String description)
+    DocumentVersion checkIn(String label, String checkinComment)
             throws DocumentException;
 
     void checkOut() throws DocumentException;
@@ -68,7 +68,6 @@ public interface VersionableDocument {
      * @throws DocumentException
      */
     DocumentVersion getLastVersion() throws DocumentException;
-
 
     /**
      * Gets the head ("live") version of this document.
@@ -113,5 +112,14 @@ public interface VersionableDocument {
      * @return
      */
     boolean isVersion();
+
+    /**
+     * Gets the version to which a checked in document is linked.
+     * <p>
+     * Returns {@code null} for a checked out document or a version or a proxy.
+     *
+     * @return the version, or {@code null}
+     */
+    DocumentVersion getBaseVersion() throws DocumentException;
 
 }

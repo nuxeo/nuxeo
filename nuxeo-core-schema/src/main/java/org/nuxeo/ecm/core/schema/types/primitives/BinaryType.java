@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.schema.types.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.core.schema.types.PrimitiveType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class BinaryType extends PrimitiveType {
+
+    private static final Log log = LogFactory.getLog(BinaryType.class);
 
     public static final String ID = "binary";
 
@@ -80,7 +84,7 @@ public final class BinaryType extends PrimitiveType {
             try {
                 return FileUtils.read((InputStream) object);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
                 return null;
             }
         }

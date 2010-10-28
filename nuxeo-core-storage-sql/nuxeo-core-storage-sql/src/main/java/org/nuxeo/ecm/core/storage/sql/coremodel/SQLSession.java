@@ -410,8 +410,6 @@ public class SQLSession implements Session {
             props.put(Model.MISC_LIFECYCLE_STATE_PROP,
                     properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
             props.put(Model.LOCK_PROP, properties.get(CoreSession.IMPORT_LOCK));
-            props.put(Model.MISC_DIRTY_PROP,
-                    properties.get(CoreSession.IMPORT_DIRTY));
             props.put(Model.MAIN_MAJOR_VERSION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(Model.MAIN_MINOR_VERSION_PROP,
@@ -760,11 +758,12 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document checkIn(Node node, String label, String description)
-            throws DocumentException {
+    protected DocumentVersion checkIn(Node node, String label,
+            String checkinComment) throws DocumentException {
         try {
-            Node versionNode = session.checkIn(node, label, description);
-            return versionNode == null ? null : newDocument(versionNode);
+            Node versionNode = session.checkIn(node, label, checkinComment);
+            return versionNode == null ? null
+                    : (DocumentVersion) newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -778,8 +777,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected void restore(Node node, Node version)
-            throws DocumentException {
+    protected void restore(Node node, Node version) throws DocumentException {
         try {
             session.restore(node, version);
         } catch (StorageException e) {

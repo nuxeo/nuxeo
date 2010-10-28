@@ -36,11 +36,12 @@ import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.SessionSynchronization;
 import javax.ejb.Stateful;
+import javax.interceptor.Interceptors;
 import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
+import org.jboss.annotation.security.SecurityDomain;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CallerPrincipalProvider;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.RollbackClientException;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.model.Document;
@@ -73,7 +75,8 @@ import org.nuxeo.ecm.core.model.Session;
 @Stateful
 @Local(DocumentManagerLocal.class)
 @Remote(CoreSession.class)
-@SerializedConcurrentAccess
+@SecurityDomain("nuxeo-ecm")
+@Interceptors({ReentrantCallsShieldInterceptor.class})
 public class DocumentManagerBean extends AbstractSession implements
         DocumentManagerLocal, SessionSynchronization {
 
@@ -90,8 +93,13 @@ public class DocumentManagerBean extends AbstractSession implements
     @Transient
     protected transient Session session;
 
+    // Because of NXP-5782 this field can not be made transient
+    // otherwise it will break after a passivation
+    // => we will fetch the caller Principal only the first time
     @Resource
-    transient EJBContext context;
+    protected EJBContext context;
+
+    protected Principal callerPrincipal=null;
 
     @Override
     @Remove
@@ -140,14 +148,16 @@ public class DocumentManagerBean extends AbstractSession implements
      * @return
      */
     protected Principal getCallerPrincipal() {
-        Principal principal = context.getCallerPrincipal();
-        if (!(principal instanceof NuxeoPrincipal)) {
+        if (callerPrincipal==null) {
+            callerPrincipal = context.getCallerPrincipal();
+        }
+        if (!(callerPrincipal instanceof NuxeoPrincipal)) {
             NuxeoPrincipal np = CallerPrincipalProvider.getInstance().getCallerPrincipal();
             if (np != null) {
-                principal = np;
+                callerPrincipal = np;
             }
         }
-        return principal;
+        return callerPrincipal;
     }
 
     @Override
@@ -327,15 +337,6 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    protected void removeDocument(Document doc) throws ClientException {
-        try {
-            super.removeDocument(doc);
-        } catch (Throwable e) {
-            throw new RollbackClientException(e);
-        }
-    }
-
-    @Override
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         try {
             super.removeDocuments(docRefs);
@@ -444,10 +445,10 @@ public class DocumentManagerBean extends AbstractSession implements
     }
 
     @Override
-    public DocumentModel checkIn(DocumentRef docRef, String description)
-            throws ClientException {
+    public DocumentRef checkIn(DocumentRef docRef, VersioningOption option,
+            String checkinComment) throws ClientException {
         try {
-            return super.checkIn(docRef, description);
+            return super.checkIn(docRef, option, checkinComment);
         } catch (Throwable e) {
             throw new RollbackClientException(e);
         }
@@ -586,5 +587,4 @@ public class DocumentManagerBean extends AbstractSession implements
             throw new RollbackClientException(t);
         }
     }
-
 }

@@ -147,16 +147,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public boolean isDirty() throws DocumentException {
-        return target.isDirty();
-    }
-
-    @Override
-    public void setDirty(boolean value) throws DocumentException {
-        target.setDirty(value);
-    }
-
-    @Override
     public void readDocumentPart(DocumentPart dp) throws Exception {
         target.readDocumentPart(dp);
     }
@@ -249,13 +239,18 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
+    public DocumentVersion getBaseVersion() throws DocumentException {
+        return null;
+    }
+
+    @Override
     public Document getSourceDocument() throws DocumentException {
         // this is what the rest of Nuxeo expects for a proxy
         return target;
     }
 
     @Override
-    public Document checkIn(String label, String description)
+    public DocumentVersion checkIn(String label, String checkinComment)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }

@@ -32,4 +32,9 @@ public class DataModelMapImpl extends HashMap<String, DataModel>  implements Dat
 
     private static final long serialVersionUID = 8797227773838852959L;
 
+    @Override
+    public String toString() {
+        return values().toString();
+    }
+
 }

@@ -135,13 +135,8 @@ public class DataModelImpl implements DataModel {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(DocumentModelImpl.class.getSimpleName());
-        buf.append(" {");
-        buf.append(" schema: ");
-        buf.append(getSchema());
-        buf.append(dp != null ? "," + dp.size() + " fields" :  " N/A yet.");
-        return buf.toString();
+        return getClass().getSimpleName() + '(' + getSchema()
+                + (dp.isDirty() ? "*" : "") + ')';
     }
 
     @Override

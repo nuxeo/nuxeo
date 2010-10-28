@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.io.impl.plugins;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 // modify core session to add a batch create method and use it
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class DocumentModelInjector extends AbstractDocumentModelWriter {
+
+    private static final Log log = LogFactory.getLog(DocumentModelInjector.class);
 
    /**
     *
@@ -76,7 +80,7 @@ public class DocumentModelInjector extends AbstractDocumentModelWriter {
                     "Failed to import document in repository: "
                             + e.getMessage());
             ioe.setStackTrace(e.getStackTrace());
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
     }

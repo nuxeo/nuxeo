@@ -19,18 +19,22 @@
     <outbound-resourceadapter>
       <connection-definition>
         <managedconnectionfactory-class>org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionFactoryImpl</managedconnectionfactory-class>
-        <connectionfactory-interface>org.nuxeo.ecm.core.storage.sql.Repository</connectionfactory-interface>
-        <connectionfactory-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl</connectionfactory-impl-class>
-        <connection-interface>org.nuxeo.ecm.core.storage.sql.Session</connection-interface>
-        <connection-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl</connection-impl-class>
-        <!-- this is not an error, JBoss 4 uses a "non-standard" schema -->
-        <transaction-support>XATransaction</transaction-support>
         <config-property>
           <config-property-name>Name</config-property-name>
           <config-property-type>java.lang.String</config-property-type>
           <config-property-value>Nuxeo Core SQL Storage</config-property-value>
         </config-property>
+        <connectionfactory-interface>org.nuxeo.ecm.core.storage.sql.Repository</connectionfactory-interface>
+        <connectionfactory-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl</connectionfactory-impl-class>
+        <connection-interface>org.nuxeo.ecm.core.storage.sql.Session</connection-interface>
+        <connection-impl-class>org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl</connection-impl-class>
       </connection-definition>
+      <transaction-support>XATransaction</transaction-support>
+      <authentication-mechanism>
+        <authentication-mechanism-type>BasicPassword</authentication-mechanism-type>
+        <credential-interface>javax.resource.spi.security.PasswordCredential</credential-interface>
+      </authentication-mechanism>
+      <reauthentication-support>false</reauthentication-support>
     </outbound-resourceadapter>
   </resourceadapter>
 

@@ -41,7 +41,6 @@ public class SQLSimpleProperty extends SQLBaseProperty {
     protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
             Arrays.asList( //
                     Model.FULLTEXT_BINARYTEXT_PROP, //
-                    Model.MISC_DIRTY_PROP, //
                     Model.MISC_LIFECYCLE_STATE_PROP, //
                     DC_ISSUED //
             ));

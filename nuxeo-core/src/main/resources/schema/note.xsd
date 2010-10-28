@@ -9,9 +9,4 @@
   <xs:element name="note" type="xs:string"/>
   <xs:element name="mime_type" type="xs:string"/>
 
-  <xs:element name="stylesheet_filename" type="xs:string" />
-  <xs:element name="stylesheet_content" type="nxs:content" />
-
-  <xs:element name="transform_result" type="nxs:content"/>
-
 </xs:schema>

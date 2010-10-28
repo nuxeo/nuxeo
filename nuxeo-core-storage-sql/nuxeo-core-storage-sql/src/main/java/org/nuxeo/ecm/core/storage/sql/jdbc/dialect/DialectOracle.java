@@ -316,7 +316,7 @@ public class DialectOracle extends Dialect {
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltextOrAndAndNot(ft, "OR", "AND", "NOT");
+        return translateFulltext(ft, "OR", "AND", "NOT", "");
     }
 
     // SELECT ..., SCORE(1) / 100

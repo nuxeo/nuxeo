@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.AbstractSAXParser;
@@ -39,13 +42,19 @@ public class HtmlParser extends AbstractSAXParser {
 
     private static final Log log = LogFactory.getLog(HtmlParser.class);
 
-    private StringBuffer buffer;
+    protected StringBuilder buffer;
 
-    private String tagFilter;
+    protected String tagFilter;
 
-    private Boolean inFilter;
+    protected Boolean inFilter;
 
-    private Boolean noFilter;
+    protected Boolean noFilter;
+
+    protected String skipUntillClosed;
+
+    protected Set<String> newLinesTags = new HashSet<String>();
+
+    protected Set<String> skippedTags = new HashSet<String>();
 
     public HtmlParser() {
         super(new HTMLConfiguration());
@@ -65,8 +74,8 @@ public class HtmlParser extends AbstractSAXParser {
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     false);
         } catch (SAXException e) {
-            log.debug("Could not switch parser to non-validating: " +
-                    e.getMessage());
+            log.debug("Could not switch parser to non-validating: "
+                    + e.getMessage());
         }
         inFilter = false;
         if (tagFilter == null || "".equals(tagFilter)) {
@@ -75,6 +84,23 @@ public class HtmlParser extends AbstractSAXParser {
             this.tagFilter = tagFilter;
             noFilter = false;
         }
+
+        // initialize the skipped tags
+        skippedTags.add("script");
+        skippedTags.add("style");
+        skippedTags.add("link");
+
+        // initialize the new line tags
+        newLinesTags.add("div");
+        newLinesTags.add("p");
+        newLinesTags.add("br");
+        newLinesTags.add("pre");
+        newLinesTags.add("h1");
+        newLinesTags.add("h2");
+        newLinesTags.add("h3");
+        newLinesTags.add("h4");
+        newLinesTags.add("h5");
+        newLinesTags.add("h6");
     }
 
     @Override
@@ -83,6 +109,13 @@ public class HtmlParser extends AbstractSAXParser {
         super.startElement(element, attributes, augs);
         if (!noFilter && tagFilter.equalsIgnoreCase(element.localpart)) {
             inFilter = true;
+        }
+        if (skipUntillClosed == null
+                && skippedTags.contains(element.localpart.toLowerCase())) {
+            // this strategy won't work for nested skipped tags but this is not
+            // the case for script and style tags. If we want to add support for
+            // nested skipped tags we should use a stack instead
+            skipUntillClosed = element.localpart.toLowerCase();
         }
     }
 
@@ -93,55 +126,44 @@ public class HtmlParser extends AbstractSAXParser {
         if (!noFilter && tagFilter.equals(element.localpart)) {
             inFilter = false;
         }
+        if (skipUntillClosed != null
+                && skipUntillClosed.equals(element.localpart.toLowerCase())) {
+            skipUntillClosed = null;
+        }
+        if (newLinesTags.contains(element.localpart.toLowerCase())) {
+            buffer.append("\n\n");
+        }
     }
 
     @Override
     public void startDocument(XMLLocator arg0, String arg1,
             NamespaceContext arg2, Augmentations arg3) throws XNIException {
         super.startDocument(arg0, arg1, arg2, arg3);
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
     }
 
     @Override
     public void characters(XMLString xmlString, Augmentations augmentations)
             throws XNIException {
         super.characters(xmlString, augmentations);
-        if (noFilter || inFilter) {
+        if ((noFilter || inFilter) && skipUntillClosed == null) {
             buffer.append(xmlString.toString());
         }
-    }
-
-    private String filterAndJoin(String text) {
-        boolean space = false;
-        StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-
-            if (c == '\n' || c == ' ' || Character.isWhitespace(c)) {
-                if (!space) {
-                    space = true;
-                    buffer.append(' ');
-                }
-                continue;
-            }
-            if (!Character.isLetter(c) && !Character.isDigit(c)) {
-                if (!space) {
-                    space = true;
-                    buffer.append(' ');
-                }
-                continue;
-            }
-            space = false;
-            buffer.append(c);
-        }
-        return buffer.toString();
     }
 
     /**
      * @return the parsed content (as a String).
      */
     public String getContents() {
-        return filterAndJoin(buffer.toString());
+        // remove trailing space, multiple consecutive spaces and multiple
+        // consecutive new lines (except double new lines that can be used to
+        // mark new paragraphs).
+        String text = buffer.toString();
+        text = text.replaceAll(" *\n", "\n"); // clean trailing spaces
+        text = text.replaceAll(" +", " "); // clean multiple spaces
+        text = text.replaceAll("\\n\\n+", "\n\n"); // clean multiple lines
+        return text;
+
     }
 
 }

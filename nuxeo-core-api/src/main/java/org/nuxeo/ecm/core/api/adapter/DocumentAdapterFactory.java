@@ -26,6 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface DocumentAdapterFactory {
 
-    Object getAdapter(DocumentModel doc, Class itf);
+    Object getAdapter(DocumentModel doc, Class<?> itf);
 
 }

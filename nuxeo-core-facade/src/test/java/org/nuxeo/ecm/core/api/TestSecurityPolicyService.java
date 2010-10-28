@@ -27,11 +27,13 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -70,8 +72,13 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         folder.setProperty("secupolicy", "securityLevel", 4L);
         folder = session.createDocument(folder);
         session.save();
-        closeSession(session);
 
+        // test permission for 'foo' user using hasPermission
+        Principal fooUser = new UserPrincipal("foo");
+        assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
+        
+        closeSession(session);
+        
         // open session as anonymous and set access on user info
         session = openSessionAs(ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");

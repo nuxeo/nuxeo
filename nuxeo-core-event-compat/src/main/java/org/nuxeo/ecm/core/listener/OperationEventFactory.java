@@ -71,15 +71,17 @@ public class OperationEventFactory {
     public static OperationEvent createEvent(CoreEvent coreEvent) {
         Map<String, ?> info = coreEvent.getInfo();
         String sessionId = null;
+        CoreSession session = null;
         DocumentModel doc = (DocumentModel) coreEvent.getSource();
         if (doc != null) {
             sessionId = doc.getSessionId();
+            session = doc.getCoreSession();
         }
         if (info != null) {
             sessionId = (String) info.get(CoreEventConstants.SESSION_ID);
         }
-        CoreSession session = null;
-        if (sessionId != null) {
+
+        if (sessionId != null && session==null) {
             session = CoreInstance.getInstance().getSession(sessionId);
         }
         if (session != null) {
