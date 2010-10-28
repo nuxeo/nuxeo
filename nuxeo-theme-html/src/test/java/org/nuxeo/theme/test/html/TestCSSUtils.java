@@ -222,29 +222,29 @@ public class TestCSSUtils extends NXRuntimeTestCase {
     }
 
     public void testExtractCssImages() {
-        assertEquals("url(image.png)",
-                CSSUtils.extractCssImages("url(image.png)").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url( /image.png )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( /image.png )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( \" /image.png \" )").get(0));
-        assertEquals("url(/image.png)",
-                CSSUtils.extractCssImages("url  ( \' /image.png \' )").get(0));
-        assertEquals("url(image1.png)",
-                CSSUtils.extractCssImages("  url(image1.png)  ").get(0));
+        assertEquals("url(image.png)", CSSUtils.extractCssImages(
+                "url(image.png)").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
+                "url( /image.png )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
+                "url  ( /image.png )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
+                "url  ( \" /image.png \" )").get(0));
+        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
+                "url  ( \' /image.png \' )").get(0));
+        assertEquals("url(image1.png)", CSSUtils.extractCssImages(
+                "  url(image1.png)  ").get(0));
     }
 
     public void testReplaceColor() {
-        assertEquals("\"orange\"",
-                CSSUtils.replaceColor("#fc0", "#fc0", "\"orange\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("#FF0", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("#ffff00", "#ff0", "\"yellow\""));
-        assertEquals("\"yellow\"",
-                CSSUtils.replaceColor("rgb(255, 255,0)", "#ff0", "\"yellow\""));
+        assertEquals("\"orange\"", CSSUtils.replaceColor("#fc0", "#fc0",
+                "\"orange\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("#FF0", "#ff0",
+                "\"yellow\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("#ffff00", "#ff0",
+                "\"yellow\""));
+        assertEquals("\"yellow\"", CSSUtils.replaceColor("rgb(255, 255,0)",
+                "#ff0", "\"yellow\""));
     }
 
     public void testNamedStyles() {
@@ -284,6 +284,14 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         String expected = Utils.readResourceAsString("test1-expected.css");
         String actual = CSSUtils.compressSource(Utils.readResourceAsString("test1.css"));
         assertEquals(expected, actual);
+    }
+
+    public void testFixPartialUrls() throws IOException {
+        String CSS_CONTEXT_PATH = "/nuxeo/css/";
+        String source = Utils.readResourceAsString("resource.css");
+        String expandedSource = Utils.readResourceAsString("resource-expanded.css");
+        assertEquals(expandedSource, CSSUtils.expandPartialUrls(source,
+                CSS_CONTEXT_PATH));
     }
 
 }

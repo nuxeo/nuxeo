@@ -17,6 +17,7 @@ package org.nuxeo.theme.resources;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -31,6 +32,8 @@ public final class ResourceType implements Type {
 
     @XNode("url")
     public String url;
+
+    public String contextPath;
 
     @XNode("shrinkable")
     public boolean shrinkable = true;
@@ -53,6 +56,11 @@ public final class ResourceType implements Type {
 
     public String getTypeName() {
         return name;
+    }
+
+    @XNode("context-path")
+    public void setContextPath(String contextPath) {
+        this.contextPath = Framework.expandVars(contextPath);
     }
 
     public String[] getDependencies() {
@@ -85,6 +93,10 @@ public final class ResourceType implements Type {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getContextPath() {
+        return contextPath;
     }
 
     public void setShrinkable(boolean shrinkable) {

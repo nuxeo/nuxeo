@@ -77,13 +77,13 @@ public final class CSSUtils {
     private static final Pattern rgbColorPattern = Pattern.compile(
             ".*?rgb\\s*\\(\\s*([0-9,\\s]+)\\s*\\).*?", Pattern.DOTALL);
 
-    private static final Pattern imageUrlPattern = Pattern.compile(
+    private static final Pattern urlPattern = Pattern.compile(
             "^url\\s*\\([\\s,\",\']*(.*?)[\\s,\",\']*\\)$", Pattern.DOTALL);
 
-    private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
+    private static final Pattern partialUrlPattern = Pattern.compile(
+            "url\\s*\\([\\s,\",\']*([^/].*?)[\\s,\",\']*\\)", Pattern.DOTALL);
 
-    private static final String[] lengthUnits = { "%", "em", "px", "ex", "pt",
-            "in", "cm", "mm", "pc" };
+    private static final Pattern rgbDigitPattern = Pattern.compile("([0-9]{1,3},[0-9]{1,3},[0-9]{1,3})");
 
     private static final Properties cssProperties = new OrderedProperties();
 
@@ -315,7 +315,7 @@ public final class CSSUtils {
 
     public static String replaceImage(String text, String before, String after) {
         text = text.trim();
-        Matcher m = imageUrlPattern.matcher(text);
+        Matcher m = urlPattern.matcher(text);
         if (m.matches()) {
             String found = String.format("url(%s)", m.group(1));
             if (found.equals(before)) {
@@ -346,8 +346,8 @@ public final class CSSUtils {
         while (m.find()) {
             final String[] rgb = m.group(1).split(",");
             final StringBuffer hexcolor = new StringBuffer();
-            for (int i = 0; i < rgb.length; i++) {
-                final int val = Integer.parseInt(rgb[i]);
+            for (String element : rgb) {
+                final int val = Integer.parseInt(element);
                 if (val < 16) {
                     hexcolor.append("0");
                 }
@@ -376,7 +376,7 @@ public final class CSSUtils {
     public static List<String> extractCssImages(String value) {
         final List<String> images = new ArrayList<String>();
         value = value.trim();
-        Matcher m = imageUrlPattern.matcher(value);
+        Matcher m = urlPattern.matcher(value);
         if (m.matches()) {
             images.add(String.format("url(%s)", m.group(1)));
         }
@@ -448,4 +448,13 @@ public final class CSSUtils {
         return compressedSource;
     }
 
+    public static String expandPartialUrls(String text, String cssContextPath) {
+        Matcher m = partialUrlPattern.matcher(text);
+        if (!cssContextPath.endsWith("/")) {
+            cssContextPath += "/";
+        }
+        String replacement = String.format("url(%s$1)",
+                Matcher.quoteReplacement(cssContextPath));
+        return m.replaceAll(replacement);
+    }
 }

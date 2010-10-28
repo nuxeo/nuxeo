@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.html.CSSUtils;
@@ -141,8 +142,21 @@ public final class Resources extends HttpServlet implements Serializable {
                         }
                     }
                 } else if (resourceName.endsWith(".css")) {
+                    // fix CSS url(...) declarations;
+                    String cssContextPath = resource.getContextPath();
+                    if (cssContextPath != null) {
+                        source = CSSUtils.expandPartialUrls(source,
+                                cssContextPath);
+                    }
+
+                    // expands system variables
+                    source = Framework.expandVars(source);
+
+                    // expand ${basePath}
+                    // TODO use ${org.nuxeo.ecm.contextPath} instead?
                     source = source.replaceAll("\\$\\{basePath\\}",
                             Matcher.quoteReplacement(basePath));
+
                     if (resource.isShrinkable()) {
                         try {
                             source = CSSUtils.compressSource(source);
