@@ -112,6 +112,10 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
             registerCustomThemes();
         }
         ThemeManager.updateThemeDescriptors();
+
+        // setup resource banks
+
+        BankManager.setupBanks();
     }
 
     @Override

@@ -25,16 +25,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.yaml.snakeyaml.Yaml;
 
 public class BankManager {
+    private static final Log log = LogFactory.getLog(BankManager.class);
+
     private static File BANKS_DIR;
+
+    private static List<String> FOLDER_NAMES = Arrays.asList("style", "preset",
+            "image");
 
     private static final String CUSTOM_COLLECTION_DIRNAME = "custom";
 
@@ -63,6 +71,24 @@ public class BankManager {
             names.add(bankFile.getName());
         }
         return names;
+    }
+
+    public static void setupBanks() {
+        for (String bankName : getBankNames()) {
+            try {
+                setupBankStructure(bankName);
+            } catch (IOException e) {
+                log.error("Could not create bank structure: " + bankName, e);
+            }
+        }
+    }
+
+    public static void setupBankStructure(String bankName) throws IOException {
+        for (String folderName : FOLDER_NAMES) {
+            String folderPath = String.format("/%s/%s",
+                    CUSTOM_COLLECTION_DIRNAME, folderName);
+            createFolder(bankName, folderPath);
+        }
     }
 
     /*
@@ -151,7 +177,11 @@ public class BankManager {
             String typeName) throws IOException {
         File file = getInfoFile(bank, collection, typeName);
         Yaml yaml = new Yaml();
-        return (Map<String, Object>) yaml.load(BankUtils.getFileContent(file));
+        String content = "";
+        if (file.exists()) {
+            content = BankUtils.getFileContent(file);
+        }
+        return (Map<String, Object>) yaml.load(content);
     }
 
     /*
@@ -160,7 +190,7 @@ public class BankManager {
     public static void importBankData(String bankName, String collection,
             URL srcFileUrl) throws IOException {
         if (CUSTOM_COLLECTION_DIRNAME.equals(collection)) {
-            throw new IOException("Resource bank collection name not allowed: "
+            throw new IOException("Bank collection name not allowed: "
                     + CUSTOM_COLLECTION_DIRNAME);
         }
         InputStream in = null;
@@ -190,16 +220,27 @@ public class BankManager {
         return out.toByteArray();
     }
 
-    public static void createFile(String path, String fileName, String content)
+    public static File createFolder(String path, String folderName)
             throws IOException {
-        createFile(path, fileName, content.getBytes());
+        String folderPath = String.format("%s/%s", path, folderName);
+        File file = getFile(folderPath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return file;
     }
 
-    public static void createFile(String path, String fileName, byte[] data)
+    public static File createFile(String path, String fileName, String content)
+            throws IOException {
+        return createFile(path, fileName, content.getBytes());
+    }
+
+    public static File createFile(String path, String fileName, byte[] data)
             throws IOException {
         File file = new File(getFile(path), fileName);
         file.createNewFile();
         FileUtils.writeFile(file, data);
+        return file;
     }
 
     public static void editFile(String path, String fileName, String content)
