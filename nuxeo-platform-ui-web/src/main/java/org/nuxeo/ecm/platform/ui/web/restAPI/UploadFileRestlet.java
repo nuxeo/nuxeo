@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.List;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -61,8 +59,6 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
     public static final String LIVED_AUTOVERSIONING_PROP = "lived.autoversioning";
 
     public static final String POLICY_MINOR_INCR = "minor";
-
-    public static final String POLICY_MINOR_INCR_ON_RULES = "minor_on_rules";
 
     private static final long serialVersionUID = -6167207806181917456L;
 
@@ -173,25 +169,6 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
     protected boolean doAutoMinorIncrement(String policy, DocumentModel doc) {
         if (POLICY_MINOR_INCR.equals(policy)) {
             return true;
-        }
-        if (POLICY_MINOR_INCR_ON_RULES.equals(policy)) {
-
-            VersioningService versioningService = Framework.getLocalService(VersioningService.class);
-
-            List<VersioningOption> options;
-            try {
-                options = versioningService.getSaveOptions(doc);
-            } catch (ClientException e) {
-                throw new Error(
-                        "An unexpected error occured while getting the version increment edit options",
-                        e);
-            }
-
-            if (options.contains(VersioningOption.MINOR)
-                    && !options.contains(VersioningOption.MAJOR)) {
-                return true;
-            }
-
         }
         return false;
 
