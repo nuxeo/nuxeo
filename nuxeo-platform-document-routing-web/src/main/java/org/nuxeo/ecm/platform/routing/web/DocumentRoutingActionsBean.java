@@ -195,8 +195,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         webActions.resetTabList();
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
+
     public String saveRouteAsNewInstance() {
-        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(), documentManager);
+        getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
+                documentManager);
         return null;
     }
 
@@ -239,7 +241,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     protected ArrayList<LocalizableDocumentRouteElement> computeRelatedRouteElements()
             throws ClientException {
         List<DocumentModel> routes = findRelatedRouteDocument();
-        if(routes == null || routes.isEmpty())   {
+        if (routes == null || routes.isEmpty()) {
             return new ArrayList<LocalizableDocumentRouteElement>();
         }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
@@ -295,8 +297,9 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRouteRelatedToCurrentDocument() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
-        if(relatedRouteModelDocumentId != null) {
-            DocumentModel model = documentManager.getDocument(new IdRef(relatedRouteModelDocumentId));
+        if (relatedRouteModelDocumentId != null) {
+            DocumentModel model = documentManager.getDocument(new IdRef(
+                    relatedRouteModelDocumentId));
             route = model.getAdapter(DocumentRoute.class);
         }
         if (route == null) {
@@ -400,17 +403,17 @@ public class DocumentRoutingActionsBean implements Serializable {
     public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         // if fork, is not simple editable step
-        if(stepDoc.hasFacet("Folderish")){
+        if (stepDoc.hasFacet("Folderish")) {
             return false;
         }
         return stepElement.isModifiable();
     }
 
-
     /**
      * Returns true if the givenDoc is an routeElement that can be edited
      * */
-    public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
+    public boolean isEditableRouteElement(DocumentModel stepDoc)
+            throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         return stepElement.isModifiable();
     }
@@ -600,7 +603,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         return relatedRouteModelDocumentId;
     }
 
-    public void setRelatedRouteModelDocumentId(String relatedRouteModelDocumentId) {
+    public void setRelatedRouteModelDocumentId(
+            String relatedRouteModelDocumentId) {
         this.relatedRouteModelDocumentId = relatedRouteModelDocumentId;
     }
 }

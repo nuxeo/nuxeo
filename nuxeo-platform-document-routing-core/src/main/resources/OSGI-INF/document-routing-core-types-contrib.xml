@@ -48,6 +48,7 @@
     <doctype name="DocumentRouteStep" extends="Document">
       <schema name="dublincore" />
       <facet name ="RouteStep"/>
+      <facet name="Commentable" />
     </doctype>
 
   </extension>

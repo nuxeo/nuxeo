@@ -97,6 +97,28 @@
         /widgets/listing/listing_edit_document_route_element_widget_template.xhtml
       </property>
     </widgetType>
+    
+     <widgetType name="listing_no_comments">
+      <documentation>
+        This widget type displays the number of comments
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            the step documuent model
+          </li>
+          <li>
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_no_comments_widget_template.xhtml
+      </property>
+    </widgetType>
 
   </extension> 
   
@@ -179,6 +201,16 @@
       <translated>true</translated>
       <fields>
         <field>data.document.currentLifeCycleState</field>
+      </fields>
+    </widget>
+    
+    <widget name="dr_listing_no_comments" type="listing_no_comments">
+      <labels>
+        <label mode="any">label.content.header.comments</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
       </fields>
     </widget>
     

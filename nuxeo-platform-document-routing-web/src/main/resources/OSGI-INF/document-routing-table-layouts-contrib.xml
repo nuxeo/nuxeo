@@ -49,6 +49,12 @@
           </properties>
           <widget>dr_listing_remove_step</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>dr_listing_no_comments</widget>
+        </column>   
       </columns>
     </layout>
     
@@ -85,6 +91,12 @@
           </properties>
           <widget>dr_listing_current_lifecycle</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>dr_listing_no_comments</widget>
+        </column>  
       </columns>
     </layout>
     
