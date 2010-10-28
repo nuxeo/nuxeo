@@ -28,6 +28,10 @@ public class DocumentRoutingWebConstants {
 
     public static final String ADD_STEP_IN_FORK_ACTIONS_LIST = "ADD_STEP_IN_FORK_ACTIONS_LIST";
 
+    public static final String MOVE_STEP_UP = "up";
+
+    public static final String MOVE_STEP_DOWN = "down";
+
     private DocumentRoutingWebConstants(){};
 
 }

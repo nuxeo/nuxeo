@@ -54,9 +54,10 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -252,8 +253,8 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     protected List<DocumentRouteTableElement> getElements(
             DocumentRoute currentRoute) {
-        return getDocumentRoutingService().getRouteElements(
-                currentRoute, documentManager);
+        return getDocumentRoutingService().getRouteElements(currentRoute,
+                documentManager);
     }
 
     @Factory(value = "routeElementsSelectModel", scope = EVENT)
@@ -360,13 +361,6 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String removeStep() throws ClientException {
-        if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.document.route.no.creation.rights"));
-            return "";
-        }
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
         if (getDocumentRoutingService().isLockedByCurrentUser(routeModel,
@@ -435,7 +429,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         return lockRoute(docRouteElement);
     }
 
-    protected String lockRoute(DocumentRoute docRouteElement) throws ClientException {
+    protected String lockRoute(DocumentRoute docRouteElement)
+            throws ClientException {
         try {
             getDocumentRoutingService().lockDocumentRoute(
                     docRouteElement.getDocumentRoute(documentManager),
@@ -455,6 +450,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         getDocumentRoutingService().unlockDocumentRoute(route, documentManager);
         return "";
     }
+
     public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
         return forkDoc.hasFacet("Folderish")
                 && !documentManager.hasChildren(forkDoc.getRef());
@@ -493,8 +489,7 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(
-                FacesMessage.SEVERITY_INFO,
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(
                         changeableDocument.getType()));
@@ -519,13 +514,6 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String createRouteElement(String typeName) throws ClientException {
-        if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_INFO,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.document.route.no.creation.rights"));
-            return "";
-        }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRef routeRef = currentDocument.getRef();
         DocumentRef sourceDocRef = new IdRef(hiddenSourceDocId);
@@ -568,6 +556,67 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
+    /**
+     * Moves the step in the parent container in the specified direction. If the
+     * step is in a parallel container, it can't be moved. A step can't be moved
+     * before a step already done or running. Assumed that the route is already
+     * locked to have this action availabe , so no check is done
+     * */
+    public String moveRouteElement(String direction) throws ClientException {
+        if (StringUtils.isEmpty(stepId)) {
+            return null;
+        }
+        DocumentModel routeElementDocToMove = documentManager.getDocument(new IdRef(
+                stepId));
+        DocumentModel parentDoc = documentManager.getDocument(routeElementDocToMove.getParentRef());
+        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) parentDoc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+        if (DocumentRoutingConstants.ExecutionTypeValues.parallel.equals(executionType)) {
+            facesMessages.add(
+                    FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get(
+                            "feedback.casemanagement.document.route.cant.move.steps.in.parallel.container"));
+            return null;
+        }
+        DocumentModelList orderedChilds = getDocumentRoutingService().getOrderedRouteElement(
+                parentDoc.getId(), documentManager);
+        int selectedDocumentIndex = orderedChilds.indexOf(routeElementDocToMove);
+        if (DocumentRoutingWebConstants.MOVE_STEP_UP.equals(direction)) {
+            if (selectedDocumentIndex == 0) {
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get(
+                                "feedback.casemanagement.document.route.already.first.step.in.container"));
+                return null;
+            }
+            DocumentModel stepMoveBefore = orderedChilds.get(selectedDocumentIndex - 1);
+            // if this step is already done or ready ( not modifiable, can't
+            // move before it)
+            DocumentRouteElement stepElementMoveBefore = stepMoveBefore.getAdapter(DocumentRouteElement.class);
+            if (!stepElementMoveBefore.isModifiable()) {
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get(
+                                "feedback.casemanagement.document.route.cant.move.step.after.no.modifiable.step"));
+                return null;
+            }
+            documentManager.orderBefore(parentDoc.getRef(),
+                    routeElementDocToMove.getName(), stepMoveBefore.getName());
+        }
+        if (DocumentRoutingWebConstants.MOVE_STEP_DOWN.equals(direction)) {
+            if (selectedDocumentIndex == orderedChilds.size() - 1) {
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
+                        resourcesAccessor.getMessages().get(
+                                "feedback.casemanagement.document.already.last.step.in.container"));
+                return null;
+            }
+            documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(
+                    selectedDocumentIndex + 1).getName(),
+                    routeElementDocToMove.getName());
+        }
+        return navigationContext.navigateToDocument(getRelatedRoute().getDocument());
+    }
+
     public String saveRouteElement() throws ClientException {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
@@ -579,6 +628,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 return null;
             }
         }
+
         DocumentModel newDocument = navigationContext.getChangeableDocument();
         // Document has already been created if it has an id.
         // This will avoid creation of many documents if user hit create button

@@ -80,6 +80,16 @@
      <filter-id>isEditableRoute</filter-id>
     </action>
     
+     <action id="MOVE_STEP_UP" label="command.selection.moveUp" link="#{routingActions.moveRouteElement('up')}">
+      <category>EDIT_STEP_ACTIONS_LIST</category>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+    
+    <action id="MOVE_STEP_DOWN" label="command.selection.moveDown" link="#{routingActions.moveRouteElement('down')}">
+      <category>EDIT_STEP_ACTIONS_LIST</category>
+      <filter-id>isEditableRoute</filter-id>
+    </action>
+    
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
