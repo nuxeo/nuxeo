@@ -16,59 +16,40 @@
  */
 package org.nuxeo.ecm.platform.management.statuses;
 
+import java.util.Calendar;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 public class PopulateRepositoryProbe implements Probe {
 
-    public static class Runner extends UnrestrictedSessionRunner {
-
-        public Runner(String repositoryName) {
-            super(repositoryName);
-        }
+        public static class Runner extends DocumentStoreSessionRunner {
 
         protected String info;
 
         @Override
         public void run() throws ClientException {
             DocumentModel rootDocument = session.getRootDocument();
-            DocumentModel model = session.createDocumentModel(
-                    rootDocument.getPathAsString(),
-                    PopulateRepositoryProbe.class.getSimpleName(), "File");
-            DocumentRef ref = model.getRef();
-            model.setProperty("dublincore", "title", "huum");
-            model.setProperty("uid", "major_version", 1L);
-            session.createDocument(model);
-            ACP acp = model.getACP();
-            ACL acl = acp.getOrCreateACL();
-            acl.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
-            session.setACP(ref, acp, true);
-            session.save();
-            session.removeDocument(model.getRef());
-            session.save();
-
-            info = "Created document " + model.getPathAsString() + " and  removed it ";
+            String name = String.format("%s:%x", PopulateRepositoryProbe.class.getSimpleName(), Calendar.getInstance().getTimeInMillis());
+            DocumentModel doc = session.createDocumentModel(rootDocument.getPathAsString(), name, "File");
+            doc.setProperty("dublincore", "title", name);
+            doc.setProperty("uid", "major_version", 1L);
+            doc = session.createDocument(doc);
+            session.removeDocument(doc.getRef());
+            info = "Created document " + doc.getPathAsString() + " and  removed it ";
         }
 
     }
 
+    @Override
     public ProbeStatus run() {
-        RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-        Runner runner = new Runner(mgr.getDefaultRepository().getName());
+        Runner runner = new Runner();
         try {
             runner.runUnrestricted();
         } catch (ClientException e) {
