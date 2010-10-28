@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.DocumentTypeImpl;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -105,7 +103,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public String getCurrentLifeCycleState() throws LifeCycleException {
+    public String getLifeCycleState() throws LifeCycleException {
         return null;
     }
 
@@ -120,7 +118,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public DocumentVersion getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() throws DocumentException {
         return null;
     }
 
@@ -159,7 +157,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public DocumentVersion checkIn(String label, String description)
+    public Document checkIn(String label, String description)
             throws DocumentException {
         return null;
     }
@@ -169,7 +167,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public DocumentVersion getLastVersion() throws DocumentException {
+    public Document getLastVersion() throws DocumentException {
         return null;
     }
 
@@ -189,7 +187,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public DocumentVersionIterator getVersions() throws DocumentException {
+    public List<Document> getVersions() throws DocumentException {
         return null;
     }
 
@@ -207,6 +205,12 @@ public class FakeDocument implements Document {
     public boolean isVersion() {
         return false;
     }
+
+    @Override
+    public String getVersionSeriesId() throws DocumentException {
+        return null;
+    }
+
 
     @Override
     public void restore(Document version) throws DocumentException {
@@ -406,6 +410,46 @@ public class FakeDocument implements Document {
 
     @Override
     public void orderBefore(String src, String dest) throws DocumentException {
+    }
+
+    @Override
+    public Calendar getVersionCreationDate() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getVersionLabel() throws DocumentException {
+        return null;
+    }
+
+    @Override
+    public boolean isLatestVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isMajorVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+        return true;
+    }
+
+    @Override
+    public Document getWorkingCopy() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getCheckinComment() throws DocumentException {
+        return null;
     }
 
 }

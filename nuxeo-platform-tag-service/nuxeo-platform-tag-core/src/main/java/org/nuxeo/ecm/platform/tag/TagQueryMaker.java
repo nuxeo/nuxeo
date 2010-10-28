@@ -35,6 +35,14 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class TagQueryMaker extends NXQLQueryMaker {
 
+    public static final String SCHEMA_TAG = "tag";
+
+    public static final String SCHEMA_RELATION = "relation";
+
+    public static final String PROPERTY_SOURCE = "source";
+
+    public static final String PROPERTY_TARGET = "target";
+
     /**
      * Makes sure the Tag table is joined with the relation target instead of
      * the hierarchy id.
@@ -91,9 +99,9 @@ public class TagQueryMaker extends NXQLQueryMaker {
 
     @Override
     protected void addDataJoin(Table table, String joinId) {
-        // TODO table non-physical name
-        if (table.getName().equalsIgnoreCase("tag")) {
-            joinId = database.getTable("relation").getColumn("target").getFullQuotedName();
+        if (table.getKey().equals(SCHEMA_TAG)) {
+            joinId = database.getTable(SCHEMA_RELATION).getColumn(
+                    PROPERTY_TARGET).getFullQuotedName();
             tagJoinIndex = joins.size();
         }
         // add as INNER JOIN, not LEFT JOIN
@@ -114,8 +122,8 @@ public class TagQueryMaker extends NXQLQueryMaker {
             firstSelectedColumn = col;
         }
         if (type == COUNT_SOURCE
-                && col.getTable().getName().equalsIgnoreCase("relation")
-                && col.getKey().equals("source")) {
+                && col.getTable().getKey().equals(SCHEMA_RELATION)
+                && col.getKey().equals(PROPERTY_SOURCE)) {
             name = String.format("COUNT(DISTINCT %s)", name);
         }
         return name;
