@@ -76,9 +76,12 @@ public class LayoutRowDescriptor implements LayoutRowDefinition {
     }
 
     public Map<String, Serializable> getProperties(String layoutMode) {
-        Map<String, Serializable> modeProps = WidgetDescriptor.getProperties(
-                properties, layoutMode);
-        return modeProps;
+        return WidgetDescriptor.getProperties(properties, layoutMode);
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return WidgetDescriptor.getProperties(properties);
     }
 
 }

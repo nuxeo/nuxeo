@@ -119,6 +119,11 @@ public class WidgetDescriptor implements WidgetDefinition {
         return label;
     }
 
+    @Override
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+
     public String getHelpLabel(String mode) {
         String label = helpLabels.get(mode);
         if (label == null) {
@@ -127,8 +132,48 @@ public class WidgetDescriptor implements WidgetDefinition {
         return label;
     }
 
+    @Override
+    public Map<String, String> getHelpLabels() {
+        return helpLabels;
+    }
+
     public boolean isTranslated() {
         return translated;
+    }
+
+    public Map<String, Serializable> getProperties(String layoutMode,
+            String mode) {
+        Map<String, Serializable> modeProps = getProperties(properties,
+                layoutMode);
+        Map<String, Serializable> widgetModeProps = getProperties(
+                widgetModeProperties, mode);
+        if (modeProps == null && widgetModeProps == null) {
+            return null;
+        } else if (widgetModeProps == null) {
+            return modeProps;
+        } else if (modeProps == null) {
+            return widgetModeProps;
+        } else {
+            // take mode values, and override with widget mode values
+            Map<String, Serializable> res = new HashMap<String, Serializable>(
+                    modeProps);
+            res.putAll(widgetModeProps);
+            return res;
+        }
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return getProperties(properties);
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getWidgetModeProperties() {
+        return getProperties(widgetModeProperties);
+    }
+
+    public WidgetDefinition[] getSubWidgetDefinitions() {
+        return subWidgets;
     }
 
     public static Map<String, Serializable> getProperties(
@@ -154,29 +199,18 @@ public class WidgetDescriptor implements WidgetDefinition {
         }
     }
 
-    public Map<String, Serializable> getProperties(String layoutMode,
-            String mode) {
-        Map<String, Serializable> modeProps = getProperties(properties,
-                layoutMode);
-        Map<String, Serializable> widgetModeProps = getProperties(
-                widgetModeProperties, mode);
-        if (modeProps == null && widgetModeProps == null) {
+    public static Map<String, Map<String, Serializable>> getProperties(
+            Map<String, PropertiesDescriptor> map) {
+        if (map == null) {
             return null;
-        } else if (widgetModeProps == null) {
-            return modeProps;
-        } else if (modeProps == null) {
-            return widgetModeProps;
-        } else {
-            // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<String, Serializable>(
-                    modeProps);
-            res.putAll(widgetModeProps);
-            return res;
         }
-    }
-
-    public WidgetDefinition[] getSubWidgetDefinitions() {
-        return subWidgets;
+        Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+        for (Map.Entry<String, PropertiesDescriptor> item : map.entrySet()) {
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.putAll(item.getValue().getProperties());
+            res.put(item.getKey(), props);
+        }
+        return res;
     }
 
 }

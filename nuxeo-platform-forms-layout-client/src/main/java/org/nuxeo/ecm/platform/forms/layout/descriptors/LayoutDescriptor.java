@@ -74,6 +74,11 @@ public class LayoutDescriptor implements LayoutDefinition {
         return template;
     }
 
+    @Override
+    public Map<String, String> getTemplates() {
+        return templates;
+    }
+
     public LayoutRowDefinition[] getRows() {
         // check if columns tags are used instead of rows, they act as aliases.
         if (rowsAsColumns != null && rowsAsColumns.length > 0) {
@@ -102,9 +107,12 @@ public class LayoutDescriptor implements LayoutDefinition {
     }
 
     public Map<String, Serializable> getProperties(String layoutMode) {
-        Map<String, Serializable> modeProps = WidgetDescriptor.getProperties(
-                properties, layoutMode);
-        return modeProps;
+        return WidgetDescriptor.getProperties(properties, layoutMode);
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return WidgetDescriptor.getProperties(properties);
     }
 
 }

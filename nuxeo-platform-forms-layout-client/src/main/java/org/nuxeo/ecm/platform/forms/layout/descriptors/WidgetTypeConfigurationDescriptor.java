@@ -92,4 +92,15 @@ public class WidgetTypeConfigurationDescriptor implements
         return null;
     }
 
+    public Map<String, List<LayoutDefinition>> getPropertyLayouts() {
+        if (propertyLayouts != null) {
+            Map<String, List<LayoutDefinition>> res = new HashMap<String, List<LayoutDefinition>>();
+            for (Map.Entry<String, LayoutDescriptors> entry : propertyLayouts.entrySet()) {
+                res.put(entry.getKey(), entry.getValue().getLayouts());
+            }
+            return res;
+        }
+        return null;
+    }
+
 }
