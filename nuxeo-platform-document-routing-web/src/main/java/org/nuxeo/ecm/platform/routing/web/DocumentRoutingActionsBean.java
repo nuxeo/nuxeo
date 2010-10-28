@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.LocalizableDocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -231,32 +231,29 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    protected ArrayList<LocalizableDocumentRouteElement> computeRouteElements()
+    protected List<DocumentRouteTableElement> computeRouteElements()
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentRouteElement currentRouteModelElement = currentDocument.getAdapter(DocumentRouteElement.class);
-        return getElements(currentRouteModelElement);
+        DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
+        return getElements(currentRoute);
     }
 
-    protected ArrayList<LocalizableDocumentRouteElement> computeRelatedRouteElements()
+    protected List<DocumentRouteTableElement> computeRelatedRouteElements()
             throws ClientException {
         List<DocumentModel> routes = findRelatedRouteDocument();
         if (routes == null || routes.isEmpty()) {
-            return new ArrayList<LocalizableDocumentRouteElement>();
+            return new ArrayList<DocumentRouteTableElement>();
         }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
                 routes.get(0).getId()));
-        DocumentRouteElement currentRouteModelElement = relatedRouteDocumentModel.getAdapter(DocumentRouteElement.class);
-        return getElements(currentRouteModelElement);
+        DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
+        return getElements(currentRoute);
     }
 
-    protected ArrayList<LocalizableDocumentRouteElement> getElements(
-            DocumentRouteElement currentRouteModelElement)
-            throws ClientException {
-        ArrayList<LocalizableDocumentRouteElement> routeElements = new ArrayList<LocalizableDocumentRouteElement>();
-        getDocumentRoutingService().getRouteElements(currentRouteModelElement,
-                documentManager, routeElements, 0);
-        return routeElements;
+    protected List<DocumentRouteTableElement> getElements(
+            DocumentRoute currentRoute) {
+        return getDocumentRoutingService().getRouteElements(
+                currentRoute, documentManager);
     }
 
     @Factory(value = "routeElementsSelectModel", scope = EVENT)
@@ -331,7 +328,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return route.isRunning();
     }
 
-    public String getTypeDescription(LocalizableDocumentRouteElement localizable) {
+    public String getTypeDescription(DocumentRouteTableElement localizable) {
         return depthFormatter(localizable.getDepth(),
                 localizable.getElement().getDocument().getType());
     }
@@ -363,16 +360,22 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String removeStep() throws ClientException {
-        DocumentRoute routeModel = getRelatedRoute();
-        try {
-            getDocumentRoutingService().lockDocumentRoute(routeModel,
-                    documentManager);
-        } catch (DocumentRouteAlredayLockedException e) {
+        if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
             facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
+                    FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
-            return null;
+                            "feedback.document.route.no.creation.rights"));
+            return "";
+        }
+        boolean alreadyLockedByCurrentUser = false;
+        DocumentRoute routeModel = getRelatedRoute();
+        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel,
+                documentManager)) {
+            alreadyLockedByCurrentUser = true;
+        } else {
+            if (lockRoute(routeModel) == null) {
+                return null;
+            }
         }
         if (StringUtils.isEmpty(stepId)) {
             return null;
@@ -392,8 +395,12 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 routeModel.getDocument());
-        getDocumentRoutingService().unlockDocumentRoute(routeModel,
-                documentManager);
+        // Release the lock only when currentUser had locked it before
+        // entering this method.
+        if (!alreadyLockedByCurrentUser) {
+            getDocumentRoutingService().unlockDocumentRoute(routeModel,
+                    documentManager);
+        }
         return null;
     }
 
@@ -418,6 +425,36 @@ public class DocumentRoutingActionsBean implements Serializable {
         return stepElement.isModifiable();
     }
 
+    public boolean isCurrentRouteLockedByCurrentUser() throws ClientException {
+        return getDocumentRoutingService().isLockedByCurrentUser(
+                getRelatedRoute(), documentManager);
+    }
+
+    public String lockCurrentRoute() throws ClientException {
+        DocumentRoute docRouteElement = getRelatedRoute();
+        return lockRoute(docRouteElement);
+    }
+
+    protected String lockRoute(DocumentRoute docRouteElement) throws ClientException {
+        try {
+            getDocumentRoutingService().lockDocumentRoute(
+                    docRouteElement.getDocumentRoute(documentManager),
+                    documentManager);
+        } catch (DocumentRouteAlredayLockedException e) {
+            facesMessages.add(
+                    FacesMessage.SEVERITY_WARN,
+                    resourcesAccessor.getMessages().get(
+                            "feedback.casemanagement.document.route.already.locked"));
+            return null;
+        }
+        return "";
+    }
+
+    public String unlockCurrentRoute() throws ClientException {
+        DocumentRoute route = getRelatedRoute();
+        getDocumentRoutingService().unlockDocumentRoute(route, documentManager);
+        return "";
+    }
     public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
         return forkDoc.hasFacet("Folderish")
                 && !documentManager.hasChildren(forkDoc.getRef());
@@ -433,18 +470,17 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String updateRouteElement() throws ClientException {
+        boolean alreadyLockedByCurrentUser = false;
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         DocumentRouteElement docRouteElement = changeableDocument.getAdapter(DocumentRouteElement.class);
-        try {
-            getDocumentRoutingService().lockDocumentRoute(
-                    docRouteElement.getDocumentRoute(documentManager),
-                    documentManager);
-        } catch (DocumentRouteAlredayLockedException e) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
-            return null;
+        DocumentRoute route = docRouteElement.getDocumentRoute(documentManager);
+        if (getDocumentRoutingService().isLockedByCurrentUser(route,
+                documentManager)) {
+            alreadyLockedByCurrentUser = true;
+        } else {
+            if (lockRoute(route) == null) {
+                return null;
+            }
         }
         try {
             getDocumentRoutingService().updateRouteElement(docRouteElement,
@@ -457,14 +493,18 @@ public class DocumentRoutingActionsBean implements Serializable {
             return null;
         }
         navigationContext.invalidateCurrentDocument();
-        facesMessages.add(FacesMessage.SEVERITY_INFO,
+        facesMessages.add(
+                FacesMessage.SEVERITY_INFO,
                 resourcesAccessor.getMessages().get("document_modified"),
                 resourcesAccessor.getMessages().get(
                         changeableDocument.getType()));
         EventManager.raiseEventsOnDocumentChange(changeableDocument);
-        getDocumentRoutingService().unlockDocumentRoute(
-                docRouteElement.getDocumentRoute(documentManager),
-                documentManager);
+        // Release the lock only when currentUser had locked it before
+        // entering this method.
+        if (!alreadyLockedByCurrentUser) {
+            getDocumentRoutingService().unlockDocumentRoute(route,
+                    documentManager);
+        }
         return webActions.setCurrentTabAndNavigate(
                 docRouteElement.getDocumentRoute(documentManager).getDocument(),
                 "TAB_DOCUMENT_ROUTE_ELEMENTS");
@@ -480,7 +520,8 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     public String createRouteElement(String typeName) throws ClientException {
         if (!getDocumentRoutingService().canUserCreateRoute(currentUser)) {
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(
                             "feedback.document.route.no.creation.rights"));
             return "";
@@ -528,18 +569,16 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String saveRouteElement() throws ClientException {
+        boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
-        try {
-            getDocumentRoutingService().lockDocumentRoute(routeModel,
-                    documentManager);
-        } catch (DocumentRouteAlredayLockedException e) {
-            facesMessages.add(
-                    FacesMessage.SEVERITY_WARN,
-                    resourcesAccessor.getMessages().get(
-                            "feedback.casemanagement.document.route.already.locked"));
-            return null;
+        if (getDocumentRoutingService().isLockedByCurrentUser(routeModel,
+                documentManager)) {
+            alreadyLockedByCurrentUser = true;
+        } else {
+            if (lockRoute(routeModel) == null) {
+                return null;
+            }
         }
-
         DocumentModel newDocument = navigationContext.getChangeableDocument();
         // Document has already been created if it has an id.
         // This will avoid creation of many documents if user hit create button
@@ -575,8 +614,12 @@ public class DocumentRoutingActionsBean implements Serializable {
 
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     routeDocument);
-            getDocumentRoutingService().unlockDocumentRoute(routeModel,
-                    documentManager);
+            // Release the lock only when currentUser had locked it before
+            // entering this method.
+            if (!alreadyLockedByCurrentUser) {
+                getDocumentRoutingService().unlockDocumentRoute(routeModel,
+                        documentManager);
+            }
             return navigationContext.navigateToDocument(routeDocument);
         } catch (Throwable t) {
             throw ClientException.wrap(t);

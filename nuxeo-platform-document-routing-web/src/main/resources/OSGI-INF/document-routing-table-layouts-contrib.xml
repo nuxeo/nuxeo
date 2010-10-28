@@ -6,7 +6,7 @@
     point="layouts">
     <layout name="document_routing_route_content">
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">/layouts/layout_route_listing_template.xhtml</template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>
@@ -17,7 +17,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>dr_listing_document_route_element_type</widget>
+          <widget>dr_listing_document_route_folder_element_type</widget>
         </column>
         <column>
           <properties mode="any">
@@ -35,19 +35,19 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>dr_listing__edit_document_route_element</widget>
+          <widget>dr_listing_document_route_element_type</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>dr_listing_add_step</widget>
+          <widget>dr_listing_route_element_state</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>dr_listing_remove_step</widget>
+          <widget>dr_listing_step_actions</widget>
         </column>
         <column>
           <properties mode="any">

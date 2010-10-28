@@ -38,6 +38,9 @@
         It requires the following fields configuration:
         <ul>
           <li>
+           The step document.
+          </li>
+          <li>
            The step document Id.
           </li>
           <li>
@@ -54,15 +57,39 @@
       </property>
     </widgetType>
 
-    <widgetType name="listing_document_route_element_type">
+    <widgetType name="listing_document_route_folder_element_type">
       <documentation>
-        This widget type displays Step is a the current document is a Step or
+        This widget type displays an icon representing the type of folder,
         "Serial" or "Parallel "
         <br />
         It requires the following fields configuration:
         <ul>
           <li>
            the documentRouteElement
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_document_route_folder_element_type_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_document_route_element_type">
+      <documentation>
+        This widget type displays the type and the type icon of the
+        document.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           the document type icon
+          </li>
+          <li>
+           the document type
           </li>
         </ul>
       </documentation>
@@ -120,22 +147,131 @@
       </property>
     </widgetType>
 
+    <widgetType name="step_actions">
+      <documentation>
+        This widget type displays available step actions for the given doc. 
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           The step document.
+          </li>
+          <li>
+           The step document Id.
+          </li>
+          <li>
+           A Boolean used to render the Add In Button if true.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/route_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_route_title_link">
+
+      <documentation>
+        Override the default widget to add useful information for selenium.
+        This widget type displays a link to navigate to a document, as well as a
+        download link for the document binary content.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+            first field maps the document model, it will be used to display the
+            document link and its title
+          </li>
+          <li>
+            second field maps the unique id to be used for contextual menu (e.g.
+            the document model id)
+          </li>
+          <li>
+            third field maps the displayed link title (can be the document model
+            description)
+          </li>
+          <li>
+            fourth field maps the document model file to be used for download
+            link
+          </li>
+          <li>
+            fifth field maps the file name to be used for download link (can be
+            the document model file name property value)
+          </li>
+        </ul>
+        It also requires the following properties configuration:
+        <ul>
+          <li>
+            file_schema: the file schema name, used to check whether download
+            link should be displayed
+          </li>
+          <li>file_property_name:</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_route_title_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+    <widgetType name="listing_document_route_element_state">
+      <documentation>
+        This remove_step widget displays a link to delete a step.
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>
+           The document current lifeCycleState.
+          </li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_document_route_element_state_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension> 
   
    <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
     
+     <widget name="dr_listing_document_route_folder_element_type" type="listing_document_route_folder_element_type">
+      <labels>
+        <label mode="any">label.document.route.content.header.type</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.parent.routeElement.document</field>
+        <field>data.parent.routeElement.document.id</field>
+        <field>data.parent.routeElement.document.hasFacet('Folderish')</field>
+        <field>data</field>
+      </fields>
+    </widget>
+
      <widget name="dr_listing_document_route_element_type" type="listing_document_route_element_type">
       <labels>
         <label mode="any">label.document.route.content.header.type</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data</field>
+        <field>data.document</field>
+        <field>data.document.type</field>
       </fields>
     </widget>
-    
-    <widget name="dr_listing_title_link" type="listing_title_link">
+
+    <widget name="dr_listing_title_link" type="listing_route_title_link">
       <labels>
         <label mode="any">label.content.header.title</label>
       </labels>
@@ -143,6 +279,14 @@
       <fields>
         <field>data.document</field>
         <field>data.document.id</field>
+        <field>data.document.title</field>
+      </fields>
+    </widget>
+
+    <widget name="dr_listing_route_element_state" type="listing_document_route_element_state">
+      <translated>true</translated>
+      <fields>
+        <field>data.document.currentLifeCycleState</field>
       </fields>
     </widget>
     
@@ -211,6 +355,15 @@
       <translated>true</translated>
       <fields>
         <field>data.document</field>
+      </fields>
+    </widget>
+
+    <widget name="dr_listing_step_actions" type="step_actions">
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
+        <field>data.document.id</field>
+        <field>data.document.hasFacet('Folderish')</field>
       </fields>
     </widget>
     

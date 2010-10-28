@@ -1,3 +1,17 @@
+/**
+ * Find the stepActions button from a stepFolder using DOM.
+ */
+Selenium.prototype.doGetActionButtonIdFromStepFolder = function(locator, value) {
+  storedVars[value] = this.browserbot.findElement(locator).parentNode.parentNode.parentNode.getElementsByTagName('img')[0].id;
+};
+
+/**
+ * Find the stepActions button from a step using DOM.
+ */
+Selenium.prototype.doGetActionButtonIdFromStep = function(locator, value) {
+  storedVars[value] = this.browserbot.findElement(locator).parentNode.parentNode.parentNode.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.getElementsByTagName('img')[0].id;
+};
+
 // set absolute path to current folder here, used in tests with file upload
 Selenium.prototype.doRetrieveTestFolderPath = function() {
   storedVars['testfolderpath'] = "/path/to/project-ear/ftest/selenium";

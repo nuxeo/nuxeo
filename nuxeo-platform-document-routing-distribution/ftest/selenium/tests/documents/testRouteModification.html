@@ -102,13 +102,33 @@
 	<td></td>
 </tr>
 <tr>
+	<td>clickAndWait</td>
+	<td>Link=Lock</td>
+	<td></td>
+</tr>
+<tr>
+	<td>getActionButtonIdFromStep</td>
+	<td>xpath=//*[@title='0_0_0_B']</td>
+	<td>B</td>
+</tr>
+<tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_add_step:addSteps:addStepInForActionList:1:step_0</td>
+	<td>${B}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>Link=Add before</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Select the type of your new document in the list below.</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Step</td>
+	<td>selectRouteElementsTypeForCreationForm:selectRouteElementsTypeForCreationTable:0:selectRouteElementTypeForCreationCategory:0:selectRouteElementsTypeForCreationCategoryTable:0:selectRouteElementsTypeForCreationCategoryTitleLink</td>
 	<td></td>
 </tr>
 <tr>
@@ -123,12 +143,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_add_step:addSteps:addStepInForActionList:0:step_0</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_step_actions_1:nxw_dr_listing_step_actions_1_add:addStepInForActionList:0:step_0</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Fork</td>
+	<td>Link=Fork</td>
 	<td></td>
 </tr>
 <tr>
@@ -143,7 +163,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_add_step_1:addSteps:addStepInForkActionList:0:step_0</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_step_actions_2:nxw_dr_listing_step_actions_2_add:addStepInForkActionList:0:step_0</td>
 	<td></td>
 </tr>
 <tr>
@@ -163,7 +183,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_add_step_1:addSteps:addStepInForActionList:0:step_0</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_document_route_folder_element_type:nxw_dr_listing_document_route_folder_element_type:nxw_dr_listing_document_route_folder_element_type_add:addStepInForActionList:0:step_0</td>
 	<td></td>
 </tr>
 <tr>
@@ -183,7 +203,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_add_step_2:addSteps:addStepInForActionList:1:step_0</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_step_actions_2:nxw_dr_listing_step_actions_2_add:addStepInForActionList:1:step_0</td>
 	<td></td>
 </tr>
 <tr>
@@ -203,7 +223,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_3:nxw_dr_listing_add_step_3:addSteps:addStepInForActionList:0:step_0</td>
+	<td>dm_route_elements:nxl_document_routing_route_content_3:nxw_dr_listing_step_actions_3:nxw_dr_listing_step_actions_3_add:addStepInForActionList:0:step_0</td>
 	<td></td>
 </tr>
 <tr>
@@ -223,38 +243,38 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content:nxw_dr_listing_document_route_element_type:type_0</td>
-	<td>DocumentRouteStep </td>
+	<td>//span[@title='0_0_0_A']</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_1:nxw_dr_listing_document_route_element_type_1:type_1</td>
-	<td>DocumentRouteStep</td>
+	<td>//span[@title='1_0_0_B']</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_2:nxw_dr_listing_document_route_element_type_2:type_2</td>
-	<td>StepFolder</td>
+	<td>//span[@title='2_1_1_C0']</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_3:nxw_dr_listing_document_route_element_type_3:type_3</td>
-	<td>__DocumentRouteStep</td>
+	<td>//span[@title='3_1_0_C1']</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_4:nxw_dr_listing_document_route_element_type_4:type_4</td>
-	<td>__DocumentRouteStep</td>
+	<td>//span[@title='4_1_0_C2']</td>
+	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_5:nxw_dr_listing_document_route_element_type_5:type_5</td>
-	<td>__DocumentRouteStep</td>
+	<td>//span[@title='5_0_0_D']</td>
+	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>dm_route_elements:nxl_document_routing_route_content_6:nxw_dr_listing_document_route_element_type_6:type_6</td>
-	<td>DocumentRouteStep</td>
+	<td>clickAndWait</td>
+	<td>Link=Unlock</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>

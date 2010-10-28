@@ -1,14 +1,11 @@
-<f:subview id="#{widget.id}"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<f:subview id="#{widget.id}_remove"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+  <c:if test="#{routingActions.isEditableRouteElement(field_0)}">
     <nxu:set var="actions"
       value="#{getRemoveStepActions}"
       cache="true">
@@ -19,7 +16,7 @@
             value="#{actions}"
             id="removeStepListTable">
             <nxh:commandLink action="#{action.getLink()}"
-              id="documentActionSubviewUpperListLink" rendered="#{routingActions.isEditableRouteElement(field_0)}">
+              id="documentActionSubviewUpperListLink">
               <h:outputText value="#{messages[action.label]}" />
               <f:param name="stepId" value="#{field_1}" />
             </nxh:commandLink>
@@ -27,6 +24,6 @@
         </div>
       </c:if>
     </nxu:set>
-  
+  </c:if> 
 
 </f:subview>
