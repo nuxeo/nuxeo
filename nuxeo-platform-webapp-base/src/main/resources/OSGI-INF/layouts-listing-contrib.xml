@@ -306,9 +306,9 @@
         <ul>
           <li>
             file_schema: the file schema name, used to check whether download
-            link should be displayed
+            link should be displayed (e.g: file)
           </li>
-          <li>file_property_name:</li>
+          <li>file_property_name: the file property name (e.g file:content)</li>
         </ul>
       </documentation>
 

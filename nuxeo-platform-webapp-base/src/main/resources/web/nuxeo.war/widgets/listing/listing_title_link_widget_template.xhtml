@@ -26,7 +26,8 @@
       rendered="#{field_0.hasSchema(widget.properties.file_schema) and !empty field_3}"
       value="#{nxd:fileUrl('downloadFile', field_0, widget.properties.file_property_name, field_4)}">
       <nxh:graphicImage value="/icons/download.png" style="vertical-align:middle"
-        title="#{field_4}" alt="#{field_4}" />
+        title="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}"
+        alt="#{nxd:fileDescription(field_0, widget.properties.file_property_name, widget.properties.filename_property_name, field_4)}" />
     </nxh:outputLink>
 
   </div>

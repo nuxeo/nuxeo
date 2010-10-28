@@ -151,7 +151,7 @@
     </function-class>
     <function-signature>
       java.lang.String fileDescription( org.nuxeo.ecm.core.api.DocumentModel,
-      java.lang.String, java.lang.String)
+      java.lang.String, java.lang.String, java.lang.String)
     </function-signature>
   </function>
   <function>
