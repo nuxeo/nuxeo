@@ -271,6 +271,7 @@
     </resource>
     <resource name="calendar.css">
       <path>jscalendar/css/jscal2.css</path>
+      <context-path>${org.nuxeo.ecm.contextPath}/jscalendar/css/</context-path>
     </resource>
     <resource name="calendar-border-radius.css">
       <path>jscalendar/css/border-radius.css</path>
