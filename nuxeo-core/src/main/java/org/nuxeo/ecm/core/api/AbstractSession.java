@@ -90,8 +90,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
@@ -1935,30 +1933,24 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    protected VersionModel getVersionModel(DocumentVersion version)
+    protected VersionModel getVersionModel(Document version)
             throws DocumentException {
         VersionModel versionModel = new VersionModelImpl();
         versionModel.setId(version.getUUID());
-        versionModel.setCreated(version.getCreated());
-        versionModel.setDescription(version.getDescription());
-        versionModel.setLabel(version.getLabel());
+        versionModel.setCreated(version.getVersionCreationDate());
+        versionModel.setDescription(version.getCheckinComment());
+        versionModel.setLabel(version.getVersionLabel());
         return versionModel;
     }
 
     @Override
     public VersionModel getLastVersion(DocumentRef docRef)
             throws ClientException {
-        assert null != docRef;
-
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
-
-            DocumentVersion version = doc.getLastVersion();
-            if (version == null) {
-                return null;
-            }
-            return getVersionModel(version);
+            Document version = doc.getLastVersion();
+            return version == null ? null : getVersionModel(version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -1967,17 +1959,11 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public DocumentModel getLastDocumentVersion(DocumentRef docRef)
             throws ClientException {
-        assert null != docRef;
-
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
-
-            DocumentVersion version = doc.getLastVersion();
-            if (version != null) {
-                return readModel(version, null);
-            }
-            return null;
+            Document version = doc.getLastVersion();
+            return version == null ? null : readModel(version, null);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -2003,33 +1989,16 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public List<DocumentModel> getVersions(DocumentRef docRef)
             throws ClientException {
-        assert null != docRef;
-
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
-            List<DocumentModel> versions = new ArrayList<DocumentModel>();
-            DocumentVersionIterator versionIterator = doc.getVersions();
-
-            while (versionIterator.hasNext()) {
-                DocumentVersion docVersion = versionIterator.nextDocumentVersion();
-                if (docVersion.getLabel() == null) {
-                    // discard root default version
-                    continue;
-                }
-                if (docVersion.getType() == null) {
-                    throw new IllegalStateException(
-                            "FAILED TO GET VERSIONS FOR" + docRef
-                                    + " with path: " + doc.getPath());
-                }
-                DocumentModel versionModel = readModel(docVersion, null);
-                versions.add(versionModel);
+            List<Document> docVersions = doc.getVersions();
+            List<DocumentModel> versions = new ArrayList<DocumentModel>(
+                    docVersions.size());
+            for (Document version : docVersions) {
+                versions.add(readModel(version, null));
             }
-
-            log.debug("Retrieved the versions of the document " + doc.getPath());
-
             return versions;
-
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -2038,29 +2007,16 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public List<VersionModel> getVersionsForDocument(DocumentRef docRef)
             throws ClientException {
-        assert null != docRef;
-
         try {
-
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
-
-            List<VersionModel> versions = new ArrayList<VersionModel>();
-            DocumentVersionIterator versionIterator = doc.getVersions();
-
-            while (versionIterator.hasNext()) {
-                DocumentVersion docVersion = versionIterator.nextDocumentVersion();
-                if (null == docVersion.getLabel()) {
-                    // TODO: the root default version - discard
-                    continue;
-                }
-                versions.add(getVersionModel(docVersion));
+            List<Document> docVersions = doc.getVersions();
+            List<VersionModel> versions = new ArrayList<VersionModel>(
+                    docVersions.size());
+            for (Document version : docVersions) {
+                versions.add(getVersionModel(version));
             }
-
-            log.debug("Retrieved the versions of the document " + doc.getPath());
-
             return versions;
-
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -2180,7 +2136,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
-            DocumentVersion ver = doc.getBaseVersion();
+            Document ver = doc.getBaseVersion();
             if (ver == null) {
                 return null;
             }
@@ -2289,6 +2245,30 @@ public abstract class AbstractSession implements CoreSession,
         } catch (DocumentException e) {
             throw new ClientException("Failed to check out document " + docRef,
                     e);
+        }
+    }
+
+    @Override
+    public String getVersionSeriesId(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, READ);
+            return doc.getVersionSeriesId();
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, READ_VERSION);
+            Document pwc = doc.getWorkingCopy();
+            checkPermission(pwc, READ);
+            return pwc == null ? null : readModel(pwc, null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get versions for " + docRef, e);
         }
     }
 
@@ -2528,8 +2508,8 @@ public abstract class AbstractSession implements CoreSession,
             for (Document child : children) {
                 if (hasPermission(child, READ)) {
                     Document target = ((DocumentProxy) child).getTargetDocument();
-                    if (target instanceof DocumentVersion) {
-                        versions.add(((DocumentVersion) target).getLabel());
+                    if (target.isVersion()) {
+                        versions.add(target.getVersionLabel());
                     } else {
                         // live proxy
                         versions.add("");
@@ -2654,12 +2634,12 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public String getCurrentLifeCycleState(DocumentRef docRef)
             throws ClientException {
-        String currentLifeCycleState;
+        String lifeCycleState;
         try {
             Document doc = resolveReference(docRef);
 
             checkPermission(doc, READ_LIFE_CYCLE);
-            currentLifeCycleState = doc.getCurrentLifeCycleState();
+            lifeCycleState = doc.getLifeCycleState();
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
                     "Failed to get life cycle " + docRef, e);
@@ -2668,7 +2648,7 @@ public abstract class AbstractSession implements CoreSession,
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
-        return currentLifeCycleState;
+        return lifeCycleState;
     }
 
     @Override
@@ -2697,7 +2677,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
-            String formerStateName = doc.getCurrentLifeCycleState();
+            String formerStateName = doc.getLifeCycleState();
             operationResult = doc.followTransition(transition);
 
             if (operationResult) {
@@ -2708,7 +2688,7 @@ public abstract class AbstractSession implements CoreSession,
                         formerStateName);
                 options.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
-                        doc.getCurrentLifeCycleState());
+                        doc.getLifeCycleState());
                 options.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
@@ -3233,9 +3213,15 @@ public abstract class AbstractSession implements CoreSession,
                     readPermChecked = true;
                 }
                 refresh.lock = doc.getLock();
-                refresh.checkedOut = doc.isCheckedOut();
-                refresh.lifeCycleState = doc.getCurrentLifeCycleState();
+                refresh.lifeCycleState = doc.getLifeCycleState();
                 refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
+                refresh.isCheckedOut = doc.isCheckedOut();
+                refresh.isLatestVersion = doc.isLatestVersion();
+                refresh.isMajorVersion = doc.isMajorVersion();
+                refresh.isLatestMajorVersion = doc.isLatestMajorVersion();
+                refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
+                refresh.versionSeriesId = doc.getVersionSeriesId();
+                refresh.checkinComment = doc.getCheckinComment();
             }
 
             if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {

@@ -45,6 +45,8 @@ CREATE ALIAS IF NOT EXISTS nx_rebuild_read_acls FOR "${h2Functions}.rebuildReadA
 
 CREATE ALIAS IF NOT EXISTS nx_update_read_acls FOR "${h2Functions}.updateReadAcls";
 
+CREATE ALIAS IF NOT EXISTS nx_upgrade_versions FOR "${h2Functions}.upgradeVersions";
+
 #IF: fulltextEnabled
 CREATE ALIAS IF NOT EXISTS NXFT_INIT FOR "${h2Fulltext}.init";
 
@@ -166,6 +168,18 @@ DROP TABLE nxp_tagging;
 DELETE FROM hierarchy
   WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
     AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0);
+
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+MERGE INTO hierarchy (id, isversion)
+  SELECT h.id, true
+    FROM hierarchy h JOIN versions v ON h.id = v.id;
+
+CALL NX_UPGRADE_VERSIONS();
 
 
 ############################################################

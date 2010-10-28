@@ -66,7 +66,6 @@ import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -414,6 +413,8 @@ public class SQLSession implements Session {
                     properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(Model.MAIN_MINOR_VERSION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_MINOR));
+            props.put(Model.MAIN_IS_VERSION_PROP,
+                    properties.get(CoreSession.IMPORT_IS_VERSION));
         }
         Node parentNode;
         if (parent == null) {
@@ -427,6 +428,10 @@ public class SQLSession implements Session {
                     properties.get(CoreSession.IMPORT_VERSION_LABEL));
             props.put(Model.VERSION_DESCRIPTION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
+            props.put(Model.VERSION_IS_LATEST_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST));
+            props.put(Model.VERSION_IS_LATEST_MAJOR_PROP,
+                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR));
         } else {
             parentNode = ((SQLDocument) parent).getNode();
             if (isProxy) {
@@ -600,7 +605,7 @@ public class SQLSession implements Session {
         }
     }
 
-    // called by SQLQueryResult iterator
+    // called by SQLQueryResult iterator & others
     protected Document getDocumentById(Serializable id)
             throws DocumentException {
         try {
@@ -758,12 +763,11 @@ public class SQLSession implements Session {
         }
     }
 
-    protected DocumentVersion checkIn(Node node, String label,
-            String checkinComment) throws DocumentException {
+    protected Document checkIn(Node node, String label, String checkinComment)
+            throws DocumentException {
         try {
             Node versionNode = session.checkIn(node, label, checkinComment);
-            return versionNode == null ? null
-                    : (DocumentVersion) newDocument(versionNode);
+            return versionNode == null ? null : newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -785,39 +789,39 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document getVersionByLabel(Node node, String label)
-            throws DocumentException {
+    protected Document getVersionByLabel(Serializable versionSeriesId,
+            String label) throws DocumentException {
         try {
-            Node versionNode = session.getVersionByLabel(node.getId(), label);
+            Node versionNode = session.getVersionByLabel(versionSeriesId, label);
             return versionNode == null ? null : newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
     }
 
-    protected Collection<DocumentVersion> getVersions(Node node)
+    protected List<Document> getVersions(Serializable versionSeriesId)
             throws DocumentException {
-        Collection<Node> versionNodes;
+        List<Node> versionNodes;
         try {
-            versionNodes = session.getVersions(node);
+            versionNodes = session.getVersions(versionSeriesId);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        List<DocumentVersion> versions = new ArrayList<DocumentVersion>(
-                versionNodes.size());
+        List<Document> versions = new ArrayList<Document>(versionNodes.size());
         for (Node versionNode : versionNodes) {
-            versions.add((DocumentVersion) newDocument(versionNode));
+            versions.add((Document) newDocument(versionNode));
         }
         return versions;
     }
 
-    public DocumentVersion getLastVersion(Node node) throws DocumentException {
+    public Document getLastVersion(Serializable versionSeriesId)
+            throws DocumentException {
         try {
-            Node versionNode = session.getLastVersion(node);
+            Node versionNode = session.getLastVersion(versionSeriesId);
             if (versionNode == null) {
                 return null;
             }
-            return (DocumentVersion) newDocument(versionNode);
+            return newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

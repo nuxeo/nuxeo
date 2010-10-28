@@ -161,6 +161,66 @@ END;
 #IF: ! emptyResult
 CALL NX_UPGRADE_TAGS()
 
+
+############################################################
+
+
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy, versions SET hierarchy.isversion = 1
+  WHERE hierarchy.id = versions.id;
+
+DROP PROCEDURE IF EXISTS nx_upgrade_versions;
+
+CREATE PROCEDURE nx_upgrade_versions()
+LANGUAGE SQL
+MODIFIES SQL DATA
+BEGIN
+-- Upgrade versions: label, islatest, islatestmajor
+  DECLARE series ${idType} DEFAULT '-';
+  DECLARE latest BOOLEAN DEFAULT FALSE;
+  DECLARE latestmajor BOOLEAN DEFAULT FALSE;
+  DECLARE major BOOLEAN;
+  DECLARE curid ${idType};
+  DECLARE curvid ${idType};
+  DECLARE curmaj BIGINT;
+  DECLARE curmin BIGINT;
+  --
+  DECLARE done BOOLEAN DEFAULT FALSE;
+  DECLARE cur CURSOR FOR
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  OPEN cur;
+  REPEAT
+    FETCH cur INTO curid, curvid, curmaj, curmin;
+    IF NOT done THEN
+      IF curvid <> series THEN
+        -- restart
+        SET latest = TRUE;
+        SET latestmajor = TRUE;
+        SET series = curvid;
+      END IF;
+      SET major = curmin = 0;
+      UPDATE versions SET
+          label = CONCAT(curmaj, '.', curmin),
+          islatest = latest,
+          islatestmajor = major AND latestmajor
+        WHERE id = curid;
+      -- next
+      SET latest = FALSE;
+      IF major THEN SET latestmajor = FALSE; END IF;
+    END IF;
+  UNTIL done END REPEAT;
+  CLOSE cur;
+END;
+
+CALL nx_upgrade_versions();
+
+DROP PROCEDURE nx_upgrade_versions;
+
+
 ############################################################
 
 

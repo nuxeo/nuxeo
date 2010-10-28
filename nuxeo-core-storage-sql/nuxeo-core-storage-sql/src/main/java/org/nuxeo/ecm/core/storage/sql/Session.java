@@ -237,14 +237,14 @@ public interface Session extends Connection {
      * Creates a proxy for a version node.
      *
      * @param targetId the target id
-     * @param versionableId the versionable id
+     * @param versionSeriesId the version series id
      * @param parent the parent to which the proxy is added
      * @param name the proxy name
      * @param pos the proxy position
      * @return the new proxy node
      * @throws StorageException
      */
-    Node addProxy(Serializable targetId, Serializable versionableId,
+    Node addProxy(Serializable targetId, Serializable versionSeriesId,
             Node parent, String name, Long pos) throws StorageException;
 
     /**
@@ -331,37 +331,37 @@ public interface Session extends Connection {
     void restore(Node node, Node version) throws StorageException;
 
     /**
-     * Gets a version given its versionable id and label.
+     * Gets a version given its version series id and label.
      *
-     * @param versionableId the versionable id
+     * @param versionSeriesId the version series id
      * @param label the label
      * @return the version node, or {@code null} if not found
      * @throws StorageException
      */
-    Node getVersionByLabel(Serializable versionableId, String label)
+    Node getVersionByLabel(Serializable versionSeriesId, String label)
             throws StorageException;
 
     /**
-     * Gets all the versions for a given versionable node.
+     * Gets all the versions for a given version series id.
      * <p>
      * A {@link #save} is automatically done first.
      *
-     * @param node the versionable node
+     * @param versionSeriesId the version series id
      * @return the list of versions
      * @throws StorageException
      */
-    List<Node> getVersions(Node node) throws StorageException;
+    List<Node> getVersions(Serializable versionSeriesId) throws StorageException;
 
     /**
-     * Gets the last version for a given versionable node.
+     * Gets the last version for a given version series id.
      * <p>
      * A {@link #save} is automatically done first.
      *
-     * @param node the versionable node
+     * @param versionSeriesId the version series id
      * @return the last version, or {@code null} if no versions exist
      * @throws StorageException
      */
-    Node getLastVersion(Node node) throws StorageException;
+    Node getLastVersion(Serializable versionSeriesId) throws StorageException;
 
     /**
      * Creates a binary value given an input stream.
@@ -379,8 +379,8 @@ public interface Session extends Connection {
      * If the document is a version, then only proxies to that version will be
      * looked up.
      * <p>
-     * If the document is a proxy, then all similar proxies (pointing to any
-     * version of the same versionable) are retrieved.
+     * Otherwise all proxies to the same version series than the document are
+     * retrieved.
      * <p>
      * A {@link #save} is automatically done first.
      *

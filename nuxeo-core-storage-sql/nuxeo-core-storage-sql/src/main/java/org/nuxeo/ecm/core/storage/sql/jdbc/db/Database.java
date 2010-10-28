@@ -63,7 +63,7 @@ public class Database implements Serializable {
             throw new IllegalArgumentException("Duplicate table name: "
                     + physicalName);
         }
-        Table table = new TableImpl(this, physicalName);
+        Table table = new TableImpl(this, physicalName, name);
         tables.put(name, table);
         return table;
     }
@@ -97,7 +97,7 @@ public class Database implements Serializable {
         buf.append('(');
         for (Iterator<Table> iter = tables.values().iterator(); iter.hasNext();) {
             Table table = iter.next();
-            buf.append(table.getName());
+            buf.append(table.getPhysicalName());
             if (iter.hasNext()) {
                 buf.append(',');
             }

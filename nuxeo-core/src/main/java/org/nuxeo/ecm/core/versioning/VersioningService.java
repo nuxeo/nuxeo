@@ -112,7 +112,7 @@ public interface VersioningService {
      * @param checkinComment a checkin comment
      * @return the version
      */
-    DocumentVersion doCheckIn(Document doc, VersioningOption option,
+    Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException;
 
     /**

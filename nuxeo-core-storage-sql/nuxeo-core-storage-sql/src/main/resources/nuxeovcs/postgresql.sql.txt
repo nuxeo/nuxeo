@@ -709,6 +709,53 @@ CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 ############################################################
 
 
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy SET isversion = true
+  FROM versions WHERE hierarchy.id = versions.id;
+
+CREATE OR REPLACE FUNCTION nx_upgrade_versions()
+RETURNS void
+AS $$
+-- Upgrade versions: label, islatest, islatestmajor
+DECLARE
+  series ${idType} := '-';
+  latest boolean := false;
+  latestmajor boolean := false;
+  major boolean;
+  r record;
+BEGIN
+  FOR r in
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC
+  LOOP
+    IF r.versionableid <> series THEN
+      -- restart
+      latest := true;
+      latestmajor := true;
+      series := r.versionableid;
+    END IF;
+    major := r.minorversion = 0;
+    UPDATE versions SET
+        label = r.majorversion || '.' || r.minorversion,
+        islatest = latest,
+        islatestmajor = major AND latestmajor
+      WHERE id = r.id;
+    -- next
+    latest := false;
+    IF major THEN latestmajor := false; END IF;
+  END LOOP;
+END $$
+LANGUAGE plpgsql;
+
+SELECT nx_upgrade_versions();
+
+DROP FUNCTION nx_upgrade_versions();
+
+############################################################
+
+
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore

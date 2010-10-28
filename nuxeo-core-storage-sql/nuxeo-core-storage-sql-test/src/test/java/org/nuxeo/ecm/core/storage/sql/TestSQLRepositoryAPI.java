@@ -198,8 +198,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.getDocument(docRef);
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
-                "cmpf:attachedFile/vignettes").getValue());
+        assertEquals(attachedFile.get("vignettes"),
+                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
 
         // test setting and reading a list of maps without a complex type in the
         // maps
@@ -216,12 +216,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.getDocument(docRef);
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
-                "cmpf:attachedFile/vignettes").getValue());
-        assertEquals(vignette, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
-        assertEquals(Long.valueOf(0), doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals(attachedFile.get("vignettes"),
+                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
+        assertEquals(
+                vignette,
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(
+                Long.valueOf(0),
+                doc.getProperty(
+                        "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
 
@@ -239,12 +242,15 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"), doc.getProperty(
-                "cmpf:attachedFile/vignettes").getValue());
-        assertEquals(vignette, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]").getValue());
-        assertEquals(Long.valueOf(0), doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals(attachedFile.get("vignettes"),
+                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
+        assertEquals(
+                vignette,
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]").getValue());
+        assertEquals(
+                Long.valueOf(0),
+                doc.getProperty(
+                        "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         // this doesn't work due to core restrictions (BlobProperty):
         // assertEquals(blob.getFilename(), doc.getProperty(
         // "cmpf:attachedFile/vignettes/vignette[0]/content/name").getValue());
@@ -322,11 +328,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             for (int j = 0; j < 3; j++) {
                 String propertyPath = String.format(
                         "cmpf:attachedFile/vignettes/%d/", j);
-                assertEquals(Long.valueOf(j), doc.getProperty(
-                        propertyPath + "height").getValue());
-                assertEquals(Long.valueOf(j), doc.getProperty(
-                        propertyPath + "width").getValue());
-                assertEquals(String.format("document %d, vignette %d", i, j),
+                assertEquals(Long.valueOf(j),
+                        doc.getProperty(propertyPath + "height").getValue());
+                assertEquals(Long.valueOf(j),
+                        doc.getProperty(propertyPath + "width").getValue());
+                assertEquals(
+                        String.format("document %d, vignette %d", i, j),
                         doc.getProperty(propertyPath + "content").getValue(
                                 Blob.class).getString());
             }
@@ -390,8 +397,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(new PathRef("/doc"));
-        assertEquals(333L, doc.getProperty(
-                "cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
+        assertEquals(
+                333L,
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/width").getValue());
     }
 
     //
@@ -448,7 +456,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNotNull(root.getPathAsString());
     }
 
-    @SuppressWarnings( { "SimplifiableJUnitAssertion" })
+    @SuppressWarnings({ "SimplifiableJUnitAssertion" })
     public void testDocumentReferenceEqualitySameInstance()
             throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -940,8 +948,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(schemas.contains("dublincore"));
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
-        assertEquals("desc 1", returnedDocument.getProperty("dublincore",
-                "description"));
+        assertEquals("desc 1",
+                returnedDocument.getProperty("dublincore", "description"));
         assertNull(returnedDocument.getProperty("file", "filename"));
 
         returnedDocument = session.getDocument(childFile.getRef(),
@@ -962,10 +970,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(schemas.contains("dublincore"));
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
-        assertEquals("desc 1", returnedDocument.getProperty("dublincore",
-                "description"));
-        assertEquals("second name", returnedDocument.getProperty("file",
-                "filename"));
+        assertEquals("desc 1",
+                returnedDocument.getProperty("dublincore", "description"));
+        assertEquals("second name",
+                returnedDocument.getProperty("file", "filename"));
     }
 
     public void testGetFilesDocumentRef() throws ClientException {
@@ -1542,8 +1550,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(session.exists(childFolder.getRef()));
 
         assertEquals("f1", childFolder.getProperty("dublincore", "title"));
-        assertEquals("desc 1", childFolder.getProperty("dublincore",
-                "description"));
+        assertEquals("desc 1",
+                childFolder.getProperty("dublincore", "description"));
     }
 
     public void testSaveFile() throws ClientException {
@@ -1568,8 +1576,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModel retrievedFile = session.getDocument(childFile.getRef());
 
         assertEquals("f1", retrievedFile.getProperty("dublincore", "title"));
-        assertEquals("desc 1", retrievedFile.getProperty("dublincore",
-                "description"));
+        assertEquals("desc 1",
+                retrievedFile.getProperty("dublincore", "description"));
         assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
@@ -2351,7 +2359,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", docModel.getType());
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public void testCopyContent() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2782,8 +2790,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
 
         assertEquals("the title", proxy.getProperty("dublincore", "title"));
-        assertEquals("the title modified", doc.getProperty("dublincore",
-                "title"));
+        assertEquals("the title modified",
+                doc.getProperty("dublincore", "title"));
 
         // make another proxy
         session.publishDocument(doc, root);
@@ -2867,8 +2875,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(proxy.isProxy());
         assertFalse(proxy.isVersion());
         assertFalse(proxy.isImmutable());
-        assertEquals("the title modified", proxy.getProperty("dublincore",
-                "title"));
+        assertEquals("the title modified",
+                proxy.getProperty("dublincore", "title"));
 
         // modify proxy
         proxy.setProperty("dublincore", "title", "the title again");
@@ -2934,6 +2942,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         ver.putContextData(CoreSession.IMPORT_VERSION_CREATED, vcr);
         ver.putContextData(CoreSession.IMPORT_VERSION_LABEL, "v1");
         ver.putContextData(CoreSession.IMPORT_VERSION_DESCRIPTION, "v descr");
+        ver.putContextData(CoreSession.IMPORT_IS_VERSION, Boolean.TRUE);
+        ver.putContextData(CoreSession.IMPORT_VERSION_IS_LATEST, Boolean.TRUE);
+        ver.putContextData(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR,
+                Boolean.FALSE);
         ver.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(3));
         ver.putContextData(CoreSession.IMPORT_VERSION_MINOR, Long.valueOf(14));
         ver.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "v lcp");
@@ -2948,8 +2960,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         ver = session.getDocument(new IdRef(vid));
         // assertEquals(name, doc.getName()); // no path -> no name...
-        assertEquals("Ver title", (String) ver.getProperty("dublincore",
-                "title"));
+        assertEquals("Ver title",
+                (String) ver.getProperty("dublincore", "title"));
         assertEquals(mod, ver.getProperty("dublincore", "modified"));
         assertEquals("v lcp", ver.getLifeCyclePolicy());
         assertEquals("v lcst", ver.getCurrentLifeCycleState());
@@ -2982,8 +2994,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         proxy = session.getDocument(new IdRef(pid));
         assertEquals(name, proxy.getName());
-        assertEquals("Ver title", (String) proxy.getProperty("dublincore",
-                "title"));
+        assertEquals("Ver title",
+                (String) proxy.getProperty("dublincore", "title"));
         assertEquals(mod, proxy.getProperty("dublincore", "modified"));
         assertEquals("v lcp", proxy.getLifeCyclePolicy());
         assertEquals("v lcst", proxy.getCurrentLifeCycleState());
@@ -3010,8 +3022,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
         doc = session.getDocument(new IdRef(id));
         assertEquals(name, doc.getName());
-        assertEquals("Live title", (String) doc.getProperty("dublincore",
-                "title"));
+        assertEquals("Live title",
+                (String) doc.getProperty("dublincore", "title"));
         assertEquals(folderId, doc.getParentRef().toString());
         assertEquals("lcp", doc.getLifeCyclePolicy());
         assertEquals("lcst", doc.getCurrentLifeCycleState());
@@ -3134,8 +3146,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 EventConstants.INVAL_MODIFIED_PARENT_IDS);
         assertEquals(2, set.size());
         // spurious doc "parent" modified, due to its complex property
-        assertEquals(new HashSet<String>(Arrays.asList(doc.getId(),
-                root.getId())), set);
+        assertEquals(
+                new HashSet<String>(Arrays.asList(doc.getId(), root.getId())),
+                set);
 
         // change just one property
         doc.setProperty("dublincore", "title", "t1");
@@ -3178,8 +3191,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.getDocument(new IdRef(doc.getId()));
         assertNull(doc.getParentRef());
 
-        assertEquals("The title", (String) doc.getProperty("dublincore",
-                "title"));
+        assertEquals("The title",
+                (String) doc.getProperty("dublincore", "title"));
         assertNull((String) doc.getProperty("dublincore", "description"));
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));

@@ -74,7 +74,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  */
 public interface DocumentModel extends Serializable {
 
-    int REFRESH_STATE = 1; // "small" state (life cycle, lock)
+    int REFRESH_STATE = 1; // "small" state (life cycle, lock, versioning)
 
     int REFRESH_PREFETCH = 4;
 
@@ -311,6 +311,7 @@ public interface DocumentModel extends Serializable {
      * <p>
      * Only applicable to documents that are live (not versions and not
      * proxies).
+     *
      * @since 5.4
      */
     void checkOut() throws ClientException;
@@ -332,6 +333,59 @@ public interface DocumentModel extends Serializable {
      */
     DocumentRef checkIn(VersioningOption option, String checkinComment)
             throws ClientException;
+
+    /**
+     * Returns the version label.
+     * <p>
+     * The label returned is computed by the VersioningService.
+     *
+     * @return the version label, or {@code null}
+     */
+    String getVersionLabel();
+
+    /**
+     * Returns the checkin comment if the document model is a version.
+     *
+     * @return the checkin comment, or {@code null}
+     * @since 5.4
+     */
+    String getCheckinComment() throws ClientException;
+
+    /**
+     * Gets the version series id for this document.
+     * <p>
+     * All documents and versions derived by a check in or checkout from the
+     * same original document share the same version series id.
+     *
+     * @return the version series id
+     * @since 5.4
+     */
+    String getVersionSeriesId() throws ClientException;
+
+    /**
+     * Checks if a document is the latest version in the version series.
+     * @since 5.4
+     */
+    boolean isLatestVersion() throws ClientException;
+
+    /**
+     * Checks if a document is a major version.
+     * @since 5.4
+     */
+    boolean isMajorVersion() throws ClientException;
+
+    /**
+     * Checks if a document is the latest major version in the version series.
+     * @since 5.4
+     */
+    boolean isLatestMajorVersion() throws ClientException;
+
+    /**
+     * Checks if there is a checked out working copy for the version series of
+     * this document.
+     * @since 5.4
+     */
+    boolean isVersionSeriesCheckedOut() throws ClientException;
 
     /**
      * Gets the access control policy (ACP) for this document.
@@ -613,13 +667,6 @@ public interface DocumentModel extends Serializable {
     String getSourceId();
 
     /**
-     * Returns the version label if the document model is a version.
-     *
-     * @return the version label or null if not a version.
-     */
-    String getVersionLabel();
-
-    /**
      * Returns the map of prefetched values.
      *
      * @return the map of prefetched values.
@@ -740,11 +787,23 @@ public interface DocumentModel extends Serializable {
 
         public String lock;
 
-        public boolean checkedOut;
-
         public String lifeCycleState;
 
         public String lifeCyclePolicy;
+
+        public boolean isCheckedOut;
+
+        public boolean isLatestVersion;
+
+        public boolean isMajorVersion;
+
+        public boolean isLatestMajorVersion;
+
+        public boolean isVersionSeriesCheckedOut;
+
+        public String versionSeriesId;
+
+        public String checkinComment;
 
         public ACP acp;
 

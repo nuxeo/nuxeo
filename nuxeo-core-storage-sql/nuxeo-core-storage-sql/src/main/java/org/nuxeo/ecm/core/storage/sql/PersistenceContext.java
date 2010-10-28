@@ -690,11 +690,22 @@ public class PersistenceContext {
         fragment.setDeleted();
     }
 
-    protected List<Serializable> getVersionIds(Serializable versionableId)
+    public void recomputeVersionSeries(Serializable versionSeriesId)
             throws StorageException {
-        List<Row> rows = mapper.getVersionRows(versionableId);
+        hierContext.recomputeVersionSeries(versionSeriesId);
+    }
+
+    protected List<Serializable> getVersionIds(Serializable versionSeriesId)
+            throws StorageException {
+        List<Row> rows = mapper.getVersionRows(versionSeriesId);
         List<Fragment> fragments = getFragmentsFromFetchedRows(rows, false);
         return fragmentsIds(fragments);
+    }
+
+    protected List<Fragment> getVersionFragments(Serializable versionSeriesId)
+            throws StorageException {
+        List<Row> rows = mapper.getVersionRows(versionSeriesId);
+        return getFragmentsFromFetchedRows(rows, false);
     }
 
     protected List<Serializable> getProxyIds(Serializable searchId,
@@ -750,8 +761,8 @@ public class PersistenceContext {
         return hierContext.copy(source, parentId, name);
     }
 
-    protected Serializable checkIn(Node node, String label, String checkinComment)
-            throws StorageException {
+    protected Serializable checkIn(Node node, String label,
+            String checkinComment) throws StorageException {
         return hierContext.checkIn(node, label, checkinComment);
     }
 

@@ -194,14 +194,14 @@ public interface RowMapper {
             throws StorageException;
 
     /**
-     * Gets the list of version rows for all the versions having a given
-     * versionable id.
+     * Gets the list of version rows for all the versions in a given version
+     * series id.
      *
-     * @param versionableId the versionable id
+     * @param versionSeriesId the version series id
      * @return the list of version rows
      * @throws StorageException
      */
-    List<Row> getVersionRows(Serializable versionableId)
+    List<Row> getVersionRows(Serializable versionSeriesId)
             throws StorageException;
 
     /**
@@ -209,7 +209,7 @@ public interface RowMapper {
      *
      * @param searchId the id to look for
      * @param byTarget {@code true} if the searchId is a proxy target id,
-     *            {@code false} if the searchId is a versionable id
+     *            {@code false} if the searchId is a version series id
      * @param parentId the parent to which to restrict, if not {@code null}
      * @return the list of proxies rows
      * @throws StorageException

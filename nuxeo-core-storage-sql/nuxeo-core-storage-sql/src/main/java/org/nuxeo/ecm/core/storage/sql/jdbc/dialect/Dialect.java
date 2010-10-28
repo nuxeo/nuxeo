@@ -506,8 +506,8 @@ public abstract class Dialect {
     /**
      * Translate fulltext into a common pattern used by many servers.
      */
-    public static String translateFulltext(FulltextQuery ft,
-            String or, String and, String andNot, String phraseQuote) {
+    public static String translateFulltext(FulltextQuery ft, String or,
+            String and, String andNot, String phraseQuote) {
         StringBuilder buf = new StringBuilder();
         FulltextQueryAnalyzer.translate(ft, buf, or, and, andNot, phraseQuote);
         return buf.toString();

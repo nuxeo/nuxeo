@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -31,16 +30,14 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * @author Florent Guillaume
  */
-public class SQLDocumentVersion extends SQLDocumentLive implements
-        DocumentVersion {
+public class SQLDocumentVersion extends SQLDocumentLive {
 
     private final Node versionableNode;
 
@@ -65,37 +62,6 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     /*
-     * ----- DocumentVersion -----
-     */
-
-    @Override
-    public String getLabel() throws DocumentException {
-        return getString(Model.VERSION_LABEL_PROP);
-    }
-
-    @Override
-    public String getDescription() throws DocumentException {
-        return getString(Model.VERSION_DESCRIPTION_PROP);
-    }
-
-    @Override
-    public Calendar getCreated() throws DocumentException {
-        return getDate(Model.VERSION_CREATED_PROP);
-    }
-
-    // API unused
-    @Override
-    public DocumentVersion[] getPredecessors() {
-        throw new UnsupportedOperationException();
-    }
-
-    // API unused
-    @Override
-    public DocumentVersion[] getSuccessors() {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
      * ----- version-specific overrides -----
      */
 
@@ -105,16 +71,61 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     @Override
-    public DocumentVersion getBaseVersion() throws DocumentException {
-        return null;
+    public boolean isCheckedOut() throws DocumentException {
+        return false;
     }
 
     @Override
-    public Document getSourceDocument() throws DocumentException {
+    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+        if (versionableNode == null) {
+            return false;
+        }
+        try {
+            Boolean b = (Boolean) versionableNode.getSimpleProperty(
+                    Model.MAIN_CHECKED_IN_PROP).getValue();
+            return b == null ? true : !b.booleanValue();
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    @Override
+    public boolean isMajorVersion() throws DocumentException {
+        return Long.valueOf(0).equals(
+                getProperty(Model.MAIN_MINOR_VERSION_PROP).getValue());
+    }
+
+    @Override
+    public boolean isLatestVersion() throws DocumentException {
+        return getBoolean(Model.VERSION_IS_LATEST_PROP);
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws DocumentException {
+        return getBoolean(Model.VERSION_IS_LATEST_MAJOR_PROP);
+    }
+
+    @Override
+    public Document getWorkingCopy() throws DocumentException {
         if (versionableNode == null) {
             return null;
         }
         return session.getDocumentByUUID(versionableNode.getId().toString());
+    }
+
+    @Override
+    public Document getBaseVersion() throws DocumentException {
+        return null;
+    }
+
+    @Override
+    public String getVersionSeriesId() throws DocumentException {
+        return getString(Model.VERSION_VERSIONABLE_PROP);
+    }
+
+    @Override
+    public Document getSourceDocument() throws DocumentException {
+        return getWorkingCopy();
     }
 
     @Override
@@ -190,18 +201,13 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
      */
 
     @Override
-    public DocumentVersion checkIn(String label, String description) {
+    public Document checkIn(String label, String description) {
         throw new VersionNotModifiableException();
     }
 
     @Override
     public void checkOut() {
         throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public boolean isCheckedOut() {
-        return false;
     }
 
     @Override
@@ -214,31 +220,9 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
         return null;
     }
 
-    protected static final DocumentVersionIterator EMPTY_VERSION_ITERATOR = new DocumentVersionIterator() {
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public DocumentVersion next() {
-            throw new NoSuchElementException();
-        }
-
-        @Override
-        public DocumentVersion nextDocumentVersion() {
-            throw new NoSuchElementException();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    };
-
     @Override
-    public DocumentVersionIterator getVersions() {
-        return EMPTY_VERSION_ITERATOR;
+    public List<Document> getVersions() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -247,7 +231,7 @@ public class SQLDocumentVersion extends SQLDocumentLive implements
     }
 
     @Override
-    public DocumentVersion getLastVersion() {
+    public Document getLastVersion() {
         return null;
     }
 

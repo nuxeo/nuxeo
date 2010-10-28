@@ -110,6 +110,10 @@ public class Model {
 
     public static final String MAIN_MINOR_VERSION_KEY = "minorversion";
 
+    public static final String MAIN_IS_VERSION_PROP = "ecm:isVersion";
+
+    public static final String MAIN_IS_VERSION_KEY = "isversion";
+
     public static final String UID_SCHEMA_NAME = "uid";
 
     public static final String UID_MAJOR_VERSION_KEY = "major_version";
@@ -177,6 +181,14 @@ public class Model {
     public static final String VERSION_DESCRIPTION_PROP = "ecm:versionDescription";
 
     public static final String VERSION_DESCRIPTION_KEY = "description";
+
+    public static final String VERSION_IS_LATEST_PROP = "ecm:isLatestVersion";
+
+    public static final String VERSION_IS_LATEST_KEY = "islatest";
+
+    public static final String VERSION_IS_LATEST_MAJOR_PROP = "ecm:isLatestMajorVersion";
+
+    public static final String VERSION_IS_LATEST_MAJOR_KEY = "islatestmajor";
 
     public static final String PROXY_TYPE = "ecm:proxy";
 
@@ -1010,6 +1022,9 @@ public class Model {
         addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
                 HIER_TABLE_NAME, MAIN_MINOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
+        addPropertyInfo(null, MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN,
+                HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
     }
 
     /**
@@ -1040,6 +1055,13 @@ public class Model {
         addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, false,
                 StringType.INSTANCE, ColumnType.VARCHAR);
+        addPropertyInfo(null, VERSION_IS_LATEST_PROP, PropertyType.BOOLEAN,
+                VERSION_TABLE_NAME, VERSION_IS_LATEST_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(null, VERSION_IS_LATEST_MAJOR_PROP,
+                PropertyType.BOOLEAN, VERSION_TABLE_NAME,
+                VERSION_IS_LATEST_MAJOR_KEY, false, BooleanType.INSTANCE,
+                ColumnType.BOOLEAN);
     }
 
     /**

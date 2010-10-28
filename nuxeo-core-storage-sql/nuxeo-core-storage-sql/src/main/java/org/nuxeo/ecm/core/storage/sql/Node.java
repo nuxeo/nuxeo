@@ -118,14 +118,15 @@ public class Node {
     // cache the isVersion computation
     public boolean isVersion() {
         if (isVersion == null) {
-            Serializable versionableId;
             try {
-                versionableId = getSimpleProperty(
-                        model.VERSION_VERSIONABLE_PROP).getValue();
+                isVersion = (Boolean) getSimpleProperty(
+                        model.MAIN_IS_VERSION_PROP).getValue();
             } catch (StorageException e) {
                 throw new RuntimeException(e);
             }
-            isVersion = Boolean.valueOf(versionableId != null);
+            if (isVersion == null) {
+                isVersion = Boolean.FALSE;
+            }
         }
         return isVersion.booleanValue();
     }

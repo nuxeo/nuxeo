@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -61,6 +60,7 @@ import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
@@ -77,7 +77,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
-    public static boolean testMode;
+    public static Map<String, Serializable> testProps = new HashMap<String, Serializable>();
+
+    public static final String TEST_UPGRADE = "testUpgrade";
+
+    // property in sql.txt file
+    public static final String TEST_UPGRADE_VERSIONS = "testUpgradeVersions";
 
     private final QueryMakerService queryMakerService;
 
@@ -117,21 +122,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void createDatabase() throws StorageException {
         try {
-            sqlInfo.initSQLStatements();
+            sqlInfo.initSQLStatements(testProps);
         } catch (IOException e) {
             throw new StorageException(e);
         }
         try {
-            sqlInfo.executeSQLStatements("beforeTableCreation", this);
-            if (testMode) {
-                sqlInfo.executeSQLStatements("testUpgrade", this);
-            }
             createTables();
-            if (testMode) {
-                sqlInfo.executeSQLStatements("testUpgradeOldTables", this);
-            }
-            sqlInfo.executeSQLStatements("afterTableCreation", this);
-            sqlInfo.dialect.performAdditionalStatements(connection);
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException(e);
@@ -166,27 +162,35 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     protected void createTables() throws SQLException {
+        sqlInfo.executeSQLStatements("beforeTableCreation", this);
+        if (testProps.containsKey(TEST_UPGRADE)) {
+            // create "old" tables
+            sqlInfo.executeSQLStatements("testUpgrade", this);
+        }
+
         String schemaName = sqlInfo.dialect.getConnectionSchema(connection);
         DatabaseMetaData metadata = connection.getMetaData();
         Set<String> tableNames = findTableNames(metadata, schemaName);
+        Database database = sqlInfo.getDatabase();
+        Map<String, List<Column>> added = new HashMap<String, List<Column>>();
+
         Statement st = connection.createStatement();
 
-        for (Table table : sqlInfo.getDatabase().getTables()) {
-
-            String tableName = getTableName(table.getName());
-
-            if (tableNames.contains(tableName)
-                    || tableNames.contains(tableName.toUpperCase())) {
+        for (Table table : database.getTables()) {
+            String tableName = getTableName(table.getPhysicalName());
+            if (tableNames.contains(tableName.toUpperCase())) {
                 sqlInfo.dialect.existingTableDetected(connection, table, model,
                         sqlInfo.database);
             } else {
+
                 /*
                  * Create missing table.
                  */
+
                 boolean create = sqlInfo.dialect.preCreateTable(connection,
                         table, model, sqlInfo.database);
                 if (!create) {
-                    log.warn("Creation skipped for table: " + table.getName());
+                    log.warn("Creation skipped for table: " + table.getPhysicalName());
                     continue;
                 }
 
@@ -202,11 +206,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     logger.log(s);
                     st.execute(s);
                 }
+                added.put(table.getKey(), null); // null = table created
             }
 
             /*
              * Get existing columns.
              */
+
             ResultSet rs = metadata.getColumns(null, schemaName, tableName, "%");
             Map<String, Integer> columnTypes = new HashMap<String, Integer>();
             Map<String, String> columnTypeNames = new HashMap<String, String>();
@@ -230,6 +236,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             /*
              * Update types and create missing columns.
              */
+
+            List<Column> addedColumns = new LinkedList<Column>();
             for (Column column : table.getColumns()) {
                 String upperName = column.getPhysicalName().toUpperCase();
                 Integer type = columnTypes.remove(upperName);
@@ -243,6 +251,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         logger.log(s);
                         st.execute(s);
                     }
+                    addedColumns.add(column);
                 } else {
                     int expected = column.getJdbcType();
                     int actual = type.intValue();
@@ -266,11 +275,56 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                                 new ArrayList<String>(columnTypes.keySet()),
                                 ", "));
             }
+            if (!addedColumns.isEmpty()) {
+                if (added.containsKey(table.getKey())) {
+                    throw new AssertionError();
+                }
+                added.put(table.getKey(), addedColumns);
+            }
         }
 
         closeStatement(st);
+
+        if (testProps.containsKey(TEST_UPGRADE)) {
+            // create "old" content in tables
+            sqlInfo.executeSQLStatements("testUpgradeOldTables", this);
+        }
+
+        // run upgrade for each table if added columns or test
+        for (Entry<String, List<Column>> en : added.entrySet()) {
+            List<Column> addedColumns = en.getValue();
+            String tableKey = en.getKey();
+            upgradeTable(tableKey, addedColumns);
+        }
+        sqlInfo.executeSQLStatements("afterTableCreation", this);
+        sqlInfo.dialect.performAdditionalStatements(connection);
     }
 
+    protected void upgradeTable(String tableKey, List<Column> addedColumns)
+            throws SQLException {
+        if (model.VERSION_TABLE_NAME.equals(tableKey)) {
+            boolean upgradeVersions;
+            if (addedColumns == null) {
+                // table created
+                upgradeVersions = testProps.containsKey(TEST_UPGRADE_VERSIONS);
+            } else {
+                // columns added
+                upgradeVersions = false;
+                for (Column col : addedColumns) {
+                    if (col.getKey().equals(model.VERSION_IS_LATEST_KEY)) {
+                        upgradeVersions = true;
+                        break;
+                    }
+                }
+            }
+            if (upgradeVersions) {
+                log.info("Upgrading versions");
+                sqlInfo.executeSQLStatements("upgradeVersions", this);
+            }
+        }
+    }
+
+    /** Finds uppercase table names. */
     protected static Set<String> findTableNames(DatabaseMetaData metadata,
             String schemaName) throws SQLException {
         Set<String> tableNames = new HashSet<String>();
@@ -278,8 +332,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
-            tableNames.add(tableName);
-            // normalize to uppercase too
             tableNames.add(tableName.toUpperCase());
         }
         return tableNames;
@@ -528,11 +580,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     // uses JDBCRowMapper
     @Override
-    public Serializable getVersionIdByLabel(Serializable versionableId,
+    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
             String label) throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsByLabel;
+        SQLInfoSelect select = sqlInfo.selectVersionBySeriesAndLabel;
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
-        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
         criteriaMap.put(model.VERSION_LABEL_KEY, label);
         List<Row> rows = getSelectRows(model.VERSION_TABLE_NAME, select,
                 criteriaMap, null, true);
@@ -541,11 +594,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     // uses JDBCRowMapper
     @Override
-    public Serializable getLastVersionId(Serializable versionableId)
+    public Serializable getLastVersionId(Serializable versionSeriesId)
             throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                model.VERSION_VERSIONABLE_KEY, versionableId);
+        SQLInfoSelect select = sqlInfo.selectVersionsBySeriesDesc;
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
         List<Row> maps = getSelectRows(model.VERSION_TABLE_NAME, select,
                 criteriaMap, null, true);
         return maps == null ? null : maps.get(0).id;

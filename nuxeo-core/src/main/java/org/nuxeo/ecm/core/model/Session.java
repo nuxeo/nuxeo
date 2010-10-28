@@ -247,7 +247,9 @@ public interface Session {
      * @param versionLabel the version
      * @return the proxy
      * @throws DocumentException if any error occurs
+     * @deprecated
      */
+    @Deprecated
     Document createProxyForVersion(Document parent, Document doc,
             String versionLabel) throws DocumentException;
 

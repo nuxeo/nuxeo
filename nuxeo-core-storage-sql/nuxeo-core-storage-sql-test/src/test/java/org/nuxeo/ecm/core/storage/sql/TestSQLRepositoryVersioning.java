@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.schema.FacetNames;
 
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
@@ -432,6 +434,67 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("deleted", proxy.getCurrentLifeCycleState());
     }
 
+    public void testCopy() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        String versionSeriesId = doc.getVersionSeriesId();
+
+        // copy
+        DocumentModel copy = session.copy(doc.getRef(),
+                session.getRootDocument().getRef(), "fileCopied");
+
+        // check different version series id
+        assertNotSame(versionSeriesId, copy.getVersionSeriesId());
+
+        // create version and proxy
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        // check same version series id
+        assertEquals(versionSeriesId, proxy.getVersionSeriesId());
+
+        // copy proxy
+        DocumentModel proxyCopy = session.copy(proxy.getRef(),
+                session.getRootDocument().getRef(), "proxyCopied");
+        // check same version series id
+        assertEquals(versionSeriesId, proxyCopy.getVersionSeriesId());
+    }
+
+    public void testPublishing() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        checkVersions(doc);
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.save();
+        String versionSeriesId = doc.getVersionSeriesId();
+        assertFalse(proxy.isVersion());
+        assertTrue(proxy.isProxy());
+        assertTrue(proxy.hasFacet(FacetNames.IMMUTABLE));
+        assertTrue(proxy.isImmutable());
+        assertEquals(versionSeriesId, proxy.getVersionSeriesId());
+        assertNotSame(versionSeriesId, proxy.getId());
+        assertEquals("0.1", proxy.getVersionLabel());
+        assertNull(proxy.getCheckinComment());
+        assertFalse(proxy.isMajorVersion());
+        assertTrue(proxy.isLatestVersion());
+        assertFalse(proxy.isLatestMajorVersion());
+
+        checkVersions(doc, "0.1");
+        VersionModel lastVersion = session.getLastVersion(doc.getRef());
+        assertNotNull(lastVersion);
+        assertEquals("0.1", lastVersion.getLabel());
+        DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
+        assertNotNull(lastVersionDocument);
+        assertEquals("file", lastVersionDocument.getName());
+    }
+
     public void testPublishingAfterVersionDelete() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -447,7 +510,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
-        checkVersions(proxy);
         checkVersions(doc, "0.1");
         lastVersion = session.getLastVersion(doc.getRef());
         assertNotNull(lastVersion);
@@ -473,7 +535,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // republish
         DocumentModel newProxy = session.publishDocument(doc, folder);
-        checkVersions(newProxy);
         checkVersions(doc, "0.2");
         lastVersion = session.getLastVersion(doc.getRef());
         assertNotNull(lastVersion);
@@ -493,7 +554,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
-        checkVersions(proxy);
         checkVersions(doc, "0.1");
         VersionModel lastVersion = session.getLastVersion(doc.getRef());
         assertNotNull(lastVersion);
@@ -513,7 +573,6 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // republish
         DocumentModel newProxy = session.publishDocument(copy, folder);
-        checkVersions(newProxy);
         checkVersions(copy, "0.2");
         lastVersion = session.getLastVersion(copy.getRef());
         assertNotNull(lastVersion);
@@ -521,6 +580,165 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("fileCopied", lastVersionDocument.getName());
+    }
+
+    public void testCmisProperties() throws Exception {
+
+        /*
+         * checked out doc (live; private working copy)
+         */
+
+        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        doc = session.createDocument(doc);
+
+        assertTrue(doc.isCheckedOut()); // nuxeo prop, false only on live
+        assertFalse(doc.isVersion());
+        assertFalse(doc.isProxy());
+        assertFalse(doc.hasFacet(FacetNames.IMMUTABLE));
+        assertFalse(doc.isImmutable());
+        String versionSeriesId = doc.getVersionSeriesId();
+        assertNotNull(versionSeriesId);
+        // assertNotSame(versionSeriesId, doc.getId());
+        assertEquals("0.0", doc.getVersionLabel());
+        assertNull(doc.getCheckinComment());
+        assertFalse(doc.isMajorVersion());
+        assertFalse(doc.isLatestVersion());
+        assertFalse(doc.isLatestMajorVersion());
+        assertTrue(doc.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(), session.getWorkingCopy(doc.getRef()).getId());
+
+        /*
+         * proxy to checked out doc (live proxy)
+         */
+
+        DocumentModel proxy = session.createProxy(doc.getRef(),
+                session.getRootDocument().getRef());
+
+        assertTrue(proxy.isCheckedOut()); // nuxeo prop, false only on live
+        assertFalse(proxy.isVersion());
+        assertTrue(proxy.isProxy());
+        assertFalse(proxy.hasFacet(FacetNames.IMMUTABLE));
+        assertFalse(proxy.isImmutable());
+        assertEquals(versionSeriesId, proxy.getVersionSeriesId());
+        assertEquals("0.0", proxy.getVersionLabel());
+        assertNull(proxy.getCheckinComment());
+        assertFalse(proxy.isMajorVersion());
+        assertFalse(proxy.isLatestVersion());
+        assertFalse(proxy.isLatestMajorVersion());
+        assertTrue(proxy.isVersionSeriesCheckedOut());
+        assertTrue(doc.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(),
+                session.getWorkingCopy(proxy.getRef()).getId());
+
+        /*
+         * checked in doc
+         */
+
+        DocumentRef verRef = doc.checkIn(VersioningOption.MINOR, "comment");
+        session.save();
+        DocumentModel ver = session.getDocument(verRef);
+
+        assertFalse(doc.isCheckedOut());
+        assertFalse(doc.isVersion());
+        assertFalse(doc.isProxy());
+        // assertTrue(doc.hasFacet(FacetNames.IMMUTABLE)); // debatable
+        // assertTrue(doc.isImmutable()); // debatable
+        assertEquals(versionSeriesId, doc.getVersionSeriesId());
+        assertEquals("0.1", doc.getVersionLabel());
+        assertNull(doc.getCheckinComment());
+        assertFalse(doc.isMajorVersion());
+        assertFalse(doc.isLatestVersion());
+        assertFalse(doc.isLatestMajorVersion());
+        assertFalse(doc.isVersionSeriesCheckedOut());
+        assertFalse(proxy.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(),
+                session.getWorkingCopy(proxy.getRef()).getId());
+
+        // TODO proxy to checked in doc
+
+        /*
+         * version
+         */
+
+        // assertFalse(ver.isCheckedOut()); // TODO
+        assertTrue(ver.isVersion());
+        assertFalse(ver.isProxy());
+        assertTrue(ver.hasFacet(FacetNames.IMMUTABLE));
+        assertTrue(ver.isImmutable());
+        assertEquals(versionSeriesId, ver.getVersionSeriesId());
+        assertEquals("0.1", ver.getVersionLabel());
+        assertEquals("comment", ver.getCheckinComment());
+        assertFalse(ver.isMajorVersion());
+        assertTrue(ver.isLatestVersion());
+        assertFalse(ver.isLatestMajorVersion());
+        assertFalse(ver.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(), session.getWorkingCopy(ver.getRef()).getId());
+
+        /*
+         * proxy to version
+         */
+
+        proxy = session.createProxy(ver.getRef(),
+                session.getRootDocument().getRef());
+
+        assertFalse(proxy.isCheckedOut());
+        assertFalse(proxy.isVersion());
+        assertTrue(proxy.isProxy());
+        assertTrue(proxy.hasFacet(FacetNames.IMMUTABLE));
+        assertTrue(proxy.isImmutable());
+        assertEquals(versionSeriesId, proxy.getVersionSeriesId());
+        assertEquals("0.1", proxy.getVersionLabel());
+        assertEquals("comment", proxy.getCheckinComment());
+        assertFalse(proxy.isMajorVersion());
+        assertTrue(proxy.isLatestVersion());
+        assertFalse(proxy.isLatestMajorVersion());
+        assertFalse(proxy.isVersionSeriesCheckedOut());
+        assertFalse(doc.isVersionSeriesCheckedOut());
+        assertFalse(ver.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(),
+                session.getWorkingCopy(proxy.getRef()).getId());
+
+        /*
+         * re-checked out doc
+         */
+
+        doc.checkOut();
+
+        assertTrue(doc.isCheckedOut());
+        assertFalse(doc.isVersion());
+        assertFalse(doc.isProxy());
+        assertFalse(doc.hasFacet(FacetNames.IMMUTABLE));
+        assertFalse(doc.isImmutable());
+        assertEquals(versionSeriesId, doc.getVersionSeriesId());
+        assertEquals("0.1+", doc.getVersionLabel());
+        assertNull(doc.getCheckinComment());
+        assertFalse(doc.isMajorVersion());
+        assertFalse(doc.isLatestVersion());
+        assertFalse(doc.isLatestMajorVersion());
+        assertTrue(doc.isVersionSeriesCheckedOut());
+        assertTrue(ver.isVersionSeriesCheckedOut());
+        assertTrue(proxy.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(), session.getWorkingCopy(doc.getRef()).getId());
+
+        /*
+         * major checkin
+         */
+
+        DocumentRef majRef = doc.checkIn(VersioningOption.MAJOR, "yo");
+        DocumentModel maj = session.getDocument(majRef);
+        assertTrue(maj.isMajorVersion());
+        assertTrue(maj.isLatestVersion());
+        assertTrue(maj.isLatestMajorVersion());
+        assertFalse(maj.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(), session.getWorkingCopy(maj.getRef()).getId());
+        // previous ver
+        assertFalse(ver.isMajorVersion());
+        assertFalse(ver.isLatestVersion());
+        assertFalse(ver.isLatestMajorVersion());
+        assertFalse(ver.isVersionSeriesCheckedOut());
+        assertFalse(doc.isVersionSeriesCheckedOut());
+        assertFalse(proxy.isVersionSeriesCheckedOut());
+        assertEquals(doc.getId(), session.getWorkingCopy(ver.getRef()).getId());
     }
 
 }

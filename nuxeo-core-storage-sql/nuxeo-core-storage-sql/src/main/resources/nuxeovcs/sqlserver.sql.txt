@@ -194,6 +194,65 @@ EXEC NX_UPGRADE_TAGS
 ############################################################
 
 
+#CATEGORY: upgradeVersions
+
+UPDATE hierarchy SET isversion = 1
+  FROM hierarchy JOIN versions ON hierarchy.id = versions.id;
+
+IF OBJECT_ID('dbo.NX_UPGRADE_VERSIONS', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
+
+CREATE PROCEDURE NX_UPGRADE_VERSIONS
+AS
+BEGIN
+  DECLARE @series NVARCHAR(36);
+  DECLARE @latest TINYINT;
+  DECLARE @latestmajor TINYINT;
+  DECLARE @major TINYINT;
+  DECLARE @cur CURSOR;
+  DECLARE @curid NVARCHAR(36);
+  DECLARE @curvid NVARCHAR(36);
+  DECLARE @curmaj BIGINT;
+  DECLARE @curmin BIGINT;
+  SET @series = '-';
+  SET @latest = 0;
+  SET @latestmajor = 0;
+  SET @cur = CURSOR FAST_FORWARD FOR
+    SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC;
+  OPEN @cur;
+  FETCH FROM @cur INTO @curid, @curvid, @curmaj, @curmin;
+  WHILE @@FETCH_STATUS = 0 BEGIN
+    IF @curvid <> @series
+    BEGIN
+      -- restart
+      SET @latest = 1;
+      SET @latestmajor = 1;
+      SET @series = @curvid;
+    END;
+    SET @major = CASE WHEN @curmin = 0 THEN 1 ELSE 0 END;
+    UPDATE versions SET
+        label = CONVERT(VARCHAR, @curmaj) + '.' + CONVERT(VARCHAR, @curmin),
+        islatest = @latest,
+        islatestmajor = CASE WHEN @major = 1 and @latestmajor = 1 THEN 1 ELSE 0 END
+      WHERE id = @curid;
+    -- next
+    SET @latest = 0;
+    IF @major = 1 SET @latestmajor = 0;
+    -- loop
+    FETCH FROM @cur INTO @curid, @curvid, @curmaj, @curmin;
+  END;
+  CLOSE @cur;
+END;
+
+EXEC NX_UPGRADE_VERSIONS
+
+DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
+
+############################################################
+
+
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore

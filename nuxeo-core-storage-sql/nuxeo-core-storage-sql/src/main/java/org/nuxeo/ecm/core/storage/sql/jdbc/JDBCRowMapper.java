@@ -771,11 +771,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<Row> getVersionRows(Serializable versionableId)
+    public List<Row> getVersionRows(Serializable versionSeriesId)
             throws StorageException {
-        SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
-        Map<String, Serializable> criteriaMap = Collections.singletonMap(
-                model.VERSION_VERSIONABLE_KEY, versionableId);
+        SQLInfoSelect select = sqlInfo.selectVersionsBySeries;
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionSeriesId);
+        criteriaMap.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
         return getSelectRows(model.VERSION_TABLE_NAME, select, criteriaMap,
                 null, false);
     }
@@ -790,11 +791,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Map<String, Serializable> joinMap;
         if (parentId == null) {
             select = byTarget ? sqlInfo.selectProxiesByTarget
-                    : sqlInfo.selectProxiesByVersionable;
+                    : sqlInfo.selectProxiesBySeries;
             joinMap = null;
         } else {
             select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
-                    : sqlInfo.selectProxiesByVersionableAndParent;
+                    : sqlInfo.selectProxiesByVersionSeriesAndParent;
             joinMap = Collections.singletonMap(model.HIER_PARENT_KEY, parentId);
         }
         return getSelectRows(model.PROXY_TABLE_NAME, select, criteriaMap,

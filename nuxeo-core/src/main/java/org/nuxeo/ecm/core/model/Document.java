@@ -130,7 +130,7 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * @return the life cycle as a string
      * @throws LifeCycleException
      */
-    String getCurrentLifeCycleState() throws LifeCycleException;
+    String getLifeCycleState() throws LifeCycleException;
 
     /**
      * Sets the lifecycle state of the document.

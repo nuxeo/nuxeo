@@ -67,7 +67,12 @@ public class TableAlias implements Table {
     }
 
     @Override
-    public String getName() {
+    public String getKey() {
+        return table.getKey();
+    }
+
+    @Override
+    public String getPhysicalName() {
         return alias;
     }
 
@@ -85,7 +90,7 @@ public class TableAlias implements Table {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("Table(");
-        buf.append(table.getName());
+        buf.append(table.getPhysicalName());
         buf.append(" AS ");
         buf.append(alias);
         buf.append(')');

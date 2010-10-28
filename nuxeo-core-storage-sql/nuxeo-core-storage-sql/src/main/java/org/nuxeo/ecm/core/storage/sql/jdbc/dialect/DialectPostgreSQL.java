@@ -606,11 +606,12 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public boolean preCreateTable(Connection connection, Table table,
             Model model, Database database) throws SQLException {
-        if (table.getName().equals(model.HIER_TABLE_NAME.toLowerCase())) {
+        String tableKey = table.getKey();
+        if (model.HIER_TABLE_NAME.equals(tableKey)) {
             hierarchyCreated = true;
             return true;
         }
-        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
+        if (model.ANCESTORS_TABLE_NAME.equals(tableKey)) {
             if (hierarchyCreated) {
                 // database initialization
                 return true;
@@ -639,7 +640,7 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public List<String> getPostCreateTableSqls(Table table, Model model,
             Database database) {
-        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
+        if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
             List<String> sqls = new ArrayList<String>();
             if (pathOptimizationsEnabled) {
                 sqls.add("SELECT nx_init_ancestors()");
@@ -654,7 +655,7 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public void existingTableDetected(Connection connection, Table table,
             Model model, Database database) throws SQLException {
-        if (table.getName().equals(Model.ANCESTORS_TABLE_NAME.toLowerCase())) {
+        if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
             if (!pathOptimizationsEnabled) {
                 log.info("Path optimizations disabled");
                 return;

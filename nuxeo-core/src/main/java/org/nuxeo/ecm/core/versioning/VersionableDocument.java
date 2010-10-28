@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -39,12 +40,10 @@ public interface VersionableDocument {
      * @return the created version
      * @throws DocumentException
      */
-    DocumentVersion checkIn(String label, String checkinComment)
+    Document checkIn(String label, String checkinComment)
             throws DocumentException;
 
     void checkOut() throws DocumentException;
-
-    boolean isCheckedOut() throws DocumentException;
 
     /**
      * Gets the list of version ids for this document.
@@ -59,7 +58,7 @@ public interface VersionableDocument {
      * @return all versions of the document, empty list if there's no version
      * @throws DocumentException
      */
-    DocumentVersionIterator getVersions() throws DocumentException;
+    List<Document> getVersions() throws DocumentException;
 
     /**
      * Gets the last version of this document.
@@ -67,7 +66,7 @@ public interface VersionableDocument {
      * @return the last version
      * @throws DocumentException
      */
-    DocumentVersion getLastVersion() throws DocumentException;
+    Document getLastVersion() throws DocumentException;
 
     /**
      * Gets the head ("live") version of this document.
@@ -120,6 +119,31 @@ public interface VersionableDocument {
      *
      * @return the version, or {@code null}
      */
-    DocumentVersion getBaseVersion() throws DocumentException;
+    Document getBaseVersion() throws DocumentException;
+
+    boolean isCheckedOut() throws DocumentException;
+
+    Calendar getVersionCreationDate() throws DocumentException;
+
+    /**
+     * Gets the version series id.
+     *
+     * @return the version series id
+     */
+    String getVersionSeriesId() throws DocumentException;
+
+    String getVersionLabel() throws DocumentException;
+
+    boolean isLatestVersion() throws DocumentException;
+
+    boolean isMajorVersion() throws DocumentException;
+
+    boolean isLatestMajorVersion() throws DocumentException;
+
+    boolean isVersionSeriesCheckedOut() throws DocumentException;
+
+    Document getWorkingCopy() throws DocumentException;
+
+    String getCheckinComment() throws DocumentException;
 
 }

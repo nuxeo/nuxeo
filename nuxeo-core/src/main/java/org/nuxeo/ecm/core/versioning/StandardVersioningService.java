@@ -184,7 +184,7 @@ public class StandardVersioningService implements VersioningService {
                 FacetNames.VERSIONABLE);
         String lifecycleState;
         try {
-            lifecycleState = doc.getCurrentLifeCycleState();
+            lifecycleState = doc.getLifeCycleState();
         } catch (LifeCycleException e) {
             lifecycleState = null;
         }
@@ -236,7 +236,7 @@ public class StandardVersioningService implements VersioningService {
     protected void followTransitionByOption(Document doc,
             VersioningOption option) throws DocumentException {
         try {
-            String lifecycleState = doc.getCurrentLifeCycleState();
+            String lifecycleState = doc.getLifeCycleState();
             if (APPROVED_STATE.equals(lifecycleState)
                     || OBSOLETE_STATE.equals(lifecycleState)) {
                 doc.followTransition(BACK_TO_PROJECT_TRANSITION);
@@ -258,7 +258,7 @@ public class StandardVersioningService implements VersioningService {
     }
 
     @Override
-    public DocumentVersion doCheckIn(Document doc, VersioningOption option,
+    public Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException {
         incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
         return doc.checkIn(null, checkinComment); // auto-label
@@ -269,7 +269,7 @@ public class StandardVersioningService implements VersioningService {
         doc.checkOut();
         // set version number to that of the last version
         try {
-            DocumentVersion last = doc.getLastVersion();
+            Document last = doc.getLastVersion();
             if (last != null) {
                 setVersion(doc, getMajor(last), getMinor(last));
             }

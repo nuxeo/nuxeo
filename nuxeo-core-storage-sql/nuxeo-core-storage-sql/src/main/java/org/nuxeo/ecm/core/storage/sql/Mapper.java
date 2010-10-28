@@ -113,22 +113,22 @@ public interface Mapper extends RowMapper, XAResource {
      */
 
     /**
-     * Gets the id of a version given a versionableId and a label.
+     * Gets the id of a version given a version series id and a label.
      *
-     * @param versionableId the versionable id
+     * @param versionSeriesId the version series id
      * @param label the label
      * @return the id of the version, or {@code null} if not found
      */
-    Serializable getVersionIdByLabel(Serializable versionableId, String label)
+    Serializable getVersionIdByLabel(Serializable versionSeriesId, String label)
             throws StorageException;
 
     /**
-     * Gets the id of the last version given a versionable id.
+     * Gets the id of the last version given a version series id.
      *
-     * @param versionableId the versionable id
+     * @param versionSeriesId the version series id
      * @return the id of the last version, or {@code null} if not found
      */
-    Serializable getLastVersionId(Serializable versionableId)
+    Serializable getLastVersionId(Serializable versionSeriesId)
             throws StorageException;
 
     /*

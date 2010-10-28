@@ -518,6 +518,53 @@ END;
 ############################################################
 
 
+#CATEGORY: upgradeVersions
+
+UPDATE (select isversion FROM hierarchy, versions
+  WHERE hierarchy.id = versions.id)
+  SET isversion = 1
+
+CREATE OR REPLACE PROCEDURE nx_upgrade_versions
+IS
+  series hierarchy.id%TYPE := '-';
+  latest NUMBER(1,0) := 0;
+  setlatestmajor NUMBER(1,0);
+  latestmajor BOOLEAN := FALSE;
+  major BOOLEAN;
+BEGIN
+-- Upgrade versions: label, islatest, islatestmajor
+  FOR r in
+    (SELECT v.id, v.versionableid, h.majorversion, h.minorversion
+      FROM versions v JOIN hierarchy h ON v.id = h.id
+      ORDER BY v.versionableid, v.created DESC)
+  LOOP
+    IF r.versionableid <> series THEN
+      -- restart
+      latest := 1;
+      latestmajor := TRUE;
+      series := r.versionableid;
+    END IF;
+    major := r.minorversion = 0;
+    IF major and latestmajor THEN setlatestmajor := 1; ELSE setlatestmajor := 0; END IF;
+    UPDATE versions SET
+        label = r.majorversion || '.' || r.minorversion,
+        islatest = latest,
+        islatestmajor = setlatestmajor
+      WHERE id = r.id;
+    -- next
+    latest := 0;
+    IF major THEN latestmajor := FALSE; END IF;
+  END LOOP;
+END;
+
+{CALL nx_upgrade_versions}
+
+DROP PROCEDURE nx_upgrade_versions
+
+
+############################################################
+
+
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore

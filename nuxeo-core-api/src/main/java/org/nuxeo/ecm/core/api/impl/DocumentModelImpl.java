@@ -78,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @version $Revision: 1.0 $
  */
-@SuppressWarnings( { "SuppressionAnnotation" })
+@SuppressWarnings({ "SuppressionAnnotation" })
 public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     public static final String STRICT_LAZY_LOADING_POLICY_KEY = "org.nuxeo.ecm.core.strictlazyloading";
@@ -121,14 +121,38 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected DocumentRef parentRef;
 
+    /** state is lock, lifecycle, version stuff. */
+    protected boolean isStateLoaded;
+
+    // loaded if isStateLoaded
     protected String lock;
 
-    // null when not loaded
-    protected Boolean checkedout;
-
+    // loaded if isStateLoaded
     protected String currentLifeCycleState;
 
+    // loaded if isStateLoaded
     protected String lifeCyclePolicy;
+
+    // loaded if isStateLoaded
+    protected boolean isCheckedOut;
+
+    // loaded if isStateLoaded
+    protected String versionSeriesId;
+
+    // loaded if isStateLoaded
+    protected boolean isLatestVersion;
+
+    // loaded if isStateLoaded
+    protected boolean isMajorVersion;
+
+    // loaded if isStateLoaded
+    protected boolean isLatestMajorVersion;
+
+    // loaded if isStateLoaded
+    protected boolean isVersionSeriesCheckedOut;
+
+    // loaded if isStateLoaded
+    protected String checkinComment;
 
     // acp is not send between client/server
     // it will be loaded lazy first time it is accessed
@@ -157,23 +181,23 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     private ScopedMap contextData;
 
-    @SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
+    @SuppressWarnings({ "CollectionDeclaredAsConcreteClass" })
     protected HashMap<String, Serializable> prefetch;
 
     protected static Boolean strictSessionManagement = null;
 
-    // ThreadLocal CoreSession used when DocumenModelImpl uses the CoreSession from within the DocumentManagerBean
+    // ThreadLocal CoreSession used when DocumenModelImpl uses the CoreSession
+    // from within the DocumentManagerBean
     // to avoid reentrant calls to the Stateful Bean
-    // because there can be several CoreSessions in parallele, we need to use a Map where sessionId is used as key
+    // because there can be several CoreSessions in parallele, we need to use a
+    // Map where sessionId is used as key
 
-    public static ThreadLocal<HashMap<String, CoreSession>> reentrantCoreSession = new ThreadLocal<HashMap<String,CoreSession>>() {
+    public static ThreadLocal<HashMap<String, CoreSession>> reentrantCoreSession = new ThreadLocal<HashMap<String, CoreSession>>() {
         @Override
-        protected HashMap<String,CoreSession> initialValue() {
+        protected HashMap<String, CoreSession> initialValue() {
             return new HashMap<String, CoreSession>();
         }
     };
-
-
 
     protected DocumentModelImpl() {
     }
@@ -607,8 +631,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                     return value == Null.VALUE ? null : value;
                 }
             }
-            if(log.isTraceEnabled()) {
-                log.trace("Property not in prefetch: " + schemaName + '.' + name);
+            if (log.isTraceEnabled()) {
+                log.trace("Property not in prefetch: " + schemaName + '.'
+                        + name);
             }
             dm = getDataModel(schemaName);
         }
@@ -681,17 +706,18 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isCheckedOut() throws ClientException {
-        if (checkedout == null) {
-            checkedout = Boolean.valueOf(getCoreSession().isCheckedOut(ref));
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
         }
-        return checkedout.booleanValue();
+        return isCheckedOut;
     }
 
     @Override
     public void checkOut() throws ClientException {
         getCoreSession().checkOut(ref);
-        checkedout = Boolean.TRUE;
-        refresh(REFRESH_CONTENT_IF_LOADED, null); // new version number
+        isStateLoaded = false;
+        // new version number, refresh content
+        refresh(REFRESH_CONTENT_IF_LOADED, null);
     }
 
     @Override
@@ -699,9 +725,67 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throws ClientException {
         DocumentRef versionRef = getCoreSession().checkIn(ref, option,
                 description);
-        checkedout = Boolean.FALSE;
-        refresh(REFRESH_CONTENT_IF_LOADED, null); // new version number
+        isStateLoaded = false;
+        // new version number, refresh content
+        refresh(REFRESH_CONTENT_IF_LOADED, null);
         return versionRef;
+    }
+
+    @Override
+    public String getVersionLabel() {
+        try {
+            return getCoreSession().getVersionLabel(this);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getVersionSeriesId() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return versionSeriesId;
+    }
+
+    @Override
+    public boolean isLatestVersion() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return isLatestVersion;
+    }
+
+    @Override
+    public boolean isMajorVersion() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return isMajorVersion;
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return isLatestMajorVersion;
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return isVersionSeriesCheckedOut;
+    }
+
+    @Override
+    public String getCheckinComment() throws ClientException {
+        if (!isStateLoaded) {
+            refresh(REFRESH_STATE, null);
+        }
+        return checkinComment;
     }
 
     @Override
@@ -1192,15 +1276,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return sourceId;
     }
 
-    @Override
-    public String getVersionLabel() {
-        try {
-            return getCoreSession().getVersionLabel(this);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-
     public boolean isSchemaLoaded(String name) {
         return dataModels.containsKey(name);
     }
@@ -1491,9 +1566,16 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         if ((refreshFlags & REFRESH_STATE) != 0) {
             lock = refresh.lock;
-            checkedout = Boolean.valueOf(refresh.checkedOut);
             currentLifeCycleState = refresh.lifeCycleState;
             lifeCyclePolicy = refresh.lifeCyclePolicy;
+            isCheckedOut = refresh.isCheckedOut;
+            isLatestVersion = refresh.isLatestVersion;
+            isMajorVersion = refresh.isMajorVersion;
+            isLatestMajorVersion = refresh.isLatestMajorVersion;
+            isVersionSeriesCheckedOut = refresh.isVersionSeriesCheckedOut;
+            versionSeriesId = refresh.versionSeriesId;
+            checkinComment = refresh.checkinComment;
+
         }
         acp = null;
         isACPLoaded = false;

@@ -44,6 +44,8 @@ public class TableImpl implements Table {
 
     protected final Dialect dialect;
 
+    protected final String key;
+
     protected final String name;
 
     /** Map of logical names to columns. */
@@ -58,9 +60,10 @@ public class TableImpl implements Table {
     /**
      * Creates a new empty table.
      */
-    public TableImpl(Database database, String name) {
+    public TableImpl(Database database, String name, String key) {
         this.database = database;
         dialect = database.dialect;
+        this.key = key; // Model table name
         this.name = name;
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
@@ -84,7 +87,12 @@ public class TableImpl implements Table {
     }
 
     @Override
-    public String getName() {
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String getPhysicalName() {
         return name;
     }
 
@@ -245,7 +253,7 @@ public class TableImpl implements Table {
             Column fc = ft.getColumn(column.getForeignKey());
             String constraintName = dialect.openQuote()
                     + dialect.getForeignKeyConstraintName(name,
-                            column.getPhysicalName(), ft.getName())
+                            column.getPhysicalName(), ft.getPhysicalName())
                     + dialect.closeQuote();
             StringBuilder buf = new StringBuilder();
             buf.append("ALTER TABLE ");

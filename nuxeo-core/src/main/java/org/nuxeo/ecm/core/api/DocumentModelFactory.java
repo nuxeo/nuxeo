@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
 
 /**
  * DocumentModel factory for document models initialization.
@@ -181,8 +180,6 @@ public class DocumentModelFactory {
 
         if (doc.isVersion()) {
             docModel.setIsVersion(true);
-            docModel.putContextData("version.label",
-                    ((DocumentVersion) doc).getLabel());
         }
         if (doc.isProxy()) {
             docModel.setIsProxy(true);
@@ -234,8 +231,8 @@ public class DocumentModelFactory {
 
         // prefetch lifecycle state
         try {
-            String lifecycle = doc.getCurrentLifeCycleState();
-            docModel.prefetchCurrentLifecycleState(lifecycle);
+            String lifeCycleState = doc.getLifeCycleState();
+            docModel.prefetchCurrentLifecycleState(lifeCycleState);
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             docModel.prefetchLifeCyclePolicy(lifeCyclePolicy);
         } catch (LifeCycleException e) {

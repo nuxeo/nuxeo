@@ -284,19 +284,21 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Node getVersionByLabel(Serializable versionableId, String label)
+    public Node getVersionByLabel(Serializable versionSeriesId, String label)
             throws StorageException {
-        return getSession().getVersionByLabel(versionableId, label);
+        return getSession().getVersionByLabel(versionSeriesId, label);
     }
 
     @Override
-    public List<Node> getVersions(Node node) throws StorageException {
-        return getSession().getVersions(node);
+    public List<Node> getVersions(Serializable versionSeriesId)
+            throws StorageException {
+        return getSession().getVersions(versionSeriesId);
     }
 
     @Override
-    public Node getLastVersion(Node node) throws StorageException {
-        return getSession().getLastVersion(node);
+    public Node getLastVersion(Serializable versionSeriesId)
+            throws StorageException {
+        return getSession().getLastVersion(versionSeriesId);
     }
 
     @Override
@@ -306,9 +308,10 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Node addProxy(Serializable targetId, Serializable versionableId,
+    public Node addProxy(Serializable targetId, Serializable versionSeriesId,
             Node parent, String name, Long pos) throws StorageException {
-        return getSession().addProxy(targetId, versionableId, parent, name, pos);
+        return getSession().addProxy(targetId, versionSeriesId, parent, name,
+                pos);
     }
 
     @Override

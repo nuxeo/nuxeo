@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,7 +71,7 @@ public class VersioningServiceBean implements VersioningServiceLocal {
     }
 
     @Override
-    public DocumentVersion doCheckIn(Document doc, VersioningOption option,
+    public Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException {
         return service.doCheckIn(doc, option, checkinComment);
     }

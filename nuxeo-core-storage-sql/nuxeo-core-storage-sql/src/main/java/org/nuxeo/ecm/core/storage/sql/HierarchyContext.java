@@ -527,7 +527,7 @@ public class HierarchyContext {
     }
 
     /**
-     * Checks in a node.
+     * Checks in a node (creates a version).
      *
      * @param node the node to check in
      * @param label the version label
@@ -562,7 +562,10 @@ public class HierarchyContext {
         Serializable newId = res.copyId;
         context.markInvalidated(res.invalidations);
         // add version as a new child of its parent
-        getHier(newId, false);
+        SimpleFragment verHier = getHier(newId, false);
+        verHier.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
+        boolean isMajor = Long.valueOf(0).equals(
+                verHier.get(model.MAIN_MINOR_VERSION_KEY));
 
         // create a "version" row for our new version
         Row row = new Row(model.VERSION_TABLE_NAME, newId);
@@ -570,11 +573,44 @@ public class HierarchyContext {
         row.putNew(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
         row.putNew(model.VERSION_LABEL_KEY, label);
         row.putNew(model.VERSION_DESCRIPTION_KEY, checkinComment);
-        SimpleFragment versionRow = context.createSimpleFragment(row);
+        row.putNew(model.VERSION_IS_LATEST_KEY, Boolean.TRUE);
+        row.putNew(model.VERSION_IS_LATEST_MAJOR_KEY, Boolean.valueOf(isMajor));
+        context.createSimpleFragment(row);
+
         // update the original node to reflect that it's checked in
         node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         node.hierFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
+
+        recomputeVersionSeries(id);
+
         return newId;
+    }
+
+    // recompute isLatest / isLatestMajor on all versions
+    protected void recomputeVersionSeries(Serializable versionSeriesId)
+            throws StorageException {
+        session.flush(); // needed by following search
+        List<Fragment> versFrags = context.getVersionFragments(versionSeriesId);
+        Collections.reverse(versFrags);
+        boolean isLatest = true;
+        boolean isLatestMajor = true;
+        for (Fragment vf : versFrags) {
+            SimpleFragment vsf = (SimpleFragment) vf;
+
+            // isLatestVersion
+            vsf.put(model.VERSION_IS_LATEST_KEY, Boolean.valueOf(isLatest));
+            isLatest = false;
+
+            // isLatestMajorVersion
+            SimpleFragment vh = getHier(vsf.getId(), true);
+            boolean isMajor = Long.valueOf(0).equals(
+                    vh.get(model.MAIN_MINOR_VERSION_KEY));
+            vsf.put(model.VERSION_IS_LATEST_MAJOR_KEY,
+                    Boolean.valueOf(isMajor && isLatestMajor));
+            if (isMajor) {
+                isLatestMajor = false;
+            }
+        }
     }
 
     /**
@@ -599,8 +635,7 @@ public class HierarchyContext {
      * @param node the node
      * @param version the version to restore on this node
      */
-    public void restoreVersion(Node node, Node version)
-            throws StorageException {
+    public void restoreVersion(Node node, Node version) throws StorageException {
         String typeName = node.getPrimaryType();
         Serializable versionableId = node.getId();
         Serializable versionId = version.getId();
@@ -617,19 +652,22 @@ public class HierarchyContext {
         Row overwriteRow = new Row(model.HIER_TABLE_NAME, versionableId);
         SimpleFragment versionHier = version.getHierFragment();
         for (String key : model.getFragmentKeysType(model.HIER_TABLE_NAME).keySet()) {
+            // keys we don't copy from version when restoring
             if (key.equals(model.HIER_PARENT_KEY)
                     || key.equals(model.HIER_CHILD_NAME_KEY)
                     || key.equals(model.HIER_CHILD_POS_KEY)
                     || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
                     || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
                     || key.equals(model.MAIN_CHECKED_IN_KEY)
-                    || key.equals(model.MAIN_BASE_VERSION_KEY)) {
+                    || key.equals(model.MAIN_BASE_VERSION_KEY)
+                    || key.equals(model.MAIN_IS_VERSION_KEY)) {
                 continue;
             }
             overwriteRow.putNew(key, versionHier.get(key));
         }
         overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
+        overwriteRow.putNew(model.MAIN_IS_VERSION_KEY, null);
         CopyHierarchyResult res = mapper.copyHierarchy(versionId, typeName,
                 node.getParentId(), null, overwriteRow);
         context.markInvalidated(res.invalidations);

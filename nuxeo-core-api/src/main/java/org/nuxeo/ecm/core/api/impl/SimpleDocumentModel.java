@@ -342,7 +342,6 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-
     public String getType() {
         return type;
     }
@@ -350,6 +349,7 @@ public class SimpleDocumentModel implements DocumentModel {
     public void setType(String type) {
         this.type = type;
     }
+
     @Override
     public Set<String> getDeclaredFacets() {
         throw new UnsupportedOperationException();
@@ -502,6 +502,11 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public String getCheckinComment() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Map<String, Serializable> getPrefetch() {
         throw new UnsupportedOperationException();
     }
@@ -582,6 +587,31 @@ public class SimpleDocumentModel implements DocumentModel {
     public DocumentRef checkIn(VersioningOption option, String description)
             throws ClientException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getVersionSeriesId() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLatestVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isMajorVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws ClientException {
+        return true;
     }
 
 }

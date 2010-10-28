@@ -33,9 +33,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -317,11 +317,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     public void testBasicsUpgrade() throws Exception {
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         try {
-            JDBCMapper.testMode = true;
             testBasics();
         } finally {
-            JDBCMapper.testMode = false;
+            JDBCMapper.testProps.clear();
         }
     }
 
@@ -1495,8 +1495,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 || this instanceof ITSQLBackendNet) {
             return;
         }
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         try {
-            JDBCMapper.testMode = true;
             Session session = repository.getConnection();
 
             PartialList<Serializable> res;
@@ -1552,7 +1552,71 @@ public class TestSQLBackend extends SQLBackendTestCase {
             Node tags = session.getNodeByPath("/tags", null);
             assertNull(tags);
         } finally {
-            JDBCMapper.testMode = false;
+            JDBCMapper.testProps.clear();
+        }
+    }
+
+    protected static boolean isLatestVersion(Node node) throws Exception {
+        Boolean b = (Boolean) node.getSimpleProperty(
+                Model.VERSION_IS_LATEST_PROP).getValue();
+        return b.booleanValue();
+    }
+
+    protected static boolean isLatestMajorVersion(Node node) throws Exception {
+        Boolean b = (Boolean) node.getSimpleProperty(
+                Model.VERSION_IS_LATEST_MAJOR_PROP).getValue();
+        return b.booleanValue();
+    }
+
+    protected static String getVersionLabel(Node node) throws Exception {
+        return (String) node.getSimpleProperty(Model.VERSION_LABEL_PROP).getValue();
+    }
+
+    public void testVersionsUpgrade() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS, Boolean.TRUE);
+        try {
+            Node ver;
+            Session session = repository.getConnection();
+
+            // check normal doc is not a version
+            Node doc = session.getNodeById("dddddddd-dddd-dddd-dddd-dddddddddddd");
+            assertFalse(doc.isVersion());
+
+            // v 1
+            ver = session.getNodeById("11111111-0000-0000-2222-000000000000");
+            assertTrue(ver.isVersion());
+            assertFalse(isLatestVersion(ver));
+            assertFalse(isLatestMajorVersion(ver));
+            assertEquals("0.1", getVersionLabel(ver));
+
+            // v 2
+            ver = session.getNodeById("11111111-0000-0000-2222-000000000001");
+            assertTrue(ver.isVersion());
+            assertFalse(isLatestVersion(ver));
+            assertTrue(isLatestMajorVersion(ver));
+            assertEquals("1.0", getVersionLabel(ver));
+
+            // v 3
+            ver = session.getNodeById("11111111-0000-0000-2222-000000000002");
+            assertTrue(ver.isVersion());
+            assertTrue(isLatestVersion(ver));
+            assertFalse(isLatestMajorVersion(ver));
+            assertEquals("1.1", getVersionLabel(ver));
+
+            // v 4 other doc
+            ver = session.getNodeById("11111111-0000-0000-3333-000000000001");
+            assertTrue(ver.isVersion());
+            assertTrue(isLatestVersion(ver));
+            assertTrue(isLatestMajorVersion(ver));
+            assertEquals("1.0", getVersionLabel(ver));
+
+        } finally {
+            JDBCMapper.testProps.clear();
         }
     }
 

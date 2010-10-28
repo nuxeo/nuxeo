@@ -38,8 +38,6 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * A proxy is a shortcut to a target document (a version or normal document).
@@ -183,8 +181,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public String getCurrentLifeCycleState() throws LifeCycleException {
-        return target.getCurrentLifeCycleState();
+    public String getLifeCycleState() throws LifeCycleException {
+        return target.getLifeCycleState();
     }
 
     @Override
@@ -239,8 +237,13 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public DocumentVersion getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() throws DocumentException {
         return null;
+    }
+
+    @Override
+    public String getVersionSeriesId() throws DocumentException {
+        return target.getVersionSeriesId();
     }
 
     @Override
@@ -250,7 +253,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public DocumentVersion checkIn(String label, String checkinComment)
+    public Document checkIn(String label, String checkinComment)
             throws DocumentException {
         throw new UnsupportedOperationException();
     }
@@ -263,6 +266,46 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     @Override
     public boolean isCheckedOut() throws DocumentException {
         return target.isCheckedOut();
+    }
+
+    @Override
+    public boolean isLatestVersion() throws DocumentException {
+        return target.isLatestVersion();
+    }
+
+    @Override
+    public boolean isMajorVersion() throws DocumentException {
+        return target.isMajorVersion();
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws DocumentException {
+        return target.isLatestMajorVersion();
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+        return target.isVersionSeriesCheckedOut();
+    }
+
+    @Override
+    public String getVersionLabel() throws DocumentException {
+        return target.getVersionLabel();
+    }
+
+    @Override
+    public String getCheckinComment() throws DocumentException {
+        return target.getCheckinComment();
+    }
+
+    @Override
+    public Document getWorkingCopy() throws DocumentException {
+        return target.getWorkingCopy();
+    }
+
+    @Override
+    public Calendar getVersionCreationDate() throws DocumentException {
+        return target.getVersionCreationDate();
     }
 
     @Override
@@ -281,12 +324,12 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public DocumentVersionIterator getVersions() throws DocumentException {
+    public List<Document> getVersions() throws DocumentException {
         return target.getVersions();
     }
 
     @Override
-    public DocumentVersion getLastVersion() throws DocumentException {
+    public Document getLastVersion() throws DocumentException {
         return target.getLastVersion();
     }
 

@@ -213,15 +213,15 @@ public class DialectH2 extends Dialect {
         for (Column col : columns) {
             columnNames.add("'" + col.getPhysicalName() + "'");
         }
-        String fullIndexName = String.format("PUBLIC_%s_%s", table.getName(),
-                indexName);
+        String fullIndexName = String.format("PUBLIC_%s_%s",
+                table.getPhysicalName(), indexName);
         String analyzer = model.getFulltextInfo().indexAnalyzer.get(indexName);
         if (analyzer == null) {
             analyzer = DEFAULT_FULLTEXT_ANALYZER;
         }
         return String.format(
                 "CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')",
-                fullIndexName, table.getName(),
+                fullIndexName, table.getPhysicalName(),
                 StringUtils.join(columnNames, ", "), analyzer);
     }
 
@@ -243,7 +243,7 @@ public class DialectH2 extends Dialect {
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
-        String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getName(); // physical
+        String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getPhysicalName();
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String tableAlias = "_nxfttbl" + nthSuffix;

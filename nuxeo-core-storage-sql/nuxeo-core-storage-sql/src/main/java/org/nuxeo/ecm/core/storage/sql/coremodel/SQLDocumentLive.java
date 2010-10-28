@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
-import org.nuxeo.ecm.core.versioning.DocumentVersion;
-import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * @author Florent Guillaume
@@ -277,7 +275,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public String getCurrentLifeCycleState() throws LifeCycleException {
+    public String getLifeCycleState() throws LifeCycleException {
         try {
             return getString(Model.MISC_LIFECYCLE_STATE_PROP);
         } catch (DocumentException e) {
@@ -317,7 +315,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         if (lifeCycle == null) {
             return Collections.emptyList();
         }
-        return lifeCycle.getAllowedStateTransitionsFrom(getCurrentLifeCycleState());
+        return lifeCycle.getAllowedStateTransitionsFrom(getLifeCycleState());
     }
 
     /*
@@ -369,7 +367,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public DocumentVersion getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() throws DocumentException {
         if (isCheckedOut()) {
             return null;
         }
@@ -378,7 +376,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
             // shouldn't happen
             return null;
         }
-        return (DocumentVersion) session.getDocumentByUUID(id);
+        return session.getDocumentByUUID(id);
+    }
+
+    @Override
+    public String getVersionSeriesId() throws DocumentException {
+        return getUUID();
     }
 
     @Override
@@ -387,7 +390,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public DocumentVersion checkIn(String label, String checkinComment)
+    public Document checkIn(String label, String checkinComment)
             throws DocumentException {
         return session.checkIn(getNode(), label, checkinComment);
     }
@@ -403,6 +406,46 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
+    public boolean isMajorVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws DocumentException {
+        return false;
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+        return isCheckedOut();
+    }
+
+    @Override
+    public String getVersionLabel() throws DocumentException {
+        return getString(Model.VERSION_LABEL_PROP);
+    }
+
+    @Override
+    public String getCheckinComment() throws DocumentException {
+        return getString(Model.VERSION_DESCRIPTION_PROP);
+    }
+
+    @Override
+    public Document getWorkingCopy() throws DocumentException {
+        return this;
+    }
+
+    @Override
+    public Calendar getVersionCreationDate() throws DocumentException {
+        return (Calendar) getProperty(Model.VERSION_CREATED_PROP).getValue();
+    }
+
+    @Override
     public void restore(Document version) throws DocumentException {
         if (!version.isVersion()) {
             throw new DocumentException("Cannot restore a non-version: "
@@ -413,9 +456,10 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public List<String> getVersionsIds() throws DocumentException {
-        Collection<DocumentVersion> versions = session.getVersions(getNode());
+        String versionSeriesId = getVersionSeriesId();
+        Collection<Document> versions = session.getVersions(versionSeriesId);
         List<String> ids = new ArrayList<String>(versions.size());
-        for (DocumentVersion version : versions) {
+        for (Document version : versions) {
             ids.add(version.getUUID());
         }
         return ids;
@@ -423,17 +467,20 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public Document getVersion(String label) throws DocumentException {
-        return session.getVersionByLabel(getNode(), label);
+        String versionSeriesId = getVersionSeriesId();
+        return session.getVersionByLabel(versionSeriesId, label);
     }
 
     @Override
-    public DocumentVersionIterator getVersions() throws DocumentException {
-        return new SQLDocumentVersionIterator(session.getVersions(getNode()));
+    public List<Document> getVersions() throws DocumentException {
+        String versionSeriesId = getVersionSeriesId();
+        return session.getVersions(versionSeriesId);
     }
 
     @Override
-    public DocumentVersion getLastVersion() throws DocumentException {
-        return session.getLastVersion(getNode());
+    public Document getLastVersion() throws DocumentException {
+        String versionSeriesId = getVersionSeriesId();
+        return session.getLastVersion(versionSeriesId);
     }
 
     @Override
@@ -618,36 +665,6 @@ class SQLDocumentListIterator implements DocumentIterator {
 
     @Override
     public Document next() {
-        return iterator.next();
-    }
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-}
-
-class SQLDocumentVersionIterator implements DocumentVersionIterator {
-
-    private final Iterator<DocumentVersion> iterator;
-
-    public SQLDocumentVersionIterator(Collection<DocumentVersion> list) {
-        iterator = list.iterator();
-    }
-
-    @Override
-    public boolean hasNext() {
-        return iterator.hasNext();
-    }
-
-    @Override
-    public DocumentVersion next() {
-        return iterator.next();
-    }
-
-    @Override
-    public DocumentVersion nextDocumentVersion() {
         return iterator.next();
     }
 

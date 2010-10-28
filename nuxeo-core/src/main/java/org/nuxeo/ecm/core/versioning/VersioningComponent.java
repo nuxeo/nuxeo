@@ -167,7 +167,7 @@ public class VersioningComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentVersion doCheckIn(Document doc, VersioningOption option,
+    public Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException {
         return getService().doCheckIn(doc, option, checkinComment);
     }

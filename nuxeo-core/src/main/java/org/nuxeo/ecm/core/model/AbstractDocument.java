@@ -51,7 +51,7 @@ public abstract class AbstractDocument implements Document {
         LifeCycleService service = NXCore.getLifeCycleService();
         LifeCycle lifeCycle = service.getLifeCycleFor(this);
         if (lifeCycle != null) {
-            return lifeCycle.getAllowedStateTransitionsFrom(getCurrentLifeCycleState());
+            return lifeCycle.getAllowedStateTransitionsFrom(getLifeCycleState());
         } else {
             return Collections.emptyList();
         }

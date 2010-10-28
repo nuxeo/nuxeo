@@ -79,15 +79,15 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
-    public Serializable getVersionIdByLabel(Serializable versionableId,
+    public Serializable getVersionIdByLabel(Serializable versionSeriesId,
             String label) throws StorageException {
-        return mapper.getVersionIdByLabel(versionableId, label);
+        return mapper.getVersionIdByLabel(versionSeriesId, label);
     }
 
     @Override
-    public Serializable getLastVersionId(Serializable versionableId)
+    public Serializable getLastVersionId(Serializable versionSeriesId)
             throws StorageException {
-        return mapper.getLastVersionId(versionableId);
+        return mapper.getLastVersionId(versionSeriesId);
     }
 
     @Override

@@ -725,26 +725,26 @@ public class SessionImpl implements Session, XAResource {
         Serializable parentId = parent == null ? null
                 : parent.hierFragment.getId();
 
+        return addNode(id, parentId, name, pos, typeName, complexProp);
+    }
+
+    protected Node addNode(Serializable id, Serializable parentId, String name,
+            Long pos, String typeName, boolean complexProp)
+            throws StorageException {
+        requireReadAclsUpdate();
         // main info
         Row hierRow = new Row(model.HIER_TABLE_NAME, id);
-        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
-        // TODO if folder is ordered, we have to compute the pos as max+1...
         hierRow.putNew(model.HIER_PARENT_KEY, parentId);
-        hierRow.putNew(model.HIER_CHILD_POS_KEY, pos);
         hierRow.putNew(model.HIER_CHILD_NAME_KEY, name);
+        hierRow.putNew(model.HIER_CHILD_POS_KEY, pos);
+        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
         hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
-
         SimpleFragment hierFragment = context.createSimpleFragment(hierRow);
-
-        FragmentsMap fragments = new FragmentsMap();
         // TODO if non-lazy creation of some fragments, create them here
         // for (String tableName : model.getTypeSimpleFragments(typeName)) {
-
-        FragmentGroup fragmentGroup = new FragmentGroup(hierFragment, fragments);
-
-        requireReadAclsUpdate();
-
+        FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
+                new FragmentsMap());
         return new Node(context, fragmentGroup);
     }
 
@@ -840,7 +840,20 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void removeNode(Node node) throws StorageException {
         checkLive();
+        boolean isVersion = Boolean.TRUE.equals(node.getSimpleProperty(
+                model.MAIN_IS_VERSION_PROP).getValue());
+        Serializable versionSeriesId = null;
+        if (isVersion) {
+            versionSeriesId = node.getSimpleProperty(
+                    model.VERSION_VERSIONABLE_PROP).getValue();
+        }
+
         context.removeNode(node.getHierFragment());
+
+        // for versions there's stuff we have to recompute
+        if (isVersion) {
+            context.recomputeVersionSeries(versionSeriesId);
+        }
     }
 
     @Override
@@ -871,27 +884,29 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node getVersionByLabel(Serializable versionableId, String label)
+    public Node getVersionByLabel(Serializable versionSeriesId, String label)
             throws StorageException {
         checkLive();
         flush();
-        Serializable id = mapper.getVersionIdByLabel(versionableId, label);
+        Serializable id = mapper.getVersionIdByLabel(versionSeriesId, label);
         return id == null ? null : getNodeById(id);
     }
 
     @Override
-    public Node getLastVersion(Node node) throws StorageException {
+    public Node getLastVersion(Serializable versionSeriesId)
+            throws StorageException {
         checkLive();
         flush();
-        Serializable id = mapper.getLastVersionId(node.getId());
+        Serializable id = mapper.getLastVersionId(versionSeriesId);
         return id == null ? null : getNodeById(id);
     }
 
     @Override
-    public List<Node> getVersions(Node versionableNode) throws StorageException {
+    public List<Node> getVersions(Serializable versionSeriesId)
+            throws StorageException {
         checkLive();
         flush();
-        List<Serializable> ids = context.getVersionIds(versionableNode.getId());
+        List<Serializable> ids = context.getVersionIds(versionSeriesId);
         List<Node> nodes = new ArrayList<Node>(ids.size());
         for (Serializable id : ids) {
             nodes.add(getNodeById(id));
@@ -978,20 +993,8 @@ public class SessionImpl implements Session, XAResource {
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
-        requireReadAclsUpdate();
         Serializable id = generateNewId(null);
-
-        Row hierRow = new Row(model.HIER_TABLE_NAME, id);
-        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
-        hierRow.putNew(model.HIER_PARENT_KEY, null);
-        hierRow.putNew(model.HIER_CHILD_POS_KEY, null);
-        hierRow.putNew(model.HIER_CHILD_NAME_KEY, "");
-        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
-
-        SimpleFragment hierFragment = context.createSimpleFragment(hierRow);
-        FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
-                new FragmentsMap());
-        return new Node(context, fragmentGroup);
+        return addNode(id, null, "", null, model.ROOT_TYPE, false);
     }
 
     private void addRootACP() throws StorageException {

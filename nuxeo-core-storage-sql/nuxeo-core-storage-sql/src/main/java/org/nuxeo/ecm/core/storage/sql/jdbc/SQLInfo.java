@@ -129,19 +129,19 @@ public class SQLInfo {
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
-    protected SQLInfoSelect selectVersionsByLabel;
+    protected SQLInfoSelect selectVersionsBySeries;
 
-    protected SQLInfoSelect selectVersionsByVersionable;
+    protected SQLInfoSelect selectVersionsBySeriesDesc;
 
-    protected SQLInfoSelect selectVersionsByVersionableLastFirst;
+    protected SQLInfoSelect selectVersionBySeriesAndLabel;
 
-    protected SQLInfoSelect selectProxiesByVersionable;
+    protected SQLInfoSelect selectProxiesBySeries;
 
     protected SQLInfoSelect selectProxiesByTarget;
 
     protected SQLInfoSelect selectChildrenByIsProperty;
 
-    protected SQLInfoSelect selectProxiesByVersionableAndParent;
+    protected SQLInfoSelect selectProxiesByVersionSeriesAndParent;
 
     protected SQLInfoSelect selectProxiesByTargetAndParent;
 
@@ -470,33 +470,46 @@ public class SQLInfo {
         /*
          * versions
          */
-        Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByLabel = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
-        table.addIndex(model.VERSION_VERSIONABLE_KEY);
-        // don't index versionable+label, a simple label scan will suffice
-        selectVersionsByVersionable = makeSelect(table, new String[] {
-                model.VERSION_CREATED_KEY, ORDER_ASC },
-                model.VERSION_VERSIONABLE_KEY);
-        selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
-                model.VERSION_CREATED_KEY, ORDER_DESC },
-                model.VERSION_VERSIONABLE_KEY);
+
+        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+        Table versionTable = database.getTable(model.VERSION_TABLE_NAME);
+        hierTable.addIndex(model.MAIN_IS_VERSION_KEY);
+        versionTable.addIndex(model.VERSION_VERSIONABLE_KEY);
+        // don't index series+label, a simple label scan will suffice
+
+        selectVersionsBySeries = makeJoinSelect(versionTable,
+                new String[] { model.VERSION_VERSIONABLE_KEY }, hierTable,
+                new String[] { model.MAIN_IS_VERSION_KEY }, new String[] {
+                        model.VERSION_CREATED_KEY, ORDER_ASC });
+
+        selectVersionsBySeriesDesc = makeJoinSelect(versionTable,
+                new String[] { model.VERSION_VERSIONABLE_KEY }, hierTable,
+                new String[] { model.MAIN_IS_VERSION_KEY }, new String[] {
+                        model.VERSION_CREATED_KEY, ORDER_DESC });
+
+        selectVersionBySeriesAndLabel = makeJoinSelect(versionTable,
+                new String[] { model.VERSION_VERSIONABLE_KEY,
+                        model.VERSION_LABEL_KEY }, hierTable,
+                new String[] { model.MAIN_IS_VERSION_KEY });
 
         /*
          * proxies
          */
-        table = database.getTable(model.PROXY_TABLE_NAME);
-        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
-        selectProxiesByVersionable = makeSelect(table,
+
+        Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+
+        selectProxiesBySeries = makeSelect(proxyTable,
                 model.PROXY_VERSIONABLE_KEY);
-        table.addIndex(model.PROXY_VERSIONABLE_KEY);
-        selectProxiesByTarget = makeSelect(table, model.PROXY_TARGET_KEY);
-        table.addIndex(model.PROXY_TARGET_KEY);
-        selectProxiesByVersionableAndParent = makeSelect(table,
+        proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
+
+        selectProxiesByTarget = makeSelect(proxyTable, model.PROXY_TARGET_KEY);
+        proxyTable.addIndex(model.PROXY_TARGET_KEY);
+
+        selectProxiesByVersionSeriesAndParent = makeJoinSelect(proxyTable,
                 new String[] { model.PROXY_VERSIONABLE_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
 
-        selectProxiesByTargetAndParent = makeSelect(table,
+        selectProxiesByTargetAndParent = makeJoinSelect(proxyTable,
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
 
@@ -504,7 +517,7 @@ public class SQLInfo {
          * fulltext
          */
         if (!model.getRepositoryDescriptor().fulltextDisabled) {
-            table = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
             ModelFulltext fulltextInfo = model.getFulltextInfo();
             if (fulltextInfo.indexNames.size() > 1
                     && !dialect.supportsMultipleFulltextIndexes()) {
@@ -1099,8 +1112,18 @@ public class SQLInfo {
      * Joining SELECT T.x, T.y, T.z FROM T, U WHERE T.id = U.id AND T.a = ? and
      * U.b = ?
      */
-    public SQLInfoSelect makeSelect(Table table, String[] freeColumns,
+    public SQLInfoSelect makeJoinSelect(Table table, String[] freeColumns,
             Table joinTable, String[] joinCriteria) {
+        return makeJoinSelect(table, freeColumns, joinTable, joinCriteria,
+                new String[0]);
+    }
+
+    /**
+     * Joining SELECT T.x, T.y, T.z FROM T, U WHERE T.id = U.id AND T.a = ? and
+     * U.b = ? ORDER BY x, y DESC
+     */
+    public SQLInfoSelect makeJoinSelect(Table table, String[] freeColumns,
+            Table joinTable, String[] joinCriteria, String[] orderBys) {
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
@@ -1136,19 +1159,35 @@ public class SQLInfo {
         select.setWhat(StringUtils.join(whats, ", "));
         select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
+        List<String> orders = new LinkedList<String>();
+        for (int i = 0; i < orderBys.length; i++) {
+            String name = orderBys[i++];
+            String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
+                    : "";
+            Column c = table.getColumn(name);
+            if (c == null) {
+                c = joinTable.getColumn(name);
+            }
+            orders.add(c.getQuotedName() + ascdesc);
+        }
+        select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
                 whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
-    public void initSQLStatements() throws IOException {
+    public void initSQLStatements(Map<String, Serializable> testProps)
+            throws IOException {
         sqlStatements = new HashMap<String, List<SQLStatement>>();
         SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
-        if (JDBCMapper.testMode) {
+        if (!testProps.isEmpty()) {
             SQLStatement.read(dialect.getTestSQLStatementsFilename(),
                     sqlStatements);
         }
         sqlStatementsProperties = dialect.getSQLStatementsProperties(model,
                 database);
+        if (!testProps.isEmpty()) {
+            sqlStatementsProperties.putAll(testProps);
+        }
     }
 
     /**

@@ -83,7 +83,7 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public DocumentVersion doCheckIn(Document doc, VersioningOption option,
+    public Document doCheckIn(Document doc, VersioningOption option,
             String checkinComment) throws DocumentException {
         return doc.checkIn(null, checkinComment); // auto-label
     }
@@ -93,7 +93,7 @@ public class CompatVersioningService extends StandardVersioningService {
         doc.checkOut();
         // set version number to that of the last version + inc minor
         try {
-            DocumentVersion last = doc.getLastVersion();
+            Document last = doc.getLastVersion();
             if (last != null) {
                 setVersion(doc, getMajor(last), getMinor(last) + 1);
             }

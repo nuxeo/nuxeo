@@ -38,7 +38,9 @@ public interface Table extends Serializable {
 
     Dialect getDialect();
 
-    String getName();
+    String getKey();
+
+    String getPhysicalName();
 
     String getQuotedName();
 

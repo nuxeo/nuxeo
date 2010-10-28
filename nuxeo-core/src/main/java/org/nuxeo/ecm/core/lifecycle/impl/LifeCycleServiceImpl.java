@@ -142,16 +142,16 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     public void followTransition(Document doc, String transitionName)
             throws LifeCycleException {
-        String currentStateName = doc.getCurrentLifeCycleState();
+        String lifeCycleState = doc.getLifeCycleState();
         LifeCycle lifeCycle = getLifeCycleFor(doc);
-        if (lifeCycle.getAllowedStateTransitionsFrom(currentStateName).contains(
+        if (lifeCycle.getAllowedStateTransitionsFrom(lifeCycleState).contains(
                 transitionName)) {
             String destinationStateName = lifeCycle.getTransitionByName(
                     transitionName).getDestinationStateName();
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
             throw new LifeCycleException("Not allowed to follow transition <"
-                    + transitionName + "> from state <" + currentStateName
+                    + transitionName + "> from state <" + lifeCycleState
                     + '>');
         }
     }

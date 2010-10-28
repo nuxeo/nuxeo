@@ -308,6 +308,11 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public String getCheckinComment() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean hasFacet(String facet) {
         throw new UnsupportedOperationException();
     }
@@ -449,6 +454,31 @@ public class ShallowDocumentModel implements DocumentModel {
     public DocumentRef checkIn(VersioningOption option, String checkinComment)
             throws ClientException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getVersionSeriesId() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLatestVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isMajorVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestMajorVersion() throws ClientException {
+        return false;
+    }
+
+    @Override
+    public boolean isVersionSeriesCheckedOut() throws ClientException {
+        return true;
     }
 
 }

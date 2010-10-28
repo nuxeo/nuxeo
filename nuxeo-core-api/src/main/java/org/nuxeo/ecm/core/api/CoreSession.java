@@ -63,6 +63,12 @@ public interface CoreSession {
 
     String IMPORT_VERSION_DESCRIPTION = "ecm:versionDescription";
 
+    String IMPORT_VERSION_IS_LATEST = "ecm:isLatestVersion";
+
+    String IMPORT_VERSION_IS_LATEST_MAJOR = "ecm:isLatestMajorVersion";
+
+    String IMPORT_IS_VERSION = "ecm:isVersion";
+
     String IMPORT_VERSION_MAJOR = "ecm:majorVersion";
 
     String IMPORT_VERSION_MINOR = "ecm:minorVersion";
@@ -1130,6 +1136,27 @@ public interface CoreSession {
     boolean isCheckedOut(DocumentRef docRef) throws ClientException;
 
     /**
+     * Gets the version series id for a document.
+     * <p>
+     * All documents and versions derived by a check in or checkout from the same
+     * original document share the same version series id.
+     *
+     * @param docRef the document reference
+     * @return the version series id
+     * @since 5.4
+     */
+    String getVersionSeriesId(DocumentRef docRef) throws ClientException;
+
+    /**
+     * Gets the working copy (live document) for a proxy or a version.
+     *
+     * @param docRef the document reference
+     * @return the working copy, or {@code null} if not found
+     * @since 5.4
+     */
+    DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException;
+
+    /**
      * Creates a generic proxy to the given document inside the given folder.
      * <p>
      * The document may be a version, or a working copy (live document) in which
@@ -1495,7 +1522,9 @@ public interface CoreSession {
      *         for a live proxy. {@code null} is returned if no proxies are
      *         found the specified folder
      * @throws ClientException if any error occurs
+     * @deprecated since 5.4, use {@link #getProxies} instead
      */
+    @Deprecated
     String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException;
 
