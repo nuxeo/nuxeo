@@ -9,12 +9,14 @@
   <c:if test="#{field_0.stepf.execution eq 'parallel'}">
     <h:graphicImage value="icons/route_parallel.png"
       alt="#{routingActions.getTypeDescription(field_3)}"
-      title="#{routingActions.getTypeDescription(field_3)}" />
+      title="#{routingActions.getTypeDescription(field_3)}"
+      class="stepExecutionIcon" />
   </c:if>
   <c:if test="#{field_0.stepf.execution eq 'serial'}">
     <h:graphicImage value="icons/route_serial_vertical.png"
       alt="#{routingActions.getTypeDescription(field_3)}"
-      title="#{routingActions.getTypeDescription(field_3)}" />
+      title="#{routingActions.getTypeDescription(field_3)}"
+      class="stepExecutionIcon" />
   </c:if>
 
 </f:subview>

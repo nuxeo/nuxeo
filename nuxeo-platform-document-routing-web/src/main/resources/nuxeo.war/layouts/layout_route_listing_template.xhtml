@@ -124,7 +124,7 @@
 				<c:when test="#{layoutColumnIndex == 0}">
 					<c:forEach var="folder"
 						items="#{value.data.getFirstChildFolders()}">
-						<td rowspan="#{folder.getTotalChildCount()}">
+						<td class="cellVerticalBorder" rowspan="#{folder.getTotalChildCount()}">
               <nxl:layoutColumnWidget>
   							<nxl:widget widget="#{widget}" value="#{value}" />
   							<c:if
