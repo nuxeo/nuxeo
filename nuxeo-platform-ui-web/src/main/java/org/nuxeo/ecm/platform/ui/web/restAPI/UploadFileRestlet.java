@@ -56,7 +56,7 @@ import org.restlet.data.Response;
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
         LiveEditConstants, Serializable {
 
-    public static final String LIVED_AUTOVERSIONING_PROP = "lived.autoversioning";
+    public static final String LIVED_AUTOVERSIONING_PROP = "org.nuxeo.ecm.platform.liveedit.autoversioning";
 
     public static final String POLICY_MINOR_INCR = "minor";
 

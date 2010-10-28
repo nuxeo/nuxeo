@@ -102,7 +102,7 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
     @SuppressWarnings("serial")
     public void testUploadRestletSaveWithAutoIncr() throws Exception {
         // mock property setting
-        ((AbstractRuntimeService) runtime).setProperty("lived.autoversioning",
+        ((AbstractRuntimeService) runtime).setProperty("org.nuxeo.ecm.platform.liveedit.autoversioning",
                 "minor");
 
         // create a empty File document
