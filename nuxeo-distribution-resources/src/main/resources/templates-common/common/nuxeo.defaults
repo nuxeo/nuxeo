@@ -7,3 +7,5 @@ org.nuxeo.ecm.instance.description=Nuxeo ECM server
 org.nuxeo.ecm.webapp.dashboard.mode=auto
 
 org.nuxeo.ecm.contextPath=/nuxeo
+
+org.nuxeo.ecm.platform.liveedit.autoversioning=none
