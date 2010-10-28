@@ -55,8 +55,8 @@
       <li> bigFileUrl(DocumentModel, String, String): get the rest url for
            a blob using nxbigfile servlet.</li>
       <li> fileDescription(DocumentModel doc, String blobPropertyPath,
-           String filenamePropertyPath): get the pretty-print description of a
-           blob.</li>
+           String filenamePropertyPath, String filename): get the pretty-print description
+           of a blob.</li>
       <li> documentUrl(DocumentModel): get the rest url for a document.</li>
       <li> liveEditDefaultUrl(DocumentModel): get the nxedit:// URL to edit a document
            file attachement (default File-like types)</li>

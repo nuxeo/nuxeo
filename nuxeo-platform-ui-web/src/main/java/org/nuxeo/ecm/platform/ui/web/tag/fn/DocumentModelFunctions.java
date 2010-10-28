@@ -91,7 +91,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static DirectoryService dirService;
 
-    // static cache of default viewId per document type shared all among threads
+    // static cache of default viewId per document type shared all among
+    // threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
 
     // Utility class.
@@ -466,7 +467,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     public static String fileDescription(DocumentModel document,
-            String blobPropertyName, String filePropertyName) {
+            String blobPropertyName, String filePropertyName, String filename) {
         String fileInfo = "";
         if (document != null) {
             Long blobLength = null;
@@ -478,11 +479,12 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             } catch (ClientException e) {
                 // no prop by that name with that type
             }
-            String filename = null;
-            try {
-                filename = (String) document.getPropertyValue(filePropertyName);
-            } catch (ClientException e) {
-                // no prop by that name with that type
+            if (filename != null && filePropertyName != null) {
+                try {
+                    filename = (String) document.getPropertyValue(filePropertyName);
+                } catch (ClientException e) {
+                    // no prop by that name with that type
+                }
             }
             if (blobLength != null && filename != null) {
                 fileInfo = String.format("%s [%s]", filename,
@@ -503,8 +505,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param patternName
      * @param doc The document model.
-     * @param index index of the element containing the blob. <code>index</code>
-     *            starts at 0.
+     * @param index index of the element containing the blob.
+     *            <code>index</code> starts at 0.
      * @param filename The filename of the blob.
      * @return the REST URL for the blob, or <code>null</code> if an error
      *         occurred.
@@ -517,7 +519,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     /**
      * Get the REST URL for a blob inside a list of complex type. For instance,
-     *
      * <code>http://localhost/nuxeo/nxfile/server/docId/files:files%5B0%5D/file/image.png</code>
      * for the blob property 'file' of the first element inside the
      * 'files:files' list.
@@ -752,8 +753,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use case
-     * with "File" doc type and "file" schema
+     * Build the nxedit URL for the "create new document from template" use
+     * case with "File" doc type and "file" schema
      *
      * @param template the document holding the blob to be used as template
      * @return the encoded URL string
@@ -767,7 +768,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use case
+     * Build the nxedit URL for the "create new document from template" use
+     * case
      *
      * @param template the document holding the blob to be used as template
      * @param templateSchemaName the schema of the blob holding the template
@@ -777,7 +779,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param schemaName the schema of the new blob to be saved as attachment
      * @param blobFieldName the field name of the new blob to be saved as
      *            attachment
-     * @param filenameFieldName the field name of the filename of the attachment
+     * @param filenameFieldName the field name of the filename of the
+     *            attachment
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
@@ -810,9 +813,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
-        // build the URL prefix by concatenating nxedit: scheme with the http://
-        // or https:// base URL from the current request context and the
-        // LiveEditBoostrapHelper JSF view
+        // build the URL prefix by concatenating nxedit: scheme with the
+        // http:// or https:// base URL from the current request context and
+        // the LiveEditBoostrapHelper JSF view
         StringBuilder nxeditUrlBuilder = new StringBuilder(NXEDIT_URL_SCHEME);
         nxeditUrlBuilder.append(":");
         nxeditUrlBuilder.append(BaseURL.getBaseURL(request));
