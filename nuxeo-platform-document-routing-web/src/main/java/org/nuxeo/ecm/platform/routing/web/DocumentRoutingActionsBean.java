@@ -25,6 +25,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.convert.Converter;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
+import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -66,6 +68,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.webapp.action.TypesTool;
+import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -100,6 +103,9 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(create = true)
     protected WebActions webActions;
 
+    @In(create = true)
+    protected LockActions lockActions;
+    
     @In(create = true, required = false)
     protected TypesTool typesTool;
 
@@ -422,6 +428,24 @@ public class DocumentRoutingActionsBean implements Serializable {
     public boolean isCurrentRouteLockedByCurrentUser() throws ClientException {
         return getDocumentRoutingService().isLockedByCurrentUser(
                 getRelatedRoute(), documentManager);
+    }
+
+    public boolean isCurrentRouteLocked() throws ClientException {
+        LockableDocumentRoute lockableRoute = getRelatedRoute().getDocument().getAdapter(
+                LockableDocumentRoute.class);
+        return lockableRoute.isLocked(documentManager);
+    }
+
+    public boolean canUnlockRoute() throws ClientException {
+        return lockActions.getCanUnlockDoc(getRelatedRoute().getDocument());
+    }
+
+    public boolean canLockRoute() throws ClientException {
+        return lockActions.getCanLockDoc(getRelatedRoute().getDocument());
+    }
+
+    public Map<String, String> getCurrentRouteLockDetails() throws ClientException {
+        return lockActions.getLockDetails(getRelatedRoute().getDocument());
     }
 
     public String lockCurrentRoute() throws ClientException {

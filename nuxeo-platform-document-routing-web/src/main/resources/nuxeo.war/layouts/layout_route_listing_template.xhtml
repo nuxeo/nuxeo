@@ -20,31 +20,33 @@
 	<c:if
 		test="#{showListingHeader and layout.properties.showListingHeader}">
 
-    <div class="lockFile_block" id='lock_unlock_button'>
-      <c:if test="#{!empty currentDocumentLockDetails}">
-        <h:outputText value="#{messages['label.summary.locked.intro']} "/>
-        <h:outputText class="summary_locked" value="#{messages['label.summary.locked']}"/>
-        <c:if test="#{currentDocumentCanBeUnlocked}">
-          <h:outputText value=" | " />
-          <h:commandLink value="#{messages['command.unlock']}"
-            action="#{routingActions.unlockCurrentRoute}"/>
+   <nxu:set var="isLocked" value="#{routingActions.isCurrentRouteLocked()}" cache="true">
+      <div class="lockFile_block" id='lock_unlock_button'>
+        <c:if test="#{isLocked}">
+          <h:outputText value="#{messages['label.summary.locked.intro']} "/>
+          <h:outputText class="summary_locked" value="#{messages['label.summary.locked']}"/>
+          <c:if test="#{routingActions.canUnlockRoute()}">
+            <h:outputText value=" | " />
+            <h:commandLink value="#{messages['command.unlock']}"
+              action="#{routingActions.unlockCurrentRoute()}"/>
+          </c:if>
+          <div class="lockDetail">
+            <h:outputText value="#{messages['label.summary.by']} #{routingActions.getCurrentRouteLockDetails()['document.locker']}, "/>
+            <h:outputText value="#{messages['label.summary.the']} #{routingActions.getCurrentRouteLockDetails()['document.lock.time']}"/>
+          </div>
         </c:if>
-        <div class="lockDetail">
-          <h:outputText value="#{messages['label.summary.by']} #{currentDocumentLockDetails['document.locker']}, "/>
-          <h:outputText value="#{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.time']}"/>
-        </div>
-      </c:if>
-  
-      <c:if test="#{empty currentDocumentLockDetails}">
-        <h:outputText value="#{messages['label.summary.locked.intro']} "/>
-        <h:outputText class="summary_unlocked" value="#{messages['label.summary.unlocked']} "/>
-        <c:if test="#{currentDocumentCanBeLocked}" >
-          <h:outputText value=" | " />
-          <h:commandLink value="#{messages['command.lock']}"
-            action="#{routingActions.lockCurrentRoute}"/>
+    
+        <c:if test="#{!isLocked}">
+          <h:outputText value="#{messages['label.summary.locked.intro']} "/>
+          <h:outputText class="summary_unlocked" value="#{messages['label.summary.unlocked']} "/>
+          <c:if test="#{routingActions.canLockRoute()}" >
+            <h:outputText value=" | " />
+            <h:commandLink value="#{messages['command.lock']}"
+              action="#{routingActions.lockCurrentRoute()}"/>
+          </c:if>
         </c:if>
-      </c:if>
-    </div>
+      </div>
+    </nxu:set>
 
 		<thead>
 			<tr>
