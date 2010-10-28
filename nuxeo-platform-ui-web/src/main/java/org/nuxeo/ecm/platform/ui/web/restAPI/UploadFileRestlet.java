@@ -39,12 +39,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -159,7 +157,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         if (doAutoMinorIncrement(versioningPolicy, dm)) {
             if (dm.isCheckedOut()) {
                 dm.checkIn(VersioningOption.MINOR,
-                "Live edit (UploadFileRestlet) autoversioning");
+                        "Live edit (UploadFileRestlet) autoversioning");
             }
         }
 
@@ -178,18 +176,19 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         }
         if (POLICY_MINOR_INCR_ON_RULES.equals(policy)) {
 
-            VersioningManager versioningService = Framework.getLocalService(VersioningManager.class);
-            VersionIncEditOptions options;
+            VersioningService versioningService = Framework.getLocalService(VersioningService.class);
+
+            List<VersioningOption> options;
             try {
-                options = versioningService.getVersionIncEditOptions(doc);
+                options = versioningService.getSaveOptions(doc);
             } catch (ClientException e) {
                 throw new Error(
                         "An unexpected error occured while getting the version increment edit options",
                         e);
             }
-            List<VersioningActions> versioningActionsOptions = options.getOptions();
-            if (versioningActionsOptions.contains(VersioningActions.ACTION_INCREMENT_MINOR)
-                    && !versioningActionsOptions.contains(VersioningActions.ACTION_NO_INCREMENT)) {
+
+            if (options.contains(VersioningOption.MINOR)
+                    && !options.contains(VersioningOption.MAJOR)) {
                 return true;
             }
 
