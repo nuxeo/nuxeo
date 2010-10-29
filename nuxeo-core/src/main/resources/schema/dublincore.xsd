@@ -31,6 +31,10 @@
   <xs:element name="creator" type="xs:string"/>
   <xs:element name="contributors" type="nxs:contributorList"/>
 
+  <!-- Corresponds to the dublincore type element,
+  but renamed to avoid conflicts -->
+  <xs:element name="nature" type="xs:string"/>
+
 </xs:schema>
 
 
