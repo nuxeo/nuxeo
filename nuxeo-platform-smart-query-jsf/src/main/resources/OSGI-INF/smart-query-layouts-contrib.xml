@@ -315,6 +315,32 @@
       </subWidgets>
     </widget>
 
+    <widget name="nxql_smart_query_condition_nature"
+      type="incremental_smart_query_condition">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="searchField">dc:nature</property>
+        <propertyList name="availableOperators">
+          <value>IN</value>
+          <value>NOT IN</value>
+        </propertyList>
+      </properties>
+      <subWidgets>
+        <widget name="nature" type="selectManyDirectory">
+          <fields>
+            <field>stringArrayValue</field>
+          </fields>
+          <properties mode="any">
+            <property name="directoryName">nature</property>
+            <property name="localize">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
     <widget name="nxql_smart_query_condition_subjects"
       type="incremental_smart_query_condition">
       <labels>
@@ -367,7 +393,7 @@
           <widgetModes>
             <!-- to show only when using 'IN' or 'NOT IN' -->
             <mode value="any">
-              <![CDATA[            
+              <![CDATA[
               #{not empty value.conditionalOperator
               and value.conditionalOperator!='IN'
               and value.conditionalOperator!='NOT IN'?'hidden':mode}
@@ -673,6 +699,9 @@
         </row>
         <row name="nxql_smart_query_condition_expired">
           <widget>nxql_smart_query_condition_expired</widget>
+        </row>
+        <row name="nxql_smart_query_condition_nature">
+          <widget>nxql_smart_query_condition_nature</widget>
         </row>
         <row name="nxql_smart_query_condition_subjects">
           <widget>nxql_smart_query_condition_subjects</widget>
