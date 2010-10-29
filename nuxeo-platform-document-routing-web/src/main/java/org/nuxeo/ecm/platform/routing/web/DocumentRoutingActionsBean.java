@@ -105,7 +105,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @In(create = true)
     protected LockActions lockActions;
-    
+
     @In(create = true, required = false)
     protected TypesTool typesTool;
 
@@ -466,13 +466,13 @@ public class DocumentRoutingActionsBean implements Serializable {
                             "feedback.casemanagement.document.route.already.locked"));
             return null;
         }
-        return "";
+        return null;
     }
 
     public String unlockCurrentRoute() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         getDocumentRoutingService().unlockDocumentRoute(route, documentManager);
-        return "";
+        return null;
     }
 
     public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
