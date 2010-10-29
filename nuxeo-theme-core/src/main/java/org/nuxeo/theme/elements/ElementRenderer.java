@@ -77,8 +77,7 @@ public final class ElementRenderer {
                 if (info.isDirty()) {
                     final String fragmentName = fragment.getFragmentType().getTypeName();
                     log.error("Rendering of fragment '" + fragmentName
-                            + "' failed:");
-                    e.printStackTrace();
+                            + "' failed.", e);
                     return info;
                 }
             }

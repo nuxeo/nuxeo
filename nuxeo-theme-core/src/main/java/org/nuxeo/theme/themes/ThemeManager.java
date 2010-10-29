@@ -741,7 +741,7 @@ public final class ThemeManager implements Registrable {
                 cssSource = ResourceManager.getBankResource(resourceBankName,
                         collectionName, "style", resourceId);
             } catch (ThemeException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         if (cssSource == null) {
@@ -1227,7 +1227,7 @@ public final class ThemeManager implements Registrable {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 } finally {
                     is = null;
                 }

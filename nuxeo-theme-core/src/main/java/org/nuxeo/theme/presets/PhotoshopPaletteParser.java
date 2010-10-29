@@ -64,7 +64,7 @@ public class PhotoshopPaletteParser extends PaletteParser {
             is.close();
             dis.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
 
         int offset = 1;

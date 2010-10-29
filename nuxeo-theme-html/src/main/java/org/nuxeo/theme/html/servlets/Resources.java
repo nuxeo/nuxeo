@@ -226,13 +226,13 @@ public final class Resources extends HttpServlet implements Serializable {
                         resource.getName()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
         }

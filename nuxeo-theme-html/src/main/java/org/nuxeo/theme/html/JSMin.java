@@ -1,35 +1,35 @@
 /*
- * 
+ *
  * JSMin.java 2006-02-13
- * 
+ *
  * Updated 2007-08-20 with updates from jsmin.c (2007-05-22)
- * 
+ *
  * Copyright (c) 2006 John Reilly (www.inconspicuous.org)
- * 
+ *
  * This work is a translation from C to Java of jsmin.c published by
- * Douglas Crockford.  Permission is hereby granted to use the Java 
+ * Douglas Crockford.  Permission is hereby granted to use the Java
  * version under the same conditions as the jsmin.c on which it is
- * based.  
- * 
- * 
- * 
- * 
+ * based.
+ *
+ *
+ *
+ *
  * jsmin.c 2003-04-21
- * 
+ *
  * Copyright (c) 2002 Douglas Crockford (www.crockford.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * The Software shall be used for Good, not Evil.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,8 +48,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.XAnnotatedList;
+
 
 public class JSMin {
+
+    private static final Log log = LogFactory.getLog(XAnnotatedList.class);
+
     private static final int EOF = -1;
 
     private PushbackInputStream in;
@@ -57,7 +64,7 @@ public class JSMin {
 
     private int theA;
     private int theB;
-    
+
     public JSMin(InputStream in, OutputStream out) {
         this.in = new PushbackInputStream(in);
         this.out = out;
@@ -68,8 +75,8 @@ public class JSMin {
      * underscore, dollar sign, or non-ASCII character.
      */
     static boolean isAlphanum(int c) {
-        return ( (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || 
-                 (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || c == '\\' || 
+        return ( (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+                 (c >= 'A' && c <= 'Z') || c == '_' || c == '$' || c == '\\' ||
                  c > 126);
     }
 
@@ -88,12 +95,12 @@ public class JSMin {
         if (c == '\r') {
             return '\n';
         }
-        
+
         return ' ';
     }
 
-    
-    
+
+
     /**
      * Get the next character without getting it.
      */
@@ -174,13 +181,13 @@ public class JSMin {
                     }
                 }
             }
-            
+
         case 3:
             theB = next();
             if (theB == '/' && (theA == '(' || theA == ',' || theA == '=' ||
-                                theA == ':' || theA == '[' || theA == '!' || 
-                                theA == '&' || theA == '|' || theA == '?' || 
-                                theA == '{' || theA == '}' || theA == ';' || 
+                                theA == ':' || theA == '[' || theA == '!' ||
+                                theA == '&' || theA == '|' || theA == '?' ||
+                                theA == '{' || theA == '}' || theA == ';' ||
                                 theA == '\n')) {
                 out.write(theA);
                 out.write(theB);
@@ -290,17 +297,17 @@ public class JSMin {
             JSMin jsmin = new JSMin(new FileInputStream(arg[0]), System.out);
             jsmin.jsmin();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();            
+            log.error(e, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (UnterminatedRegExpLiteralException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (UnterminatedCommentException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (UnterminatedStringLiteralException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

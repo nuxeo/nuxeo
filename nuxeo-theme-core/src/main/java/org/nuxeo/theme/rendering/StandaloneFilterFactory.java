@@ -14,10 +14,14 @@
 
 package org.nuxeo.theme.rendering;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.types.TypeFamily;
 
 public final class StandaloneFilterFactory {
+
+    private static final Log log = LogFactory.getLog(StandaloneFilterFactory.class);
 
     public static StandaloneFilter create(String typeName) {
         StandaloneFilter filter = null;
@@ -27,7 +31,7 @@ public final class StandaloneFilterFactory {
             filter = (StandaloneFilter) Thread.currentThread().getContextClassLoader().loadClass(
                     filterType.getClassName()).newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return filter;
     }

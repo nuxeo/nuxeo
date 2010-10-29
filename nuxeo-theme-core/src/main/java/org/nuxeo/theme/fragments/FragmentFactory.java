@@ -49,7 +49,7 @@ public final class FragmentFactory {
 
             uidManager.register(fragment);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return fragment;
     }

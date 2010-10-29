@@ -59,7 +59,7 @@ public class TemplateView extends AbstractView {
                     }
                     result = rendered.toString();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 } finally {
                     if (in != null) {
                         in.close();
@@ -67,13 +67,13 @@ public class TemplateView extends AbstractView {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } finally {
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 } finally {
                     is = null;
                 }
