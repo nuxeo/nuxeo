@@ -16,16 +16,6 @@
  */
 package org.nuxeo.osgi.application;
 
-import static org.nuxeo.osgi.application.LoaderConstants.BUNDLES;
-import static org.nuxeo.osgi.application.LoaderConstants.DEVMODE;
-import static org.nuxeo.osgi.application.LoaderConstants.FLUSH_CACHE;
-import static org.nuxeo.osgi.application.LoaderConstants.HOME_DIR;
-import static org.nuxeo.osgi.application.LoaderConstants.HOST_NAME;
-import static org.nuxeo.osgi.application.LoaderConstants.HOST_VERSION;
-import static org.nuxeo.osgi.application.LoaderConstants.LIBS;
-import static org.nuxeo.osgi.application.LoaderConstants.PREPROCESSING;
-import static org.nuxeo.osgi.application.LoaderConstants.SCAN_FOR_NESTED_JARS;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,12 +37,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * TODO: needs to be kept in sync with the one from nuxeo-runtime-launcher until
- * they will be merged
+ * @deprecated needs to be kept in sync with the one from nuxeo-runtime-launcher
+ *             until they are merged
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class FrameworkBootstrap {
+public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*";
 
@@ -198,7 +188,7 @@ public class FrameworkBootstrap {
     }
 
     /**
-     * Fill the classloader with all jars found in the defined classpath.
+     * Fills the classloader with all jars found in the defined classpath.
      *
      * @return the list of bundle files.
      */
@@ -246,7 +236,9 @@ public class FrameworkBootstrap {
                 if (files != null) {
                     for (File file : files) {
                         String path = file.getPath();
-                        if (path.endsWith(".jar") || path.endsWith(".zip") || path.endsWith(".war")) {
+                        if (path.endsWith(".jar") || path.endsWith(".zip")
+                                || path.endsWith(".war")
+                                || path.endsWith("rar")) {
                             bundleFiles.add(file);
                             loader.addURL(file.toURI().toURL());
                         }
