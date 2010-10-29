@@ -22,6 +22,8 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -38,6 +40,8 @@ import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class TestElementRenderer extends NXRuntimeTestCase {
+
+    private static final Log log = LogFactory.getLog(TestElementRenderer.class);
 
     private ThemeManager themeManager;
 
@@ -132,7 +136,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
                         content.append((char) ch);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 } finally {
                     if (in != null) {
                         in.close();
@@ -140,13 +144,13 @@ public class TestElementRenderer extends NXRuntimeTestCase {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } finally {
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 } finally {
                     is = null;
                 }

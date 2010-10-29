@@ -98,8 +98,7 @@ public final class DocumentLocator {
         try {
             safetxt = URLEncoder.encode(txt, CHAR_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
         return safetxt;
@@ -110,8 +109,7 @@ public final class DocumentLocator {
         try {
             decoded = URLDecoder.decode(txt, CHAR_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
         return decoded;
