@@ -92,7 +92,7 @@ pre {
   <table width="100%" class="main_table">
     <tr>
       <td colspan="2" align="right">
-        <a href="?">Index</a>
+        <a href="?">Index</a> - <a href="wiki/">Wiki export</a>
       </td>
     </tr>
     <tr valign="top">
