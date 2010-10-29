@@ -78,6 +78,10 @@
             <field schema="advanced_search" name="source" />
           </predicate>
 
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="advanced_search" name="nature" />
+          </predicate>
+
           <predicate parameter="dc:coverage" operator="IN">
             <field schema="advanced_search" name="coverage" />
           </predicate>

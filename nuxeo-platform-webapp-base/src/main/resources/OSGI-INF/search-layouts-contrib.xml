@@ -44,6 +44,20 @@
       </properties>
     </widget>
 
+    <widget name="search_nature" type="selectManyDirectory">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>search:nature</field>
+      </fields>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
     <widget name="search_subjects" type="template">
       <labels>
         <label mode="any">label.dublincore.subject</label>
@@ -305,6 +319,9 @@
         </row>
         <row>
           <widget>search_description</widget>
+        </row>
+        <row>
+          <widget>search_nature</widget>
         </row>
         <row>
           <widget>search_subjects</widget>
