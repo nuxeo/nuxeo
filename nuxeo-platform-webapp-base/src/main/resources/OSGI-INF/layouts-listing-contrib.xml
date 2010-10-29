@@ -611,6 +611,16 @@
       </fields>
     </widget>
 
+    <widget name="listing_nature" type="selectOneDirectory">
+      <labels>
+        <label mode="any">label.dublincore.nature</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.nature</field>
+      </fields>
+    </widget>
+
     <widget name="listing_subjects" type="template">
       <labels>
         <label mode="any">label.dublincore.subject</label>
@@ -1340,6 +1350,20 @@
             <property name="showInSortInfoSelection">true</property>
           </properties>
           <widget>listing_description</widget>
+        </column>
+        <column name="nature" selectedByDefault="false">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:nature</property>
+            <property name="label">label.dublincore.nature</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_nature</widget>
         </column>
         <column name="subjects" selectedByDefault="false">
           <properties mode="any">
