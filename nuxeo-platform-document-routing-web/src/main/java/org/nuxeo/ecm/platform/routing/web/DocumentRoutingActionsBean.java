@@ -301,7 +301,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRouteRelatedToCurrentDocument() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
-        if (relatedRouteModelDocumentId != null) {
+        if (relatedRouteModelDocumentId != null && !"".equals(relatedRouteModelDocumentId)) {
             DocumentModel model = documentManager.getDocument(new IdRef(
                     relatedRouteModelDocumentId));
             route = model.getAdapter(DocumentRoute.class);
