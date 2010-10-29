@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -35,6 +37,8 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
  *
  */
 public class DirectoryContentProvider implements ContentProvider {
+
+    private static final Log log = LogFactory.getLog(DirectoryContentProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -71,8 +75,7 @@ public class DirectoryContentProvider implements ContentProvider {
                 return list.toArray(new DocumentModel[list.size()]);
             }
         } catch (ClientException e) {
-            // FIXME: proper logging
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

@@ -23,6 +23,8 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -45,6 +47,8 @@ import org.w3c.dom.Node;
  */
 @XObject("permission")
 public class GuardDescriptor {
+
+    private static final Log log = LogFactory.getLog(GuardDescriptor.class);
 
     @XNode("@id")
     protected String id;
@@ -109,7 +113,7 @@ public class GuardDescriptor {
                         guards.put(id, new PermissionGuard(value));
                     } else if ("isAdministrator".equals(type)) {
                         String value = node.getTextContent().trim();
-                        guards.put(id, new IsAdministratorGuard(value));                        
+                        guards.put(id, new IsAdministratorGuard(value));
                     } else if ("facet".equals(type)) {
                         String value = node.getTextContent().trim();
                         guards.put(id, new FacetGuard(value));
@@ -137,7 +141,7 @@ public class GuardDescriptor {
                         try {
                             guards.put(id, PermissionService.getInstance().parse(value, guards));
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            log.error(e, e);
                         }
                     } else { // the type should be a guard factory
                         String value = node.getTextContent().trim();
@@ -146,7 +150,7 @@ public class GuardDescriptor {
                             Guard guard = ((GuardFactory)factory.newInstance()).newGuard(value);
                             guards.put(id, guard);
                         } catch (Exception e) {
-                            e.printStackTrace(); //TODO should throw a DeployException
+                            log.error(e, e); //TODO should throw a DeployException
                         }
                     }
                 }

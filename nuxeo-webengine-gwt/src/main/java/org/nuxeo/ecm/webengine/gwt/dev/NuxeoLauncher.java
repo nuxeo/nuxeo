@@ -28,6 +28,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dev.NuxeoApp;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
@@ -41,6 +43,8 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(NuxeoLauncher.class);
+
     protected static NuxeoApp app;
     protected static RedirectService redirect;
 
@@ -53,10 +57,10 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
     protected void buildDone(NuxeoApp app) {
     }
-    
+
     protected void aboutToStartFramework(NuxeoApp app) {
     }
-    
+
     /**
      * You can overwrite this add custom initialization after nuxeo started.
      */
@@ -73,14 +77,14 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     protected URL getConfiguration() {
         return null;
     }
-    
+
     /**
      * Override this if you don't want to cache the nuxeo build.
      */
     protected boolean useCache() {
         return true;
     }
-    
+
     @Override
     public synchronized void init(FilterConfig config) throws ServletException {
         if (app != null) {
@@ -88,21 +92,21 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         }
         System.setProperty(GwtBundleActivator.GWT_DEV_MODE_PROP, "true");
         app = createApplication(config);
-        
+
         Runtime.getRuntime().addShutdownHook(new Thread("Nuxeo Server Shutdown") {
             @Override
             public void run() {
                 try {
                     if (app != null) app.shutdown();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e, e);
                 }
             }
         });
-        
+
         super.init(config);
     }
-    
+
     protected NuxeoApp createApplication(FilterConfig config) throws ServletException {
         URL cfg = getConfiguration();
         String homeParam = config.getInitParameter("home");
@@ -111,11 +115,11 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         String profileParam = config.getInitParameter("profile");
         String updatePolicy = config.getInitParameter("updatePolicy");
         String offline = config.getInitParameter("offline");
-        
+
         String redirectPrefix = config.getInitParameter("redirectPrefix");
         String redirectTrace = config.getInitParameter("redirectTrace");
         String redirectTraceContent = config.getInitParameter("redirectTraceContent");
-        
+
         File home = null;
         String host = hostParam == null ? "localhost" : null;
         int port = portParam == null ? 8081 : Integer.parseInt(portParam);
@@ -128,7 +132,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             homeParam = StringUtils.expandVars(homeParam, System.getProperties());
             home = new File(homeParam);
         }
-        
+
         // start redirect service
         redirect = new RedirectService(host, port);
         if (redirectPrefix != null) {
@@ -141,7 +145,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             redirect.setTrace(true);
             redirect.setTraceContent(true);
         }
-        
+
         System.out.println("+---------------------------------------------------------");
         System.out.println("| Nuxeo Server Profile: "+(profile==null?"custom":profile));
         System.out.println("| Home Directory: "+home);
@@ -150,7 +154,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         System.out.println("+---------------------------------------------------------\n");
 
         NuxeoApp.setHttpServerAddress(host, port);
-        
+
         try {
             MyNuxeoApp app = new MyNuxeoApp(home);
             if (updatePolicy != null) {
@@ -212,7 +216,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             redirect.redirect(httpRequest, httpResponse);
             return;
-        }        
+        }
         super.doFilter(request, response, chain);
     }
 }

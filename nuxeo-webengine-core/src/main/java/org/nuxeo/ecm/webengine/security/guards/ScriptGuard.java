@@ -29,6 +29,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -45,6 +47,8 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 @XObject("script")
 public class ScriptGuard implements Guard {
+
+    private static final Log log = LogFactory.getLog(ScriptGuard.class);
 
     @XContent
     protected String script;
@@ -85,7 +89,7 @@ public class ScriptGuard implements Guard {
             }
             return booleanValue(result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return false;
         }
     }

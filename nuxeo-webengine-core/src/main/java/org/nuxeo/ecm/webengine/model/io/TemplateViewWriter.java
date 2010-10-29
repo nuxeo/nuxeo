@@ -30,6 +30,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 
@@ -41,6 +43,8 @@ import org.nuxeo.ecm.webengine.model.view.TemplateView;
 @Produces("*/*")
 public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
 
+    private static final Log log = LogFactory.getLog(TemplateViewWriter.class);
+
     public void writeTo(TemplateView t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
@@ -48,7 +52,7 @@ public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
         try {
             t.render(entityStream);
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e, e);
             throw WebException.wrap("Failed to render resource", e);
         }
     }

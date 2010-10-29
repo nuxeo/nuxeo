@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.security;
 
 import java.security.Principal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.Adaptable;
@@ -31,6 +33,8 @@ import org.nuxeo.runtime.model.Adaptable;
  *
  */
 public class SecurityContext implements Adaptable {
+
+    private static final Log log = LogFactory.getLog(SecurityContext.class);
 
     protected final CoreSession session;
     protected final DocumentModel doc;
@@ -47,7 +51,7 @@ public class SecurityContext implements Adaptable {
             try {
             return adapter.cast(session);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         } else if (adapter == Principal.class) {
             return adapter.cast(session.getPrincipal());

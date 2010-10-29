@@ -14,10 +14,14 @@
 
 package org.nuxeo.theme.webengine.negotiation.mode;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.Scheme;
 
 public class CookieValue implements Scheme {
+
+    private static final Log log = LogFactory.getLog(CookieValue.class);
 
     public String getOutcome(final Object context) {
         final WebContext webContext = (WebContext) context;
@@ -27,7 +31,7 @@ public class CookieValue implements Scheme {
         try {
             mode = webContext.getCookie("nxthemes.mode");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return mode;
     }

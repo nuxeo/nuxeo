@@ -22,6 +22,8 @@ import java.util.Set;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -34,12 +36,14 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 /**
  * Experimental - Can be used to inject WebContext through @Context annotation.
  * Do not use it for now.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @Provider
 public class JerseyApplication extends WebEngineApplication implements InjectableProvider<Context, Type> {
+
+    private static final Log log = LogFactory.getLog(JerseyApplication.class);
 
     @Override
     public Set<Object> getSingletons() {
@@ -47,27 +51,26 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
         set.add(this);
         return set;
     }
-    
+
     public ComponentScope getScope() {
         return ComponentScope.PerRequest;
     }
-    
+
     public Injectable<?> getInjectable(ComponentContext cc, Context a, Type t) {
         if (!(t instanceof Class<?>)) return null;
-        
+
         try {
             Class<?> c = (Class<?>)t;
             if (c == WebContext.class) {
-                System.out.println("INJECT >>>>>> "+c);
                 return new Injectable<Object>() {
                     public Object getValue() {
                         return WebEngine.getActiveContext();
                     }
-                };            
+                };
             }
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
     }

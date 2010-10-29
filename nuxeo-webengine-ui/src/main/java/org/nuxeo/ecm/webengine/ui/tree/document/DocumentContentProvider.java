@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.ui.tree.document;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
  */
 // FIXME: properly handle exceptions
 public class DocumentContentProvider implements ContentProvider {
+
+    private static final Log log = LogFactory.getLog(DocumentContentProvider.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -54,7 +58,7 @@ public class DocumentContentProvider implements ContentProvider {
             try {
                 return new DocumentModel[]{session.getRootDocument()};
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e, e);
                 return null;
             }
         } else { // may be a document
@@ -68,7 +72,7 @@ public class DocumentContentProvider implements ContentProvider {
                 DocumentModelList list = session.getChildren(((DocumentModel) obj).getRef());
                 return list.toArray(new DocumentModel[list.size()]);
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         return null;
@@ -86,7 +90,7 @@ public class DocumentContentProvider implements ContentProvider {
             try {
                 return ((DocumentModel) obj).getTitle();
             } catch (ClientException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         return null;

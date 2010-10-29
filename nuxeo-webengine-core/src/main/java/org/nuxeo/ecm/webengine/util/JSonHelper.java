@@ -22,6 +22,8 @@ package org.nuxeo.ecm.webengine.util;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,6 +38,8 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 // TODO: Not used. Remove?
 public class JSonHelper {
+
+    private static final Log log = LogFactory.getLog(JSonHelper.class);
 
     // Utility class.
     private JSonHelper() {
@@ -76,7 +80,7 @@ public class JSonHelper {
             DocumentModelList docs = session.getChildren(doc.getRef());
             return asJSON(docs);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

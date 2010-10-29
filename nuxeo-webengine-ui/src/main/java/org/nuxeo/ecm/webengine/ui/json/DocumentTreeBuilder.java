@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  */
 public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(DocumentTreeBuilder.class);
 
     protected final CoreSession session;
 
@@ -49,8 +53,7 @@ public class DocumentTreeBuilder extends JQueryTreeBuilder<DocumentModel> {
         try {
             return session.getChildren(obj.getRef());
         } catch (ClientException e) {
-            // FIXME: proper logging
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

@@ -26,12 +26,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 // TODO: Not used. Remove?
 public class DirectoryStack {
+
+    private static final Log log = LogFactory.getLog(DirectoryStack.class);
 
     protected final List<Entry> dirs;
 
@@ -127,7 +132,7 @@ public class DirectoryStack {
             System.out.println("dummy: "+vd.getFile("dummy"));
             System.out.println("dev: "+vd.getFile("dev"));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
 
     }

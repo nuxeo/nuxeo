@@ -192,7 +192,7 @@ public class BundleAnnotationsLoader implements BundleListener {
                 break;
             }
         } catch (IOException e) {
-            e.printStackTrace(); //TODO
+            log.error(e, e);
         }
     }
 
