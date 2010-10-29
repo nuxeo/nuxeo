@@ -24,24 +24,26 @@ import org.w3c.dom.NodeList;
 
 public class XMLBuilder {
 
-    //    use DOMSerializer
-    //    public static Transformer transformer =  null;
+    // use DOMSerializer
+    // public static Transformer transformer = null;
     //
-    //    public static Transformer getTransformer(){
-    //        if ( transformer == null){
-    //            try {
-    //                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    //                transformer = transformerFactory.newTransformer();
-    //                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    //                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    //            } catch (TransformerConfigurationException e) {
-    //                e.printStackTrace();
-    //            }
-    //        }
-    //        return transformer;
-    //    }
+    // public static Transformer getTransformer(){
+    // if ( transformer == null){
+    // try {
+    // TransformerFactory transformerFactory =
+    // TransformerFactory.newInstance();
+    // transformer = transformerFactory.newTransformer();
+    // transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    // } catch (TransformerConfigurationException e) {
+    // e.printStackTrace();
+    // }
+    // }
+    // return transformer;
+    // }
 
-    public static String saveToXML(Object object, Element root, XAnnotatedObject xao){
+    public static String saveToXML(Object object, Element root,
+            XAnnotatedObject xao) {
         try {
             XMLBuilder.toXML(object, root, xao);
             return DOMSerializer.toString(root);
@@ -51,23 +53,24 @@ public class XMLBuilder {
         return null;
     }
 
-    public static void toXML(Object o, Element parent, XAnnotatedObject xao) throws Exception{
-//        XPath xpath = XPathFactory.newInstance().newXPath();
+    public static void toXML(Object o, Element parent, XAnnotatedObject xao)
+            throws Exception {
+        // XPath xpath = XPathFactory.newInstance().newXPath();
         Element currentNode = parent;
         String path = xao.getPath().toString();
-        if ( path.length() > 0 ) {
+        if (path.length() > 0) {
             currentNode = parent.getOwnerDocument().createElement(path);
             parent.appendChild(currentNode);
         }
         // process annotated members
-        for ( XAnnotatedMember m: xao.members){
-            if ( m instanceof XAnnotatedMap ){
+        for (XAnnotatedMember m : xao.members) {
+            if (m instanceof XAnnotatedMap) {
                 m.toXML(o, currentNode);
-            } else if ( m instanceof XAnnotatedList ){
+            } else if (m instanceof XAnnotatedList) {
                 m.toXML(o, currentNode);
-            } else if ( m instanceof XAnnotatedContent) {
+            } else if (m instanceof XAnnotatedContent) {
                 m.toXML(o, currentNode);
-            } else if ( m instanceof XAnnotatedParent) {
+            } else if (m instanceof XAnnotatedParent) {
 
             } else {
                 m.toXML(o, currentNode);
@@ -76,28 +79,28 @@ public class XMLBuilder {
     }
 
     // TODO use xpath for that ?
-    public static Element getOrCreateElement(Element root, Path path){
+    public static Element getOrCreateElement(Element root, Path path) {
         Element e = root;
-        for ( String segment : path.segments) {
+        for (String segment : path.segments) {
             e = getOrCreateElement(e, segment);
         }
         return e;
     }
 
-    public static Element addElement(Element root, Path path){
+    public static Element addElement(Element root, Path path) {
         Element e = root;
         int len = path.segments.length - 1;
-        for ( int i = 0 ; i < len ; i++) {
+        for (int i = 0; i < len; i++) {
             e = getOrCreateElement(e, path.segments[i]);
         }
         return addElement(e, path.segments[len]);
     }
 
-    private static Element getOrCreateElement(Element parent, String segment){
+    private static Element getOrCreateElement(Element parent, String segment) {
         NodeList list = parent.getChildNodes();
-        for ( int i = 0, len = list.getLength() ; i < len ; i++ ){
+        for (int i = 0, len = list.getLength(); i < len; i++) {
             Element e = (Element) list.item(i);
-            if ( segment.equals(e.getNodeName())){
+            if (segment.equals(e.getNodeName())) {
                 return e;
             }
         }
@@ -105,14 +108,14 @@ public class XMLBuilder {
         return addElement(parent, segment);
     }
 
-    public static Element addElement(Element parent, String segment){
+    public static Element addElement(Element parent, String segment) {
         Element e = parent.getOwnerDocument().createElement(segment);
         parent.appendChild(e);
         return e;
     }
 
-    public static void fillField( Element element, String value, String attribute){
-        if ( attribute != null ){
+    public static void fillField(Element element, String value, String attribute) {
+        if (attribute != null) {
             element.setAttribute(attribute, value);
         } else {
             element.setTextContent(value);
