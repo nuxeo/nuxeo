@@ -30,6 +30,15 @@
 
   </extension>
 
+  <extension target="org.nuxeo.theme.services.ThemeService" point="banks">
+    <bank name="nuxeo" url="${nuxeo.url}/site/theme-banks/nuxeo" />
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <import src="themes/collections/nuxeo-DM.zip" bank="nuxeo" collection="nuxeo DM" />
+    <import src="themes/collections/Galaxy.zip" bank="nuxeo" collection="Galaxy" />
+  </extension>
+
   <!-- fragments -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="fragments">
 
