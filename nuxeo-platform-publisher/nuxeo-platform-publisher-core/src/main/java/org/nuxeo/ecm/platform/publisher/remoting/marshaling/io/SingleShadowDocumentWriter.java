@@ -17,15 +17,21 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling.io;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
-
-import java.io.IOException;
 
 /**
  * {@link DocumentModelWriter} that creates a shallow DocumentModel (ie: no
@@ -34,6 +40,8 @@ import java.io.IOException;
  * @author tiry
  */
 public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
+
+    private static final Log log = LogFactory.getLog(SingleShadowDocumentWriter.class);
 
     protected DocumentModel dm;
 
@@ -48,8 +56,7 @@ public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
         try {
             dm = createDocument(doc, null);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
         }
         // keep location unchanged
         DocumentLocation oldLoc = doc.getSourceLocation();

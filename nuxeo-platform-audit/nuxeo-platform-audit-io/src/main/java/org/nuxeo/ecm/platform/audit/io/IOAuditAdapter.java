@@ -145,7 +145,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             }
             return new IOAuditResources(docLogs);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
     }

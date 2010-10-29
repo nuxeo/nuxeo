@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.spec.View;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.spaces.api.Gadget;
@@ -34,6 +36,8 @@ import org.nuxeo.opensocial.container.factory.utils.UrlBuilder;
  * @author Guillaume Cusnieux
  */
 public class GadgetFactory {
+
+    private static final Log log = LogFactory.getLog(GadgetFactory.class);
 
     public static GadgetBean getGadgetBean(Gadget gadget, String locale, String serverBase)
             throws ClientException {
@@ -80,7 +84,7 @@ public class GadgetFactory {
                         .toString()));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return gv;
     }

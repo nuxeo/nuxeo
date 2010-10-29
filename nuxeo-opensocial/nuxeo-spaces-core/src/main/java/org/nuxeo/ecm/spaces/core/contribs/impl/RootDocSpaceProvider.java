@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.spaces.core.impl.docwrapper.DocSpaceImpl;
  *
  */
 public class RootDocSpaceProvider extends AbstractSpaceProvider {
+
+    private static final Log log = LogFactory.getLog(RootDocSpaceProvider.class);
 
     private final DocumentModel rootDoc;
 
@@ -63,7 +67,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
                 add(o, session);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

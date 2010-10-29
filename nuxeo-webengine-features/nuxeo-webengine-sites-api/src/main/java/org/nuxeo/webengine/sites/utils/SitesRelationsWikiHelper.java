@@ -20,11 +20,14 @@
 package org.nuxeo.webengine.sites.utils;
 
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE_CONTENT;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -46,6 +49,8 @@ import org.wikimodel.wem.common.CommonWikiParser;
  *
  */
 public class SitesRelationsWikiHelper {
+
+    private static final Log log = LogFactory.getLog(SitesRelationsWikiHelper.class);
 
     public static final Resource HAS_LINK_TO = new ResourceImpl(
             "http://www.nuxeo.org/sitesWiki/hasLinkTo");
@@ -102,15 +107,15 @@ public class SitesRelationsWikiHelper {
             try {
                 parser.parse(new StringReader(content), extractor);
             } catch (WikiParserException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
             return getWordLinks(collector.toString());
         } catch (PropertyNotFoundException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (PropertyException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return new ArrayList<String>();
     }

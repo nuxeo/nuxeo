@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,6 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationContext extends HashMap<String, Object> {
+
+    private static final Log log = LogFactory.getLog(OperationContext.class);
 
     private static final long serialVersionUID = 2944230823597903715L;
 
@@ -177,7 +181,7 @@ public class OperationContext extends HashMap<String, Object> {
             try {
                 handler.cleanup();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
     }

@@ -167,7 +167,7 @@ public class GadgetServiceImpl extends DefaultComponent implements
         try {
             return gadget.getGadgetDefinition();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
 
         return null;

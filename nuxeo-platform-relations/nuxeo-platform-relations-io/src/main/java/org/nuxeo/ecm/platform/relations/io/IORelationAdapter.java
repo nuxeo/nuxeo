@@ -344,7 +344,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             return new IORelationResources(namespaces, docResources,
                     memoryGraph.getStatements());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
     }
@@ -362,7 +362,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                     namespaces, statements);
             graphHelper.write(out);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 
@@ -415,7 +415,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             }
             return new IORelationResources(namespaces, docResources, statements);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }
@@ -443,7 +443,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             }
             graph.add(relResources.getStatements());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 
@@ -549,7 +549,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             return new IORelationResources(namespaces,
                     relResources.getResourcesMap(), graph.getStatements());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

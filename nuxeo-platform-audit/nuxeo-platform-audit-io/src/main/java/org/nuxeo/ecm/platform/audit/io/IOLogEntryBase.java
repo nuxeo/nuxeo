@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -54,6 +56,8 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
  */
 // FIXME: design issue - this is a utility class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
+
+    private static final Log log = LogFactory.getLog(IOLogEntryBase.class);
 
     public static final String DOCUMENT_TAG = "documentLogs";
 
@@ -141,8 +145,7 @@ public class IOLogEntryBase {
                     logEntryElement.attributeValue("creationDate"));
             logEntry.setEventDate(creationDate);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e, e);
         }
         logEntry.setEventId(logEntryElement.attributeValue("eventId"));
         logEntry.setPrincipalName(logEntryElement.attributeValue("principalName"));

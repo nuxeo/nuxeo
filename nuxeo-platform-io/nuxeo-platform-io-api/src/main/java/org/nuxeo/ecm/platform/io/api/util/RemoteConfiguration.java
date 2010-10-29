@@ -24,12 +24,16 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RemoteConfiguration extends AbstractIOConfiguration {
+
+    private static final Log log = LogFactory.getLog(RemoteConfiguration.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -46,7 +50,7 @@ public class RemoteConfiguration extends AbstractIOConfiguration {
             try {
                 manager = (IOManager) new InitialContext(jndiEnv).lookup(jndiName);
             } catch (NamingException e) {
-                e.printStackTrace(); // TODO throw exception
+                log.error(e, e); // TODO throw exception
                 return null;
             }
         }

@@ -24,6 +24,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -39,6 +41,8 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "Engine")
 @Produces("text/html;charset=UTF-8")
 public class EngineService extends DefaultObject {
+
+    private static final Log log = LogFactory.getLog(EngineService.class);
 
     @GET
     public Object getIndex() {
@@ -82,7 +86,7 @@ public class EngineService extends DefaultObject {
 
         return "Test OK";
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.error(t, t);
             throw WebException.wrap(t);
         }
     }
@@ -122,7 +126,7 @@ public class EngineService extends DefaultObject {
 
         return "Test OK";
         } catch (Throwable t) {
-            t.printStackTrace();
+            log.error(t, t);
             throw WebException.wrap(t);
         }
     }

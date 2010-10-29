@@ -125,7 +125,7 @@ public class JSONDocument extends DocumentObject {
 
             return makeJSON(all);
         } catch (ClientException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
 
         return Response.serverError()
@@ -142,7 +142,7 @@ public class JSONDocument extends DocumentObject {
         try {
             fm = Framework.getService(FileManager.class);
         } catch (Exception e1) {
-            e1.printStackTrace();
+            log.error(e1, e1);
             return Response.serverError()
                     .build();
         }
@@ -159,10 +159,9 @@ public class JSONDocument extends DocumentObject {
             fm.createDocumentFromBlob(session, blob, doc.getPathAsString(),
                     true, blob.getFilename());
         } catch (IOException e) {
-            log.info("************** IOException ****************");
-            e.printStackTrace();
+            log.error(e, e);
         } catch (Exception e) {
-            log.error("************** Exception ****************");
+            log.error(e, e);
             // TODO : Resolve this exception...
             // org.nuxeo.ecm.core.storage.sql.Fragment.setPristine(Fragment.java:394)
             // at org.nuxeo.ecm.core.storage.sql.Context.save(Context.java:523)
@@ -175,7 +174,6 @@ public class JSONDocument extends DocumentObject {
             // org.nuxeo.ecm.platform.filemanager.service.FileManagerService.createDocumentFromBlob(FileManagerService.java:248)
             // org.nuxeo.ecm.opensocial.mydocs.rest.JSONDocument.doPost(JSONDocument.java:156)
             // Fixed in method fixedSQLExceptionWhenUpload
-            e.printStackTrace();
         }
 
         return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)

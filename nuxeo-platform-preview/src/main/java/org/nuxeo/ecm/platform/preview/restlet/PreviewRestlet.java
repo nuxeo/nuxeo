@@ -279,7 +279,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
 

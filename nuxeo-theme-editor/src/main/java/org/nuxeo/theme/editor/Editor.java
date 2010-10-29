@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;
@@ -52,6 +54,8 @@ import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class Editor {
+
+    private static final Log log = LogFactory.getLog(Editor.class);
 
     public static void updateElementWidget(Element element, String viewName)
             throws ThemeException {
@@ -1025,7 +1029,7 @@ public class Editor {
             themeManager.fillScratchPage(themeName, fragment);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         // Clean cache
         themeManager.themeModified(currentThemeName);

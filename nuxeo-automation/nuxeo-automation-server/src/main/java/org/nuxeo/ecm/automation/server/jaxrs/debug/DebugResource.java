@@ -25,6 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -44,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DebugResource {
+
+    private static final Log log = LogFactory.getLog(DebugResource.class);
 
     static final XMap xmap = new XMap();
     static {
@@ -95,7 +99,7 @@ public class DebugResource {
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return Response.status(500).build();
         }
     }
@@ -112,7 +116,7 @@ public class DebugResource {
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return Response.status(500).build();
         }
     }
