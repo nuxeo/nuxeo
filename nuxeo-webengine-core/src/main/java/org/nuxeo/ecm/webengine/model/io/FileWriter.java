@@ -32,19 +32,24 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
- * text/plain is needed otherwise resteasy will use its default text plain (@see DefaultTextPlain) writer
- * to write text/plain objects and the file is not written correctly. 
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * text/plain is needed otherwise resteasy will use its default text plain
+ * (@see DefaultTextPlain) writer to write text/plain objects and the file is
+ * not written correctly.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces({"*/*", "text/plain"})
+@Produces( { "*/*", "text/plain" })
 public class FileWriter implements MessageBodyWriter<File> {
+
+    private static final Log log = LogFactory.getLog(FileWriter.class);
 
     public void writeTo(File t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
@@ -56,14 +61,25 @@ public class FileWriter implements MessageBodyWriter<File> {
             FileUtils.copy(in, entityStream);
             entityStream.flush();
         } catch (Throwable e) {
-            throw WebException.wrap("Failed to render resource", e);
+            Throwable unwrappedError = ExceptionHelper.unwrapException(e);
+            if (ExceptionHelper.isClientAbortError(unwrappedError)) {
+                // ignore but log as warn
+                log.warn(unwrappedError.getMessage());
+            } else if (unwrappedError instanceof IOException) {
+                // can be a broken pipe => do not display the whole stack trace
+                log.error(unwrappedError.getMessage());
+            } else {
+                throw WebException.wrap("Failed to render resource", e);
+            }
         } finally {
-            if (in != null) in.close();
+            if (in != null) {
+                in.close();
+            }
         }
     }
 
-    public long getSize(File arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(File arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
+            MediaType arg4) {
         long n = arg0.length();
         return n <= 0 ? -1 : n;
     }
