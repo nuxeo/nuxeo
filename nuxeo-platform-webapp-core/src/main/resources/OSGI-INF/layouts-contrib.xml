@@ -50,6 +50,9 @@
       </templates>
       <rows>
         <row>
+          <widget>nature</widget>
+        </row>
+        <row>
           <widget>subjects</widget>
         </row>
         <row>
@@ -83,6 +86,19 @@
           <widget>contributors</widget>
         </row>
       </rows>
+      <widget name="nature" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.dublincore.nature</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:nature</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">nature</property>
+          <property name="localize">true</property>
+        </properties>
+      </widget>
       <widget name="subjects" type="template">
         <labels>
           <label mode="any">label.dublincore.subject</label>
