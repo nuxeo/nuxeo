@@ -9,7 +9,7 @@ Selenium.prototype.doGetActionButtonIdFromStepFolder = function(locator, value) 
  * Find the stepActions button from a step using DOM.
  */
 Selenium.prototype.doGetActionButtonIdFromStep = function(locator, value) {
-  storedVars[value] = this.browserbot.findElement(locator).parentNode.parentNode.parentNode.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.getElementsByTagName('img')[0].id;
+  storedVars[value] = this.browserbot.findElement(locator).parentNode.parentNode.parentNode.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.nextSibling.getElementsByTagName('img')[0].id;
 };
 
 // set absolute path to current folder here, used in tests with file upload

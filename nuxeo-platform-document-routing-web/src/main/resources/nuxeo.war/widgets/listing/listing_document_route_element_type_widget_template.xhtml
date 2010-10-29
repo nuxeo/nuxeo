@@ -5,11 +5,11 @@
 
   <div class="cell">
     <nxu:graphicImage
-      value="#{nxd:iconPath(field_0)}" alt="#{field_1}" title="#{field_1}"
-      rendered="#{!empty nxd:iconPath(field_0)}"
+      value="#{nxd:iconPath(field_0)}" alt="#{field_0.dc.description}"
+      title="#{field_0.dc.description}" rendered="#{!empty nxd:iconPath(field_0)}"
       styleClass="smallIcon" />
     <span>
-      <h:outputText value="#{field_1}" />
+      <h:outputText value="#{messages[field_1]}" />
     </span>
   </div>
 
