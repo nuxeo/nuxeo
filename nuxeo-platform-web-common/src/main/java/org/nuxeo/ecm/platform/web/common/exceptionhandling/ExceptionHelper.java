@@ -57,7 +57,7 @@ public class ExceptionHelper {
             DocumentSecurityException.class.getName(),
             SecurityException.class.getName());
 
-    public static Boolean isSecurityError(Throwable t) {
+    public static boolean isSecurityError(Throwable t) {
         if (t instanceof DocumentSecurityException) {
             return true;
         } else if (t.getCause() instanceof DocumentSecurityException) {
@@ -76,15 +76,29 @@ public class ExceptionHelper {
         return false;
     }
 
-    public static Boolean isClientAbortError(Throwable t) {
+    public static boolean isClientAbortError(Throwable t) {
         if (t instanceof ClientAbortException || t instanceof SocketException) {
             return true;
         } else if (t.getCause() instanceof ClientAbortException
                 || t.getCause() instanceof SocketException) {
             return true;
+        } else if (t != null) {
+            // handle all IOException that are ClientAbortException by looking
+            // at their class name since the package name is not the same for
+            // jboss, glassfish, tomcat and jetty and we don't want to add
+            // implementation specific build dependencies to this project
+            if (ClientAbortException.class.getSimpleName().equals(
+                    t.getClass().getSimpleName())) {
+                return true;
+            }
+            Throwable cause = t.getCause();
+            if (cause != null
+                    && ClientAbortException.class.getSimpleName().equals(
+                            cause.getClass().getSimpleName())) {
+                return true;
+            }
         }
 
         return false;
     }
-
 }
