@@ -215,7 +215,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         && !session.getChildren(child.getRef()).isEmpty()) {
                     RouteFolderElement thisFolder = new RouteFolderElement(
                             child.getAdapter(DocumentRouteElement.class),
-                            table, first, folder);
+                            table, first, folder, depth);
                     processElementsInFolder(child, elements, table, session,
                             depth + 1, thisFolder);
                 } else {

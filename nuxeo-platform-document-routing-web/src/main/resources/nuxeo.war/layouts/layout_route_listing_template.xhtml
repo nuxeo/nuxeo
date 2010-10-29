@@ -117,16 +117,17 @@
 		</thead>
 	</c:if>
 
-	<c:set var="trStyleClass"
-		value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
-	<tr
-		class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+  <c:set var="tdStyleClass"
+    value="#{nxu:test(value.data.getDepth()%4 == 0, 'routeRowBackground0', nxu:test(value.data.getDepth()%4 == 1, 'routeRowBackground1', nxu:test(value.data.getDepth()%4 ==2, 'routeRowBackground2', nxu:test(value.data.getDepth()%4 ==3, 'routeRowBackground3', ''))))}" />
+  <tr>
 		<nxl:layoutColumn>
 			<c:choose>
 				<c:when test="#{layoutColumnIndex == 0}">
 					<c:forEach var="folder"
 						items="#{value.data.getFirstChildFolders()}">
-						<td class="cellVerticalBorder" rowspan="#{folder.getTotalChildCount()}">
+            <c:set var="tdParentStyleClass"
+              value="#{nxu:test((1+folder.depth)%4 ==0, 'routeRowBackground0', nxu:test((1+folder.depth)%4 == 1, 'routeRowBackground1', nxu:test((1+folder.depth)%4 ==2, 'routeRowBackground2', nxu:test((1+folder.depth)%4 ==3, 'routeRowBackground3', ''))))}" />
+						<td class="cellVerticalBorder  #{tdParentStyleClass}" rowspan="#{folder.getTotalChildCount()}">
               <nxl:layoutColumnWidget>
   							<nxl:widget widget="#{widget}" value="#{value}" />
   							<c:if
@@ -138,11 +139,11 @@
 					</c:forEach>
 					<c:if
 						test="#{(value.data.getRouteMaxDepth() - value.data.getDepth()) > 0}">
-						<td colspan="#{value.data.getRouteMaxDepth() - value.data.getDepth()}" />
+						<td colspan="#{value.data.getRouteMaxDepth() - value.data.getDepth()}" class=" #{tdStyleClass}"/>
 					</c:if>
 				</c:when>
 				<c:otherwise>
-					<td class="#{layoutColumn.properties.columnStyleClass}"><nxl:layoutColumnWidget>
+					<td class="#{layoutColumn.properties.columnStyleClass}  #{tdStyleClass}"><nxl:layoutColumnWidget>
 						<nxl:widget widget="#{widget}" value="#{value}" />
 						<c:if
 							test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">

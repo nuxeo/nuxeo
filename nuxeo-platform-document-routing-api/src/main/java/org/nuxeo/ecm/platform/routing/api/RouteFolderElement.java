@@ -31,12 +31,15 @@ public class RouteFolderElement {
 
     protected int totalChildCount;
 
+    protected int depth;
+
     public RouteFolderElement(DocumentRouteElement element, RouteTable table,
-            boolean isFirstChild, RouteFolderElement parent) {
+            boolean isFirstChild, RouteFolderElement parent, int depth) {
         this.table = table;
         this.element = element;
         this.isFirstChild = isFirstChild;
         this.parent = parent;
+        this.depth = depth;
     }
 
     public int getTotalChildCount() {
@@ -54,5 +57,9 @@ public class RouteFolderElement {
 
     public DocumentRouteElement getRouteElement() {
         return element;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }
