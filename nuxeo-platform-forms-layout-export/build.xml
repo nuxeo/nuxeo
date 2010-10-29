@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<project name="forms layout" default="deploy-web-live" basedir=".">
+
+  <import file="../../build.xml" />
+  <property file="build.properties" />
+
+  <target name="deploy-web-live" depends="web" />
+  <target name="web" description="Deploy Web components to the live ECM" 
+    depends="setproperties">
+    <copy todir="${jboss.nuxeo.ear}/nuxeo.war">
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
+    </copy>
+
+    <copy todir="${jboss.server}/data/NXRuntime/web/modules/com.afp.asap.ui/"
+      failonerror="true">
+      <fileset dir="${basedir}/afp-asap-ui/src/main/resources/"
+        includes="skin/ webwidgets/ widgets/" />
+    </copy>
+
+  </target>
+
+</project>

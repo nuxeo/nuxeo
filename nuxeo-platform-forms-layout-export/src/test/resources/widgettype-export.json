@@ -1,0 +1,62 @@
+{
+  "name": "test",
+  "handlerClassName": "org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler",
+  "properties":   {
+    "foo1": "bar1",
+    "foo2": "bar2"
+  },
+  "configuration":   {
+    "title": "Test widget type",
+    "description": "This is a test widget type",
+    "categories":     [
+      "foo",
+      "bar"
+    ],
+    "properties": {"layouts":     {
+      "any": [      {
+        "templates": {},
+        "properties": {},
+        "rows": [        {
+          "properties": {},
+          "widgets": ["required_property"]
+        }],
+        "widgets": [        {
+          "name": "required_property",
+          "type": "text",
+          "labels": {"any": "Required"},
+          "helpLabels": {},
+          "fields": [          {
+            "fieldName": "bar",
+            "schemaName": "foo",
+            "propertyName": "foo:bar"
+          }],
+          "subWidgets": [],
+          "properties": {},
+          "propertiesByWidgetMode": {}
+        }]
+      }],
+      "edit": [      {
+        "templates": {},
+        "properties": {},
+        "rows": [        {
+          "properties": {},
+          "widgets": ["rendered_property"]
+        }],
+        "widgets": [        {
+          "name": "rendered_property",
+          "type": "text",
+          "labels": {"any": "Rendered"},
+          "helpLabels": {},
+          "fields": [          {
+            "fieldName": "bar",
+            "schemaName": "foo",
+            "propertyName": "foo:bar"
+          }],
+          "subWidgets": [],
+          "properties": {},
+          "propertiesByWidgetMode": {}
+        }]
+      }]
+    }}
+  }
+}
