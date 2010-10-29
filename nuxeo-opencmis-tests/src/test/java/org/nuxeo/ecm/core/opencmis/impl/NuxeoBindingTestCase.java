@@ -16,21 +16,26 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
+import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
+import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
+import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class NuxeoBindingTestCase {
+
+    public static final String USERNAME = "test";
+
+    public static final String PASSWORD = "test";
 
     public String repositoryId;
 
@@ -57,6 +62,7 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
         // MyDocType
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.tests");
+        nuxeotc.openSession();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put(SessionParameter.BINDING_SPI_CLASS,
@@ -64,23 +70,29 @@ public class NuxeoBindingTestCase {
         params.put(SessionParameter.LOCAL_FACTORY,
                 NuxeoCmisServiceFactory.class.getName());
 
-        binding = CmisBindingFactory.newInstance().createCmisLocalBinding(
-                params);
+        // use manual local bindings to keep the session open
 
-        RepositoryInfo repo = binding.getRepositoryService().getRepositoryInfo(
-                nuxeotc.getRepositoryId(), null);
-        rootFolderId = repo.getRootFolderId();
-        repositoryId = repo.getId();
+        repositoryId = nuxeotc.getRepositoryId();
+        rootFolderId = nuxeotc.getSession().getRootDocument().getId();
 
-        assertNotNull(repositoryId);
-        assertNotNull(rootFolderId);
+        boolean objectInfoRequired = true; // for tests
+        CallContextImpl context = new CallContextImpl(
+                CallContext.BINDING_LOCAL, repositoryId, objectInfoRequired);
+        context.put(CallContext.USERNAME, USERNAME);
+        context.put(CallContext.PASSWORD, PASSWORD);
+        NuxeoRepository repository = new NuxeoRepository(repositoryId,
+                rootFolderId);
+        NuxeoCmisService service = new NuxeoCmisService(repository, context,
+                nuxeotc.getSession());
+        binding = new NuxeoBinding(service);
     }
 
     public void tearDown() throws Exception {
-        NuxeoRepositories.clear();
         if (nuxeotc != null) {
+            nuxeotc.closeSession();
             nuxeotc.tearDown();
         }
+        NuxeoRepositories.clear();
     }
 
 }

@@ -108,6 +108,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
@@ -210,6 +211,15 @@ public class NuxeoCmisService extends AbstractCmisService {
         Filter lcFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE,
                 false);
         return new CompoundFilter(facetFilter, lcFilter);
+    }
+
+    protected String getIdFromDocumentRef(DocumentRef ref)
+            throws ClientException {
+        if (ref instanceof IdRef) {
+            return ((IdRef) ref).value;
+        } else {
+            return coreSession.getDocument(ref).getId();
+        }
     }
 
     /* This is the only method that does not have a repositoryId / coreSession. */
@@ -336,7 +346,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                     throw new CmisRuntimeException("Cannot create object", e);
                 }
             }
-            String pathSegment = nuxeoTypeId; // default path segment based on id
+            String pathSegment = nuxeoTypeId; // default path segment based on
+                                              // id
             doc.setPathInfo(parentDoc.getPathAsString(), pathSegment);
         }
         return doc;
@@ -1275,15 +1286,71 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean major, Properties properties, ContentStream contentStream,
             String checkinComment, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId;
+        if (objectIdHolder == null
+                || (objectId = objectIdHolder.getValue()) == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+        VersioningOption option = Boolean.TRUE.equals(major) ? VersioningOption.MAJOR
+                : VersioningOption.MINOR;
+
+        DocumentModel doc = getDocumentModel(objectId);
+        if (doc.isVersion() || doc.isProxy()) {
+            throw new CmisInvalidArgumentException("Cannot check in non-PWC: "
+                    + doc);
+        }
+
+        NuxeoObjectData object = new NuxeoObjectData(repository, doc);
+        updateProperties(object, null, properties, false);
+        try {
+            DocumentRef ver = doc.checkIn(option, checkinComment);
+            coreSession.saveDocument(doc);
+            coreSession.save();
+            objectIdHolder.setValue(getIdFromDocumentRef(ver));
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
     public void checkOut(String repositoryId, Holder<String> objectIdHolder,
             ExtensionsData extension, Holder<Boolean> contentCopiedHolder) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId;
+        if (objectIdHolder == null
+                || (objectId = objectIdHolder.getValue()) == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+
+        DocumentModel doc = getDocumentModel(objectId);
+
+        try {
+            if (doc.isProxy()) {
+                throw new CmisInvalidArgumentException(
+                        "Cannot check out non-version: " + objectId);
+            }
+            // find pwc
+            DocumentModel pwc;
+            if (doc.isVersion()) {
+                pwc = coreSession.getWorkingCopy(doc.getRef());
+                if (pwc == null) {
+                    // no live document available
+                    // TODO do a restore somewhere
+                    throw new CmisObjectNotFoundException(objectId);
+                }
+            } else {
+                pwc = doc;
+            }
+            if (pwc.isCheckedOut()) {
+                throw new CmisConstraintException("Already checked out: "
+                        + objectId);
+            }
+            pwc.checkOut();
+            coreSession.save();
+            objectIdHolder.setValue(pwc.getId());
+            contentCopiedHolder.setValue(Boolean.TRUE);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override

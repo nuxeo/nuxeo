@@ -78,6 +78,7 @@ import org.apache.chemistry.opencmis.commons.spi.MultiFilingService;
 import org.apache.chemistry.opencmis.commons.spi.NavigationService;
 import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
+import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -110,18 +111,21 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected DiscoveryService discService;
 
+    protected VersioningService verService;
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        nuxeotc.openSession();
+        // nuxeotc.openSession();
         Helper.makeNuxeoRepository(nuxeotc.getSession());
-        nuxeotc.closeSession();
+        // nuxeotc.closeSession();
         repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
         filingService = binding.getMultiFilingService();
         discService = binding.getDiscoveryService();
+        verService = binding.getVersioningService();
     }
 
     @Override
@@ -1011,6 +1015,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         ObjectData data = res.getObjects().get(0);
+        checkValue(prop, expected, data);
+    }
+
+    protected void checkValue(String prop, Object expected, ObjectData data) {
         Object value = expected instanceof List ? getValues(data, prop)
                 : getValue(data, prop);
         if (expected == NOT_NULL) {
@@ -1058,13 +1066,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // ----- Document -----
 
         checkReturnedValue(PropertyIds.IS_IMMUTABLE, Boolean.FALSE);
-        checkReturnedValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE); // TODO
-        checkReturnedValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE); // TODO
-        checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE); // TODO
+        checkReturnedValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE);
+        checkReturnedValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE);
+        checkReturnedValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE);
         checkReturnedValue(PropertyIds.VERSION_LABEL, null);
         checkReturnedValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL);
-        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null);
-        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null);
+        checkReturnedValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT,
+                Boolean.TRUE);
+        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
+        checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system");
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
         checkReturnedValue(
                 PropertyIds.CONTENT_STREAM_LENGTH,
@@ -1245,6 +1255,99 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfolder2_Title", getQueryValue(data, "A.dc:title"));
         assertEquals(folder4id, getQueryValue(data, "B.cmis:objectId"));
         assertEquals("testfolder4_Title", getQueryValue(data, "B.dc:title"));
+    }
+
+    @Test
+    public void testVersioning() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+
+        // checked out
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        String series = (String) getValue(ob, PropertyIds.VERSION_SERIES_ID);
+
+        // check in major -> version 1.0
+
+        Holder<String> idHolder = new Holder<String>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "comment", null, null, null, null);
+
+        String vid = idHolder.getValue();
+        ObjectData ver = getObject(vid);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, ver);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
+                ver);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+
+        // look at the checked in document to verify
+        // that CMIS views it as a version
+
+        ObjectData ci = getObject(id);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ci);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, ci);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ci);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ci);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ci);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ci);
+
+        // check out
+
+        Holder<Boolean> bhold = new Holder<Boolean>();
+        verService.checkOut(repositoryId, idHolder, null, bhold);
+        String coid = idHolder.getValue();
+        ObjectData co = getObject(coid);
+
+        assertEquals(id, coid); // Nuxeo invariant
+        assertEquals(Boolean.TRUE, bhold.getValue()); // copied
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.VERSION_LABEL, null, co);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, co);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid, co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", co);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
+
+        // check in minor -> version 1.1
+
+        idHolder.setValue(coid);
+        verService.checkIn(repositoryId, idHolder, Boolean.FALSE, null, null,
+                "comment2", null, null, null, null);
+
+        String v2id = idHolder.getValue();
+        ObjectData ver2 = getObject(v2id);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver2);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ver2);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ver2);
+        checkValue(PropertyIds.VERSION_LABEL, "1.1", ver2);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, ver2);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
+                ver2);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
     }
 
 }

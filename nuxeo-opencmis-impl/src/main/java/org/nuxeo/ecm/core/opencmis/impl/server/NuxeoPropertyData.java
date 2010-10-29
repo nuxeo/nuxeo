@@ -51,6 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -140,33 +141,39 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
                     (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
         } else if (PropertyIds.IS_LATEST_VERSION.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
-                    (PropertyDefinition<Boolean>) pd, Boolean.TRUE);
-        } else if (PropertyIds.IS_MAJOR_VERSION.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
-                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyDataIsLatestVersion(
+                    (PropertyDefinition<Boolean>) pd, doc);
         } else if (PropertyIds.IS_LATEST_MAJOR_VERSION.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
-                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyDataIsLatestMajorVersion(
+                    (PropertyDefinition<Boolean>) pd, doc);
+        } else if (PropertyIds.IS_MAJOR_VERSION.equals(name)) {
+            return (PropertyData<U>) new NuxeoPropertyDataIsMajorVersion(
+                    (PropertyDefinition<Boolean>) pd, doc);
         } else if (PropertyIds.VERSION_LABEL.equals(name)) {
-            // value = doc.getVersionLabel();
-            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyDataVersionLabel(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.VERSION_SERIES_ID.equals(name)) {
+            // doesn't change once computed, no need to have a dynamic prop
+            String versionSeriesId;
+            try {
+                versionSeriesId = doc.getVersionSeriesId();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
             return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
-                    (PropertyDefinition<String>) pd, doc.getId());
+                    (PropertyDefinition<String>) pd, versionSeriesId);
         } else if (PropertyIds.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed(
-                    (PropertyDefinition<Boolean>) pd, Boolean.FALSE);
+            return (PropertyData<U>) new NuxeoPropertyDataIsVersionSeriesCheckedOut(
+                    (PropertyDefinition<Boolean>) pd, doc);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_BY.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutBy(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.VERSION_SERIES_CHECKED_OUT_ID.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyDataVersionSeriesCheckedOutId(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CHECKIN_COMMENT.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyDataCheckInComment(
+                    (PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.CONTENT_STREAM_LENGTH.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamLength(
                     (PropertyDefinition<BigInteger>) pd, doc);
@@ -681,6 +688,217 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         public String getFirstValue() {
             String path = doc.getPathAsString();
             return path == null ? "" : path;
+        }
+    }
+
+    protected static boolean isLiveDocumentMajorVersion(DocumentModel doc)
+            throws ClientException {
+        return !doc.isCheckedOut() && doc.getVersionLabel().endsWith(".0");
+    }
+
+    /**
+     * Property for cmis:isMajorVersion.
+     */
+    public static class NuxeoPropertyDataIsMajorVersion extends
+            NuxeoPropertyDataBase<Boolean> implements PropertyBoolean {
+
+        protected NuxeoPropertyDataIsMajorVersion(
+                PropertyDefinition<Boolean> propertyDefinition,
+                DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public Boolean getFirstValue() {
+            try {
+                if (doc.isVersion() || doc.isProxy()) {
+                    return Boolean.valueOf(doc.isMajorVersion());
+                }
+                // checked in doc considered latest version
+                return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:isLatestVersion.
+     */
+    public static class NuxeoPropertyDataIsLatestVersion extends
+            NuxeoPropertyDataBase<Boolean> implements PropertyBoolean {
+
+        protected NuxeoPropertyDataIsLatestVersion(
+                PropertyDefinition<Boolean> propertyDefinition,
+                DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public Boolean getFirstValue() {
+            try {
+                if (doc.isVersion() || doc.isProxy()) {
+                    return Boolean.valueOf(doc.isLatestVersion());
+                }
+                // checked in doc considered latest version
+                return Boolean.valueOf(!doc.isCheckedOut());
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:isLatestMajorVersion.
+     */
+    public static class NuxeoPropertyDataIsLatestMajorVersion extends
+            NuxeoPropertyDataBase<Boolean> implements PropertyBoolean {
+
+        protected NuxeoPropertyDataIsLatestMajorVersion(
+                PropertyDefinition<Boolean> propertyDefinition,
+                DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public Boolean getFirstValue() {
+            try {
+                if (doc.isVersion() || doc.isProxy()) {
+                    return Boolean.valueOf(doc.isLatestMajorVersion());
+                }
+                // checked in doc considered latest version
+                return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:isVersionSeriesCheckedOut.
+     */
+    public static class NuxeoPropertyDataIsVersionSeriesCheckedOut extends
+            NuxeoPropertyDataBase<Boolean> implements PropertyBoolean {
+
+        protected NuxeoPropertyDataIsVersionSeriesCheckedOut(
+                PropertyDefinition<Boolean> propertyDefinition,
+                DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public Boolean getFirstValue() {
+            try {
+                return Boolean.valueOf(doc.isVersionSeriesCheckedOut());
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:versionSeriesCheckedOutId.
+     */
+    public static class NuxeoPropertyDataVersionSeriesCheckedOutId extends
+            NuxeoPropertyDataBase<String> implements PropertyId {
+
+        protected NuxeoPropertyDataVersionSeriesCheckedOutId(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            try {
+                if (!doc.isVersionSeriesCheckedOut()) {
+                    return null;
+                }
+                DocumentModel pwc = doc.getCoreSession().getWorkingCopy(
+                        doc.getRef());
+                return pwc == null ? null : pwc.getId();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:versionSeriesCheckedOutBy.
+     */
+    public static class NuxeoPropertyDataVersionSeriesCheckedOutBy extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataVersionSeriesCheckedOutBy(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            try {
+                if (!doc.isVersionSeriesCheckedOut()) {
+                    return null;
+                }
+                DocumentModel pwc = doc.getCoreSession().getWorkingCopy(
+                        doc.getRef());
+                return pwc == null ? null : "system"; // TODO not implemented
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:versionLabel.
+     */
+    public static class NuxeoPropertyDataVersionLabel extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataVersionLabel(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            try {
+                if (doc.isVersion() || doc.isProxy()) {
+                    return doc.getVersionLabel();
+                }
+                return doc.isCheckedOut() ? null : doc.getVersionLabel();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * Property for cmis:checkinComment.
+     */
+    public static class NuxeoPropertyDataCheckInComment extends
+            NuxeoPropertyDataBase<String> implements PropertyString {
+
+        protected NuxeoPropertyDataCheckInComment(
+                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
+            super(propertyDefinition, doc);
+        }
+
+        @Override
+        public String getFirstValue() {
+            try {
+                if (doc.isVersion() || doc.isProxy()) {
+                    return doc.getCheckinComment();
+                }
+                if (doc.isCheckedOut()) {
+                    return null;
+                }
+                CoreSession session = doc.getCoreSession();
+                DocumentRef v = session.getBaseVersion(doc.getRef());
+                DocumentModel ver = session.getDocument(v);
+                return ver.getCheckinComment();
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
         }
     }
 
