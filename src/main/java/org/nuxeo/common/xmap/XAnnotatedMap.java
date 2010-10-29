@@ -21,6 +21,8 @@ package org.nuxeo.common.xmap;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -107,13 +109,15 @@ public class XAnnotatedMap extends XAnnotatedList {
 }
 
 class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
+
+    private static final Log log = LogFactory.getLog(ElementMapVisitor.class);
+
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             String key, Map<String, Object> result) {
         try {
             result.put(key, xam.xao.newInstance(ctx, (Element) node));
         } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 }

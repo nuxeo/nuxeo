@@ -19,28 +19,14 @@
 
 package org.nuxeo.common.xmap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class XMLBuilder {
 
-    // use DOMSerializer
-    // public static Transformer transformer = null;
-    //
-    // public static Transformer getTransformer(){
-    // if ( transformer == null){
-    // try {
-    // TransformerFactory transformerFactory =
-    // TransformerFactory.newInstance();
-    // transformer = transformerFactory.newTransformer();
-    // transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    // transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    // } catch (TransformerConfigurationException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    // return transformer;
-    // }
+    private static final Log log = LogFactory.getLog(XMLBuilder.class);
 
     public static String saveToXML(Object object, Element root,
             XAnnotatedObject xao) {
@@ -48,7 +34,7 @@ public class XMLBuilder {
             XMLBuilder.toXML(object, root, xao);
             return DOMSerializer.toString(root);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return null;
     }

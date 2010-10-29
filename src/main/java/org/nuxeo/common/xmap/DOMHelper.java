@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -35,6 +37,8 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class DOMHelper {
+
+    private static final Log log = LogFactory.getLog(DOMHelper.class);
 
     // Utility class.
     private DOMHelper() {
@@ -244,7 +248,7 @@ public final class DOMHelper {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

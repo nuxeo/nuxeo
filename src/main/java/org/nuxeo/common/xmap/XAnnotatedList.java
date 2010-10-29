@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.w3c.dom.Element;
@@ -136,13 +138,15 @@ public class XAnnotatedList extends XAnnotatedMember {
 }
 
 class ElementVisitor implements DOMHelper.NodeVisitor {
+
+    private static final Log log = LogFactory.getLog(ElementVisitor.class);
+
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             Collection<Object> result) {
         try {
             result.add(xam.xao.newInstance(ctx, (Element) node));
         } catch (Exception e) {
-            // TODO
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 }
