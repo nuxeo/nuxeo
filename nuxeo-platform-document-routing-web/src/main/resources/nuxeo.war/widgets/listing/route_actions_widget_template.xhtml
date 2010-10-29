@@ -1,9 +1,15 @@
-<f:subview id="#{widget.id}" xmlns:f="http://java.sun.com/jsf/core"
+<f:subview id="#{widget.id}"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <c:if test="#{routingActions.isCurrentRouteLockedByCurrentUser()}">
+  <nxu:set var="isEditableRouteElement" value="#{routingActions.isEditableRouteElement(field_0)}">
+  <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(field_0)}">
+  <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(field_0)}">
+
+  <c:if test="#{routingActions.isCurrentRouteLockedByCurrentUser() and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
     <img id="#{field_1}_imgref" class="#{field_1}_popupTarget cellActionIcon"
       src="icons/action_plus.png"
       alt="#{messages['label.widget.document_routing_route_content.dr_listing_step_actions']}"
@@ -30,4 +36,7 @@
       </div>
     </div>
   </c:if>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
 </f:subview>

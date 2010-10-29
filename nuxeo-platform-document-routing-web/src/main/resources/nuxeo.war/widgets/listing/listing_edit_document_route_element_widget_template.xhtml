@@ -5,18 +5,19 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
- <c:if test="#{routingActions.isEditableStep(field_0) and !routingActions.isEmptyFork(field_0)}">
+ <c:if test="#{isEditableStep and !isEmptyFork}">
    <nxu:set var="actions"
       value="#{getEditStepActions}"
       cache="true">
       <c:if test="#{!empty actions}">
         <div class="action_bar">
           <nxu:dataList layout="unorderedList"
-            var="action"
+            var="action" styleClass="ctxMenuStyle"
             value="#{actions}"
             id="editStepListTable">
             <nxh:commandLink action="#{action.getLink()}"
               id="documentActionSubviewUpperListLink">
+              <nxu:graphicImage value="#{action.icon}"/>
               <h:outputText value="#{messages[action.label]}" />
               <f:param name="stepId" value="#{field_1}" />
             </nxh:commandLink>
