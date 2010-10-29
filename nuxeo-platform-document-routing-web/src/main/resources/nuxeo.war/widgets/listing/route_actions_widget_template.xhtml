@@ -11,7 +11,8 @@
   
     <div>
       <c:set value="#{nxu:concat(field_1, '_menuPopup')}" var="popupId" />
-        <script type="text/javascript">
+        <script type="text/javascript"> 
+            setupContextMenu("span.popupTarget");
             var options = {
                 bind: 'click',
                 useFilter: false,
