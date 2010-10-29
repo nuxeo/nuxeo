@@ -9,7 +9,8 @@
 
    function getGwtParams(){
      var w = document.documentElement.clientWidth;
-      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: "+w+", nxBaseUrl: top.nxBaseUrl, userLanguage: '#{localeSelector.language}' }";
+      return "{docRef:'#{personalDashboardContainerIdRef}', clientUrl: top.nxBaseUrl, windowWidth: " + w
+              + ", nxBaseUrl: top.nxBaseUrl, userLanguage: '#{localeSelector.language}', locale: '#{localeSelector.localeString}'}";
    }
 
     function loading_show(){}

@@ -80,7 +80,10 @@ public class ContainerEntryPoint implements EntryPoint {
             GWT_PARAMS.put(key, getGwtParam(objects, key));
         }
 
-        GWT_PARAMS.put("locale", LocaleInfo.getCurrentLocale().getLocaleName());
+        if (!GWT_PARAMS.containsKey("locale")) {
+            // Add the current GWT locale
+            GWT_PARAMS.put("locale", LocaleInfo.getCurrentLocale().getLocaleName());
+        }
 
         windowWidth = getWindowWidth(objects);
 
