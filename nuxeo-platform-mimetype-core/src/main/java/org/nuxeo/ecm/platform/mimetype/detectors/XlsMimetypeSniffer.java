@@ -71,7 +71,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
             FileUtils.writeFile(file, data);
             mimetypes = guessExcel(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } finally {
             if (file != null) {
                 file.delete();
@@ -106,7 +106,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
         } catch (IllegalArgumentException e) {
             log.debug("MimeType detector : Not an excel file");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
 
         return mimetypes;

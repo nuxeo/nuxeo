@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -53,6 +55,8 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 @SuppressWarnings({"ALL"})
 public final class Platform implements Serializable {
+
+    private static final Log log = LogFactory.getLog(Platform.class);
 
     private static final long serialVersionUID = 6176553194123324439L;
 
@@ -159,7 +163,7 @@ public final class Platform implements Serializable {
             RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
             return repositoryMgr.getDefaultRepository();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
             return null;
         }
     }

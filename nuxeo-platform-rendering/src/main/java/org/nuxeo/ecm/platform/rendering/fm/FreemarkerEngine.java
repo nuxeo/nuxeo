@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.rendering.fm;
 import java.io.Writer;
 import java.util.ResourceBundle;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -47,6 +49,8 @@ import freemarker.template.Template;
  *
  */
 public class FreemarkerEngine implements RenderingEngine {
+
+    private static final Log log = LogFactory.getLog(FreemarkerEngine.class);
 
     public static final String RENDERING_ENGINE_KEY = "NX_RENDERING_ENGINE";
 
@@ -123,7 +127,7 @@ public class FreemarkerEngine implements RenderingEngine {
         try {
             cfg.setSharedVariable(key, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 

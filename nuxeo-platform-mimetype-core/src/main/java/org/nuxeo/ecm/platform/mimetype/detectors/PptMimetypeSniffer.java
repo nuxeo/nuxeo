@@ -70,7 +70,7 @@ public class PptMimetypeSniffer implements MagicDetector {
             FileUtils.writeFile(file, data);
             mimetypes = guessPowerpoint(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         } finally {
             if (file != null) {
                 file.delete();
@@ -108,7 +108,7 @@ public class PptMimetypeSniffer implements MagicDetector {
             // This is not a powerpoint file
             log.debug("MimeType detector : Not a powerpoint file - RuntimeException");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return mimetypes;
     }

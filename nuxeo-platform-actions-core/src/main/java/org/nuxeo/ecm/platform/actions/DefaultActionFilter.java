@@ -215,7 +215,7 @@ public class DefaultActionFilter implements ActionFilter {
                     return true;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e, e);
             }
         }
         return false;

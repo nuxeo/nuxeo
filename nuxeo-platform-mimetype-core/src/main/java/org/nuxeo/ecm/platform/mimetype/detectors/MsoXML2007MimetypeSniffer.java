@@ -98,7 +98,7 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
             ZipFile zip = new ZipFile(file);
             // look at mimetype
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
         return mimetype;
     }
