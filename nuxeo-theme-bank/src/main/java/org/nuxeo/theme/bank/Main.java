@@ -107,6 +107,12 @@ public class Main extends ModuleRoot {
     }
 
     @GET
+    @Path("{bank}/status")
+    public Object getBankStatus(@PathParam("bank") String bank) {
+        return "OK";
+    }
+
+    @GET
     @Path("{bank}/logo")
     public Object displayBankLogo(@PathParam("bank") String bank) {
         File file;
