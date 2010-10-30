@@ -35,7 +35,7 @@ import org.jboss.virtual.VirtualFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Utils {
 
@@ -74,7 +74,7 @@ public class Utils {
      * thrown if the virtual file cannot be converted to a java file. Virtual
      * files that point to a zip entry will return the zip file containing the
      * entry.
-     * 
+     *
      * @param vf
      * @return
      * @throws Exception
@@ -91,7 +91,7 @@ public class Utils {
      * Unzip only if the given lastModified is greater than the already unzipped
      * home (if any). Must use a vlue of 0 if the lastModified time is not
      * known.
-     * 
+     *
      * @param vf
      * @param lastModified
      * @return
@@ -173,7 +173,7 @@ public class Utils {
      * given map.
      * <p>
      * The variable format is ${property_key}.
-     * 
+     *
      * @param expression the expression to expand
      * @param properties a map containing variables
      */

@@ -23,9 +23,9 @@ import org.jboss.deployers.vfs.spi.structure.StructureContext;
 /**
  * Avoid letting JARStructure deploy JARs containing "nuxeo.war" because they
  * will try to deploy the war...
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class WebBundleStructureDeployer extends JARStructure {
 

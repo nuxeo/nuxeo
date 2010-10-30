@@ -22,7 +22,7 @@ import org.nuxeo.runtime.jboss.deployer.AbstractNuxeoDeployer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DebugDeployer extends AbstractNuxeoDeployer {
 

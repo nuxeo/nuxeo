@@ -30,12 +30,12 @@ import org.nuxeo.runtime.jboss.deployer.structure.NuxeoStructureDeployer;
 /**
  * Nuxeo Launcher - work both with exploded and zipped Nuxeo EARs. A zipped ear
  * will be unpacked into JBoss tmp folder in nuxeo/[unit-name]
- * 
+ *
  * A nuxeo.ear zip will be unpacked only the first time nuxeo starts or if the
  * EAR zip was changed from the last unzip.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class NuxeoLauncher extends AbstractNuxeoDeployer {
 
@@ -57,7 +57,7 @@ public class NuxeoLauncher extends AbstractNuxeoDeployer {
      * This method is needed for optimization in the zipped ear deployment. It
      * tries to get the original zip file to be able to check the last modified
      * time to see if the unzip is required.
-     * 
+     *
      * @param unit
      * @return
      * @throws Exception

@@ -29,7 +29,7 @@ import org.nuxeo.runtime.jboss.deployer.Utils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DeploymentStructure {
 
@@ -61,10 +61,10 @@ public class DeploymentStructure {
     /**
      * Must be called immediately after the deployment structure was created
      * (before using the object).
-     * 
+     *
      * The lastModified is optional - if you don't need it you must specify a
      * value of 0.
-     * 
+     *
      * @param home
      */
     public void initialize(long lastModified) throws Exception {
@@ -95,7 +95,7 @@ public class DeploymentStructure {
     /**
      * Get the property value given a key. Any variable present in the value
      * will be expanded against the system properties.
-     * 
+     *
      * @param key
      * @return
      */

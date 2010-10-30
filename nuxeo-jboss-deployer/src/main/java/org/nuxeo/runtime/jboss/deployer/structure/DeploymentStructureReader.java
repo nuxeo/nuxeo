@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DeploymentStructureReader {
 

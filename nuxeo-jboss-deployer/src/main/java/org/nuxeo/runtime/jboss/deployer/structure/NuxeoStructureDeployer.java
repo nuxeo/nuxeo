@@ -43,7 +43,7 @@ import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
 
@@ -56,7 +56,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
      * deployers I tried context getPredeterminedManagedObjects() but without
      * success. So I am using a static field to propagate the
      * DeploymentStructure.
-     * 
+     *
      * This is useful to avoid parsing and resolving bundles twice.
      */
     protected static Map<String, DeploymentStructure> structures;
@@ -109,7 +109,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
 
     /**
      * Get the schema resolver
-     * 
+     *
      * @return the schema resolver
      */
     public SchemaBindingResolver getResolver() {
@@ -118,7 +118,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
 
     /**
      * Set the schema resolver
-     * 
+     *
      * @param resolver the schema resolver
      */
     public void setResolver(SchemaBindingResolver resolver) {
@@ -272,7 +272,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
      * EAR modules from he bundles list we put in the root context classpath to
      * avoid having EJB2 deployed twice. (one for the EAR as EAr module and once
      * as global EJBs for the jar module)
-     * 
+     *
      * @param structureContext
      * @param md
      * @param earMd

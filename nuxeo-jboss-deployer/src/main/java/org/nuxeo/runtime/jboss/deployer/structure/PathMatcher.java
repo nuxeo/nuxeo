@@ -30,9 +30,9 @@ import org.nuxeo.runtime.jboss.deployer.Utils;
 
 /**
  * Helper to parse and load classpaths
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class PathMatcher {
 
@@ -94,7 +94,7 @@ public class PathMatcher {
     /**
      * Parse and add patterns from a class path expression. Example of
      * expression: <code>lib/*.jar:bundles/*:nuxeo-core-*.rar</code>
-     * 
+     *
      * @param pathExpr a class path pattenr expression
      */
     public void addPatterns(String pathExpr) {
@@ -109,7 +109,7 @@ public class PathMatcher {
 
     /**
      * Return null if nothing matches
-     * 
+     *
      * @param root
      * @return
      * @throws IOException

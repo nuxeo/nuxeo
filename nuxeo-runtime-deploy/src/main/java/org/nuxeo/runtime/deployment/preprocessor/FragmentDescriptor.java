@@ -117,7 +117,7 @@ public class FragmentDescriptor {
     protected boolean isMarker;
 
     /**
-     * 
+     *
      */
     public FragmentDescriptor() {
         // TODO Auto-generated constructor stub

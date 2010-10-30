@@ -22,7 +22,7 @@ import org.jboss.virtual.VirtualFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ScanFilter extends ListDeploymentUnitFilter {
 

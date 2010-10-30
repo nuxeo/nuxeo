@@ -49,7 +49,7 @@ public abstract class ServerConfigurator {
     /**
      * Generate configuration files from templates and given configuration
      * parameters
-     * 
+     *
      * @param config Properties with configuration parameters for template
      *            replacement
      */

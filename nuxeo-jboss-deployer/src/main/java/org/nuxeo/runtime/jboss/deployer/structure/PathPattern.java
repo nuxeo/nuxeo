@@ -30,13 +30,13 @@ import org.jboss.virtual.VirtualFileFilter;
  * <li>exact match patterns: <code>lib/myfile.jar</code>
  * <li>wildcard patterns: <code>lib/*</code>, <code>lib/*.rar</code>.
  * </ul>
- * 
+ *
  * Note that only a single wildcard character can be used in a pattern. Also,
  * wildcards can be used only on file names - not on directory path segments.
  * Invalid patterns: <code>dir/*file*.jar</code> <code>*dir/file.jar</code>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class PathPattern {
 
@@ -63,7 +63,7 @@ public abstract class PathPattern {
     /**
      * Get the determined part of the path. For exact match this is the exact
      * file path, for wildcard match this is the exact parent path.
-     * 
+     *
      * @return
      */
     public String getPath() {
@@ -106,7 +106,7 @@ public abstract class PathPattern {
 
     /**
      * Match the name of the given path. (only name segment is matched)
-     * 
+     *
      * @param name
      * @return
      */

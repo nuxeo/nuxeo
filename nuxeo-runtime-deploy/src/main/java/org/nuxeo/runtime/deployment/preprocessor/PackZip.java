@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class PackZip {
 
