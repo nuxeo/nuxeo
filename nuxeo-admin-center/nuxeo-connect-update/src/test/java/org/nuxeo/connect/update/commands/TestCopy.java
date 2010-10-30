@@ -29,7 +29,6 @@ import org.nuxeo.connect.update.util.PackageBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestCopy extends AbstractCommandTest {
 

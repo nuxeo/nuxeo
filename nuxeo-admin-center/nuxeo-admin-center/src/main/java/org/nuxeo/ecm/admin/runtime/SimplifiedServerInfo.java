@@ -79,7 +79,7 @@ public class SimplifiedServerInfo {
     protected List<String> warnings;
 
     public boolean hasWarnings() {
-        return (warnings != null && warnings.size() > 0);
+        return (warnings != null && !warnings.isEmpty());
     }
 
     @Override
@@ -96,7 +96,7 @@ public class SimplifiedServerInfo {
         sb.append("\n");
 
         sb.append("warnings :  ");
-        if (warnings == null | warnings.size() == 0) {
+        if (warnings == null | warnings.isEmpty()) {
             sb.append("none");
         } else {
             for (String warn : warnings) {

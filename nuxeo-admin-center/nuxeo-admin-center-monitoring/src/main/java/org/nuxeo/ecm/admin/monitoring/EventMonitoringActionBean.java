@@ -84,7 +84,7 @@ public class EventMonitoringActionBean implements Serializable {
             if (line.length() == 0) {
                 continue;
             }
-            String parts[] = line.split(" - ");
+            String[] parts = line.split(" - ");
             List<String> lin = Arrays.asList(parts);
             result.add(lin);
         }

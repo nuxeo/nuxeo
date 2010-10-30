@@ -54,7 +54,7 @@ public class SetupWizardActionBean implements Serializable {
 
     protected static final Log log = LogFactory.getLog(SetupWizardActionBean.class);
 
-    private final static String[] managedKeyParameters = new String[] {
+    private static final String[] managedKeyParameters = new String[] {
             "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
             "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
             "org.nuxeo.ecm.product.version", "nuxeo.conf",

@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  */
 public class Install extends AbstractCommand {
 
-    public final static String ID = "install";
+    public static final String ID = "install";
 
     protected File file;
 

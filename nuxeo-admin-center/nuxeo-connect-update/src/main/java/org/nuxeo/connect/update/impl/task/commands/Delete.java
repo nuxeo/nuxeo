@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  */
 public class Delete extends AbstractCommand {
 
-    public final static String ID = "delete";
+    public static final String ID = "delete";
 
     protected File file; // the file to restore
 

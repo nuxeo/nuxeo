@@ -21,7 +21,6 @@ import org.nuxeo.connect.update.task.Task;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestCopyUninstallValidation extends TestCopy {
 

@@ -46,7 +46,7 @@ import org.nuxeo.connect.update.task.Task;
  */
 public class PackagePersistence {
 
-    private final static String FEATURES_DIR = "packages";
+    private static final String FEATURES_DIR = "packages";
 
     protected File root;
 
@@ -217,7 +217,7 @@ public class PackagePersistence {
             throws PackageException {
         File[] list = store.listFiles();
         if (list != null) {
-            ArrayList<LocalPackage> pkgs = new ArrayList<LocalPackage>(
+            List<LocalPackage> pkgs = new ArrayList<LocalPackage>(
                     list.length);
             for (File file : list) {
                 pkgs.add(new LocalPackageImpl(file, getState(file.getName())));
@@ -248,6 +248,7 @@ public class PackagePersistence {
     protected File newTempDir(String id) {
         File tmp = new File(temp, id + "-" + random.nextInt());
         synchronized (temp) {
+            // FIXME: logic error here
             while (tmp.exists()) {
                 return newTempDir(id);
             }

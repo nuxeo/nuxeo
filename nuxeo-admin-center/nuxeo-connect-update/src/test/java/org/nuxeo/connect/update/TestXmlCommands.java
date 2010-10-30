@@ -27,7 +27,6 @@ import org.nuxeo.connect.update.util.PackageBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestXmlCommands extends PackageTestCase {
 
@@ -40,7 +39,7 @@ public class TestXmlCommands extends PackageTestCase {
         builder.dependency("nuxeo-core:5.3.1:5.3.2");
         builder.dependency("nuxeo-runtime:5.3.1");
         builder.title("Nuxeo Automation");
-        builder.description("A service that enable building complex business logic on top of Nuxeo services using scriptable operation chains");
+        builder.description("A service that enables building complex business logic on top of Nuxeo services using scriptable operation chains");
         builder.classifier("Open Source");
         builder.vendor("Nuxeo");
         builder.installer(InstallTask.class.getName(), true);
@@ -65,6 +64,7 @@ public class TestXmlCommands extends PackageTestCase {
         service.addPackage(zip);
         List<LocalPackage> pkgs = service.getPackages();
         assertEquals(1, pkgs.size());
+
         LocalPackage pkg = pkgs.get(0);
         assertEquals("nuxeo-automation-5.3.2", pkg.getId());
         assertEquals("nuxeo-automation", pkg.getName());
@@ -72,6 +72,7 @@ public class TestXmlCommands extends PackageTestCase {
 
         CommandsTask task = (CommandsTask) pkg.getInstallTask();
         assertTrue(task.isRestartRequired());
+
         task.validate();
         task.run(null);
         assertEquals(1, task.getCommands().size());

@@ -41,44 +41,44 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractTask implements Task {
 
-    public final static String PKG_ID = "package.id";
+    public static final String PKG_ID = "package.id";
 
-    public final static String PKG_NAME = "package.name";
+    public static final String PKG_NAME = "package.name";
 
-    public final static String PKG_VERSION = "package.version";
+    public static final String PKG_VERSION = "package.version";
 
-    public final static String PKG_ROOT = "package.root";
+    public static final String PKG_ROOT = "package.root";
 
-    public final static String ENV_HOME = "env.home";
+    public static final String ENV_HOME = "env.home";
 
     /**
      * Set only on JBoss - the EAR root directory path
      */
-    public final static String ENV_EAR = "env.ear";
+    public static final String ENV_EAR = "env.ear";
 
-    public final static String ENV_LIB = "env.lib";
+    public static final String ENV_LIB = "env.lib";
 
-    public final static String ENV_SYSLIB = "env.syslib";
+    public static final String ENV_SYSLIB = "env.syslib";
 
-    public final static String ENV_BUNDLES = "env.bundles";
+    public static final String ENV_BUNDLES = "env.bundles";
 
-    public final static String ENV_CONFIG = "env.config";
+    public static final String ENV_CONFIG = "env.config";
 
-    public final static String ENV_TIMESTAMP = "sys.timestamp";
+    public static final String ENV_TIMESTAMP = "sys.timestamp";
 
     /**
      * The host application name.
      * 
      * @see Environment#getHostApplicationName()
      */
-    public final static String ENV_HOSTAPP_NAME = "env.hostapp.name";
+    public static final String ENV_HOSTAPP_NAME = "env.hostapp.name";
 
     /**
      * The host application version
      * 
      * @see Environment#getHostApplicationVersion()
      */
-    public final static String ENV_HOSTAPP_VERSION = "env.hostapp.version";
+    public static final String ENV_HOSTAPP_VERSION = "env.hostapp.version";
 
     protected boolean restart;
 
@@ -157,7 +157,7 @@ public abstract class AbstractTask implements Task {
     }
 
     protected Map<Object, Object> createContextMap(Map<String, String> params) {
-        HashMap<Object, Object> map = new HashMap<Object, Object>(
+        Map<Object, Object> map = new HashMap<Object, Object>(
                 System.getProperties());
         map.putAll(env);
         if (params != null && !params.isEmpty()) {

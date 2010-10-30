@@ -63,13 +63,13 @@
     </h:form>
   </h:panelGroup>
 
-  <h:outputText value="#{messages['label.monitoring.eventStats.threads']}" /> :
+  <h:outputText value="#{messages['label.monitoring.eventStats.threads']}" />:
   <h:outputText value="#{eventMonitoringAction.getActiveThreads()}" /><br/>
 
-  <h:outputText value="#{messages['label.monitoring.eventStats.queuedEvents']}" /> :
+  <h:outputText value="#{messages['label.monitoring.eventStats.queuedEvents']}" />:
   <h:outputText value="#{eventMonitoringAction.getQueuedEvents()}" /><br/>
 
-  <br/><h:outputText value="#{messages['label.monitoring.eventStats.syncStats']}" /> : <br/>
+  <br/><h:outputText value="#{messages['label.monitoring.eventStats.syncStats']}" />: <br/>
   <h:panelGroup rendered="#{eventSyncStats!=null and eventSyncStats.size()>0}">
 
   <h:dataTable var="line" value="#{eventSyncStats}" class="dataOutput"
@@ -112,7 +112,7 @@
   </h:panelGroup>
 
 <br/>
-  <h:outputText value="#{messages['label.monitoring.eventStats.asyncStats']}" /> : <br/>
+  <h:outputText value="#{messages['label.monitoring.eventStats.asyncStats']}" />: <br/>
   <h:panelGroup rendered="#{eventAsyncStats!=null and eventAsyncStats.size()>0}">
   <h:dataTable var="line" value="#{eventAsyncStats}" class="dataOutput"
     rowClasses="dataRowEven,dataRowOdd">

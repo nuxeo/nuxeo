@@ -36,7 +36,7 @@ import org.w3c.dom.Element;
  */
 public class Flush extends PostInstallCommand {
 
-    public final static String ID = "flush";
+    public static final String ID = "flush";
 
     public Flush() {
         super(ID);

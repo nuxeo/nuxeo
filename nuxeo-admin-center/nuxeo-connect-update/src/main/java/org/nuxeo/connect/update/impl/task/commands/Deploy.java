@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
  */
 public class Deploy extends AbstractCommand {
 
-    public final static String ID = "deploy";
+    public static final String ID = "deploy";
 
     protected File file;
 

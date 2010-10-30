@@ -52,7 +52,7 @@ public class TestPCopy extends AbstractCommandTest {
 
     @Override
     protected Map<String, String> getUserProperties() {
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("v", "value");
         return map;
     }

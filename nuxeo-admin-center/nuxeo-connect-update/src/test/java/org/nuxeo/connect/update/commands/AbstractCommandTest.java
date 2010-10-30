@@ -33,14 +33,13 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 
 /**
- * A base test case for testing command execution
- * 
- * 
+ * A base test case for testing command execution.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public abstract class AbstractCommandTest extends PackageTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         // be sure these directories exists
@@ -52,16 +51,12 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     /**
      * Override this method to add to the package any resources required y the
      * command execution.
-     * 
-     * @param builder
      */
     protected abstract void updatePackage(PackageBuilder builder)
             throws Exception;
 
     /**
      * Override this method to write the command XML definition to test.
-     * 
-     * @return
      */
     protected abstract void writeCommand(XmlWriter writer);
 
@@ -69,7 +64,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * Override this method to check the install outcome. If the
      * <code>error</code> argument is not null then a rollback was done. In that
      * case you must check the rollback outcome.
-     * 
+     *
      * @param task the executed task.
      * @param error always null if task successfully executed. Not null if a
      *            rollback occurred.
@@ -81,7 +76,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * Override this method to check the uninstall outcome. If the
      * <code>error</code> argument is not null then a rollback was done. In that
      * case you must check the rollback outcome.
-     * 
+     *
      * @param task the executed task.
      * @param error always null if task successfully executed. Not null if a
      *            rollback occurred.
@@ -94,8 +89,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * validated - in that case check the execution status for consistency. The
      * default implementation expects valid task and will fails if any errors
      * are found in the validation status.
-     * 
-     * @param tasl the task to execute
+     *
+     * @param task the task to execute
      * @param status the validation status to check
      */
     protected boolean validateInstall(Task task, ValidationStatus status) {
@@ -110,8 +105,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
      * validated - in that case check the execution status for consistency. The
      * default implementation expects valid task and will fails if any errors
      * are found in the validation status.
-     * 
-     * @param tasl the task to execute
+     *
+     * @param task the task to execute
      * @param status the validation status to check
      */
     protected boolean validateUninstall(Task task, ValidationStatus status) {
@@ -121,7 +116,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         return true;
     }
 
-    /** test methods **/
+    /* test methods */
 
     protected File createPackage() throws Exception {
         PackageBuilder builder = new PackageBuilder();

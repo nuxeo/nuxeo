@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
  */
 public class FlushJaasCache extends PostInstallCommand {
 
-    public final static String ID = "flush-jaas";
+    public static final String ID = "flush-jaas";
 
     public FlushJaasCache() {
         super(ID);

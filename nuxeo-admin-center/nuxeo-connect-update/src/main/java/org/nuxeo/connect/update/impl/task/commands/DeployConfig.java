@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
  */
 public class DeployConfig extends AbstractCommand {
 
-    public final static String ID = "deploy-config";
+    public static final String ID = "deploy-config";
 
     protected File file;
 

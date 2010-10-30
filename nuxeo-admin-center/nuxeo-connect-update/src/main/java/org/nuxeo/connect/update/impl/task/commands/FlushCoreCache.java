@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
  */
 public class FlushCoreCache extends PostInstallCommand {
 
-    public final static String ID = "flush-core";
+    public static final String ID = "flush-core";
 
     public FlushCoreCache() {
         super(ID);

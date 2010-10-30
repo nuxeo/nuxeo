@@ -42,7 +42,7 @@ import org.w3c.dom.Element;
  */
 public class Uninstall extends AbstractCommand {
 
-    public final static String ID = "uninstall";
+    public static final String ID = "uninstall";
 
     protected File file;
 

@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  */
 public class ReloadProperties extends PostInstallCommand {
 
-    public final static String ID = "reload-properties";
+    public static final String ID = "reload-properties";
 
     public ReloadProperties() {
         super(ID);
