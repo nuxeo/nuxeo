@@ -175,7 +175,7 @@ public class MetadataFile {
             Date date = ((Calendar) value).getTime();
             metadataProperties.put(propertyKey, DATE_FORMAT.format(date));
         } else if (value instanceof Number) {
-            metadataProperties.put(propertyKey, value);
+            metadataProperties.put(propertyKey, value.toString());
         }
     }
 

@@ -72,7 +72,7 @@ public class TestMetadataFile {
         String contextPath = new Path(file.getAbsolutePath()).removeLastSegments(
                 1).toString();
         Map<String, Serializable> properties = collector.getProperties(contextPath);
-        assertEquals(5, properties.size());
+        assertEquals(7, properties.size());
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
@@ -80,6 +80,8 @@ public class TestMetadataFile {
         assertEquals(MetadataFile.DATE_FORMAT.format(calendar.getTime()),
                 MetadataFile.DATE_FORMAT.format(date));
         assertEquals("testIcon", properties.get("common:icon"));
+        assertEquals(0L, properties.get("uid:major_version"));
+        assertEquals(0L, properties.get("uid:minor_version"));
     }
 
     @Test
