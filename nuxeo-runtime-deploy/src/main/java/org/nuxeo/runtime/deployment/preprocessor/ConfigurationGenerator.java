@@ -120,7 +120,7 @@ public class ConfigurationGenerator {
 
     private boolean onceGeneration = false;
 
-    private String templates = null;
+    private String templates;
 
     // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
     private boolean setOnceToFalse = true;
@@ -312,10 +312,6 @@ public class ConfigurationGenerator {
         }
     }
 
-    /**
-     * @param loadConfiguration
-     * @throws ConfigurationException
-     */
     private void writeConfiguration(StringBuffer configuration)
             throws ConfigurationException {
         writeConfiguration(configuration, null);

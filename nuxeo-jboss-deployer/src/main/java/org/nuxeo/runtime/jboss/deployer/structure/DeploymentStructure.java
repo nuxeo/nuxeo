@@ -18,6 +18,7 @@ package org.nuxeo.runtime.jboss.deployer.structure;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.IllegalStateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,11 +62,9 @@ public class DeploymentStructure {
     /**
      * Must be called immediately after the deployment structure was created
      * (before using the object).
-     *
+     * <p>
      * The lastModified is optional - if you don't need it you must specify a
      * value of 0.
-     *
-     * @param home
      */
     public void initialize(long lastModified) throws Exception {
         this.home = Utils.getRealHomeDir(vhome, lastModified).getCanonicalFile();
@@ -95,9 +94,6 @@ public class DeploymentStructure {
     /**
      * Get the property value given a key. Any variable present in the value
      * will be expanded against the system properties.
-     *
-     * @param key
-     * @return
      */
     public String expandProperty(String key, String defaultValue) {
         String v = properties.get(key);
@@ -138,7 +134,7 @@ public class DeploymentStructure {
 
     public File[] getResolvedBundleFiles() throws IOException {
         if (getResolvedBundles() == null) {
-            throw new java.lang.IllegalStateException(
+            throw new IllegalStateException(
                     "You must call this method only after bundles are resolved");
         }
         File[] files = new File[resolvedBundlePaths.length];
@@ -150,7 +146,7 @@ public class DeploymentStructure {
 
     public File getHome() {
         if (home == null) {
-            throw new java.lang.IllegalStateException(
+            throw new IllegalStateException(
                     "The initialize method must be called before using the deployment structure object.");
         }
         return home;

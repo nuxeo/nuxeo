@@ -32,7 +32,7 @@ public class TransactedServiceProvider extends AnnotatedServiceProvider {
 
     protected static final Log log = LogFactory.getLog(TransactedServiceProvider.class);
 
-    public final static TransactedServiceProvider INSTANCE = new TransactedServiceProvider();
+    public static final TransactedServiceProvider INSTANCE = new TransactedServiceProvider();
 
     public static void install() {
         INSTANCE.installSelf();

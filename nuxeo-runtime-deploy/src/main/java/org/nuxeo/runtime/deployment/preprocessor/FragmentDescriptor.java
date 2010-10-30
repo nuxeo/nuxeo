@@ -48,7 +48,7 @@ public class FragmentDescriptor {
      * Marker used for better control on requirements. see "all" marker in
      * FragmentRegistry
      */
-    public final static FragmentDescriptor ALL = new FragmentDescriptor("all",
+    public static final FragmentDescriptor ALL = new FragmentDescriptor("all",
             true);
 
     // the name is the name of the XML fragment file for XML fragments

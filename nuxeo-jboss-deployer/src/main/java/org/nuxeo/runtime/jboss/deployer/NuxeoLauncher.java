@@ -39,9 +39,9 @@ import org.nuxeo.runtime.jboss.deployer.structure.NuxeoStructureDeployer;
  */
 public class NuxeoLauncher extends AbstractNuxeoDeployer {
 
-    public final static String NUXEO_HOME_DIR = "nuxeo.home.dir";
+    public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
 
-    public final static String NUXEO_EAR_DIR = "nuxeo.ear.dir";
+    public static final String NUXEO_EAR_DIR = "nuxeo.ear.dir";
 
     protected File home;
 

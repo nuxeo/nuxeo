@@ -108,14 +108,10 @@ public class PathMatcher {
     }
 
     /**
-     * Return null if nothing matches
-     *
-     * @param root
-     * @return
-     * @throws IOException
+     * Returns null if nothing matches.
      */
     public List<VirtualFile> getMatches(VirtualFile root) throws IOException {
-        ArrayList<VirtualFile> result = new ArrayList<VirtualFile>();
+        List<VirtualFile> result = new ArrayList<VirtualFile>();
         for (String path : exactPaths) {
             VirtualFile file = root.getChild(path);
             if (file != null) {
@@ -143,7 +139,7 @@ public class PathMatcher {
     }
 
     public List<File> getMatchesAsFiles(File root) throws IOException {
-        ArrayList<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<File>();
         for (String path : exactPaths) {
             File file = new File(root, path);
             if (file.exists()) {
@@ -172,7 +168,7 @@ public class PathMatcher {
     }
 
     public List<String> getMatchesAsPaths(File root) throws IOException {
-        ArrayList<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<String>();
         for (String path : exactPaths) {
             File file = new File(root, path);
             if (file.exists()) {
@@ -201,7 +197,7 @@ public class PathMatcher {
     }
 
     public List<File> getAbsoluteMatches() throws IOException {
-        ArrayList<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<File>();
         for (String path : exactPaths) {
             File file = new File(path);
             if (file.exists()) {

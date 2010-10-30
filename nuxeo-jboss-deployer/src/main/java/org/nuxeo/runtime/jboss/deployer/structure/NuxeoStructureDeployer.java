@@ -61,7 +61,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
      */
     protected static Map<String, DeploymentStructure> structures;
 
-    public synchronized static DeploymentStructure popStructure(String key) {
+    public static synchronized DeploymentStructure popStructure(String key) {
         if (structures != null) {
             DeploymentStructure ds = structures.remove(key);
             if (structures.isEmpty()) {
@@ -72,14 +72,14 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
         return null;
     }
 
-    public synchronized static DeploymentStructure peekStructure(String key) {
+    public static synchronized DeploymentStructure peekStructure(String key) {
         if (structures != null) {
             return structures.get(key);
         }
         return null;
     }
 
-    public synchronized static void pushStructure(String key,
+    public static synchronized void pushStructure(String key,
             DeploymentStructure ds) {
         if (structures == null) {
             structures = new HashMap<String, DeploymentStructure>();
@@ -108,7 +108,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
     }
 
     /**
-     * Get the schema resolver
+     * Gets the schema resolver.
      *
      * @return the schema resolver
      */
@@ -117,7 +117,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
     }
 
     /**
-     * Set the schema resolver
+     * Sets the schema resolver.
      *
      * @param resolver the schema resolver
      */
@@ -260,7 +260,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
     }
 
     public static DeploymentStructure accept(VirtualFile root) throws Exception {
-        if (root.isLeaf() == true) {
+        if (root.isLeaf()) {
             return null;
         }
         return loadConfig(root);
@@ -271,13 +271,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
      * be put in the classpath by the children deployments. so we need to remove
      * EAR modules from he bundles list we put in the root context classpath to
      * avoid having EJB2 deployed twice. (one for the EAR as EAr module and once
-     * as global EJBs for the jar module)
-     *
-     * @param structureContext
-     * @param md
-     * @param earMd
-     * @return
-     * @throws Exception
+     * as global EJBs for the jar module).
      */
     protected void createBundlesClasspath(StructureContext structureContext,
             DeploymentStructure md, JBossAppMetaData earMd) throws Exception {
@@ -437,9 +431,10 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
                 String fileName = mod.getFileName();
                 if (fileName != null
                         && (fileName = fileName.trim()).length() > 0) {
-                    if (log.isTraceEnabled())
+                    if (log.isTraceEnabled()) {
                         log.trace("Checking application.xml module: "
                                 + fileName);
+                    }
 
                     try {
                         VirtualFile module = file.getChild(fileName);
@@ -450,7 +445,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
                                             + file.toURI());
                         }
                         // Ask the deployers to analyze this
-                        if (structureContext.determineChildStructure(module) == false) {
+                        if (!structureContext.determineChildStructure(module)) {
                             throw new RuntimeException(
                                     fileName
                                             + " module listed in application.xml is not a recognized deployment, .ear: "

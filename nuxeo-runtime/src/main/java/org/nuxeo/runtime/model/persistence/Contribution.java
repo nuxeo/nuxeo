@@ -27,53 +27,39 @@ import org.nuxeo.runtime.model.StreamRef;
 public interface Contribution extends StreamRef {
 
     /**
-     * Get the contribution name
-     *
-     * @return
+     * Gets the contribution name.
      */
     String getName();
 
     /**
-     * Get the contribution description.
-     *
-     * @return
+     * Gets the contribution description.
      */
     String getDescription();
 
     /**
-     * Set the contribution description
-     *
-     * @param description
+     * Sets the contribution description.
      */
     void setDescription(String description);
 
     /**
      * Whether this contribution should be automatically installed at startup.
-     *
-     * @return
      */
     boolean isDisabled();
 
     /**
-     * Set the auto install flag for this contribution.
-     *
-     * @param isAutoInstall
+     * Sets the auto install flag for this contribution.
      */
     void setDisabled(boolean isAutoStart);
 
     /**
-     * Get the contribution XML content. The content should be in Nuxeo XML
+     * Gets the contribution XML content. The content should be in Nuxeo XML
      * component format.
-     *
-     * @return
      */
     InputStream getStream();
 
     /**
-     * Get the contribution XML content. The content should be in Nuxeo XML
+     * Gets the contribution XML content. The content should be in Nuxeo XML
      * component format.
-     *
-     * @return
      */
     String getContent();
 

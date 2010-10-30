@@ -53,16 +53,16 @@ public class FileSystemStorage implements ContributionStorage {
         root.mkdirs();
     }
 
-    public synchronized static String safeRead(File file) throws IOException {
+    public static synchronized String safeRead(File file) throws IOException {
         return FileUtils.readFile(file);
     }
 
-    public synchronized static void safeWrite(File file, String content)
+    public static synchronized void safeWrite(File file, String content)
             throws IOException {
         FileUtils.writeFile(file, content);
     }
 
-    public synchronized static boolean safeCreate(File file, String content)
+    public static synchronized boolean safeCreate(File file, String content)
             throws IOException {
         if (file.isFile()) {
             return false;
@@ -71,7 +71,7 @@ public class FileSystemStorage implements ContributionStorage {
         return true;
     }
 
-    public synchronized static boolean safeRemove(File file) throws IOException {
+    public static synchronized boolean safeRemove(File file) throws IOException {
         return file.delete();
     }
 
@@ -104,7 +104,7 @@ public class FileSystemStorage implements ContributionStorage {
                 contrib.setDescription("");
             }
         } catch (Exception e) {
-            log.error("Failed to rread contribution metadata", e);
+            log.error("Failed to read contribution metadata", e);
         }
     }
 
@@ -127,7 +127,7 @@ public class FileSystemStorage implements ContributionStorage {
     }
 
     public List<Contribution> getContributions() {
-        ArrayList<Contribution> result = new ArrayList<Contribution>();
+        List<Contribution> result = new ArrayList<Contribution>();
         File[] files = root.listFiles();
         if (files == null) {
             return result;
@@ -175,7 +175,7 @@ public class FileSystemStorage implements ContributionStorage {
             root.removeChild(node);
         }
         Element el = doc.createElement("documentation");
-        el.appendChild(doc.createTextNode(contribution.getDescription()));
+        el.appendChild(doc.createTextNode(description));
         root.appendChild(el);
 
         safeWrite(file, DOMSerializer.toString(doc));

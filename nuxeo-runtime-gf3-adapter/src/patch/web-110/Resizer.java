@@ -239,7 +239,7 @@ public class Resizer extends TimerTask {
         }
     }
 
-    private final static Logger _logger = LogDomains.getLogger(Resizer.class, LogDomains.RSR_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(Resizer.class, LogDomains.RSR_LOGGER);
 
     private static void debug(String debugStatement) {
         if (_logger.isLoggable(Level.FINE))

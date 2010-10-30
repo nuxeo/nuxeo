@@ -19,6 +19,7 @@ package org.nuxeo.runtime.reload;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoRestart {
 
     public static void restart() throws Exception {
-        ArrayList<String> cmd = new ArrayList<String>();
+        List<String> cmd = new ArrayList<String>();
         String javaHome = System.getProperty("java.home");
         File java = new File(new File(javaHome), "bin/java").getCanonicalFile();
         if (java.isFile()) {
