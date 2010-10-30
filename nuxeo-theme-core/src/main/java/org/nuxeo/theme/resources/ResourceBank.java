@@ -64,6 +64,17 @@ public class ResourceBank implements Type {
         return TypeFamily.RESOURCE_BANK;
     }
 
+    public boolean checkStatus() {
+        String src = String.format("%s/status", connectionUrl);
+        byte[] status;
+        try {
+            status = Utils.fetchUrl(new URL(src));
+        } catch (Exception e) {
+            return false;
+        }
+        return status != null && "OK".equals(new String(status));
+    }
+
     public byte[] getResourceContent(String collectionName, String typeName,
             String resourceId) {
         String src = String.format("%s/%s/%s/%s", connectionUrl,
