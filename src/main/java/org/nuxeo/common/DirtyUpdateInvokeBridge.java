@@ -33,7 +33,7 @@ import java.util.Calendar;
  */
 public class DirtyUpdateInvokeBridge {
 
-    protected static ThreadLocal<ThreadContext> contextHolder = new ThreadLocal<ThreadContext>();
+    protected static final ThreadLocal<ThreadContext> contextHolder = new ThreadLocal<ThreadContext>();
 
     public static class ThreadContext {
         public final Long tag;
@@ -41,7 +41,7 @@ public class DirtyUpdateInvokeBridge {
         public final Long invoked;
         ThreadContext(Long tag) {
             this.tag = tag;
-            this.invoked = Calendar.getInstance().getTimeInMillis();
+            invoked = Calendar.getInstance().getTimeInMillis();
         }
     }
 

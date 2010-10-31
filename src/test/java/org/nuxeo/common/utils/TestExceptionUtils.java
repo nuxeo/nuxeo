@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 public class TestExceptionUtils extends TestCase {
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public void testExceptionCause() {
         Exception e1 = new Exception("root");
         Exception e2 = new Exception("child1", e1);

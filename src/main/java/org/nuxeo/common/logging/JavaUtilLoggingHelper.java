@@ -83,7 +83,7 @@ public class JavaUtilLoggingHelper {
 
     public static class LogHandler extends Handler {
 
-        ThreadLocal<LogRecord> holder = new ThreadLocal<LogRecord>();
+        final ThreadLocal<LogRecord> holder = new ThreadLocal<LogRecord>();
 
         private final Map<String, Log> cache = new ConcurrentHashMap<String, Log>();
 

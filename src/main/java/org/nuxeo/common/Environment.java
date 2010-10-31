@@ -37,17 +37,17 @@ public class Environment {
 
     public static final String TOMCAT_HOST = "Tomcat";
 
-    public static String NUXEO_HOME_DIR = "nuxeo.home.dir";
+    public static final String NUXEO_HOME_DIR = "nuxeo.home.dir";
 
-    public static String NUXEO_DATA_DIR = "nuxeo.data.dir";
+    public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
-    public static String NUXEO_LOG_DIR = "nuxeo.log.dir";
+    public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
 
-    public static String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
+    public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
-    public static String NUXEO_CONFIG_DIR = "nuxeo.config.dir";
+    public static final String NUXEO_CONFIG_DIR = "nuxeo.config.dir";
 
-    public static String NUXEO_WEB_DIR = "nuxeo.web.dir";
+    public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
     /**
      * The home directory.

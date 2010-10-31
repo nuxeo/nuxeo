@@ -19,16 +19,18 @@
 
 package org.nuxeo.common.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author sfermigier
  */
-public class TestTextTemplate extends TestCase {
+public class TestTextTemplate {
 
+    @Test
     public void test1() {
         TextTemplate tt = new TextTemplate();
         tt.setVariable("var1", "value1");
@@ -38,9 +40,10 @@ public class TestTextTemplate extends TestCase {
         assertEquals("test value1 and value2 and value3", text);
     }
 
+    @Test
     public void test2() {
-        Map<String, String> vars = new HashMap<String, String>();
-        vars.put("k1", "v1");
+        Properties vars = new Properties();
+        vars.setProperty("k1", "v1");
         TextTemplate tt = new TextTemplate(vars);
 
         assertEquals(vars, tt.getVariables());

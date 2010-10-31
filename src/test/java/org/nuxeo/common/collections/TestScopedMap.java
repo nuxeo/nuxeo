@@ -25,7 +25,6 @@ import junit.framework.TestCase;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
 public class TestScopedMap extends TestCase {
 
     public void testGetScopedValueWithScope() {

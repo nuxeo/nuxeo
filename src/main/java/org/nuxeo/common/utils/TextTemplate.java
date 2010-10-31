@@ -37,13 +37,14 @@ import java.util.regex.Pattern;
 
 /**
  * Text template processing.
+ * <p>
  * Copy files or directories replacing parameters matching pattern
  * '${[a-zA-Z_0-9\-\.]+}'
  * with values from a {@link Map} (deprecated) or a {@link Properties}.
+ * <p>
  * Method {@link #setParsingExtensions(String)} allow to set list of files being
  * processed when using {@link #processDirectory(File, File)} or #pro, others
- * are simply
- * copied.
+ * are simply copied.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -55,16 +56,14 @@ public class TextTemplate {
 
     private boolean trim = false;
 
-    private List<String> extensions = null;
+    private List<String> extensions;
 
     public boolean isTrim() {
         return trim;
     }
 
     /**
-     * Set to true in order to trim invisible characters (spaces) from values
-     * 
-     * @param trim
+     * Set to true in order to trim invisible characters (spaces) from values.
      */
     public void setTrim(boolean trim) {
         this.trim = trim;
@@ -77,6 +76,7 @@ public class TextTemplate {
     /**
      * @deprecated prefer use of {@link #TextTemplate(Properties)}
      */
+    @Deprecated
     public TextTemplate(Map<String, String> vars) {
         this.vars = new Properties();
         this.vars.putAll(vars);
@@ -93,6 +93,7 @@ public class TextTemplate {
      * @deprecated prefer use of {@link #getVariables()} then {@link Properties}
      *             .load()
      */
+    @Deprecated
     public void setVariables(Map<String, String> vars) {
         this.vars.putAll(vars);
     }
@@ -139,7 +140,7 @@ public class TextTemplate {
 
     /**
      * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
-     * each file from "in" directory to "out" directory
+     * each file from "in" directory to "out" directory.
      * 
      * @param in Directory to read files from
      * @param out Directory to write files to
@@ -183,7 +184,6 @@ public class TextTemplate {
 
     /**
      * @param processText if true, text is processed for parameters replacement
-     * @throws IOException
      */
     public void process(InputStream is, OutputStream os, boolean processText)
             throws IOException {
@@ -195,7 +195,7 @@ public class TextTemplate {
     }
 
     /**
-     * @param extensionsList Comma separated list of files extensions to parse
+     * @param extensionsList comma-separated list of files extensions to parse
      */
     public void setParsingExtensions(String extensionsList) {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
