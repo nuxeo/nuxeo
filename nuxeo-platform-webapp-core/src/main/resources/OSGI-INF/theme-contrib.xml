@@ -31,7 +31,7 @@
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="banks">
-    <bank name="nuxeo" url="${nuxeo.url}/site/theme-banks/nuxeo" />
+    <bank name="nuxeo" url="http://localhost:8080/nuxeo/site/theme-banks/nuxeo" />
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
@@ -374,6 +374,7 @@
     </negotiation>
 
     <negotiation object="mode" strategy="nuxeo5">
+      <scheme>org.nuxeo.theme.jsf.negotiation.mode.RequestParameter</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.mode.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.mode.ViewId</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.mode.UnspecifiedMode</scheme>
