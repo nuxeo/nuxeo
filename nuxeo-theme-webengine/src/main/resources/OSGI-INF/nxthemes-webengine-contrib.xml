@@ -179,6 +179,15 @@
       <template>nxthemes/webengine/fm/widgets/plain-html.xml</template>
     </view>    
 
+    <!-- no style caching -->
+    <view name="theme view" template-engine="freemarker">
+      <engine>default</engine>
+      <mode>no-cache</mode>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/webengine/fm/widgets/theme-view-no-cache.xml</template>
+    </view>
+
   </extension>  
   
   
