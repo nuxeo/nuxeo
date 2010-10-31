@@ -201,12 +201,17 @@ public class Main extends ModuleRoot {
                         isSkin = (Boolean) value.get("skin");
                     }
                     if (isSkin) {
+                        Boolean isBase = false;
+                        if (value.containsKey("base")) {
+                            isBase = (Boolean) value.get("base");
+                        }
                         JSONObject skinMap = new JSONObject();
                         skinMap.put("bank", bankName);
                         skinMap.put("collection", collection);
                         skinMap.put("resource", resource);
                         skinMap.put("name", String.format("%s (%s)",
                                 resource.replace(".css", ""), collection));
+                        skinMap.put("base", isBase);
                         skins.add(skinMap);
                     }
                 }
