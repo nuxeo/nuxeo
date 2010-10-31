@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * MimetypeEntry registry bean.
  * <p>
  * EJB Facade on the mimetype registry service.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 @Stateless

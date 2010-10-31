@@ -54,7 +54,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * Filter to handle Transactions and Requests synchronization. This filter is
  * useful when accessing web resources that are not protected by Seam Filter.
  * This is the case for specific Servlets, WebEngine, XML-RPC connector ...
- * 
+ *
  * @author tiry
  */
 public class NuxeoRequestControllerFilter implements Filter {
@@ -115,7 +115,7 @@ public class NuxeoRequestControllerFilter implements Filter {
 
         if (log.isDebugEnabled()) {
             log.debug(doFormatLogMessage(httpRequest,
-                    "Entering NuxeoRequestControler filter"));
+                    "Entering NuxeoRequestController filter"));
         }
 
         doInitIfNeeded();
@@ -331,7 +331,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     }
 
     /**
-     * Set cache parameters to httpReponse.
+     * Set cache parameters to httpResponse.
      */
     public static void addCacheHeader(HttpServletResponse httpResponse,
             Boolean isPrivate, String cacheTime) {

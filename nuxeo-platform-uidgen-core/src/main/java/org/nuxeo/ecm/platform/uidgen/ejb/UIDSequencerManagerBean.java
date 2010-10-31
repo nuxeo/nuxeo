@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.uidgen.service.UIDSequencerImpl;
 
 /**
  * The UID sequence manager implementation as a stateless session bean.
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  * @author Bogdan Stefanescu
  */

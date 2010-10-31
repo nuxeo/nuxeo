@@ -29,9 +29,9 @@ import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * Handle JAAS principal cache flushing on principal data edition.
- * 
+ *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- * 
+ *
  */
 public class JaasCacheFlusher implements EventListener {
 

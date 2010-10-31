@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * File Manager bean.
  * <p>
  * EJB Facade on the file manager service.
- * 
+ *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */

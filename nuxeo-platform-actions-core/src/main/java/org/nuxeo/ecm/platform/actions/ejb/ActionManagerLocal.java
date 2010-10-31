@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.actions.ejb;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface ActionManagerLocal extends ActionManager {
 

@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Facade Bean provide Remoting API for DirectoryService
- * 
+ *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */

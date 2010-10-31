@@ -57,7 +57,7 @@ public class ExportCommand extends AbstractCommand {
 
         // open a session
         repository = context.getRepositoryInstance();
-        
+
         try {
             // run export
             exportTree(path, file);

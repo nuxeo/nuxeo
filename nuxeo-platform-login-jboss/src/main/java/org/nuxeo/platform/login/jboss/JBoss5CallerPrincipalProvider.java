@@ -28,11 +28,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 /**
  * Fix a problem related to EJBContext.getCallerPrincipal() in JBoss5 which
  * return the originated principal and not the authenticated one.
- * 
+ *
  * See NXP-
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class JBoss5CallerPrincipalProvider extends CallerPrincipalProvider {
 

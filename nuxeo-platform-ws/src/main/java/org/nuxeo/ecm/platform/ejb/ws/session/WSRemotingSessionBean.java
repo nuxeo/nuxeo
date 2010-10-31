@@ -35,9 +35,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Web service remote session bean.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 @Stateless
 @Local(WSRemotingSessionManagerLocal.class)
