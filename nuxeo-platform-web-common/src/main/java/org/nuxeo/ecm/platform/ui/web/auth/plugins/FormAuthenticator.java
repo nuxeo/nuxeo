@@ -19,24 +19,20 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
+
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
 
 public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -44,9 +40,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected String loginPage = "login.jsp";
 
-    protected String usernameKey = NXAuthConstants.USERNAME_KEY;
+    protected String usernameKey = USERNAME_KEY;
 
-    protected String passwordKey = NXAuthConstants.PASSORD_KEY;
+    protected String passwordKey = PASSWORD_KEY;
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
@@ -64,19 +60,19 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             HttpSession session = httpRequest.getSession(false);
             String requestedUrl = null;
             if (session != null) {
-                requestedUrl = (String) httpRequest.getSession(false).getAttribute(
-                        NXAuthConstants.START_PAGE_SAVE_KEY);
+                requestedUrl = (String) session.getAttribute(
+                        START_PAGE_SAVE_KEY);
             }
             if (requestedUrl != null && !requestedUrl.equals("")) {
-                parameters.put(NXAuthConstants.REQUESTED_URL,
+                parameters.put(REQUESTED_URL,
                         URLEncoder.encode(requestedUrl, "UTF-8"));
             }
-            String loginError = (String) httpRequest.getAttribute(NXAuthConstants.LOGIN_ERROR);
+            String loginError = (String) httpRequest.getAttribute(LOGIN_ERROR);
             if (loginError != null) {
-                if (NXAuthConstants.ERROR_USERNAME_MISSING.equals(loginError)) {
-                    parameters.put(NXAuthConstants.LOGIN_MISSING, "true");
+                if (ERROR_USERNAME_MISSING.equals(loginError)) {
+                    parameters.put(LOGIN_MISSING, "true");
                 } else {
-                    parameters.put(NXAuthConstants.LOGIN_FAILED, "true");
+                    parameters.put(LOGIN_FAILED, "true");
                 }
             }
             // avoid resending the password in clear !!!
@@ -97,10 +93,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
         // NXP-2650: ugly hack to check if form was submitted
-        if (httpRequest.getParameter(NXAuthConstants.FORM_SUBMITTED_MARKER) != null
+        if (httpRequest.getParameter(FORM_SUBMITTED_MARKER) != null
                 && (userName == null || userName.length() == 0)) {
-            httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR,
-                    NXAuthConstants.ERROR_USERNAME_MISSING);
+            httpRequest.setAttribute(LOGIN_ERROR, ERROR_USERNAME_MISSING);
         }
         if (userName==null  || userName.length() == 0 ) {
             return null;

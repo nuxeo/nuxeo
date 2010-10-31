@@ -59,8 +59,8 @@ public class SpecificAuthChainDescriptor {
     private Map<String, Pattern> headerPatterns;
 
     public List<Pattern> getUrlPatterns() {
-        if (urlPatterns==null) {
-            urlPatterns= new ArrayList<Pattern>();
+        if (urlPatterns == null) {
+            urlPatterns = new ArrayList<Pattern>();
             for (String url : urls) {
                 urlPatterns.add(Pattern.compile(url));
             }
@@ -69,7 +69,7 @@ public class SpecificAuthChainDescriptor {
     }
 
     public Map<String, Pattern> getHeaderPatterns() {
-        if (headerPatterns==null) {
+        if (headerPatterns == null) {
             headerPatterns = new HashMap<String, Pattern>();
             for (String headerName : headers.keySet()) {
                 headerPatterns.put(headerName, Pattern.compile(headers.get(headerName)));
@@ -79,7 +79,7 @@ public class SpecificAuthChainDescriptor {
     }
 
     public List<String> computeResultingChain(List<String> defaultChain) {
-        if (replacementChain!=null && replacementChain.size()>0) {
+        if (replacementChain != null && !replacementChain.isEmpty()) {
             return replacementChain;
         }
 

@@ -25,8 +25,10 @@ public final class NXAuthConstants {
 
     public static final String USERNAME_KEY = "user_name";
 
-    // FIXME: typo in constant name
+    @Deprecated // because of typo.
     public static final String PASSORD_KEY = "user_password";
+
+    public static final String PASSWORD_KEY = "user_password";
 
     public static final String FORM_SUBMITTED_MARKER = "form_submitted_marker";
 
