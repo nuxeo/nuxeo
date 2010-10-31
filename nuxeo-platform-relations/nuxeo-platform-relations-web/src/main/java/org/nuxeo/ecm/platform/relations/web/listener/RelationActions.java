@@ -89,16 +89,6 @@ public interface RelationActions extends StatefulBaseLifeCycle {
 
     void setPredicateUri(String predicateUri);
 
-    String getSearchKeywords();
-
-    void setSearchKeywords(String searchKeywords);
-
-    String searchDocuments() throws ClientException;
-
-    List<DocumentModel> getSearchDocumentResults();
-
-    boolean getHasSearchResults();
-
     void initialize();
 
     void destroy();

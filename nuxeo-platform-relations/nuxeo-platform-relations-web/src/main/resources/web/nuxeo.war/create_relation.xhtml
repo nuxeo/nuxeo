@@ -13,6 +13,10 @@
       }
       return false;
     }
+
+    function selectObjectType(index) {
+      document.getElementsByName('createForm:objectType')[index].checked = true;
+    }
   </script>
 
   <h3>
@@ -54,14 +58,14 @@
           <h:panelGroup>
             <h:inputText id="objectLiteralValue" value="#{relationActions.objectLiteralValue}"
               binding="#{relationCreationBean.objectLiteralValueInput}" size="60"
-              styleClass="dataInputTextNoSize" />
+              styleClass="dataInputTextNoSize" onfocus="javascript:selectObjectType(0)" />
           </h:panelGroup>
 
           <nxu:radio for="objectType" index="1" id="uri" />
           <h:panelGroup>
             <h:inputText id="objectUri" value="#{relationActions.objectUri}"
               binding="#{relationCreationBean.objectUriInput}" size="60"
-              styleClass="dataInputTextNoSize" />
+              styleClass="dataInputTextNoSize" onfocus="javascript:selectObjectType(1)" />
           </h:panelGroup>
 
           <nxu:radio for="objectType" index="2" id="document" />
@@ -78,7 +82,8 @@
               <nxu:set var="urlWithConversation"
                 value="#{restHelper.addCurrentConversationParameters(url)}">
                 <input type="button" value="#{messages['command.search']}" class="button"
-                  onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');" />
+                  onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');"
+                  onfocus="javascript:selectObjectType(2)" />
               </nxu:set>
             </nxu:set>
           </h:panelGroup>
