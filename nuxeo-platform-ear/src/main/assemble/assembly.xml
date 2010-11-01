@@ -17,7 +17,7 @@
 
   <target name="expand">
     <artifact:nuxeo-expand />
-    <!--artifact:print output="dependency-tree.log" /-->
+    <artifact:print output="dependency-tree.log" />
   </target>
 
   <target name="build" depends="init" description="Build Nuxeo EP">
@@ -60,6 +60,7 @@
         <excludes>
           <artifact artifactId="gwt-dev" />
           <artifact artifactId="gwt-user" />
+          <artifact artifactId="json-jena" />
         </excludes>
         <includes>
           <artifact groupId="!org.nuxeo*" />
