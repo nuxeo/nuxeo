@@ -49,7 +49,7 @@ public class SlowDownloaderServlet extends HttpServlet {
         for(int i=1;i<10;i++) {
             writer.write("Yoooooo\n");
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 // NOP
             }

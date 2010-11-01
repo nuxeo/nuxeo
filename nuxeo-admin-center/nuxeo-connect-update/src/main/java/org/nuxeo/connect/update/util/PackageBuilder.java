@@ -31,6 +31,8 @@ import java.util.zip.ZipOutputStream;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.ProductionState;
+import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.Version;
@@ -141,6 +143,31 @@ public class PackageBuilder {
 
     public PackageBuilder uninstaller(String type, boolean restart) {
         def.setUninstaller(new TaskDefinitionImpl(type, restart));
+        return this;
+    }
+
+    public PackageBuilder validationState(NuxeoValidationState validationState) {
+        def.setValidationState(validationState);
+        return this;
+    }
+
+    public PackageBuilder productionState(ProductionState productionState) {
+        def.setProductionState(productionState);
+        return this;
+    }
+
+    public PackageBuilder supported(boolean supported) {
+        def.setSupported(supported);
+        return this;
+    }
+
+    public PackageBuilder hotReloadSupport(boolean hotReloadSupport) {
+        def.setHotReloadSupport(hotReloadSupport);
+        return this;
+    }
+
+    public PackageBuilder requireTermsAndConditionsAcceptance(boolean requireTermsAndConditionsAcceptance) {
+        def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
         return this;
     }
 

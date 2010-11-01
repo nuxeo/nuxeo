@@ -19,13 +19,17 @@ package org.nuxeo.connect.update.impl.xml;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.model.TaskDefinition;
 import org.nuxeo.connect.update.task.Task;
+
+import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,6 +61,19 @@ public class PackageDefinitionImpl implements PackageDefinition {
 
     @XNode("home-page")
     protected String homePage;
+
+    @XNode("supported")
+    protected boolean supported=false;
+
+    @XNode("hotreload-support")
+    protected boolean hotReloadSupport=false;
+
+    @XNode("require-terms-and-conditions-acceptance")
+    protected boolean requireTermsAndConditionsAcceptance=false;
+
+    protected NuxeoValidationState validationState = NuxeoValidationState.NONE;
+
+    protected ProductionState productionState = ProductionState.TESTING;
 
     /**
      * The license name. E.g. LGPL, BSD etc.
@@ -105,6 +122,23 @@ public class PackageDefinitionImpl implements PackageDefinition {
      */
     @XNode("validator")
     protected String validator;
+
+    @XNode("production-state")
+    protected void initNuxeoValidationState(String value) {
+        NuxeoValidationState targetState = NuxeoValidationState.getByValue(value);
+        if (targetState!=null) {
+            validationState = targetState;
+        }
+    }
+
+    @XNode("nuxeo-validation")
+    protected void initProductionState(String value) {
+        ProductionState targetState = ProductionState.getByValue(value);
+        if (targetState!=null) {
+            productionState = targetState;
+        }
+    }
+
 
     public String getId() {
         if (version == null) {
@@ -244,6 +278,23 @@ public class PackageDefinitionImpl implements PackageDefinition {
         this.validator = validator;
     }
 
+    public void setSupported(boolean supported) {
+        this.supported = supported;
+    }
+
+    public void setHotReloadSupport(boolean hotReloadSupport) {
+        this.hotReloadSupport = hotReloadSupport;
+    }
+
+    public void setValidationState(NuxeoValidationState validationState) {
+        this.validationState = validationState;
+    }
+
+    public void setProductionState(ProductionState productionState) {
+        this.productionState = productionState;
+    }
+
+    @Deprecated
     public void write(XmlWriter writer) {
         writer.writeXmlDecl();
 
@@ -264,6 +315,12 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.element("home-page", homePage);
         writer.element("license", license);
         writer.element("license-url", licenseUrl);
+        writer.element("hotreload-support", new Boolean(hotReloadSupport).toString());
+        writer.element("supported", new Boolean(supported).toString());
+        writer.element("require-terms-and-conditions-acceptance", new Boolean(requireTermsAndConditionsAcceptance).toString());
+        writer.element("production-state", productionState.toString());
+        writer.element("nuxeo-validation", validationState.toString());
+
         if (platforms != null) {
             writer.start("platforms");
             writer.startContent();
@@ -299,10 +356,43 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.end("package");
     }
 
-    public String toXML() {
-        XmlWriter writer = new XmlWriter();
-        write(writer);
-        return writer.toString();
+
+    @Override
+    public ProductionState getProductionState() {
+        return productionState;
     }
+
+    @Override
+    public NuxeoValidationState getValidationState() {
+        return validationState;
+    }
+
+    @Override
+    public boolean isSupported() {
+        return supported;
+    }
+
+    @Override
+    public boolean supportsHotReload() {
+        return hotReloadSupport;
+    }
+
+    public void setRequireTermsAndConditionsAcceptance(
+            boolean requireTermsAndConditionsAcceptance) {
+        this.requireTermsAndConditionsAcceptance = requireTermsAndConditionsAcceptance;
+    }
+
+    @Override
+    public boolean requireTermsAndConditionsAcceptance() {
+        return requireTermsAndConditionsAcceptance;
+    }
+
+    public String toXML() {
+        return new XmlSerializer().toXML(this);
+//        XmlWriter writer = new XmlWriter();
+//        write(writer);
+//        return writer.toString();
+    }
+
 
 }

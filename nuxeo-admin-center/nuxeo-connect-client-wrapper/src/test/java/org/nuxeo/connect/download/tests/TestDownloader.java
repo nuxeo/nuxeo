@@ -30,6 +30,7 @@ import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -47,12 +48,14 @@ public class TestDownloader {
          Assert.assertNotNull(cdm);
 
          int nbDownloads=5;
+         int maxLoop=40;
 
          List<PackageDescriptor> pkgToDownload = new ArrayList<PackageDescriptor>();
          for (int i = 0;i<nbDownloads;i++) {
              PackageDescriptor pkg = new PackageDescriptor();
              pkg.setSourceUrl("test"+i);
-             pkg.setId("B"+i);
+             pkg.setName("FakePackage-" + i);
+             pkg.setVersion(new Version(1));
              pkgToDownload.add(pkg);
          }
 
@@ -67,6 +70,7 @@ public class TestDownloader {
 
          boolean downloadInProgress=true;
 
+         int nbLoop=0;
          while (downloadInProgress) {
              downloadInProgress=false;
              for (DownloadingPackage pkg : downloads) {
@@ -78,7 +82,12 @@ public class TestDownloader {
                  }
              }
              System.out.println();
+             nbLoop++;
+             if (nbLoop>maxLoop) {
+                 throw new RuntimeException("Download is stuck");
+             }
              Thread.sleep(500);
+
          }
      }
 }

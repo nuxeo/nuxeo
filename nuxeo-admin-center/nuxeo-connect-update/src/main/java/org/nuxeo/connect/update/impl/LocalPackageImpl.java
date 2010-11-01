@@ -25,10 +25,12 @@ import java.io.InputStream;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageData;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.impl.task.InstallTask;
@@ -250,5 +252,37 @@ public class LocalPackageImpl implements LocalPackage {
 
     public Form[] getUninstallForms() throws PackageException {
         return getForms(LocalPackage.UNINSTALL_FORMS);
+    }
+
+    @Override
+    public String getTermsAndConditionsContent() throws PackageException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean requireTermsAndConditionsAcceptance() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public ProductionState getProductionState() {
+        return def.getProductionState();
+    }
+
+    @Override
+    public NuxeoValidationState getValidationState() {
+        return def.getValidationState();
+    }
+
+    @Override
+    public boolean isSupported() {
+        return def.isSupported();
+    }
+
+    @Override
+    public boolean supportsHotReload() {
+        return def.supportsHotReload();
     }
 }
