@@ -727,6 +727,46 @@ public final class ThemeManager implements Registrable {
         }
     }
 
+    public static void setStyleInheritance(String styleName,
+            String ancestorStyleName, String themeName) throws ThemeException {
+
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
+            throw new ThemeException("Theme not found: " + themeName);
+        }
+        String resourceBankName = themeDescriptor.getResourceBankName();
+
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        if (style == null && resourceBankName != null) {
+            style = (Style) FormatFactory.create("style");
+            style.setName(styleName);
+            themeManager.registerFormat(style);
+            themeManager.setNamedObject(themeName, "style", style);
+            ThemeManager.loadRemoteStyle(resourceBankName, style);
+        }
+        if (style == null) {
+            throw new ThemeException("Could not find named style: " + styleName);
+        }
+
+        Style ancestorStyle = (Style) themeManager.getNamedObject(themeName,
+                "style", ancestorStyleName);
+        if (ancestorStyle == null && resourceBankName != null) {
+            ancestorStyle = (Style) FormatFactory.create("style");
+            ancestorStyle.setName(ancestorStyleName);
+            themeManager.registerFormat(ancestorStyle);
+            themeManager.setNamedObject(themeName, "style", ancestorStyle);
+            ThemeManager.loadRemoteStyle(resourceBankName, ancestorStyle);
+        }
+        if (ancestorStyle == null) {
+            throw new ThemeException("Could not find named style: "
+                    + ancestorStyleName);
+        }
+
+        themeManager.makeFormatInherit(style, ancestorStyle);
+    }
+
     public static void loadRemoteStyle(String resourceBankName, Style style) {
         if (!style.isNamed()) {
             return;

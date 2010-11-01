@@ -613,4 +613,35 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertSame(ancestorStyle, ThemeManager.getAncestorFormatOf(namedStyle2));
         assertNull(ThemeManager.getAncestorFormatOf(namedStyle1));
     }
+
+    public void testSetStyleInheritance() throws NodeException, ThemeException {
+        final String currentThemeName = "theme";
+
+        ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+        themeDescriptor.setName(currentThemeName);
+        typeRegistry.register(themeDescriptor);
+
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName(currentThemeName);
+        PageElement page = (PageElement) ElementFactory.create("page");
+        page.setName("default");
+        theme.addChild(page);
+        themeManager.registerTheme(theme);
+
+        final String styleName1 = "named style 1";
+        Style namedStyle1 = (Style) FormatFactory.create("style");
+        namedStyle1.setName(styleName1);
+        themeManager.registerFormat(namedStyle1);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle1);
+
+        final String styleName2 = "named style 2";
+        Style namedStyle2 = (Style) FormatFactory.create("style");
+        namedStyle2.setName(styleName2);
+        themeManager.registerFormat(namedStyle2);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle2);
+
+        ThemeManager.setStyleInheritance(styleName1, styleName2,
+                currentThemeName);
+        assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(namedStyle1));
+    }
 }
