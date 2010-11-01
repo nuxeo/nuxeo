@@ -10,9 +10,9 @@ To customize the nuxeo.ear zip just provide a properties files with custom setti
 See defualt.properties for the default property values. You can override any property specified in the default file.
 The most important properties are:
 NX_DISTRIBUTION - the complete artifact name for the target distribution to use
-NX_CONFIG - the location where Nuxeo config directory will reside on production server
-NX_HOME - the location where Nuxeo home directory will reside on production server
-NX_TEMPLATE - the template ID to use when configuring Nuxeo.
+nuxeo.config.dir - the location where Nuxeo config directory will reside on production server
+nuxeo.home.dir - the location where Nuxeo home directory will reside on production server
+nuxeo.templates - the template ID to use when configuring Nuxeo.
 
 See the example/pack.properties for a custom property file.
 
