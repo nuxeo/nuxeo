@@ -95,6 +95,9 @@
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
       <artifact:file groupId="org.apache.derby" artifactId="derby" />
     </copy>
+    <copy tofile="${jboss}/common/lib/hibernate-core.jar">
+      <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
+    </copy>
   </target>
 
   <target name="build-nuxeo-ep"
@@ -194,24 +197,26 @@
 
   <target name="reorganize-libs">
     <!-- Add JBoss specific requirements -->
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles" overwrite="true">
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles"
+          overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="org.nuxeo*" />
         </includes>
       </artifact:set>
     </copy>
-    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" overwrite="true">
+    <copy todir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib"
+          overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="!org.nuxeo*" />
         </includes>
       </artifact:set>
     </copy>
-    
+
     <!-- Remove duplicates -->
     <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
-    
+
     <!-- remove libraries already provided by JBoss or unneeded -->
     <delete>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
