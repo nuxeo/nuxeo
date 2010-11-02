@@ -6,8 +6,8 @@ mvn package
 
 The zipped nuxeo.ear will be put inside target/nuxeo.ear
 
-To customize the nuxeo.ear zip just provide a properties files with custom settings.
-See defualt.properties for the default property values. You can override any property specified in the default file.
+To customize the nuxeo.ear zip just provide a properties file with custom settings.
+See default.properties. You can override any property specified in the default file.
 The most important properties are:
 NX_DISTRIBUTION - the complete artifact name for the target distribution to use
 nuxeo.config.dir - the location where Nuxeo config directory will reside on production server
@@ -34,13 +34,3 @@ To load a properties file into the system properties add an entry like this in p
     </attribute>
 
 You can find in example/nuxeo.properties some properties you must usually define.
-
-#nuxeo-ds.xml
-nuxeo.data.dir
-nuxeo.db.name
-nuxeo.db.user
-nuxeo.db.password
-
-#default-repository-ds.xml
-nuxeo.vcs.max-pool-size
-
