@@ -21,6 +21,9 @@ ${Document.webcontainer.welcomeText}
     </div>
     <div class="postHeadtitle">
       <div class="postTitle"><a href="${item.path}">${item.title?xml}</a></div>
+      <a href="${item.path}/@delete"> Remove</a></div>
+      <div style="clear:both;"></div>
+      
       <div class="postSubtitle">${item.description?xml}</div>
     </div>
     <div class="postContent">${item.content}</div>               

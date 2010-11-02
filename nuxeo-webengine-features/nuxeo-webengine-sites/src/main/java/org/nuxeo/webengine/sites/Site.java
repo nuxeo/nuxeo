@@ -129,6 +129,11 @@ public class Site extends AbstractSiteDocumentObject {
     }
 
     @Override
+    protected String getDocumentDeletedErrorTemplateName(){
+        return "no_site.ftl";
+    }
+
+    @Override
     protected String getSearchThemePage() {
         return SEARCH_THEME_PAGE;
     }
