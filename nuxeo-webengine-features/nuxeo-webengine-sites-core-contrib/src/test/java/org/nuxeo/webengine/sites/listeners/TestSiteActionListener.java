@@ -36,11 +36,11 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
 
         String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
+        assertEquals("website", website1URL);
+
         String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
-        log.info("webSite1 URL : " + website1URL);
-        log.info("webSite2 URL : " + website2URL);
-        assertTrue(!(website1URL.equals(website2URL)));
+        assertFalse(website1URL.equals(website2URL));
     }
 
     public void testTestSiteActionWithWebSiteNotInTheSameContainer()
@@ -67,12 +67,16 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
 
         String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
+        assertEquals("website", website1URL);
+        
         String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
-        log.info("webSite1 path : " + (String) session.getDocument(website1.getRef()).getPathAsString());
-        log.info("webSite2 path : " + (String) session.getDocument(website2.getRef()).getPathAsString());
-        log.info("webSite1 URL : " + website1URL);
-        log.info("webSite2 URL : " + website2URL);
-        assertTrue(!(website1URL.equals(website2URL)));
+
+        String path1 = (String) session.getDocument(website1.getRef()).getPathAsString();
+        String path2 = (String) session.getDocument(website2.getRef()).getPathAsString();
+        assertEquals("/folder1/website", path1);
+        assertEquals("/folder2/website", path2);
+        
+        assertFalse(website1URL.equals(website2URL));
     }
 }
