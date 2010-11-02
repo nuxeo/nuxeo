@@ -674,8 +674,8 @@ public final class ThemeManager implements Registrable {
     }
 
     public void makeElementUseNamedStyle(final Element element,
-            final String inheritedName, final String themeName,
-            final boolean preserveInheritance) throws ThemeException {
+            final String inheritedName, final String themeName)
+            throws ThemeException {
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,
@@ -705,36 +705,20 @@ public final class ThemeManager implements Registrable {
                     }
                 }
             }
-
-            if (preserveInheritance) {
-                Style existingStyle = (Style) ThemeManager.getAncestorFormatOf(style);
-                if (existingStyle != null) {
-                    Style ancestor = (Style) ThemeManager.getAncestorFormatOf(existingStyle);
-                    if (ancestor != null) {
-                        if (ancestor.isNamed()) {
-                            Style newStyle = (Style) getNamedObject(themeName,
-                                    "style", inheritedName);
-                            if (newStyle != null) {
-                                removeInheritanceTowards(existingStyle);
-                                makeFormatInherit(newStyle, ancestor);
-                            }
-                        }
-                    }
-                }
-            }
-
             makeFormatInherit(style, inheritedStyle);
         }
     }
 
     public static void setStyleInheritance(String styleName,
-            String ancestorStyleName, String themeName) throws ThemeException {
+            String ancestorStyleName, String themeName, boolean allowMany)
+            throws ThemeException {
 
         ThemeManager themeManager = Manager.getThemeManager();
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + themeName);
         }
+
         String resourceBankName = themeDescriptor.getResourceBankName();
 
         Style style = (Style) themeManager.getNamedObject(themeName, "style",
@@ -763,7 +747,9 @@ public final class ThemeManager implements Registrable {
             throw new ThemeException("Could not find named style: "
                     + ancestorStyleName);
         }
-
+        if (!allowMany) {
+            ThemeManager.removeInheritanceFrom(ancestorStyle);
+        }
         themeManager.makeFormatInherit(style, ancestorStyle);
     }
 
@@ -1355,6 +1341,16 @@ public final class ThemeManager implements Registrable {
     public static void removeInheritanceTowards(Format format) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
                 PREDICATE_FORMAT_INHERIT, format, null);
+        Iterator<Relation> it = relations.iterator();
+        if (it.hasNext()) {
+            Relation relation = it.next();
+            Manager.getRelationStorage().remove(relation);
+        }
+    }
+
+    public static void removeInheritanceFrom(Format format) {
+        Collection<Relation> relations = Manager.getRelationStorage().search(
+                PREDICATE_FORMAT_INHERIT, null, format);
         Iterator<Relation> it = relations.iterator();
         if (it.hasNext()) {
             Relation relation = it.next();

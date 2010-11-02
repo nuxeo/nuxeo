@@ -582,36 +582,13 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.registerFormat(pageStyle);
         ElementFormatter.setFormat(page, pageStyle);
 
-        // Do not preserve style inheritance
-        boolean preserveInheritance = false;
         themeManager.makeElementUseNamedStyle(page, styleName1,
-                currentThemeName, preserveInheritance);
+                currentThemeName);
         assertSame(namedStyle1, ThemeManager.getAncestorFormatOf(pageStyle));
 
         themeManager.makeElementUseNamedStyle(page, styleName2,
-                currentThemeName, preserveInheritance);
+                currentThemeName);
         assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
-
-        // Preserve style inheritance
-        final String ancestorName = "ancestor style";
-        Style ancestorStyle = (Style) FormatFactory.create("style");
-        ancestorStyle.setName(ancestorName);
-        themeManager.registerFormat(ancestorStyle);
-        themeManager.setNamedObject(currentThemeName, "style", ancestorStyle);
-
-        themeManager.makeFormatInherit(namedStyle1, ancestorStyle);
-        themeManager.makeElementUseNamedStyle(page, styleName1,
-                currentThemeName, preserveInheritance);
-        assertSame(namedStyle1, ThemeManager.getAncestorFormatOf(pageStyle));
-        assertSame(ancestorStyle, ThemeManager.getAncestorFormatOf(namedStyle1));
-
-        preserveInheritance = true;
-
-        themeManager.makeElementUseNamedStyle(page, styleName2,
-                currentThemeName, preserveInheritance);
-        assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(pageStyle));
-        assertSame(ancestorStyle, ThemeManager.getAncestorFormatOf(namedStyle2));
-        assertNull(ThemeManager.getAncestorFormatOf(namedStyle1));
     }
 
     public void testSetStyleInheritance() throws NodeException, ThemeException {
@@ -628,11 +605,11 @@ public class TestThemeManager extends NXRuntimeTestCase {
         theme.addChild(page);
         themeManager.registerTheme(theme);
 
-        final String styleName1 = "named style 1";
-        Style namedStyle1 = (Style) FormatFactory.create("style");
-        namedStyle1.setName(styleName1);
-        themeManager.registerFormat(namedStyle1);
-        themeManager.setNamedObject(currentThemeName, "style", namedStyle1);
+        final String ancestorName = "ancestor style";
+        Style ancestorStyle = (Style) FormatFactory.create("style");
+        ancestorStyle.setName(ancestorName);
+        themeManager.registerFormat(ancestorStyle);
+        themeManager.setNamedObject(currentThemeName, "style", ancestorStyle);
 
         final String styleName2 = "named style 2";
         Style namedStyle2 = (Style) FormatFactory.create("style");
@@ -640,8 +617,31 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.registerFormat(namedStyle2);
         themeManager.setNamedObject(currentThemeName, "style", namedStyle2);
 
-        ThemeManager.setStyleInheritance(styleName1, styleName2,
-                currentThemeName);
-        assertSame(namedStyle2, ThemeManager.getAncestorFormatOf(namedStyle1));
+        final String styleName3 = "named style 3";
+        Style namedStyle3 = (Style) FormatFactory.create("style");
+        namedStyle3.setName(styleName3);
+        themeManager.registerFormat(namedStyle3);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle3);
+
+        boolean allowMany = true;
+        ThemeManager.setStyleInheritance(styleName2, ancestorName,
+                currentThemeName, allowMany);
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
+                ancestorStyle));
+
+        ThemeManager.setStyleInheritance(styleName3, ancestorName,
+                currentThemeName, allowMany);
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle3).contains(
+                ancestorStyle));
+        // previous inheritance still here
+        assertTrue(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
+                ancestorStyle));
+
+        allowMany = false;
+        ThemeManager.setStyleInheritance(styleName3, ancestorName,
+                currentThemeName, allowMany);
+        // previous inheritance gone
+        assertFalse(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
+                ancestorStyle));
     }
 }
