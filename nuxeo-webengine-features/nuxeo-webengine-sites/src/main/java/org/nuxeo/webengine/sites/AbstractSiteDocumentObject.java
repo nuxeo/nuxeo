@@ -19,6 +19,34 @@
 
 package org.nuxeo.webengine.sites;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+import org.nuxeo.webengine.sites.utils.SiteUtils;
+
 import static org.nuxeo.webengine.sites.utils.SiteConstants.EMAIL;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.PAGE_NAME_ATTRIBUTE;
@@ -36,33 +64,6 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_WELCOMEMEDIA;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBPAGE;
 import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.rest.DocumentObject;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.webengine.sites.utils.SiteConstants;
-import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * The basic web object implementation.It holds the web object back methods.
@@ -234,7 +235,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
                     getWebPageDocumentType());
             DocumentModel parentWebSite = getParentWebSite(session);
             String path = SiteUtils.getPagePath(parentWebSite, createdDocument);
-            return redirect(path);
+            return redirect(URIUtils.quoteURIPathComponent(path, false));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
@@ -253,7 +254,7 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             StringBuilder path = new StringBuilder(
                     SiteUtils.getWebContainersPath()).append("/");
             path.append(SiteUtils.getString(parentWebSite, WEBCONTAINER_URL));
-            return redirect(path.toString());
+            return redirect(URIUtils.quoteURIPathComponent(path.toString(), false));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
