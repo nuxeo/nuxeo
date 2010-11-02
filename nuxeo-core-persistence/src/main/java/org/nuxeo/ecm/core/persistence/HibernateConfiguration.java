@@ -37,6 +37,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
 import org.hibernate.ejb.transaction.JoinableCMTTransactionFactory;
+import org.hibernate.transaction.JDBCTransactionFactory;
 import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -105,15 +106,12 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
 
         // Load hibernate properties
-        cfg.setProperties(hibernateProperties);
+        cfg.addProperties(hibernateProperties);
 
         // Add annnoted classes if any
         for (Class<?> annotedClass : annotedClasses) {
             cfg.addAnnotatedClass(annotedClass);
         }
-
-        // needed for correct setup
-        cfg.configure("fake-hibernate.cfg.xml");
 
         return cfg;
     }
@@ -123,19 +121,20 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         if (txType == null) {
             txType = getTxType();
         }
-        if (txType != null) {
-            properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
-            if (txType.equals(JTA)) {
-                // properties.put(Environment.TRANSACTION_STRATEGY,
-                // JTATransactionFactory.class.getName());
-                properties.put(Environment.TRANSACTION_STRATEGY,
-                        JoinableCMTTransactionFactory.class.getName());
-                properties.put(Environment.TRANSACTION_MANAGER_STRATEGY,
-                        NuxeoTransactionManagerLookup.class.getName());
-            }
+        properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
+        if (txType.equals(JTA)) {
+            // properties.put(Environment.TRANSACTION_STRATEGY,
+            // JTATransactionFactory.class.getName());
+            properties.put(Environment.TRANSACTION_STRATEGY, JoinableCMTTransactionFactory.class.getName());
+            properties.put(Environment.TRANSACTION_MANAGER_STRATEGY, NuxeoTransactionManagerLookup.class.getName());
+        } else if (txType.equals(RESOURCE_LOCAL)) {
+            properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
         }
         if (cfg == null) {
             setupConfiguration(properties);
+        }
+        if (txType.equals(RESOURCE_LOCAL)) {
+            cfg.getProperties().remove(Environment.DATASOURCE);
         }
         return cfg.createEntityManagerFactory(properties);
     }
