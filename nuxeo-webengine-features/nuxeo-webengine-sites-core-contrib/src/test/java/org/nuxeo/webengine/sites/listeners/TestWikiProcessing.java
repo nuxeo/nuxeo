@@ -1,4 +1,6 @@
 package org.nuxeo.webengine.sites.listeners;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -6,7 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.webengine.sites.listeners.SitesWikiListener;
 import org.nuxeo.webengine.sites.listeners.SitesWikiListener.WikiProcessingResult;
 
 public class TestWikiProcessing extends NXRuntimeTestCase {
@@ -15,7 +16,8 @@ public class TestWikiProcessing extends NXRuntimeTestCase {
 
     public void testProcessing() throws Exception {
 
-        InputStream is = TestWikiProcessing.class.getResourceAsStream("test-data/page1.wiki");
+        InputStream is = new FileInputStream(FileUtils
+                .getResourceFileFromContext("test-data/page1.wiki"));
 
         String wikiInput = FileUtils.read(is);
 
