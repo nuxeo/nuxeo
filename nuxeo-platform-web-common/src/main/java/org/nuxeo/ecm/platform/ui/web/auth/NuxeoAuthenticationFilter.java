@@ -684,6 +684,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (startPage == null) {
             return false;
         }
+        try {
+            // Sometimes, the service is not initialized at startup
+            doInitIfNeeded();
+        } catch (ServletException e) {
+            return false;
+        }
         for (String prefix : service.getStartURLPatterns()) {
             if (startPage.startsWith(prefix)) {
                 return true;
