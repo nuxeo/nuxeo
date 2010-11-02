@@ -143,7 +143,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     /**
      * Implementation details: the path to current domain is deduced from the
-     * path of current document (hardcoded rule that it'd be the first element).
+     * path of current document (hardcoded rule that it'd be the first
+     * element).
      * <p>
      * If current document is null, then the first document found is used
      * instead.
@@ -197,7 +198,7 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
         // update all depending variables
         updateContextVariables();
-        resetCurrentPath();        
+        resetCurrentPath();
         Contexts.getEventContext().remove("currentDocument");
 
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
@@ -333,8 +334,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     protected boolean checkIfUpdateNeeded(DocumentModel ctxDoc,
             DocumentModel newDoc) {
-        if (ctxDoc == null && newDoc != null
-                || ctxDoc != null && newDoc == null) {
+        if (ctxDoc == null && newDoc != null || ctxDoc != null
+                && newDoc == null) {
             return true;
         }
         if (ctxDoc == null && newDoc == null) {
@@ -365,9 +366,9 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     protected ServerContextBean getServerLocator() {
-	return (ServerContextBean) Component.getInstance("serverLocator");
+        return (ServerContextBean) Component.getInstance("serverLocator");
     }
-    
+
     public RepositoryLocation getCurrentServerLocation() {
         return getServerLocator().getCurrentServerLocation();
     }
@@ -381,8 +382,8 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     /**
-     * Switches to a new server location by updating the context and updating to
-     * the CoreSession (DocumentManager).
+     * Switches to a new server location by updating the context and updating
+     * to the CoreSession (DocumentManager).
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
@@ -393,7 +394,8 @@ public class NavigationContextBean implements NavigationContextLocal,
         RepositoryLocation currentServerLocation = serverLocation;
         getServerLocator().setRepositoryLocation(serverLocation);
         resetCurrentContext();
-        Contexts.getEventContext().set("currentServerLocation", currentServerLocation);
+        Contexts.getEventContext().set("currentServerLocation",
+                currentServerLocation);
 
         // update the documentManager
         documentManager = null;
@@ -409,8 +411,8 @@ public class NavigationContextBean implements NavigationContextLocal,
     }
 
     /**
-     * Returns the current documentManager if any or create a new session to the
-     * current location.
+     * Returns the current documentManager if any or create a new session to
+     * the current location.
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -431,8 +433,9 @@ public class NavigationContextBean implements NavigationContextLocal,
         if (documentManagerBD == null) {
             // this is the first time we select the location, create a
             // DocumentManagerBusinessDelegate instance
-            documentManagerBD = new DocumentManagerBusinessDelegate();            
-            Contexts.getConversationContext().set("documentManager", documentManagerBD);
+            documentManagerBD = new DocumentManagerBusinessDelegate();
+            Contexts.getConversationContext().set("documentManager",
+                    documentManagerBD);
         }
         documentManager = documentManagerBD.getDocumentManager(getCurrentServerLocation());
         return documentManager;
@@ -524,11 +527,12 @@ public class NavigationContextBean implements NavigationContextLocal,
     protected void updateContextVariables() throws ClientException {
 
         // XXX flush method is not implemented for Event context :)
-	Contexts.getEventContext().set("currentDocument", currentDocument);
+        Contexts.getEventContext().set("currentDocument", currentDocument);
 
         if (currentDocument != null) {
             changeableDocument = currentDocument;
-            Contexts.getEventContext().set("changeableDocument", changeableDocument);
+            Contexts.getEventContext().set("changeableDocument",
+                    changeableDocument);
         } else {
             changeableDocument = currentDocument;
             Contexts.getEventContext().remove("changeableDocument");
@@ -615,7 +619,7 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     public void resetCurrentContext() {
         // flush event context
-	Context eventContext = Contexts.getEventContext();
+        Context eventContext = Contexts.getEventContext();
         eventContext.remove("currentDocument");
         eventContext.remove("changeableDocument");
         eventContext.remove("currentDocumentChildren");
