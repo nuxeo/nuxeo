@@ -120,17 +120,17 @@
     <ant target="copy-resources" dir="nuxeo-distribution-resources" />
   </target>
 
+  <target name="list-available-distributions">
+    <echo message="Available distributions are:" />
+    <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
+    <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
+    <echo message="jboss                - build all JBoss distributions" />
+    <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
+    <echo message="tomcat               - build all Tomcat distribution" />
+    <echo message="shell                - build Nuxeo Shell" />
+    <echo message="all-distributions    - build all available distributions" />
+  </target>
   <target name="choose-distrib" unless="distrib">
-    <target name="list-available-distributions">
-      <echo message="Available distributions are:" />
-      <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
-      <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
-      <echo message="jboss                - build all JBoss distributions" />
-      <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
-      <echo message="tomcat               - build all Tomcat distributions" />
-      <echo message="shell                - build Nuxeo Shell" />
-      <echo message="all-distributions    - build all distributions" />
-    </target>
     <input message="Which distribution do you want to build?"
            validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
            addproperty="distrib" />
