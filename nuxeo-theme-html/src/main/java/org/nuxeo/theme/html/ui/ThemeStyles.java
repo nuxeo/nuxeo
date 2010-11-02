@@ -52,7 +52,7 @@ public class ThemeStyles {
 
         // Load theme if needed
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-        if (!themeDescriptor.isLoaded()) {
+        if (themeDescriptor != null && !themeDescriptor.isLoaded()) {
             ThemeManager.loadTheme(themeDescriptor);
         }
 
@@ -78,22 +78,25 @@ public class ThemeStyles {
             }
 
             // Replace images from resource banks
-            String resourceBankName = themeDescriptor.getResourceBankName();
-            if (resourceBankName != null) {
-                ResourceBank resourceBank;
-                try {
-                    resourceBank = ThemeManager.getResourceBank(resourceBankName);
-                    for (String imagePath : resourceBank.getImages()) {
-                        rendered = rendered.replace(imagePath, String.format(
-                                "'/nuxeo/nxthemes-images/%s/%s'",
-                                resourceBankName, imagePath));
+            if (themeDescriptor != null) {
+                String resourceBankName = themeDescriptor.getResourceBankName();
+                if (resourceBankName != null) {
+                    ResourceBank resourceBank;
+                    try {
+                        resourceBank = ThemeManager.getResourceBank(resourceBankName);
+                        for (String imagePath : resourceBank.getImages()) {
+                            rendered = rendered.replace(imagePath,
+                                    String.format(
+                                            "'/nuxeo/nxthemes-images/%s/%s'",
+                                            resourceBankName, imagePath));
+                        }
+                    } catch (ThemeException e) {
+                        log.warn("Could not get the list of bank images in: "
+                                + resourceBankName);
                     }
-                } catch (ThemeException e) {
-                    log.warn("Could not get the list of bank images in: "
-                            + resourceBankName);
                 }
+                return rendered;
             }
-            return rendered;
         }
         if (cache) {
             return String.format(
