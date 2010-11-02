@@ -26,9 +26,9 @@ import org.nuxeo.connect.update.impl.task.AbstractTask;
 
 /**
  * A task based on ant
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class AntTask extends AbstractTask {
 
