@@ -240,6 +240,10 @@
         <background preset="back (Galaxy Admin backgrounds)"/>
         <padding>2px 2px 2px 20px</padding>
       </selector>
+      <selector path=".feedBackMessages ul">
+        <list-style>none</list-style>
+        <padding-left>0</padding-left>
+      </selector>
       <selector path=".errorMessage">
         <color preset="default.text (Galaxy Admin colors)" />
         <border preset="dataInput (Galaxy Admin borders)" />
