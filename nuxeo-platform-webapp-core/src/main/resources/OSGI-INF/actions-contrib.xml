@@ -410,7 +410,7 @@
     <action id="POPUP_EDIT" link="javascript:doEdit" label="action.view.edit"
       icon="/icons/application_form_edit.png">
       <category>POPUP</category>
-      <filter-id>edit</filter-id>
+      <filter-id>user_canedit</filter-id>
       <filter-id>mutable_document</filter-id>
     </action>
 
@@ -446,7 +446,7 @@
     <action id="POPUP_RENAME" link="javascript:doRename" label="command.rename"
       icon="/icons/rename.png">
       <category>POPUP</category>
-      <filter-id>edit</filter-id>
+      <filter-id>user_canedit</filter-id>
       <filter-id>mutable_document</filter-id>
       <filter id="canRenamePopup">
         <rule grant="true">
@@ -620,6 +620,12 @@
         <type>WorkspaceRoot</type>
         <type>Workspace</type>
       </rule>
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
+    <filter id="user_canedit">
       <rule grant="true">
         <permission>Write</permission>
       </rule>
