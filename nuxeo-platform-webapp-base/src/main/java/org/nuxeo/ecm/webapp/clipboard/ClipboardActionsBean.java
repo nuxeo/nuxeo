@@ -638,9 +638,8 @@ public class ClipboardActionsBean extends InputController implements
                 setFacesMessage("label.clipboard.emptyDocuments");
                 return null;
             }
-            response.setHeader("Content-Disposition", "attachment; filename=\""
-                    + "clipboard.zip" + "\";");
-            response.setContentType("application/gzip");
+            response.setHeader("Content-Disposition", "attachment; filename=\"clipboard.zip\";");
+            response.setContentType("application/zip");
             response.flushBuffer();
             context.responseComplete();
             return null;
