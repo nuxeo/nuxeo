@@ -31,6 +31,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -53,14 +55,16 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Seam bean provides support for tagging related actions which can be made
- * on the current document.
+ * This Seam bean provides support for tagging related actions which can be
+ * made on the current document.
  */
 @Name("tagActions")
 @Scope(CONVERSATION)
 public class TagActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(TagActionsBean.class);
 
     public static final String TAG_SEARCH_RESULT_PAGE = "tag_search_results";
 
@@ -175,13 +179,13 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns tag cloud info for the whole repository. For performance reasons,
-     * the security on underlying documents is not tested.
+     * Returns tag cloud info for the whole repository. For performance
+     * reasons, the security on underlying documents is not tested.
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
     public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
-        List<Tag> cloud = getTagService().getTagCloud(documentManager,
-                null, null, Boolean.TRUE); // logarithmic 0-100 normalization
+        List<Tag> cloud = getTagService().getTagCloud(documentManager, null,
+                null, Boolean.TRUE); // logarithmic 0-100 normalization
         // change weight to a font size
         double min = 100;
         double max = 200;
@@ -206,8 +210,17 @@ public class TagActionsBean implements Serializable {
             List<String> ids = getTagService().getTagDocumentIds(
                     documentManager, listLabel, null);
             DocumentModelList docs = new DocumentModelListImpl(ids.size());
+            DocumentModel doc = null;
             for (String id : ids) {
-                docs.add(documentManager.getDocument(new IdRef(id)));
+                try {
+                    doc = documentManager.getDocument(new IdRef(id));
+                } catch (ClientException e) {
+                    log.error(e);
+                }
+                if (doc != null) {
+                    docs.add(doc);
+                    doc = null;
+                }
             }
             return docs;
         }
@@ -218,8 +231,8 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns <b>true</b> if the current logged user has permission to modify a
-     * tag that is applied on the current document.
+     * Returns <b>true</b> if the current logged user has permission to modify
+     * a tag that is applied on the current document.
      */
     public boolean canModifyTag(Tag tag) throws ClientException {
         return tag != null;
