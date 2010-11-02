@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.syndication.translate.TranslationHelper;
 import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.w3c.dom.Element;
@@ -190,6 +191,7 @@ public class SimpleXMLSerializer extends AbstractDocumentModelSerializer
         }
 
         res.setEntity(rootDoc.asXML(), MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 
     public static Map<String, String> getTranslationsForWorkflow(String lang) {
