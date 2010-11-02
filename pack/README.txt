@@ -32,5 +32,11 @@ To load a properties file into the system properties add an entry like this in p
     <attribute name="URLList">
       ${jboss.server.config.url}/nuxeo.properties
     </attribute>
+and fill server/default/conf/nuxeo.properties
+
+Do not use: 
+   <attribute name="Properties">
+      ...
+   </attribute>
 
 You can find in example/nuxeo.properties some properties you must usually define.
