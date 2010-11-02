@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
     protected static final Resource conformsTo = new ResourceImpl(
-    "http://purl.org/dc/terms/ConformsTo");
+            "http://purl.org/dc/terms/ConformsTo");
 
     protected static final String COMMENTS_GRAPH_NAME = "documentComments";
 
@@ -60,7 +60,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.comment.api");
         deployBundle("org.nuxeo.ecm.platform.comment.core");
         deployContrib("org.nuxeo.ecm.platform.comment",
-        "OSGI-INF/CommentService.xml");
+                "OSGI-INF/CommentService.xml");
         deployBundle("org.nuxeo.ecm.platform.relations.core.listener.tests");
         openSession();
 
@@ -87,8 +87,6 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         doc2 = session.createDocument(doc2);
 
         session.save();
-        closeSession();
-        openSession();
     }
 
     protected void addSomeComments(DocumentModel docToComment) throws Exception {
@@ -109,7 +107,7 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
     }
 
     protected void addSomeRelations(Resource documentResource)
-    throws ClientException {
+            throws ClientException {
         Resource otherDocResource = relationManager.getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
@@ -134,7 +132,6 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
         // publish the document
         DocumentModel publishedProxy = session.publishDocument(doc1, section);
         session.save();
-        closeSession();
 
         // read the relations carried by the proxy, comments should not be
         // copied on the proxy, just ordinary relations
@@ -214,9 +211,10 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
                 RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
         addSomeRelations(docToDeleteResource);
 
-        //now check that the relations were added
+        // now check that the relations were added
 
-        List<Statement> statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
+        List<Statement> statementsOnDeleted = getRelations(docResource2,
+                docToDeleteResource);
         assertEquals(1, statementsOnDeleted.size());
 
         // publish the document
@@ -233,11 +231,12 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
 
         // check that relations are still there on the published doc after the
         // doc was deleted
-        List<Statement> statementsOnPublishedResource = getRelations(publishedResource, null);
+        List<Statement> statementsOnPublishedResource = getRelations(
+                publishedResource, null);
         assertNotNull(statementsOnPublishedResource);
         assertEquals(2, statementsOnPublishedResource.size());
 
-        // check that all relations  the deleted docs was part of are deleted
+        // check that all relations the deleted docs was part of are deleted
 
         statementsOnDeleted = getRelations(docResource2, docToDeleteResource);
         assertEquals(0, statementsOnDeleted.size());
@@ -254,14 +253,14 @@ public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
     }
 
     private List<Statement> getRelations(Resource resource1, Resource resource2)
-    throws ClientException {
+            throws ClientException {
         List<Statement> statements = relationManager.getStatements(
-                RelationConstants.GRAPH_NAME, new StatementImpl(resource1, null,
-                        resource2));
+                RelationConstants.GRAPH_NAME, new StatementImpl(resource1,
+                        null, resource2));
         if (statements != null) {
             statements.addAll(relationManager.getStatements(
-                    RelationConstants.GRAPH_NAME, new StatementImpl(resource2, null,
-                            resource1)));
+                    RelationConstants.GRAPH_NAME, new StatementImpl(resource2,
+                            null, resource1)));
         }
         return statements;
 
