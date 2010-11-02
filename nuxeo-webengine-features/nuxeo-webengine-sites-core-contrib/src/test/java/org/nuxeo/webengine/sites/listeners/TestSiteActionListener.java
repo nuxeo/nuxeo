@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.webengine.sites.listeners;
 
 import org.apache.commons.logging.Log;
@@ -68,7 +85,7 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
         assertEquals("website", website1URL);
-        
+
         String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
                 SiteConstants.WEBCONTAINER_URL);
 
@@ -76,7 +93,7 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         String path2 = (String) session.getDocument(website2.getRef()).getPathAsString();
         assertEquals("/folder1/website", path1);
         assertEquals("/folder2/website", path2);
-        
+
         assertFalse(website1URL.equals(website2URL));
     }
 }
