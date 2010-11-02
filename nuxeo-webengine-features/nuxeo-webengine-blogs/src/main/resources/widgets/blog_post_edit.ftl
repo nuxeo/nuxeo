@@ -5,7 +5,6 @@
 <script type="text/javascript" src="${skinPath}/script/tiny_mce/themes/simple/editor_template.js"></script>
 <!-- end tinyMCE -->
 
-
 <form name="blogPostEdit" method="POST" action="${This.path}/modifyWebPage" accept-charset="utf-8">
   <table class="modifyWebPage">
     <tbody>
@@ -13,20 +12,21 @@
         <td>${Context.getMessage("label.blogpost.title")}</td>
       </tr>
       <tr>
-        <td><input type="text" name="title" value="${Document.title}"/></td>
+        <td><input type="text" size="60" name="title" value="${Document.title}"/></td>
       </tr>
       <tr>
         <td>${Context.getMessage("label.blogpost.description")}</td>
       </tr>
       <tr>
-        <td><textarea name="description">${Document.dublincore.description}</textarea></td>
+        <td><textarea name="description" cols="80">${Document.dublincore.description}</textarea></td>
       </tr>
       <tr>
         <td>${Context.getMessage("label.blogpost.content")}</td>
       </tr>
       <tr>
         <td>
-          <textarea name="richtextEditorEdit" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditorEdit">${Document.webpage.content}</textarea>
+          <textarea name="richtextEditorEdit" style="width:300px; height:400px" cols="80" rows="20"
+          	id="richtextEditorEdit">${Document.webpage.content}</textarea>
         </td>
       </tr>
       <tr>
@@ -44,12 +44,11 @@
 
 <script type="text/javascript">
 $('#richtextEditorEdit').ready(function() {
-
   document.tmceEdit = new tinymce.Editor('richtextEditorEdit',{
-  mode : "textareas",
-  theme : "advanced",
-  editor_selector : "mceAdvanced"
-    });
+  	mode : "textareas",
+  	theme : "advanced",
+  	editor_selector : "mceAdvanced"
+  });
 
   document.tmceEdit.render();
 });
