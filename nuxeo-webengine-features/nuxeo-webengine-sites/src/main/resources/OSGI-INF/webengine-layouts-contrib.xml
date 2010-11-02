@@ -125,6 +125,9 @@
         <fields>
           <field>webc:moderationType</field>
         </fields>
+        <helpLabels>
+          <label mode="any">label.widget.webcontainer.moderationType.info</label>
+        </helpLabels>
         <properties mode="any">
           <property name="template">
             /widgets/moderation_type_widget_template.xhtml
@@ -187,6 +190,9 @@
           </mode>
           <mode value="create">hidden</mode>
         </widgetModes>
+        <properties widgetMode="edit">
+          <property name="rows">15</property>
+        </properties>
       </widget>
 
 

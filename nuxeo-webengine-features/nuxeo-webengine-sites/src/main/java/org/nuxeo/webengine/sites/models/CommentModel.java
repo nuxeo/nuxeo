@@ -34,6 +34,8 @@ public class CommentModel extends AbstractModel {
 
     private String creationDate;
 
+    private String siteUrl;
+
     private boolean pendingComment;
 
     public CommentModel(String creationDate, String author, String commentText,
@@ -83,6 +85,14 @@ public class CommentModel extends AbstractModel {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
     }
 
 }

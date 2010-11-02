@@ -18,9 +18,9 @@ package org.nuxeo.connect.update.impl.task;
 
 /**
  * Base class for flush like commands.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class PostInstallCommand extends AbstractCommand {
 

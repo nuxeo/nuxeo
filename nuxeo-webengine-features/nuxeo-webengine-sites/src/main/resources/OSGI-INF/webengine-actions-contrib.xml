@@ -30,6 +30,7 @@
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>WebSite</type>
+        <type>WebPage</type>
       </rule>
     </filter>
 

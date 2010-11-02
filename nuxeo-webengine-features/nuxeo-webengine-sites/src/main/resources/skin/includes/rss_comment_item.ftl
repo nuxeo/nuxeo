@@ -1,5 +1,6 @@
 <item>
   <title>${item.creationDate}</title>
-  <link>${item.author}</link>
+  <author>${item.author}</author>
+  <link>${item.siteUrl}</link>
   <description>${item.commentText}</description>
 </item>

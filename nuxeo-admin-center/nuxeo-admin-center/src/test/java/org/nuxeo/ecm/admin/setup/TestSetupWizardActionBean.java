@@ -37,7 +37,7 @@ import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class TestSetupWizardActionBean {
 
