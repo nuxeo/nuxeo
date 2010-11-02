@@ -41,6 +41,10 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
 
+      <!-- Add 10 min cache to avoid refetching the groups during login --> 
+      <cacheTimeout>360</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+
       <references>
         <tableReference field="members" directory="userDirectory"
           table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
