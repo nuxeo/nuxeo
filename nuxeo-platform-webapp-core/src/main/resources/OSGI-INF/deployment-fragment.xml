@@ -55,17 +55,6 @@
     <page view-id="/nxstartup.xhtml"
       action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}" />
 
-    <!-- To redirect to the user dashboard instead, use instead:
-
-      <page view-id="/nxstartup.xhtml"
-      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'user_dashboard')}" />
-
-      or for the OpenSocial dashboard:
-
-      <page view-id="/nxstartup.xhtml"
-      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'opensocial_dashboard')}" />
-    -->
-
     <!--  config for workspace management
       = give a description for each viewId
     -->
