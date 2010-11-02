@@ -69,6 +69,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
                     serversNode.appendChild(server);
                 }
                 res.setEntity(result.asXML(), MediaType.TEXT_XML);
+                res.getEntity().setCharacterSet(CharacterSet.UTF_8);
                 return;
             } catch (Exception e) {
                 handleError(result, res, e);

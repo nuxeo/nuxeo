@@ -27,6 +27,7 @@ import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -92,6 +93,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements
             docElement.addElement(docRefTag).setText(
                     "Document " + docId + " deleted");
             res.setEntity(result.asXML(), MediaType.TEXT_XML);
+            res.getEntity().setCharacterSet(CharacterSet.UTF_8);
         } catch (ClientException e) {
             log.error(e.getMessage(), e);
             handleError(res, e);

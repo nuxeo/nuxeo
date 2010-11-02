@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentTreeWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -148,6 +149,9 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                 exportAsTree, exportAsZip, needUnrestricted);
 
         res.setEntity(entity);
+        if (mediaType == MediaType.TEXT_XML) {
+            res.getEntity().setCharacterSet(CharacterSet.UTF_8);
+        }
     }
 
     protected Representation makeRepresentation(MediaType mediaType,

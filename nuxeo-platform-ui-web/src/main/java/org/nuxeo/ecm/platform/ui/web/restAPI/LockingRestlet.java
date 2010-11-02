@@ -25,6 +25,7 @@ import java.util.Date;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -147,6 +148,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         current.setAttribute("message", response);
         result.setRootElement((org.dom4j.Element) current);
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 
     private static String getLockToken(String user) {
