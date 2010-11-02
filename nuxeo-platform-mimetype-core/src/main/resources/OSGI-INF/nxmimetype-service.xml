@@ -889,9 +889,7 @@
         <extension>m4a</extension>
         <extension>m4b</extension>
         <extension>m4p</extension>
-        <extension>m4v</extension>
         <extension>m4r</extension>
-        <extension>3gp</extension>
         <extension>mp4</extension>
       </extensions>
     </mimetype>
@@ -1001,6 +999,33 @@
       <extensions>
         <extension>viv</extension>
         <extension>vivo</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/x-m4v" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/x-m4v</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>m4v</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/3gpp" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/3gpp</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>3gp</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="video/3gpp2" binary="true" iconPath="video.png">
+      <mimetypes>
+        <mimetype>video/3gpp2</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>3g2</extension>
       </extensions>
     </mimetype>
 
