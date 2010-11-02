@@ -299,7 +299,9 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
                 session.removeDocument(docRef);
             }
             session.save();
-            return redirect(SiteUtils.getPagePath(webContainer, webContainer));
+
+            return redirect(URIUtils.quoteURIPathComponent(
+                    SiteUtils.getPagePath(webContainer, webContainer), false));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
