@@ -217,6 +217,11 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
                 break;
             }
         }
+        // be sure we have at least one item in the breadcrumb otherwise the upnavigation will fail
+        if (shrinkedPath.size()==0) {
+            // this means the current document has a title longer than MAX_PATH_CHAR_LEN !
+            shrinkedPath.add(0, paths.get(paths.size()-1));
+        }
         shrinkedPath.add(0, new TextPathElement(PATH_SHORTCUT));
         return shrinkedPath;
     }
