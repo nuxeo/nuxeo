@@ -81,6 +81,22 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
      */
     public void testMimeTypeUpdaterWithoutPrefix() throws Exception {
         DocumentModel doc = createWithoutPrefixBlobDocument(false);
+        Blob blob = (Blob) doc.getProperty("wihtoutpref", "blob");
+        assertNotNull(blob);
+        String mt = blob.getMimeType();
+        assertNotNull(mt);
+        assertEquals("application/pdf", mt);
+    }
+
+    /**
+     * Testing mime type update with a schema with prefix.
+     * https://jira.nuxeo.org/browse/NXP-3972 <a
+     * href="https://jira.nuxeo.org/browse/NXP-3972">NXP-3972</a>
+     *
+     * @throws Exception
+     */
+    public void testMimeTypeUpdaterWithPrefix() throws Exception {
+        DocumentModel doc = createWithPrefixBlobDocument(false);
         Blob blob = (Blob) doc.getProperty("simpleblob", "blob");
         assertNotNull(blob);
         String mt = blob.getMimeType();
@@ -93,6 +109,28 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
     }
 
     protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType)
+            throws ClientException {
+        DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel(
+                "/", "testFile", "WithoutPrefixDocument");
+        withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
+
+        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        blob.setFilename("test.pdf");
+        if (setMimeType) {
+            blob.setMimeType("application/pdf");
+        }
+        withoutPrefixBlobDoc.setProperty("wihtoutpref", "blob", blob);
+
+        withoutPrefixBlobDoc = getCoreSession().createDocument(
+                withoutPrefixBlobDoc);
+
+        getCoreSession().saveDocument(withoutPrefixBlobDoc);
+        getCoreSession().save();
+
+        return withoutPrefixBlobDoc;
+    }
+
+    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType)
             throws ClientException {
         DocumentModel withoutPrefixBlobDoc = getCoreSession().createDocumentModel(
                 "/", "testFile", "SimpleBlobDocument");
