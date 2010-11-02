@@ -69,6 +69,9 @@ public class LDAPFilterMatcher {
      */
     public boolean match(Attributes attributes, String filter)
             throws DirectoryException {
+        if (filter == null || "".equals(filter)) {
+            return true;
+        }
         try {
             ExprNode parsedFilter = parser.parse(filter);
             return recursiveMatch(attributes, parsedFilter);
@@ -90,7 +93,7 @@ public class LDAPFilterMatcher {
             return branchMatch(attributes, (BranchNode) filterElement);
         } else {
             throw new DirectoryException("unsupported filter element type: "
-                    + filterElement.toString());
+                    + filterElement);
         }
     }
 
@@ -108,8 +111,8 @@ public class LDAPFilterMatcher {
      *
      * @return true if the equality holds
      */
-    private static boolean simpleMatch(Attributes attributes, SimpleNode simpleElement)
-            throws DirectoryException {
+    private static boolean simpleMatch(Attributes attributes,
+            SimpleNode simpleElement) throws DirectoryException {
         Attribute attribute = attributes.get(simpleElement.getAttribute());
         if (attribute == null) {
             // null attribute cannot match any equality statement

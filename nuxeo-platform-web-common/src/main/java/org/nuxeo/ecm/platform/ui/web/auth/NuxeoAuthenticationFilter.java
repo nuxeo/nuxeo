@@ -217,7 +217,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.error("Login failed for " + cachableUserIdent.getUserInfo().getUserName(), e);
+            log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             return null;
         }
@@ -682,6 +682,12 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected boolean isStartPageValid(String startPage) {
         if (startPage == null) {
+            return false;
+        }
+        try {
+            // Sometimes, the service is not initialized at startup
+            doInitIfNeeded();
+        } catch (ServletException e) {
             return false;
         }
         for (String prefix : service.getStartURLPatterns()) {
