@@ -463,6 +463,7 @@ namespace NuxeoCtl
 
 		void StartClick(object sender, System.EventArgs e)
 		{
+            clearLogs();
 			bool statusChanged;
 			if (nxService!=null) {
 				statusChanged=StartService();
@@ -491,6 +492,11 @@ namespace NuxeoCtl
 				stopButton.Enabled=false;
 			}
 		}
+
+        void clearLogs()
+        {
+            logBox.Clear();
+        }
 
 		void TerminateClick(object sender, EventArgs e)
 		{
