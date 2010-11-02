@@ -1,0 +1,78 @@
+package org.nuxeo.webengine.sites.listeners;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.webengine.sites.utils.SiteConstants;
+
+public class TestSiteActionListener extends SQLRepositoryTestCase {
+
+    protected Log log = LogFactory.getLog(TestSiteActionListener.class);
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+        deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib",
+                "OSGI-INF/core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.webengine.sites.core.contrib",
+                "OSGI-INF/webengine-sites-listener-contrib.xml");
+        openSession();
+    }
+
+    public void testTestSiteAction() throws ClientException {
+        DocumentModel website1 = session.createDocumentModel("WebSite");
+        website1.setPathInfo("/", "website");
+        website1 = session.createDocument(website1);
+        session.save();
+
+        DocumentModel website2 = session.createDocumentModel("WebSite");
+        website2.setPathInfo("/", "website");
+        website2 = session.createDocument(website2);
+        session.save();
+
+        String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
+                SiteConstants.WEBCONTAINER_URL);
+        String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
+                SiteConstants.WEBCONTAINER_URL);
+        log.info("webSite1 URL : " + website1URL);
+        log.info("webSite2 URL : " + website2URL);
+        assertTrue(!(website1URL.equals(website2URL)));
+    }
+
+    public void testTestSiteActionWithWebSiteNotInTheSameContainer()
+            throws ClientException {
+        DocumentModel folder1 = session.createDocumentModel("Folder");
+        folder1.setPathInfo("/", "folder1");
+        session.createDocument(folder1);
+        session.save();
+
+        DocumentModel folder2 = session.createDocumentModel("Folder");
+        folder2.setPathInfo("/", "folder2");
+        session.createDocument(folder2);
+        session.save();
+
+        DocumentModel website1 = session.createDocumentModel("WebSite");
+        website1.setPathInfo("/folder1", "website");
+        website1 = session.createDocument(website1);
+        session.save();
+
+        DocumentModel website2 = session.createDocumentModel("WebSite");
+        website2.setPathInfo("/folder2", "website");
+        website2 = session.createDocument(website2);
+        session.save();
+
+        String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
+                SiteConstants.WEBCONTAINER_URL);
+        String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
+                SiteConstants.WEBCONTAINER_URL);
+        log.info("webSite1 path : " + (String) session.getDocument(website1.getRef()).getPathAsString());
+        log.info("webSite2 path : " + (String) session.getDocument(website2.getRef()).getPathAsString());
+        log.info("webSite1 URL : " + website1URL);
+        log.info("webSite2 URL : " + website2URL);
+        assertTrue(!(website1URL.equals(website2URL)));
+    }
+}

@@ -60,16 +60,13 @@ public class SiteActionListener implements EventListener {
 
             String url = doc.getName();
             int sameName = 0;
-            DocumentModelList otherChildren = docCtx.getCoreSession().getChildren(doc.getParentRef());
-            for (DocumentModel child : otherChildren) {
-                if (child.getType().equals(doc.getType())) {
-                    if (child.getName().startsWith(url)) {
-                        sameName+=1;
-                    }
-                }
-            }
-            if (sameName>0) {
-                url = url + "_" + (sameName+1);
+            String documentWithSameURLQuery = "SELECT * FROM DOCUMENT where "
+                    + SiteConstants.WEBCONTAINER_URL + " STARTSWITH \"" + url
+                    + "\"";
+            DocumentModelList documentWithSameURL = docCtx.getCoreSession().query(
+                    documentWithSameURLQuery);
+            if (documentWithSameURL.size() > 0) {
+                url = url + "_" + (sameName + 1);
             }
 
             doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, url);
