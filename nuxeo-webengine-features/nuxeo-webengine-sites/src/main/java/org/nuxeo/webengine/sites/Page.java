@@ -123,6 +123,7 @@ public class Page extends AbstractSiteDocumentObject {
         }
     }
 
+
     @Override
     protected String getSchemaFieldThemeName() {
         return WEBPAGE_SCHEMA_THEME;
@@ -158,6 +159,11 @@ public class Page extends AbstractSiteDocumentObject {
     @Override
     protected String getSearchThemePage() {
         return SEARCH_THEME_PAGE;
+    }
+
+    @Override
+    protected String getDocumentDeletedErrorTemplateName() {
+        return "error_deleted_page.ftl";
     }
 
 }
