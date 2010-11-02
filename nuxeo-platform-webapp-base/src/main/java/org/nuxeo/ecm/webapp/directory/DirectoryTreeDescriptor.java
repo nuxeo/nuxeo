@@ -59,7 +59,7 @@ public class DirectoryTreeDescriptor {
      */
     @Deprecated
     @XNode("@querymodel")
-    protected String querymodel = "defaultSearchForm";
+    protected String querymodel;
 
     /**
      * Content view to be updated on node selection
