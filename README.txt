@@ -27,4 +27,5 @@ To add a new widget type to the application, you need to:
 - declare this template with a view id in OSGI-INF/deployment-fragment.xml
 - provide the widget sample xml configuration in OSGI-INF/demo and
   reference it in the MANIFEST
-- configure the widget type in OSGI-INF/layout-demo-contrib.xml 
+- configure the widget type in OSGI-INF/layout-demo-contrib.xml
+ 
