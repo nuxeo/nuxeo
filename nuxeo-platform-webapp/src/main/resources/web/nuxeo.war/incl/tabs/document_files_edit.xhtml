@@ -36,6 +36,7 @@
     <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
       listHeight="150" maxFilesQuantity="5"
       id="upload"
+      locale="#{localeSelector.localeString}"
       immediateUpload="true" >
       <a4j:support  onsubmit="removeUploadedFile(event.memo.entry);" event="onclear"/>
     </rich:fileUpload>
