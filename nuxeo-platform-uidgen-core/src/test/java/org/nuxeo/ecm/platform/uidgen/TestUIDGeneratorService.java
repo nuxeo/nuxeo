@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -50,14 +51,12 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
+        NamingContextFactory.setAsInitial();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.uidgen.core");
-
-        DataSourceHelper.setup();
 
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
@@ -74,18 +73,23 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
     public void testUIDGenerator() throws Exception {
         String docTypeName = "GeideDoc";
         // create Geide doc
         DocumentModel gdoc = createDocumentModel(docTypeName);
         gdoc.setProperty("dublincore", "title", "testGdoc_Title");
         gdoc.setProperty("dublincore", "description", "testGdoc_description");
-        gdoc.setProperty("geide", "application_emetteur", "T4");
+        gdoc.setProperty("geide", "application_emetteur", "T5");
 
         String uid = service.createUID(gdoc);
 
         final int year = new GregorianCalendar().get(Calendar.YEAR);
-        final String expected = "T4" + year + "00001";
+        final String expected = "T5" + year + "00001";
         assertEquals(expected, uid);
     }
 

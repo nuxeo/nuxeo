@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -42,31 +43,31 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestGen extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        NamingContextFactory.setAsInitial();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core"); // for dublincore
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.uidgen.core");
 
-        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
-                "nxuidgenerator-test-contrib.xml");
-
-        DataSourceHelper.setup();
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-test-contrib.xml");
 
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(
-                SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(
-                SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
+        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     public void testUIDGenerator() throws Exception {
@@ -133,15 +134,14 @@ public class TestGen extends NXRuntimeTestCase {
         gdoc.setProperty("dublincore", "title", "testGdoc_Title");
         gdoc.setProperty("dublincore", "description", "testGdoc_description");
         gdoc.setProperty("geide", "application_emetteur", "T4");
-        gdoc.setProperty("geide", "atelier_emetteur", "ATELIER3_");
+        gdoc.setProperty("geide", "atelier_emetteur", "ATELIER4_");
 
         for (int i = 1; i < 100; i++) {
             // local instantiation
             // TODO make it real
 
             EventContext ctx = new DocumentEventContext(null, null, gdoc);
-            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED,
-                    ctx);
+            Event event = new EventImpl(DocumentEventTypes.DOCUMENT_CREATED, ctx);
             new DocUIDGeneratorListener().handleEvent(event);
 
             String uid = (String) gdoc.getProperty("uid", "uid");
@@ -149,7 +149,7 @@ public class TestGen extends NXRuntimeTestCase {
 
             final int year = new GregorianCalendar().get(Calendar.YEAR);
             final String suffix = String.format("%05d", i);
-            final String expected = "ATELIER3_" + year + suffix;
+            final String expected = "ATELIER4_" + year + suffix;
             assertEquals(expected, uid);
             assertEquals(expected, uid2);
         }
