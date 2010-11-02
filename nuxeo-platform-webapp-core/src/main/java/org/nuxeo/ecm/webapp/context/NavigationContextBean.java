@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.types.Type;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.pathelements.ArchivedVersionsPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.DocumentPathElement;
+import org.nuxeo.ecm.platform.ui.web.pathelements.HiddenDocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
 import org.nuxeo.ecm.platform.ui.web.util.BadDocumentUriException;
@@ -873,7 +875,7 @@ public class NavigationContextBean implements NavigationContextLocal,
 
                 List<DocumentModel> parentList = documentManager.getParentDocuments(sourceDocument.getRef());
                 for (DocumentModel docModel : parentList) {
-                    parents.add(new DocumentPathElement(docModel));
+                    parents.add(getDocumentPathElement(docModel));
                 }
 
                 parents.add(new ArchivedVersionsPathElement(sourceDocument));
@@ -881,12 +883,18 @@ public class NavigationContextBean implements NavigationContextLocal,
             } else {
                 if (currentDocumentParents != null) {
                     for (DocumentModel docModel : currentDocumentParents) {
-                        parents.add(new DocumentPathElement(docModel));
+                        parents.add(getDocumentPathElement(docModel));
                     }
                 }
             }
         }
+    }
 
+    protected PathElement getDocumentPathElement(DocumentModel doc) {
+        if (doc != null && doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION)) {
+            return new HiddenDocumentPathElement(doc);
+        }
+        return new DocumentPathElement(doc);
     }
 
     @SuppressWarnings("unused")
