@@ -70,6 +70,10 @@ public class SessionProvider {
     }
 
     public synchronized void destroy(Principal principal) throws Exception {
+        if (sessions == null || sessions.isEmpty()) {
+            sessions = null;
+            return;
+        }
         LoginContext lc = null;
         try {
             lc = Framework.loginAs(principal.getName());
