@@ -24,5 +24,3 @@ Import-Package: javax.annotation;version="1.0",
  org.xml.sax
 Fragment-Host: org.nuxeo.osgi
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-tomcat-adapter;singleton:=true
-Nuxeo-Require: system.bundle,
-  org.nuxeo.runtime

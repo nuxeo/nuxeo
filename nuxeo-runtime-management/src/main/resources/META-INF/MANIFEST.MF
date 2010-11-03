@@ -23,5 +23,4 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model,
  org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.runtime.management;singleton:=true
-Nuxeo-Require: org.nuxeo.runtime
 Eclipse-BuddyPolicy: dependent

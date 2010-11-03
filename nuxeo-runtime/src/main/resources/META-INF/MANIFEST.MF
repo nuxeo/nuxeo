@@ -77,4 +77,3 @@ Import-Package: javax.management,
  org.w3c.dom,
  org.w3c.dom.ranges
 Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
-Nuxeo-Require: org.nuxeo.osgi

@@ -19,4 +19,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.remoting,
  org.nuxeo.runtime.remoting.transporter
 Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true
-Nuxeo-Require: org.nuxeo.runtime

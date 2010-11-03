@@ -5,7 +5,6 @@ Bundle-Name: Nuxeo Metrics
 Bundle-SymbolicName: org.nuxeo.runtime.management.metrics;singleton:=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/runtime-management-metrics-component.xml
-Nuxeo-Require: org.nuxeo.runtime
 Eclipse-BuddyPolicy: dependent
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.thoughtworks.xstream,
