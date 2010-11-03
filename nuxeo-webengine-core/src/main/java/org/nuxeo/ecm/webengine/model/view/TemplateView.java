@@ -35,15 +35,13 @@ import org.nuxeo.runtime.api.Framework;
  * A view to be used by regular JAX-RS resources to be able to use freemarker templates.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TemplateView {
 
     protected URL url;
     protected WebContext ctx;
     protected Object target;
-    protected Map<String,Object> bindings;
-
+    protected Map<String, Object> bindings;
 
     public static URL findTemplate(Object owner, String name) {
         URL url = owner.getClass().getResource(name);
@@ -56,17 +54,17 @@ public class TemplateView {
         return url;
     }
 
-    public TemplateView(Object owner, String name) {
-        this (WebEngine.getActiveContext(), owner, name);
-    }
+	public TemplateView(Object owner, String name) {
+		this(WebEngine.getActiveContext(), owner, name);
+	}
 
-    public TemplateView(WebContext ctx, Object owner, String name) {
-        this (ctx, owner, findTemplate(owner, name));
-    }
+	public TemplateView(WebContext ctx, Object owner, String name) {
+		this(ctx, owner, findTemplate(owner, name));
+	}
 
-    public TemplateView(Object owner, URL url) {
-        this (WebEngine.getActiveContext(), owner, url);
-    }
+	public TemplateView(Object owner, URL url) {
+		this(WebEngine.getActiveContext(), owner, url);
+	}
 
     public TemplateView(WebContext ctx, Object owner, URL url) {
         if (ctx == null) {
@@ -114,10 +112,10 @@ public class TemplateView {
         }
     }
 
-
     public String getString() {
         StringWriter writer = new StringWriter();
         render(writer);
         return writer.toString();
     }
+
 }

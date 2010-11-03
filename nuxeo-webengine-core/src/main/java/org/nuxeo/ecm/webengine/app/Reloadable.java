@@ -18,7 +18,6 @@ package org.nuxeo.ecm.webengine.app;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Reloadable {
 

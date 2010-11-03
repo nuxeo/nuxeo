@@ -35,7 +35,6 @@ import org.nuxeo.ecm.webengine.model.Template;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Produces("*/*")
@@ -54,7 +53,6 @@ public class TemplateWriter implements MessageBodyWriter<Template> {
 
     public long getSize(Template arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
-        // TODO Auto-generated method stub
         return -1;
     }
 

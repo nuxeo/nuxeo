@@ -22,8 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.Reloadable;
 import org.nuxeo.ecm.webengine.app.Reloader;
@@ -32,16 +30,15 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
- * JAX-RS servlet based on jersey servlet to provide hot reloading
- * Use it as the webengine servlet in web.xml if you want hot reload, otherwise use {@link ServletContainer} 
+ * JAX-RS servlet based on jersey servlet to provide hot reloading.
+ * <p>
+ * Use it as the webengine servlet in web.xml if you want hot reload, otherwise use {@link ServletContainer}.
+ *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ReloadingJerseyServlet extends ServletContainer implements Reloadable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(ReloadingJerseyServlet.class);
 
     protected Reloader reloader;
 
@@ -64,7 +61,8 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
         reloader.check();
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
-            // force reading properties because jersey is consuming one character from the input stream - see WebComponent.isEntityPresent.
+            // force reading properties because jersey is consuming one character from the input stream
+        	// see WebComponent.isEntityPresent.
             request.getParameterMap();             
         }
         super.service(request, response);

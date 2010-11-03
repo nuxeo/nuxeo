@@ -37,7 +37,6 @@ import org.nuxeo.ecm.webengine.model.view.TemplateView;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 @Produces("*/*")
@@ -59,7 +58,6 @@ public class TemplateViewWriter implements MessageBodyWriter<TemplateView> {
 
     public long getSize(TemplateView arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
-        // TODO Auto-generated method stub
         return -1;
     }
 

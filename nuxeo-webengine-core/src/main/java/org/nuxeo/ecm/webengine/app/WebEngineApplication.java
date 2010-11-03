@@ -33,10 +33,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * A composite application that aggregate all webengine deployed modules as a single JAX-RS application.
+ * <p>
  * Should be used as the value of the <code>javax.ws.rs.Application</code> init-param of JAX-RS servlet in the web.xml file. 
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineApplication extends Application {
 

@@ -24,7 +24,6 @@ import org.nuxeo.ecm.webengine.WebEngine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Reloader {
 
@@ -103,6 +102,5 @@ public class Reloader {
             reloadable.reload();
         }
     }
-    
     
 }

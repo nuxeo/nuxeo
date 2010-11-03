@@ -29,7 +29,6 @@ import org.nuxeo.runtime.annotations.loader.Indexable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

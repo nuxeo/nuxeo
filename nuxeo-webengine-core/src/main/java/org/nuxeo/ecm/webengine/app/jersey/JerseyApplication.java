@@ -34,11 +34,10 @@ import com.sun.jersey.spi.inject.Injectable;
 import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
- * Experimental - Can be used to inject WebContext through @Context annotation.
+ * Experimental - Can be used to inject WebContext through {@code @Context} annotation.
  * Do not use it for now.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 public class JerseyApplication extends WebEngineApplication implements InjectableProvider<Context, Type> {
@@ -57,7 +56,9 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
     }
 
     public Injectable<?> getInjectable(ComponentContext cc, Context a, Type t) {
-        if (!(t instanceof Class<?>)) return null;
+        if (!(t instanceof Class<?>)) {
+        	return null;
+        }
 
         try {
             Class<?> c = (Class<?>)t;

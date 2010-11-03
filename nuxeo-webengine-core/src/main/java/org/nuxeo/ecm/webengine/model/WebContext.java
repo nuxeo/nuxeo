@@ -42,7 +42,6 @@ import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface WebContext extends Adaptable {
 
@@ -51,13 +50,10 @@ public interface WebContext extends Adaptable {
      * This variable is used in a proxy setting. The proxy should send a header
      * with this name. Webengine will assume that the base path of the
      * application is this value.
-     * </p>
-     *
      * <p>
      * If your application is on server localhost:8080/nuxeo/site/myapp and you
      * proxy it via mysite.com/myapp, then the header should have an empty
      * string value.
-     * </p>
      */
     String NUXEO_WEBENGINE_BASE_PATH = "nuxeo-webengine-base-path";
 
@@ -127,8 +123,7 @@ public interface WebContext extends Adaptable {
     String getMessageL(String key, String locale, List<Object> args);
 
     /**
-     * Get the context locale.
-     *
+     * Gets the context locale.
      * <p>
      * If the locale has been set using {@link #setLocale(Locale)}, returns the
      * last locale set. Otherwise, compute it from the Accept-Language language
