@@ -109,5 +109,3 @@ Import-Package: com.sun.jersey.core.spi.component,
  org.w3c.dom
 Eclipse-BuddyPolicy: dependent
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.platform.rendering

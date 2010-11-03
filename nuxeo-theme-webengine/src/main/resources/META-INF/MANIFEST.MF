@@ -7,4 +7,3 @@ Nuxeo-Component: OSGI-INF/nxthemes-webengine-contrib.xml
 Bundle-Localization: bundle
 Bundle-Version: ${eclipseVersion}-r${buildNumber}
 Require-Bundle: org.nuxeo.theme.html, org.nuxeo.ecm.webengine.core
-Nuxeo-Require: org.nuxeo.ecm.webengine.core
