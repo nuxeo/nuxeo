@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.jboss.seam.annotations.In;
@@ -66,7 +68,12 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
 
         for (String pathElement : pathElements) {
             if (pathElement != null && !pathElement.trim().equals("")) {
-                relativePath = relativePath + '/' + pathElement;
+                try {
+                    relativePath = relativePath + '/'
+                            + URLDecoder.decode(pathElement, "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalArgumentException(e);
+                }
             }
         }
 
