@@ -39,12 +39,12 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @deprecated needs to be kept in sync with the one from nuxeo-runtime-launcher
  *             until they are merged
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FrameworkBootstrap implements LoaderConstants {
 
-    protected static final String DEFAULT_BUNDLES_CP = "bundles/*";
+    protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
 
     protected static final String DEFAULT_LIBS_CP = "lib/*:.:config";
 
@@ -189,7 +189,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     *
+     * 
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
@@ -199,7 +199,7 @@ public class FrameworkBootstrap implements LoaderConstants {
             buildLibsClassPath(libsCp);
         }
         String bundlesCp = (String) env.get(BUNDLES);
-        if (libsCp != null) {
+        if (bundlesCp != null) {
             buildBundlesClassPath(bundlesCp, bundleFiles);
         }
         extractNestedJars(bundleFiles, new File(home, "tmp/nested-jars"));
