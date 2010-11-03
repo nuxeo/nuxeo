@@ -1749,4 +1749,7 @@
     <style element="page[3]/section[3]/cell[1]|page[3]/section[3]/cell[2]" inherit="common style 1">
     </style>
   </formats>
+  <presets>
+    <preset category="image" name="site.logo" label="Site logo" description="Site logo image (max: 120x40 pixels)">url(nuxeo DM/nuxeo_5.2_logo.png)</preset>
+  </presets>
 </theme>
