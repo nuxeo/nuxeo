@@ -33,35 +33,35 @@ import org.nuxeo.ecm.webengine.model.Resource;
 /**
  * An internal registry implementing the internal work of registering applications and extensions.
  * The registry is not thread safe and neither secure to concurrent modifications - synchronization is ensured by the application manager.
- * Modifying the registry is happening only at deploy and redeploy time.  
- * At runtime only lookups are performed. 
- *  
+ * Modifying the registry is happening only at deploy and redeploy time.
+ * At runtime only lookups are performed.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ModuleRegistry {
 
-    private static final Log log = LogFactory.getLog(ModuleRegistry.class); 
-    
+    private static final Log log = LogFactory.getLog(ModuleRegistry.class);
+
     protected WebEngine engine;
-    
+
     /**
      * A map between bundled application ID and the provided WebEngine module
      */
     protected Map<String, ModuleHandler> modules;
-    
+
     /**
      * Mapping between root resource type and its module
      */
     protected Map<String, ModuleHandler> modulesByRoot;
-    
+
     /**
      * Resources contributed from an applications to other applications.
-     * A map of key : value where key is the target parent resource class 
+     * A map of key : value where key is the target parent resource class
      * and value is a list of contributed child resources.
      */
     protected ClassRegistry<ResourceContributions> contributions;
-    
+
     //TODO impl resource factories
     //protected Map<String, ResourceFactory> factories;
 
@@ -72,19 +72,19 @@ public class ModuleRegistry {
         modulesByRoot = new HashMap<String, ModuleHandler>();
         contributions = new ClassRegistry<ResourceContributions>(ExtensibleResource.class);
     }
-    
+
     public ModuleHandler[] getModuleHandlers() {
         return modulesByRoot.values().toArray(new ModuleHandler[modulesByRoot.size()]);
     }
-    
+
     public ModuleHandler getModuleHandlerFor(Class<?> rootResource) {
         return modulesByRoot.get(rootResource.getName());
     }
 
     public ModuleHandler getModuleHandler(String appId) {
         return modules.get(appId);
-    } 
-    
+    }
+
     public void addApplication(BundledApplication app) {
         if (app.isWebEngineModule()) {
             ModuleHandler mh = new ModuleHandler(engine, app);
@@ -96,14 +96,14 @@ public class ModuleRegistry {
             addContributions(app, mh);
         }
     }
-    
+
     public BundledApplication removeApplication(BundledApplication app) {
         ModuleHandler mh = modules.remove(app.getId());
         if (mh != null) {
             Class<?>[] rc = mh.getRootClasses();
             for (Class<?> c : rc) {
                 modulesByRoot.remove(c.getName());
-            }            
+            }
             removeContributions(app, mh);
         }
         return app;
@@ -134,7 +134,7 @@ public class ModuleRegistry {
     public List<ResourceContribution> getContributions(ExtensibleResource target, String category) {
         ResourceContributions rcs = contributions.get(target.getClass());
         if (rcs != null) {
-            return rcs.getContributions(target, category);            
+            return rcs.getContributions(target, category);
         }
         return null;
     }
@@ -142,7 +142,7 @@ public class ModuleRegistry {
     public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
         ResourceContributions rcs = contributions.get(target.getClass());
         if (rcs != null) {
-            return rcs.getContributions(target, category);            
+            return rcs.getContributions(target, category);
         }
         return null;
     }
@@ -165,7 +165,7 @@ public class ModuleRegistry {
             }
         }
     }
-    
+
     protected void addContributionFor(Class<? extends ExtensibleResource> target, ResourceContribution rc) throws Exception {
         ResourceContributions rcs = contributions.get(target);
         if (rcs == null) {
@@ -174,7 +174,7 @@ public class ModuleRegistry {
         }
         rcs.addContribution(rc);
     }
-    
+
     protected void removeContributions(BundledApplication app, ModuleHandler mh) {
         Class<?>[] xts = mh.getContributions();
         if (xts != null && xts.length > 0) {
@@ -191,5 +191,5 @@ public class ModuleRegistry {
             }
         }
     }
-    
+
 }

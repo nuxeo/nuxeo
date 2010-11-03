@@ -47,9 +47,7 @@ public class Utils {
     }
 
     public static boolean isWebEngineVirtualHosting(final HttpServletRequest request) {
-        if (request.getHeader("nuxeo-webengine-base-path") != null) {
-            return true;
-        }
-        return false;
+        return request.getHeader("nuxeo-webengine-base-path") != null;
     }
+
 }

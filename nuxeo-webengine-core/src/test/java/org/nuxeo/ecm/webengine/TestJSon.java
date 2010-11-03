@@ -28,7 +28,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class TestJSon extends NXRuntimeTestCase {
 
@@ -48,14 +47,13 @@ public class TestJSon extends NXRuntimeTestCase {
 
     /**
      * TODO: Test is not working because of life cycle that is missing ..
-     * @throws Exception
      */
     public void XXXtestJSon() throws Exception {
         final DocumentModelImpl doc = new DocumentModelImpl("/root/folder/wiki1", "test", "File");
         doc.addDataModel(new DataModelImpl("dublincore"));
         DocumentPart dc = doc.getPart("dublincore");
         dc.get("title").setValue("The dublincore title for doc1");
-        dc.get("description").setValue("A descripton *with* wiki code and a WikiName");
+        dc.get("description").setValue("A description *with* wiki code and a WikiName");
         System.out.println(">> "+JSonHelper.toJSon(doc));
     }
 

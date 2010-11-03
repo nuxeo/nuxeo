@@ -33,13 +33,13 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class TypeConvertor<T> {
 
     public abstract Class<?> getType();
-        
+
     public abstract T convert(String value) throws ValidationException;
 
     public Object[] newArray(int length) {
         return (Object[])Array.newInstance(getType(), length);
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> TypeConvertor<T> getConvertor(Class<T> type) {
         if (type == String.class) {
@@ -60,13 +60,13 @@ public abstract class TypeConvertor<T> {
             result = DOUBLE;
         } else if (type == Class.class) {
             result = CLASS;
-        } else { 
+        } else {
             throw new IllegalArgumentException("Unsupported type: "+type);
         }
         return (TypeConvertor<T>)result;
     }
-    
-    
+
+
     public static final TypeConvertor<Boolean> BOOLEAN = new TypeConvertor<Boolean>() {
         @Override
         public Class<?> getType() {
@@ -178,7 +178,7 @@ public abstract class TypeConvertor<T> {
     public static Class<?> loadClass(String name) throws Exception {
         return Framework.getLocalService(WebEngine.class).loadClass(name);
     }
-    
+
     private static final Pattern PATTERN = Pattern.compile(
     "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
 

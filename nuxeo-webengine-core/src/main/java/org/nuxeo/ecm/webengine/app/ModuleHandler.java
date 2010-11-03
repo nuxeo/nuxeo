@@ -23,47 +23,47 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.osgi.framework.Bundle;
 
 /**
- * Manage a WebEngine module. 
- * 
+ * Manage a WebEngine module.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ModuleHandler {
-    
+
     protected WebEngine engine;
-    
+
     /**
-     * The bundled application that deployed the module 
+     * The bundled application that deployed the module
      */
     protected BundledApplication app;
-    
+
     /**
-     * The module instance. The instance is lazy loaded at first access. 
+     * The module instance. The instance is lazy loaded at first access.
      */
     protected volatile Module module;
-    
+
     /**
      * Lock to build module instance
      */
     private final Object lock = new Object();
-    
-    
+
+
     public ModuleHandler(WebEngine engine, BundledApplication app) {
         this.engine = engine;
         this.app = app;
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
-    
+
     public BundledApplication getBundledApplication() {
         return app;
     }
-    
+
     public Bundle getBundle() {
         return app.getBundle();
     }
-    
+
     public Module getModule() {
         Module _module = module;
         if (_module == null) {
@@ -78,23 +78,23 @@ public class ModuleHandler {
         }
         return _module;
     }
-    
+
     /**
      * Reset the module instance - this will force module rebuild on next call to {@link #getModule()}.
      */
     public void reset() {
-        synchronized (lock) {            
+        synchronized (lock) {
             module = null;
         }
     }
-    
+
     /**
      * The module name to be displayed in UI.
      */
     public String getName() {
         return ((WebEngineModule)app.getApplication()).getName();
     }
-    
+
     public Class<?>[] getRootClasses() {
         return ((WebEngineModule)app.getApplication()).getRootClasses();
     }
@@ -102,7 +102,7 @@ public class ModuleHandler {
     public Class<? extends ResourceContribution>[] getContributions() {
         return ((WebEngineModule)app.getApplication()).getContributions();
     }
-        
+
     public Class<? extends WebEngineModule> getBaseModule() {
         return ((WebEngineModule)app.getApplication()).getBaseModule();
     }
@@ -110,5 +110,5 @@ public class ModuleHandler {
     protected Module buildModule() {
         return new DefaultModule(this);
     }
-    
+
 }

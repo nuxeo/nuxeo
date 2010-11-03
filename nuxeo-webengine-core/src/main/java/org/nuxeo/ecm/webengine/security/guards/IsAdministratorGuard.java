@@ -32,11 +32,11 @@ import org.nuxeo.runtime.model.Adaptable;
 public class IsAdministratorGuard implements Guard {
 
     protected boolean isAdministrator;
-    
+
     public IsAdministratorGuard() {
         isAdministrator = true;
     }
-            
+
     public IsAdministratorGuard(String isAdministrator) {
         this.isAdministrator = Boolean.parseBoolean(isAdministrator);
     }
@@ -52,7 +52,7 @@ public class IsAdministratorGuard implements Guard {
         }
         return false;
     }
-    
+
     public boolean isAdministrator() {
         return isAdministrator;
     }

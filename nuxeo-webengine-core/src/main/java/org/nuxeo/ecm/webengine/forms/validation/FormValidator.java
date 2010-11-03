@@ -25,5 +25,5 @@ import org.nuxeo.ecm.webengine.forms.FormDataProvider;
 public interface FormValidator {
 
     void validate(FormDataProvider data, Form form) throws ValidationException;
-    
+
 }

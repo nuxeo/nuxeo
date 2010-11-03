@@ -34,11 +34,11 @@ public class ValidationException extends Exception {
 
     public static final String IS_REQUIRED_MSG = "is required";
     public static final String IS_INVALID_MSG = "is invalid";
-    
+
     protected Map<String, String> invalidFields;
     protected Map<String, String> requiredFields;
-    
-    protected transient Form form; // the form that has errors - should be set by the caller 
+
+    protected transient Form form; // the form that has errors - should be set by the caller
 
     public ValidationException(String message) {
         super(message);
@@ -56,7 +56,7 @@ public class ValidationException extends Exception {
         invalidFields = new HashMap<String, String>();
         requiredFields = new HashMap<String, String>();
     }
-    
+
     @Override
     public String getMessage() {
         String message = super.getMessage();
@@ -153,7 +153,7 @@ public class ValidationException extends Exception {
     public void setForm(Form form) {
         this.form = form;
     }
-    
+
     public Form getForm() {
         return form;
     }

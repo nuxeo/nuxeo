@@ -31,30 +31,30 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public abstract class DocumentResource extends ExtensibleResource {
 
     protected DocumentModel doc;
-    
+
     public DocumentResource(DocumentModel doc) {
         this.doc = doc;
     }
-    
+
     public DocumentResource(WebContext ctx, DocumentModel doc) {
         super (ctx);
         this.doc = doc;
     }
-    
+
     protected DocumentModel getDocument() {
         return doc;
     }
 
     protected DocumentResource getDocumentResource(DocumentModel doc) {
-    	return null;
+        return null;
         //return new DocumentResource(doc);
 //      return getContext().getEngine().getApplicationManager()
 //      .getDocumentResourceFactory().getDocumentResource(doc);
     }
-    
+
     @Override
     protected Object resolveUnmatchedSegment(String key) {
-        try {            
+        try {
             DocumentModel child = getContext().getCoreSession().getDocument(
                     new PathRef(doc.getPath().append(key).toString()));
             return getDocumentResource(child);
@@ -62,5 +62,5 @@ public abstract class DocumentResource extends ExtensibleResource {
             return super.resolveUnmatchedSegment(key);
         }
     }
-    
+
 }

@@ -26,9 +26,9 @@ import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
 /**
  * Used to annotate extension resources.
  * Extension resources are used to insert new sub-locators to an existing resource.
- * The extension resource will be instantiated and returned when its key match the path segment 
+ * The extension resource will be instantiated and returned when its key match the path segment
  * on the target resource.
- *   
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -40,26 +40,26 @@ public @interface ResourceExtension {
      * The target resource where this resource should be contributed.
      */
     Class<? extends ExtensibleResource> target();
-    
+
     /**
      * The path segment where this resource should be installed.
      *
      * @return the key
      */
     String key();
-    
+
     /**
      * A label to be displayed in the link that points to the contributed resource.
      * If not specified the label will be fetched from i18n messages of the contribution module using
-     * the key {class_name}.label where class_name is the absolute name of the contribution class.   
+     * the key {class_name}.label where class_name is the absolute name of the contribution class.
      */
     String label() default "";
-    
+
     /**
      * The contribution categories.
      * Categories can be shared between contributions
      */
     String[] categories() default {};
-    
+
     String[] targetFacets() default {};
 }

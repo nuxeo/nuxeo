@@ -28,7 +28,7 @@ import org.nuxeo.common.utils.StringUtils;
 public class EnumerationValidator implements FieldValidator {
 
     protected Set<String> values;
-    
+
     public EnumerationValidator(String expr) {
         values = new HashSet<String>();
         String[] vals = StringUtils.split(expr, ',', true);
@@ -49,5 +49,5 @@ public class EnumerationValidator implements FieldValidator {
             throw new ValidationException();
         }
     }
-    
+
 }

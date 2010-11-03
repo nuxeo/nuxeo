@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -25,16 +26,15 @@ import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Provider
 public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
-    protected final static Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
+    protected static final Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
 
-    public javax.ws.rs.core.Response toResponse(Throwable t) {
+    public Response toResponse(Throwable t) {
         log.error("Exception in JAX-RS processing", t);
         return WebException.wrap(t).getResponse();
-    };
+    }
 
 }

@@ -27,5 +27,5 @@ public abstract class AbstractFieldValidator implements FieldValidator {
     public Class<?> getType() {
         return null;
     }
-    
+
 }

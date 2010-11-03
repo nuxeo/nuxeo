@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Length {
 
-    public int value() default -1;
-    public int min() default Integer.MIN_VALUE;
-    public int max() default Integer.MAX_VALUE;
-    
+    int value() default -1;
+    int min() default Integer.MIN_VALUE;
+    int max() default Integer.MAX_VALUE;
+
 }

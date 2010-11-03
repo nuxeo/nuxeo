@@ -59,9 +59,9 @@ public interface Resource extends Adaptable {
     Resource getNext();
 
     void setNext(Resource next);
-    
+
     void setPrevious(Resource previous);
-    
+
     boolean isAdapter();
 
     boolean isRoot();

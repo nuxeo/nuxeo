@@ -57,5 +57,5 @@ public class EmptyRegistry implements ResourceRegistry {
     public void removeBinding(ResourceBinding binding) {
         // TODO Auto-generated method stub
     }
-    
+
 }

@@ -24,28 +24,28 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * A registry which inherits values from super keys.
  * <p>
- * The super key relation is defined by the derived classes by overriding {@link #getSuperKey(Object)}  
+ * The super key relation is defined by the derived classes by overriding {@link #getSuperKey(Object)}
  * method.
- * The registry is thread safe and is optimized for lookups. 
+ * The registry is thread safe and is optimized for lookups.
  * A concurrent cache is dynamically updated when a value is retrieved from a super entry.
  * The cache is removed each time a modification is made on the registry using {@link #put(Object, Object)}
- * or {@link #remove(Object)} methods. Thus, for maximum performance you need to avoid modifying the registry 
- * after lookups were done: 
+ * or {@link #remove(Object)} methods. Thus, for maximum performance you need to avoid modifying the registry
+ * after lookups were done:
  * at application startup build the registry, at runtime perform lookups, at shutdown remove entries.
- *  
- * The root key is passed in the constructor and is used to stop looking in super entries.  
- *  
+ *
+ * The root key is passed in the constructor and is used to stop looking in super entries.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public abstract class SuperKeyedRegistry<K, V> {
 
     private static final Object NULL = new Object();
-    
+
     protected K root;
-    
+
     protected Map<K, V> registry;
-    
+
     /**
      * the cache map used for lookups. Object is used for the value to be able to
      * insert NULL values.
@@ -56,12 +56,12 @@ public abstract class SuperKeyedRegistry<K, V> {
      * the lock used to update the registry
      */
     private final Object lock = new Object();
-    
+
     public SuperKeyedRegistry(K root) {
         this.root = root;
         registry = new HashMap<K, V>();
     }
-    
+
     public void put(K key, V value) {
         synchronized (lock) {
             registry.put(key, value);
@@ -81,7 +81,7 @@ public abstract class SuperKeyedRegistry<K, V> {
     protected boolean isRoot(K key) {
         return key == root;
     }
-    
+
     protected abstract K getSuperKey(K key);
 
     @SuppressWarnings("unchecked")

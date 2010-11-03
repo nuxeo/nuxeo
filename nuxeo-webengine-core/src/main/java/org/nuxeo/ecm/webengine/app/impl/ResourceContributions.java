@@ -29,10 +29,10 @@ import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 
 /**
  * Describe the external contributions on a parent resource
- * 
+ *
  * Class names are used to store references to involved resources instead of class objects since
- * WebEngine is using a specific class loader (not the one used by the framework) to load resources - and doing so we avoid class cast exceptions. 
- * 
+ * WebEngine is using a specific class loader (not the one used by the framework) to load resources - and doing so we avoid class cast exceptions.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -42,32 +42,32 @@ public class ResourceContributions {
      * The target resource class name
      */
     protected Class<?> target;
-    
+
     /**
      * A map of key : values where key is the segment name that should match a contribution resource and value is the contribution resource class
      */
     protected Map<String, ResourceContribution> contribs;
-    
+
     /**
      * contributions by category cache
      */
     protected ConcurrentMap<String, List<ResourceContribution>> contribsByCategories;
-    
-    
+
+
     public ResourceContributions(Class<?> target) {
         this.target = target;
         contribs = new HashMap<String, ResourceContribution>();
         contribsByCategories = new ConcurrentHashMap<String, List<ResourceContribution>>();
     }
-    
+
     public Class<?> getTarget() {
         return target;
     }
-    
+
     public ResourceContribution getContribution(String key) {
         return contribs.get(key);
     }
-    
+
     public ResourceContribution[] getContributions() {
         return contribs.values().toArray(new ResourceContribution[contribs.size()]);
     }
@@ -89,9 +89,9 @@ public class ResourceContributions {
     public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
         List<ResourceContribution> result = contribsByCategories.get(category);
         if (result == null) {
-            result = new ArrayList<ResourceContribution>();   
+            result = new ArrayList<ResourceContribution>();
             for (ResourceContribution c : contribs.values()) {
-                if (c.hasCategory(category)) {                    
+                if (c.hasCategory(category)) {
                     result.add(c);
                 }
             }
@@ -103,11 +103,11 @@ public class ResourceContributions {
     public void addContribution(ResourceContribution c) throws Exception {
         contribs.put(c.getKey(), c);
     }
-    
+
     public void removeContribution(String key) {
         contribs.remove(key);
     }
-    
+
     public void addContribution(Class<? extends ResourceContribution> contrib) throws Exception {
         ResourceContribution c = contrib.newInstance();
         addContribution(c);
@@ -117,7 +117,7 @@ public class ResourceContributions {
         ResourceExtension xt = contrib.getAnnotation(ResourceExtension.class);
         if (xt != null) {
             removeContribution(xt.key());
-        }        
+        }
     }
-    
+
 }

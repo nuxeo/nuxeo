@@ -41,7 +41,7 @@ public class WebEngineResourceConfig extends DefaultResourceConfig {
     @Override
     public Set<Class<?>> getResourceClasses() {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<Class<?>>();
         for (ResourceBinding binding : engine.getBindings()) {
             try {
                 result.add(binding.clazz);

@@ -44,7 +44,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
@@ -71,7 +71,7 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
         env.setVariable("nxthemesInfo",
                 BeansWrapper.getDefaultInstance().wrap(InfoPool.getInfoMap()));
-      
+
         Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
         final URL elementUrl = new URL(String.format(
                 "nxtheme://element/%s/%s/%s/%s", attributes.get("engine"),

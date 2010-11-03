@@ -51,7 +51,7 @@ public class SimpleFormDataProvider extends HashMap<String,String[]>  implements
     public Map<String, String[]> getFormFields() {
         return this;
     }
-    
+
     public void putString(String key, String value) {
         put(key, new String[] {value});
     }
@@ -71,7 +71,7 @@ public class SimpleFormDataProvider extends HashMap<String,String[]>  implements
     public <T extends Form> T validate(Class<T> type) throws ValidationException {
         T proxy = FormManager.newProxy(type);
         try {
-            proxy.load(this, proxy);        
+            proxy.load(this, proxy);
             return proxy;
         } catch (ValidationException e) {
             e.setForm(proxy);

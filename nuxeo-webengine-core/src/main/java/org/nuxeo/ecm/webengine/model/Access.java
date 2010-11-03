@@ -23,16 +23,16 @@ package org.nuxeo.ecm.webengine.model;
 public enum Access {
 
     GRANT, DENY, NULL;
-    
+
     public boolean isGranted() {
-       return this == GRANT; 
+       return this == GRANT;
     }
-    
+
     public boolean isDenied() {
         return this == DENY;
     }
-    
+
     public boolean isUndefined() {
-        return this == NULL;    
+        return this == NULL;
     }
 }

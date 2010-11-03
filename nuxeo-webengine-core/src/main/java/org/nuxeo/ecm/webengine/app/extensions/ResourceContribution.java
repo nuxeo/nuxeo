@@ -26,12 +26,12 @@ import org.nuxeo.ecm.webengine.model.Resource;
  * (i.e. the first time the module registry is accessed by client code - usually at first request on a web module root resource)
  * <p>
  * The resource contribution is responsible of checking if the contribution can be done - depending on current context
- * and to instantiate new resources to be used when request is matching the contribution key.   
+ * and to instantiate new resources to be used when request is matching the contribution key.
  * <p>
- * Classes implementing this interface must be annotated using {@link ResourceExtension} to define the target resource, 
- * the path segment used for matching and optional hints for computing enabling state of this contribution 
- * depending on the runtiem context.      
- *  
+ * Classes implementing this interface must be annotated using {@link ResourceExtension} to define the target resource,
+ * the path segment used for matching and optional hints for computing enabling state of this contribution
+ * depending on the runtiem context.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -43,7 +43,7 @@ public abstract class ResourceContribution {
     protected String[] categories;
     protected String[] targetFacets;
     protected boolean translate;
-    
+
     public ResourceContribution() {
         ResourceExtension anno = getClass().getAnnotation(ResourceExtension.class);
         if (anno == null) {
@@ -59,27 +59,27 @@ public abstract class ResourceContribution {
             label = getClass().getName()+".label";
         }
     }
-    
+
     public String getKey() {
         return key;
     }
-    
+
     /**
      * Override this to specify a link target page.
      */
     public String getLinkTarget() {
         return null;
     }
-    
+
     public String getLabel() {
         // TODO - use i18n messages if translate = true
         return label;
     }
-    
+
     public String[] getCategories() {
         return categories;
     }
-    
+
     public boolean hasCategory(String category) {
         if (categories == null || categories.length == 0) {
             return false;
@@ -91,11 +91,11 @@ public abstract class ResourceContribution {
         }
         return false;
     }
-    
+
     /**
      * Checks if the given resource is accepted.
-     * Override this method if you need to filter your contributions using custom logic. 
-     * The default implementation is using the target facets declared in the {@link ResourceExtension} 
+     * Override this method if you need to filter your contributions using custom logic.
+     * The default implementation is using the target facets declared in the {@link ResourceExtension}
      * annotation to check contribution enablement.
      *
      * @param target

@@ -31,13 +31,13 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * Server Entry point to a server GWT module.
  * Must be extended by the webengine resource used to load the studio application.
  * The <code>@GET</code> method must be defined by the subclasses to point to the main HTML file of
- * the GWT module. 
+ * the GWT module.
  * Example:
  * <pre>
     <code>@GET</code> <code>@Produces("text/html")</code>
     public Object getIndex() {
         return getTemplate("index.ftl");
-    } 
+    }
  * </pre>
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

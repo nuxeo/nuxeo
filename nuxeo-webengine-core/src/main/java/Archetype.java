@@ -80,8 +80,6 @@ public class Archetype {
         processArchetype(doc, System.getProperties());
     }
 
-
-
     private static void expandVars(File file, Map<?,?> vars) throws IOException {
         String content = readFile(file);
         content = expandVars(content, vars);

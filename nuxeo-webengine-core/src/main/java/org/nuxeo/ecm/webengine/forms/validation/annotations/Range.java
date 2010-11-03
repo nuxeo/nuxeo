@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Range {
 
-    public double min() default Double.MIN_VALUE;
-    public double max() default Double.MAX_VALUE;
-    public boolean negate() default false;
-    
+    double min() default Double.MIN_VALUE;
+    double max() default Double.MAX_VALUE;
+    boolean negate() default false;
+
 }

@@ -43,23 +43,23 @@ public class FormManager implements InvocationHandler, Form {
     protected List<String> unknownKeys;
     protected FormDescriptor fd;
 
-    
+
     public FormManager(FormDescriptor fd) {
         this.fd = fd;
         unknownKeys = new ArrayList<String>();
         map = new HashMap<String, Object>(); // remove any previous data
         fields = new HashMap<String, String[]>(); // remove any previous data
-        //TODO when implementing file upload - remove here any previously created file 
+        //TODO when implementing file upload - remove here any previously created file
     }
-    
+
     public Collection<String> unknownKeys() {
         return unknownKeys;
     }
-    
+
     public Map<String,String[]> fields() {
         return fields;
     }
-    
+
     @SuppressWarnings("unchecked")
     public void load(FormDataProvider data, Form proxy) throws ValidationException {
         ValidationException ve = null;
@@ -73,26 +73,26 @@ public class FormManager implements InvocationHandler, Form {
                         k++;
                     }
                 }
-                if (k == values.length) { 
+                if (k == values.length) {
                     values = null;
                 }
             }
-            if (values != null) {                
+            if (values != null) {
                 fields.put(key, values);
                 reqs.remove(key);
-            }            
+            }
             FormDescriptor.Field f = fd.fields.get(key);
             if (f != null) {
-                Object o = null;                
+                Object o = null;
                 try {
                     if (f.isArray) {
                         if (values != null) {
                             o = f.validateArray(values);
                         }
                     } else {
-                        String v = values != null && values.length > 0 ? values[0] : null;                        
+                        String v = values != null && values.length > 0 ? values[0] : null;
                         if (v != null && v.length() > 0) {
-                            
+
                             o = f.validate(v);
                         }
                     }
@@ -106,7 +106,7 @@ public class FormManager implements InvocationHandler, Form {
             } else {
                 unknownKeys.add(key);
             }
-        }        
+        }
         if (!reqs.isEmpty()) {
             if (ve == null) {
                 ve = new ValidationException();
@@ -122,7 +122,7 @@ public class FormManager implements InvocationHandler, Form {
             fd.validator.validate(data, proxy);
         }
     }
-    
+
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         if (method.getDeclaringClass() == Form.class) {
@@ -143,31 +143,27 @@ public class FormManager implements InvocationHandler, Form {
         }
         throw new UnsupportedOperationException("Method unsupported: "+method);
     }
-    
-    
 
-    
-    
     protected static Map<Class<?>, FormDescriptor> forms = new Hashtable<Class<?>, FormDescriptor>();
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
         ClassLoader cl = null;
         try {
             WebEngine we = Framework.getLocalService(WebEngine.class);
-            cl = we != null ? we.getWebLoader().getClassLoader() : FormManager.class.getClassLoader();  
+            cl = we != null ? we.getWebLoader().getClassLoader() : FormManager.class.getClassLoader();
         } catch (Exception e) { // this is needed to be able to run tests (no framework or webengine installed)
             cl = FormManager.class.getClassLoader();
-        }        
-        return (T)Proxy.newProxyInstance(cl, 
-                new Class<?>[] {type}, 
+        }
+        return (T)Proxy.newProxyInstance(cl,
+                new Class<?>[] {type},
                 new FormManager(getDescriptor(type)));
     }
 
     public void flushCache() {
         forms = new Hashtable<Class<?>, FormDescriptor>();
     }
-    
+
     static FormDescriptor getDescriptor(Class<?> type) {
         FormDescriptor fd = forms.get(type);
         if (fd == null) {
@@ -180,7 +176,5 @@ public class FormManager implements InvocationHandler, Form {
         }
         return fd;
     }
-    
-    
-    
+
 }

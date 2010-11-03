@@ -27,21 +27,21 @@ import org.nuxeo.ecm.webengine.WebEngine;
  */
 public class Reloader {
 
-    public static final int DEFAULT_TIMEOUT_CHECK = 2000; // 2 seconds 
-    
+    public static final int DEFAULT_TIMEOUT_CHECK = 2000; // 2 seconds
+
     private int checkTimeout = 0;
-    
+
     private long lastCheck;
     private long lastModified;
-    protected File fileToCheck;  
+    protected File fileToCheck;
     protected WebEngine engine;
     protected List<Reloadable> listeners;
-    
-    
+
+
     public Reloader(WebEngine engine) {
-        this (engine, engine.isDevMode() ? DEFAULT_TIMEOUT_CHECK : 0);
+        this(engine, engine.isDevMode() ? DEFAULT_TIMEOUT_CHECK : 0);
     }
-    
+
     public Reloader(WebEngine engine, int checkTimeout) {
         this.engine = engine;
         listeners = new Vector<Reloadable>();
@@ -49,11 +49,11 @@ public class Reloader {
         lastModified = fileToCheck.lastModified();
         setCheckTimeout(checkTimeout);
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
-        
+
     public void addListener(Reloadable listener) {
         listeners.add(listener);
     }
@@ -63,21 +63,21 @@ public class Reloader {
     }
 
     public void setEnabled(boolean isEnabled) {
-        checkTimeout = DEFAULT_TIMEOUT_CHECK; 
+        checkTimeout = DEFAULT_TIMEOUT_CHECK;
     }
-    
+
     public boolean isEnabled() {
         return checkTimeout != 0;
     }
-    
+
     public void setCheckTimeout(int checkTimeout) {
         this.checkTimeout = checkTimeout;
     }
-    
+
     public int getCheckTimeout() {
         return checkTimeout;
     }
-    
+
     public void check() {
         if (checkTimeout == 0) {
             return;
@@ -85,7 +85,7 @@ public class Reloader {
 //        if (lastModified == 0) {
 //            lastModified = fileToCheck.lastModified();
 //        }
-        long now = System.currentTimeMillis(); 
+        long now = System.currentTimeMillis();
         if (now - lastCheck > checkTimeout) {
             lastCheck = now;
             long tm = fileToCheck.lastModified();
@@ -95,12 +95,12 @@ public class Reloader {
             }
         }
     }
-    
+
     public void reload() {
         engine.reload();
         for (Reloadable reloadable : listeners.toArray(new Reloadable[listeners.size()])) {
             reloadable.reload();
         }
     }
-    
+
 }

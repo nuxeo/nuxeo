@@ -31,10 +31,10 @@ import org.nuxeo.ecm.webengine.app.WebEngineModule;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebModule {
 
-    Class<?>[] roots(); 
-    
+    Class<?>[] roots();
+
     String name() default "";
-    
+
     Class<? extends WebEngineModule> base() default WebEngineModule.class;
-    
+
 }

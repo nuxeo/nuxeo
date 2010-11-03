@@ -37,5 +37,5 @@ public class MyFormValidator implements FormValidator {
             throw new ValidationException().addInvalidField("verifyPassword");
         }
     }
-    
+
 }

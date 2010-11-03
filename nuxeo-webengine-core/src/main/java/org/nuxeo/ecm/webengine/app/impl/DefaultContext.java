@@ -31,11 +31,11 @@ public class DefaultContext extends AbstractWebContext {
     // FIXME: these two members must be removed - they are redundant and buggy
     protected UriInfo info;
     protected HttpHeaders headers;
-    
+
     public DefaultContext(HttpServletRequest request) {
         super(request);
     }
-    
+
     @Deprecated
     public HttpHeaders getHttpHeaders() {
         //throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
@@ -51,7 +51,7 @@ public class DefaultContext extends AbstractWebContext {
     public void setUriInfo(UriInfo info) {
         this.info = info;
     }
-    
+
     public void setHttpHeaders(HttpHeaders headers) {
         this.headers = headers;
     }

@@ -120,10 +120,10 @@ public class FileResourceStore implements ResourceStore {
     public int hashCode() {
         return root.hashCode();
     }
-    
+
     @Override
     public String toString() {
         return "FileResourceStore: "+root;
     }
-    
+
 }

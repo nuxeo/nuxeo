@@ -59,16 +59,16 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.ctx = ctx;
         this.type = (T)type;
         path = ctx.getUriInfo().getMatchedURIs().get(0);
-        // avoid paths ending in / -> this will mess-up URLs in FTL files. 
+        // avoid paths ending in / -> this will mess-up URLs in FTL files.
         if (path.endsWith("/")) {
-            path = path.substring(0, path.length()-1); 
+            path = path.substring(0, path.length()-1);
         }
         // resteasy doesn't return correct paths - that should be relative as is JAX-RS specs
         // on resteasy paths begin with a /
-        StringBuilder buf = new StringBuilder(64).append(ctx.getBasePath());        
+        StringBuilder buf = new StringBuilder(64).append(ctx.getBasePath());
         if (!path.startsWith("/")) {
             buf.append('/');
-        }            
+        }
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
             throw new WebSecurityException(
@@ -154,7 +154,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Resource getNext() {
         return next;
     }
-    
+
     public void setNext(Resource next) {
         this.next = (AbstractResource<?>)next;
     }
@@ -162,7 +162,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public Resource getPrevious() {
         return prev;
     }
-    
+
     public void setPrevious(Resource previous) {
         this.prev = (AbstractResource<?>)previous;
     }

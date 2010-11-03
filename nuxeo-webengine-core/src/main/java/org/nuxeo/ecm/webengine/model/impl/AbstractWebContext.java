@@ -68,7 +68,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     private static final Log log = LogFactory.getLog(WebContext.class);
 
-    // this should be made configurable through an extension point
+    // TODO: this should be made configurable through an extension point
     public static Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     public static final String LOCALE_SESSION_KEY = "webengine_locale";
@@ -114,7 +114,7 @@ public abstract class AbstractWebContext implements WebContext {
     public Resource getRoot() {
         return root;
     }
-    
+
     public void setRoot(Resource root) {
         this.root = root;
     }
@@ -146,7 +146,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     public UserSession getUserSession() {
         if (us == null) {
-            us = UserSession.getCurrentSession(request); 
+            us = UserSession.getCurrentSession(request);
         }
         return us;
     }

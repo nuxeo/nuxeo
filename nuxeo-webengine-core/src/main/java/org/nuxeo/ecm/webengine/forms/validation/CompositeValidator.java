@@ -25,12 +25,12 @@ import java.util.ArrayList;
  */
 public class CompositeValidator extends ArrayList<FieldValidator> implements FieldValidator {
 
-    private static final long serialVersionUID = -1851648770815748104L;    
-    
+    private static final long serialVersionUID = -1851648770815748104L;
+
     public void validate(String value, Object decoded) throws ValidationException {
         for (int i=0,len=size(); i<len; i++) {
             get(i).validate(value, decoded);
         }
     }
-    
+
 }

@@ -21,6 +21,6 @@ package org.nuxeo.ecm.webengine.app;
  */
 public interface Reloadable {
 
-    public void reload();
-    
+    void reload();
+
 }

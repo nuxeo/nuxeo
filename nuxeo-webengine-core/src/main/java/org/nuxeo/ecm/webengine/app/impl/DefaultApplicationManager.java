@@ -59,20 +59,20 @@ public class DefaultApplicationManager implements ApplicationManager {
     private static final Log log = LogFactory.getLog(DefaultApplicationManager.class);
 
     protected WebEngine engine;
-    
+
     /**
      * Collected user applications keyed by application ID. Deployment order is preserved.
      * The application ID (i.e. bundle symbolic name is used as the key in the map)
      */
     protected LinkedHashMap<String, BundledApplication> apps;
-    
+
     /** A reloadable module registry which is lazy built when first requested. */
     protected volatile ModuleRegistry registry;
 
     /** A lock used to synchronize mutable operations on the registry. */
     private final Object lock = new Object();
-    
-    
+
+
     public DefaultApplicationManager(WebEngine engine) {
         this.engine = engine;
         this.apps = new LinkedHashMap<String, BundledApplication>();
@@ -86,7 +86,7 @@ public class DefaultApplicationManager implements ApplicationManager {
             registry = null;
         }
     }
-    
+
     public void removeApplication(Bundle bundle) {
         synchronized (lock) {
             BundledApplication app = apps.remove(bundle.getSymbolicName());
@@ -95,7 +95,7 @@ public class DefaultApplicationManager implements ApplicationManager {
             }
         }
     }
-    
+
     /**
      * Gets the module registry.
      */
@@ -128,7 +128,7 @@ public class DefaultApplicationManager implements ApplicationManager {
             return apps.values().toArray(new BundledApplication[apps.size()]);
         }
     }
-    
+
     public ModuleHandler getModuleHandler(String appId) {
         return getRegistry().getModuleHandler(appId);
     }
@@ -140,11 +140,11 @@ public class DefaultApplicationManager implements ApplicationManager {
     public Object getContribution(Resource target, String key) throws Exception {
         return getRegistry().getContribution(target, key);
     }
-    
+
     public List<ResourceContribution> getContributions(ExtensibleResource target, String category) {
         return getRegistry().getContributions(target, category);
     }
-    
+
     public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
         return getRegistry().getContributions(target, category);
     }
@@ -158,7 +158,7 @@ public class DefaultApplicationManager implements ApplicationManager {
     }
 
     /**
-     * Reload modules - this is useful for hot reload when application classes changes  
+     * Reload modules - this is useful for hot reload when application classes changes
      */
     public void reload() {
         synchronized (lock) {
@@ -174,8 +174,8 @@ public class DefaultApplicationManager implements ApplicationManager {
             registry = _registry;
         }
     }
-    
-    public boolean deployApplication(Bundle bundle) throws Exception {        
+
+    public boolean deployApplication(Bundle bundle) throws Exception {
         String webAppEntry = (String)bundle.getHeaders().get("Nuxeo-WebModule");
         if (webAppEntry == null) {
             return false;
@@ -198,15 +198,15 @@ public class DefaultApplicationManager implements ApplicationManager {
                 explode = false;
             } else { // not specified
                 // load the class to check if a WebEngine Module is present
-                explode = isWebEngineModule(bundle, type);                  
+                explode = isWebEngineModule(bundle, type);
             }
             v = attrs.get("compat");
             if ("true".equals(v)) {
                 compat = true;
-            }            
+            }
         }
-        
-        if (explode) { // this will also add the exploded directory to WebEngine class loader            
+
+        if (explode) { // this will also add the exploded directory to WebEngine class loader
             File moduleDir = explodeBundle(bundle);
             if (compat) { // old style deploy
                 File config = new File(moduleDir, "module.xml");
@@ -215,7 +215,7 @@ public class DefaultApplicationManager implements ApplicationManager {
                 }
             }
         }
-        // register application        
+        // register application
         try {
             // load the class using WebEngine loader
             Class<?> appClass = engine.loadClass(type);
@@ -229,11 +229,11 @@ public class DefaultApplicationManager implements ApplicationManager {
         log.info("Deployed web module found in bundle: " + bundleId);
         return true;
     }
-    
+
     protected boolean isWebEngineModule(Bundle b, String type) throws Exception {
         return WebEngineModule.class.isAssignableFrom(b.loadClass(type));
     }
-    
+
     protected File explodeBundle(Bundle bundle) throws IOException {
         File bundleFile = Framework.getRuntime().getBundleFile(bundle);
         if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
@@ -250,13 +250,13 @@ public class DefaultApplicationManager implements ApplicationManager {
                 }
                 // remove existing files
                 FileUtils.deleteTree(moduleRoot);
-            }            
+            }
             // create the module root
             moduleRoot.mkdirs();
             ZipUtils.unzip(bundleFile, moduleRoot);
             engine.getWebLoader().addClassPathElement(moduleRoot);
             return moduleRoot;
-        }        
+        }
     }
 
     protected static Map<String,String> readManifestEntryValue(String value, StringBuilder result) {
@@ -264,7 +264,7 @@ public class DefaultApplicationManager implements ApplicationManager {
         if (p > 0) {
             result.append(value.substring(0, p).trim());
             value = value.substring(p + 1);
-            HashMap<String,String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<String, String>();
             Matcher m = PARAMS_PATTERN.matcher(value);
             while (m.find()) {
                 params.put(m.group(1), m.group(2));
@@ -290,5 +290,5 @@ public class DefaultApplicationManager implements ApplicationManager {
 
         return !(serviceNames == null || serviceNames.length == 0);
     }
-        
+
 }

@@ -35,5 +35,5 @@ public @interface ResourceExtensions {
      * An array of resource extension classes (ie resources annotated with {@link ResourceExtension}).
      */
     Class<? extends ResourceContribution>[] value();
-    
+
 }

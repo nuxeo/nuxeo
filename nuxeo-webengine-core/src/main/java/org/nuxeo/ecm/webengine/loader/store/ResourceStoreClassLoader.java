@@ -28,9 +28,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The class loader allows modifying the stores (adding/removing). 
+ * The class loader allows modifying the stores (adding/removing).
  * Mutable operations are thread safe.
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
@@ -38,7 +38,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
     private final Log log = LogFactory.getLog(ResourceStoreClassLoader.class);
 
     private volatile ResourceStore[] stores;
-    private final LinkedHashSet<ResourceStore> cp; // class path 
+    private final LinkedHashSet<ResourceStore> cp; // class path
 
     public ResourceStoreClassLoader(final ClassLoader pParent) {
         this (pParent, new LinkedHashSet<ResourceStore>());
@@ -59,7 +59,7 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
         }
         return false;
     }
-    
+
     public synchronized boolean removeStore(ResourceStore store) {
         if (cp.remove(store)) {
             stores = cp.toArray(new ResourceStore[cp.size()]);
@@ -67,12 +67,12 @@ public class ResourceStoreClassLoader extends ClassLoader implements Cloneable {
         }
         return false;
     }
-    
+
     @Override
     public synchronized ResourceStoreClassLoader clone() {
         return new ResourceStoreClassLoader(getParent(), new LinkedHashSet<ResourceStore>(cp));
     }
-    
+
     public ResourceStore[] getStores() {
         return stores;
     }

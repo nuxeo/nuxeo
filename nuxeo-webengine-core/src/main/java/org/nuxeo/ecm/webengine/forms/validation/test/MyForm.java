@@ -30,27 +30,27 @@ import org.nuxeo.ecm.webengine.forms.validation.annotations.Required;
  */
 @FormValidator(MyFormValidator.class)
 public interface MyForm extends Form {
-    
-    @Required
-    public String getId();
-    
-    public String getTitle();
-    
-    @NotNull("me")
-    public String getName();
 
-    public Integer getAge();
-    
+    @Required
+    String getId();
+
+    String getTitle();
+
+    @NotNull("me")
+    String getName();
+
+    Integer getAge();
+
     @Range(min=3, max=7)
-    public Integer getNumber();
+    Integer getNumber();
 
     @Length(min=3) @Regex(".+@.+")
-    public String[] getEmails();
-    
+    String[] getEmails();
+
     @Required @Length(min=2)
-    public String getPassword();
-    
-    @Required 
-    public String getVerifyPassword();
-    
+    String getPassword();
+
+    @Required
+    String getVerifyPassword();
+
 }

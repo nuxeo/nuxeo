@@ -27,12 +27,12 @@ import org.nuxeo.runtime.api.Framework;
 public class TypeRegistry<V> extends SuperKeyedRegistry<DocumentType, V> {
 
     protected SchemaManager mgr;
-    
+
     public TypeRegistry() throws Exception {
         this (Framework.getService(SchemaManager.class));
     }
-    
-    public TypeRegistry(SchemaManager mgr) {        
+
+    public TypeRegistry(SchemaManager mgr) {
         super (mgr.getDocumentType("Document"));
         this.mgr = mgr;
     }

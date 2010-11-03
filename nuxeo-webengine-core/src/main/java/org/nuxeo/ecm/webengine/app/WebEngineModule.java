@@ -29,11 +29,11 @@ import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
 
 /**
  * Base application class for WebEngine modules.
- * Enable application configuration through annotations - like declaring root resources and other WebEngine related 
- * configuration.
- * 
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * <p>
+ * Enable application configuration through annotations - like declaring root resources
+ * and other WebEngine related configuration.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class WebEngineModule extends Application {
 
@@ -41,7 +41,7 @@ public abstract class WebEngineModule extends Application {
     protected Class<?>[] roots;
     protected Class<? extends WebEngineModule> base;
     protected Class<? extends ResourceContribution>[] contributions;
-    
+
     public WebEngineModule() {
         Class<?> type = getClass();
         WebModule wm = type.getAnnotation(WebModule.class);
@@ -51,7 +51,7 @@ public abstract class WebEngineModule extends Application {
         name = wm.name();
         if (name.length() == 0) {
             name = type.getSimpleName();
-        };
+        }
         base = wm.base();
         if (Modifier.isAbstract(base.getModifiers())) {
             base = null;
@@ -62,14 +62,16 @@ public abstract class WebEngineModule extends Application {
             contributions = rs.value();
             for (int i=0; i<contributions.length; i++) {
                 if (!contributions[i].isAnnotationPresent(ResourceExtension.class)) {
-                    throw new Error("Invalid resource extension class: "+contributions[i]+" in application: "+type+". Must be annotated with @ResourceExtension.");        
+                    throw new Error("Invalid resource extension class: "+contributions[i]
+                            +" in application: "+type+". Must be annotated with @ResourceExtension.");
                 }
             }
         }
     }
-    
+
     /**
-     * When overriding this class make sure to call <code>super.getClasses()</code> to add your custom classes.
+     * When overriding this class make sure to call <code>super.getClasses()</code>
+     * to add your custom classes.
      * <p>
      * Example:
      * <pre>
@@ -97,7 +99,7 @@ public abstract class WebEngineModule extends Application {
         WebModule wm = getClass().getAnnotation(WebModule.class);
         return wm != null ? wm.name() : null;
     }
-    
+
     public Class<?>[] getRootClasses() {
         return roots;
     }
@@ -105,9 +107,9 @@ public abstract class WebEngineModule extends Application {
     public Class<? extends ResourceContribution>[] getContributions() {
         return contributions;
     }
-    
+
     public Class<? extends WebEngineModule> getBaseModule() {
         return base;
     }
-    
+
 }

@@ -28,23 +28,23 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import com.sun.jersey.spi.container.servlet.WebComponent;
 
 /**
- * A resource that can be extended with sub resources contributed via an {@link ResourceContribution}. 
- * 
+ * A resource that can be extended with sub resources contributed via an {@link ResourceContribution}.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // FIXME: not used. Remove?
 public abstract class ExtensibleResource implements Resource {
 
     protected WebContext ctx;
-    
+
     public ExtensibleResource() {
         this (WebEngine.getActiveContext());
     }
-    
+
     public ExtensibleResource(WebContext ctx) {
         this.ctx = ctx;
     }
-    
+
     @Path("{key}")
     public Object dispatch(@PathParam("key") String key) {
         try {
@@ -58,7 +58,7 @@ public abstract class ExtensibleResource implements Resource {
             throw WebException.wrap(e);
         }
     }
-    
+
     protected Object resolveUnmatchedSegment(String key) {
         throw new WebResourceNotFoundException("No resource found at "+key+" in context "+this);
     }

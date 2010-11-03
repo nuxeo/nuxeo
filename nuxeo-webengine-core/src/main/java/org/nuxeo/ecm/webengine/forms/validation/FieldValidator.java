@@ -24,5 +24,5 @@ package org.nuxeo.ecm.webengine.forms.validation;
 public interface FieldValidator {
 
     void validate(String value, Object decoded) throws ValidationException;
-    
+
 }

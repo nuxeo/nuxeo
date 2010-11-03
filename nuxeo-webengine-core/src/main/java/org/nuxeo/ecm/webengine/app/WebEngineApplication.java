@@ -32,34 +32,35 @@ import org.nuxeo.ecm.webengine.model.io.URLWriter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A composite application that aggregate all webengine deployed modules as a single JAX-RS application.
+ * A composite application that aggregates all webengine deployed modules as a single JAX-RS application.
  * <p>
- * Should be used as the value of the <code>javax.ws.rs.Application</code> init-param of JAX-RS servlet in the web.xml file. 
+ * Should be used as the value of the <code>javax.ws.rs.Application</code>
+ * init-param of JAX-RS servlet in the web.xml file.
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WebEngineApplication extends Application {
 
     protected WebEngine engine;
-    
+
     public WebEngineApplication() {
         engine = Framework.getLocalService(WebEngine.class);
     }
-    
+
     @Override
     public Set<Class<?>> getClasses() {
         ApplicationManager apps = engine.getApplicationManager();
-        HashSet<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<Class<?>>();
         for (Application app : apps.getApplications()) {
             result.addAll(app.getClasses());
         }
         return result;
     }
-    
+
     @Override
     public Set<Object> getSingletons() {
         ApplicationManager apps = engine.getApplicationManager();
-        HashSet<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<Object>();
         result.add(new WebEngineExceptionMapper());
         result.add(new TemplateWriter());
         result.add(new ScriptFileWriter());

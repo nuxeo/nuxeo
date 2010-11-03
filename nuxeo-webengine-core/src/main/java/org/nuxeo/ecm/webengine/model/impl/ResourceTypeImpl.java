@@ -49,7 +49,7 @@ public class ResourceTypeImpl extends AbstractResourceType {
         WebObject wo = c.getAnnotation(WebObject.class);
         if (wo == null) {
             return;
-        }        
+        }
         String g = wo.guard();
         if (g != null && g.length() > 0) {
             try {

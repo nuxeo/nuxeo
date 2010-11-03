@@ -55,7 +55,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 public class DefaultModule implements Module {
 
     public static final Log log = LogFactory.getLog(DefaultModule.class);
-    
+
     protected ModuleHandler handler;
     protected WebEngine engine;
     protected File root;
@@ -63,22 +63,22 @@ public class DefaultModule implements Module {
     protected Messages messages;
     protected DirectoryStack dirStack;
     protected ModuleHandler base;
-    
+
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
-    
+
     public DefaultModule(ModuleHandler handler) {
         this.handler = handler;
         this.engine = handler.getEngine();
         this.root = new File(engine.getRootDirectory(), "modules/"+handler.getBundledApplication().getId());
-        this.skinDir = new File(root, "skin"); 
+        this.skinDir = new File(root, "skin");
         fileCache = new ConcurrentHashMap<String, ScriptFile>();
         loadSuperModule();
         loadDirectoryStack();
         loadMessages();
     }
-    
+
     public WebEngine getEngine() {
         return engine;
     }
@@ -87,7 +87,7 @@ public class DefaultModule implements Module {
         return handler.getName();
     }
 
-    
+
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.loadClass(className);
     }
@@ -97,7 +97,7 @@ public class DefaultModule implements Module {
     }
 
     public Module getSuperModule() {
-        return base != null ? base.getModule() : null;                
+        return base != null ? base.getModule() : null;
     }
 
     public ScriptFile getSkinResource(String path) throws IOException {
@@ -144,20 +144,20 @@ public class DefaultModule implements Module {
     public File getSkinDir() {
         return skinDir;
     }
-    
+
     protected void loadSuperModule() {
         Class<? extends WebEngineModule> superModule = handler.getBaseModule();
-        if (superModule != null) {            
+        if (superModule != null) {
             ModuleHandler mh = engine.getApplicationManager().getModuleHandler(superModule.getName());
             if (mh == null) {
                 log.warn("Imported module not found: "+superModule
                         +". Needed by module: "+handler.getBundledApplication().getId());
-            } else {                    
-                base = mh; 
+            } else {
+                base = mh;
             }
         }
     }
-    
+
     protected void loadDirectoryStack() {
         dirStack = new DirectoryStack();
         try {
@@ -169,7 +169,7 @@ public class DefaultModule implements Module {
                 DirectoryStack ds = ((DefaultModule)superModule).dirStack;
                 if (!ds.isEmpty()) {
                     dirStack.getDirectories().addAll(ds.getDirectories());
-                }                
+                }
             }
         } catch (IOException e) {
             throw WebException.wrap("Failed to load directories stack", e);
@@ -211,7 +211,7 @@ public class DefaultModule implements Module {
             }
         }
     }
-    
+
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("not yet impl");
@@ -228,7 +228,7 @@ public class DefaultModule implements Module {
     }
 
     // the following should be removed
-    @Deprecated    
+    @Deprecated
     public void flushCache() {
     }
 
@@ -239,12 +239,12 @@ public class DefaultModule implements Module {
 
     @Deprecated
     public String getMediaTypeId(MediaType mt) {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
 
-    @Deprecated 
+    @Deprecated
     public String getSkinPathPrefix() {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
 
     @Deprecated
@@ -252,7 +252,7 @@ public class DefaultModule implements Module {
         throw new UnsupportedOperationException("deprecated");
     }
 
-    
+
     @Deprecated
     public AdapterType getAdapter(Resource ctx, String name) {
         throw new UnsupportedOperationException("deprecated");
@@ -280,9 +280,9 @@ public class DefaultModule implements Module {
 
     @Deprecated
     public List<ResourceBinding> getResourceBindings() {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
-    
+
     @Deprecated
     public ResourceType getType(String typeName) {
         throw new UnsupportedOperationException("deprecated");
@@ -290,17 +290,17 @@ public class DefaultModule implements Module {
 
     @Deprecated
     public ResourceType[] getTypes() {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
 
     @Deprecated
     public Validator getValidator(String docType) {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
 
     @Deprecated
     public boolean isDerivedFrom(String moduleName) {
-        throw new UnsupportedOperationException("deprecated");        
+        throw new UnsupportedOperationException("deprecated");
     }
 
 }

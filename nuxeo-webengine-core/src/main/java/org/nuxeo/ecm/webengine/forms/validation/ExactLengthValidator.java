@@ -18,15 +18,15 @@ package org.nuxeo.ecm.webengine.forms.validation;
 
 
 /**
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ExactLengthValidator implements FieldValidator {
 
     protected int length;
-    
+
     public ExactLengthValidator(int length) {
         this.length = length;
     }

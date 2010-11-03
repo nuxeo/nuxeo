@@ -72,7 +72,7 @@ public interface WebContext extends Adaptable {
      * @return the root resource or null if no root was defined
      */
     Resource getRoot();
-    
+
     /**
      * Set the root resource of this context
      */
@@ -399,13 +399,13 @@ public interface WebContext extends Adaptable {
      * Renders the given template using the rendering engine registered in that
      * web engine.
      * <p>
-     * This is similar to the {@link #render(String, Map)} method with a null
+     * This is similar to the {@link #render(String, Object, Writer)} method with a null
      * value for the <i>args</i> argument.
      *
      * @param template the template to render. Can be a path absolute to the web
      *            directory or relative to the caller script if any.
      * @param writer the writer to use
-     * @see #render(String, Map)
+     * @see #render(String, Object, Writer)
      */
     void render(String template, Writer writer);
 

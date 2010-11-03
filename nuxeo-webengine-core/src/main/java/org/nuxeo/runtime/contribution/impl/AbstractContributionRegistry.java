@@ -61,16 +61,16 @@ public abstract class AbstractContributionRegistry<K, T> implements
     }
 
     protected synchronized void importParentContributions() {
-        AbstractContributionRegistry<K,T> pParent = parent;
-        ArrayList<AbstractContributionRegistry<K,T>> parents = new ArrayList<AbstractContributionRegistry<K,T>>();
+        AbstractContributionRegistry<K, T> pParent = parent;
+        List<AbstractContributionRegistry<K, T>> parents = new ArrayList<AbstractContributionRegistry<K,T>>();
         while (pParent != null) {
-        	parents.add(pParent);
-        	pParent = pParent.parent;
+            parents.add(pParent);
+            pParent = pParent.parent;
         }
         Collections.reverse(parents);
         for (AbstractContributionRegistry<K,T> p : parents) {
             p.listeners.add(this);
-            for (Contribution<K,T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
+            for (Contribution<K, T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
                 if (contrib.isResolved()) {
                     installContribution(contrib.getId(), contrib.getValue());
                 }
@@ -78,7 +78,7 @@ public abstract class AbstractContributionRegistry<K, T> implements
             p = p.parent;
         }
     }
-    
+
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         Contribution<K,T> contrib = registry.get(primaryKey);
         if (contrib == null && parent != null) {

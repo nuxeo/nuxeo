@@ -32,7 +32,8 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 /**
  * JAX-RS servlet based on jersey servlet to provide hot reloading.
  * <p>
- * Use it as the webengine servlet in web.xml if you want hot reload, otherwise use {@link ServletContainer}.
+ * Use it as the webengine servlet in web.xml if you want hot reload,
+ * otherwise use {@link ServletContainer}.
  *  
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -48,28 +49,29 @@ public class ReloadingJerseyServlet extends ServletContainer implements Reloadab
         reloader = new Reloader(Framework.getLocalService(WebEngine.class));
         reloader.addListener(this);
     }
-    
+
     @Override
     public void destroy() {
         reloader.removeListener(this);
         super.destroy();
     }
-    
+
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         reloader.check();
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
-            // force reading properties because jersey is consuming one character from the input stream
-        	// see WebComponent.isEntityPresent.
-            request.getParameterMap();             
+            // force reading properties because jersey is consuming one character
+            // from the input stream - see WebComponent.isEntityPresent.
+            request.getParameterMap();
         }
         super.service(request, response);
     }
-            
+
     @Override
     public void reload() {
         super.reload();
     }
+
 }

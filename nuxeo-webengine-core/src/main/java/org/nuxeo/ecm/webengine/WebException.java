@@ -107,7 +107,7 @@ public class WebException extends WebApplicationException {
     public int getStatusCode() {
         return status;
     }
-    
+
     /**
      * For compatibility only.
      */

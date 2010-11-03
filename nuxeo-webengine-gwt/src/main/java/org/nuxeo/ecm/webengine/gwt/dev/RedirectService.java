@@ -68,7 +68,7 @@ public class RedirectService extends HttpServlet implements Debug {
     public String getRedirectPrefix() {
         return redirectPrefix;
     }
-    
+
     public void setRedirectPrefix(String redirectPrefix) {
         this.redirectPrefix = redirectPrefix;
     }
@@ -76,17 +76,17 @@ public class RedirectService extends HttpServlet implements Debug {
     public void setTrace(boolean trace) {
         this.trace = trace;
     }
-        
+
     public void setTraceContent(boolean traceContent) {
         this.traceContent = traceContent;
     }
-    
+
 
 
     @SuppressWarnings("unchecked")
     public void redirect(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
- 
+
         StringBuilder buf = new StringBuilder(); // getRequestURL(req);
         String urlPath = req.getRequestURI();
         if (redirectPrefix.equals(urlPath)) {

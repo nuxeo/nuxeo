@@ -33,38 +33,38 @@ import org.osgi.framework.Bundle;
  */
 public interface ApplicationManager {
 
-    public void addApplication(Bundle bundle, Application app);
-    
-    public void removeApplication(Bundle bundle);
-    
-    public BundledApplication getApplication(String bundleId);
+    void addApplication(Bundle bundle, Application app);
 
-    public BundledApplication[] getApplications();
-    
-    public ModuleHandler getModuleHandler(String appId);
+    void removeApplication(Bundle bundle);
 
-    public ModuleHandler[] getModuleHandlers();
+    BundledApplication getApplication(String bundleId);
 
-    public Object getContribution(Resource target, String key) throws Exception;
+    BundledApplication[] getApplications();
 
-    public List<ResourceContribution> getContributions(ExtensibleResource target, String category);
-    
-    public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category);
-    
-    public ModuleHandler getModuleHandlerFor(Class<?> rootResource);
+    ModuleHandler getModuleHandler(String appId);
+
+    ModuleHandler[] getModuleHandlers();
+
+    Object getContribution(Resource target, String key) throws Exception;
+
+    List<ResourceContribution> getContributions(ExtensibleResource target, String category);
+
+    List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category);
+
+    ModuleHandler getModuleHandlerFor(Class<?> rootResource);
 
     /**
-     * Reload modules - this is useful for hot reload when application classes changes  
+     * Reload modules - this is useful for hot reload when application classes changes
      */
-    public void reload();
-    
+    void reload();
+
     /**
      * Deploy the JAX-RS application if any is found in the given bundle.
-     * If no JAX-RS application is found return false, otherwise deploy it and return true.   
+     * If no JAX-RS application is found return false, otherwise deploy it and return true.
      * @param bundle the bundle that may contain a JAX-RS application
      * @return true if a JAX-RS application was found and deployed, false otherwise
      * @throws Exception
      */
-    public boolean deployApplication(Bundle bundle) throws Exception;
+    boolean deployApplication(Bundle bundle) throws Exception;
 
 }

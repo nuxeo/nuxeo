@@ -26,11 +26,11 @@ import java.util.Map;
 public interface FormDataProvider {
 
     Collection<String> getKeys();
-    
+
     String getString(String key);
-    
+
     String[] getList(String key);
-    
+
     Map<String, String[]> getFormFields();
-    
+
 }

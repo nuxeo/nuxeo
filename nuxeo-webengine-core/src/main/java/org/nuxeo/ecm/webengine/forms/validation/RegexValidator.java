@@ -27,12 +27,12 @@ public class RegexValidator implements FieldValidator {
 
     protected String regex;
     protected Pattern pattern;
-    
+
     public RegexValidator(String regex) {
         this.regex = regex;
         this.pattern = Pattern.compile(regex);
     }
-    
+
     public void validate(String value, Object decoded) throws ValidationException {
         if (!pattern.matcher(value).matches()) {
             throw new ValidationException();

@@ -27,7 +27,7 @@ import java.util.Map;
 public class FieldsBuilder {
 
     protected Map<String, String[]> map;
-    
+
     public static FieldsBuilder create() {
         return new FieldsBuilder();
     }
@@ -35,7 +35,7 @@ public class FieldsBuilder {
     public static FieldsBuilder create(Map<String, String[]> map) {
         return new FieldsBuilder(map);
     }
-    
+
     public FieldsBuilder() {
         map = new HashMap<String, String[]>();
     }

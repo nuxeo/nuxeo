@@ -39,7 +39,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:jmo@chalmers.se">Jean-Marc Orliaguet</a>
- * 
+ *
  */
 public class NXThemesRequireDirective implements TemplateDirectiveModel {
 
@@ -62,11 +62,11 @@ public class NXThemesRequireDirective implements TemplateDirectiveModel {
         WebContext context = WebEngine.getActiveContext();
         HttpServletRequest request = context.getRequest();
         final URL themeUrl = (URL) request.getAttribute("org.nuxeo.theme.url");
-        
+
         StringWriter sw = new StringWriter();
         body.render(sw);
         String resourceName = sw.getBuffer().toString();
-        
+
         // Register as a local resource
         final boolean local = true;
         Manager.getResourceManager().addResource(resourceName, themeUrl, local);

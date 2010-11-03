@@ -41,7 +41,7 @@ public class FormDescriptor {
     protected FormValidator validator;
     protected Map<String, Field> fields = new HashMap<String, Field>();
     protected HashSet<String> requiredFields = new HashSet<String>();
-        
+
     public FormDescriptor(Class<?> type) throws Exception {
         Method[] methods = type.getMethods(); // get all inherited public methods
         int mod = type.getModifiers();
@@ -66,7 +66,7 @@ public class FormDescriptor {
             validator = fv.value().newInstance();
         }
     }
-        
+
     static class Field {
         CompositeValidator validator;
         String name;
@@ -81,13 +81,13 @@ public class FormDescriptor {
             // not null
             NotNull nn = m.getAnnotation(NotNull.class);
             if (nn != null) {
-                String dv = nn.value();                
+                String dv = nn.value();
                 if (dv.length() > 0) {
                     defaultValue = dv;
                 } else {
                     notnull = true;
                 }
-            }            
+            }
             // required
             required = m.isAnnotationPresent(Required.class);
             // enum
@@ -99,12 +99,12 @@ public class FormDescriptor {
             Regex regex = m.getAnnotation(Regex.class);
             if (regex != null) {
                 validator.add(new RegexValidator(regex.value()));
-            }            
+            }
             // length
             Length length = m.getAnnotation(Length.class);
             if (length != null) {
                 if (length.value() > -1) {
-                    validator.add(new ExactLengthValidator(length.value()));    
+                    validator.add(new ExactLengthValidator(length.value()));
                 } else {
                     validator.add(new LengthValidator(length.min(), length.max()));
                 }
@@ -118,7 +118,7 @@ public class FormDescriptor {
             org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator custom = m.getAnnotation(org.nuxeo.ecm.webengine.forms.validation.annotations.FieldValidator.class);
             if (custom != null) {
                 validator.add((FieldValidator) custom.value().newInstance());
-            }            
+            }
             // type convertor
             Class<?> rtype = m.getReturnType();
             isArray = rtype.isArray();
@@ -126,11 +126,11 @@ public class FormDescriptor {
                 rtype = rtype.getComponentType();
             }
             convertor = TypeConvertor.getConvertor(rtype);
-            
+
             this.m = m;
             this.name = name;
         }
-        
+
         Object validate(String value) throws ValidationException {
             if (value == null || value.length() == 0) {
                 value = null; // "" empty strings are treated as null values
@@ -146,7 +146,7 @@ public class FormDescriptor {
             }
             if (validator != null) {
                 validator.validate(value, obj);
-            } 
+            }
             return obj;
         }
 
@@ -170,5 +170,5 @@ public class FormDescriptor {
             return Character.toLowerCase(key.charAt(3))+key.substring(4);
         }
     }
-    
+
 }

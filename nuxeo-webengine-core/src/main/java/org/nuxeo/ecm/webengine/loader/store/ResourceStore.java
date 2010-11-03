@@ -23,7 +23,7 @@ import java.net.URL;
 /**
  * When implementing a resource store you should implement equals and hashCode method.
  * A store is equals to another if the store location is the same.
- *  
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ResourceStore {
