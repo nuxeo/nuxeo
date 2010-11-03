@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Check IO archive import via Unit Tests.
- *
+ * 
  * @author tiry
  */
 public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
@@ -47,7 +47,9 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
     protected final String tmpDir = System.getProperty("java.io.tmpdir");
 
     protected DocumentModel sourceWS;
+
     protected DocumentModel destWS;
+
     protected DocumentModel wsRoot;
 
     private File getArchiveFile() {
@@ -59,6 +61,7 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.ecm.platform.types.api");
+        deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
@@ -128,7 +131,8 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
-        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(), true, "toto");
+        fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
+                true, "toto");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertTrue(children.size() > 0);
         assertEquals(children.get(0).getTitle(), sourceWS.getTitle());
@@ -137,10 +141,12 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         DocumentModelList subChildren = coreSession.getChildren(importedWS.getRef());
         assertSame(2, subChildren.size());
 
-        DocumentModel subFolder = coreSession.getChild(importedWS.getRef(), "myfolder");
+        DocumentModel subFolder = coreSession.getChild(importedWS.getRef(),
+                "myfolder");
         assertNotNull(subFolder);
 
-        DocumentModel subFile = coreSession.getChild(importedWS.getRef(), "myfile");
+        DocumentModel subFile = coreSession.getChild(importedWS.getRef(),
+                "myfile");
         assertNotNull(subFile);
 
         DocumentModelList subSubChildren = coreSession.getChildren(subFolder.getRef());
@@ -153,14 +159,16 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         sourceWS = coreSession.saveDocument(sourceWS);
 
         // remove one children
-        DocumentModel subFile = coreSession.getChild(sourceWS.getRef(), "myfile");
+        DocumentModel subFile = coreSession.getChild(sourceWS.getRef(),
+                "myfile");
         coreSession.removeDocument(subFile.getRef());
         coreSession.save();
 
         File archive = getArchiveFile();
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
-        fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(), true, "toto");
+        fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(),
+                true, "toto");
         sourceWS = coreSession.getChild(wsRoot.getRef(), "ws1");
         assertNotNull(sourceWS);
         assertEquals("test WS", sourceWS.getTitle());
