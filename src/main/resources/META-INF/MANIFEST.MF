@@ -40,5 +40,3 @@ Import-Package: javax.resource;version="2.0.0",
  org.w3c.dom.ranges,
  org.xml.sax
 Bundle-SymbolicName: org.nuxeo.common;singleton:=true
-Nuxeo-Require: org.apache.xerces;visibility:=reexport,
- org.nuxeo.logging;visibility:=reexport
