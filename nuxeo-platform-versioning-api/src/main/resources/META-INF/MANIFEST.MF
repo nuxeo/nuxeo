@@ -22,4 +22,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.versioning.api
-Nuxeo-Require: org.nuxeo.ecm.core.api

@@ -30,5 +30,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.url.core;singleton:=true
 Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require: org.nuxeo.ecm.core.api,
-  org.nuxeo.ecm.platform.url.api

@@ -34,10 +34,4 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model,
  org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.ecm.platform.management;singleton=true
-Nuxeo-Require: org.nuxeo.ecm.webengine.core,
- org.nuxeo.runtime.management,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.management,
- org.nuxeo.ecm.platform.web.common,
- org.nuxeo.ecm.platform.scheduler.core
 Require-Bundle: org.nuxeo.ecm.core;bundle-version="0.0.0"

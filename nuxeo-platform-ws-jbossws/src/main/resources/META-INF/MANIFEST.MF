@@ -9,4 +9,3 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.ws.jbossws
-Nuxeo-Require: org.nuxeo.ecm.platform.ws

@@ -47,4 +47,3 @@ Import-Package: freemarker.cache,
  org.wikimodel.wem.common
 Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
 Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require: org.nuxeo.ecm.core.api

@@ -16,4 +16,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.api;api=split,
  org.nuxeo.ecm.directory;api=split
 Bundle-SymbolicName: org.nuxeo.ecm.directory.types.contrib;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api

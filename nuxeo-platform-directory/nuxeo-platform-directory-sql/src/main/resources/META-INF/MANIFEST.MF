@@ -38,4 +38,3 @@ Import-Package: au.com.bytecode.opencsv,
  org.nuxeo.runtime.model,
  org.osgi.framework
 Bundle-SymbolicName: org.nuxeo.ecm.directory.sql;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.directory

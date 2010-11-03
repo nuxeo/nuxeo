@@ -8,7 +8,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: 
+Nuxeo-Component:
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core;api=split,
@@ -16,4 +16,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.api
-Nuxeo-Require: org.nuxeo.ecm.core.api

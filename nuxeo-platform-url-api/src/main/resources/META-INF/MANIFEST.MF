@@ -30,4 +30,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.ecm.platform.types.adapter
 Bundle-SymbolicName: org.nuxeo.ecm.platform.url.api;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api

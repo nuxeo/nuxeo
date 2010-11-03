@@ -33,6 +33,3 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.event
 Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager
-Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.directory.api,
- org.nuxeo.ecm.platform.usermanager.api

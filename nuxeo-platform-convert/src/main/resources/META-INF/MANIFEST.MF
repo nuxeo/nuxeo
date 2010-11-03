@@ -55,6 +55,3 @@ Import-Package: com.sun.star.beans;ridl=split,
  org.xml.sax,
  org.xml.sax.helpers
 Bundle-SymbolicName: org.nuxeo.ecm.platform.convert;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.convert,
- org.nuxeo.ecm.platform.commandline.executor

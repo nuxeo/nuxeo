@@ -23,4 +23,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.platform.forms.layout.api,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.types.api;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api

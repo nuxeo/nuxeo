@@ -24,5 +24,4 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.directory.multi;singleton:=true
 Originally-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Nuxeo-Require: org.nuxeo.ecm.directory
 Require-Bundle: org.nuxeo.ecm.directory

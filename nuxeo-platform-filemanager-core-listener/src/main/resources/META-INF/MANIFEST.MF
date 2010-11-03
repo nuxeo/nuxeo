@@ -33,6 +33,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime,
  org.nuxeo.runtime.api
 Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core.listener
-Nuxeo-Require: org.nuxeo.ecm.core,
- org.nuxeo.ecm.core.event,
- org.nuxeo.ecm.platform.filemanager.api

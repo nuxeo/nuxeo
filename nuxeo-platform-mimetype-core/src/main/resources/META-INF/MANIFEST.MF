@@ -39,6 +39,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.model,
  org.w3c.dom
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.core
-Nuxeo-Require: org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.platform.api,
- org.nuxeo.ecm.platform.mimetype.api
