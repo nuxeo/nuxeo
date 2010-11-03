@@ -80,11 +80,3 @@ Import-Package: javax.resource;version="2.0.0",
  org.nuxeo.runtime.services.event,
  org.nuxeo.runtime.services.streaming
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
-Nuxeo-Require: org.nuxeo.runtime,
-  org.nuxeo.runtime.management,
-  org.nuxeo.ecm.core.schema,
-  org.nuxeo.ecm.core,
-  org.nuxeo.ecm.core.management,
-  org.nuxeo.ecm.core.convert,
-  org.nuxeo.ecm.core.convert.api,
-  org.nuxeo.ecm.core.convert.plugins

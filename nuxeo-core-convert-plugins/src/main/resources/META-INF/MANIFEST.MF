@@ -43,6 +43,3 @@ Import-Package: javax.mail,
  org.xml.sax,
  org.xml.sax.helpers
 Bundle-SymbolicName: org.nuxeo.ecm.core.convert.plugins;singleton=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
-  org.nuxeo.ecm.core.convert,
-  org.nuxeo.ecm.core.convert.api

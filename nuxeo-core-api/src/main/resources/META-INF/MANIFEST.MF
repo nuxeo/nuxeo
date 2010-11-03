@@ -60,5 +60,3 @@ Import-Package: javax.security.auth,
 Bundle-SymbolicName: org.nuxeo.ecm.core.api;singleton=true
 Eclipse-RegisterBuddy: org.nuxeo.runtime
 Eclipse-ExtensibleAPI: true
-Nuxeo-Require: org.nuxeo.runtime,
-  org.nuxeo.ecm.core.schema

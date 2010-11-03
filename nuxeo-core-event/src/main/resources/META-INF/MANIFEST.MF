@@ -35,6 +35,3 @@ Import-Package: javax.naming,
  org.nuxeo.runtime.transaction,
  org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
-  org.nuxeo.ecm.core.schema,
-  org.nuxeo.runtime.management

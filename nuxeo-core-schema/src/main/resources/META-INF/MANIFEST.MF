@@ -22,4 +22,3 @@ Import-Package: com.sun.xml.xsom,
  org.nuxeo.runtime.model,
  org.xml.sax
 Bundle-SymbolicName: org.nuxeo.ecm.core.schema;singleton:=true
-Nuxeo-Require: org.nuxeo.runtime

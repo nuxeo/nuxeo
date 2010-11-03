@@ -14,7 +14,6 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/CoreServiceBindings.xml
 Bundle-SymbolicName: org.nuxeo.ecm.core.facade
-Nuxeo-Require: org.nuxeo.ecm.core
 Import-Package: javax.annotation.security,
  javax.ejb,
  javax.persistence,
@@ -28,4 +27,3 @@ Import-Package: javax.annotation.security,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.schema.types,
  org.nuxeo.runtime.api
-Require-Bundle: org.nuxeo.ecm.core

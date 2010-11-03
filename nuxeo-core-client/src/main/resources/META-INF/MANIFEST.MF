@@ -29,5 +29,3 @@ Import-Package: javax.security.auth.login,
  org.nuxeo.runtime.services.streaming,
  org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.ecm.core.client;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
-  org.nuxeo.ecm.core.schema

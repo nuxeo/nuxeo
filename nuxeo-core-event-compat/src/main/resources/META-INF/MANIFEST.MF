@@ -5,7 +5,6 @@ Export-Package: org.nuxeo.ecm.core.event.compat,
  org.nuxeo.ecm.core.listener.impl
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Nuxeo-RequiredBy: org.nuxeo.ecm.core 
 Manifest-Version: 1.0
 Bundle-Category: core
 Bundle-Name: org.nuxeo.ecm.core.event.compat
@@ -35,5 +34,3 @@ Import-Package: javax.jms,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.event
 Bundle-SymbolicName: org.nuxeo.ecm.core.event.compat;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.api,
-  org.nuxeo.ecm.core.event

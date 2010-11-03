@@ -20,4 +20,3 @@ Import-Package: javax.jms,
  org.nuxeo.ecm.core.event,
  org.nuxeo.ecm.core.event.impl
 Bundle-SymbolicName: org.nuxeo.ecm.core.event.jms;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.core.event
