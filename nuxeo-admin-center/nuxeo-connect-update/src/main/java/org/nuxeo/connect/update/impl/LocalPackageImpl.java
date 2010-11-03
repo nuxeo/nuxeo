@@ -64,6 +64,9 @@ public class LocalPackageImpl implements LocalPackage {
             throws PackageException {
         this.state = state;
         XMap xmap = UpdateServiceImpl.getXmap();
+        if (xmap==null) { // for tests
+            xmap = UpdateServiceImpl.createXmap();
+        }
         InputStream in = null;
         try {
             this.data = new LocalPackageData(parent, file);
@@ -256,14 +259,22 @@ public class LocalPackageImpl implements LocalPackage {
 
     @Override
     public String getTermsAndConditionsContent() throws PackageException {
-        // TODO Auto-generated method stub
+        File file = data.getEntry(LocalPackage.TERMSANDCONDITIONS);
+        if (file.isFile()) {
+            try {
+                return FileUtils.readFile(file);
+            } catch (Exception e) {
+                throw new PackageException(
+                        "Failed to rad license.txt file for package: "
+                                + getId());
+            }
+        }
         return null;
     }
 
     @Override
     public boolean requireTermsAndConditionsAcceptance() {
-        // TODO Auto-generated method stub
-        return false;
+        return def.requireTermsAndConditionsAcceptance();
     }
 
     @Override

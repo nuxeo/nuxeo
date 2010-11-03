@@ -29,8 +29,6 @@ import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.model.TaskDefinition;
 import org.nuxeo.connect.update.task.Task;
 
-import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -123,7 +121,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("validator")
     protected String validator;
 
-    @XNode("production-state")
+    @XNode("nuxeo-validation")
     protected void initNuxeoValidationState(String value) {
         NuxeoValidationState targetState = NuxeoValidationState.getByValue(value);
         if (targetState!=null) {
@@ -131,7 +129,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
     }
 
-    @XNode("nuxeo-validation")
+    @XNode("production-state")
     protected void initProductionState(String value) {
         ProductionState targetState = ProductionState.getByValue(value);
         if (targetState!=null) {
@@ -389,9 +387,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
 
     public String toXML() {
         return new XmlSerializer().toXML(this);
-//        XmlWriter writer = new XmlWriter();
-//        write(writer);
-//        return writer.toString();
     }
 
 

@@ -225,6 +225,14 @@ public class PackageBuilder {
         return addEntry(LocalPackage.UNINSTALL, in);
     }
 
+    public PackageBuilder addTermsAndConditions(String content) {
+        return addTermsAndConditions(new ByteArrayInputStream(content.getBytes()));
+    }
+
+    public PackageBuilder addTermsAndConditions(InputStream in) {
+        return addEntry(LocalPackage.TERMSANDCONDITIONS, in);
+    }
+
     /**
      * The entry content will be copied into the zip at build time and the given
      * input stream will be closed. (event if an exception occurs) - so you
@@ -273,8 +281,7 @@ public class PackageBuilder {
                     addForms(uninstallForms, LocalPackage.UNINSTALL_FORMS, zout);
                 }
                 if (!validationForms.isEmpty()) {
-                    addForms(validationForms, LocalPackage.VALIDATION_FORMS,
-                            zout);
+                    addForms(validationForms, LocalPackage.VALIDATION_FORMS,zout);
                 }
             } finally {
                 zout.close();
