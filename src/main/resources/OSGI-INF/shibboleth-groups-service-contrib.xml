@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component
-  name="org.nuxeo.ecm.platform.shibboleth.groups.service.ShibbolethGroupsService">
+  name="org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService">
 
   <documentation>
     The Shibboleth Groups Service handles the Group Tree Widget configuration

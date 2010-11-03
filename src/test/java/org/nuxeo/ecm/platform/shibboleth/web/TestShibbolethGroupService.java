@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -49,5 +50,11 @@ public class TestShibbolethGroupService {
     @Test
     public void testRegistration() {
         assertNotNull(service);
+    }
+
+    @Test
+    public void testServiceImpl() {
+        assertEquals(":::", service.getParseString());
+        assertEquals("external:::group", service.getShibbGroupBasePath());
     }
 }

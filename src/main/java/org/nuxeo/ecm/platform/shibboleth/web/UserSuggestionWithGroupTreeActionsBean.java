@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNode;
+import org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNodeHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.webapp.security.UserSuggestionActionsBean;
 import org.richfaces.component.UITree;
@@ -65,8 +66,9 @@ public class UserSuggestionWithGroupTreeActionsBean extends
         List<DocumentModel> shibbGroups = getShibbGroups();
 
         treeRoot = new ArrayList<UserTreeNode>();
-        treeRoot.addAll(UserTreeNode.getHierarcicalNodes(groups));
-        treeRoot.addAll(UserTreeNode.buildBranch("external:shibb", shibbGroups));
+        treeRoot.addAll(UserTreeNodeHelper.getHierarcicalNodes(groups));
+        treeRoot.addAll(UserTreeNodeHelper.buildBranch(UserTreeNodeHelper.getShibbGroupBasePath(),
+                shibbGroups));
     }
 
     /**
