@@ -48,9 +48,9 @@ import org.osgi.framework.SynchronousBundleListener;
 
 /**
  * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class WebEngineComponent extends DefaultComponent { // implements
     // ConfigurationChangedListener

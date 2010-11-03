@@ -47,9 +47,9 @@ import org.nuxeo.ecm.webengine.util.PathMatcher;
  * 'prefix'. Paths are relative to the webengine servlet (i.e. they correspond
  * to the servlet path info in the JAX-RS servlet) - and always begin with a
  * '/'.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @XObject("path")
 public class PathDescriptor implements Comparable<PathDescriptor> {

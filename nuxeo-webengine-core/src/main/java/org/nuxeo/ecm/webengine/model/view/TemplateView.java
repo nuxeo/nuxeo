@@ -54,17 +54,17 @@ public class TemplateView {
         return url;
     }
 
-	public TemplateView(Object owner, String name) {
-		this(WebEngine.getActiveContext(), owner, name);
-	}
+    public TemplateView(Object owner, String name) {
+        this(WebEngine.getActiveContext(), owner, name);
+    }
 
-	public TemplateView(WebContext ctx, Object owner, String name) {
-		this(ctx, owner, findTemplate(owner, name));
-	}
+    public TemplateView(WebContext ctx, Object owner, String name) {
+        this(ctx, owner, findTemplate(owner, name));
+    }
 
-	public TemplateView(Object owner, URL url) {
-		this(WebEngine.getActiveContext(), owner, url);
-	}
+    public TemplateView(Object owner, URL url) {
+        this(WebEngine.getActiveContext(), owner, url);
+    }
 
     public TemplateView(WebContext ctx, Object owner, URL url) {
         if (ctx == null) {

@@ -57,7 +57,7 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
 
     public Injectable<?> getInjectable(ComponentContext cc, Context a, Type t) {
         if (!(t instanceof Class<?>)) {
-        	return null;
+            return null;
         }
 
         try {
