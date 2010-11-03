@@ -47,10 +47,6 @@
 
       <div id="content">
         <ui:decorate template="/incl/content_view.xhtml">
-          <ui:param name="selectedResultLayoutColumns"
-            value="#{documentSearchActions.selectedLayoutColumns}" />
-          <ui:param name="contentViewSortInfos"
-            value="#{documentSearchActions.searchSortInfos}" />
           <ui:define name="empty_folder_label">
             <h:outputText value="#{messages['label.content.empty.search']}"
               rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
@@ -63,12 +59,7 @@
             </div>
           </ui:define>
           <ui:define name="content_view_header_after_selector" />
-          <ui:define name="syndication_buttons">
-            <c:if test="false">syndication currently broken with content views</c:if>
-            <ui:include src="/incl/syndication_buttons.xhtml">
-              <ui:param name="type" value="search" />
-            </ui:include>
-          </ui:define>
+          <ui:define name="syndication_buttons" />
         </ui:decorate>
       </div>
     </nxu:set>

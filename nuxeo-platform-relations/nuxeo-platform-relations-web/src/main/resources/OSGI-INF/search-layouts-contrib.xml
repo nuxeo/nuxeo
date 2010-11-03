@@ -21,28 +21,30 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="relation_search_title" type="template">
+    <widget name="relation_search_title" type="text">
       <labels>
-        <label mode="any">label.dublincore.title</label>
+        <label mode="any">label.relation.search.title</label>
       </labels>
       <translated>true</translated>
+      <helpLabels>
+        <label mode="any">label.relation.search.title.info</label>
+      </helpLabels>
       <fields>
         <field>rel_srch:dc_title</field>
       </fields>
-      <properties mode="any">
-        <property name="template">/widgets/title_with_help_widget.xhtml</property>
-      </properties>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
-        <property name="tooltipLabel">label.relation.search.title.tooltip</property>
       </properties>
     </widget>
 
     <widget name="relation_search_fulltext" type="text">
       <labels>
-        <label mode="any">label.search.all_words</label>
+        <label mode="any">label.relation.search.all_words</label>
       </labels>
       <translated>true</translated>
+      <helpLabels>
+        <label mode="any">label.relation.search.all_words.info</label>
+      </helpLabels>
       <fields>
         <field>rel_srch:ecm_fulltext</field>
       </fields>

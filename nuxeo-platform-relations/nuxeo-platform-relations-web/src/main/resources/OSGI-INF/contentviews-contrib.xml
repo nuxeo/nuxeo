@@ -7,6 +7,7 @@
     <contentView name="relation_search">
 
       <coreQueryPageProvider>
+        <parameter>#{currentDocument.id}</parameter>
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="RelationSearch">
           <predicate parameter="ecm:path" operator="STARTSWITH">
@@ -22,7 +23,7 @@
           </predicate>
 
           <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
+            ecm:uuid != ? AND ecm:mixinType != 'HiddenInNavigation' AND ecm:mixinType != 'Folderish' AND ecm:isCheckedInVersion = 0
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
