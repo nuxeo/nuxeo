@@ -128,7 +128,6 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
             }
             if (checkProxies && doc.isProxy()) {
                 info.proxies++;
-                continue;
             }
             if (doc.isLocked()) {
                 String locker = getDocumentLocker(doc);
@@ -222,7 +221,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         for (DocumentModel doc : docs) {
             DocumentRef docRef = doc.getRef();
             if (session.getAllowedStateTransitions(docRef).contains(
-                    LifeCycleConstants.DELETE_TRANSITION)) {
+                    LifeCycleConstants.DELETE_TRANSITION)
+                    && !doc.isProxy()) {
                 session.followTransition(docRef,
                         LifeCycleConstants.DELETE_TRANSITION);
             } else {
