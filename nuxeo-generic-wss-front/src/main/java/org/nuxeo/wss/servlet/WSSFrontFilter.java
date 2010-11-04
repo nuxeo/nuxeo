@@ -48,7 +48,7 @@ public class WSSFrontFilter extends BaseWSSFilter implements Filter {
         if (target != null && !"".equals(target)) {
             rootFilterTarget = target;
         } else {
-            rootFilterTarget = "/nuxeo";
+            rootFilterTarget = System.getProperty("org.nuxeo.ecm.contextPath", "/nuxeo");
         }
         return true;
     }

@@ -25,7 +25,7 @@ public class SimpleVirtualHostedBackendFactory extends AbstractWSSBackendFactory
 
     @Override
     protected WSSBackend createBackend(WSSRequest request) {
-        String virtualRoot = "nuxeo";
+        String virtualRoot = computeVirtualRoot(request);
         NuxeoWSSBackend realBackend = new SimpleNuxeoBackend("/default-domain", virtualRoot);
         return new VirtualRootedBackend(virtualRoot,realBackend);
     }

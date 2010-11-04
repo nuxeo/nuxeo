@@ -25,6 +25,22 @@ public abstract class AbstractWSSBackendFactory implements WSSBackendFactory {
 
     public static final String BACKEND_KEY = "org.nuxeo.ecm.platform.wss.backend";
 
+    protected String computeVirtualRoot(WSSRequest request) {
+        String virtualRoot = null;
+        if (request == null) { // happens during unit tests
+            virtualRoot = System.getProperty("org.nuxeo.ecm.contextPath", "/nuxeo");
+        } else {
+            virtualRoot = request.getSitePath();
+        }
+        if (virtualRoot == null || virtualRoot.equals("")) {
+            virtualRoot = request.getHttpRequest().getContextPath();
+        }
+        if (virtualRoot.startsWith("/")) {
+            virtualRoot = virtualRoot.substring(1);
+        }
+        return virtualRoot;
+    }
+
     public WSSBackend getBackend(WSSRequest request) {
 
         if (request == null) {

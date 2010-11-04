@@ -369,9 +369,10 @@ public class SimpleNuxeoBackend extends AbstractNuxeoCoreBackend implements WSSB
         NuxeoListItem parent = (NuxeoListItem) getItem(parentPath);
         String siteName = parent.getDisplayName();
         SiteImpl site = new SiteImpl(siteName);
-        String nxUrl = "nuxeo/nxpath/default" + parent.getDoc().getPathAsString() + "@view_documents";
+        String nxUrl = urlRoot + "/nxpath/default" + parent.getDoc().getPathAsString() + "@view_documents";
         try {
             site.setAccessUrl("?"+ WSSFilter.FILTER_FORWARD_PARAM +  "=" + URLEncoder.encode(nxUrl, "UTF-8"));
+            //site.setAccessUrl(URLEncoder.encode(nxUrl, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new WSSException("Error encoding url", e);
         }

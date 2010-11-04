@@ -40,14 +40,15 @@ import org.nuxeo.wss.spi.dws.Task;
 import org.nuxeo.wss.spi.dws.User;
 
 /**
- * Minimal fake implementation of the DWS WebService.
- * Uses FreeMarker to render responses.
+ * Minimal fake implementation of the DWS WebService. Uses FreeMarker to render
+ * responses.
  *
  * @author Thierry Delprat
  */
 public class FakeDWS implements FakeWSHandler {
 
     public static final String document_TAG = "document";
+
     public static final String url_TAG = "url";
 
     public void handleRequest(FakeWSRequest request, WSSResponse response)
@@ -56,8 +57,8 @@ public class FakeDWS implements FakeWSHandler {
         response.addRenderingParameter("siteRoot", request.getSitePath());
         response.addRenderingParameter("request", request);
 
-        if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData".equals(request.getAction()) ||
-                "http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
+        if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsMetaData".equals(request.getAction())
+                || "http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
 
             boolean withMeta = true;
             if ("http://schemas.microsoft.com/sharepoint/soap/dws/GetDwsData".equals(request.getAction())) {
@@ -102,7 +103,7 @@ public class FakeDWS implements FakeWSHandler {
                 link.updateReferences(users);
             }
             int docIdx = 1;
-            String siteRoot = "/nuxeo"; // XXXX
+            String siteRoot = calculateSiteRoot(request);
             for (WSSListItem doc : metadata.getDocuments()) {
                 DWSDocument dwsd = new DWSDocument(doc, siteRoot);
                 dwsd.updateReferences(users);
@@ -111,7 +112,8 @@ public class FakeDWS implements FakeWSHandler {
                 docIdx++;
             }
 
-            String siteUrl = metadata.getSite().getItem().getRelativeSubPath(siteRoot);
+            String siteUrl = metadata.getSite().getItem().getRelativeSubPath(
+                    siteRoot);
 
             Map<String, Object> renderingContext = new HashMap<String, Object>();
             renderingContext.put("doc", item);
@@ -130,9 +132,11 @@ public class FakeDWS implements FakeWSHandler {
             try {
                 String xmlMetaData = "";
                 if (withMeta) {
-                    xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl", renderingContext);
+                    xmlMetaData = renderSubTemplate("GetDwsMetaDataBody.ftl",
+                            renderingContext);
                 } else {
-                    xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl", renderingContext);
+                    xmlMetaData = renderSubTemplate("GetDwsDataBody.ftl",
+                            renderingContext);
                 }
 
                 xmlMetaData = StringEscapeUtils.escapeXml(xmlMetaData);
@@ -159,7 +163,7 @@ public class FakeDWS implements FakeWSHandler {
             }
 
             response.setContentType("text/xml");
-            String siteRoot = "/nuxeo"; // XXXX
+            String siteRoot = calculateSiteRoot(request);
             String folderName;
             String targetPath;
             int idx = documentUrl.lastIndexOf("/");
@@ -176,19 +180,39 @@ public class FakeDWS implements FakeWSHandler {
 
             response.setRenderingTemplateName("CreateFolderResponse.ftl");
         } else {
-            throw new WSSException("no FakeWS implemented for action " + request.getAction());
+            throw new WSSException("no FakeWS implemented for action "
+                    + request.getAction());
         }
     }
 
-    protected String renderSubTemplate(String renderingTemplateName, Map<String, Object> renderingContext) throws Exception {
+    protected String renderSubTemplate(String renderingTemplateName,
+            Map<String, Object> renderingContext) throws Exception {
         Writer writer;
         ByteArrayOutputStream bufferedOs;
         bufferedOs = new ByteArrayOutputStream();
         writer = new BufferedWriter(new OutputStreamWriter(bufferedOs));
-        FreeMarkerRenderer.instance().render(renderingTemplateName, renderingContext, writer);
+        FreeMarkerRenderer.instance().render(renderingTemplateName,
+                renderingContext, writer);
         writer.flush();
         writer.close();
         return bufferedOs.toString("UTF-8");
+    }
+
+    protected String calculateSiteRoot(FakeWSRequest request) {
+        String siteRoot = request.getSitePath();
+        if (siteRoot == null || siteRoot.equals("")) {
+            siteRoot = request.getHttpRequest().getContextPath();
+        }
+        if (siteRoot == null) { // happens in unit tests
+            siteRoot = System.getProperty("org.nuxeo.ecm.contextPath", "/nuxeo");
+        }
+        if (!siteRoot.startsWith("/")) {
+            siteRoot = "/" + siteRoot;
+        }
+        if (siteRoot.endsWith("/")) {
+            siteRoot = siteRoot.substring(0, siteRoot.length() - 1);
+        }
+        return siteRoot;
     }
 
 }
