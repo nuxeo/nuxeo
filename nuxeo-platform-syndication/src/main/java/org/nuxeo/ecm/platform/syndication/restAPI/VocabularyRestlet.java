@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.syndication.vocabularies.SimpleVocabulary;
 import org.nuxeo.ecm.platform.syndication.vocabularies.Tree;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -160,6 +161,7 @@ public class VocabularyRestlet extends BaseStatelessNuxeoRestlet {
         }
 
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 
     /*

@@ -6,7 +6,6 @@
 <!-- end tinyMCE -->
 
 <script type="text/javascript">
-
     function isTitleSet() {
         var title = document.getElementById('titleInput');
         if (title) {
@@ -15,7 +14,6 @@
                 return false;
             }
         }
-
         return true;
     }
 </script>
@@ -29,20 +27,20 @@
     <td>${Context.getMessage("label.blogpost.title")}</td>
   </tr>
   <tr>
-    <td><input type="text" id="titleInput" name="title" value="${Context.request.getAttribute('pageName')}" /></td>
+    <td><input type="text" size="60" id="titleInput" name="title" value="${Context.request.getAttribute('pageName')}" /></td>
    </tr>
    <tr>
       <td>${Context.getMessage("label.blogpost.description")}</td>
     </tr>
     <tr>
-      <td><textarea name="description"></textarea></td>
+      <td><textarea name="description" cols="80"></textarea></td>
     </tr>
     <tr>
       <td>${Context.getMessage("label.blogpost.content")}</td>
     </tr>
     <tr>
       <td>
-        <textarea name="richtextEditor" style="width: 300px;height: 400px" cols="60" rows="20" id="richtextEditor"></textarea>
+        <textarea name="richtextEditor" style="width:300px; height:400px" cols="80" rows="20" id="richtextEditor"></textarea>
       </td>
     </tr>
     <tr>
@@ -60,12 +58,11 @@
 
 <script type="text/javascript">
 $('#richtextEditor').ready(function() {
-
   document.tmceCreate = new tinymce.Editor('richtextEditor',{
-  mode : "textareas",
-  theme : "advanced",
-  editor_selector : "mceAdvanced"
-    });
+    mode : "textareas",
+    theme : "advanced",
+    editor_selector : "mceAdvanced"
+  });
 
   document.tmceCreate.render();
 });

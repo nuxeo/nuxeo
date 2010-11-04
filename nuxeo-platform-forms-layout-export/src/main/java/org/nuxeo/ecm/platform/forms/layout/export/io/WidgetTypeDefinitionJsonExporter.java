@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,24 +57,9 @@ public class WidgetTypeDefinitionJsonExporter {
             OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
         if (defs != null) {
-            Collections.sort(defs, new Comparator<WidgetTypeDefinition>() {
-                @Override
-                public int compare(WidgetTypeDefinition o1,
-                        WidgetTypeDefinition o2) {
-                    if (o1 == null && o2 == null) {
-                        return 0;
-                    }
-                    if (o1 == null) {
-                        return -1;
-                    }
-                    if (o2 == null) {
-                        return 1;
-                    }
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
+            // sort so that order is deterministic
+            Collections.sort(defs, new WidgetTypeDefinitionComparator());
         }
-        // TODO: sort so that order is deterministic (?)
         for (WidgetTypeDefinition def : defs) {
             res.element(def.getName(), exportToJson(def));
         }

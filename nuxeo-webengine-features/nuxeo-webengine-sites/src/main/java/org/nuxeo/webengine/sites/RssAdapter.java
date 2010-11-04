@@ -54,6 +54,7 @@ import org.nuxeo.webengine.sites.utils.SiteUtils;
 public class RssAdapter extends DefaultAdapter {
 
     public static final int NO_PAGES = 15;
+
     public static final int NO_COMMENTS = 15;
 
     /**
@@ -117,14 +118,19 @@ public class RssAdapter extends DefaultAdapter {
             String docId = ctx.getRequest().getParameter("docId");
             DocumentModel doc = session.getDocument(new IdRef(docId));
 
+            StringBuilder path = new StringBuilder(ctx.getServerURL());
             if (doc.getType().equals(getWebSiteDocumentType())) {
                 comments = SiteQueriesCollection.queryLastComments(session,
                         doc.getPathAsString(), NO_COMMENTS,
                         SiteUtils.isCurrentModerated(session, doc));
+                path.append(SiteUtils.getPagePath(doc,
+                        doc));
             } else if (doc.getType().equals(getWebPageDocumentType())) {
                 CommentManager commentManager = SiteUtils.getCommentManager();
                 comments = new DocumentModelListImpl(
                         commentManager.getComments(doc));
+                path.append(SiteUtils.getPagePath(
+                        SiteUtils.getFirstWebSiteParent(session, doc), doc));
             }
 
             for (DocumentModel documentModel : comments) {
@@ -138,9 +144,10 @@ public class RssAdapter extends DefaultAdapter {
                             CommentsConstants.COMMENT_AUTHOR).getValue();
                     String commentText = (String) documentModel.getProperty(
                             CommentsConstants.COMMENT_TEXT).getValue();
-                    CommentModel commentModel = new CommentModel(creationDate, author,
-                            commentText, documentModel.getRef().toString(),
-                            false);
+                    CommentModel commentModel = new CommentModel(creationDate,
+                            author, commentText,
+                            documentModel.getRef().toString(), false);
+                    commentModel.setSiteUrl(path.toString());
                     String entryXml = rssEntryTpl.arg("item", commentModel).render();
                     entries.add(entryXml);
                 }
@@ -156,8 +163,8 @@ public class RssAdapter extends DefaultAdapter {
 
     private String getWebSiteDocumentType() throws ClientException {
         try {
-            return (String) getTarget().getClass().getMethod("getWebSiteDocumentType").invoke(
-                    getTarget());
+            return (String) getTarget().getClass().getMethod(
+                    "getWebSiteDocumentType").invoke(getTarget());
         } catch (Exception e) {
             throw new ClientException(e);
         }
@@ -165,8 +172,8 @@ public class RssAdapter extends DefaultAdapter {
 
     private String getWebPageDocumentType() throws ClientException {
         try {
-            return (String) getTarget().getClass().getMethod("getWebPageDocumentType").invoke(
-                    getTarget());
+            return (String) getTarget().getClass().getMethod(
+                    "getWebPageDocumentType").invoke(getTarget());
         } catch (Exception e) {
             throw new ClientException(e);
         }

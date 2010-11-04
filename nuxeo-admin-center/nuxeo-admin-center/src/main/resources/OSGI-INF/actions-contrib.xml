@@ -41,7 +41,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <!-- 
+    <!--
     <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml" label="tab.sysinfo.reposStats"
       order="60">
       <category>NUXEO_ADMIN_SystemInfo</category>
@@ -107,7 +107,7 @@
     <action id="adm_logout" link="#{loginLogoutAction.logout()}" label="command.logout">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>
-    
+
     <action id="adm_exit" link="#{adminViews.exit()}" label="action.admin.exit">
       <category>NUXEO_ADMIN_USER_SERVICES</category>
     </action>

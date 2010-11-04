@@ -58,6 +58,13 @@ public class AdminViewManager implements Serializable {
     @In(create = true, required = false)
     protected WebActions webActions;
 
+    public String goHome() {
+        currentView=null;
+        Contexts.getEventContext().remove("currentView");
+        Contexts.getEventContext().remove("currentAdminSubView");
+        return "view_admin";
+    }
+
     public String exit() throws ClientException {
         NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");

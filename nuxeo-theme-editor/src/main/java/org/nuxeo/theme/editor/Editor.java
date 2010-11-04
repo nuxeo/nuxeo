@@ -683,7 +683,7 @@ public class Editor {
 
         if (element != null) {
             themeManager.makeElementUseNamedStyle(element, styleName,
-                    themeName, false);
+                    themeName);
         }
 
         saveTheme(themeName);
@@ -709,7 +709,7 @@ public class Editor {
         Style inheritedStyle = (Style) themeManager.getNamedObject(themeName,
                 "style", styleName);
         themeManager.deleteFormat(inheritedStyle);
-        themeManager.makeElementUseNamedStyle(element, null, themeName, false);
+        themeManager.makeElementUseNamedStyle(element, null, themeName);
         themeManager.removeNamedObject(themeName, "style", styleName);
         saveTheme(themeName);
     }
@@ -1023,7 +1023,7 @@ public class Editor {
             ElementFormatter.setFormat(fragment, style);
 
             themeManager.makeElementUseNamedStyle(fragment, styleName,
-                    currentThemeName, false);
+                    currentThemeName);
 
             String themeName = currentThemeName.split("/")[0];
             themeManager.fillScratchPage(themeName, fragment);

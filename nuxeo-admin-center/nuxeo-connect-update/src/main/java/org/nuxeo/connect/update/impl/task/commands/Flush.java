@@ -30,9 +30,9 @@ import org.w3c.dom.Element;
 
 /**
  * Flush all nuxeo caches.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class Flush extends PostInstallCommand {
 

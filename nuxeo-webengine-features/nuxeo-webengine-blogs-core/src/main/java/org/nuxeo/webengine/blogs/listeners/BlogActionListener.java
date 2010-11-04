@@ -39,7 +39,7 @@ public class BlogActionListener implements EventListener {
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
+        if (!(DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId) || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventId))) {
             return;
         }
 
@@ -54,21 +54,29 @@ public class BlogActionListener implements EventListener {
         String documentType = doc.getType();
 
         if (BlogConstants.BLOG_DOC_TYPE.equals(documentType)) {
-            // Is WebSite
-            // CB: Because, at least for a while, Workspaces need to work
-            // together with WebSites, "isWebContainer" flag needs to be
-            // kept and set to "true" for all new created WebSites.
-            // TODO probably the methods from the site modules that keep
-            // this field into account, should be updated in order to ignore it
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
-                    Boolean.TRUE);
-            // Set Blog url field
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, doc.getName());
+
+            if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
+
+                // Is WebSite
+                // CB: Because, at least for a while, Workspaces need to work
+                // together with WebSites, "isWebContainer" flag needs to be
+                // kept and set to "true" for all new created WebSites.
+                // TODO probably the methods from the site modules that keep
+                // this field into account, should be updated in order to ignore
+                // it
+                doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
+                        Boolean.TRUE);
+                // Set Blog url field
+                doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL,
+                        doc.getName());
+                doc.setPropertyValue(SiteConstants.WEBSITE_SCHEMA_THEME,
+                        "blogs");
+                doc.setPropertyValue(SiteConstants.WEBSITE_THEMEPAGE, "site");
+            }
             // Set Blog title
             doc.setPropertyValue(SiteConstants.WEBCONTAINER_NAME,
                     doc.getTitle());
-            doc.setPropertyValue(SiteConstants.WEBSITE_SCHEMA_THEME, "blogs");
-            doc.setPropertyValue(SiteConstants.WEBSITE_THEMEPAGE, "site");
+
         } else if (BlogConstants.BLOG_POST_DOC_TYPE.equals(documentType)) {
             doc.setPropertyValue(SiteConstants.WEBPAGE_SCHEMA_THEME, "blogs");
             doc.setPropertyValue(SiteConstants.WEBPAGE_THEMEPAGE, "post");

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
 import org.nuxeo.ecm.platform.syndication.workflow.TaskModule;
 import org.nuxeo.ecm.platform.syndication.workflow.TaskModuleImpl;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 
@@ -89,6 +90,7 @@ public class ATOMSerializer extends AbstractSyndicationSerializer implements
         try {
             response.setEntity(output.outputString(atomFeed),
                     MediaType.TEXT_XML);
+            response.getEntity().setCharacterSet(CharacterSet.UTF_8);
             return;
         } catch (FeedException fe) {
             return;

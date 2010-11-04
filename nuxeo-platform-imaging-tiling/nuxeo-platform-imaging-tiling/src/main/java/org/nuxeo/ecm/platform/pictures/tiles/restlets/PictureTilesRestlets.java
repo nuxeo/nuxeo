@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.serializer.JSONPictureTilesSerializ
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.PictureTilesSerializer;
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.XMLPictureTilesSerializer;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -172,6 +173,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         }
 
         res.setEntity(serializer.serialize(tiles), mt);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
 
         HttpServletResponse response = getHttpResponse(res);
         response.setHeader("Cache-Control", "no-cache");

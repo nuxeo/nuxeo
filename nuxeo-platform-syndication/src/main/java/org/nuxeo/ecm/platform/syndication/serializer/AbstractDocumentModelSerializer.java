@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 
@@ -76,12 +77,14 @@ public abstract class AbstractDocumentModelSerializer implements
             Response res, HttpServletRequest req) throws ClientException {
         String xml = serialize(docList, columnsDefinition, req);
         res.setEntity(xml, MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 
     public void serialize(ResultSummary summary, DocumentModelList docList,
             String columnsDefinition, Response res, HttpServletRequest req) throws ClientException {
         String xml = serialize(summary, docList, columnsDefinition, req);
         res.setEntity(xml, MediaType.TEXT_XML);
+        res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
 
     public void serialize(ResultSummary summary, DocumentModelList docList,

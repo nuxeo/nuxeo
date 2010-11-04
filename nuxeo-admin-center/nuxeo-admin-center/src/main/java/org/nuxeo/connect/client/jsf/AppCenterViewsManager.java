@@ -69,7 +69,7 @@ public class AppCenterViewsManager implements Serializable {
 
     protected boolean onlyRemote = false;
 
-    protected String searchString = null;
+    protected String searchString;
 
     public String getSearchString() {
         if (searchString == null) {

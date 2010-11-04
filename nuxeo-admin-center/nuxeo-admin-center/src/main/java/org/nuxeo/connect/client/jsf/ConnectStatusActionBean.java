@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.connect.connector.CanNotReachConnectServer;
 import org.nuxeo.connect.connector.ConnectClientVersionMismatchError;
 import org.nuxeo.connect.connector.ConnectServerError;
@@ -73,6 +74,9 @@ public class ConnectStatusActionBean implements Serializable {
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
+	
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
 
     protected String login;
 
@@ -168,7 +172,7 @@ public class ConnectStatusActionBean implements Serializable {
     public void validateLogin() {
         if (login == null || password == null) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    "label.empty.loginpassword");
+                    resourcesAccessor.getMessages().get("label.empty.loginpassword"));
             loginValidated = false;
             flushEventCache();
             return;
@@ -176,7 +180,7 @@ public class ConnectStatusActionBean implements Serializable {
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
         if (prjs == null || prjs.size() == 0) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    "label.bad.loginpassword.or.noproject");
+                    resourcesAccessor.getMessages().get("label.bad.loginpassword.or.noproject"));
             loginValidated = false;
             flushEventCache();
             return;
@@ -260,7 +264,8 @@ public class ConnectStatusActionBean implements Serializable {
 
     public String register() {
         if (registredProject == null) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN, "label.empty.project");
+            facesMessages.add(FacesMessage.SEVERITY_WARN, 
+			resourcesAccessor.getMessages().get("label.empty.project"));
             return null;
         }
         try {
@@ -270,7 +275,7 @@ public class ConnectStatusActionBean implements Serializable {
                     instanceDescription);
         } catch (Exception e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "label.connect.registrationError");
+					resourcesAccessor.getMessages().get("label.connect.registrationError"));
             log.error("Error while registring instance", e);
         }
 
@@ -287,10 +292,10 @@ public class ConnectStatusActionBean implements Serializable {
             getService().localRegisterInstance(CLID, instanceDescription);
         } catch (InvalidCLID e) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
-                    "label.connect.wrongCLID");
+                    resourcesAccessor.getMessages().get("label.connect.wrongCLID"));
         } catch (IOException e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "label.connect.registrationError");
+                    resourcesAccessor.getMessages().get("label.connect.registrationError"));
             log.error("Error while registring instance locally", e);
         }
 
@@ -335,7 +340,7 @@ public class ConnectStatusActionBean implements Serializable {
         }
         catch (Exception e) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-            "label.connect.wrong.package" + ":" + e.getMessage());
+            resourcesAccessor.getMessages().get("label.connect.wrong.package" + ":" + e.getMessage()));
             return;
         } finally {
             tmpFile.delete();

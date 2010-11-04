@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.forms.layout.export;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.export.io.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -49,15 +51,51 @@ public class WebLayoutResource {
 
     protected WebLayoutManager service;
 
-    protected List<WidgetTypeDefinition> widgetTypes;
+    protected final List<WidgetTypeDefinition> widgetTypes;
+
+    protected final Map<String, List<WidgetTypeDefinition>> widgetTypesByCat;
 
     public WebLayoutResource() throws Exception {
         try {
             service = Framework.getService(WebLayoutManager.class);
             widgetTypes = service.getWidgetTypeDefinitions();
+            // sort so that order is deterministic
+            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator());
+            widgetTypesByCat = getWidgetTypesByCategory();
         } catch (Exception e) {
             throw WebException.wrap("Failed to initialize WebLayoutManager", e);
         }
+    }
+
+    protected Map<String, List<WidgetTypeDefinition>> getWidgetTypesByCategory() {
+        Map<String, List<WidgetTypeDefinition>> cats = new LinkedHashMap<String, List<WidgetTypeDefinition>>();
+        List<WidgetTypeDefinition> unknownCatWidgets = new ArrayList<WidgetTypeDefinition>();
+        for (WidgetTypeDefinition wTypeDef : widgetTypes) {
+            List<String> categories = null;
+            WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
+            if (conf != null) {
+                categories = conf.getCategories();
+            }
+            boolean added = false;
+            if (categories != null) {
+                for (String cat : categories) {
+                    List<WidgetTypeDefinition> list = cats.get(cat);
+                    if (list == null) {
+                        list = new ArrayList<WidgetTypeDefinition>();
+                    }
+                    list.add(wTypeDef);
+                    cats.put(cat, list);
+                    added = true;
+                }
+            }
+            if (!added) {
+                unknownCatWidgets.add(wTypeDef);
+            }
+        }
+        if (!unknownCatWidgets.isEmpty()) {
+            cats.put("unknown", unknownCatWidgets);
+        }
+        return cats;
     }
 
     @GET
@@ -81,6 +119,7 @@ public class WebLayoutResource {
     HttpServletRequest request, @PathParam("category")
     String category, @QueryParam("all")
     Boolean all) {
+        // TODO: refactor so that's cached
         WidgetTypeDefinitions res = new WidgetTypeDefinitions();
         for (WidgetTypeDefinition def : widgetTypes) {
             WidgetTypeConfiguration conf = def.getConfiguration();
@@ -136,35 +175,7 @@ public class WebLayoutResource {
     }
 
     protected TemplateView getTemplate(String name) {
-        Map<String, List<WidgetTypeDefinition>> cats = new LinkedHashMap<String, List<WidgetTypeDefinition>>();
-        for (WidgetTypeDefinition wTypeDef : widgetTypes) {
-            List<String> categories = null;
-            WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
-            if (conf != null) {
-                categories = conf.getCategories();
-            }
-            boolean added = false;
-            if (categories != null) {
-                for (String cat : categories) {
-                    List<WidgetTypeDefinition> list = cats.get(cat);
-                    if (list == null) {
-                        list = new ArrayList<WidgetTypeDefinition>();
-                    }
-                    list.add(wTypeDef);
-                    cats.put(cat, list);
-                    added = true;
-                }
-            }
-            if (!added) {
-                List<WidgetTypeDefinition> list = cats.get("unknown");
-                if (list == null) {
-                    list = new ArrayList<WidgetTypeDefinition>();
-                }
-                list.add(wTypeDef);
-                cats.put("unknown", list);
-            }
-        }
-        return new TemplateView(this, name).arg("categories", cats).arg(
+        return new TemplateView(this, name).arg("categories", widgetTypesByCat).arg(
                 "widgetTypes", widgetTypes);
     }
 

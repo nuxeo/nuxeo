@@ -31,11 +31,11 @@ import org.w3c.dom.Element;
 /**
  * Install bundle, flush any application cache and perform Nuxeo preprocessing
  * on the bundle.
- * 
+ *
  * The inverse of this command is Undeploy.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class UndeployConfig extends AbstractCommand {
 

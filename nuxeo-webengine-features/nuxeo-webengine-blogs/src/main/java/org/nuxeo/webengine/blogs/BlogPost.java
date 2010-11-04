@@ -110,4 +110,9 @@ public class BlogPost extends Page {
         }
     }
 
+    @Override
+    protected String getDocumentDeletedErrorTemplateName() {
+        return "error_deleted_blog_entry.ftl";
+    }
+
 }

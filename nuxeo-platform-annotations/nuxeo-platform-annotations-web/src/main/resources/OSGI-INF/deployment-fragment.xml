@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <require>org.nuxeo.theme.jsf</require>
+
   <extension target="web#FILTER-MAPPING">
     <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter
-      </filter-name>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/adnotatio.HtmlAnnotatorClient/*</url-pattern>
     </filter-mapping>
   </extension>
@@ -12,27 +13,31 @@
   <extension target="web#FILTER-MAPPING">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration</url-pattern>
+      <url-pattern>
+        /org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration
+      </url-pattern>
     </filter-mapping>
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration</url-pattern>
+      <url-pattern>
+        /org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration
+      </url-pattern>
     </filter-mapping>
   </extension>
 
   <!-- extension target="web#SERVLET">
     <servlet>
-      <servlet-name>Annotation GWT Servlet</servlet-name>
-      <servlet-class>adnotatio.server.ServiceServlet
-      </servlet-class>
-      <load-on-startup>1</load-on-startup>
+    <servlet-name>Annotation GWT Servlet</servlet-name>
+    <servlet-class>adnotatio.server.ServiceServlet
+    </servlet-class>
+    <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-      <servlet-name>Annotation GWT Servlet</servlet-name>
-      <url-pattern>/adnotatio.HtmlAnnotatorClient/*
-      </url-pattern>
+    <servlet-name>Annotation GWT Servlet</servlet-name>
+    <url-pattern>/adnotatio.HtmlAnnotatorClient/*
+    </url-pattern>
     </servlet-mapping>
-  </extension-->
+    </extension-->
 
   <extension target="web#SERVLET">
     <servlet>
@@ -44,11 +49,15 @@
     </servlet>
     <servlet-mapping>
       <servlet-name>Web configuration servlet</servlet-name>
-      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration</url-pattern>
+      <url-pattern>
+        /org.nuxeo.ecm.platform.annotations.gwt.AnnotationFrameModule/webConfiguration
+      </url-pattern>
     </servlet-mapping>
     <servlet-mapping>
       <servlet-name>Web configuration servlet</servlet-name>
-      <url-pattern>/org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration</url-pattern>
+      <url-pattern>
+        /org.nuxeo.ecm.platform.annotations.gwt.AnnotationModule/webConfiguration
+      </url-pattern>
     </servlet-mapping>
   </extension>
 

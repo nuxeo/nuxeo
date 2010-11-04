@@ -57,7 +57,7 @@ import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class UpdateServiceImpl implements PackageUpdateService {
 
