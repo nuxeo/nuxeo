@@ -23,6 +23,16 @@
           &lt;h:inputText /&gt; tag in create or edit mode, and properties
           accepted on a &lt;h:outputText /&gt; tag in other modes.
         </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
         <categories>
           <category>document</category>
         </categories>

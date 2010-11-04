@@ -74,6 +74,16 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(conf);
         assertEquals("Test widget type", conf.getTitle());
         assertEquals("This is a test widget type", conf.getDescription());
+        assertFalse(conf.isComplex());
+        assertFalse(conf.isList());
+        List<String> supportedTypes = conf.getSupportedFieldTypes();
+        assertNotNull(supportedTypes);
+        assertEquals(1, supportedTypes.size());
+        assertEquals("string", supportedTypes.get(0));
+        List<String> defaultTypes = conf.getDefaultFieldTypes();
+        assertNotNull(defaultTypes);
+        assertEquals(1, defaultTypes.size());
+        assertEquals("string", defaultTypes.get(0));
         List<String> categories = conf.getCategories();
         assertNotNull(categories);
         assertEquals(2, categories.size());
