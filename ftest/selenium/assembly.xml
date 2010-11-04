@@ -8,7 +8,7 @@
     <property name="integration.dir"
       value="${maven.project.build.directory}/integration" />
     <property name="selenium.dir" value="ftest/selenium" />
-    <property name="jboss" value="${integration.dir}/nuxeo-ep-jboss" />
+    <property name="jboss" value="${integration.dir}/nuxeo-cap-jboss" />
     <property name="init.done" value="true" />
   </target>
 
@@ -24,10 +24,10 @@
     <unzip dest="${integration.dir}">
       <artifact:resolveFile
         key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.version}:zip"
-        classifier="nuxeo-ep" />
+        classifier="nuxeo-cap" />
     </unzip>
     <rename dest="${jboss}"
-      src="${integration.dir}/nuxeo-ep-${nuxeo.version}-jboss" />
+      src="${integration.dir}/nuxeo-cap-${nuxeo.version}-jboss" />
     <chmod dir="${jboss}/bin" perm="u+x" includes="*.sh,*ctl" />
 
     <copy todir="${jboss}/server/default/lib">
