@@ -18,6 +18,13 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.nuxeo.ecm.webapp.contentbrowser.DocumentActions.CHILDREN_DOCUMENT_LIST;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -62,22 +69,13 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.webapp.contentbrowser.DocumentActions.CHILDREN_DOCUMENT_LIST;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED;
 
 @Name("deleteActions")
 @Scope(ScopeType.EVENT)
@@ -253,7 +251,7 @@ public class DeleteActionsBean extends InputController implements
         }
         TrashInfo info;
         try {
-            info = getTrashService().getTrashInfo(docs, currentUser, true,
+            info = getTrashService().getTrashInfo(docs, currentUser, false,
                     false);
         } catch (ClientException e) {
             log.error("Cannot check delete permission", e);
