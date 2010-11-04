@@ -3,7 +3,7 @@
 <component name="org.nuxeo.ecm.platform.ui.web.ContentViewService">
 
   <documentation>
-    The Content View services provides extension points for content view
+    The Content View service provides extension points for content view
     registration.
 
     @author Anahide Tchertchian (at@nuxeo.com)
