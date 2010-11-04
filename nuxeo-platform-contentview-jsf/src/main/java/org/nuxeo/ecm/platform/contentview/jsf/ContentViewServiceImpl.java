@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.ContentViewPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
@@ -142,12 +141,12 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         }
 
         PageProviderDefinition pageDesc;
-        ContentViewPageProvider<?> pageProvider;
+        PageProvider<?> pageProvider;
         if (coreDesc != null && coreDesc.isEnabled()) {
             pageProvider = new CoreQueryDocumentPageProvider();
             pageDesc = coreDesc;
         } else if (genDesc != null && genDesc.isEnabled()) {
-            Class<ContentViewPageProvider<?>> klass = genDesc.getPageProviderClass();
+            Class<PageProvider<?>> klass = genDesc.getPageProviderClass();
             try {
                 pageProvider = klass.newInstance();
             } catch (Exception e) {
@@ -164,7 +163,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         // set resolved properties
         pageProvider.setProperties(resolvePageProviderProperties(pageDesc.getProperties()));
         // set descriptor, used to build the query
-        pageProvider.setPageProviderDescriptor(pageDesc);
+        pageProvider.setDefinition(pageDesc);
         pageProvider.setSortable(pageDesc.isSortable());
         pageProvider.setParameters(parameters);
         if (sortInfos == null) {
