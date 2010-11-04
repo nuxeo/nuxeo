@@ -28,6 +28,8 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Seam component holding tasks actions created using the
@@ -68,7 +71,15 @@ public class JbpmTaskActionsBean extends DocumentContextBoundActionBean {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
     protected List<TaskInstance> tasks;
+
+    protected String comment;
 
     @Factory(value = "currentSingleTasks", scope = ScopeType.EVENT)
     public List<TaskInstance> getCurrentDocumentTasks()
@@ -89,11 +100,37 @@ public class JbpmTaskActionsBean extends DocumentContextBoundActionBean {
         return tasks;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void acceptTask(TaskInstance task) throws NuxeoJbpmException {
+        acceptTask(task, getComment());
+        setComment(null);
+    }
+
     public void acceptTask(TaskInstance task, String comment)
             throws NuxeoJbpmException {
         jbpmTaskService.acceptTask(documentManager,
                 (NuxeoPrincipal) documentManager.getPrincipal(), task, comment);
         Events.instance().raiseEvent(JbpmEventNames.WORKFLOW_TASK_COMPLETED);
+    }
+
+    public void rejectTask(TaskInstance task) throws NuxeoJbpmException {
+        String userComment = getComment();
+        if (userComment != null && !"".equals(userComment)) {
+            rejectTask(task, userComment);
+            setComment(null);
+        } else {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.review.task.enterComment"));
+        }
+
     }
 
     public void rejectTask(TaskInstance task, String comment)

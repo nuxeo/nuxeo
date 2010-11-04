@@ -93,19 +93,46 @@
             <td>
               <h:commandLink
                 value="#{messages['label.review.end.task']}"
-                action="#{jbpmTaskActions.acceptTask(task, null)}"
+                action="#{jbpmTaskActions.acceptTask(task)}"
                 rendered="#{jbpmTaskService.canEndTask(currentUser, task)}" />
             </td>
             <td>
               <h:commandLink
                 value="#{messages['label.review.reject.task']}"
-                action="#{jbpmTaskActions.rejectTask(task, null)}"
+                action="#{jbpmTaskActions.rejectTask(task)}"
                 rendered="#{jbpmTaskService.canEndTask(currentUser, task)}" />
             </td>
           </tr>
         </nxu:repeat>
       </tbody>
     </table>
+
+    <h:panelGroup class="dataInputGroup"
+      rendered="#{not empty currentSingleTasks}">
+      <div>
+        <i>
+          <h:outputText value="#{messages['label.review.my.tasks.help']}" />
+        </i>
+        <table class="dataInput">
+          <tr>
+            <td class="labelColumn">
+              <h:outputText class="required"
+                value="#{messages['label.review.user.comment']}" />
+            </td>
+            <td>
+              <h:inputTextarea id="#{widget.id}_taskActionComment" rows="5"
+                cols="50" value="#{jbpmTaskActions.comment}" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <h:message styleClass="errorMessage"
+                for="#{widget.id}_taskActionComment" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </h:panelGroup>
     
   </c:if>
 
