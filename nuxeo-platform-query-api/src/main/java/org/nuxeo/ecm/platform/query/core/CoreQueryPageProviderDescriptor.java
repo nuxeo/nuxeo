@@ -40,6 +40,9 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@name")
+    String name;
+
     @XNode("@enabled")
     boolean enabled = true;
 
@@ -135,6 +138,10 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
 
     public String getSortInfosBinding() {
         return sortInfosBinding;
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

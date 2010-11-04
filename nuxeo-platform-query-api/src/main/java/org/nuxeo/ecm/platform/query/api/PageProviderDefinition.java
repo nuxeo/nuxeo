@@ -32,6 +32,10 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public interface PageProviderDefinition extends Serializable {
 
+    String getName();
+
+    boolean isEnabled();
+
     Map<String, String> getProperties();
 
     String[] getQueryParameters();

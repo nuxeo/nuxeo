@@ -43,6 +43,9 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@name")
+    String name;
+
     @XNode("@enabled")
     private final boolean enabled = true;
 
@@ -145,6 +148,10 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
 
     public String getSortInfosBinding() {
         return sortInfosBinding;
+    }
+
+    public String getName() {
+        return name;
     }
 
 }
