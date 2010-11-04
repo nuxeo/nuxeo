@@ -130,11 +130,6 @@
                      type="jar" />
     </copy>
 
-    <!-- Tomcat equivalent ?
-    <antcall target="add-jbossws-bundle">
-        <param name="distribution.dir" value="${distribution.dir}" />
-    </antcall>
-    -->
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
@@ -186,11 +181,22 @@
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
+    <!-- WSS specific BEGIN -->
+    <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
+    <move todir="${distribution.dir}/lib">
+      <fileset dir="${distribution.dir}/nxserver/lib">
+        <include name="nuxeo-generic-wss-front*" />
+      </fileset>
+    </move>
+    <!-- WSS specific END -->
+
     <!-- Complementary templates for DM -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-common-dm" />
-    </unzip>
+     <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-tomcat-dm" /> 
+   </unzip>
 
     <antcall target="set-distribution-properties">
       <param name="distribution.properties.file"
@@ -337,8 +343,6 @@
         <include name="nuxeo-platform-login-jboss*" />
         <include name="nuxeo-platform-auth-web-jboss*" />
         <include name="nuxeo*facade*" />
-        <!-- temporary removal of wss -->
-        <include name="*wss*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="jboss-seam-debug*" />
@@ -367,8 +371,6 @@
              |- commons-logging:commons-logging:1.1.1:jar:
                 |- org.hibernate:hibernate:3.2.6.ga:jar:
         -->
-        <!-- temporary removal of wss -->
-        <include name="*wss*" />
       </fileset>
     </delete>
 
