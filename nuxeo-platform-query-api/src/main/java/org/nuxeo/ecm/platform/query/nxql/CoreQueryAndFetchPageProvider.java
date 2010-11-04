@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.api.ContentViewPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 
@@ -47,7 +47,7 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  */
 public class CoreQueryAndFetchPageProvider extends
         AbstractPageProvider<Map<String, Serializable>> implements
-        ContentViewPageProvider<Map<String, Serializable>> {
+        PageProvider<Map<String, Serializable>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,16 +57,9 @@ public class CoreQueryAndFetchPageProvider extends
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
-    protected PageProviderDefinition descriptor;
-
     protected String query;
 
     protected List<Map<String, Serializable>> currentItems;
-
-    public void setPageProviderDescriptor(
-            PageProviderDefinition providerDescriptor) {
-        descriptor = providerDescriptor;
-    }
 
     @Override
     public List<Map<String, Serializable>> getCurrentPage() {
@@ -138,15 +131,16 @@ public class CoreQueryAndFetchPageProvider extends
 
     protected void buildQuery() {
         try {
-            String originalQuery = descriptor.getPattern();
+            PageProviderDefinition def = getDefinition();
+            String originalQuery = def.getPattern();
 
             SortInfo[] sortArray = null;
             if (sortInfos != null) {
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
             String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
-                    getParameters(), descriptor.getQuotePatternParameters(),
-                    descriptor.getEscapePatternParameters(), sortArray);
+                    getParameters(), def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), sortArray);
 
             if (!newQuery.equals(query)) {
                 // query has changed => refresh

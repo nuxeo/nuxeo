@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-import org.nuxeo.ecm.platform.query.api.ContentViewPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 
@@ -47,7 +47,7 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  */
 public class CoreQueryDocumentPageProvider extends
         AbstractPageProvider<DocumentModel> implements
-        ContentViewPageProvider<DocumentModel> {
+        PageProvider<DocumentModel> {
 
     private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
 
@@ -57,16 +57,9 @@ public class CoreQueryDocumentPageProvider extends
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
-    protected PageProviderDefinition descriptor;
-
     protected String query;
 
     protected List<DocumentModel> currentPageDocuments;
-
-    public void setPageProviderDescriptor(
-            PageProviderDefinition providerDescriptor) {
-        descriptor = providerDescriptor;
-    }
 
     @Override
     public List<DocumentModel> getCurrentPage() {
@@ -123,11 +116,11 @@ public class CoreQueryDocumentPageProvider extends
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
             String newQuery;
-            if (descriptor.getWhereClause() == null) {
-                newQuery = NXQLQueryBuilder.getQuery(descriptor.getPattern(),
-                        getParameters(),
-                        descriptor.getQuotePatternParameters(),
-                        descriptor.getEscapePatternParameters(), sortArray);
+            PageProviderDefinition def = getDefinition();
+            if (def.getWhereClause() == null) {
+                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(),
+                        getParameters(), def.getQuotePatternParameters(),
+                        def.getEscapePatternParameters(), sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {
@@ -137,7 +130,7 @@ public class CoreQueryDocumentPageProvider extends
                             getName()));
                 }
                 newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
-                        descriptor.getWhereClause(), getParameters(), sortArray);
+                        def.getWhereClause(), getParameters(), sortArray);
             }
 
             if (newQuery != null && !newQuery.equals(query)) {

@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.ContentViewPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
@@ -47,7 +47,7 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
     private final boolean enabled = true;
 
     @XNode("@class")
-    private Class<ContentViewPageProvider<?>> klass;
+    private Class<PageProvider<?>> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<String, String>();
@@ -81,7 +81,7 @@ public class GenericPageProviderDescriptor implements PageProviderDefinition {
     @XNode("whereClause")
     protected WhereClauseDescriptor whereClause;
 
-    public Class<ContentViewPageProvider<?>> getPageProviderClass() {
+    public Class<PageProvider<?>> getPageProviderClass() {
         return klass;
     }
 

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
  *
  * @param <T> any Serializable item
  * @since 5.4
- *
  * @author arussel
  * @author Anahide Tchertchian
  */
@@ -300,5 +299,9 @@ public interface PageProvider<T> extends Serializable {
     String getErrorMessage();
 
     Throwable getError();
+
+    void setDefinition(PageProviderDefinition providerDefinition);
+
+    PageProviderDefinition getDefinition();
 
 }

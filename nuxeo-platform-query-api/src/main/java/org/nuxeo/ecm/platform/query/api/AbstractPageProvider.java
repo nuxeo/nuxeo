@@ -67,6 +67,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected Throwable error;
 
+    protected PageProviderDefinition definition;
+
     public abstract List<T> getCurrentPage();
 
     /**
@@ -507,6 +509,16 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public boolean hasError() {
         return error != null;
+    }
+
+    @Override
+    public PageProviderDefinition getDefinition() {
+        return definition;
+    }
+
+    @Override
+    public void setDefinition(PageProviderDefinition providerDefinition) {
+        this.definition = providerDefinition;
     }
 
 }
