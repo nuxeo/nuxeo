@@ -42,7 +42,7 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 <!--
  body {
   font: normal 11px "Lucida Grande", sans-serif;
-  background: url("<%=context%>/img/theme_galaxy/boston.jpg") no-repeat scroll center -100px #000000;
+  background: url("<%=context%>/img/theme_galaxy/sanfrancisco.jpg") no-repeat scroll center -400px #000000;
   color: #343434;
   }
 
