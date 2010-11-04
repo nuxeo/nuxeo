@@ -50,9 +50,9 @@ public final class ElementUid extends StandaloneFilter {
         String f = "";
 
         if (inBrackets.endsWith("/")) {
-            f = String.format("<%s id=\"e%s\" />%s", inBrackets.replaceAll(
-                    "/$", "").trim(), info.getElement().getUid(),
-                    othersMatcher.group(1));
+            f = String.format("<%s id=\"e%s\" />%s",
+                    inBrackets.replaceAll("/$", "").trim(),
+                    info.getElement().getUid(), othersMatcher.group(1));
         } else {
             f = String.format("<%s id=\"e%s\">%s", inBrackets,
                     info.getElement().getUid(), othersMatcher.group(1));

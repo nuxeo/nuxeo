@@ -41,7 +41,7 @@ public class ThemeEditorException extends WebException {
 
     @Override
     public Response getResponse() {
-        return Response.status(500).entity(this.getMessage()).build();
+        return Response.status(500).entity(getMessage()).build();
     }
 
 }

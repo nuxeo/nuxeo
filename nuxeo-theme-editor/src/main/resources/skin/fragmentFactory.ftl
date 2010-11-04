@@ -57,7 +57,7 @@
   <td style="vertical-align: top; text-align: center">
     <#if selected_fragment_type & selected_fragment_view>
     
-      <@nxthemes_themestyles cache="true" inline="true" />
+      <@nxthemes_themestyles cache="true" inline="true" theme="${current_theme_name}" />
 
       <@nxthemes_view resource="fragment-preview.json" />
       ${Root.createFragmentPreview(current_theme_name)}

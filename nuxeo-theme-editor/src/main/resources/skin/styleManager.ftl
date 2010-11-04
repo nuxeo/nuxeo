@@ -1,7 +1,6 @@
+
 <!-- style menu -->
 <@nxthemes_view resource="style-menu.json" />   
-
-<div id="nxthemesStyleManager" class="nxthemesScreen">
 
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
@@ -9,16 +8,12 @@
   <#assign selected_named_style_name = selected_named_style.name>
 </#if>
 
-<h1 class="nxthemesEditor">Manage styles</h1>
 
-<#if style_manager_mode = 'named styles'>
+<!-- Style manager -->
 
-<div style="float: right">
-  <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
-  <img src="${basePath}/skin/nxthemes-editor/img/add-14.png" /> Create new style</a>
-</div>
-
-  <p class="nxthemesExplanation">List styles by name.<p>
+<div class="window">
+<div class="title">Style manager</div>
+<div class="body">
 
   <table class="nxthemesManageScreen">
   <tr>
@@ -36,38 +31,53 @@
 </#list>
 </ul>
 
+
+<p class="nxthemesEditor">
+  <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
+  Create style</a>
+</p>
+
 </td>
 <td>
 
 <#if selected_named_style>
 <form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
-      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this); return false">
+      onsubmit="NXThemesCssEditor.updateNamedStyleCSS(this); return false">
 <div>
   <textarea id="namedStyleCssEditor" name="css_source" rows="15" cols="72"
  style="border: 1px solid #999; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
   <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
   <input type="hidden" name="theme_name" value="${current_theme_name}" />
 </div>
-<div>
+<div style="margin-top: 5px">
   <button type="submit">Save</button>
 </div>
 </form>
-</#if>
 
+<p class="nxthemesEditor" style="float: right; margin-top: -20px">
+   <button class="nxthemesActionButton"
+    onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name}', '${selected_named_style.name}')">Delete style</button>  
+</p>
+
+</#if>
+ 
 </td>
 </tr>
 </table>
 
-</#if>
+</div>
+</div>
 
 
-
-
-<#if style_manager_mode = 'clean up'>
-
-<p class="nxthemesExplanation">Clean up styles by removing those associated with unused widgets.<p>
-
+<!-- unused styles -->
+<!--
 <#assign styles=themeManager.getStyles(current_theme_name)>
+<#if styles>
+
+<div class="window">
+<div class="title">Unused styles</div>
+<div class="body">
+
 <#list styles as style>
 
 <#assign views=themeManager.getUnusedStyleViews(style)>
@@ -100,13 +110,19 @@
 </#if>
 </#list>
 
+</div>
+</div>
+
 </#if>
+-->
 
 
 
-<#if style_manager_mode = 'page styles'>
+<!-- page styles -->
 
-  <p class="nxthemesExplanation">Page styles.<p>
+<div class="window">
+<div class="title">Page styles</div>
+<div class="body">
 
   <form class="nxthemesForm" action="javascript:void(0)"
     onsubmit="NXThemesStyleManager.setPageStyles('${current_theme_name}', this); return false">
@@ -140,15 +156,18 @@
   
   </table>
   </form>
-  
-</#if>
+
+</div>
+</div>
 
 
+<!-- style dependencies -->
 
-<#if style_manager_mode = 'style dependencies'>
+<div class="window">
+<div class="title">Style dependencies</div>
+<div class="body">
 
-  <p class="nxthemesExplanation">Style dependencies.<p>
-
+<div style="padding: 10px">
   <#macro listTree (objects)>
   <#if (objects?size > 0)>
     <ul>
@@ -185,8 +204,8 @@
   <div class="nxthemesStyleTree">
     <@listTree root_styles/>
   </div>
-  
-</#if>
 
+</div>
 
+</div>
 </div>

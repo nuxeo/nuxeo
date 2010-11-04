@@ -17,6 +17,7 @@ package org.nuxeo.theme.editor;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -40,18 +41,24 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
+import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
+import org.nuxeo.theme.resources.ImageInfo;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.resources.SkinInfo;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeIOException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSerializer;
+import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
-import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.uids.Identifiable;
+import org.nuxeo.theme.views.ViewType;
 
 public class Editor {
 
@@ -217,24 +224,48 @@ public class Editor {
                     TypeFamily.FORMAT, "style");
             style = (Style) ElementFormatter.getFormatByType(element, styleType);
         }
-        if (style.getName() != null || "".equals(viewName)) {
+        if (style.isNamed() || "".equals(viewName)) {
             viewName = "*";
         }
         org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
-
         saveTheme(themeName);
     }
 
     public static void updateNamedStyleCss(Style style, String cssSource,
             String themeName) throws ThemeException {
-
         saveToUndoBuffer(themeName, "update style properties");
-
         if (style == null || style.getName() == null) {
             throw new ThemeException("A named style is required.");
         }
         final String viewName = "*";
         org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
+        // if the style came from a resource bank, it has now been customized.
+        if (style.isRemote()) {
+            style.setCustomized(true);
+        }
+        saveTheme(themeName);
+    }
+
+    public static void restoreNamedStyle(Style style, String themeName)
+            throws ThemeException {
+        saveToUndoBuffer(themeName, "restore style");
+        if (style == null || style.getName() == null) {
+            throw new ThemeException("A named style is required.");
+        }
+        if (!style.isRemote()) {
+            throw new ThemeException(
+                    "A style from a remote resource bank is required.");
+        }
+        // if the style came from a resource bank, it has now been customized.
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
+            throw new ThemeException("Theme not found: " + themeName);
+        }
+        String resourceBankName = themeDescriptor.getResourceBankName();
+        if (resourceBankName != null) {
+            ThemeManager.loadRemoteStyle(resourceBankName, style);
+        }
+        style.setCustomized(false);
         saveTheme(themeName);
     }
 
@@ -304,12 +335,12 @@ public class Editor {
     }
 
     public static void saveTheme(String themeName) throws ThemeException {
-        ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(themeName);
-        if (themeDef == null) {
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + themeName);
         }
-        if (themeDef.isSaveable()) {
-            String themeSrc = themeDef.getSrc();
+        if (themeDescriptor.isSaveable()) {
+            String themeSrc = themeDescriptor.getSrc();
             try {
                 ThemeManager.saveTheme(themeSrc);
             } catch (ThemeIOException e) {
@@ -320,6 +351,15 @@ public class Editor {
         final ThemeManager themeManager = Manager.getThemeManager();
         themeManager.themeModified(themeName);
         themeManager.stylesModified(themeName);
+    }
+
+    public static void refreshTheme(String themeName) throws ThemeException {
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDescriptor == null) {
+            throw new ThemeException("Theme not found: " + themeName);
+        }
+        final ThemeManager themeManager = Manager.getThemeManager();
+        themeManager.themeModified(themeName);
     }
 
     public static String renderCssPreview(Element element, Style style,
@@ -388,7 +428,13 @@ public class Editor {
 
     public static void moveElement(Element srcElement, Element destElement,
             int order) throws ThemeException, NodeException {
-        final String themeName = ThemeManager.getThemeOf(srcElement).getName();
+        ThemeElement srcTheme = ThemeManager.getThemeOf(srcElement);
+        if (srcTheme == null) {
+            throw new ThemeException(
+                    "Could not determing the theme of the element :"
+                            + srcElement.computeXPath());
+        }
+        final String themeName = srcTheme.getName();
         saveToUndoBuffer(themeName, "move element");
 
         srcElement.moveTo(destElement, order);
@@ -434,21 +480,11 @@ public class Editor {
     }
 
     public static void setStyleInheritance(String styleName,
-            String ancestorName, String themeName) throws ThemeException {
+            String ancestorStyleName, String themeName) throws ThemeException {
         saveToUndoBuffer(themeName, "set style inheritance");
-        ThemeManager themeManager = Manager.getThemeManager();
-        Style style = (Style) themeManager.getNamedObject(themeName, "style",
-                styleName);
-        if (style == null) {
-            throw new ThemeException("Could not find named style: " + styleName);
-        }
-        Style ancestor = (Style) themeManager.getNamedObject(themeName,
-                "style", ancestorName);
-        if (ancestor == null) {
-            throw new ThemeException("Could not find named style: "
-                    + ancestorName);
-        }
-        themeManager.makeFormatInherit(style, ancestor);
+        final boolean allowMany = true;
+        ThemeManager.setStyleInheritance(styleName, ancestorStyleName,
+                themeName, allowMany);
         saveTheme(themeName);
     }
 
@@ -484,45 +520,34 @@ public class Editor {
         return path;
     }
 
-    public static String addTheme(String name) throws ThemeException,
-            NodeException, ThemeIOException {
+    public static String addTheme(String name) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         if (themeManager.getThemeByName(name) != null) {
             throw new ThemeException("The theme name is already taken: " + name);
         }
-        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
-        theme.setName(name);
-        Format themeWidget = themeManager.createWidget();
-        themeWidget.setName("theme view");
-        ElementFormatter.setFormat(theme, themeWidget);
-        // default page
-        PageElement page = (PageElement) ElementFactory.create("page");
-        page.setName("default");
-        Format pageWidget = themeManager.createWidget();
-        pageWidget.setName("page frame");
-        Format pageLayout = themeManager.createLayout();
-        Format pageStyle = themeManager.createStyle();
-        ElementFormatter.setFormat(page, pageWidget);
-        ElementFormatter.setFormat(page, pageStyle);
-        ElementFormatter.setFormat(page, pageLayout);
-        theme.addChild(page);
-        // create a theme descriptor
-        ThemeDescriptor themeDescriptor = new ThemeDescriptor();
-        themeDescriptor.setName(name);
-        final String path = ThemeManager.getCustomThemePath(name);
-        if (path == null) {
-            throw new ThemeException("Could not get file path for theme: "
-                    + name);
+        ThemeDescriptor themeDef = ThemeManager.createCustomTheme(name);
+        String themeName = themeDef.getName();
+        return String.format("%s/default", themeName);
+    }
+
+    public static String customizeTheme(String src) throws ThemeException {
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(src);
+        if (themeDescriptor == null) {
+            throw new ThemeException("Theme not found: " + src);
         }
-        final String src = String.format("file://%s", path);
-        themeDescriptor.setSrc(src);
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        typeRegistry.register(themeDescriptor);
-        // register the theme
-        themeManager.registerTheme(theme);
-        // save the theme
-        ThemeManager.saveTheme(themeDescriptor.getSrc());
-        return String.format("%s/%s", name, "default");
+        ThemeDescriptor themeDef = ThemeManager.customizeTheme(themeDescriptor);
+        String themeName = themeDef.getName();
+        return String.format("%s/default", themeName);
+    }
+
+    public static String uncustomizeTheme(String src) throws ThemeException {
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(src);
+        if (themeDescriptor == null) {
+            throw new ThemeException("Theme not found: " + src);
+        }
+        ThemeDescriptor themeDef = ThemeManager.uncustomizeTheme(themeDescriptor);
+        String themeName = themeDef.getName();
+        return String.format("%s/default", themeName);
     }
 
     public static void assignStyleProperty(Element element,
@@ -682,8 +707,7 @@ public class Editor {
         themeManager.setNamedObject(themeName, "style", style);
 
         if (element != null) {
-            themeManager.makeElementUseNamedStyle(element, styleName,
-                    themeName);
+            themeManager.makeElementUseNamedStyle(element, styleName, themeName);
         }
 
         saveTheme(themeName);
@@ -709,7 +733,9 @@ public class Editor {
         Style inheritedStyle = (Style) themeManager.getNamedObject(themeName,
                 "style", styleName);
         themeManager.deleteFormat(inheritedStyle);
-        themeManager.makeElementUseNamedStyle(element, null, themeName);
+        if (element != null) {
+            themeManager.makeElementUseNamedStyle(element, null, themeName);
+        }
         themeManager.removeNamedObject(themeName, "style", styleName);
         saveTheme(themeName);
     }
@@ -1022,10 +1048,10 @@ public class Editor {
             Style style = (Style) FormatFactory.create("style");
             ElementFormatter.setFormat(fragment, style);
 
-            themeManager.makeElementUseNamedStyle(fragment, styleName,
-                    currentThemeName);
-
             String themeName = currentThemeName.split("/")[0];
+            themeManager.makeElementUseNamedStyle(fragment, styleName,
+                    themeName);
+
             themeManager.fillScratchPage(themeName, fragment);
 
         } catch (Exception e) {
@@ -1033,6 +1059,296 @@ public class Editor {
         }
         // Clean cache
         themeManager.themeModified(currentThemeName);
+    }
+
+    /*
+     * Skin management
+     */
+    public static void activateSkin(String themeName, String bankName,
+            String collectionName, String resourceName, boolean isBaseSkin)
+            throws ThemeException {
+        String currentTopSkinName = getCurrentTopSkinName(themeName);
+        String currentBaseSkinName = getCurrentBaseSkinName(themeName);
+        for (SkinInfo skin : getBankSkins(bankName)) {
+            if (skin.getName().equals(currentTopSkinName)) {
+                if (skin.isBase()) {
+                    currentTopSkinName = null;
+                }
+            }
+            if (skin.getName().equals(currentBaseSkinName)) {
+                if (!skin.isBase()) {
+                    currentBaseSkinName = null;
+                }
+            }
+        }
+
+        ThemeManager themeManager = Manager.getThemeManager();
+        String skinName = String.format("%s (%s)", resourceName, collectionName);
+
+        if (!isBaseSkin && currentBaseSkinName == null) {
+            throw new ThemeException("Cannot set skin: " + skinName
+                    + " (base skin is missing)");
+        }
+
+        if (isBaseSkin && (skinName.equals(currentBaseSkinName))) {
+            return;
+        }
+        if (!isBaseSkin && currentBaseSkinName != null) {
+            if (skinName.equals(currentTopSkinName)) {
+                return;
+            }
+            final boolean allowMany = false;
+            ThemeManager.setStyleInheritance(skinName, currentBaseSkinName,
+                    themeName, allowMany);
+        }
+
+        for (PageElement page : themeManager.getPagesOf(themeName)) {
+            Style newStyle = themeManager.createStyle();
+            ElementFormatter.setFormat(page, newStyle);
+            themeManager.makeElementUseNamedStyle(page, skinName, themeName);
+        }
+
+        themeManager.removeOrphanedFormats();
+        saveTheme(themeName);
+    }
+
+    public static String getCurrentTopSkinName(final String themeName) {
+        Style skinStyle = getCurrentPageSkin(themeName);
+        if (skinStyle == null) {
+            return null;
+        }
+        return skinStyle.getName();
+    }
+
+    public static String getCurrentBaseSkinName(final String themeName) {
+        Style skinStyle = getCurrentPageSkin(themeName);
+        if (skinStyle == null) {
+            return null;
+        }
+        Style ancestorStyle = (Style) ThemeManager.getAncestorFormatOf(skinStyle);
+        if (ancestorStyle != null && ancestorStyle.isNamed()) {
+            return ancestorStyle.getName();
+        }
+        return skinStyle.getName();
+    }
+
+    public static Style getCurrentPageSkin(final String themeName) {
+        if (themeName == null) {
+            return null;
+        }
+        ThemeManager themeManager = Manager.getThemeManager();
+        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
+                TypeFamily.FORMAT, "style");
+        Style skinStyle = null;
+        String skinName = null;
+        String previousSkinName = null;
+
+        List<PageElement> themePages = themeManager.getPagesOf(themeName);
+        if (themePages == null) {
+            return null;
+        }
+        for (PageElement page : themePages) {
+            Style style = (Style) ElementFormatter.getFormatByType(page,
+                    styleType);
+            if (style == null) {
+                return null;
+            }
+            Style ancestorStyle = (Style) ThemeManager.getAncestorFormatOf(style);
+            if (ancestorStyle == null || !ancestorStyle.isNamed()) {
+                return null;
+            }
+            skinName = ancestorStyle.getName();
+            if (previousSkinName != null && !skinName.equals(previousSkinName)) {
+                return null;
+            }
+            skinStyle = ancestorStyle;
+            previousSkinName = skinName;
+        }
+        return skinStyle;
+    }
+
+    public static void useResourceBank(String themeSrc, String bankName)
+            throws ThemeException {
+        ResourceBank resourceBank = ThemeManager.getResourceBank(bankName);
+        if (!resourceBank.checkStatus()) {
+            throw new ThemeException("Could not connect to bank: " + bankName);
+        }
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(themeSrc);
+        themeDescriptor.setResourceBankName(bankName);
+        saveTheme(themeDescriptor.getName());
+    }
+
+    public static void useNoResourceBank(String themeSrc) throws ThemeException {
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(themeSrc);
+        themeDescriptor.setResourceBankName(null);
+        saveTheme(themeDescriptor.getName());
+    }
+
+    public static List<SkinInfo> getBankSkins(String bankName) {
+        List<SkinInfo> info = new ArrayList<SkinInfo>();
+        if (bankName != null) {
+            ResourceBank resourceBank;
+            try {
+                resourceBank = ThemeManager.getResourceBank(bankName);
+                info = resourceBank.getSkins();
+            } catch (ThemeException e) {
+                e.printStackTrace();
+            }
+        }
+        return info;
+    }
+
+    public static SkinInfo getSkinInfo(String bankName, String skinName) {
+        ResourceBank resourceBank;
+        try {
+            resourceBank = ThemeManager.getResourceBank(bankName);
+        } catch (ThemeException e) {
+            return null;
+        }
+        for (SkinInfo skin : resourceBank.getSkins()) {
+            if (skinName.equals(skin.getName())) {
+                return skin;
+            }
+        }
+        return null;
+    }
+
+    public static List<String> getBankCollections(String bankName) {
+        List<String> collections = new ArrayList<String>();
+        if (bankName != null) {
+            ResourceBank resourceBank;
+            try {
+                resourceBank = ThemeManager.getResourceBank(bankName);
+                collections.addAll(resourceBank.getCollections());
+            } catch (ThemeException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return collections;
+    }
+
+    public static List<ImageInfo> getBankImages(String bankName) {
+        List<ImageInfo> images = new ArrayList<ImageInfo>();
+        if (bankName != null) {
+            ResourceBank resourceBank;
+            try {
+                resourceBank = ThemeManager.getResourceBank(bankName);
+                for (String name : resourceBank.getImages()) {
+                    String[] parts = name.split("/");
+                    if (parts.length != 2) {
+                        continue;
+                    }
+                    String collection = parts[0];
+                    String resource = parts[1];
+                    images.add(new ImageInfo(name, collection, resource));
+                }
+
+            } catch (ThemeException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return images;
+    }
+
+    public static List<Style> getNamedStyles(String themeName) {
+        List<Style> styles = new ArrayList<Style>();
+        for (Identifiable s : Manager.getThemeManager().getNamedObjects(
+                themeName, "style")) {
+            styles.add((Style) s);
+        }
+        return styles;
+    }
+
+    public static List<Style> listNamedStylesDirectlyInheritingFrom(Style style) {
+        List<Style> styles = new ArrayList<Style>();
+        for (Format format : ThemeManager.listFormatsDirectlyInheritingFrom(style)) {
+            if (format.isNamed()) {
+                styles.add((Style) format);
+            }
+        }
+        return styles;
+    }
+
+    public static Map<String, String> getPageStyles(String themeName) {
+        Map<String, String> pageStyles = new LinkedHashMap<String, String>();
+        List<PageElement> pages = Manager.getThemeManager().getPagesOf(
+                themeName);
+        if (!pages.isEmpty()) {
+            for (PageElement page : pages) {
+                Style namedStyle = null;
+                try {
+                    namedStyle = Editor.getNamedStyleOf(page);
+                } catch (ThemeException e) {
+                    e.printStackTrace();
+                }
+                String styleName = namedStyle == null ? ""
+                        : namedStyle.getName();
+                pageStyles.put(page.getName(), styleName);
+            }
+        }
+        return pageStyles;
+    }
+
+    public static Style getThemeSkin(String themeName) {
+        List<PageElement> pages = Manager.getThemeManager().getPagesOf(
+                themeName);
+        if (pages == null || pages.isEmpty()) {
+            return null;
+        }
+        for (PageElement page : pages) {
+            Style namedStyle = null;
+            try {
+                namedStyle = Editor.getNamedStyleOf(page);
+            } catch (ThemeException e) {
+                e.printStackTrace();
+            }
+            if (namedStyle != null) {
+                return namedStyle;
+            }
+        }
+        return null;
+    }
+
+    public static List<FragmentType> getFragments(String templateEngine) {
+        List<FragmentType> fragments = new ArrayList<FragmentType>();
+        for (Type f : Manager.getTypeRegistry().getTypes(TypeFamily.FRAGMENT)) {
+            FragmentType fragmentType = (FragmentType) f;
+            if (fragments.contains(fragmentType)) {
+                continue;
+            }
+            List<ViewType> views = new ArrayList<ViewType>();
+            for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+                if (templateEngine.equals(viewType.getTemplateEngine())) {
+                    views.add(viewType);
+                }
+            }
+            if (views.isEmpty()) {
+                continue;
+            }
+            fragments.add(fragmentType);
+        }
+        return fragments;
+    }
+
+    public static List<ViewType> getViews(String fragmentTypeName,
+            String templateEngine) {
+        List<ViewType> views = new ArrayList<ViewType>();
+        if (fragmentTypeName == null) {
+            return views;
+        }
+        FragmentType fragmentType = (FragmentType) Manager.getTypeRegistry().lookup(
+                TypeFamily.FRAGMENT, fragmentTypeName);
+        if (fragmentType == null) {
+            return views;
+        }
+        for (ViewType viewType : ThemeManager.getViewTypesForFragmentType(fragmentType)) {
+            if (templateEngine.equals(viewType.getTemplateEngine())) {
+                views.add(viewType);
+            }
+        }
+        return views;
     }
 
 }

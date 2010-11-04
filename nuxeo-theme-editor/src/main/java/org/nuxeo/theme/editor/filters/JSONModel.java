@@ -104,8 +104,8 @@ public class JSONModel extends StandaloneFilter {
         }
 
         else if (element instanceof CellElement) {
-            model_data.put("title", String.format("Cell %s",
-                    element.getOrder() + 1));
+            model_data.put("title",
+                    String.format("Cell %s", element.getOrder() + 1));
             if ("layout".equals(viewMode)) {
                 model_data.put("splittable", true);
                 model_data.put("deletable", true);

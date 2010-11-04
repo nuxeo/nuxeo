@@ -67,7 +67,8 @@ public class StyleFieldProperty {
         if (hasChoices) {
             // render selection list
             String choices = choiceMatcher.group(1);
-            rendered.append(String.format("<select id=\"%s\" name=\"property:%s\">", id, name));
+            rendered.append(String.format(
+                    "<select id=\"%s\" name=\"property:%s\">", id, name));
             rendered.append("<option></option>");
             for (String choice : choices.split("\\|")) {
                 rendered.append(String.format("<option%s>%s</option>",
@@ -96,6 +97,5 @@ public class StyleFieldProperty {
     public String getId() {
         return id;
     }
-
 
 }

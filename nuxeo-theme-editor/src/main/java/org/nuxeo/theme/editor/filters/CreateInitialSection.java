@@ -45,7 +45,8 @@ public final class CreateInitialSection extends StandaloneFilter {
         }
         html.append(
                 "<a href=\"javascript:void(0)\" class=\"nxthemesAddSection\" title=\"Add a section\"><div sectionid=\"").append(
-                info.getElement().getUid().toString()).append("\"> Add a section</div></a>");
+                info.getElement().getUid().toString()).append(
+                "\"> Add a section</div></a>");
         info.setMarkup(html.toString());
         return info;
     }

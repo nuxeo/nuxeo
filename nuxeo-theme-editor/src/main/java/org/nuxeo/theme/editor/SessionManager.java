@@ -15,7 +15,9 @@
 package org.nuxeo.theme.editor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.session.AbstractComponent;
@@ -57,9 +59,15 @@ public class SessionManager extends AbstractComponent {
 
     private static final String SELECTED_CSS_CATEGORIES = "org.nuxeo.theme.editor.css_categories";
 
-    private static final String WORKSPACE_THEMES = "org.nuxeo.theme.editor.workspace_themes";
+    private static final String SELECTED_RESOURCE_BANK = "org.nuxeo.theme.editor.resource_bank";
+
+    private static final String WORKSPACE_THEME_NAMES = "org.nuxeo.theme.editor.workspace_theme_names";
 
     private static final String UNDO_BUFFER = "org.nuxeo.theme.editor.undo_buffer";
+
+    private static final String SELECTED_EDIT_FIELD = "org.nuxeo.theme.editor.edit_field";
+
+    private static final String SELECTED_BANK_COLLECTION = "org.nuxeo.theme.editor.selected_bank_collection";
 
     private static UserSession getUserSession() {
         return WebEngine.getActiveContext().getUserSession();
@@ -186,12 +194,17 @@ public class SessionManager extends AbstractComponent {
     }
 
     @SuppressWarnings("unchecked")
-    public static synchronized List<ThemeInfo> getWorkspaceThemes() {
-        return (List<ThemeInfo>) getUserSession().get(WORKSPACE_THEMES);
+    public static synchronized Set<String> getWorkspaceThemeNames() {
+        Set<String> themes = (Set<String>) getUserSession().get(
+                WORKSPACE_THEME_NAMES);
+        if (themes == null) {
+            themes = new LinkedHashSet<String>();
+        }
+        return themes;
     }
 
-    public static synchronized void setWorkspaceThemes(List<ThemeInfo> themes) {
-        getUserSession().put(WORKSPACE_THEMES, themes);
+    public static synchronized void setWorkspaceThemeNames(Set<String> themes) {
+        getUserSession().put(WORKSPACE_THEME_NAMES, themes);
     }
 
     public static synchronized UndoBuffer getUndoBuffer(final String themeName) {
@@ -212,7 +225,7 @@ public class SessionManager extends AbstractComponent {
         if (categories == null) {
             categories = new ArrayList<String>();
         }
-        return (List<String>) categories;
+        return categories;
     }
 
     public static synchronized void toggleCssCategory(String name) {
@@ -225,8 +238,33 @@ public class SessionManager extends AbstractComponent {
         setSelectedCssCategories(categories);
     }
 
-    public static synchronized void setSelectedCssCategories(List<String> categories) {
+    public static synchronized void setSelectedCssCategories(
+            List<String> categories) {
         getUserSession().put(SELECTED_CSS_CATEGORIES, categories);
+    }
+
+    public static synchronized String getSelectedEditField() {
+        return (String) getUserSession().get(SELECTED_EDIT_FIELD);
+    }
+
+    public static synchronized void setSelectedEditField(String fieldName) {
+        getUserSession().put(SELECTED_EDIT_FIELD, fieldName);
+    }
+
+    public static void setSelectedBankCollection(String collection) {
+        getUserSession().put(SELECTED_BANK_COLLECTION, collection);
+    }
+
+    public static String getSelectedBankCollection() {
+        return (String) getUserSession().get(SELECTED_BANK_COLLECTION);
+    }
+
+    public static void setSelectedResourceBank(String bankName) {
+        getUserSession().put(SELECTED_RESOURCE_BANK, bankName);
+    }
+
+    public static String getSelectedResourceBank() {
+        return (String) getUserSession().get(SELECTED_RESOURCE_BANK);
     }
 
 }

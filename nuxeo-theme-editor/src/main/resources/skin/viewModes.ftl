@@ -1,6 +1,6 @@
 <#assign view_mode = Context.getCookie("nxthemes.mode", "wysiwyg") />
 
-<div class="nxthemesButtonSelector" style="text-align: right; margin: 3px; padding-right: 10px">
+<div id="nxthemesViewModeButtons" class="nxthemesButtonSelector" style="text-align: right; margin: 3px; padding-right: 10px">
   
   <#if view_mode == "wysiwyg">
     <a href="javascript:NXThemesEditor.setViewMode('fragment')">+ show fragments</a>

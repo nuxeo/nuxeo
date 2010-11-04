@@ -8,7 +8,7 @@
        "targetType": "preset",
        "items": [
          {"type": "title"
-         },                 
+         },
          {"type": "item",
           "label": "Edit",
           "icon": "/skin/nxthemes-editor/img/edit-16.png",
@@ -17,7 +17,7 @@
          },
          {"type": "submenu",
           "label": "Set category",
-          "icon": "/skin/nxthemes-editor/img/category-16.png",          
+          "icon": "/skin/nxthemes-editor/img/category-16.png",
           "visible": "editable",
           "items": [
             {"type": "selection",
@@ -25,13 +25,13 @@
              "choices": "categories"
             }
           ]
-         },         
+         },
          {"type": "item",
           "label": "Rename",
           "icon": "/skin/nxthemes-editor/img/rename-16.png",
           "action": "rename preset",
           "visible": "editable"
-         },         
+         },
          {"type": "item",
           "label": "Copy",
           "icon": "/skin/nxthemes-editor/img/copy-16.png",
@@ -49,7 +49,7 @@
           "icon": "/skin/nxthemes-editor/img/delete-16.png",
           "action": "delete preset",
           "confirm": "Deleting, are you sure?",
-          "visible": "deletable"          
+          "visible": "deletable"
          }
        ]
      },

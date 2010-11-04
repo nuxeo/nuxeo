@@ -21,7 +21,7 @@ public class UndoBuffer {
     private String message;
 
     public UndoBuffer() {
-        this.savedVersion = null;
+        savedVersion = null;
     }
 
     public void save(String source, String message) {
