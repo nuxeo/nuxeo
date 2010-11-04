@@ -12,7 +12,7 @@
   <artifactId>nuxeo-distribution-jetty</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Jetty Distribution</name>
-  <description>Package Nuxeo EP or DM into Jetty</description>
+  <description>Package Nuxeo CAP or DM into Jetty</description>
 
   <dependencyManagement>
     <dependencies>
@@ -39,17 +39,17 @@
     <profile>
       <id>all</id>
       <!-- profile for building all classifiers -->
-    </profile>
-    <profile>
-      <id>nuxeo-ep</id>
-      <!-- profile for building only JBoss with Nuxeo EP -->
-    </profile>
-    <profile>
-      <id>nuxeo-dm</id>
-      <!-- default profile for building only JBoss with Nuxeo DM -->
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+    </profile>
+    <profile>
+      <id>nuxeo-cap</id>
+      <!-- profile for building only JBoss with Nuxeo CAP -->
+    </profile>
+    <profile>
+      <id>nuxeo-dm</id>
+      <!-- profile for building only JBoss with Nuxeo DM -->
     </profile>
   </profiles>
 

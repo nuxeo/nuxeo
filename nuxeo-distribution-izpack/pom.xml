@@ -16,7 +16,7 @@
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-izpack</artifactId>
   <name>Nuxeo Distribution IzPack Installer</name>
-  <description>Build an IzPack installer from a Nuxeo EP zip archive.</description>
+  <description>Build an IzPack installer from a Nuxeo CAP zip archive.</description>
 
   <packaging>pom</packaging>
 
@@ -36,7 +36,7 @@
   </dependencies>
 
   <build>
-    <finalName>nuxeo-ep-${project.version}-installer</finalName>
+    <finalName>nuxeo-cap-${project.version}-installer</finalName>
     <defaultGoal>package</defaultGoal>
 
     <plugins>
@@ -54,14 +54,14 @@
             <configuration>
               <tasks>
                 <property file="build.properties" />
-                <property name="nuxeo.zip" value="nuxeo-ep.zip" />
+                <property name="nuxeo.zip" value="nuxeo-cap.zip" />
                 <copy todir="${staging.dir}">
                   <fileset dir="${basedir}/src/izpack" />
                 </copy>
                 <unzip src="${nuxeo.zip}" dest="${staging.dir}/tmp" />
-                <exec executable="./rename-nuxeo-ep.sh" failonerror="true">
+                <exec executable="./rename-nuxeo-cap.sh" failonerror="true">
                   <arg value="${staging.dir}/tmp" />
-                  <arg value="${staging.dir}/nuxeo-ep" />
+                  <arg value="${staging.dir}/nuxeo-cap" />
                 </exec>
               </tasks>
             </configuration>

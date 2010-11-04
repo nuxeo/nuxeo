@@ -10,7 +10,7 @@
     <tstamp />
     <condition property="build.ep">
       <or>
-        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.nuxeo-cap" />
         <isset property="maven.profile.all" />
         <isset property="maven.profile.all-distributions" />
       </or>
@@ -39,7 +39,7 @@
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
-    <antcall target="build-nuxeo-ep" />
+    <antcall target="build-nuxeo-cap" />
     <antcall target="build-nuxeo-dm" />
     <delete dir="${jboss}" failonerror="false" />
   </target>
@@ -101,11 +101,11 @@
     </copy>
   </target>
 
-  <target name="build-nuxeo-ep"
+  <target name="build-nuxeo-cap"
           if="build.ep"
-          description="Build JBoss distribution with Nuxeo EP">
+          description="Build JBoss distribution with Nuxeo CAP">
     <property name="distribution.dir"
-              value="${outdir}/nuxeo-ep-${maven.project.version}-jboss" />
+              value="${outdir}/nuxeo-cap-${maven.project.version}-jboss" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${jboss}" />
@@ -114,9 +114,9 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
-    <!-- Nuxeo EP -->
+    <!-- Nuxeo CAP -->
     <unzip dest="${distribution.dir}/server/default/deploy/nuxeo.ear">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
     </unzip>
 
     <antcall target="add-jbossws-bundle">
@@ -135,12 +135,12 @@
              value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
          basedir="${outdir}"
-         includes="nuxeo-ep-${maven.project.version}-jboss/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+         includes="nuxeo-cap-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-ep"
+                     classifier="nuxeo-cap"
                      type="zip" />
   </target>
 

@@ -41,7 +41,7 @@
   <!-- backward compatibility -->
   <target name="undeploy"
           depends="jboss-clean"
-          description="Undeploy Nuxeo-EP (deprecated : use jboss-clean instead)" />
+          description="Undeploy nuxeo-cap (deprecated : use jboss-clean instead)" />
 
   <target name="package"
           depends="setproperties,package-unix,package-windows"
@@ -73,7 +73,7 @@
 
   <target name="jboss-clean"
           depends="delete-ear"
-          description="Remove Nuxeo-EP from jboss">
+          description="Remove nuxeo-cap from jboss">
     <delete>
       <fileset dir="${jboss.lib}">
         <include name="nuxeo-*.jar" />
@@ -97,7 +97,7 @@
     <delete dir="${jboss.server}/data" />
   </target>
 
-  <target name="patch" description="Patch a JBoss 4.2.x for use by Nuxeo-EP">
+  <target name="patch" description="Patch a JBoss 4.2.x for use by nuxeo-cap">
     <ant target="patch" dir="nuxeo-distribution-jboss" />
   </target>
 
@@ -122,7 +122,7 @@
 
   <target name="list-available-distributions">
     <echo message="Available distributions are:" />
-    <echo message="nuxeo-ep             - build Nuxeo EP EAR" />
+    <echo message="nuxeo-cap             - build Nuxeo CAP EAR" />
     <echo message="nuxeo-dm             - build Nuxeo DM EAR" />
     <echo message="jboss                - build all JBoss distributions" />
     <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
@@ -132,7 +132,7 @@
   </target>
   <target name="choose-distrib" unless="distrib">
     <input message="Which distribution do you want to build?"
-           validargs="nuxeo-ep,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
+           validargs="nuxeo-cap,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
            addproperty="distrib" />
   </target>
   <target name="distrib"

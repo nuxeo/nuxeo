@@ -4,22 +4,22 @@ About
 
 See http://doc.nuxeo.org/ for full documentation.
 
-This module builds the Nuxeo products: Nuxeo EP, Nuxeo DM, Nuxeo Shell, ...
+This module builds the Nuxeo products: Nuxeo CAP, Nuxeo DM, Nuxeo Shell, ...
 
 1. Quick build
 
 Here are common commands for building distributions:
-  * (default) Building Nuxeo DM with JBoss
-    o mvn clean install
+  * Building Nuxeo DM with JBoss
+    o mvn clean install -Pjboss,nuxeo-dm
     
   * Building all JBoss packagings
     o mvn clean install -Pjboss,all
     
+  * Building Nuxeo DM with Tomcat
+    o mvn clean install -Ptomcat,nuxeo-dm
+    
   * Building all Tomcat packagings
     o mvn clean install -Ptomcat,all
-    
-  * Building all Jetty packagings
-    o mvn clean install -Pjetty,all
     
   * Building all Nuxeo products and their alternatives
     o mvn clean install -Pall-distributions
@@ -49,12 +49,12 @@ user-friendly commands for building most used products.
 
 4. Modules listing
 
-  * nuxeo-platform-ear: Nuxeo Enterprise Platform EAR
+  * nuxeo-distribution-cap: Nuxeo Content Application Platform EAR
   * nuxeo-distribution-dm: Nuxeo Document Management EAR
   * nuxeo-distribution-shell: Nuxeo Shell
-  * nuxeo-distribution-jboss: JBoss containing Nuxeo EP or DM
+  * nuxeo-distribution-jboss: JBoss containing Nuxeo CAP or DM
   * nuxeo-distribution-gf3: (DEPRECATED) GlassFish distribution
-  * nuxeo-distribution-jetty: Jetty containing Nuxeo EP or DM
+  * nuxeo-distribution-jetty: Jetty containing Nuxeo CAP or DM
   * nuxeo-distribution-tomcat: Tomcat distribution
   * nuxeo-distribution-base: (DEPRECATED) template package for use by other modules.
   * nuxeo-distribution-server: (DEPRECATED) template package for use by other modules.
@@ -66,13 +66,13 @@ user-friendly commands for building most used products.
 5. Build with Maven
 
 Building from nuxeo root won't run nuxeo-distribution.
-Building from nuxeo-distribution with no specific profile will package Nuxeo EP, 
+Building from nuxeo-distribution with no specific profile will package Nuxeo CAP, 
 Nuxeo DM on VCS, JBoss with Nuxeo DM on VCS.
 Meaning "mvn clean install" produces:
-  * Nuxeo EP EAR
-    nuxeo-platform-ear/target/nuxeo.ear.zip
-  * Nuxeo EP resource files (for various backends or deployments) for EAR
-    nuxeo-platform-ear/target/nuxeo-platform-ear-5.4.0-SNAPSHOT-*.zip
+  * Nuxeo CAP EAR
+    nuxeo-distribution-cap/target/nuxeo.ear.zip
+  * Nuxeo CAP resource files (for various backends or deployments) for EAR
+    nuxeo-distribution-cap/target/nuxeo-distribution-cap-5.4.0-SNAPSHOT-*.zip
   * Nuxeo DM EAR with default VCS backend 
     nuxeo-distribution-dm/target/nuxeo-distribution-dm-5.4.0-SNAPSHOT.zip
   * JBoss 4.2.3.GA containing Nuxeo DM with default VCS backend
@@ -100,14 +100,14 @@ profiles can be used simultaneously.
 Here are some common profiles and their impact on build result:
   * all-distributions: build everything except the Windows installer
   * all: build all classifiers for the called module(s) 
-  * nuxeo-ep: build only Nuxeo EP classifier (if JBoss module, so build only
-    JBoss with Nuxeo EP)
-  * nuxeo-dm: same as nuxeo-ep but with Nuxeo DM
+  * nuxeo-cap: build only Nuxeo CAP classifier (if JBoss module, so build only
+    JBoss with Nuxeo CAP)
+  * nuxeo-dm: same as nuxeo-cap but with Nuxeo DM
   * shell: package a Nuxeo Shell
   * jboss: package a Nuxeo within JBoss
 
 Here are some usage examples (ran from nuxeo-distribution):
-  * (default) Building Nuxeo EP, nuxeo DM with VCS, JBoss with Nuxeo DM on VCS
+  * (default) Building Nuxeo CAP, nuxeo DM with VCS, JBoss with Nuxeo DM on VCS
     o mvn clean install
     o mvn clean install -Pjboss,nuxeo-dm,vcs
   * Building all Nuxeo DM alternatives
@@ -118,7 +118,7 @@ Here are some usage examples (ran from nuxeo-distribution):
     o mvn clean install -Pall-distributions
 
 Note: because of a Maven bug making things crazy when two classifiers of an
-artifact are not deployed at the same time (i.e. if you deploy only nuxeo-ep 
+artifact are not deployed at the same time (i.e. if you deploy only nuxeo-cap 
 classifier of nuxeo-distribution-jboss, then nuxeo-dm classifier becomes 
 unreachable from local and remote Maven repositories).
 That means when you want to "deploy" (Maven remote deployment) or "install" (Maven
@@ -134,74 +134,27 @@ Modules with an asterisk need refactoring and may be unusable for now: foo*
 Infrastructure profiles are within parenthesis: (foo)
 Default profiles are within asterisks: *foo*
 
-  * Module nuxeo-platform-ear
+  * Module nuxeo-distribution-cap
     o Produced artifacts
-      nuxeo-platform-ear-5.4.0-SNAPSHOT.pom
-      nuxeo-platform-ear-5.4.0-SNAPSHOT.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-common.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-derby.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-h2.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-mono.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-mysql.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-oracle.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-platform-stateful.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-postgresql.zip
-      (DEPRECATED) nuxeo-platform-ear-5.4.0-SNAPSHOT-resources-web-stateless.zip
-    o Available profiles
-      (DEPRECATED) derby
-      (DEPRECATED) mysql
-      (DEPRECATED) postgresql
-      (DEPRECATED) oracle
-      (DEPRECATED) h2
-      *vcs-profile*
+      nuxeo-distribution-cap-5.4.0-SNAPSHOT.pom
+      nuxeo-distribution-cap-5.4.0-SNAPSHOT.zip
+    o No available profile
       
   * Module nuxeo-distribution-dm
     o Produced artifacts
       nuxeo-distribution-dm-5.4.0-SNAPSHOT.pom
       nuxeo-distribution-dm-5.4.0-SNAPSHOT.zip
-      (COMPLIANCE) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-derby.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-h2.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-mysql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-oracle.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-postgresql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources-derby.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources-h2.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources-mysql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources-oracle.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources-postgresql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful-resources.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-platform-stateful.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-derby.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-h2.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-mysql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-oracle.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-resources-postgresql.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-web-stateless-resources.zip
-      (DEPRECATED) nuxeo-distribution-dm-5.4.0-SNAPSHOT-web-stateless.zip
-    o Available profiles
-      all-distributions
-      all
-      (DEPRECATED) nuxeo-2parts
-      (nuxeo-ep)
-      *nuxeo-dm*
-      *vcs*
-      (DEPRECATED) derby
-      (DEPRECATED) mysql
-      (DEPRECATED) postgresql
-      (DEPRECATED) oracle
-      (DEPRECATED) h2
+    o No available profile
       
   * Module nuxeo-distribution-jboss
     o Produced artifacts
-      nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-ep.zip
+      nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-cap.zip
       nuxeo-distribution-jboss-5.4.0-SNAPSHOT-nuxeo-dm.zip
     o Available profiles
       all-distributions
-      all
-      nuxeo-ep
-      *nuxeo-dm*
+      *all*
+      nuxeo-cap
+      nuxeo-dm
 
   * Module nuxeo-distribution-shell
     o Produced artifacts
@@ -211,12 +164,12 @@ Default profiles are within asterisks: *foo*
   * Module nuxeo-distribution-jetty*
     o Produced artifacts
       nuxeo-distribution-jetty-5.4.0-SNAPSHOT-nuxeo-dm.zip
-      nuxeo-distribution-jetty-5.4.0-SNAPSHOT-nuxeo-ep.zip
+      nuxeo-distribution-jetty-5.4.0-SNAPSHOT-nuxeo-cap.zip
     o Available profiles
       all-distributions
-      all
-      *nuxeo-dm*
-      nuxeo-ep
+      *all*
+      nuxeo-dm
+      nuxeo-cap
       
   * Module nuxeo-distribution-gf3* (DEPRECATED)
     o Produced artifacts
@@ -228,8 +181,13 @@ Default profiles are within asterisks: *foo*
   * Module nuxeo-distribution-tomcat
     o Produced artifacts
       nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-dm.zip
+      nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-nuxeo-cap.zip
       nuxeo-distribution-tomcat-5.4.0-SNAPSHOT-coreserver.zip
-    o No available profile
+    o Available profiles
+      all-distributions
+      *all*
+      nuxeo-cap
+      nuxeo-dm
 
   * Module nuxeo-windows-startup
     o Produced artifacts
@@ -241,9 +199,11 @@ Default profiles are within asterisks: *foo*
       nuxeo-distribution-resources-5.4.0-SNAPSHOT-bin.zip
       nuxeo-distribution-resources-5.4.0-SNAPSHOT-doc.zip
       nuxeo-distribution-resources-5.4.0-SNAPSHOT-jetty-base.zip
-      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-jboss-dm.zip
+      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-common.zip
+      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-common-dm.zip
       nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-jboss.zip
       nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-tomcat.zip
+      nuxeo-distribution-resources-5.4.0-SNAPSHOT-templates-tomcat-dm.zip
     o No available profile
 
 
@@ -266,9 +226,9 @@ For example:
 Details about predefined applications
 -------------------------------------
 
-1. Nuxeo EP
+1. Nuxeo CAP
 
-  Built EAR is in nuxeo-platform-ear/target/ and its name depends on chosen
+  Built EAR is in nuxeo-distribution-cap/target/ and its name depends on chosen
   package: default is nuxeo.ear
 
 

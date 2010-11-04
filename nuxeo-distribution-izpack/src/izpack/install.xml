@@ -5,7 +5,7 @@
   <info>
     <appname>@{project.name}</appname>
     <appversion>@{project.version}</appversion>
-    <appsubpath>nuxeo-ep-@{project.version}</appsubpath>
+    <appsubpath>nuxeo-cap-@{project.version}</appsubpath>
     <authors>
       <author name="Nuxeo SAS" email="contact@nuxeo.com"/>
     </authors>
@@ -108,7 +108,7 @@
   <packs>
     <pack name="nuxeo-full" required="yes">
       <description>This package contains everything</description>
-      <fileset dir="${staging.dir}/nuxeo-ep" targetdir="$INSTALL_PATH"/>
+      <fileset dir="${staging.dir}/nuxeo-cap" targetdir="$INSTALL_PATH"/>
       <singlefile src="README.html" target="$INSTALL_PATH/README_NUXEO.html"/>
       <singlefile src="LICENSE.html" target="$INSTALL_PATH/LICENSE.html"/>
       <parsable targetfile="$INSTALL_PATH/README_NUXEO.html" />

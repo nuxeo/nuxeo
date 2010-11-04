@@ -12,7 +12,7 @@
   <artifactId>nuxeo-distribution-tomcat</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Tomcat Build</name>
-  <description>Package Nuxeo EP or DM WAR with Tomcat</description>
+  <description>Package Nuxeo CAP or DM WAR with Tomcat</description>
 
   <dependencies>
     <dependency>
@@ -70,8 +70,8 @@
       </activation>
     </profile>
     <profile>
-      <id>nuxeo-ep</id>
-      <!-- profile for building Tomcat with only Nuxeo EP -->
+      <id>nuxeo-cap</id>
+      <!-- profile for building Tomcat with only Nuxeo CAP -->
     </profile>
     <profile>
       <id>nuxeo-dm</id>

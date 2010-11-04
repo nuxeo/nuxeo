@@ -8,12 +8,11 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-ear</artifactId>
+  <artifactId>nuxeo-distribution-cap</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo EP</name>
+  <name>Nuxeo CAP</name>
   <description>
-    Nuxeo Enterprise Platform: The Nuxeo EAR application.
+    Nuxeo Content Application Platform EAR.
   </description>
 
   <dependencies>

@@ -20,7 +20,7 @@
     <artifact:print output="dependency-tree.log" />
   </target>
 
-  <target name="build" depends="init" description="Build Nuxeo EP">
+  <target name="build" depends="init" description="Build Nuxeo CAP">
     <echo>Building default Nuxeo DM EAR</echo>
     <delete failonerror="false" dir="${nuxeo.ear}" />
     <mkdir dir="${nuxeo.ear}" />

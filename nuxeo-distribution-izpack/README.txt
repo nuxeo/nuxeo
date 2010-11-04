@@ -2,7 +2,7 @@
 nuxeo-distribution-izpack
 ================================
 
-This tool converts a Nuxeo EP zip archive (like the one produced by
+This tool converts a Nuxeo CAP zip archive (like the one produced by
 ``nx-builder package``) into a java installer using IzPack.  
 
 How to use it?

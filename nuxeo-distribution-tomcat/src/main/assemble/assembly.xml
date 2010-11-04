@@ -10,7 +10,7 @@
     <tstamp />
     <condition property="build.ep">
       <or>
-        <isset property="maven.profile.nuxeo-ep" />
+        <isset property="maven.profile.nuxeo-cap" />
         <isset property="maven.profile.all" />
         <isset property="maven.profile.all-distributions" />
       </or>
@@ -39,7 +39,7 @@
     <artifact:attach file="pom.xml"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
                      type="pom" />
-    <antcall target="build-nuxeo-ep" />
+    <antcall target="build-nuxeo-cap" />
     <antcall target="build-nuxeo-dm" />
     <antcall target="build-nuxeo-coreserver" />
     <delete dir="${tomcat}" failonerror="false" />
@@ -106,11 +106,11 @@
     </copy>
   </target>
 
-  <target name="build-nuxeo-ep"
+  <target name="build-nuxeo-cap"
           if="build.ep"
-          description="Build Tomcat distribution with Nuxeo EP">
+          description="Build Tomcat distribution with Nuxeo CAP">
     <property name="distribution.dir"
-              value="${outdir}/nuxeo-ep-${maven.project.version}-tomcat" />
+              value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -119,9 +119,9 @@
            perm="ug+x"
            includes="*.sh,*ctl,*.command" />
 
-    <!-- Nuxeo EP -->
+    <!-- Nuxeo CAP -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
     </unzip>
     <!-- NXP-5800 - tomcat adapter ignoring .rar -->
     <copy todir="${distribution.dir}/nxserver/bundles">
@@ -143,12 +143,12 @@
              value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
          basedir="${outdir}"
-         includes="nuxeo-ep-${maven.project.version}-tomcat/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
+         includes="nuxeo-cap-${maven.project.version}-tomcat/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
                      target="${maven.project.groupId}:${maven.project.artifactId}"
-                     classifier="nuxeo-ep"
+                     classifier="nuxeo-cap"
                      type="zip" />
   </target>
 
@@ -194,9 +194,9 @@
     <unzip dest="${distribution.dir}/templates" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
                             classifier="templates-common-dm" />
-     <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
-                            classifier="templates-tomcat-dm" /> 
-   </unzip>
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${maven.project.version}:zip"
+                            classifier="templates-tomcat-dm" />
+    </unzip>
 
     <antcall target="set-distribution-properties">
       <param name="distribution.properties.file"

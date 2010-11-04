@@ -19,7 +19,7 @@
     <property name="jetty" value="${outdir}/jetty.tmp" />
 
     <antcall target="prepare-jetty" />
-    <antcall target="build-nuxeo-ep-jetty" />
+    <antcall target="build-nuxeo-cap-jetty" />
     <antcall target="build-nuxeo-dm-jetty" />
     <delete dir="${jetty}" failonerror="false" />
   </target>
@@ -67,16 +67,16 @@
     </antcall>
   </target>
 
-  <target name="build-nuxeo-ep-jetty" unless="maven.profile.nuxeo-dm"
-    description="Build Jetty distribution with Nuxeo EP">
+  <target name="build-nuxeo-cap-jetty" unless="maven.profile.nuxeo-dm"
+    description="Build Jetty distribution with Nuxeo CAP">
     <delete failonerror="false"
-      dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty" />
-    <copy todir="${outdir}/nuxeo-ep-${maven.project.version}-jetty">
+      dir="${outdir}/nuxeo-cap-${maven.project.version}-jetty" />
+    <copy todir="${outdir}/nuxeo-cap-${maven.project.version}-jetty">
       <fileset dir="${jetty}" />
     </copy>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jetty/bundles">
+    <unzip dest="${outdir}/nuxeo-cap-${maven.project.version}-jetty/bundles">
       <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.distribution.version}:zip" />
       <patternset>
         <include name="nuxeo-platform-webapp*.jar" />
         <include name="plugins/*.*" />
@@ -90,35 +90,35 @@
       </patternset>
       <mapper type="flatten" />
     </unzip>
-    <unzip dest="${outdir}/nuxeo-ep-${maven.project.version}-jetty/lib">
+    <unzip dest="${outdir}/nuxeo-cap-${maven.project.version}-jetty/lib">
       <artifact:resolveFile
-        key="org.nuxeo.ecm.platform:nuxeo-platform-ear:${nuxeo.features.version}:zip" />
+        key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.distribution.version}:zip" />
       <patternset>
         <include name="lib/*.*" />
       </patternset>
       <mapper type="flatten" />
     </unzip>
-    <chmod dir="${outdir}/nuxeo-ep-${maven.project.version}-jetty/bin"
+    <chmod dir="${outdir}/nuxeo-cap-${maven.project.version}-jetty/bin"
       perm="ug+x" includes="*.sh,*ctl,*.command" />
 
     <antcall target="set-distribution-properties">
       <param name="distribution.properties.file"
-        value="${outdir}/nuxeo-ep-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
+        value="${outdir}/nuxeo-cap-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="ep" />
       <param name="org.nuxeo.distribution.server" value="jetty" />
       <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
     <zip
-      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-      basedir="${outdir}" includes="nuxeo-ep-${maven.project.version}-jetty/**" />
+      destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
+      basedir="${outdir}" includes="nuxeo-cap-${maven.project.version}-jetty/**" />
     <artifact:attach
-      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
-      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-ep"
+      file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
+      target="${maven.project.groupId}:${maven.project.artifactId}" classifier="nuxeo-cap"
       type="zip" />
   </target>
 
-  <target name="build-nuxeo-dm-jetty" unless="maven.profile.nuxeo-ep"
+  <target name="build-nuxeo-dm-jetty" unless="maven.profile.nuxeo-cap"
     description="Build jetty distribution with Nuxeo DM">
     <delete failonerror="false"
       dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty" />
