@@ -20,13 +20,14 @@
 
 package org.nuxeo.ecm.webapp.delegate;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.EJBAccessException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -44,8 +45,6 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
 
 /**
  * Acquires a {@link CoreSession} connection.
@@ -125,37 +124,32 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     @Destroy
     @PermitAll
     public void remove() {
-        for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
-            String serverName = entry.getKey().getName();
-            CoreSession session = entry.getValue();
+        LoginContext lc = null;
+        try {
             try {
+                lc = Framework.login();
+            }
+            catch (LoginException le) {
+                 log.error("Unable to login as System", le);
+                 log.warn("...try to feed CoreSession(s) without system login ...");
+            }
+            for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
+                String serverName = entry.getKey().getName();
+                CoreSession session = entry.getValue();
                 Repository.close(session);
                 log.debug("Closed session for repository " + serverName);
-            } catch (EJBAccessException e) {
-
-                log.debug("EJBAccessException while closing session for repository "
-                        + serverName);
-
-                LoginContext lc = null;
-                try {
-                    lc = Framework.login();
-                    Repository.close(session);
-                } catch (LoginException le) {
-                    log.error("Unable to login as System", le);
-                } finally {
-                    if (lc != null) {
-                        try {
-                            lc.logout();
-                        } catch (LoginException lo) {
-                            log.error("Error when loggin out", lo);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error closing session for repository " + serverName,
-                        e);
             }
         }
-        sessions.clear();
+        finally {
+            if (lc != null) {
+                try {
+                    lc.logout();
+                } catch (LoginException lo) {
+                    log.error("Error when loggin out", lo);
+                }
+            }
+            sessions.clear();
+        }
+
     }
 }
