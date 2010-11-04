@@ -4,6 +4,7 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <target name="init" unless="init.done">
+    <tstamp />
     <property name="outdir" value="${maven.project.build.directory}" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
@@ -101,11 +102,12 @@
       perm="ug+x" includes="*.sh,*ctl,*.command" />
 
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file" value="${outdir}/nuxeo-ep-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
+      <param name="distribution.properties.file"
+        value="${outdir}/nuxeo-ep-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="ep" />
-      <param name="org.nuxeo.distribution.server" value="jetty"/>
+      <param name="org.nuxeo.distribution.server" value="jetty" />
       <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
-      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
     <zip
       destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
@@ -152,13 +154,14 @@
     </unzip>
     <chmod dir="${outdir}/nuxeo-dm-${maven.project.version}-jetty/bin"
       perm="ug+x" includes="*.sh,*ctl,*.command" />
-      
+
     <antcall target="set-distribution-properties">
-      <param name="distribution.properties.file" value="${outdir}/nuxeo-dm-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
+      <param name="distribution.properties.file"
+        value="${outdir}/nuxeo-dm-${maven.project.version}-jetty/templates/common/config/distribution.properties" />
       <param name="org.nuxeo.distribution.name" value="dm" />
-      <param name="org.nuxeo.distribution.server" value="jetty"/>
+      <param name="org.nuxeo.distribution.server" value="jetty" />
       <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
-      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
     <zip
       destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
@@ -215,11 +218,11 @@
 
   <target name="set-distribution-properties">
     <echo append="false" file="${distribution.properties.file}">
-## DO NOT MANUALLY EDIT THIS FILE
-org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
-org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
-org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
-org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
+      ## DO NOT MANUALLY EDIT THIS FILE
+      org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
+      org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
+      org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
+      org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
     </echo>
   </target>
 
