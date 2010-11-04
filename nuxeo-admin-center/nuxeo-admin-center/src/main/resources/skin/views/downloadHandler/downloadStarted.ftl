@@ -22,6 +22,15 @@ function back() {
  document.location.href=url;
 }
 
+function install() {
+ alert("start install");
+ stopRefresh=true;
+ var url = document.location.href;
+ var idx = url.indexOf("/download/");
+ url = url.substring(0,idx) + "/install/start/${pkg.id}/?source=${source}&depCheck=${depCheck}"
+ document.location.href=url;
+}
+
 </script>
 
 </@block>
@@ -33,9 +42,16 @@ function back() {
     <#if (over || pkg.completed)>
       <div class="successfulDownloadBox">
         <p>Download for package ${pkg.id} terminated </p>
-        <script>
-         window.setTimeout(back,1000);
-        </script>
+        <#if !install>
+	        <script>
+	         window.setTimeout(back,1000);
+	        </script>
+	    </#if>
+        <#if install>
+	        <script>
+	         window.setTimeout(install,500);
+	        </script>
+	    </#if>
       </div>
     </#if>
     <#if (!over && !pkg.completed)>

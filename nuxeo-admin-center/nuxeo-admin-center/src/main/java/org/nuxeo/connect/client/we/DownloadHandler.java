@@ -58,9 +58,17 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "progressPage/{pkgId}")
-    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source) {
+    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source, @QueryParam("install") Boolean install,@QueryParam("depCheck") Boolean depCheck) {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
+        // flag to start install after download
+        if (install==null) {
+            install=false;
+        }
+        if (depCheck==null) {
+            depCheck=true;
+        }
+
         if (pkg==null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
@@ -68,7 +76,7 @@ public class DownloadHandler extends DefaultObject {
                 downloadOver=true;
             }
         }
-        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg("over", downloadOver);
+        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg("over", downloadOver).arg("install", install).arg("depCheck", depCheck);
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
@@ -87,8 +95,16 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source) {
+    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,@QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
+
+        // flag to start install after download
+        if (install==null) {
+            install=false;
+        }
+        if (depCheck==null) {
+            depCheck=true;
+        }
 
         if (!RequestHelper.isInternalLink(getContext())) {
             DownloadablePackage pkg = pm.getPackage(pkgId);
@@ -100,7 +116,7 @@ public class DownloadHandler extends DefaultObject {
         } catch (Exception e) {
             return getView("downloadError").arg("e", e);
         }
-        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",false);
+        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",false).arg("install", install).arg("depCheck", depCheck);
     }
 
 }

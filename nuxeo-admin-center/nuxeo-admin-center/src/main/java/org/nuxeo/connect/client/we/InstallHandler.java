@@ -32,6 +32,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -84,16 +86,59 @@ public class InstallHandler extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "showTermsAndConditions/{pkgId}")
+    public Object showTermsAndConditions(@PathParam("pkgId") String pkgId,@QueryParam("source") String source, @QueryParam("depCheck") Boolean depCheck) {
+        if (depCheck==null) {
+            depCheck=true;
+        }
+        try {
+            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            LocalPackage pkg = pus.getPackage(pkgId);
+            String content = pkg.getTermsAndConditionsContent();
+            return getView("termsAndConditions").arg("pkg", pkg).arg("source", source).arg("content", content).arg("depCheck", depCheck);
+        }
+        catch (Exception e) {
+            log.error("Error during terms and conditions phase ", e);
+            return getView("installError").arg("e", e).arg("source", source);
+        }
+
+    }
+
+    @GET
+    @Produces("text/html")
     @Path(value = "start/{pkgId}")
     public Object startInstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source) {
+            @QueryParam("source") String source,@QueryParam("tacAccepted") Boolean acceptedTAC,@QueryParam("depCheck") Boolean depCheck) {
 
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
+            if (pkg==null) {
+                throw new ClientException("Can not find package " + pkgId);
+            }
+
+            if (pkg.requireTermsAndConditionsAcceptance() & !(Boolean.TRUE.equals(acceptedTAC))) {
+                return showTermsAndConditions(pkgId, source, depCheck);
+            }
+            if (!Boolean.FALSE.equals(depCheck)) {
+                // check deps requirements
+                if (pkg.getDependencies()!=null && pkg.getDependencies().length>0) {
+                    PackageManager pm = Framework.getLocalService(PackageManager.class);
+                    DependencyResolution resolution = pm.resolveDependencies(pkgId, null);
+                    if (resolution.isFailed()) {
+                        return getView("dependencyError").arg("resolution", resolution).arg(
+                                "pkg", pkg).arg("source", source);
+                    } else {
+                        if (resolution.requireChanges()) {
+                            return getView("displayDependencies").arg("resolution", resolution).arg(
+                                    "pkg", pkg).arg("source", source);
+                        }
+                        // no dep changes => can continue standard install process
+                    }
+                }
+            }
 
             Task installTask = pkg.getInstallTask();
-
             ValidationStatus status = installTask.validate();
 
             if (status.hasErrors()) {
