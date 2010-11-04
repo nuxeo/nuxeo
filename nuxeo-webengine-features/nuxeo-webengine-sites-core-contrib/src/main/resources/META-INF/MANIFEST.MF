@@ -26,5 +26,3 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.webengine.sites.utils
 Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites.core.contrib
-Nuxeo-Require: org.nuxeo.ecm.core,
-  org.nuxeo.ecm.platform.webengine.sites.api

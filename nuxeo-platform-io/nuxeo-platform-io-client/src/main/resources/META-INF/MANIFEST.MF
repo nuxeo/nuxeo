@@ -7,4 +7,3 @@ Bundle-Category: web,stateless
 Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/actions-contrib.xml
 Require-Bundle: org.nuxeo.ecm.webapp.core
-Nuxeo-RequiredBy: org.nuxeo.ecm.war

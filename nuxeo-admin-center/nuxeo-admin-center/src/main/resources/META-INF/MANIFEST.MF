@@ -7,7 +7,4 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/auth-contrib.xml
-Nuxeo-Require: org.nuxeo.ecm.webengine.core,
- org.nuxeo.connect.client
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Export-Package: i18n

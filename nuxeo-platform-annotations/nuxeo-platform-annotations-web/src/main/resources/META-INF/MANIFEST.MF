@@ -9,7 +9,6 @@ Require-Bundle: org.nuxeo.ecm.webapp.ui,
   org.nuxeo.ecm.platform.preview,
   org.nuxeo.theme.jsf
 Provide-Package: org.nuxeo.ecm.annotations.client
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-Component: OSGI-INF/default-contrib.xml,
  OSGI-INF/web-configuration-service-framework.xml,
  OSGI-INF/web-configuration-service-contrib.xml,

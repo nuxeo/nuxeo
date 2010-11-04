@@ -7,7 +7,3 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: stateless
 Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/userworkspace-actions-contrib.xml
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
-Require-Bundle: org.nuxeo.ecm.actions,
-  org.nuxeo.ecm.platform.userworkspace.api,
-  org.nuxeo.ecm.webapp.core

@@ -46,4 +46,3 @@ Import-Package: javax.annotation,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.base;singleton:=true
-Nuxeo-Require: org.nuxeo.ecm.webengine.core

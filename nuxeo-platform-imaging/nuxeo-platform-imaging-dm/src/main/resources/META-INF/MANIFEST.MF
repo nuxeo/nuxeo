@@ -16,4 +16,3 @@ Require-Bundle: org.nuxeo.ecm.platform.picture.api,
  org.nuxeo.ecm.platform.types.core,
  org.nuxeo.ecm.platform.commandline.executor
 Export-Package: org.nuxeo.ecm.platform.picture.web
-Nuxeo-RequiredBy: org.nuxeo.ecm.war

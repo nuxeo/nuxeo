@@ -10,4 +10,3 @@ Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.forum.api,
  org.nuxeo.ecm.platform.comment.web
 Bundle-Category: stateless
-Nuxeo-RequiredBy: org.nuxeo.ecm.war

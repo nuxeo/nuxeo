@@ -7,7 +7,6 @@ Export-Package: org.nuxeo.webengine.sites,
 Private-Package: .
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Manifest-Version: 1.0
 Bundle-Category: web,
  stateless
@@ -65,8 +64,3 @@ Import-Package: javax.annotation,
  org.nuxeo.webengine.sites.utils
 Provide-Package: org.nuxeo.ecm.platform.webengine.jsf
 Bundle-SymbolicName: org.nuxeo.ecm.platform.webengine.sites
-Nuxeo-Require: org.nuxeo.ecm.webapp.core,
-  org.nuxeo.ecm.webengine.core,
-  org.nuxeo.theme.fragments,
-  org.nuxeo.ecm.platform.webengine.sites.api 
-Nuxeo-Required: org.nuxeo.ecm.war

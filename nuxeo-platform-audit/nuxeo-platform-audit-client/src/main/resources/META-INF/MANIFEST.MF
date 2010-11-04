@@ -13,4 +13,3 @@ Provide-Package: org.nuxeo.ecm.platform.audit.web,
  org.nuxeo.ecm.platform.audit.web.listener.ejb,
  org.nuxeo.ecm.platform.audit.web.listener.events
 Nuxeo-Component: OSGI-INF/actions-contrib.xml
-Nuxeo-RequiredBy: org.nuxeo.ecm.war

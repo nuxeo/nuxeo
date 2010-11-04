@@ -12,7 +12,6 @@ Private-Package: schema,
  org.nuxeo.ecm.platform.picture.core.im
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Nuxeo-RequiredBy: org.nuxeo.ecm.platform.picture.web
 Manifest-Version: 1.0
 Bundle-Category: core,
  stateful
@@ -64,9 +63,4 @@ Import-Package: com.drew.imaging.jpeg,
  org.nuxeo.runtime.services.streaming
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.core;singleton=true
 Eclipse-RegisterBuddy: org.nuxeo.ecm.platform.filemanager.core
-Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.platform.picture.api,
- org.nuxeo.ecm.platform.commandline.executor,
- org.nuxeo.ecm.platform.filemanager.core
 Require-Bundle: net.java.dev.mistral.EditableImage

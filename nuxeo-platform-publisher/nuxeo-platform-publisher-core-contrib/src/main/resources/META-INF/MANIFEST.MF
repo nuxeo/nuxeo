@@ -11,4 +11,3 @@ Nuxeo-Component: OSGI-INF/publisher-relations-contrib.xml,
 Require-Bundle: org.nuxeo.ecm.relations,
  org.nuxeo.ecm.relations.jena,
  org.nuxeo.ecm.platform.audit
-Nuxeo-RequiredBy: org.nuxeo.ecm.platform.publisher.core

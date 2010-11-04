@@ -5,7 +5,3 @@ Bundle-SymbolicName: org.nuxeo.admin.center.monitoring;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/actions-contrib.xml
-Nuxeo-Require: org.nuxeo.ecm.webengine.core,
- org.nuxeo.admin.center
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
-

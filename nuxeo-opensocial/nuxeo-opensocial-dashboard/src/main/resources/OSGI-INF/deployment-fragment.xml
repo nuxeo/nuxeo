@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <fragment version="1">
+  <!-- I am not sure this is needed -->
+  <require>org.nuxeo.opensocial.spaces.web</require>
+  <require>org.nuxeo.ecm.directory.web</require>
 
   <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">

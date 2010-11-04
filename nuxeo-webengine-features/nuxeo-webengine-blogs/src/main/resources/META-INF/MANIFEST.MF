@@ -11,11 +11,9 @@ Nuxeo-Component: OSGI-INF/theme-contrib.xml,
  OSGI-INF/webengine-blogs-layouts-contrib.xml,
  OSGI-INF/webengine-blogs-actions-contrib.xml,
  OSGI-INF/auth-contrib.xml
-Require-Bundle: org.nuxeo.ecm.webapp.core, 
-  org.nuxeo.ecm.webengine.core, 
+Require-Bundle: org.nuxeo.ecm.webapp.core,
+  org.nuxeo.ecm.webengine.core,
   org.nuxeo.theme.fragments,
   org.nuxeo.ecm.platform.webengine.sites,
   org.nuxeo.ecm.platform.webengine.blogs.api
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Export-Package: org.nuxeo.webengine.blogs
-
