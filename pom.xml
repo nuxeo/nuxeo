@@ -19,6 +19,7 @@
     <nuxeo.chemistry.version>5.4.0-SNAPSHOT</nuxeo.chemistry.version>
     <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.windows.version>5.4.0-SNAPSHOT</nuxeo.windows.version>
+    <nuxeo.addons.version>5.4.0-SNAPSHOT</nuxeo.addons.version>
     <noIncrementalBuild>true</noIncrementalBuild>
   </properties>
 
@@ -223,6 +224,23 @@
         <artifactId>nuxeo-windows-startup</artifactId>
         <version>${nuxeo.windows.version}</version>
         <type>zip</type>
+      </dependency>
+
+      <!-- Faceted Search -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-faceted-search-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-faceted-search-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-faceted-search-dm</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -16,10 +16,6 @@
     Nuxeo Enterprise Platform: The Nuxeo EAR application.
   </description>
 
-  <properties>
-    <nuxeo.addons.version>5.4.0-SNAPSHOT</nuxeo.addons.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
