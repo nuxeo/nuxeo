@@ -64,6 +64,8 @@ public class AppCenterViewsManager implements Serializable {
 
     protected Map<String, String> packageTypeFilters = new HashMap<String, String>();
 
+    protected Map<String, Boolean> platformFilters = new HashMap<String, Boolean>();
+
     @In(create = true)
     protected String currentAdminSubViewId;
 
@@ -88,6 +90,18 @@ public class AppCenterViewsManager implements Serializable {
 
     public void setOnlyRemote(boolean onlyRemote) {
         this.onlyRemote = onlyRemote;
+    }
+
+    public void setPlatformFilter(boolean doFilter) {
+        platformFilters.put(currentAdminSubViewId, doFilter);
+    }
+
+    public boolean getPlatformFilter() {
+        Boolean dofilter = platformFilters.get(currentAdminSubViewId);
+        if (dofilter == null) {
+            return false;
+        }
+        return dofilter.booleanValue();
     }
 
     public String getPackageTypeFilter() {

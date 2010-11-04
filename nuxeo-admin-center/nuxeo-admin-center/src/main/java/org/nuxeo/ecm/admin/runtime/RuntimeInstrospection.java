@@ -73,10 +73,6 @@ public class RuntimeInstrospection {
             Collections.sort(bundles);
             info = new SimplifiedServerInfo();
             info.setBundleInfos(bundles);
-            info.setPlatformName(Framework.getProperty(
-                    "org.nuxeo.ecm.product.name", "Unknown"));
-            info.setPlatformVersion(Framework.getProperty(
-                    "org.nuxeo.ecm.product.version", "Unknown"));
             info.setRuntimeVersion(runtime.getVersion().toString());
             info.setWarnings(runtime.getWarnings());
 

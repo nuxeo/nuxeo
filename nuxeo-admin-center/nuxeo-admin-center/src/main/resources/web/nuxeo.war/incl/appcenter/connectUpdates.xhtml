@@ -22,14 +22,24 @@
                 <a4j:commandButton value="submit" reRender="connectAppListing"/>
             </div>
     </h:form>
-     <h:form>
+        <h:form>
+                <h:selectBooleanCheckbox class="dataInputText"
+                  value="#{appsViews.platformFilter}"
+                   onchange="Element.next(this).firstChild.click();">
+
+                </h:selectBooleanCheckbox> <h:outputText value="#{messages['label.appcenter.platform.filter']}"/>
+                  <div style="display: none;">
+                <a4j:commandButton value="submit"  reRender="connectAppListing" />
+            </div>
+    </h:form>
+    <h:form>
            <a4j:commandButton value="#{messages['admCommand.refresh']}" actionListener="#{appsViews.flushCache()}"  reRender="connectAppListing" />
     </h:form>
 
   </div>
 
   <c:if test="#{connectServerReachable and registredConnectInstance}">
-    <iframe src="/nuxeo/site/connectClient/packages/updates?type=#{appsViews.packageTypeFilter}" frameborder="0" scrolling="auto" width="100%" height="500px">
+    <iframe src="/nuxeo/site/connectClient/packages/updates?type=#{appsViews.packageTypeFilter}&amp;filterOnPlatform=#{appsViews.platformFilter}" frameborder="0" scrolling="auto" width="100%" height="500px">
       <img src="/nuxeo/img/big_loading.gif"/>
     </iframe>
   </c:if>
