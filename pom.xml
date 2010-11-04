@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -34,6 +35,7 @@
     <module>nuxeo-platform-forms-layout-client</module>
     <module>nuxeo-platform-webapp-base</module>
     <module>nuxeo-theme-jsf</module>
+    <module>nuxeo-platform-contentview-jsf</module>
   </modules>
 
   <profiles>
@@ -248,6 +250,17 @@
         <artifactId>nuxeo-platform-el</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-query-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-contentview-jsf</artifactId>
+        <version>${nuxeo.jsf.version}</version>
+      </dependency>
+      <!-- test deps -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-test</artifactId>

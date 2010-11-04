@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
-import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewCache;
-import org.nuxeo.ecm.platform.ui.web.contentview.ContentViewService;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**

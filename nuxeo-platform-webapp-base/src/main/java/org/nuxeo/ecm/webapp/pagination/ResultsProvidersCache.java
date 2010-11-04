@@ -20,11 +20,11 @@
 package org.nuxeo.ecm.webapp.pagination;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
-import org.nuxeo.ecm.platform.ui.web.contentview.ContentView;
 
 /**
  * This is a controller interface for pagination. The methods are bound to
