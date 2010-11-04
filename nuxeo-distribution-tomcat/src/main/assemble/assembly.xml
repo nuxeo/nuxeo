@@ -138,6 +138,13 @@
       <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
 
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file" value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="cap" />
+      <param name="org.nuxeo.distribution.server" value="tomcat"/>
+      <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+    </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-ep.zip"
          basedir="${outdir}"
          includes="nuxeo-ep-${maven.project.version}-tomcat/**" />
@@ -182,6 +189,13 @@
                             classifier="templates-common-dm" />
     </unzip>
 
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file" value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="dm" />
+      <param name="org.nuxeo.distribution.server" value="tomcat"/>
+      <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+    </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
          includes="nuxeo-dm-${maven.project.version}-tomcat/**" />
@@ -273,6 +287,13 @@
       </fileset>
     </delete>
 
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file" value="${distribution.dir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="coreserver" />
+      <param name="org.nuxeo.distribution.server" value="tomcat"/>
+      <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+    </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-coreserver.zip"
          basedir="${outdir}"
          includes="nuxeo-coreserver-${maven.project.version}-tomcat/**" />
@@ -360,6 +381,16 @@
         <include name="nuxeo-generic-wss-handler-*" />
       </fileset>
     </move>
+  </target>
+
+  <target name="set-distribution-properties">
+    <echo append="false" file="${distribution.properties.file}">
+## DO NOT MANUALLY EDIT THIS FILE
+org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
+org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
+org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
+org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
+    </echo>
   </target>
 
 </project>
