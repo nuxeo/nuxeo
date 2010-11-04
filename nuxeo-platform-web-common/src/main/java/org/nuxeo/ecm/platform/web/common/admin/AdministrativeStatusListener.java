@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.web.common.admin;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
+import org.nuxeo.ecm.platform.api.login.RestrictedLoginHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
@@ -68,9 +69,11 @@ public class AdministrativeStatusListener implements EventListener {
           if (serviceId.equals(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY)) {
               if (eventId.equals(AdministrativeStatusManager.ACTIVATED_EVENT)) {
                   AdminStatusHelper.instanceInMaintenanceMode=false;
+                  RestrictedLoginHelper.setRestrictedModeActivated(false);
               }
               if (eventId.equals(AdministrativeStatusManager.PASSIVATED_EVENT)) {
                   AdminStatusHelper.instanceInMaintenanceMode=true;
+                  RestrictedLoginHelper.setRestrictedModeActivated(true);
               }
 
               AdminStatusHelper.maintenanceMessage = asm.getStatus(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY).getMessage();

@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.api.login.RestrictedLoginHelper;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallback;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -263,6 +264,12 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         identity = getPrincipal();
         if (identity == null) { // auth failed
             throw new LoginException("Authentication Failed");
+        }
+
+        if (RestrictedLoginHelper.isRestrictedModeActivated()) {
+            if (!identity.isAdministrator()) {
+                throw new LoginException("Only Administrators can login when restricted mode is activated");
+            }
         }
 
         loginOk = true;
