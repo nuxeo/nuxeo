@@ -1,6 +1,5 @@
 Require-Bundle: org.nuxeo.theme.fragments
 Bundle-Vendor: Chalmers
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Bundle-Version: 0.0.0.SNAPSHOT
 Manifest-Version: 1.0
 Bundle-Category: web,
