@@ -34,6 +34,14 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     List<String> getCategories();
 
+    boolean isList();
+
+    boolean isComplex();
+
+    List<String> getSupportedFieldTypes();
+
+    List<String> getDefaultFieldTypes();
+
     List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode);
 
     Map<String, List<LayoutDefinition>> getPropertyLayouts();
