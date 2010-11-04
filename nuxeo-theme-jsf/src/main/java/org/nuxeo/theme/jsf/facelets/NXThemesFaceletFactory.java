@@ -54,14 +54,6 @@ public final class NXThemesFaceletFactory extends DefaultFaceletFactory {
                     return true;
                 }
 
-                // refresh after a given period
-                if (refreshPeriod > 0) {
-                    long now = System.currentTimeMillis();
-                    if (now > created + refreshPeriod) {
-                        return true;
-                    }
-                }
-
             } catch (Exception e) {
                 throw new FaceletException("Error Checking Last Modified for "
                         + facelet.getAlias(), e);
