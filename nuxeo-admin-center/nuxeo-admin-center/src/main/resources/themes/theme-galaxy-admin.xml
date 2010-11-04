@@ -1087,7 +1087,7 @@
       <selector path=".actionBar form">
         <display>inline</display>
       </selector>
-      <selector path=".actionBar form select">
+      <selector path=".actionBar form select, .actionBar form input">
         <margin>0px 5px</margin>
       </selector>
       <selector path=".actionBar h3">
@@ -1179,6 +1179,17 @@
         <font-weight>bold</font-weight>
         <color>#777777</color>
       </selector>
+      <selector path=".studioUpdateActions">
+        <margin>5px 0px</margin>
+      </selector>
+      <selector path=".studioUpdateActions span">
+        <margin>0</margin>
+        <color>#000</color>
+        <font-weight>bold</font-weight>
+      </selector>
+       <selector path=".evenStatsBloc ul">
+        <list-style>none</list-style>
+      </selector>
       <selector path=".hostInfos pre">
         <border>1px solid #eee</border>
         <font preset="default (Galaxy Admin fonts)"/>
@@ -1212,6 +1223,9 @@
         <border>1px solid #ffc76e</border>
         <background preset="warning (Galaxy Admin backgrounds)"/>
         <padding>5px 10px 5px 23px</padding>
+      </selector>
+      <selector path=".packageUploadBlock">
+        <padding>0 0 10px</padding>
       </selector>
     </style>
     <!-- General -->

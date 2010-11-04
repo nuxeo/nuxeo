@@ -8,20 +8,18 @@
 
   <div class="genericBox">
 
-   <h1> ${pkg.title} (${pkg.id}) </h1>
+   <h3> ${pkg.title} (${pkg.id}) </h3>
 
-   You need to accept the Terms and Condition before continuing the installation.
+   <p>You need to accept the Terms and Condition before continuing the installation.</p>
 
-   <br/>
-
-   <pre>
+   <div class="termsAndConditionsBlock">
    ${content}
-   </pre>
+   </div>
 
-   <br/>
-
-   <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}&tacAccepted=true" class="installButton"> Accepts </a>
+ 	 <div class="alignCenter">
+   	 <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
+   	 <a href="${Root.path}/install/start/${pkg.id}/?source=${source}&tacAccepted=true" class="installButton"> Accept </a>
+   </div>
 
   </div>
 
