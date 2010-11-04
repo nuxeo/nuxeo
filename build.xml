@@ -122,7 +122,7 @@
   </target>
 
   <target name="deploy" depends="install"
-    description="Deploy Nuxeo-EP on jboss">
+    description="Deploy Nuxeo on JBoss">
     <echo>
       WARNING: this ant task is here for developers who find it handy: use to
       your own risk, and refer to nuxeo-distribution scripts for better
