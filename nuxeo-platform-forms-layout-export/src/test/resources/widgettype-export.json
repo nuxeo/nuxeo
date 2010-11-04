@@ -8,6 +8,12 @@
   "configuration":   {
     "title": "Test widget type",
     "description": "This is a test widget type",
+    "fields":     {
+      "list": false,
+      "complex": false,
+      "supportedTypes": ["string"],
+      "defaultTypes": ["string"]
+    },
     "categories":     [
       "foo",
       "bar"

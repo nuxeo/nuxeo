@@ -15,6 +15,16 @@
       <configuration>
         <title>Test widget type</title>
         <description>This is a test widget type</description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
         <categories>
           <category>foo</category>
           <category>bar</category>

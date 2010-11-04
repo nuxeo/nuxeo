@@ -82,12 +82,30 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject json = new JSONObject();
         json.element("title", conf.getTitle());
         json.element("description", conf.getDescription());
+        JSONObject fields = new JSONObject();
+        fields.element("list", conf.isList());
+        fields.element("complex", conf.isComplex());
+        JSONArray supportedTypes = new JSONArray();
+        List<String> confSupportedTypes = conf.getSupportedFieldTypes();
+        if (confSupportedTypes != null) {
+            supportedTypes.addAll(confSupportedTypes);
+        }
+        fields.element("supportedTypes", supportedTypes);
+        JSONArray defaultTypes = new JSONArray();
+        List<String> confDefaultTypes = conf.getDefaultFieldTypes();
+        if (confDefaultTypes != null) {
+            defaultTypes.addAll(confDefaultTypes);
+        }
+        fields.element("defaultTypes", defaultTypes);
+        json.element("fields", fields);
+
         JSONArray cats = new JSONArray();
         List<String> confCats = conf.getCategories();
         if (confCats != null) {
             cats.addAll(confCats);
         }
         json.element("categories", cats);
+
         JSONObject props = new JSONObject();
         Map<String, List<LayoutDefinition>> confLayouts = conf.getPropertyLayouts();
         if (confLayouts != null) {
