@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Check IO archive import via Unit Tests.
- * 
+ *
  * @author tiry
  */
 public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
@@ -132,7 +132,7 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
         fm.createDocumentFromBlob(coreSession, blob, destWS.getPathAsString(),
-                true, "toto");
+                true, "toto.zip");
         DocumentModelList children = coreSession.getChildren(destWS.getRef());
         assertTrue(children.size() > 0);
         assertEquals(children.get(0).getTitle(), sourceWS.getTitle());
@@ -168,7 +168,7 @@ public class TestExportedZipImporterPlugin extends RepositoryOSGITestCase {
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new FileBlob(archive);
         fm.createDocumentFromBlob(coreSession, blob, wsRoot.getPathAsString(),
-                true, "toto");
+                true, "toto.zip");
         sourceWS = coreSession.getChild(wsRoot.getRef(), "ws1");
         assertNotNull(sourceWS);
         assertEquals("test WS", sourceWS.getTitle());
