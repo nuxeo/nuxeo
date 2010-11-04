@@ -3,7 +3,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<h:form enctype="multipart/form-data">
+<h:form enctype="multipart/form-data" class="packageUploadBlock">
    <h5><h:outputText value="#{messages['label.upload.package']}" /></h5>
    <nxu:inputFile  id="t_pkgupload" editFilename="false" value="#{connectStatus.packageToUpload}"
    filename="#{connectStatus.packageFileName}">

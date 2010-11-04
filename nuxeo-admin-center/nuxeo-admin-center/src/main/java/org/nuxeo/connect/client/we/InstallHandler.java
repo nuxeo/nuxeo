@@ -41,6 +41,7 @@ import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.model.Field;
 import org.nuxeo.connect.update.model.Form;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebException;
@@ -124,7 +125,11 @@ public class InstallHandler extends DefaultObject {
                 // check deps requirements
                 if (pkg.getDependencies()!=null && pkg.getDependencies().length>0) {
                     PackageManager pm = Framework.getLocalService(PackageManager.class);
-                    DependencyResolution resolution = pm.resolveDependencies(pkgId, null);
+                    DependencyResolution resolution = pm.resolveDependencies(pkgId, PlatformVersionHelper.getPlatformFilter());
+                    if (resolution.isFailed() && PlatformVersionHelper.getPlatformFilter()!=null) {
+                        // retry without PF filter ...
+                        resolution = pm.resolveDependencies(pkgId, null);
+                    }
                     if (resolution.isFailed()) {
                         return getView("dependencyError").arg("resolution", resolution).arg(
                                 "pkg", pkg).arg("source", source);
@@ -140,6 +145,10 @@ public class InstallHandler extends DefaultObject {
 
             Task installTask = pkg.getInstallTask();
             ValidationStatus status = installTask.validate();
+
+            if (!PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                status.addWarning("This package is not validated for you current platform");
+            }
 
             if (status.hasErrors()) {
                 return getView("canNotInstall").arg("status", status).arg(

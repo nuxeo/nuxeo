@@ -30,6 +30,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage;
+import org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage;
 import org.nuxeo.ecm.automation.jsf.operations.SeamOperation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -64,6 +66,23 @@ public class OperationActionBean implements Serializable {
         return runOperation(chainId);
     }
 
+    protected void showError(OperationContext ctx, String chain, Throwable cause) {
+        String msg = (String) ctx.get(AddErrorMessage.ID);
+        if (msg == null) {
+            msg = "An error occured while executing the chain '" + chain
+                    + "': " + cause.getMessage();
+        }
+        facesMessages.add(FacesMessage.SEVERITY_ERROR, msg);
+    }
+
+    protected void showSuccess(OperationContext ctx, String chain) {
+        String msg = (String) ctx.get(AddInfoMessage.ID);
+        if (msg == null) {
+            msg = "chain " + chain + " executed successfully";
+        }
+        facesMessages.add(FacesMessage.SEVERITY_INFO, msg);
+    }
+
     protected String runOperation(Object chain) throws Exception {
         AutomationService os = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext(documentManager);
@@ -72,8 +91,7 @@ public class OperationActionBean implements Serializable {
         if (chain instanceof String) {
             try {
                 os.run(ctx, (String) chain);
-                facesMessages.add(FacesMessage.SEVERITY_INFO, "chain " + chain
-                        + " executed successfully");
+                showSuccess(ctx, (String) chain);
             } catch (InvalidChainException e) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         "Unknown chain: " + chain);
@@ -81,16 +99,12 @@ public class OperationActionBean implements Serializable {
             } catch (Throwable t) {
                 log.error(t, t);
                 Throwable cause = ExceptionHelper.unwrapException(t);
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        "An error occured while executing the chain '" + chain
-                                + "': " + cause.getMessage());
+                showError(ctx, (String) chain, cause);
                 return null;
             }
         } else {
             os.run(ctx, (OperationChain) chain);
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "chain "
-                    + ((OperationChain) chain).getId()
-                    + " executed successfully");
+            showSuccess(ctx, ((OperationChain) chain).getId());
         }
 
         return (String) ctx.get(SeamOperation.OUTCOME);

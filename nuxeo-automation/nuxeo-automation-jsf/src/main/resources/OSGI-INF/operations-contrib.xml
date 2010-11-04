@@ -28,6 +28,8 @@
     <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearWorklist" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearClipboard" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.DownloadFile" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage" />
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage" />
 
   </extension>
 

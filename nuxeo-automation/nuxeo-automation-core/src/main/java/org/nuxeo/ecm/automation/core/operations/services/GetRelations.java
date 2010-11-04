@@ -59,7 +59,7 @@ public class GetRelations {
     // TODO use a combo box?
     protected String predicate;
 
-    @Param(name = "outgoing")
+    @Param(name = "outgoing", required = false)
     protected boolean outgoing = true;
 
     @OperationMethod

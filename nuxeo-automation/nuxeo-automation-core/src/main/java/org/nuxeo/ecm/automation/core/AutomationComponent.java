@@ -67,6 +67,7 @@ import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
+import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
 import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlobList;
@@ -89,7 +90,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -171,6 +172,7 @@ public class AutomationComponent extends DefaultComponent {
 
         // platform
         service.putOperation(GetRelations.class);
+        service.putOperation(CreateRelation.class);
         service.putOperation(SendMail.class);
 
         service.putOperation(GetDocumentUsersAndGroups.class);

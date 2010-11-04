@@ -11,11 +11,27 @@
  <table class="dataOutput">
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoName']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.platformName}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.applicationName}" /></td>
  </tr>
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoVersion']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.platformVersion}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.applicationVersion}" /></td>
+ </tr>
+ <tr>
+      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribName']}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.distributionName}" /></td>
+ </tr>
+ <tr>
+      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribVersion']}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.distributionVersion}" /></td>
+ </tr>
+ <tr>
+      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribHost']}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.distributionHost}" /></td>
+ </tr>
+ <tr>
+      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribDate']}" /></td>
+      <td><h:outputText value="#{nuxeoServerInfo.distributionDate}" /></td>
  </tr>
  <tr>
       <td><h:outputText value="#{messages['adminsubtab.sysinfo.warnings']}" /></td>

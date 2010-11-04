@@ -28,6 +28,13 @@ import java.util.List;
  */
 public class SimplifiedServerInfo {
 
+    protected List<SimplifiedBundleInfo> bundleInfos;
+
+    protected String runtimeVersion;
+
+    protected List<String> warnings;
+
+
     public List<SimplifiedBundleInfo> getBundleInfos() {
         return bundleInfos;
     }
@@ -36,20 +43,28 @@ public class SimplifiedServerInfo {
         this.bundleInfos = bundleInfos;
     }
 
-    public String getPlatformName() {
-        return platformName;
+    public String getApplicationName() {
+        return PlatformVersionHelper.getApplicationName();
     }
 
-    public void setPlatformName(String platformName) {
-        this.platformName = platformName;
+    public String getApplicationVersion() {
+        return PlatformVersionHelper.getApplicationVersion();
     }
 
-    public String getPlatformVersion() {
-        return platformVersion;
+    public String getDistributionName() {
+        return PlatformVersionHelper.getDistributionName();
     }
 
-    public void setPlatformVersion(String platformVersion) {
-        this.platformVersion = platformVersion;
+    public String getDistributionVersion() {
+        return PlatformVersionHelper.getDistributionVersion();
+    }
+
+    public String getDistributionHost() {
+        return PlatformVersionHelper.getDistributionHost();
+    }
+
+    public String getDistributionDate() {
+        return PlatformVersionHelper.getDistributionDate();
     }
 
     public String getRuntimeVersion() {
@@ -68,16 +83,6 @@ public class SimplifiedServerInfo {
         this.warnings = warnings;
     }
 
-    protected List<SimplifiedBundleInfo> bundleInfos;
-
-    protected String platformName;
-
-    protected String platformVersion;
-
-    protected String runtimeVersion;
-
-    protected List<String> warnings;
-
     public boolean hasWarnings() {
         return (warnings != null && !warnings.isEmpty());
     }
@@ -86,9 +91,9 @@ public class SimplifiedServerInfo {
     public String toString() {
         StringBuffer sb = new StringBuffer();
 
-        sb.append(platformName);
+        sb.append(getApplicationName());
         sb.append("  ");
-        sb.append(platformVersion);
+        sb.append(getApplicationVersion());
         sb.append("\n");
 
         sb.append("runtime :  ");

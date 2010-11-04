@@ -19,6 +19,8 @@
 
 package org.nuxeo.connect.client.we;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -33,6 +35,7 @@ import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -45,10 +48,29 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
 
+
+    protected List<DownloadablePackage> filterOnPlatform(List<DownloadablePackage> pkgs, Boolean filterOnPlatform) {
+        if (filterOnPlatform==null || !filterOnPlatform) {
+            return pkgs;
+        }
+        String targetPF = PlatformVersionHelper.getPlatformFilter();
+        if (targetPF==null) {
+            return pkgs;
+        } else {
+            List<DownloadablePackage> filteredPackages = new ArrayList<DownloadablePackage>();
+            for (DownloadablePackage pkg : pkgs) {
+                if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                    filteredPackages.add(pkg);
+                }
+            }
+            return filteredPackages;
+        }
+    }
+
     @GET
     @Produces("text/html")
     @Path(value = "list")
-    public Object doList(@QueryParam("type") String type) {
+    public Object doList(@QueryParam("type") String type, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
         List<DownloadablePackage> pkgs;
@@ -58,13 +80,15 @@ public class PackageListingProvider extends DefaultObject {
             pkgs = pm.listPackages(PackageType.getByValue(type));
         }
 
+        pkgs=filterOnPlatform(pkgs, filterOnPlatform);
+
         return getView("simpleListing").arg("pkgs", pkgs).arg("showCommunityInfo", true).arg("source", "list");
     }
 
     @GET
     @Produces("text/html")
     @Path(value = "updates")
-    public Object getUpdates(@QueryParam("type") String type) {
+    public Object getUpdates(@QueryParam("type") String type, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
         List<DownloadablePackage> pkgs;
@@ -73,6 +97,8 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listUpdatePackages(PackageType.getByValue(type));
         }
+
+        pkgs=filterOnPlatform(pkgs, filterOnPlatform);
 
         return getView("simpleListing").arg("pkgs", pkgs).arg("showCommunityInfo", true).arg("source", "updates");
     }
@@ -97,7 +123,7 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "remote")
-    public Object getRemote(@QueryParam("type") String type, @QueryParam("onlyRemote") Boolean onlyRemote, @QueryParam("searchString") String searchString) {
+    public Object getRemote(@QueryParam("type") String type, @QueryParam("onlyRemote") Boolean onlyRemote, @QueryParam("searchString") String searchString, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
@@ -129,6 +155,8 @@ public class PackageListingProvider extends DefaultObject {
                 }
             }
         }
+        pkgs=filterOnPlatform(pkgs, filterOnPlatform);
+
         return getView("simpleListing").arg("pkgs", pkgs).arg("showCommunityInfo", false).arg("source", "remote");
     }
 
@@ -159,7 +187,6 @@ public class PackageListingProvider extends DefaultObject {
             case PackageState.STARTED:
                 return "installed and started";
         }
-
         return "!?!";
     }
 
