@@ -54,6 +54,8 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+        deployContrib("org.nuxeo.ecm.platform.query.api",
+                "OSGI-INF/pageprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf",
                 "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.contentview.jsf;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,11 +34,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -80,6 +83,25 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         String pageSizeBinding = null;
         CoreQueryPageProviderDescriptor coreDesc = desc.getCoreQueryPageProvider();
         GenericPageProviderDescriptor genDesc = desc.getGenericPageProvider();
+        ReferencePageProviderDescriptor refDesc = desc.getReferencePageProvider();
+        String[] refQueryParams = null;
+        if (refDesc != null && refDesc.isEnabled()) {
+            try {
+                PageProviderService ppService = Framework.getService(PageProviderService.class);
+                PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
+                if (def == null) {
+                    log.error("Could not resolve page provider with name "
+                            + refDesc.getName());
+                } else if (def instanceof CoreQueryPageProviderDescriptor) {
+                    coreDesc = (CoreQueryPageProviderDescriptor) def;
+                    refQueryParams = refDesc.getQueryParameters();
+                } else if (def instanceof GenericPageProviderDescriptor) {
+                    genDesc = (GenericPageProviderDescriptor) def;
+                }
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
         WhereClauseDefinition whereClause = null;
         if (coreDesc != null && coreDesc.isEnabled()) {
             whereClause = coreDesc.getWhereClause();
@@ -95,6 +117,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (whereClause != null) {
             searchDocumentType = whereClause.getDocType();
         }
+        List<String> allQueryParams = new ArrayList<String>();
+        if (queryParams != null) {
+            allQueryParams.addAll(Arrays.asList(queryParams));
+        }
+        if (refQueryParams != null) {
+            allQueryParams.addAll(Arrays.asList(refQueryParams));
+        }
         ContentViewImpl contentView = new ContentViewImpl(name,
                 desc.getTitle(), translateTitle.booleanValue(),
                 desc.getIconPath(), desc.getSelectionListName(),
@@ -102,7 +131,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 desc.getSearchLayout(), desc.getResultLayouts(),
                 desc.getFlags(), desc.getCacheKey(), desc.getCacheSize(),
                 desc.getRefreshEventNames(), desc.getRefreshEventNames(),
-                useGlobalPageSize.booleanValue(), queryParams,
+                useGlobalPageSize.booleanValue(),
+                allQueryParams.toArray(new String[] {}),
                 desc.getSearchDocumentBinding(), searchDocumentType,
                 desc.getResultColumnsBinding(), sortInfosBinding,
                 pageSizeBinding);
@@ -129,58 +159,57 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (contentViewDesc == null) {
             return null;
         }
-        CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
-        GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
-        if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
-                && genDesc.isEnabled()) {
-            log.error(String.format(
-                    "Only one page provider should be registered on "
-                            + "content view '%s': take the core query "
-                            + "descriptor by default", name));
-
+        PageProviderService ppService = null;
+        try {
+            ppService = Framework.getService(PageProviderService.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        if (ppService == null) {
+            throw new ClientException("Page provider service is null");
         }
 
-        PageProviderDefinition pageDesc;
-        PageProvider<?> pageProvider;
-        if (coreDesc != null && coreDesc.isEnabled()) {
-            pageProvider = new CoreQueryDocumentPageProvider();
-            pageDesc = coreDesc;
-        } else if (genDesc != null && genDesc.isEnabled()) {
-            Class<PageProvider<?>> klass = genDesc.getPageProviderClass();
+        CoreQueryPageProviderDescriptor coreDesc = contentViewDesc.getCoreQueryPageProvider();
+        GenericPageProviderDescriptor genDesc = contentViewDesc.getGenericPageProvider();
+        ReferencePageProviderDescriptor refDesc = contentViewDesc.getReferencePageProvider();
+        if (coreDesc != null && coreDesc.isEnabled() && genDesc != null
+                && genDesc.isEnabled() && refDesc != null
+                && refDesc.isEnabled()) {
+            log.error(String.format(
+                    "Only one page provider should be registered on "
+                            + "content view '%s': take the reference "
+                            + "descriptor by default, then core query descriptor, "
+                            + "and then generic descriptor", name));
+        }
+
+        PageProvider<?> provider = null;
+        if (refDesc != null && refDesc.isEnabled()) {
             try {
-                pageProvider = klass.newInstance();
+                PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
+                if (def == null) {
+                    log.error("Could not resolve page provider with name "
+                            + refDesc.getName());
+                }
+                provider = ppService.getPageProvider(refDesc.getName(),
+                        sortInfos, pageSize, currentPage,
+                        resolvePageProviderProperties(refDesc.getProperties()),
+                        parameters);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
-            pageDesc = genDesc;
-        } else {
-            throw new ClientException(String.format(
-                    "No page provider defined on content view '%s'", name));
+        } else if (coreDesc != null && coreDesc.isEnabled()) {
+            provider = ppService.getPageProvider(name, coreDesc, sortInfos,
+                    pageSize, currentPage,
+                    resolvePageProviderProperties(coreDesc.getProperties()),
+                    parameters);
+        } else if (genDesc != null && genDesc.isEnabled()) {
+            provider = ppService.getPageProvider(name, genDesc, sortInfos,
+                    pageSize, currentPage,
+                    resolvePageProviderProperties(genDesc.getProperties()),
+                    parameters);
         }
 
-        // set same name than content view
-        pageProvider.setName(name);
-        // set resolved properties
-        pageProvider.setProperties(resolvePageProviderProperties(pageDesc.getProperties()));
-        // set descriptor, used to build the query
-        pageProvider.setDefinition(pageDesc);
-        pageProvider.setSortable(pageDesc.isSortable());
-        pageProvider.setParameters(parameters);
-        if (sortInfos == null) {
-            pageProvider.setSortInfos(pageDesc.getSortInfos());
-        } else {
-            pageProvider.setSortInfos(sortInfos);
-        }
-        if (pageSize == null || pageSize.longValue() < 0) {
-            pageProvider.setPageSize(pageDesc.getPageSize());
-        } else {
-            pageProvider.setPageSize(pageSize.longValue());
-        }
-        if (currentPage != null && currentPage.longValue() > 0) {
-            pageProvider.setCurrentPage(currentPage.longValue());
-        }
-
-        return pageProvider;
+        return provider;
     }
 
     public Map<String, Serializable> resolvePageProviderProperties(

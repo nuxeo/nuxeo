@@ -36,6 +36,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+        deployContrib("org.nuxeo.ecm.platform.query.api",
+                "OSGI-INF/pageprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf",
                 "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -157,14 +159,18 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(3, names.size());
+        assertEquals(6, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH", orderedNames.get(1));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF", orderedNames.get(2));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_REF", orderedNames.get(3));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
-                orderedNames.get(2));
+                orderedNames.get(4));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
+                orderedNames.get(5));
 
         // check after override too
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -172,13 +178,17 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(2, names.size());
+        assertEquals(5, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_FETCH_REF", orderedNames.get(1));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_REF", orderedNames.get(2));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
-                orderedNames.get(1));
+                orderedNames.get(3));
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
+                orderedNames.get(4));
 
     }
 
@@ -202,7 +212,10 @@ public class TestContentViewService extends NXRuntimeTestCase {
         names = service.getContentViewNames("bar");
         assertNotNull(names);
         assertEquals(1, names.size());
-        assertEquals("CURRENT_DOCUMENT_CHILDREN", names.iterator().next());
+        orderedNames.clear();
+        orderedNames.addAll(names);
+        Collections.sort(orderedNames);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
 
         names = service.getContentViewNames("not_set");
         assertNotNull(names);

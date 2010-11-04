@@ -52,9 +52,12 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
     DocumentModel searchDocument;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         super.setUp();
 
+        deployContrib("org.nuxeo.ecm.platform.query.api",
+                "OSGI-INF/pageprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf",
                 "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -122,6 +125,24 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertEquals(parentIdParam, contentView.getCacheKey());
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQuery(parentIdParam, pp);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryReference() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        assertNotNull(contentView);
+
+        String parentIdParam = session.getRootDocument().getId();
+        assertEquals(parentIdParam, contentView.getCacheKey());
+
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQuery(parentIdParam, pp);
+    }
+
+    protected void checkCoreQuery(String parentIdParam,
+            PageProvider<DocumentModel> pp) throws Exception {
+
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -202,6 +223,21 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        checkCoreQueryWithXMLParameter(parentIdParam, pp);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryWithXMLParametersReference() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        assertNotNull(contentView);
+
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        checkCoreQueryWithXMLParameter(parentIdParam, pp);
+    }
+
+    protected void checkCoreQueryWithXMLParameter(String parentIdParam,
+            PageProvider<DocumentModel> pp) throws Exception {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -273,12 +309,28 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertTrue(selections.getEntries().get(1).isSelected());
     }
 
+    @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetch() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
 
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQueryAndFetch(parentIdParam, pp);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryAndFetchReference() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
+        assertNotNull(contentView);
+
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQueryAndFetch(parentIdParam, pp);
+    }
+
+    protected void checkCoreQueryAndFetch(String parentIdParam,
+            PageProvider<Map<String, Serializable>> pp) throws Exception {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -334,6 +386,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertEquals("Document number 3", docs.get(1).get("dc:title"));
     }
 
+    @SuppressWarnings("unchecked")
     public void testCoreQueryAndFetchWithError() throws Exception {
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
@@ -341,6 +394,22 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         // do not pass params => query will not be built correctly
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProvider();
+        checkCoreQueryAndFetchWithError(pp);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryAndFetchWithErrorReference() throws Exception {
+
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH_REF");
+        assertNotNull(contentView);
+
+        // do not pass params => query will not be built correctly
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) contentView.getPageProvider();
+        checkCoreQueryAndFetchWithError(pp);
+    }
+
+    protected void checkCoreQueryAndFetchWithError(
+            PageProvider<Map<String, Serializable>> pp) throws Exception {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -349,7 +418,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNull(pp.getErrorMessage());
 
         // init results
-        List<Map<String, Serializable>> docs = pp.getCurrentPage();
+        pp.getCurrentPage();
 
         assertEquals(-1, pp.getResultsCount());
         assertNotNull(pp.getError());
@@ -361,9 +430,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                         + "at offset 51 in query: SELECT dc:title FROM "
                         + "Document WHERE ecm:parentId = ORDER BY dc:title",
                 pp.getErrorMessage());
-
     }
 
+    @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocument() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
@@ -372,6 +441,23 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         // given parent
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQueryWithSearchDocument(parentIdParam, pp);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryWithSearchDocumentReference() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF");
+        assertNotNull(contentView);
+
+        // leave default values on doc for now: will filter on all docs with
+        // given parent
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+        checkCoreQueryWithSearchDocument(parentIdParam, pp);
+    }
+
+    protected void checkCoreQueryWithSearchDocument(String parentIdParam,
+            PageProvider<DocumentModel> pp) throws Exception {
         assertNotNull(pp);
 
         assertEquals(-1, pp.getResultsCount());
@@ -403,7 +489,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertEquals("Document number 1", docs.get(1).getPropertyValue(
                 "dc:title"));
 
-        // fill search document with some properties
+        // fill search document with some properDocumentModelties
         searchDocument.setPropertyValue("dc:title", "0");
 
         docs = pp.getCurrentPage();

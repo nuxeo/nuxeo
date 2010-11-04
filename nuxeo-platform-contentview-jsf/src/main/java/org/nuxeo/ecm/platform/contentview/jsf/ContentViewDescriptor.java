@@ -24,6 +24,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 
 /**
  * Descriptor for content view registration.
@@ -56,6 +57,9 @@ public class ContentViewDescriptor {
 
     @XNode("genericPageProvider")
     GenericPageProviderDescriptor genericPageProvider;
+
+    @XNode("pageProvider")
+    ReferencePageProviderDescriptor referencePageProvider;
 
     @XNode("selectionList")
     String selectionList;
@@ -109,6 +113,10 @@ public class ContentViewDescriptor {
 
     public GenericPageProviderDescriptor getGenericPageProvider() {
         return genericPageProvider;
+    }
+
+    public ReferencePageProviderDescriptor getReferencePageProvider() {
+        return referencePageProvider;
     }
 
     public String getSelectionListName() {
