@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -53,8 +52,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Olivier Grisel
  * @author Georges Racinet
  * @author Florent Guillaume
- * @deprecated use {@link ContentView} instances in conjunction with
- *             {@link PageProvider} instead.
+ * @deprecated use ContentView instances in conjunction with
+ *             PageProvider instead.
  */
 @Deprecated
 public class QueryModel implements Serializable {

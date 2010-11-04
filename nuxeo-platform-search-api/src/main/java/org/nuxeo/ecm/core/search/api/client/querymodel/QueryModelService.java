@@ -24,15 +24,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.PageProvider;
 import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @deprecated use {@link ContentView} instances in conjunction with
- *             {@link PageProvider} instead.
+ * @deprecated use ContentView instances in conjunction with
+ *             PageProvider instead.
  */
 @Deprecated
 public class QueryModelService extends DefaultComponent {
