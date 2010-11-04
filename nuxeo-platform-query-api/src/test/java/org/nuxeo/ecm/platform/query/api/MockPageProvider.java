@@ -19,9 +19,6 @@ package org.nuxeo.ecm.platform.query.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.MockPagedListItem;
-import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
-
 /**
  * Provider simulating mock results given a page size ands a total number of
  * results
