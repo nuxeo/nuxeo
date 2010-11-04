@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<project name="nuxeo-webengine-blogs" default="deploy" basedir=".">
-	
+<project name="nuxeo-webengine-blogs" basedir=".">
+
   <!-- From the pom.xml -->
   <property name="name" value="nuxeo-webengine-blogs" />
 
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
   <property file="build.properties" />
-	
+
   <property name="mvn.opts" value="" />
   <property name="javac.debug" value="true" />
   <property name="javac.deprecation" value="false" />
@@ -15,17 +15,19 @@
   <!-- Boilerplate configuration -->
   <property name="build.dir" value="${basedir}/target" />
   <property name="template.ear.root" value="${basedir}" />
-  <property name="build.lib.dir" value="lib" />  
+  <property name="build.lib.dir" value="lib" />
 
   <!-- these properties will need to be overridden at execution time -->
   <target name="set.assembly.name" unless="assembly.name">
     <property name="assembly.tests.name" value="blogs" />
   </target>
   <target name="setproperties" depends="set.assembly.name">
-    <property name="nuxeo.dm.version" value="5.4.0-SNAPSHOT" />  
-    <property name="jboss.testing.location" value="${template.ear.root}/target/${assembly.tests.name}.ear/nuxeo-ep-${nuxeo.dm.version}" />  
-    <property name="deploy.lib.dir.tests" value="${jboss.testing.location}/server/${jboss.config}/lib" />
-    <property name="selenium.test.script.location" value="ftest/selenium" />    
+    <property name="nuxeo.dm.version" value="5.4.0-SNAPSHOT" />
+    <property name="jboss.testing.location"
+              value="${template.ear.root}/target/${assembly.tests.name}.ear/nuxeo-cap-${nuxeo.dm.version}" />
+    <property name="deploy.lib.dir.tests"
+              value="${jboss.testing.location}/server/${jboss.config}/lib" />
+    <property name="selenium.test.script.location" value="ftest/selenium" />
   </target>
 
   <target name="usage">
@@ -44,16 +46,26 @@
     <os family="windows" />
   </condition>
 
-  <target name="test-all" depends="package-tests,test-copy" description="Run tests">
+  <target name="test-all"
+          depends="package-tests,test-copy"
+          description="Run tests">
   </target>
-  <target name="test-all-with-userworkspace" depends="package-tests,copy-userworkspace-core,test-copy" description="Run tests">
+  <target name="test-all-with-userworkspace"
+          depends="package-tests,copy-userworkspace-core,test-copy"
+          description="Run tests">
   </target>
-  <target name="test-copy" depends="copy-plugins,test-jboss" description="Run tests">
+  <target name="test-copy"
+          depends="copy-plugins,test-jboss"
+          description="Run tests">
   </target>
-  <target name="test-jboss" depends="start-jboss,run-selenium,stop-jboss" description="Run tests">
+  <target name="test-jboss"
+          depends="start-jboss,run-selenium,stop-jboss"
+          description="Run tests">
   </target>
 
-  <target name="package-tests" depends="setproperties,package-tests-unix,package-tests-windows" description="Package tests" />
+  <target name="package-tests"
+          depends="setproperties,package-tests-unix,package-tests-windows"
+          description="Package tests" />
   <target name="package-tests-unix" if="osfamily-unix">
     <echo message="assembly NAME ${assembly.tests.name}" />
     <exec executable="mvn" failonerror="true">
@@ -79,31 +91,33 @@
     </exec>
   </target>
 
-  <target name="copy-plugins" depends="setproperties">    
+  <target name="copy-plugins" depends="setproperties">
 
-    <copy file="${basedir}/target/${name}-${nuxeo.dm.version}.jar" todir="${jboss.testing.location}/server/${jboss.config}/deploy/nuxeo.ear/plugins"        	  overwrite="true" flatten="true" />
+    <copy file="${basedir}/target/${name}-${nuxeo.dm.version}.jar"
+          todir="${jboss.testing.location}/server/${jboss.config}/deploy/nuxeo.ear/plugins"
+          overwrite="true"
+          flatten="true" />
     <delete dir="${jboss.testing.location}/server/${jboss.config}/data" />
     <delete dir="${jboss.testing.location}/server/${jboss.config}/log" />
     <delete dir="${jboss.testing.location}/server/${jboss.config}/tmp" />
     <delete dir="${jboss.testing.location}/server/${jboss.config}/work" />
   </target>
 
-  <target name="copy-userworkspace-core" depends="setproperties">    
-    <copy file="${m2.nuxeo.userworkspace.dir}/${nuxeo.dm.version}/nuxeo-platform-userworkspace-core-${nuxeo.dm.version}.jar" todir="${jboss.testing.location}/server/${jboss.config}/deploy/nuxeo.ear/system" overwrite="true" flatten="true" />
+  <target name="copy-userworkspace-core" depends="setproperties">
+    <copy file="${m2.nuxeo.userworkspace.dir}/${nuxeo.dm.version}/nuxeo-platform-userworkspace-core-${nuxeo.dm.version}.jar"
+          todir="${jboss.testing.location}/server/${jboss.config}/deploy/nuxeo.ear/system"
+          overwrite="true"
+          flatten="true" />
   </target>
-  
+
 
   <target name="start-jboss" depends="copy-plugins">
-    <echo message="Starting JBOSS from ${jboss.testing.location}/bin/jbossctl" /> 
-    <chmod perm="+x"
-      file="${jboss.testing.location}/bin/run.sh" />
-    <chmod perm="+x"
-      file="${jboss.testing.location}/bin/jbossctl" />
-    <exec
-      executable="${jboss.testing.location}/bin/jbossctl"
-      spawn="true">
+    <echo message="Starting JBOSS from ${jboss.testing.location}/bin/jbossctl" />
+    <chmod perm="+x" file="${jboss.testing.location}/bin/run.sh" />
+    <chmod perm="+x" file="${jboss.testing.location}/bin/jbossctl" />
+    <exec executable="${jboss.testing.location}/bin/jbossctl" spawn="true">
       <arg value="start" />
-    </exec>    
+    </exec>
     <waitfor>
       <http url="http://localhost:8080/nuxeo/login.jsp" />
     </waitfor>
@@ -113,10 +127,9 @@
     <exec executable="./${selenium.test.script.location}/run.sh" />
   </target>
   <target name="stop-jboss">
-    <echo message="Stoping JBOSS from ${jboss.testing.location}/bin/jbossctl" /> 
-    <exec
-      executable="${jboss.testing.location}/bin/jbossctl"
-      failonerror="true">
+    <echo message="Stoping JBOSS from ${jboss.testing.location}/bin/jbossctl" />
+    <exec executable="${jboss.testing.location}/bin/jbossctl"
+          failonerror="true">
       <arg value="stop" />
     </exec>
   </target>
