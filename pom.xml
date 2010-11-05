@@ -20,7 +20,6 @@
     <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.windows.version>5.4.0-SNAPSHOT</nuxeo.windows.version>
     <nuxeo.addons.version>5.4.0-SNAPSHOT</nuxeo.addons.version>
-    <noIncrementalBuild>true</noIncrementalBuild>
   </properties>
 
   <modules>
