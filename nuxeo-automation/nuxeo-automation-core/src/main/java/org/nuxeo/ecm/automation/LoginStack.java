@@ -154,6 +154,7 @@ public class LoginStack {
         public final void dispose() throws OperationException {
             try {
                 if (session != null) {
+                    session.save();
                     Repository.close(session);
                 }
             } catch (Exception e) {
