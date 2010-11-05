@@ -205,7 +205,7 @@ public final class FaceletHandlerHelper {
     public boolean shouldCreateReferenceAttribute(String key, Serializable value) {
         if ((value instanceof String)
                 && (ComponentTagUtils.isValueReference((String) value)
-                        || "converter".equals(key) || "validator".equals(key))) {
+                        || "converter".equals(key) || "validator".equals(key) || "size".equals(key))) {
             return false;
         }
         return true;
