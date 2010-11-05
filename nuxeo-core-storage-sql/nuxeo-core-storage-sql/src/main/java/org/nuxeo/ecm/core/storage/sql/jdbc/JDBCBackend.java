@@ -149,8 +149,12 @@ public class JDBCBackend implements RepositoryBackend {
             Credentials credentials, boolean create) throws StorageException {
         Mapper mapper = createMapper(model, pathResolver);
         if (create) {
-            // first connection, initialize the database
-            mapper.createDatabase();
+            if (repository.getRepositoryDescriptor().noDDL) {
+                log.info("Skipping database creation");
+            } else {
+                // first connection, initialize the database
+                mapper.createDatabase();
+            }
             // create cluster mapper if needed
             RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
             if (repositoryDescriptor.clusteringEnabled) {

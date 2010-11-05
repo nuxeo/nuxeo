@@ -120,6 +120,9 @@ public class RepositoryDescriptor {
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
 
+    @XNode("noDDL")
+    public boolean noDDL = false;
+
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 
