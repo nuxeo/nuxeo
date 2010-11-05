@@ -101,14 +101,17 @@ H2 {
   }
 
 .maintenanceModeMessage {
-  background:#fff;
-  opacity:0.8;
-  filter : alpha(opacity=80);
-  border: 1px solid #4E9AE1;
-  padding:20px 75px 5px 70px;
-  width:450px;
   color:red;
+  font-size:12px;
  }
+ 
+.warnMessage, .infoMessage {
+  margin:0 0 10px;
+}
+
+.infoMessage {
+  color:#b31500;
+}
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
@@ -271,19 +274,19 @@ nxthemes css is not used in login.jsp */
           <!-- ;jsessionid=<%=request.getSession().getId()%> -->
           <!-- ImageReady Slices (login_cutted.psd) -->
 
-           <% if (maintenanceMode) { %>
+          <div class="login">
+            <% if (maintenanceMode) { %>
           <div class="maintenanceModeMessage">
             <div class="warnMessage">
               <fmt:message bundle="${messages}" key="label.maintenancemode.active" /><br/>
               <fmt:message bundle="${messages}" key="label.maintenancemode.adminLoginOnly" />
-            </div><br/>
+            </div>
             <div class="infoMessage">
               <fmt:message bundle="${messages}" key="label.maintenancemode.message" /> : <br/>
               <%=maintenanceMessage%>
-            </div><br/>
-            </div> <br/>
+            </div>
+            </div>
           <%} %>
-          <div class="login">
             <table>
              <tr>
                 <td class="login_label">
@@ -382,8 +385,7 @@ nxthemes css is not used in login.jsp */
                 </td>
               </tr>
               <tr>
-                <td></td>
-                <td>
+                <td colspan="2">
                   <c:if test="${param.loginFailed}">
                     <div class="errorMessage">
                       <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
