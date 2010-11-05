@@ -95,6 +95,7 @@
       <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
       <artifact:file groupId="org.apache.derby" artifactId="derby" />
+      <artifact:resolveFile key="org.jboss.services:logging-monitor:5.1.0.GA" />
     </copy>
     <copy tofile="${jboss}/common/lib/hibernate-core.jar">
       <artifact:resolveFile key="org.hibernate:hibernate-core:3.3.2.GA" />
