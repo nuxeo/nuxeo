@@ -358,7 +358,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/listing/listing_author_widget_template.xhtml
+        /widgets/author_widget_template.xhtml
       </property>
 
     </widgetType>
