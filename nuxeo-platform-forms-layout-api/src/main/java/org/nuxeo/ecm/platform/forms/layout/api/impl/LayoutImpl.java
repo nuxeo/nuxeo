@@ -154,7 +154,7 @@ public class LayoutImpl implements Layout {
     public String toString() {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(LayoutImpl.class.getSimpleName());
+        buf.append("LayoutImpl");
         buf.append(" {");
         buf.append(" name=");
         buf.append(name);

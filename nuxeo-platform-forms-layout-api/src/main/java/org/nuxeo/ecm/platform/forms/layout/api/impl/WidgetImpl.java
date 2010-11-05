@@ -111,7 +111,7 @@ public class WidgetImpl implements Widget {
     public String getLabel() {
         if (label == null) {
             // compute default label name
-            label = String.format("label.widget.%s.%s", layoutName, name);
+            label = "label.widget." + layoutName + "." + name;
         }
         return label;
     }
@@ -173,7 +173,7 @@ public class WidgetImpl implements Widget {
     public String toString() {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(WidgetImpl.class.getSimpleName());
+        buf.append("WidgetImpl");
         buf.append(" {");
         buf.append(" name=");
         buf.append(name);

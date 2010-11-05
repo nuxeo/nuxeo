@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -36,8 +34,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
  * @since 5.4
  */
 public class WidgetDefinitionImpl implements WidgetDefinition {
-
-    private static final Log log = LogFactory.getLog(WidgetDefinitionImpl.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -236,10 +232,6 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                 res = ((Boolean) value).toString();
             } else if (value instanceof String) {
                 res = (String) value;
-            } else {
-                log.error(String.format(
-                        "Invalid property \"%s\" on widget %s: %s",
-                        REQUIRED_PROPERTY_NAME, name, value));
             }
         }
         return res;

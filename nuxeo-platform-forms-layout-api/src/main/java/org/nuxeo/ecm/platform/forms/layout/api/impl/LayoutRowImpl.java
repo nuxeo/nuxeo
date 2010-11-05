@@ -106,7 +106,7 @@ public class LayoutRowImpl implements LayoutRow {
     public String toString() {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(LayoutRowImpl.class.getSimpleName());
+        buf.append("LayoutRowImpl");
         buf.append(" {");
         buf.append(" name=");
         buf.append(name);
