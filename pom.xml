@@ -16,7 +16,7 @@
 
   <properties>
     <nuxeo.dm.version>5.4.0-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.chemistry.version>5.4.0-SNAPSHOT</nuxeo.chemistry.version>
+    <nuxeo.opencmis.version>5.4.0-SNAPSHOT</nuxeo.opencmis.version>
     <nuxeo.distribution.version>5.4.0-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.windows.version>5.4.0-SNAPSHOT</nuxeo.windows.version>
     <nuxeo.addons.version>5.4.0-SNAPSHOT</nuxeo.addons.version>
@@ -137,13 +137,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-chemistry-impl</artifactId>
-        <version>${nuxeo.chemistry.version}</version>
+        <artifactId>nuxeo-opencmis-impl</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-chemistry-bindings</artifactId>
-        <version>${nuxeo.chemistry.version}</version>
+        <artifactId>nuxeo-opencmis-bindings</artifactId>
+        <version>${nuxeo.opencmis.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
