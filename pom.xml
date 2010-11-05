@@ -2228,9 +2228,17 @@
           <linkJavadoc>true</linkJavadoc>
         </configuration>
       </plugin>
-      <!-- <plugin> <groupId>org.jvnet.maven.incrementalbuild</groupId> <artifactId>incremental-build-plugin</artifactId> 
-        <executions> <execution> <goals> <goal>incremental-build</goal> </goals> </execution> 
-        </executions> </plugin> -->
+      <plugin>
+        <groupId>org.jvnet.maven.incrementalbuild</groupId>
+        <artifactId>incremental-build-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>incremental-build</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -2547,7 +2555,7 @@
         <plugin>
           <groupId>org.jvnet.maven.incrementalbuild</groupId>
           <artifactId>incremental-build-plugin</artifactId>
-          <version>1.2</version>
+          <version>1.3-SNAPSHOT</version>
         </plugin>
       </plugins>
     </pluginManagement>
