@@ -160,12 +160,16 @@ PID="$PID_DIR/nuxeo.pid"
 if [ "$cygwin" = "false" ]; then
   MAX_FD_LIMIT=`ulimit -H -n`
   if [ $? -eq 0 ]; then
+    if [ "$darwin" = "true" ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
+      MAX_FD_LIMIT=`sysctl -n kern.maxfilesperproc`
+      ulimit -n $MAX_FD_LIMIT
+    fi
     if [ $MAX_FD_LIMIT -lt 2048 ]; then
       warn "Maximum file descriptor limit is too low: $MAX_FD_LIMIT"
       warn "See: $MAX_FD_LIMIT_HELP_URL"
     fi
   else
-    warn "Could not get system maximum file descriptor limit"
+    warn "Could not get system maximum file descriptor limit (got $MAX_FD_LIMIT)"
   fi
 fi
 
