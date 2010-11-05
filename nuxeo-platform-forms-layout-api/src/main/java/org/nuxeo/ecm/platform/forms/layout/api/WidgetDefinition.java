@@ -60,6 +60,8 @@ public interface WidgetDefinition extends Serializable {
      */
     String getMode(String layoutMode);
 
+    Map<String, String> getModes();
+
     /**
      * Returns an EL expression evaluating to true if the widget is required in
      * given mode.

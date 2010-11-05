@@ -186,6 +186,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
+    public Map<String, String> getModes() {
+        return modes;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
