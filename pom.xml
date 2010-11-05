@@ -2555,7 +2555,7 @@
         <plugin>
           <groupId>org.jvnet.maven.incrementalbuild</groupId>
           <artifactId>incremental-build-plugin</artifactId>
-          <version>1.3-SNAPSHOT</version>
+          <version>1.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
