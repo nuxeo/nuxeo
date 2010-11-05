@@ -329,7 +329,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         if (ordering != null) {
             return ordering;
         }
-        return getStringValue("ordering", null);
+        return getStringValue("ordering", "label");
     }
 
     public void setOrdering(String ordering) {
