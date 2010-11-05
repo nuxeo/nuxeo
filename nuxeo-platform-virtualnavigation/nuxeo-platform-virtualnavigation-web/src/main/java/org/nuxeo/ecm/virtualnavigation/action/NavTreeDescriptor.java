@@ -40,6 +40,9 @@ public class NavTreeDescriptor implements Serializable {
     @XNode("@directoryTreeBased")
     private boolean directoryTreeBased = false;
 
+    @XNode("@order")
+    private Integer order = 100;
+
     public boolean isDirectoryTreeBased() {
         return directoryTreeBased;
     }
@@ -84,6 +87,10 @@ public class NavTreeDescriptor implements Serializable {
 
     public void setTreeLabel(String treeLabel) {
         this.treeLabel = treeLabel;
+    }
+
+    public Integer getOrder() {
+        return order;
     }
 
 }

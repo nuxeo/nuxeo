@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.virtualnavigation.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
@@ -68,6 +70,7 @@ public class NavTreeService extends DefaultComponent {
             throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
             descriptors.add((NavTreeDescriptor) contribution);
+            Collections.sort(descriptors, NavTreeDescriptorOrderComparator.INSTANCE);
         }
     }
 
@@ -75,6 +78,19 @@ public class NavTreeService extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         directoryTreesFetched = false;
         descriptors = new ArrayList<NavTreeDescriptor>();
+    }
+
+    /**
+     * Comparator of {@link NavTreeDescriptor}s according to their order..
+     */
+    public static class NavTreeDescriptorOrderComparator implements Comparator<NavTreeDescriptor> {
+
+        public static final NavTreeDescriptorOrderComparator INSTANCE = new NavTreeDescriptorOrderComparator();
+
+        @Override
+        public int compare(NavTreeDescriptor descriptor1, NavTreeDescriptor descriptor2) {
+            return descriptor1.getOrder() - descriptor2.getOrder();
+        }
     }
 
 }
