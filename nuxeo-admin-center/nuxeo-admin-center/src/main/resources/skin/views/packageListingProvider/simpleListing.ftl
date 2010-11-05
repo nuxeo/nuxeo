@@ -32,6 +32,21 @@
       $('#pkgDetailContent' + detailIdx).html(data);
     });
  }
+
+ function showRealLogo(pkgid){
+  var defaultImage = $(".pkgLogo").filter(function() { return this.id==('placeholder-' + pkgid);})[0]
+  var realImage = $(".pkgLogo").filter(function() { return this.id==('logo-' + pkgid);})[0]
+  $(defaultImage).css("display","none");
+  $(realImage).css("display","block");
+ }
+
+ function fetchComments(pkgId) {
+   var targetUrl="${This.getConnectBaseUrl()}marketplace/package/" + pkgId + "/comments";
+   $.get(targetUrl, function(data) {
+     var commentArea = $(".commentArea").filter(function() { return this.id==('commentArea-' + pkgId);})[0]
+     $(commentArea).html(data);
+    });
+ }
 </script>
 
 </@block>

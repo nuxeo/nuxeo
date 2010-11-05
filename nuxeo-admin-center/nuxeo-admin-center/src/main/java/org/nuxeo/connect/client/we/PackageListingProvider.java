@@ -20,7 +20,6 @@
 package org.nuxeo.connect.client.we;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -29,6 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
@@ -48,6 +48,9 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
 
+    public String getConnectBaseUrl() {
+        return ConnectUrlConfig.getBaseUrl();
+    }
 
     protected List<DownloadablePackage> filterOnPlatform(List<DownloadablePackage> pkgs, Boolean filterOnPlatform) {
         if (filterOnPlatform==null || !filterOnPlatform) {
