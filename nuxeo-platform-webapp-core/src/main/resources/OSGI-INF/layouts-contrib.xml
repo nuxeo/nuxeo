@@ -141,7 +141,7 @@
          <property name="format">#{nxu:basicDateFormater()}</property>
        </properties>
      </widget>
-     <widget name="author" type="listing_author">
+     <widget name="author" type="template">
        <labels>
          <label mode="any">label.dublincore.creator</label>
        </labels>
@@ -155,6 +155,11 @@
        <widgetModes>
          <mode value="any">view</mode>
        </widgetModes>
+       <properties mode="any">
+         <property name="template">
+          /widgets/author_widget_template.xhtml
+        </property>
+       </properties>
      </widget>
      <widget name="contributors" type="template">
        <labels>
