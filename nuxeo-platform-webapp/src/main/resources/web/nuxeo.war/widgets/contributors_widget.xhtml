@@ -7,8 +7,13 @@
   id="#{widget.id}">
 
   <div>  
-    <c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
-    <h:outputText value="#{nxu:joinArrayWithFinalDelimiter(field, ', ', andLabel)}"/>
+   <c:set var="andLabel" value=" #{messages['label.and']} " scope="page"/>
+     <c:forEach var="username" items="#{field}" varStatus="status">
+     <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
+     <h:outputText value="#{nxu:userFullName(username)}" 
+      title="#{username}" onmouseover="tooltip.show(username, 500);"
+      onmouseout="tooltip.hide();"/>
+   </c:forEach>
   </div>
 
 </f:subview>

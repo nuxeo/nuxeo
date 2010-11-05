@@ -141,7 +141,7 @@
          <property name="format">#{nxu:basicDateFormater()}</property>
        </properties>
      </widget>
-     <widget name="author" type="text">
+     <widget name="author" type="listing_author">
        <labels>
          <label mode="any">label.dublincore.creator</label>
        </labels>
