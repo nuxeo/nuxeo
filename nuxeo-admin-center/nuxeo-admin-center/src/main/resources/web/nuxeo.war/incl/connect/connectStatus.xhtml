@@ -2,10 +2,16 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:c="http://java.sun.com/jstl/core">
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
 
  <a4j:outputPanel id="connectStatusPanel">
-  <a4j:status startText="Communicating with Nuxeo Connect Server" stopText="" />
+  <a4j:status>
+   <f:facet name="start">
+         <h:outputText value="#{messages['label.nuxeo.connect.communicating.with.server']}"/>
+         <h:graphicImage value="/img/big_loading.gif"/>
+   </f:facet>
+  </a4j:status>
 
   <h:panelGroup rendered="#{!registredConnectInstance}">
 
