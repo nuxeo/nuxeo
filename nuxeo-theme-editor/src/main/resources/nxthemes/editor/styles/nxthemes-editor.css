@@ -1613,11 +1613,11 @@ table.fragmentFactory td {
 
 .nxthemesUndoButtons a {
   text-decoration: none;
-  color: #000;
+  color: #000 !important;
 }
 
 .nxthemesUndoButtons a:hover {
-  color: #666;
+  color: #666 !important;
 }
 
 
@@ -1779,7 +1779,7 @@ table.fragmentFactory td {
 
 .nxthemesCssInspectorActions a {
   font: 11px Tahoma, Arial;
-  color: #666;
+  color: #666 !important;
   padding-left: 12px;
 }
 
