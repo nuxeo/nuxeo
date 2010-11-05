@@ -896,7 +896,6 @@
         <padding>7px 7px 7px 24px</padding>
       </selector>
       <selector path=".vocabularyEntryContent .currentDocumentInformation">
-        <background-color preset="blue.sky (Galaxy backgrounds)"/>
       </selector>
       <selector path=".rightsAddLabel">
         <font-weight>bold</font-weight>
@@ -951,7 +950,7 @@
         <margin-left>5px</margin-left>
       </selector>
       <selector path=".relationCreateLabelColumn">
-        <width>80px</width>
+        <width>100px</width>
       </selector>
       <selector path=".commentAuthor">
         <color preset="comments.details (Galaxy colors)" />
@@ -1060,6 +1059,7 @@
       </selector>
       <selector path=".required">
         <background preset="required (Galaxy backgrounds)"/>
+        <padding>0 10px 0 0</padding>
       </selector>
       <selector path=".rightsAddManager .labelColumn">
         <width>80px</width>
