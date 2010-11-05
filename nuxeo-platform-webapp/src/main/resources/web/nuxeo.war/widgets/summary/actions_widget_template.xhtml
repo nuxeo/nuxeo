@@ -14,7 +14,9 @@
         action="#{lockActions.unlockCurrentDocument}"/>
     </c:if>
     <div class="lockDetail">
-      <h:outputText value="#{messages['label.summary.by']} #{currentDocumentLockDetails['document.locker']}, "/>
+      <span onmouseover="tooltip.show('#{currentDocumentLockDetails['document.locker']}', 150);" onmouseout="tooltip.hide();">
+        <h:outputText value="#{messages['label.summary.by']} #{nxu:userFullName(currentDocumentLockDetails['document.locker'])}, "/>
+      </span>
       <h:outputText value="#{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.time']}"/>
     </div>
   </c:if>
