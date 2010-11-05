@@ -208,7 +208,7 @@ public interface CoreSession {
     /**
      * Checks if a given principal has the given privilege on the referred
      * document.
-     * 
+     *
      * @param principal
      * @param docRef
      * @param permission
@@ -949,6 +949,17 @@ public interface CoreSession {
      * @throws ClientException
      */
     DocumentModel getLastDocumentVersion(DocumentRef docRef)
+            throws ClientException;
+
+    /**
+     * Gets the document reference corresponding to the last version for the
+     * given document.
+     *
+     * @param docRef the reference to the document
+     * @return the document reference corresponding to the last version
+     * @throws ClientException
+     */
+    DocumentRef getLastDocumentVersionRef(DocumentRef docRef)
             throws ClientException;
 
     /**

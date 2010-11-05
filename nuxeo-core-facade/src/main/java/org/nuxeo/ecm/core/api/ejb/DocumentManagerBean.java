@@ -76,7 +76,7 @@ import org.nuxeo.ecm.core.model.Session;
 @Local(DocumentManagerLocal.class)
 @Remote(CoreSession.class)
 @SecurityDomain("nuxeo-ecm")
-@Interceptors({ReentrantCallsShieldInterceptor.class})
+@Interceptors({ ReentrantCallsShieldInterceptor.class })
 public class DocumentManagerBean extends AbstractSession implements
         DocumentManagerLocal, SessionSynchronization {
 
@@ -99,7 +99,7 @@ public class DocumentManagerBean extends AbstractSession implements
     @Resource
     protected EJBContext context;
 
-    protected Principal callerPrincipal=null;
+    protected Principal callerPrincipal = null;
 
     @Override
     @Remove
@@ -148,7 +148,7 @@ public class DocumentManagerBean extends AbstractSession implements
      * @return
      */
     protected Principal getCallerPrincipal() {
-        if (callerPrincipal==null) {
+        if (callerPrincipal == null) {
             callerPrincipal = context.getCallerPrincipal();
         }
         if (!(callerPrincipal instanceof NuxeoPrincipal)) {
@@ -573,6 +573,16 @@ public class DocumentManagerBean extends AbstractSession implements
             throws ClientException {
         try {
             return super.getLastDocumentVersion(docRef);
+        } catch (Throwable t) {
+            throw new RollbackClientException(t);
+        }
+    }
+
+    @Override
+    public DocumentRef getLastDocumentVersionRef(DocumentRef docRef)
+            throws ClientException {
+        try {
+            return super.getLastDocumentVersionRef(docRef);
         } catch (Throwable t) {
             throw new RollbackClientException(t);
         }

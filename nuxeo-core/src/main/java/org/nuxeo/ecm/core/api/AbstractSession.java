@@ -456,7 +456,7 @@ public abstract class AbstractSession implements CoreSession,
                 DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY, null,
                 false, false);
     }
-    
+
     @Override
     public boolean hasPermission(Principal principal, DocumentRef docRef, String permission)
     throws ClientException {
@@ -474,7 +474,7 @@ public abstract class AbstractSession implements CoreSession,
             String permission) throws DocumentException {
         return getSecurityService().checkPermission(doc, principal, permission);
     }
-    
+
     @Override
     public boolean hasPermission(DocumentRef docRef, String permission)
             throws ClientException {
@@ -487,7 +487,7 @@ public abstract class AbstractSession implements CoreSession,
                     + docRef.toString(), e);
         }
     }
-    
+
     protected final boolean hasPermission(Document doc, String permission)
             throws DocumentException {
         // TODO: optimize this - usually ACP is already available when calling
@@ -1964,6 +1964,19 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ_VERSION);
             Document version = doc.getLastVersion();
             return version == null ? null : readModel(version, null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get versions for " + docRef, e);
+        }
+    }
+
+    @Override
+    public DocumentRef getLastDocumentVersionRef(DocumentRef docRef)
+            throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, READ_VERSION);
+            Document version = doc.getLastVersion();
+            return version == null ? null : new IdRef(version.getUUID());
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
