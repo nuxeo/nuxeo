@@ -619,6 +619,10 @@
       <fields>
         <field>data.dc.nature</field>
       </fields>
+      <properties mode="any">
+        <property name="directoryName">nature</property>
+        <property name="localize">true</property>
+      </properties>
     </widget>
 
     <widget name="listing_subjects" type="template">
