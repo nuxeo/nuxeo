@@ -33,13 +33,13 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Context objects are:
  * <ul>
- * <li> The Operation Chain Input - optional. It will be used as the input for
+ * <li>The Operation Chain Input - optional. It will be used as the input for
  * the first operation in the chain. If input is null then only VOID methods in
  * the first operation will be matched.
- * <li> A Core Session - which is optional and should be provided by the
- * caller. (either at creation time as a constructor argument, either using the
- * {@link #setCoreSession(CoreSession)} method. When running the operation
- * chain in asynchronous mode another session will be created by preserving the
+ * <li>A Core Session - which is optional and should be provided by the caller.
+ * (either at creation time as a constructor argument, either using the
+ * {@link #setCoreSession(CoreSession)} method. When running the operation chain
+ * in asynchronous mode another session will be created by preserving the
  * current session credentials.
  * </ul>
  * <p>
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  * The context parameters map can be filled with contextual information by the
  * caller. Each operation will be able to access the contextual data at runtime
  * and to update it if needed.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationContext extends HashMap<String, Object> {
@@ -57,8 +57,6 @@ public class OperationContext extends HashMap<String, Object> {
     private static final Log log = LogFactory.getLog(OperationContext.class);
 
     private static final long serialVersionUID = 2944230823597903715L;
-
-    protected transient CoreSession session;
 
     /**
      * Whether to save the session at the end of the chain execution. The
@@ -75,6 +73,12 @@ public class OperationContext extends HashMap<String, Object> {
     protected final transient Map<String, List<Object>> stacks;
 
     /**
+     * A logins stack manage multiple logins and sessions in a single chain
+     * execution
+     */
+    protected transient LoginStack loginStack;
+
+    /**
      * The execution input that will be updated after an operation run with the
      * operation output
      */
@@ -86,12 +90,12 @@ public class OperationContext extends HashMap<String, Object> {
 
     public OperationContext(CoreSession session) {
         stacks = new HashMap<String, List<Object>>();
-        this.session = session;
         cleanupHandlers = new ArrayList<CleanupHandler>();
+        loginStack = new LoginStack(session);
     }
 
     public void setCoreSession(CoreSession session) {
-        this.session = session;
+        this.loginStack.setSession(session);
     }
 
     public void setCommit(boolean commit) {
@@ -103,10 +107,15 @@ public class OperationContext extends HashMap<String, Object> {
     }
 
     public CoreSession getCoreSession() {
-        return session;
+        return loginStack.getSession();
+    }
+
+    public LoginStack getLoginStack() {
+        return loginStack;
     }
 
     public Principal getPrincipal() {
+        CoreSession session = loginStack.getSession();
         return session != null ? session.getPrincipal() : null;
     }
 
@@ -155,7 +164,7 @@ public class OperationContext extends HashMap<String, Object> {
         if (type.isAssignableFrom(getClass())) {
             return type.cast(this);
         } else if (type.isAssignableFrom(CoreSession.class)) {
-            return type.cast(session);
+            return type.cast(getCoreSession());
         } else if (type.isAssignableFrom(Principal.class)) {
             return type.cast(getPrincipal());
         } else { // try nuxeo services
@@ -176,7 +185,8 @@ public class OperationContext extends HashMap<String, Object> {
         cleanupHandlers.remove(handler);
     }
 
-    public void dispose() {
+    public void dispose() throws OperationException {
+        loginStack.clear();
         for (CleanupHandler handler : cleanupHandlers) {
             try {
                 handler.cleanup();

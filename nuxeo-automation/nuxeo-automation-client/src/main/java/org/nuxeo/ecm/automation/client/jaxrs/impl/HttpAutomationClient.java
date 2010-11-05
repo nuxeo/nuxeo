@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.nuxeo.ecm.automation.client.jaxrs.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
@@ -35,6 +37,15 @@ public class HttpAutomationClient extends AsyncAutomationClient {
         // http.setCookieSpecs(null);
         // http.setCookieStore(null);
         registerAdapter(new DocumentServiceFactory());
+    }
+
+    public void setProxy(String host, int port) {
+        // httpclient.getCredentialsProvider().setCredentials(
+        // new AuthScope(PROXY, PROXY_PORT),
+        // new UsernamePasswordCredentials("username", "password"));
+
+        http.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
+                new HttpHost(host, port));
     }
 
     public HttpClient http() {

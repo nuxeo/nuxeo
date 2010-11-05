@@ -17,14 +17,11 @@
 package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.automation.CleanupHandler;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -49,7 +46,6 @@ public class LoginAs {
     @Param(name = "name", required = false)
     protected String name;
 
-    @SuppressWarnings("unchecked")
     @OperationMethod
     public void run() throws Exception {
         LoginContext lc = null;
@@ -64,25 +60,8 @@ public class LoginAs {
             lc = loginAs(name);
         }
         if (lc != null) {
-            List<LoginContext> stack = (List<LoginContext>) ctx.get(ID);
-            if (stack == null) {
-                stack = new ArrayList<LoginContext>();
-            }
-            stack.add(lc);
+            ctx.getLoginStack().push(lc);
         }
-        // be sure we logout at the end of the chain execution - in case the
-        // user forgot to put a logout operation
-        ctx.addCleanupHandler(new CleanupHandler() {
-            @Override
-            public void cleanup() throws Exception {
-                List<LoginContext> stack = (List<LoginContext>) ctx.remove(ID);
-                if (stack != null) {
-                    for (int i = stack.size() - 1; i > -1; i--) {
-                        stack.get(i).logout();
-                    }
-                }
-            }
-        });
     }
 
     public static LoginContext loginAs(String username) throws LoginException {

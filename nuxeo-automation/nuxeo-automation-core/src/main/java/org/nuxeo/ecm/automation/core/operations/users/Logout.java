@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.users;
 
-import java.util.List;
-
-import javax.security.auth.login.LoginContext;
-
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -37,13 +33,9 @@ public class Logout {
     @Context
     protected OperationContext ctx;
 
-    @SuppressWarnings("unchecked")
     @OperationMethod
     public void run() throws Exception {
-        List<LoginContext> stack = (List<LoginContext>) ctx.get(LoginAs.ID);
-        if (stack != null && !stack.isEmpty()) {
-            stack.remove(stack.size() - 1).logout();
-        }
+        ctx.getLoginStack().pop();
     }
 
 }

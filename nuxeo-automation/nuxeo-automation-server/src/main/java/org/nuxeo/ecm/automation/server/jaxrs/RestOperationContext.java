@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.webengine.session.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.webengine.session.UserSession;
  * <p>
  * This way temporary resources like files used by operations are removed after
  * the response is sent to the client.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class RestOperationContext extends OperationContext {
@@ -43,12 +44,16 @@ public class RestOperationContext extends OperationContext {
         UserSession.addRequestCleanupHandler(request,
                 new RequestCleanupHandler() {
                     public void cleanup(HttpServletRequest req) {
-                        deferredDispose();
+                        try {
+                            deferredDispose();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
     }
 
-    protected void deferredDispose() {
+    protected void deferredDispose() throws OperationException {
         super.dispose();
     }
 
