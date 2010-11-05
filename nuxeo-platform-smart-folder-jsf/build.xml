@@ -9,7 +9,7 @@
   <target name="web" description="Deploy Web components to the live ECM"
     depends="setproperties">
     <copy todir="${jboss.nuxeo.ear}/nuxeo.war">
-      <fileset dir="${basedir}/src/main/resources/nuxeo.war" />
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war" />
     </copy>
   </target>
 
