@@ -1,2 +1,5 @@
-<h:outputText value="#{nxu:userFullName(field)}"
-   xmlns:h="http://java.sun.com/jsf/html" />
+<div xmlns:h="http://java.sun.com/jsf/html">  
+   <span onmouseover="tooltip.show('#{field}', 150);" onmouseout="tooltip.hide();">
+   <h:outputText value="#{nxu:userFullName(field)}"   />
+ </span>
+</div>      
