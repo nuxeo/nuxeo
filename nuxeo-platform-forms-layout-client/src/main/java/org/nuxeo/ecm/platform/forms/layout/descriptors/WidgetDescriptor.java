@@ -95,6 +95,11 @@ public class WidgetDescriptor implements WidgetDefinition {
         return mode;
     }
 
+    @Override
+    public Map<String, String> getModes() {
+        return modes;
+    }
+
     public String getRequired(String layoutMode, String mode) {
         String res = "false";
         Map<String, Serializable> props = getProperties(layoutMode, mode);
