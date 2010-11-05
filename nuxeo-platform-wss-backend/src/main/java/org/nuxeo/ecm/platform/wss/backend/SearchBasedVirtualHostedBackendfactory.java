@@ -25,7 +25,7 @@ public class SearchBasedVirtualHostedBackendfactory extends
 
     @Override
     protected WSSBackend createBackend(WSSRequest request) {
-        String virtualRoot = "nuxeo";
+        String virtualRoot = computeVirtualRoot(request);
         NuxeoWSSBackend realBackend = new SearchBasedVirtualRootBackend(virtualRoot, null);
         return new VirtualRootedBackend(virtualRoot,realBackend);
     }

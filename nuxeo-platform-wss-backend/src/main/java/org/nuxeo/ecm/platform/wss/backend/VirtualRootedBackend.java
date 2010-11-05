@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.AbstractWSSBackend;
@@ -41,7 +42,7 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
         this.root = root;
         this.realBackend = realBackend;
         rootItem = new DummyWSSListItem("", "WSS Root", null);
-        nuxeoRoot = new DummyWSSListItem(root, "Nuxeo Server", null);
+        nuxeoRoot = new DummyWSSListItem(root, Framework.getProperty("org.nuxeo.ecm.instance.name","Nuxeo Server"), null);
         nuxeoRoot.markAsSite();
     }
 
@@ -63,7 +64,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
         } else if (root.equals(location) || ("/" + root).equals(location) || ("/" + root + "/").equals(location)) {
             return nuxeoRoot;
         }
-
         return realBackend.getItem(getRealBackEndPath(location));
     }
 
@@ -73,7 +73,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
             children.add(nuxeoRoot);
             return children;
         }
-
         return realBackend.listItems(getRealBackEndPath(location));
     }
 
@@ -107,7 +106,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
         } else if (root.equals(location) || ("/" + root).equals(location)) {
             return true;
         }
-
         return realBackend.exists(getRealBackEndPath(location));
     }
 
@@ -118,7 +116,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
         } else if (root.equals(parentPath) || ("/" + root).equals(parentPath)) {
             throw new WSSException("Nuxeo root item can not be removed");
         }
-
         return realBackend.createFolder(getRealBackEndPath(parentPath), name);
     }
 
@@ -135,13 +132,11 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
 
     public void saveChanges(boolean release) throws WSSException {
         realBackend.saveChanges(release);
-
     }
 
     public void begin() throws WSSException {
         realBackend.begin();
     }
-
 
     public void saveChanges() throws WSSException {
         realBackend.saveChanges();
@@ -149,7 +144,6 @@ public class VirtualRootedBackend extends AbstractWSSBackend implements
 
     public void discardChanges(boolean release) throws WSSException {
         realBackend.discardChanges(release);
-
     }
 
     public DWSMetaData getMetaData(String location, WSSRequest request)
