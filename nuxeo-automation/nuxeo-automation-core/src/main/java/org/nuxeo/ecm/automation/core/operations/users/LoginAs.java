@@ -70,6 +70,8 @@ public class LoginAs {
             }
             stack.add(lc);
         }
+        // be sure we logout at the end of the chain execution - in case the
+        // user forgot to put a logout operation
         ctx.addCleanupHandler(new CleanupHandler() {
             @Override
             public void cleanup() throws Exception {
