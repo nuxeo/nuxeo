@@ -103,7 +103,6 @@ public class SelectManyListboxRenderer extends Renderer {
         String displayValueOnlyStyle = comp.getDisplayValueOnlyStyle();
         String displayValueOnlyStyleClass = comp.getDisplayValueOnlyStyleClass();
         String displayValueOnlySeparator = comp.getDisplayValueOnlySeparator();
-        Boolean localize = comp.getLocalize();
         Boolean displayIdAndLabel = comp.getDisplayIdAndLabel();
         String display = comp.getDisplay();
 
@@ -132,9 +131,6 @@ public class SelectManyListboxRenderer extends Renderer {
                 }
                 String optionId = (String) item.getValue();
                 String optionLabel = item.getLabel();
-                if (localize) {
-                    optionLabel = translate(context, optionLabel);
-                }
                 String displayValue = DirectoryHelper.getOptionValue(optionId,
                         optionLabel, display, displayIdAndLabel, " ");
 
@@ -160,7 +156,6 @@ public class SelectManyListboxRenderer extends Renderer {
         // the sort of the item is made in the component
         // String sortCriteria = comp.getStringProperty("ordering", "label");
         String id = comp.getClientId(context);
-        Boolean localize = comp.getLocalize();
         Boolean displayIdAndLabel = comp.getDisplayIdAndLabel();
         String display = comp.getDisplay();
         // default value
@@ -206,9 +201,6 @@ public class SelectManyListboxRenderer extends Renderer {
         for (SelectItem item : options.values()) {
             String optionId = (String) item.getValue();
             String optionLabel = item.getLabel();
-            if (localize) {
-                optionLabel = translate(context, optionLabel);
-            }
             SelectItem newItem = new SelectItem(optionId, optionLabel);
             newOptions.add(newItem);
         }
