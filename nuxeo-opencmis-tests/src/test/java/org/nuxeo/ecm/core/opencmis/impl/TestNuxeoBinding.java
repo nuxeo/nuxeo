@@ -460,7 +460,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         props.add(factory.createPropertyDateTimeData("my:date", expectedDate));
         Properties properties = factory.createPropertiesData(props);
         String id = objService.createDocument(repositoryId, properties,
-                rootFolderId, null, null, null, null, null, null);
+                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
+                null, null);
         assertNotNull(id);
         return id;
     }
@@ -1464,6 +1465,64 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 id, null, major, null, null);
         assertEquals(ver2.getId(),
                 p.getProperties().get(PropertyIds.OBJECT_ID).getFirstValue());
+    }
+
+    @Test
+    public void testVersioningInitialState() {
+
+        // creation as major version (default, per spec)
+
+        String id = objService.createDocument(repositoryId,
+                createBaseDocumentProperties("newdoc2", "cmis:document"),
+                rootFolderId, null, VersioningState.MAJOR, null, null, null,
+                null);
+        ObjectData ob = getObject(id);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+
+        // creation as minor version
+
+        id = objService.createDocument(repositoryId,
+                createBaseDocumentProperties("newdoc2", "cmis:document"),
+                rootFolderId, null, VersioningState.MINOR, null, null, null,
+                null);
+        ob = getObject(id);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "0.1", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+
+        // creation checked out
+
+        id = objService.createDocument(repositoryId,
+                createBaseDocumentProperties("newdoc3", "cmis:document"),
+                rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
+                null, null);
+        ob = getObject(id);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
 
     }
 
