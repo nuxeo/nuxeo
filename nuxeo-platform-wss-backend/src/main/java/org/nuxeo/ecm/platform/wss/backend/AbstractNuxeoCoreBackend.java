@@ -38,7 +38,9 @@ public abstract class AbstractNuxeoCoreBackend extends AbstractWSSBackend
     protected CoreSession session;
 
     public void begin() throws WSSException {
-        TransactionHelper.startTransaction();
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected CoreSession getCoreSession() throws Exception {
