@@ -180,6 +180,7 @@ public class RepositoryDescriptor {
         backendClass = other.backendClass;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
+        noDDL = other.noDDL;
         schemaFields = other.schemaFields;
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
