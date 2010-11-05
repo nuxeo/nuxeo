@@ -3,9 +3,11 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <script language="javascript">
+
     function popupSearch(createFormId, url) {
       popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
       if(!popup.opener) {
@@ -17,6 +19,45 @@
     function selectObjectType(index) {
       document.getElementsByName('createForm:objectType')[index].checked = true;
     }
+
+    function showPopUpSearch() {
+      // hide all trees
+      hideAllPopUps();
+
+      var popUp = jQuery("#relationSearchPopUp");
+      popUp.css('top', 100 + getScrollTop());
+      popUp.show();
+    }
+
+    function hideAllPopUps() {
+      jQuery('.relationSearchPopUp').each(function () {
+        jQuery(this).hide();
+      });
+    }
+
+    function hidePopUp() {
+      jQuery("#relationSearchPopUp").hide();
+    }
+
+    function getScrollTop() {
+      var scrollTop  = document.body.scrollTop  || document.documentElement.scrollTop;
+      return scrollTop;
+    }
+
+    jQuery(document).keydown(function(event) {
+      // escape
+      if (event.keyCode == '27') {
+        hideAllPopUps();
+        event.preventDefault();
+      }
+    });
+
+    jQuery(document).click(function(event) {
+      var element = jQuery(event.target);
+      if (!(element.is('.relationSearchPopUp') || element.parents().is('.relationSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
+        hideAllPopups();
+      }
+    });
   </script>
 
   <h3>
@@ -82,7 +123,7 @@
               <nxu:set var="urlWithConversation"
                 value="#{restHelper.addCurrentConversationParameters(url)}">
                 <input type="button" value="#{messages['command.search']}" class="button"
-                  onclick="javascript:popupSearch(this.form.id, '#{urlWithConversation}');"
+                  onclick="javascript:showPopUpSearch();"
                   onfocus="javascript:selectObjectType(2)" />
               </nxu:set>
             </nxu:set>
@@ -107,5 +148,15 @@
         action="#{relationActions.addStatement}" />
     </h:panelGrid>
   </h:form>
+
+  <!-- Search document popUp -->
+  <div id="relationSearchPopUp" class="relationSearchPopUp">
+    <div class="closePopUpHeader"><span class="popUpTitle"><h:outputText
+      value="#{messages['label.relation.search.popup.title']}" /></span> <span
+      class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">Close</span>
+    <div style="clear: both;"></div>
+    </div>
+    <ui:include src="/create_relation_search_document_popup.xhtml" />
+  </div>
 
 </div>
