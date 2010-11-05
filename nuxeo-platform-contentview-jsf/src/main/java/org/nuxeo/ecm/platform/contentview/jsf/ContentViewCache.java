@@ -144,7 +144,8 @@ public class ContentViewCache implements Serializable {
     }
 
     /**
-     * Refresh page providers for content views in the cache with given name.
+     * Refresh page providers for content views in the cache with given
+     * name.refreshEventToContentViewName
      * <p>
      * Other contextual information set on the content view and the page
      * provider will be kept.
@@ -234,6 +235,25 @@ public class ContentViewCache implements Serializable {
         namedContentViews.remove(contentViewName);
         namedCacheKeys.remove(contentViewName);
         cacheInstances.remove(contentViewName);
+    }
+
+    /**
+     * Resets all cached information for all content views
+     */
+    public void resetAllContent() {
+        namedContentViews.clear();
+        namedCacheKeys.clear();
+        cacheInstances.clear();
+    }
+
+    /**
+     * Resets all cached information for all content views, as well as
+     * configuration caches (refresh and reset events linked to content views).
+     */
+    public void resetAll() {
+        resetAllContent();
+        refreshEventToContentViewName.clear();
+        resetEventToContentViewName.clear();
     }
 
 }

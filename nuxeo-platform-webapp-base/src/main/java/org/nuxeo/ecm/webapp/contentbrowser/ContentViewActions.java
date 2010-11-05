@@ -252,4 +252,12 @@ public class ContentViewActions implements Serializable {
         cache.reset(contentViewName);
     }
 
+    public void resetAllContent() {
+        cache.resetAllContent();
+    }
+
+    public void resetAll() {
+        cache.resetAll();
+    }
+
 }
