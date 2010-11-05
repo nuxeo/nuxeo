@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletContext;
 
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -42,14 +47,18 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PolicyIdListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
+import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
@@ -57,6 +66,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
  * {@link DocumentModel}.
  */
 public class NuxeoObjectData implements ObjectData {
+
+    public static final String STREAM_ICON = "nx:icon";
 
     public DocumentModel doc;
 
@@ -83,7 +94,9 @@ public class NuxeoObjectData implements ObjectData {
     /** Cache for Properties objects, which are expensive to create. */
     private Map<String, Properties> propertiesCache = new HashMap<String, Properties>();
 
-    public NuxeoObjectData(NuxeoRepository repository, DocumentModel doc,
+    private CallContext callContext;
+
+    public NuxeoObjectData(NuxeoCmisService service, DocumentModel doc,
             String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePolicyIds, Boolean includeAcl,
@@ -95,16 +108,17 @@ public class NuxeoObjectData implements ObjectData {
         this.renditionFilter = renditionFilter;
         this.includePolicyIds = includePolicyIds;
         this.includeAcl = includeAcl;
-        type = repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+        type = service.repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+        callContext = service.callContext;
     }
 
-    protected NuxeoObjectData(NuxeoRepository repository, DocumentModel doc) {
-        this(repository, doc, null, null, null, null, null, null, null);
+    protected NuxeoObjectData(NuxeoCmisService service, DocumentModel doc) {
+        this(service, doc, null, null, null, null, null, null, null);
     }
 
-    public NuxeoObjectData(NuxeoRepository repository, DocumentModel doc,
+    public NuxeoObjectData(NuxeoCmisService service, DocumentModel doc,
             OperationContext context) {
-        this(repository, doc, context.getFilterString(),
+        this(service, doc, context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
                 context.getRenditionFilterString(),
@@ -260,7 +274,88 @@ public class NuxeoObjectData implements ObjectData {
         if (renditionFilter == null || renditionFilter.length() == 0) {
             return null;
         }
-        return new ArrayList<RenditionData>(0); // TODO
+        // TODO parse rendition filter; for now returns them all
+        return getRenditions(doc, callContext);
+    }
+
+    public static List<RenditionData> getRenditions(DocumentModel doc,
+            CallContext callContext) {
+        try {
+            List<RenditionData> list = new ArrayList<RenditionData>();
+            // first rendition is icon
+            String iconPath;
+            try {
+                iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
+            } catch (PropertyException e) {
+                iconPath = null;
+            }
+            InputStream is = getIconStream(iconPath, callContext);
+            if (is != null) {
+                RenditionDataImpl ren = new RenditionDataImpl();
+                ren.setStreamId(STREAM_ICON);
+                ren.setMimeType(getIconMimeType(iconPath));
+                ren.setKind("cmis:thumbnail");
+                int slash = iconPath.lastIndexOf('/');
+                String filename = slash == -1 ? iconPath
+                        : iconPath.substring(slash + 1);
+                ren.setTitle(filename);
+                long len = getStreamLength(is);
+                ren.setBigLength(BigInteger.valueOf(len));
+                // TODO width, height
+                // ren.setBigWidth(width);
+                // ren.setBigHeight(height);
+                list.add(ren);
+            }
+
+            // TODO other renditions from blob holder secondary blobs
+
+            return list;
+        } catch (IOException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+
+    }
+
+    public static InputStream getIconStream(String iconPath, CallContext context)
+            throws ClientException {
+        if (iconPath == null || iconPath.length() == 0) {
+            return null;
+        }
+        if (!iconPath.startsWith("/")) {
+            iconPath = '/' + iconPath;
+        }
+        ServletContext servletContext = (ServletContext) context.get(CallContext.SERVLET_CONTEXT);
+        if (servletContext == null) {
+            throw new CmisRuntimeException("Cannot get servlet context");
+        }
+        return servletContext.getResourceAsStream(iconPath);
+    }
+
+    public static long getStreamLength(InputStream is) throws IOException {
+        byte[] buf = new byte[4096];
+        long count = 0;
+        int n;
+        while ((n = is.read(buf)) != -1) {
+            count += n;
+        }
+        is.close();
+        return count;
+    }
+
+    protected static String getIconMimeType(String iconPath) {
+        iconPath = iconPath.toLowerCase();
+        if (iconPath.endsWith(".gif")) {
+            return "image/gif";
+        } else if (iconPath.endsWith(".png")) {
+            return "image/png";
+        } else if (iconPath.endsWith(".jpg") || iconPath.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else {
+            // TODO use NXMimeType service
+            return "application/octet-stream";
+        }
     }
 
     @Override

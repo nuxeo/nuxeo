@@ -34,17 +34,21 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
+import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -210,39 +214,33 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
             AclPropagation aclPropagation) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public void applyPolicy(ObjectId policyId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public Acl getAcl() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public Acl getAcl(boolean onlyBasicPermissions) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public void removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
@@ -254,34 +252,46 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public List<Policy> getPolicies() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Collections.emptyList();
     }
 
     @Override
     public void removePolicy(ObjectId policyId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public List<Relationship> getRelationships() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     public ItemIterable<Relationship> getRelationships(
             boolean includeSubRelationshipTypes,
             RelationshipDirection relationshipDirection, ObjectType type,
             OperationContext context, int itemsPerPage) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
     public List<Rendition> getRenditions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // we don't call data.getRenditions as renditionFilter may be incomplete
+        List<RenditionData> renditions = NuxeoObjectData.getRenditions(
+                data.doc, service.getCallContext());
+        List<Rendition> res = new ArrayList<Rendition>(renditions.size());
+        for (RenditionData ren : renditions) {
+            long length = ren.getBigLength() == null ? -1
+                    : ren.getBigLength().longValue();
+            int height = ren.getBigHeight() == null ? -1
+                    : ren.getBigHeight().intValue();
+            int width = ren.getBigWidth() == null ? -1
+                    : ren.getBigWidth().intValue();
+            RenditionImpl rendition = new RenditionImpl(session, getId(),
+                    ren.getStreamId(), ren.getRenditionDocumentId(),
+                    ren.getKind(), length, ren.getMimeType(), ren.getTitle(),
+                    height, width);
+            res.add(rendition);
+        }
+        return res;
     }
 
     @Override

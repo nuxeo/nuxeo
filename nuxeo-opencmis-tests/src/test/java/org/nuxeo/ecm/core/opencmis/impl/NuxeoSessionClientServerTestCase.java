@@ -35,6 +35,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.resource.Resource;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler;
 import org.nuxeo.ecm.core.opencmis.bindings.TrustingLoginProvider;
 
@@ -101,7 +102,8 @@ public abstract class NuxeoSessionClientServerTestCase extends
         server.addConnector(connector);
 
         Context context = new Context(server, "/", Context.SESSIONS);
-        setUpContext(context);
+        context.setBaseResource(Resource.newClassPathResource("/"
+                + BASE_RESOURCE));
 
         context.setEventListeners(getEventListeners());
         ServletHolder holder = new ServletHolder(getServlet());
@@ -118,10 +120,6 @@ public abstract class NuxeoSessionClientServerTestCase extends
         server.stop();
         server.join();
         server = null;
-    }
-
-    protected void setUpContext(Context context) throws Exception {
-        // overridden for WebServices
     }
 
     protected abstract EventListener[] getEventListeners();

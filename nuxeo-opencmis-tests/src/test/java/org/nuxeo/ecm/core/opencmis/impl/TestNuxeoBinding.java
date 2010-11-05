@@ -48,6 +48,7 @@ import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryCapabilities;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
@@ -85,7 +86,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Tests that hit directly the server APIs.
@@ -218,7 +221,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("Nuxeo Repository " + repositoryId, info.getDescription());
         assertEquals("Nuxeo", info.getVendorName());
         assertEquals("Nuxeo OpenCMIS Connector", info.getProductName());
-        assertEquals("5.4.0-SNAPSHOT", info.getProductVersion());
+        String version = Framework.getProperty(
+                NuxeoRepository.NUXEO_VERSION_PROP, "5.4 dev");
+        assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
         assertNull(info.getLatestChangeLogToken());
@@ -236,7 +241,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 caps.getContentStreamUpdatesCapability());
         assertEquals(CapabilityJoin.INNERANDOUTER, caps.getJoinCapability());
         assertEquals(CapabilityQuery.BOTHCOMBINED, caps.getQueryCapability());
-        assertEquals(CapabilityRenditions.NONE, caps.getRenditionsCapability());
+        assertEquals(CapabilityRenditions.READ, caps.getRenditionsCapability());
         AclCapabilities aclCaps = info.getAclCapabilities();
         assertEquals(AclPropagation.REPOSITORYDETERMINED,
                 aclCaps.getAclPropagation());
@@ -701,6 +706,75 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(
                 "testfolder3_Title[testfile4_Title[]], testfolder4_Title[]",
                 flat(tree));
+    }
+
+    @Test
+    public void testGetFolderTree() throws Exception {
+        List<ObjectInFolderContainer> tree;
+
+        try {
+            navService.getFolderTree(repositoryId, rootFolderId,
+                    BigInteger.valueOf(0), null, null, null, null, null, null);
+            fail("Depth 0 should be forbidden");
+        } catch (CmisInvalidArgumentException e) {
+            // ok
+        }
+
+        tree = navService.getFolderTree(repositoryId, rootFolderId,
+                BigInteger.valueOf(1), null, null, null, null, null, null);
+        assertEquals("testfolder1_Title, " //
+                + "testfolder2_Title", flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, rootFolderId,
+                BigInteger.valueOf(2), null, null, null, null, null, null);
+        assertEquals("testfolder1_Title[], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
+                flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, rootFolderId,
+                BigInteger.valueOf(3), null, null, null, null, null, null);
+        assertEquals("testfolder1_Title[], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, rootFolderId,
+                BigInteger.valueOf(4), null, null, null, null, null, null);
+        assertEquals("testfolder1_Title[], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, rootFolderId,
+                BigInteger.valueOf(-1), null, null, null, null, null, null);
+        assertEquals("testfolder1_Title[], " //
+                + "testfolder2_Title[" //
+                + /* */"testfolder3_Title[], " //
+                + /* */"testfolder4_Title[]]", //
+                flat(tree));
+
+        ObjectData ob = getObjectByPath("/testfolder2");
+        String folder2Id = ob.getId();
+
+        tree = navService.getFolderTree(repositoryId, folder2Id,
+                BigInteger.valueOf(1), null, null, null, null, null, null);
+        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, folder2Id,
+                BigInteger.valueOf(2), null, null, null, null, null, null);
+        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, folder2Id,
+                BigInteger.valueOf(3), null, null, null, null, null, null);
+        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
+
+        tree = navService.getFolderTree(repositoryId, folder2Id,
+                BigInteger.valueOf(-1), null, null, null, null, null, null);
+        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
     }
 
     @Test
@@ -1348,6 +1422,72 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver2);
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
+
+        // check out again
+
+        verService.checkOut(repositoryId, idHolder, null, bhold);
+        coid = idHolder.getValue();
+        co = getObject(coid);
+        assertEquals(id, coid); // Nuxeo invariant
+
+        // cancel check out
+
+        verService.cancelCheckOut(repositoryId, coid, null);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
+                ver2);
+        ci = getObject(id);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
+
+        // list all versions
+        // TODO check this when no live document exists
+
+        // atompub passes just object id, soap just version series id
+        List<ObjectData> vers = verService.getAllVersions(null, id, null, null,
+                null, null);
+        assertEquals(2, vers.size());
+        assertEquals(ver2.getId(), vers.get(0).getId());
+        assertEquals(ver.getId(), vers.get(1).getId());
+
+        // get latest version
+
+        Boolean major = Boolean.FALSE;
+        ObjectData l = verService.getObjectOfLatestVersion(id, id, null, major,
+                null, null, null, null, null, null, null);
+        assertEquals(ver2.getId(), l.getId());
+        major = Boolean.TRUE;
+        l = verService.getObjectOfLatestVersion(id, id, null, major, null,
+                null, null, null, null, null, null);
+        assertEquals(ver.getId(), l.getId());
+
+        major = Boolean.FALSE;
+        Properties p = verService.getPropertiesOfLatestVersion(repositoryId,
+                id, null, major, null, null);
+        assertEquals(ver2.getId(),
+                p.getProperties().get(PropertyIds.OBJECT_ID).getFirstValue());
+
+    }
+
+    @Test
+    public void testRenditions() throws Exception {
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+
+        // list renditions
+
+        List<RenditionData> renditions = objService.getRenditions(repositoryId,
+                ob.getId(), null, null, null, null);
+        assertEquals(1, renditions.size());
+        RenditionData ren = renditions.get(0);
+        assertEquals("cmis:thumbnail", ren.getKind());
+        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
+        assertEquals("image/png", ren.getMimeType());
+        assertEquals("text.png", ren.getTitle());
+
+        // get rendition stream
+        ContentStream cs = objService.getContentStream(repositoryId,
+                ob.getId(), ren.getStreamId(), null, null, null);
+        assertEquals("image/png", cs.getMimeType());
+        assertEquals("text.png", cs.getFileName());
+        assertEquals(394, cs.getBigLength().longValue());
     }
 
 }

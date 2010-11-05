@@ -34,6 +34,7 @@ import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -56,6 +57,8 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
  * Tests that hit the high-level Session abstraction.
  */
 public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
+
+    public static final String BASE_RESOURCE = "jetty-test";
 
     public static final String NUXEO_ROOT_TYPE = "Root"; // from Nuxeo
 
@@ -86,6 +89,12 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         // MyDocType
         deployBundle("org.nuxeo.ecm.core.opencmis.tests");
+        // MIME Type Icon Updater for renditions
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
 
         openSession(); // nuxeo
 
@@ -284,8 +293,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         if (!isAtomPub) {
             // TODO fix AtomPub case where the filename is null
             assertEquals("foo.txt", cs.getFileName());
-        }
-        if (!isAtomPub) {
             // TODO fix AtomPub case where the length is unknown (streaming)
             assertEquals(streamBytes.length, cs.getLength());
         }
@@ -336,6 +343,28 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
                 Action.CAN_MOVE_OBJECT, //
                 Action.CAN_DELETE_OBJECT);
         assertEquals(expected, aa.getAllowableActions());
+    }
+
+    public void testRenditions() throws Exception {
+        CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
+        List<Rendition> renditions = ob.getRenditions();
+
+        assertEquals(1, renditions.size());
+        Rendition ren = renditions.get(0);
+        assertEquals("cmis:thumbnail", ren.getKind());
+        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
+        assertEquals("image/png", ren.getMimeType());
+        assertEquals("text.png", ren.getTitle());
+        assertEquals(394, ren.getBigLength().longValue());
+        assertEquals(394, ren.getLength());
+
+        // get rendition stream
+        ContentStream cs = ren.getContentStream();
+        assertEquals("image/png", cs.getMimeType());
+        if (!isAtomPub) {
+            assertEquals("text.png", cs.getFileName());
+            assertEquals(394, cs.getBigLength().longValue());
+        }
     }
 
     public void testDeletedInTrash() throws Exception {

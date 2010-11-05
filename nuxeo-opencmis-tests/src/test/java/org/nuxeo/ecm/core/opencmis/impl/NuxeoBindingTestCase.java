@@ -62,6 +62,13 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
         // MyDocType
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.tests");
+        // MIME Type Icon Updater for renditions
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.api");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
+
         nuxeotc.openSession();
 
         Map<String, String> params = new HashMap<String, String>();
@@ -80,6 +87,8 @@ public class NuxeoBindingTestCase {
                 CallContext.BINDING_LOCAL, repositoryId, objectInfoRequired);
         context.put(CallContext.USERNAME, USERNAME);
         context.put(CallContext.PASSWORD, PASSWORD);
+        context.put(CallContext.SERVLET_CONTEXT,
+                FakeServletContext.getServletContext());
         NuxeoRepository repository = new NuxeoRepository(repositoryId,
                 rootFolderId);
         NuxeoCmisService service = new NuxeoCmisService(repository, context,

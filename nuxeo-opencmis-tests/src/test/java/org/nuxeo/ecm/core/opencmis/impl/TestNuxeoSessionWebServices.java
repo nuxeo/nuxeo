@@ -32,8 +32,6 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.resource.Resource;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
@@ -51,8 +49,6 @@ import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
  */
 public class TestNuxeoSessionWebServices extends
         NuxeoSessionClientServerTestCase {
-
-    public static final String BASE_RESOURCE = "/jetty-test";
 
     public static final String JAXWS_XML = "/sun-jaxws.xml";
 
@@ -97,14 +93,6 @@ public class TestNuxeoSessionWebServices extends
     @Override
     protected Servlet getServlet() {
         return new WSServlet();
-    }
-
-    /**
-     * Adds a base resource to the context for resource resolution.
-     */
-    @Override
-    protected void setUpContext(Context context) throws Exception {
-        context.setBaseResource(Resource.newClassPathResource(BASE_RESOURCE));
     }
 
     @Override

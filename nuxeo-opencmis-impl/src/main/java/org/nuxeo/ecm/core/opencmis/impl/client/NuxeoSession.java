@@ -265,8 +265,7 @@ public class NuxeoSession implements Session {
 
     /** Gets a CMIS object given a Nuxeo {@link DocumentModel}. */
     public CmisObject getObject(DocumentModel doc, OperationContext context) {
-        ObjectData data = new NuxeoObjectData(service.getNuxeoRepository(),
-                doc, context);
+        ObjectData data = new NuxeoObjectData(service, doc, context);
         return objectFactory.convertObject(data, context);
     }
 

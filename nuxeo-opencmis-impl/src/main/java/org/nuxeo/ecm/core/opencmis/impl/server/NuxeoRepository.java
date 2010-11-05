@@ -55,6 +55,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoRepository {
 
+    public static final String NUXEO_VERSION_PROP = "org.nuxeo.distribution.version";
+
     protected final String repositoryId;
 
     protected final String rootFolderId;
@@ -79,7 +81,8 @@ public class NuxeoRepository {
                 BaseTypeId.CMIS_FOLDER));
         repositoryInfo.setVendorName("Nuxeo");
         repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
-        repositoryInfo.setProductVersion("5.4.0-SNAPSHOT"); // TODO
+        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.4 dev");
+        repositoryInfo.setProductVersion(version);
         repositoryInfo.setRootFolder(rootFolderId);
         // TODO link LatestChangeLogToken to session state
         repositoryInfo.setLatestChangeLogToken(null); // TODO XXX variable
@@ -93,9 +96,9 @@ public class NuxeoRepository {
         caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
         caps.setCapabilityJoin(CapabilityJoin.INNERANDOUTER);
         caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
-        caps.setCapabilityRendition(CapabilityRenditions.NONE);
-        caps.setIsPwcSearchable(Boolean.FALSE);
-        caps.setIsPwcUpdatable(Boolean.FALSE);
+        caps.setCapabilityRendition(CapabilityRenditions.READ);
+        caps.setIsPwcSearchable(Boolean.TRUE);
+        caps.setIsPwcUpdatable(Boolean.TRUE);
         caps.setSupportsGetDescendants(Boolean.TRUE);
         caps.setSupportsGetFolderTree(Boolean.TRUE);
         caps.setSupportsMultifiling(Boolean.FALSE);

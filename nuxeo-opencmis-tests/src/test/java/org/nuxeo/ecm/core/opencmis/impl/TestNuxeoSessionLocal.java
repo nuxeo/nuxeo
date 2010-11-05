@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
@@ -46,6 +47,8 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
                 objectInfoRequired);
         context.put(CallContext.USERNAME, USERNAME);
         context.put(CallContext.PASSWORD, PASSWORD);
+        context.put(CallContext.SERVLET_CONTEXT,
+                FakeServletContext.getServletContext());
         NuxeoRepository repository = new NuxeoRepository(getRepositoryId(),
                 getRootFolderId());
         session = new NuxeoSession(getCoreSession(), repository, context);
@@ -80,5 +83,4 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
         assertNotNull(id);
         return id;
     }
-
 }

@@ -18,6 +18,7 @@
   <description>Nuxeo Core: OpenCMIS Implementation</description>
 
   <properties>
+    <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>
     <chemistry.opencmis.version>0.2.0-incubating-SNAPSHOT</chemistry.opencmis.version>
   </properties>
 
@@ -47,9 +48,16 @@
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
+      <version>${nuxeo.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-runtime</artifactId>
     </dependency>
+
     <!-- OpenCMIS -->
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>

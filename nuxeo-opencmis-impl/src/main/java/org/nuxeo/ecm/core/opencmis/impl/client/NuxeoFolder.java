@@ -335,8 +335,8 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
                     if (items.size() > maxNumItems) {
                         continue;
                     }
-                    NuxeoObjectData data = new NuxeoObjectData(
-                            service.getNuxeoRepository(), child, ctx);
+                    NuxeoObjectData data = new NuxeoObjectData(service, child,
+                            ctx);
                     CmisObject ob = objectFactory.convertObject(data, ctx);
                     items.add(ob);
                 }

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +54,7 @@ import org.apache.chemistry.opencmis.commons.definitions.RelationshipTypeDefinit
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -111,8 +113,8 @@ public class NuxeoObjectFactory implements ObjectFactory {
     @Override
     public ContentStream createContentStream(String filename, long length,
             String mimetype, InputStream stream) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new ContentStreamImpl(filename, BigInteger.valueOf(length),
+                mimetype, stream);
     }
 
     @Override
