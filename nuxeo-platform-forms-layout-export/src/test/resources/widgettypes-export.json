@@ -31,6 +31,8 @@
           "type": "text",
           "labels": {"any": "Required"},
           "helpLabels": {},
+          "translated": true,
+          "widgetModes": {},
           "fields": [          {
             "fieldName": "bar",
             "schemaName": "foo",
@@ -53,12 +55,29 @@
           "type": "text",
           "labels": {"any": "Rendered"},
           "helpLabels": {},
+          "translated": true,
+          "widgetModes": {"any": "view"},
           "fields": [          {
             "fieldName": "bar",
             "schemaName": "foo",
             "propertyName": "foo:bar"
           }],
-          "subWidgets": [],
+          "subWidgets": [          {
+            "name": "subwidget",
+            "type": "text",
+            "labels": {"any": "subwidget label"},
+            "helpLabels": {},
+            "translated": true,
+            "widgetModes": {},
+            "fields": [            {
+              "fieldName": "bar",
+              "schemaName": "foo",
+              "propertyName": "foo:bar"
+            }],
+            "subWidgets": [],
+            "properties": {},
+            "propertiesByWidgetMode": {}
+          }],
           "properties": {},
           "propertiesByWidgetMode": {}
         }]

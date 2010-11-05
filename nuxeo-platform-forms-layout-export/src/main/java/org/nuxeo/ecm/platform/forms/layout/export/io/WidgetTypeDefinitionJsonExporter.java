@@ -190,6 +190,9 @@ public class WidgetTypeDefinitionJsonExporter {
         json.element("labels", exportStringPropsToJson(widgetDef.getLabels()));
         json.element("helpLabels",
                 exportStringPropsToJson(widgetDef.getHelpLabels()));
+        json.element("translated", widgetDef.isTranslated());
+        json.element("widgetModes",
+                exportStringPropsToJson(widgetDef.getModes()));
 
         JSONArray fields = new JSONArray();
         FieldDefinition[] fieldDefs = widgetDef.getFieldDefinitions();

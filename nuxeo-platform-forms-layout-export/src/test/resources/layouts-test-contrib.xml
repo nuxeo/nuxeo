@@ -61,6 +61,19 @@
                 <fields>
                   <field schema="foo">bar</field>
                 </fields>
+                <widgetModes>
+                  <mode value="any">view</mode>
+                </widgetModes>
+                <subWidgets>
+                  <widget name="subwidget" type="text">
+                    <labels>
+                      <label mode="any">subwidget label</label>
+                    </labels>
+                    <fields>
+                      <field schema="foo">bar</field>
+                    </fields>
+                  </widget>
+                </subWidgets>
               </widget>
             </layout>
           </layouts>
