@@ -543,9 +543,15 @@ public class HierarchyContext {
         if (label == null) {
             // use version major + minor as label
             try {
-                label = node.getSimpleProperty(model.MAIN_MAJOR_VERSION_PROP).getValue()
-                        + "."
-                        + node.getSimpleProperty(model.MAIN_MINOR_VERSION_PROP).getValue();
+                Serializable major = node.getSimpleProperty(
+                        model.MAIN_MAJOR_VERSION_PROP).getValue();
+                Serializable minor = node.getSimpleProperty(
+                        model.MAIN_MINOR_VERSION_PROP).getValue();
+                if (major == null || minor == null) {
+                    label = "";
+                } else {
+                    label = major + "." + minor;
+                }
             } catch (StorageException e) {
                 log.error("Cannot get version", e);
                 label = "";
