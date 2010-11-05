@@ -123,12 +123,6 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.features.version}:zip" />
     </unzip>
-    <!-- NXP-5800 - tomcat adapter ignoring .rar -->
-    <copy todir="${distribution.dir}/nxserver/bundles">
-      <artifact:file groupId="org.nuxeo.ecm.core"
-                     artifactId="nuxeo-core-storage-sql-ra"
-                     type="jar" />
-    </copy>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
@@ -170,12 +164,6 @@
     <unzip dest="${distribution.dir}/nxserver">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
     </unzip>
-    <!-- NXP-5800 - tomcat adapter ignoring .rar -->
-    <copy todir="${distribution.dir}/nxserver/bundles">
-      <artifact:file groupId="org.nuxeo.ecm.core"
-                     artifactId="nuxeo-core-storage-sql-ra"
-                     type="jar" />
-    </copy>
 
     <antcall target="reorganize-libs">
       <param name="distribution.dir" value="${distribution.dir}" />
