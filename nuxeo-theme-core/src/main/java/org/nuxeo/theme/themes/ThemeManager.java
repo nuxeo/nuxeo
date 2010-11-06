@@ -77,7 +77,6 @@ import org.nuxeo.theme.relations.DefaultPredicate;
 import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
-import org.nuxeo.theme.relations.RelationStorage;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.resources.ResourceType;
@@ -826,7 +825,7 @@ public final class ThemeManager implements Registrable {
         final Element parent = (Element) element.getParent();
 
         if (element instanceof ThemeElement) {
-            removeNamedObjects(element.getName());
+            removeNamedStylesOf(element.getName());
             unregisterTheme((ThemeElement) element);
             destroyDescendants(element);
             removeRelationsOf(element);
@@ -849,6 +848,15 @@ public final class ThemeManager implements Registrable {
 
         // Final cleanup: remove formats that are not used by any element.
         removeOrphanedFormats();
+    }
+
+    private void removeNamedStylesOf(String themeName) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        final UidManager uidManager = Manager.getUidManager();
+        for (Style style : themeManager.getNamedStyles(themeName)) {
+            deleteFormat(style);
+            uidManager.unregister(style);
+        }
     }
 
     // Formats
@@ -1263,9 +1271,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public void removeOrphanedFormats() throws ThemeException {
-        RelationStorage relationStorage = Manager.getRelationStorage();
         UidManager uidManager = Manager.getUidManager();
-        Set<Format> formatsToUnregister = new HashSet<Format>();
         for (Format format : listFormats()) {
             // Skip named formats since they are not directly associated to an
             // element.
@@ -1276,20 +1282,6 @@ public final class ThemeManager implements Registrable {
                 deleteFormat(format);
                 uidManager.unregister(format);
             }
-        }
-
-        for (Format format : listFormats()) {
-            // Unregister named formats if no other format inherit from
-            // them.
-            if (format.isNamed()
-                    && relationStorage.search(PREDICATE_FORMAT_INHERIT, null,
-                            format).isEmpty()) {
-                formatsToUnregister.add(format);
-            }
-        }
-        for (Format f : formatsToUnregister) {
-            deleteFormat(f);
-            uidManager.unregister(f);
         }
     }
 

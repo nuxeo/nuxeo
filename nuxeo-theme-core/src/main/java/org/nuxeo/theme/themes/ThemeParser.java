@@ -177,6 +177,7 @@ public class ThemeParser {
             org.w3c.dom.Element docElem, boolean preload)
             throws ThemeException, ThemeIOException {
         final ThemeManager themeManager = Manager.getThemeManager();
+
         // remove old theme
         String themeName = themeDescriptor.getName();
         ThemeElement oldTheme = themeManager.getThemeByName(themeName);
@@ -187,6 +188,8 @@ public class ThemeParser {
                 throw new ThemeIOException("Failed to destroy theme: "
                         + themeName, e);
             }
+            System.out.println(Manager.getRelationStorage().list());
+            System.out.println(Manager.getRelationStorage().list().size());
         }
 
         Node baseNode = getBaseNode(docElem);

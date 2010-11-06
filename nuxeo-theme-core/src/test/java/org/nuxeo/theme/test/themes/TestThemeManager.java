@@ -388,7 +388,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.removeOrphanedFormats();
 
         assertFalse(themeManager.listFormats().contains(style1));
-        assertFalse(themeManager.listFormats().contains(style3));
+        assertTrue(themeManager.listFormats().contains(style3));
     }
 
     public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException,
@@ -401,6 +401,23 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.removeOrphanedFormats();
         List<Format> formatsAfter = themeManager.listFormats();
         assertEquals(formatsBefore, formatsAfter);
+    }
+
+    public void testDestroyTestTheme() throws ThemeIOException, ThemeException,
+            NodeException {
+        ThemeDescriptor themeDef = new ThemeDescriptor();
+        themeDef.setSrc("theme.xml");
+        final boolean preload = false;
+        ThemeParser.registerTheme(themeDef, preload);
+        ThemeElement theme = themeManager.getThemeByName(themeDef.getName());
+
+        themeManager.destroyElement(theme);
+
+        System.out.println(themeManager.listFormats());
+        assertTrue(themeManager.listFormats().isEmpty());
+        assertTrue(Manager.getRelationStorage().list().isEmpty());
+        assertTrue(Manager.getUidManager().listUids().isEmpty());
+
     }
 
     public void testStyleInheritance() throws ThemeException {
@@ -504,9 +521,12 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDestroyElement() throws ThemeException, NodeException {
-        Element theme = ElementFactory.create("theme");
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        theme.setName("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
+        theme.addChild(page).addChild(section);
+        themeManager.registerTheme(theme);
 
         PerspectiveType perspective = new PerspectiveType("default",
                 "default perspective");
@@ -516,26 +536,45 @@ public class TestThemeManager extends NXRuntimeTestCase {
         PerspectiveManager.setVisibleInPerspective(section, perspective);
 
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
-        themeManager.registerFormat(widget0);
-        ElementFormatter.setFormat(theme, widget0);
-
         DefaultFormat widget1 = (DefaultFormat) FormatFactory.create("widget");
+        DefaultFormat widget2 = (DefaultFormat) FormatFactory.create("widget");
+
+        themeManager.registerFormat(widget0);
         themeManager.registerFormat(widget1);
+        themeManager.registerFormat(widget2);
+
+        ElementFormatter.setFormat(theme, widget0);
         ElementFormatter.setFormat(page, widget1);
-
-        DefaultFormat widget3 = (DefaultFormat) FormatFactory.create("widget");
-        themeManager.registerFormat(widget3);
-        ElementFormatter.setFormat(section, widget3);
-
-        theme.addChild(page).addChild(section);
+        ElementFormatter.setFormat(section, widget2);
 
         assertFalse(themeManager.listFormats().isEmpty());
         assertFalse(Manager.getRelationStorage().list().isEmpty());
         assertFalse(Manager.getUidManager().listUids().isEmpty());
 
-        themeManager.destroyElement(theme);
+        Style style = (Style) FormatFactory.create("style");
+        Style ancestor1 = (Style) FormatFactory.create("style");
+        Style ancestor2 = (Style) FormatFactory.create("style");
 
+        style.setName("style name");
+        ancestor1.setName("ancestor 1");
+        ancestor2.setName("ancestor 2");
+
+        themeManager.registerFormat(style);
+        themeManager.registerFormat(ancestor1);
+        themeManager.registerFormat(ancestor2);
+
+        themeManager.setNamedObject("theme", "style", style);
+        themeManager.setNamedObject("theme", "style", ancestor1);
+        themeManager.setNamedObject("theme", "style", ancestor2);
+
+        themeManager.makeFormatInherit(style, ancestor1);
+        themeManager.makeFormatInherit(ancestor1, ancestor2);
+
+        ElementFormatter.setFormat(section, style);
+
+        themeManager.destroyElement(theme);
         assertTrue(themeManager.listFormats().isEmpty());
+
         assertTrue(Manager.getRelationStorage().list().isEmpty());
         assertTrue(Manager.getUidManager().listUids().isEmpty());
     }
