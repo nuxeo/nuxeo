@@ -44,6 +44,7 @@
     <module>nuxeo-platform-publisher</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-theme-editor</module>
+    <module>nuxeo-theme-bank</module>
     <module>nuxeo-platform-webwidgets</module>
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
@@ -925,6 +926,12 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-gwt</artifactId>
         <version>${nuxeo.webengine.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
