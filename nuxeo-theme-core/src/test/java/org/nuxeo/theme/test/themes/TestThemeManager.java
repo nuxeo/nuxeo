@@ -413,7 +413,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
         themeManager.destroyElement(theme);
 
-        System.out.println(themeManager.listFormats());
         assertTrue(themeManager.listFormats().isEmpty());
         assertTrue(Manager.getRelationStorage().list().isEmpty());
         assertTrue(Manager.getUidManager().listUids().isEmpty());

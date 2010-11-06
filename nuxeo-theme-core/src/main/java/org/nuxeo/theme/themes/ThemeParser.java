@@ -188,8 +188,6 @@ public class ThemeParser {
                 throw new ThemeIOException("Failed to destroy theme: "
                         + themeName, e);
             }
-            System.out.println(Manager.getRelationStorage().list());
-            System.out.println(Manager.getRelationStorage().list().size());
         }
 
         Node baseNode = getBaseNode(docElem);
