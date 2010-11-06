@@ -730,9 +730,9 @@ public class Editor {
         saveToUndoBuffer(themeName, "delete style");
 
         ThemeManager themeManager = Manager.getThemeManager();
-        Style inheritedStyle = (Style) themeManager.getNamedObject(themeName,
-                "style", styleName);
-        themeManager.deleteFormat(inheritedStyle);
+        Style style = (Style) themeManager.getNamedObject(themeName, "style",
+                styleName);
+        themeManager.deleteFormat(style);
         if (element != null) {
             themeManager.makeElementUseNamedStyle(element, null, themeName);
         }
@@ -1108,6 +1108,17 @@ public class Editor {
             themeManager.makeElementUseNamedStyle(page, skinName, themeName);
         }
 
+        themeManager.removeOrphanedFormats();
+        saveTheme(themeName);
+    }
+
+    public static void deactivateSkin(String themeName) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (PageElement page : themeManager.getPagesOf(themeName)) {
+            Style newStyle = themeManager.createStyle();
+            ElementFormatter.setFormat(page, newStyle);
+            themeManager.makeElementUseNamedStyle(page, null, themeName);
+        }
         themeManager.removeOrphanedFormats();
         saveTheme(themeName);
     }

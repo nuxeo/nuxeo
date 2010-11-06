@@ -21,4 +21,24 @@
   label="Customize theme" />
 </#if>
 
+<@nxthemes_button identifier="dashboard more actions"
+  classNames="dropList"
+  menu="nxthemesDashboardActions"
+  label="More actions" />
+
+<div id="nxthemesDashboardActions" style="display: none;"> 
+  <ul class="nxthemesDropDownMenu">
+    <#if theme.exportable>
+      <#if !theme.saveable>
+        <li><a href="javascript:window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}&amp;download=1&amp;indent=2'">Download theme to your computer</a></li>  
+      </#if>
+      <li><a href="javascript:window.location='${basePath}/nxthemes-editor/xml_export?src=${theme.src?url}'">Show theme source (XML)</a></li>
+    </#if>
+    <!-- <#if theme.repairable><li><a href="javascript:NXThemesEditor.repairTheme('${theme.src?js_string}')">Repair theme</a></li></#if> -->
+    <#if !theme.saveable>
+      <li><a href="javascript:NXThemesEditor.loadTheme('${theme.src?js_string}')">Restore original ${theme.name} theme</a></li> 
+    </#if>
+  </ul>
+</div>
+
 </#if>

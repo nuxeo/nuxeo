@@ -52,7 +52,8 @@
 <div class="window">
 <div class="title">Theme options</div>
 <div class="body">
-<#assign presets = This.getCustomPresets(current_theme_name, null)>
+<#assign presets = This.getCustomPresets(current_theme.name, null)>
+<#if presets>
 <#list presets as preset_info>
   <p class="nxthemesEditor">
     <strong title="${preset_info.description}">${preset_info.label}</strong>:
@@ -63,6 +64,9 @@
     <button class="nxthemesActionButton"
      onclick="NXThemesEditor.setThemeOptions()">Set theme options</button>
   </p>
+<#else>
+<p>No theme options available for this theme</p>
+</#if>
 </div>
 </div>
 

@@ -1,4 +1,6 @@
 
+<#if style_category>
+
 <div class="nxthemesToolbox" id="nxthemesAreaStyleChooser">
 
 <div class="title">
@@ -62,4 +64,6 @@ Style chooser - ${style_category}</div>
 </div>
 
 </div>
+
+</#if>
 

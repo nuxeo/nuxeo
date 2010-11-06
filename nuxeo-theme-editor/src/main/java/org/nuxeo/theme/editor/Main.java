@@ -597,6 +597,17 @@ public class Main extends ModuleRoot {
         }
     }
 
+    @POST
+    @Path("deactivate_skin")
+    public void activateSkin(@FormParam("theme") String themeName) {
+        try {
+            Editor.deactivateSkin(themeName);
+        } catch (Exception e) {
+            throw new ThemeEditorException("Could not deactivate skin: "
+                    + e.getMessage(), e);
+        }
+    }
+
     @GET
     @Path("imageManager")
     public Object renderImageManager(
@@ -1857,11 +1868,7 @@ public class Main extends ModuleRoot {
     }
 
     public static String getSelectedStyleCategory() {
-        String category = SessionManager.getStyleCategory();
-        if (category == null) {
-            category = "page";
-        }
-        return category;
+        return SessionManager.getStyleCategory();
     }
 
     public static String getSelectedFragmentType() {

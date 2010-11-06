@@ -5,7 +5,7 @@
 <#assign saveable=current_theme && current_theme.saveable>
 
 <div class="window">
-<div class="title">Edit CSS <#if theme_skin>(${theme_skin.name})</#if></div>
+<div class="title">Edit CSS <#if theme_skin>for skin: ${theme_skin.name}</#if></div>
 <div class="body">
 
 <#if current_bank>

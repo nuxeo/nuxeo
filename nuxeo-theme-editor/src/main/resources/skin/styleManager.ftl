@@ -8,7 +8,6 @@
   <#assign selected_named_style_name = selected_named_style.name>
 </#if>
 
-
 <!-- Style manager -->
 
 <div class="window">
@@ -25,9 +24,11 @@
 
 <ul class="nxthemesSelector">
 <#list named_styles as style>
+  <#if !style.remote>
   <li <#if style.name = selected_named_style_name>class="selected"</#if>>
     <a href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">
     <img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
+  </#if>
 </#list>
 </ul>
 
@@ -163,6 +164,8 @@
 
 <!-- style dependencies -->
 
+<#if root_styles>
+
 <div class="window">
 <div class="title">Style dependencies</div>
 <div class="body">
@@ -209,3 +212,5 @@
 
 </div>
 </div>
+
+</#if>

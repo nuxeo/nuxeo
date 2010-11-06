@@ -264,6 +264,22 @@ NXThemesSkinManager.activateSkin = function(theme, bank, collection, resource, b
       });
 };
 
+NXThemesSkinManager.deactivateSkin = function(theme) {
+    var url = nxthemesBasePath + "/nxthemes-editor/deactivate_skin";
+    new Ajax.Request(url, {
+         method: 'post',
+         parameters: {
+             theme: theme,
+         },
+         onSuccess: function(r) {
+             NXThemes.getViewById("skin manager").refresh();
+         },
+         onFailure: function(r) {
+             var text = r.responseText;
+             window.alert(text);
+         }
+      });
+}
 
 NXThemesEditor.changeElementStyle = function(info) {
     var id = NXThemesEditor.extractElementUid(info.target);
@@ -752,6 +768,7 @@ NXThemesEditor.switchTheme = function(info) {
         NXThemesEditor.refreshThemeSelector();
         NXThemesEditor.refreshPageSelector();
         NXThemes.getViewById("theme actions").refresh();
+        NXThemes.getViewById("dashboard actions").refresh();        
         NXThemes.getViewById("dashboard").refresh();        
         NXThemesEditor.refreshCanvas();
     }
@@ -1216,6 +1233,8 @@ NXThemesEditor.loadTheme = function(src, confirmation) {
            NXThemesEditor.refreshThemeSelector();
            NXThemesEditor.refreshPageSelector();
            NXThemesEditor.refreshUndoActions();
+           NXThemes.getViewById("theme actions").refresh();
+           NXThemes.getViewById("dashboard actions").refresh();           
            NXThemesEditor.writeMessage("Theme loaded.");
          },
          onFailure: function(r) {
@@ -1240,6 +1259,8 @@ NXThemesEditor.deleteTheme = function(src) {
            NXThemesEditor.refreshCanvas();
            NXThemesEditor.refreshUndoActions();
            NXThemesEditor.refreshThemeSelector();
+           NXThemes.getViewById("theme actions").refresh();
+           NXThemes.getViewById("dashboard actions").refresh();              
            NXThemesEditor.writeMessage("Theme deleted.");
            NXThemesEditor.refreshDashboard();           
          },

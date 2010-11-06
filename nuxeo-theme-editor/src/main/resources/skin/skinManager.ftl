@@ -10,7 +10,9 @@
 <div class="body">
   <#if skins>
     <div style="padding: 10px 5px">
-    <div>Add a top layer skin to the <strong>${current_theme.name}</strong> theme:</div>
+    <div>Add a top layer skin to the <strong>${current_theme.name}</strong> theme:
+    ${current_skin_name}
+    </div>
     <#list skins as skin>
       <div class="nxthemesImageSingle nxthemesImageSingle<#if current_skin_name=skin.name>Selected</#if>">
         <a href="javascript:<#if saveable>NXThemesSkinManager.activateSkin('${current_theme.name}', '${skin.bank}', '${skin.collection}', '${skin.resource?replace('.css', '')}', false)<#else>void(0)</#if>">
@@ -19,6 +21,7 @@
         </a>
       </div>
     </#list>
+
     <div style="clear: both"></div>
     </div>
   <#else>
@@ -34,7 +37,12 @@
 <div class="body">
   <#if base_skins>
     <div style="padding: 10px 5px">
-    <div>Select a base skin for the <strong>${current_theme.name}</strong> theme:</div>
+    <div>Select a base skin for the <strong>${current_theme.name}</strong> theme:
+     <#if current_skin_name>
+      <button style="float: right" class="nxthemesActionButton" 
+      onclick="javascript:NXThemesSkinManager.deactivateSkin('${current_theme.name}')">Remove skin</button>
+    </#if>
+    </div>
     <#list base_skins as skin>
       <div class="nxthemesImageSingle nxthemesImageSingle<#if current_base_skin_name=skin.name>Selected</#if>">
         <a href="javascript:<#if saveable>NXThemesSkinManager.activateSkin('${current_theme.name}', '${skin.bank}', '${skin.collection}', '${skin.resource?replace('.css', '')}', true)<#else>void(0)</#if>">
