@@ -642,9 +642,7 @@ public final class ThemeManager implements Registrable {
             for (Map.Entry<String, Integer> entry : objectsInTheme.entrySet()) {
                 if (entry.getKey().startsWith(prefix)) {
                     final Identifiable object = (Identifiable) uidManager.getObjectByUid(entry.getValue());
-                    if (object != null) {
-                        objects.add(object);
-                    }
+                    objects.add(object);
                 }
             }
         }
@@ -1338,21 +1336,21 @@ public final class ThemeManager implements Registrable {
         Manager.getRelationStorage().add(relation);
     }
 
-    public static void removeInheritanceTowards(Format format) {
+    public static void removeInheritanceTowards(Format descendant) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, format, null);
+                PREDICATE_FORMAT_INHERIT, descendant, null);
         Iterator<Relation> it = relations.iterator();
-        if (it.hasNext()) {
+        while (it.hasNext()) {
             Relation relation = it.next();
             Manager.getRelationStorage().remove(relation);
         }
     }
 
-    public static void removeInheritanceFrom(Format format) {
+    public static void removeInheritanceFrom(Format ancestor) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
-                PREDICATE_FORMAT_INHERIT, null, format);
+                PREDICATE_FORMAT_INHERIT, null, ancestor);
         Iterator<Relation> it = relations.iterator();
-        if (it.hasNext()) {
+        while (it.hasNext()) {
             Relation relation = it.next();
             Manager.getRelationStorage().remove(relation);
         }
@@ -1397,9 +1395,8 @@ public final class ThemeManager implements Registrable {
     }
 
     public void deleteFormat(Format format) throws ThemeException {
-        for (Format f : ThemeManager.listFormatsDirectlyInheritingFrom(format)) {
-            ThemeManager.removeInheritanceTowards(f);
-        }
+        ThemeManager.removeInheritanceTowards(format);
+        ThemeManager.removeInheritanceFrom(format);
         unregisterFormat(format);
     }
 

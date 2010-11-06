@@ -644,4 +644,49 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.listAncestorFormatsOf(namedStyle2).contains(
                 ancestorStyle));
     }
+
+    public void testRemoveInheritanceFrom() throws NodeException,
+            ThemeException {
+        Style ancestor = (Style) FormatFactory.create("style");
+        ancestor.setUid(0);
+        Style descendant1 = (Style) FormatFactory.create("style");
+        descendant1.setUid(1);
+        Style descendant2 = (Style) FormatFactory.create("style");
+        descendant2.setUid(2);
+        Style descendant3 = (Style) FormatFactory.create("style");
+        descendant3.setUid(3);
+
+        themeManager.makeFormatInherit(descendant1, ancestor);
+        themeManager.makeFormatInherit(descendant2, ancestor);
+        themeManager.makeFormatInherit(descendant3, ancestor);
+
+        assertFalse(ThemeManager.listAncestorFormatsOf(descendant1).isEmpty());
+        assertFalse(ThemeManager.listAncestorFormatsOf(descendant2).isEmpty());
+        assertFalse(ThemeManager.listAncestorFormatsOf(descendant3).isEmpty());
+        ThemeManager.removeInheritanceFrom(ancestor);
+        assertTrue(ThemeManager.listAncestorFormatsOf(descendant1).isEmpty());
+        assertTrue(ThemeManager.listAncestorFormatsOf(descendant2).isEmpty());
+        assertTrue(ThemeManager.listAncestorFormatsOf(descendant3).isEmpty());
+    }
+
+    public void testRemoveInheritanceTowards() throws NodeException,
+            ThemeException {
+        Style descendant = (Style) FormatFactory.create("style");
+        descendant.setUid(0);
+        Style ancestor1 = (Style) FormatFactory.create("style");
+        ancestor1.setUid(1);
+        Style ancestor2 = (Style) FormatFactory.create("style");
+        ancestor2.setUid(2);
+        Style ancestor3 = (Style) FormatFactory.create("style");
+        ancestor3.setUid(3);
+
+        themeManager.makeFormatInherit(descendant, ancestor1);
+        themeManager.makeFormatInherit(descendant, ancestor2);
+        themeManager.makeFormatInherit(descendant, ancestor3);
+
+        assertFalse(ThemeManager.listAncestorFormatsOf(descendant).isEmpty());
+        ThemeManager.removeInheritanceTowards(descendant);
+        assertTrue(ThemeManager.listAncestorFormatsOf(descendant).isEmpty());
+    }
+
 }
