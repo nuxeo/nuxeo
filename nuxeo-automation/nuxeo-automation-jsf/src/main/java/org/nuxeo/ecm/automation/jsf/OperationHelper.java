@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.jsf;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.contentbrowser.ContentViewActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
@@ -33,6 +34,11 @@ public class OperationHelper {
     public static DocumentsListsManager getDocumentListManager() {
         return (DocumentsListsManager) Contexts.getSessionContext().get(
                 "documentsListsManager");
+    }
+
+    public static ContentViewActions getContentViewActions() {
+        return (ContentViewActions) Contexts.getConversationContext().get(
+                "contentViewActions");
     }
 
     public static WebActions getWebActions() {
