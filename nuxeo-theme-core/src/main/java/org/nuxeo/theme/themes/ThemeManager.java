@@ -917,6 +917,8 @@ public final class ThemeManager implements Registrable {
             }
             ids.remove(id);
         }
+        removeInheritanceTowards(format);
+        removeInheritanceFrom(format);
     }
 
     public Set<String> getFormatTypeNames() {
@@ -1271,11 +1273,7 @@ public final class ThemeManager implements Registrable {
                 continue;
             }
             if (ElementFormatter.getElementsFor(format).isEmpty()) {
-                for (Relation relation : relationStorage.search(
-                        PREDICATE_FORMAT_INHERIT, format, null)) {
-                    relationStorage.remove(relation);
-                }
-                unregisterFormat(format);
+                deleteFormat(format);
                 uidManager.unregister(format);
             }
         }
@@ -1290,7 +1288,7 @@ public final class ThemeManager implements Registrable {
             }
         }
         for (Format f : formatsToUnregister) {
-            unregisterFormat(f);
+            deleteFormat(f);
             uidManager.unregister(f);
         }
     }
