@@ -52,66 +52,39 @@ public class PredicateDescriptor implements PredicateDefinition {
     @XNodeList(value = "field", componentType = FieldDescriptor.class, type = PredicateFieldDefinition[].class)
     protected PredicateFieldDefinition[] values;
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#setOperator(java.lang.String)
-     */
     @XNode("@operator")
     public void setOperator(String operator) {
         this.operator = operator.toUpperCase();
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getOperator()
-     */
     public String getOperator() {
         return operator;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getParameter()
-     */
     public String getParameter() {
         return parameter;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#setParameter(java.lang.String)
-     */
     public void setParameter(String parameter) {
         this.parameter = parameter;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getValues()
-     */
     public PredicateFieldDefinition[] getValues() {
         return values;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#setValues(org.nuxeo.ecm.platform.query.core.FieldDescriptor[])
-     */
     public void setValues(PredicateFieldDefinition[] values) {
         this.values = values;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getType()
-     */
     public String getType() {
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getOperatorField()
-     */
     public String getOperatorField() {
         return operatorField;
     }
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.platform.query.core.PredicateDefinition#getOperatorSchema()
-     */
     public String getOperatorSchema() {
         return operatorSchema;
     }

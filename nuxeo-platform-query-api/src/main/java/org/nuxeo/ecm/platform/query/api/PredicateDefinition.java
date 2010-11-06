@@ -1,30 +1,47 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.query.api;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 
 public interface PredicateDefinition {
 
-    public static final String ATOMIC_PREDICATE = "atomic";
+    static final String ATOMIC_PREDICATE = "atomic";
 
-    public static final String SUB_CLAUSE_PREDICATE = "subClause";
+    static final String SUB_CLAUSE_PREDICATE = "subClause";
 
     @XNode("@operator")
-    public void setOperator(String operator);
+    void setOperator(String operator);
 
-    public String getOperator();
+    String getOperator();
 
-    public String getParameter();
+    String getParameter();
 
-    public void setParameter(String parameter);
+    void setParameter(String parameter);
 
-    public PredicateFieldDefinition[] getValues();
+    PredicateFieldDefinition[] getValues();
 
-    public void setValues(PredicateFieldDefinition[] values);
+    void setValues(PredicateFieldDefinition[] values);
 
-    public String getType();
+    String getType();
 
-    public String getOperatorField();
+    String getOperatorField();
 
-    public String getOperatorSchema();
+    String getOperatorSchema();
 
 }

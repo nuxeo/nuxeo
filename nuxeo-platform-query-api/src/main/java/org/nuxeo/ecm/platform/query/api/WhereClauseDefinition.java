@@ -21,22 +21,22 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 
 public interface WhereClauseDefinition {
 
-    public String getDocType();
+    String getDocType();
 
-    public void setFixedPath(String fixedPart);
+    void setFixedPath(String fixedPart);
 
-    public boolean getQuoteFixedPartParameters();
+    boolean getQuoteFixedPartParameters();
 
-    public boolean getEscapeFixedPartParameters();
+    boolean getEscapeFixedPartParameters();
 
-    public PredicateDefinition[] getPredicates();
+    PredicateDefinition[] getPredicates();
 
-    public void setPredicates(PredicateDefinition[] predicates);
+    void setPredicates(PredicateDefinition[] predicates);
 
-    public String getFixedPart();
+    String getFixedPart();
 
-    public void setFixedPart(String fixedPart);
+    void setFixedPart(String fixedPart);
 
-    public Class<? extends Escaper> getEscaperClass();
+    Class<? extends Escaper> getEscaperClass();
 
 }
