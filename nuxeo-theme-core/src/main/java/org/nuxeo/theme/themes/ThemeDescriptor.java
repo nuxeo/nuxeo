@@ -34,6 +34,8 @@ public class ThemeDescriptor implements Type {
 
     private boolean customized = false;
 
+    private boolean customization = false;
+
     private Date lastSaved;
 
     private Date lastLoaded;
@@ -200,6 +202,14 @@ public class ThemeDescriptor implements Type {
 
     public boolean isCustomizable() {
         return (isXmlConfigured() && !isCustomized());
+    }
+
+    public boolean isCustomization() {
+        return customization;
+    }
+
+    public void setCustomization(boolean customization) {
+        this.customization = customization;
     }
 
 }

@@ -89,6 +89,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         typeRegistry.register(theme1);
         ThemeManager.updateThemeDescriptors();
         assertFalse(theme1.isCustomized());
+        assertFalse(theme1.isCustomization());
 
         ThemeDescriptor theme2 = new ThemeDescriptor();
         theme2.setName("alt");
@@ -97,6 +98,8 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         ThemeManager.updateThemeDescriptors();
         assertFalse(theme1.isCustomized());
         assertFalse(theme2.isCustomized());
+        assertFalse(theme1.isCustomization());
+        assertFalse(theme2.isCustomization());
 
         ThemeDescriptor theme3 = new ThemeDescriptor();
         // override "default" theme
@@ -107,12 +110,19 @@ public class TestCustomThemes extends NXRuntimeTestCase {
         assertTrue(theme1.isCustomized());
         assertFalse(theme2.isCustomized());
         assertFalse(theme3.isCustomized());
+        assertFalse(theme1.isCustomization());
+        assertFalse(theme2.isCustomization());
+        assertTrue(theme3.isCustomization());
 
         theme3.setName("default-new");
         ThemeManager.updateThemeDescriptors();
         assertFalse(theme1.isCustomized());
         assertFalse(theme2.isCustomized());
         assertFalse(theme3.isCustomized());
+        assertFalse(theme1.isCustomization());
+        assertFalse(theme2.isCustomization());
+        assertFalse(theme3.isCustomization());
+
     }
 
     public void testCreateCustomTheme() throws ThemeException {

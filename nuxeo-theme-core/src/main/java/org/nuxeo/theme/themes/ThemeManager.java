@@ -189,6 +189,11 @@ public final class ThemeManager implements Registrable {
                     + " cannot be customized.");
         }
 
+        if (themeDescriptor.isCustomization()) {
+            throw new ThemeException("Theme : " + themeName
+                    + " is already a customized theme.");
+        }
+
         ThemeSerializer serializer = new ThemeSerializer();
         String xmlSource;
         try {
@@ -209,6 +214,8 @@ public final class ThemeManager implements Registrable {
         } catch (ThemeIOException e) {
             throw new ThemeException("Could not save theme: " + newSrc, e);
         }
+
+        newThemeDescriptor.setCustomization(true);
         return newThemeDescriptor;
     }
 
@@ -217,8 +224,7 @@ public final class ThemeManager implements Registrable {
         ThemeManager themeManager = Manager.getThemeManager();
         String themeName = themeDescriptor.getName();
 
-        // TODO make sure that the theme is a custom version of another theme
-        if (!themeDescriptor.isCustom()) {
+        if (!themeDescriptor.isCustomization()) {
             throw new ThemeException("Theme : " + themeName
                     + " cannot be uncustomized.");
         }
@@ -295,9 +301,13 @@ public final class ThemeManager implements Registrable {
         for (List<ThemeDescriptor> themeDescriptors : names.values()) {
             for (ThemeDescriptor themeDescriptor : themeDescriptors) {
                 themeDescriptor.setCustomized(true);
+                themeDescriptor.setCustomization(false);
             }
             int size = themeDescriptors.size();
             themeDescriptors.get(size - 1).setCustomized(false);
+            if (size > 1) {
+                themeDescriptors.get(size - 1).setCustomization(true);
+            }
         }
     }
 
