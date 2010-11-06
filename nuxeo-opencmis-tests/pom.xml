@@ -14,8 +14,8 @@
   </parent>
 
   <artifactId>nuxeo-opencmis-tests</artifactId>
-  <name>Nuxeo OpenCMIS Tests</name>
-  <description>Nuxeo Core: OpenCMIS Tests</description>
+  <name>Nuxeo Chemistry OpenCMIS Tests</name>
+  <description>Nuxeo Core: Chemistry OpenCMIS Tests</description>
 
   <properties>
     <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>

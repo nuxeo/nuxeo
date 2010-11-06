@@ -14,8 +14,8 @@
   </parent>
 
   <artifactId>nuxeo-opencmis-bindings</artifactId>
-  <name>Nuxeo OpenCMIS Bindings</name>
-  <description>Nuxeo Core: OpenCMIS Bindings</description>
+  <name>Nuxeo Chemistry OpenCMIS Bindings</name>
+  <description>Nuxeo Core: Chemistry OpenCMIS Bindings</description>
 
   <properties>
     <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>

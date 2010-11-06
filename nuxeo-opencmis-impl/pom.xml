@@ -14,8 +14,8 @@
   </parent>
 
   <artifactId>nuxeo-opencmis-impl</artifactId>
-  <name>Nuxeo OpenCMIS Implementation</name>
-  <description>Nuxeo Core: OpenCMIS Implementation</description>
+  <name>Nuxeo Chemistry OpenCMIS Implementation</name>
+  <description>Nuxeo Core: Chemistry OpenCMIS Implementation</description>
 
   <properties>
     <nuxeo.version>5.4.0-SNAPSHOT</nuxeo.version>
