@@ -55,6 +55,7 @@
     <module>nuxeo-automation</module>
     <module>nuxeo-features-test</module>
     <module>nuxeo-admin-center</module>
+    <module>nuxeo-platform-forms-layout-export</module>
   </modules>
 
   <profiles>
