@@ -849,6 +849,7 @@ NXThemesEditor.addTheme = function(viewid) {
              var text = r.responseText;
              NXThemesEditor.selectTheme(text);
              NXThemes.getViewById(viewid).refresh();
+             NXThemes.getViewById("dashboard actions").refresh();             
              NXThemesEditor.refreshThemeSelector();             
              NXThemesEditor.refreshPageSelector();
          },

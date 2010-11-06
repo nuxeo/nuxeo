@@ -7,7 +7,7 @@
   icon="${basePath}/skin/nxthemes-editor/img/back-14.png"
   label="Canvas editor" />
 
-<#if theme.custom>
+<#if theme.customization>
     <@nxthemes_button identifier="dashboard remove customizations"
   link="javascript:NXThemesEditor.uncustomizeTheme('${theme.src}', 'dashboard actions')"
   icon="${basePath}/skin/nxthemes-editor/img/remove-14.png"  
@@ -38,6 +38,9 @@
     <#if !theme.saveable>
       <li><a href="javascript:NXThemesEditor.loadTheme('${theme.src?js_string}')">Restore original ${theme.name} theme</a></li> 
     </#if>
+    <#if theme.custom && !theme.customization>
+      <li><a href="javascript:NXThemesEditor.deleteTheme('${theme.src?js_string}')">Delete ${theme.name} theme</a></li> 
+    </#if>    
   </ul>
 </div>
 
