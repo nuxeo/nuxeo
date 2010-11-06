@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- * 
+ *
  */
 @Stateless
 @Remote(PermissionProvider.class)

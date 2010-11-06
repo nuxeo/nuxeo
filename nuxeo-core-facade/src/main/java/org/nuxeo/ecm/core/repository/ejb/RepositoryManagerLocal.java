@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface RepositoryManagerLocal extends RepositoryManager {
 

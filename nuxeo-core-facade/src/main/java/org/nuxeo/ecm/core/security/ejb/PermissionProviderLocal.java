@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface PermissionProviderLocal extends PermissionProvider {
 

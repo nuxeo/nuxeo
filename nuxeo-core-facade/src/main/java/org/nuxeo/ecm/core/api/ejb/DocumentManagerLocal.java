@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author Razvan Caraghin
- * 
+ *
  */
 public interface DocumentManagerLocal extends CoreSession {
 

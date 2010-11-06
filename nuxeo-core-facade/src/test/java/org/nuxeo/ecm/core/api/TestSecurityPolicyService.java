@@ -76,9 +76,9 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         // test permission for 'foo' user using hasPermission
         Principal fooUser = new UserPrincipal("foo");
         assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
-        
+
         closeSession(session);
-        
+
         // open session as anonymous and set access on user info
         session = openSessionAs(ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");

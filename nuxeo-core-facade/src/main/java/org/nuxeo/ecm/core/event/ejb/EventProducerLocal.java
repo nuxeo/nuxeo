@@ -22,7 +22,7 @@ package org.nuxeo.ecm.core.event.ejb;
 import org.nuxeo.ecm.core.event.EventProducer;
 
 /**
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface EventProducerLocal extends EventProducer {

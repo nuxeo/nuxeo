@@ -37,7 +37,7 @@ import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class RepositoryReloader implements EventListener {
 
@@ -135,7 +135,7 @@ public class RepositoryReloader implements EventListener {
 
     /**
      * Reload core repositories.
-     * 
+     *
      * @throws Exception
      */
     public static void reloadRepositories() throws Exception {

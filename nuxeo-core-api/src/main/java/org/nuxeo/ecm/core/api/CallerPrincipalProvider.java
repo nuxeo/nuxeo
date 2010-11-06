@@ -22,12 +22,12 @@ import org.nuxeo.runtime.api.Framework;
  * To install a provider call setInstance() method or set a system (or nuxeo)
  * property using as key the full name of this class and as value the full name
  * of the implementation.
- * 
+ *
  * This class exists to allow changing the logic of in case of JBoss5. Should
  * only be used by the CoreSession bean. See NXP-5647.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class CallerPrincipalProvider {
 

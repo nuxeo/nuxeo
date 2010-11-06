@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Exposes a local repository manager as an stateless session bean.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Stateless

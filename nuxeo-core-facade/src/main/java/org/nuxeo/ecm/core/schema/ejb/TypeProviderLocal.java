@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.schema.TypeProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface TypeProviderLocal extends TypeProvider {
 
