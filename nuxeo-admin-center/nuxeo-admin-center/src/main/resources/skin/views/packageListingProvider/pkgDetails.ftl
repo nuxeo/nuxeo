@@ -69,6 +69,21 @@
 		        </#if>
 	        </td>
 			</tr>
+			<tr>
+				<td><span class="boldLabel">Production state</span></td>
+				<td> ${Context.getMessage('label.productionState.'+pkg.productionState)}</td>
+			</tr><tr>
+				<td><span class="boldLabel">Certification status</span></td>
+				<td> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
+			<tr>
+				<td><span class="boldLabel">Nuxeo support</span></td>
+				<td><#if pkg.isSupported()>
+					   Yes
+					<#else>
+					   No
+					</#if>
+				</td>
+			</tr>
 		</table>
         </span>
       </td>

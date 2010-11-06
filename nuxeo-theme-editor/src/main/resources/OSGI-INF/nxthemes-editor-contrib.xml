@@ -294,6 +294,15 @@
       <resource>jscolor.js</resource>
     </view>
 
+    <view name="theme view" template-engine="freemarker">
+      <engine>page-editor</engine>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/theme-view-page-editor.xml
+      </template>
+    </view>
+        
     <view name="page frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>page</element-type>
@@ -427,6 +436,15 @@
       <resource>nxthemes-editor.css</resource>
       <resource>jscolor.js</resource>
     </view>
+    
+    <view name="theme view" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/jsf/theme-view-page-editor.xml
+      </template>
+    </view>    
 
     <view name="page frame" template-engine="jsf-facelets">
       <engine>page-editor</engine>
@@ -493,7 +511,10 @@
     <!-- This engine renders the editor view of the page canvas -->
     <engine name="page-editor">
 
-      <renderer element="theme" />
+      <renderer element="theme">
+        <filter>add widget</filter>
+        <filter>collect xmlns</filter>
+      </renderer>
 
       <renderer element="page">
         <filter>add widget</filter>

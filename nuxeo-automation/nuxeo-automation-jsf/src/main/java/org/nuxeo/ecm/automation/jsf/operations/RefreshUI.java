@@ -11,31 +11,26 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
- * Contributors:
- *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.operations.users;
 
-import org.nuxeo.ecm.automation.OperationContext;
+package org.nuxeo.ecm.automation.jsf.operations;
+
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
-@Operation(id = Logout.ID, category = Constants.CAT_USERS_GROUPS, label = "Logout", description = "Perform a logout. This should be used only after using the Login As operation to restore original login. This is a void operations - the input will be returned back as the output.")
-public class Logout {
+@Operation(id = RefreshUI.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Refresh", description = "Refresh the UI cache. This is a void operation - the input object is returned back as the oputput")
+public class RefreshUI {
 
-    public static final String ID = "Auth.Logout";
-
-    @Context
-    protected OperationContext ctx;
+    public static final String ID = "Seam.Refresh";
 
     @OperationMethod
     public void run() throws Exception {
-        ctx.getLoginStack().pop();
+        OperationHelper.getContentViewActions().resetAllContent();
     }
 
 }

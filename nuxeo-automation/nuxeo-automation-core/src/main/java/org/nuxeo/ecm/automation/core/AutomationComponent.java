@@ -83,6 +83,8 @@ import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocumentList;
 import org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails;
 import org.nuxeo.ecm.automation.core.operations.users.GetDocumentUsersAndGroups;
+import org.nuxeo.ecm.automation.core.operations.users.LoginAs;
+import org.nuxeo.ecm.automation.core.operations.users.Logout;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -177,6 +179,8 @@ public class AutomationComponent extends DefaultComponent {
 
         service.putOperation(GetDocumentUsersAndGroups.class);
         service.putOperation(GetDocumentPrincipalEmails.class);
+        service.putOperation(LoginAs.class);
+        service.putOperation(Logout.class);
 
         service.putOperation(AuditLog.class);
 

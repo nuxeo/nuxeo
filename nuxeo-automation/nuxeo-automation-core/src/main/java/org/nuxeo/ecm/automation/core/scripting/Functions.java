@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -119,6 +121,14 @@ public class Functions {
     public String getNextId(final String key) throws Exception {
         UIDSequencer svc = Framework.getService(UIDSequencer.class);
         return Integer.toString(svc.getNext(key));
+    }
+
+    public DateWrapper date(Date date) {
+        return new DateWrapper(date);
+    }
+
+    public DateWrapper calendar(Calendar date) {
+        return new DateWrapper(date);
     }
 
 }

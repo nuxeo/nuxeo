@@ -77,10 +77,9 @@ public class OperationActionBean implements Serializable {
 
     protected void showSuccess(OperationContext ctx, String chain) {
         String msg = (String) ctx.get(AddInfoMessage.ID);
-        if (msg == null) {
-            msg = "chain " + chain + " executed successfully";
+        if (msg != null) {
+            facesMessages.add(FacesMessage.SEVERITY_INFO, msg);
         }
-        facesMessages.add(FacesMessage.SEVERITY_INFO, msg);
     }
 
     protected String runOperation(Object chain) throws Exception {

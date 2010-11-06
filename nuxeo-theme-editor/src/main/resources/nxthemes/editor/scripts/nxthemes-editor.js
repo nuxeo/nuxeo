@@ -1732,7 +1732,7 @@ NXThemesStyleEditor.refreshCssPreview = function() {
 };
 
 NXThemesStyleEditor.closeStylePicker = function() {
-    NXThemesEditor.setEditorPerspective('style properties');
+    NXThemes.getControllerById('element editor perspectives').switchTo('style properties');
 };
 
 NXThemesStyleEditor.renderElement = function(id, area) {
