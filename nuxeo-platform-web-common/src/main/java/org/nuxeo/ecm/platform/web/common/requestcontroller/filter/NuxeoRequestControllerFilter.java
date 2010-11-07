@@ -298,7 +298,7 @@ public class NuxeoRequestControllerFilter implements Filter {
     /**
      * Releases the {@link Lock} if present in the HttpSession.
      */
-    public static void simpleReleaseSyncOnSession(HttpServletRequest request) {
+    public static boolean simpleReleaseSyncOnSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             if (log.isDebugEnabled()) {
@@ -306,7 +306,7 @@ public class NuxeoRequestControllerFilter implements Filter {
                         request,
                         "No more HttpSession: can not unlock !, HttpSession must have been invalidated"));
             }
-            return;
+            return false;
         }
         log.debug("Trying to unlock on session " + session.getId()
                 + " on Thread " + Thread.currentThread().getId());
@@ -314,11 +314,19 @@ public class NuxeoRequestControllerFilter implements Filter {
         Lock lock = (Lock) session.getAttribute(SESSION_LOCK_KEY);
         if (lock == null) {
             log.error("Unable to find session lock, HttpSession may have been invalidated");
+            return false;
         } else {
-            lock.unlock();
+            try {
+                lock.unlock();
+            }
+            catch (Throwable t) {
+                log.debug("Unlock failed on request " + request.getRequestURI());
+                return false;
+            }
             if (log.isDebugEnabled()) {
                 log.debug("session unlocked on Thread ");
             }
+            return true;
         }
     }
 
