@@ -13,8 +13,9 @@ def system(cmd):
     print cmd
     os.system(cmd)
 
-for line in os.popen("mvn help:effective-pom"):
+for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
+    print line
     m = re.match("<module>(.*?)</module>", line)
     if not m:
         continue
