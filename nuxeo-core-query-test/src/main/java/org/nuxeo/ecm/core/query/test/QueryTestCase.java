@@ -639,9 +639,18 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         DocumentModelList dml;
         createDocs();
 
-        sql = "SELECT * FROM document WHERE ecm:path='/testfolder1/'";
+        sql = "SELECT * FROM document WHERE ecm:path = '/testfolder1'";
         dml = session.query(sql);
         assertEquals(1, dml.size());
+
+        // trailing slash accepted
+        sql = "SELECT * FROM document WHERE ecm:path = '/testfolder1/'";
+        dml = session.query(sql);
+        assertEquals(1, dml.size());
+
+        sql = "SELECT * FROM document WHERE ecm:path <> '/testfolder1'";
+        dml = session.query(sql);
+        assertEquals(6, dml.size());
     }
 
     public void testStartsWith() throws Exception {

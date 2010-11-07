@@ -1483,8 +1483,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 // tree
                 buf.append("0=1");
             } else {
-                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName()
-                        + " = ?");
+                buf.append(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName());
+                visitOperator(node.operator);
+                buf.append('?');
                 whereParams.add(id);
             }
         }
