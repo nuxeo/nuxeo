@@ -1,22 +1,20 @@
-all: build-tomcat test-selenium
+all: build assemble-tomcat selenium-tomcat
 
-test-unit:
-	mvn test
+build-with-tests:
+	mvn install
+	cd addons ; mvn install
 
-build-all:
+build:
 	mvn install -Dmaven.test.skip=true
-	cd nuxeo-distribution ; mvn clean install -Pnuxeo-dm,jboss
+	cd addons ; mvn install -Dmaven.test.skip=true
+
+assemble-tomcat:
 	cd nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
 
-build-tomcat:
-	mvn install -Dmaven.test.skip=true
-	cd nuxeo-distribution ; mvn clean install -Pnuxeo-dm,tomcat
-
-build-jboss:
-	mvn install -Dmaven.test.skip=true
+assemble-jboss:
 	cd nuxeo-distribution ; mvn clean install -Pnuxeo-dm,jboss
 
-test-selenium:
+selenium-tomcat:
 	./runtests.sh
 
 clean:
