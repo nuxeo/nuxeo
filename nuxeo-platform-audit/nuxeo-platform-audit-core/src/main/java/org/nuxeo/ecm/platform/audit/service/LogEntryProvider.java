@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -158,6 +159,19 @@ public class LogEntryProvider {
 
     public List<?> nativeQuery(String queryString, int pageNb, int pageSize) {
         Query query = em.createQuery(queryString);
+        if (pageNb > 1) {
+            query.setFirstResult((pageNb - 1) * pageSize);
+        }
+        query.setMaxResults(pageSize);
+        return query.getResultList();
+    }
+
+    public List<?> nativeQuery(String queryString, Map<String, Object> params,
+            int pageNb, int pageSize) {
+        Query query = em.createQuery(queryString);
+        for (Entry<String, Object> en : params.entrySet()) {
+            query.setParameter(en.getKey(), en.getValue());
+        }
         if (pageNb > 1) {
             query.setFirstResult((pageNb - 1) * pageSize);
         }

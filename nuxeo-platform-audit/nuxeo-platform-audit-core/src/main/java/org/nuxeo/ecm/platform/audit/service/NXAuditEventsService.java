@@ -479,6 +479,28 @@ public class NXAuditEventsService extends DefaultComponent implements
                 pageSize);
     }
 
+    public List<?> nativeQuery(final String query,
+            final Map<String, Object> params, final int pageNb,
+            final int pageSize) {
+        try {
+            return getOrCreatePersistenceProvider().run(false,
+                    new RunCallback<List<?>>() {
+                        public List<?> runWith(EntityManager em) {
+                            return nativeQuery(em, query, params, pageNb,
+                                    pageSize);
+                        }
+                    });
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public List<?> nativeQuery(EntityManager em, String query,
+            Map<String, Object> params, int pageNb, int pageSize) {
+        return LogEntryProvider.createProvider(em).nativeQuery(query, params,
+                pageNb, pageSize);
+    }
+
     public List<LogEntry> queryLogs(final String[] eventIds,
             final String dateRange) {
         try {

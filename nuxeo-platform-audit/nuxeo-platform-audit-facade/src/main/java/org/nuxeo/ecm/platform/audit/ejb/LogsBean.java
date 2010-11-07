@@ -95,6 +95,13 @@ public class LogsBean implements Logs {
         return entries;
     }
 
+    public List<?> nativeQuery(String query, Map<String, Object> params,
+            int pageNb, int pageSize) {
+        List<?> entries = service().nativeQuery(em, query, params, pageNb,
+                pageSize);
+        return entries;
+    }
+
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
             String category, String path, int pageNb, int pageSize) {
         List<LogEntry> entries = service().queryLogsByPage(em, eventIds, limit,

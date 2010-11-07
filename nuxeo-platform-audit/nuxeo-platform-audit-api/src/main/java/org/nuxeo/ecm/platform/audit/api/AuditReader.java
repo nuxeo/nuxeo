@@ -123,4 +123,14 @@ public interface AuditReader {
      */
     List<?> nativeQuery(String query, int pageNb, int pageSize);
 
+    /**
+     * Returns a batched list of entries.
+     *
+     * @param query a JPA query language query
+     * @param params parameters for the query
+     * @param pageNb the page number (starts at 1)
+     * @param pageSize the number of results per page
+     */
+    List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize);
+
 }
