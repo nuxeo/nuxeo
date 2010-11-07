@@ -52,9 +52,12 @@
                             classifier="light" />
       -->
     </unzip>
+    <!-- will use a skeleton instead
     <move todir="${jboss}">
       <fileset dir="${outdir}/jboss-5.1.0.GA" />
     </move>
+    -->
+    <mkdir dir="${jboss}"/>
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="doc" />
@@ -136,6 +139,16 @@
              value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
     </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
+         basedir="${outdir}"
+         includes="nuxeo-cap-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap-ear.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-cap-ear"
+                     type="zip" />
+    <antcall target="apply-ear">
+      <param name="distribution.dir" value="${distribution.dir}" />
+    </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-cap.zip"
          basedir="${outdir}"
          includes="nuxeo-cap-${maven.project.version}-jboss/**" />
@@ -197,6 +210,16 @@
       <param name="org.nuxeo.distribution.version"
              value="${maven.project.version}" />
       <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}" />
+    </antcall>
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
+         basedir="${outdir}"
+         includes="nuxeo-dm-${maven.project.version}-jboss/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm-ear.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     classifier="nuxeo-dm-ear"
+                     type="zip" />
+    <antcall target="apply-ear">
+      <param name="distribution.dir" value="${distribution.dir}" />
     </antcall>
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-nuxeo-dm.zip"
          basedir="${outdir}"
@@ -282,5 +305,11 @@ org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
 org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
 org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
     </echo>
+  </target>
+  
+  <target name="apply-ear">
+    <copy todir="${distribution.dir}" overwrite="true">
+      <fileset dir="${outdir}/jboss-5.1.0.GA" />
+    </copy>
   </target>
 </project>
