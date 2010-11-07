@@ -62,6 +62,7 @@
 <ul class="nxthemesSelector">
 <#list collections as collection>
   <li <#if selected_bank_collection && selected_bank_collection=collection>class="selected"</#if>><a href="javascript:NXThemesEditor.selectBankCollection('${collection}', 'image manager')">
+    <img src="${basePath}/skin/nxthemes-editor/img/collection-16.png" width="16" height="16" />
     ${collection}</a></li>
 </#list>
 </ul>

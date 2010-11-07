@@ -303,6 +303,11 @@ html, body {
   margin-top: 9px;
 }
 
+#nxthemesPerspectiveSelector label {
+  color: #eee; 
+  font: bold 11px arial;
+}
+
 /* Theme selector drop-down list */
 #nxthemesThemeSelector {
   float: left;
@@ -314,6 +319,11 @@ html, body {
   color: #eee;
 }
 
+#nxthemesThemeSelector label {
+  color: #eee; 
+  font: bold 11px arial;
+}
+
 #nxthemesThemeSelector select {
   font: 11px Arial, sans-serif;
   border: 1px solid #000;
@@ -321,8 +331,6 @@ html, body {
   background-color: #eee;
 }
 
-#nxthemesThemeSelector option.selected {
-}
 
 /* Perspective selector drop-down list */
 .nxthemesPerspectiveSelector {
