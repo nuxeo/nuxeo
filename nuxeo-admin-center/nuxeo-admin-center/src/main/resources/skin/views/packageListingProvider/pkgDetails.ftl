@@ -30,21 +30,26 @@
        		  </td>
      		</tr>
       		<tr>
-        	 <td class="packageLabel"> ${pkg.commentsNumber} comments :</td>
+        	 <td class="packageLabel">
+        	 <#if pkg.isLocal()==false>
+        	 ${pkg.commentsNumber}
+        	 </#if> comments :</td>
         	 <td class="packageField">
-        	 <#if pkg.commentsNumber==0 >
+        	 <#if pkg.commentsNumber==0 && !pkg.isLocal() >
         	 &nbsp;
         	 <#else>
         	 <span class="commentArea" id="commentArea-${pkg.id}">
-        	 <A href="javascript:fetchComments('${pkg.id}')">more ...</A>
+        	 <A href="javascript:fetchComments('${pkg.id}')">get comments...</A>
         	 </span>
         	 </#if>
         	 </td>
       		</tr>
+      		<#if pkg.isLocal()==false>
       		<tr>
       		  <td class="packageLabel">Download count :</td>
        		  <td class="packageField"> ${pkg.downloadsCount} </td>
       		</tr>
+      		</#if>
       	 </table>
   		</span>
       </td>
