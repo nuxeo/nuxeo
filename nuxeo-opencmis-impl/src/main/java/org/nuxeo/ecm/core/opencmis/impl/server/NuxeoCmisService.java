@@ -119,8 +119,6 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -1005,26 +1003,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             Holder<String> changeLogTokenHolder, Boolean includeProperties,
             String filter, Boolean includePolicyIds, Boolean includeAcl,
             BigInteger maxItems, ExtensionsData extension) {
-        String changeLogToken;
-        if (changeLogTokenHolder == null
-                || (changeLogToken = changeLogTokenHolder.getValue()) == null) {
-            throw new CmisInvalidArgumentException("Missing change log token");
-        }
-        try {
-            AuditReader reader = Framework.getService(AuditReader.class);
-            if (reader == null) {
-                throw new CmisRuntimeException("Cannot find audit service");
-            }
-            int max = maxItems == null ? 50 : maxItems.intValue();
-            // TODO XXX repositoryId as well
-            String query = "log.eventDate >= :limit"
-                    + " ORDER BY log.eventDate DESC";
-            List<LogEntry> entries = reader.nativeQueryLogs(query, 1, max);
-
-            return null; // TODO
-        } catch (Exception e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        throw new CmisNotSupportedException();
     }
 
     @Override
