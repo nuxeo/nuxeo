@@ -85,9 +85,20 @@
       <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
       <version>${nuxeo.version}</version>
     </dependency>
+    <!-- audit -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-persistence</artifactId>
+      <version>${nuxeo.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-api</artifactId>
+      <version>${nuxeo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-core</artifactId>
       <version>${nuxeo.version}</version>
     </dependency>
 
@@ -114,15 +125,24 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
     </dependency>
+    <!-- needed by H2 fulltext -->
     <dependency>
-      <!-- needed by H2 fulltext -->
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
     </dependency>
+    <!-- needed by nuxeo-core-convert-plugins -->
     <dependency>
-      <!-- needed by nuxeo-core-convert-plugins -->
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
+    </dependency>
+    <!-- needed by audit -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
     </dependency>
     <!-- scope provided -->
     <dependency>

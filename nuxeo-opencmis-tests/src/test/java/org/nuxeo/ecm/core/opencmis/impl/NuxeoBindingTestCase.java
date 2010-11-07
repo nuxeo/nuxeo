@@ -68,6 +68,11 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.api");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
+        // Audit Service
+        nuxeotc.deployBundle("org.nuxeo.ecm.core.persistence");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit.api");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit");
+        nuxeotc.deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
 
         nuxeotc.openSession();
 

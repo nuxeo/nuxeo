@@ -61,54 +61,12 @@ public class NuxeoRepository {
 
     protected final String rootFolderId;
 
-    protected final RepositoryInfoImpl repositoryInfo;
-
     protected TypeManagerImpl typeManager;
 
     public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
         this.rootFolderId = rootFolderId;
-        repositoryInfo = new RepositoryInfoImpl();
-        repositoryInfo.setId(repositoryId);
-        repositoryInfo.setName("Nuxeo Repository " + repositoryId);
-        repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
-        repositoryInfo.setCmisVersionSupported("1.0");
-        repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
-        repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
-        repositoryInfo.setThinClientUri(null); // TODO
-        repositoryInfo.setChangesIncomplete(Boolean.TRUE);
-        repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
-                BaseTypeId.CMIS_FOLDER));
-        repositoryInfo.setVendorName("Nuxeo");
-        repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
-        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.4 dev");
-        repositoryInfo.setProductVersion(version);
-        repositoryInfo.setRootFolder(rootFolderId);
-        // TODO link LatestChangeLogToken to session state
-        repositoryInfo.setLatestChangeLogToken(null); // TODO XXX variable
-        RepositoryCapabilitiesImpl caps = new RepositoryCapabilitiesImpl();
-        repositoryInfo.setCapabilities(caps);
-        AclCapabilitiesDataImpl aclCaps = new AclCapabilitiesDataImpl();
-        repositoryInfo.setAclCapabilities(aclCaps);
-        caps.setAllVersionsSearchable(Boolean.TRUE);
-        caps.setCapabilityAcl(CapabilityAcl.NONE);
-        caps.setCapabilityChanges(CapabilityChanges.PROPERTIES);
-        caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
-        caps.setCapabilityJoin(CapabilityJoin.INNERANDOUTER);
-        caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
-        caps.setCapabilityRendition(CapabilityRenditions.READ);
-        caps.setIsPwcSearchable(Boolean.TRUE);
-        caps.setIsPwcUpdatable(Boolean.TRUE);
-        caps.setSupportsGetDescendants(Boolean.TRUE);
-        caps.setSupportsGetFolderTree(Boolean.TRUE);
-        caps.setSupportsMultifiling(Boolean.FALSE);
-        caps.setSupportsUnfiling(Boolean.FALSE);
-        caps.setSupportsVersionSpecificFiling(Boolean.FALSE);
-        aclCaps.setAclPropagation(AclPropagation.REPOSITORYDETERMINED);
-        aclCaps.setPermissionDefinitionData(new ArrayList<PermissionDefinition>(
-                0));
-        aclCaps.setPermissionMappingData(new HashMap<String, PermissionMapping>());
-        aclCaps.setSupportedPermissions(SupportedPermissions.BASIC);
+
     }
 
     public String getId() {
@@ -194,7 +152,47 @@ public class NuxeoRepository {
         return rootFolderId;
     }
 
-    public RepositoryInfo getRepositoryInfo() {
+    public RepositoryInfo getRepositoryInfo(String latestChangeLogToken) {
+        RepositoryInfoImpl repositoryInfo = new RepositoryInfoImpl();
+        repositoryInfo.setId(repositoryId);
+        repositoryInfo.setName("Nuxeo Repository " + repositoryId);
+        repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
+        repositoryInfo.setCmisVersionSupported("1.0");
+        repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
+        repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
+        repositoryInfo.setThinClientUri(null); // TODO
+        repositoryInfo.setChangesIncomplete(Boolean.FALSE);
+        repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
+                BaseTypeId.CMIS_FOLDER));
+        repositoryInfo.setLatestChangeLogToken(latestChangeLogToken);
+        repositoryInfo.setVendorName("Nuxeo");
+        repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
+        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.4 dev");
+        repositoryInfo.setProductVersion(version);
+        repositoryInfo.setRootFolder(rootFolderId);
+        RepositoryCapabilitiesImpl caps = new RepositoryCapabilitiesImpl();
+        repositoryInfo.setCapabilities(caps);
+        AclCapabilitiesDataImpl aclCaps = new AclCapabilitiesDataImpl();
+        repositoryInfo.setAclCapabilities(aclCaps);
+        caps.setAllVersionsSearchable(Boolean.TRUE);
+        caps.setCapabilityAcl(CapabilityAcl.NONE);
+        caps.setCapabilityChanges(CapabilityChanges.PROPERTIES);
+        caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
+        caps.setCapabilityJoin(CapabilityJoin.INNERANDOUTER);
+        caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
+        caps.setCapabilityRendition(CapabilityRenditions.READ);
+        caps.setIsPwcSearchable(Boolean.TRUE);
+        caps.setIsPwcUpdatable(Boolean.TRUE);
+        caps.setSupportsGetDescendants(Boolean.TRUE);
+        caps.setSupportsGetFolderTree(Boolean.TRUE);
+        caps.setSupportsMultifiling(Boolean.FALSE);
+        caps.setSupportsUnfiling(Boolean.FALSE);
+        caps.setSupportsVersionSpecificFiling(Boolean.FALSE);
+        aclCaps.setAclPropagation(AclPropagation.REPOSITORYDETERMINED);
+        aclCaps.setPermissionDefinitionData(new ArrayList<PermissionDefinition>(
+                0));
+        aclCaps.setPermissionMappingData(new HashMap<String, PermissionMapping>());
+        aclCaps.setSupportedPermissions(SupportedPermissions.BASIC);
         return repositoryInfo;
     }
 

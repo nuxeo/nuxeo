@@ -95,6 +95,11 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
+        // Audit Service
+        deployBundle("org.nuxeo.ecm.core.persistence");
+        deployBundle("org.nuxeo.ecm.platform.audit.api");
+        deployBundle("org.nuxeo.ecm.platform.audit");
+        deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
 
         openSession(); // nuxeo
 

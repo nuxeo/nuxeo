@@ -40,6 +40,7 @@ import java.util.TimeZone;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.AclCapabilities;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.ChangeEventInfo;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
@@ -64,6 +65,7 @@ import org.apache.chemistry.opencmis.commons.enums.CapabilityContentStreamUpdate
 import org.apache.chemistry.opencmis.commons.enums.CapabilityJoin;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityQuery;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityRenditions;
+import org.apache.chemistry.opencmis.commons.enums.ChangeType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
@@ -84,6 +86,7 @@ import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
@@ -116,12 +119,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     protected VersioningService verService;
 
+    protected String file5id;
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         // nuxeotc.openSession();
-        Helper.makeNuxeoRepository(nuxeotc.getSession());
+        Map<String, String> info = Helper.makeNuxeoRepository(nuxeotc.getSession());
+        file5id = info.get("file5id");
         // nuxeotc.closeSession();
         repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
@@ -215,7 +221,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkInfo(info);
     }
 
-    public void checkInfo(RepositoryInfo info) {
+    protected void checkInfo(RepositoryInfo info) {
         assertEquals(repositoryId, info.getId());
         assertEquals("Nuxeo Repository " + repositoryId, info.getName());
         assertEquals("Nuxeo Repository " + repositoryId, info.getDescription());
@@ -226,10 +232,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
-        assertNull(info.getLatestChangeLogToken());
         assertEquals("1.0", info.getCmisVersionSupported());
         // TODO assertEquals("...", info.getThinClientUri());
-        assertEquals(Boolean.TRUE, info.getChangesIncomplete());
+        assertNotNull(info.getLatestChangeLogToken());
+        assertEquals(Boolean.FALSE, info.getChangesIncomplete());
         assertEquals(
                 Arrays.asList(BaseTypeId.CMIS_DOCUMENT, BaseTypeId.CMIS_FOLDER),
                 info.getChangesOnType());
@@ -1547,6 +1553,95 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("image/png", cs.getMimeType());
         assertEquals("text.png", cs.getFileName());
         assertEquals(394, cs.getBigLength().longValue());
+    }
+
+    @Ignore // has some problems when run from maven
+    @Test
+    public void testGetContentChanges() throws Exception {
+        ObjectList changes;
+        List<ObjectData> objects;
+        Holder<String> changeLogTokenHolder = new Holder<String>();
+
+        sleepForAudit();
+        String clt1 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
+        assertNotNull(clt1);
+
+        // read all log
+        List<ObjectData> allObjects = new ArrayList<ObjectData>();
+        changeLogTokenHolder.setValue(null); // start at beginning
+        boolean skipFirst = false;
+        do {
+            int maxItems = 5;
+            changes = discService.getContentChanges(repositoryId,
+                    changeLogTokenHolder, Boolean.TRUE, null, null, null,
+                    BigInteger.valueOf(maxItems), null);
+            objects = changes.getObjects();
+            if (skipFirst) {
+                // already got the first one as part of the last batch
+                objects = objects.subList(1, objects.size());
+            }
+            allObjects.addAll(objects);
+            skipFirst = true;
+        } while (Boolean.TRUE.equals(changes.hasMoreItems()));
+        assertEquals(clt1, changeLogTokenHolder.getValue());
+
+        assertTrue(allObjects.size() >= 10);
+        objects = allObjects.subList(allObjects.size() - 10, allObjects.size());
+        checkChange(objects.get(0), "/testfolder1", //
+                ChangeType.CREATED, "Folder");
+        checkChange(objects.get(1), "/testfolder1/testfile1",
+                ChangeType.CREATED, "File");
+        checkChange(objects.get(2), "/testfolder1/testfile2",
+                ChangeType.CREATED, "File");
+        checkChange(objects.get(3), "/testfolder1/testfile3",
+                ChangeType.CREATED, "Note");
+        checkChange(objects.get(4), "/testfolder2", //
+                ChangeType.CREATED, "Folder");
+        checkChange(objects.get(5), "/testfolder2/testfolder3",
+                ChangeType.CREATED, "Folder");
+        checkChange(objects.get(6), "/testfolder2/testfolder4",
+                ChangeType.CREATED, "Folder");
+        checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4",
+                ChangeType.CREATED, "File");
+        checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
+        checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
+
+        // remove a doc
+
+        ObjectData ob1 = getObjectByPath("/testfolder1/testfile1");
+        objService.deleteObject(repositoryId, ob1.getId(), Boolean.TRUE, null);
+
+        // get latest change log token
+        sleepForAudit();
+        String clt2 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
+        assertNotNull(clt2);
+        assertNotSame(clt2, clt1);
+
+        changeLogTokenHolder.setValue(clt2); // just the last
+        changes = discService.getContentChanges(repositoryId,
+                changeLogTokenHolder, Boolean.TRUE, null, null, null,
+                BigInteger.valueOf(100), null);
+        objects = changes.getObjects();
+        assertEquals(1, objects.size());
+        checkChange(objects.get(0), ob1.getId(), ChangeType.DELETED, "File");
+    }
+
+    protected void sleepForAudit() throws InterruptedException {
+        Thread.sleep(5 * 1000); // wait for audit log to catch up
+    }
+
+    protected void checkChange(ObjectData data, String id,
+            ChangeType changeType, String type) throws Exception {
+        Map<String, PropertyData<?>> properties;
+        ChangeEventInfo cei;
+        cei = data.getChangeEventInfo();
+        properties = data.getProperties().getProperties();
+        String expectedId = id.startsWith("/") ? getObjectByPath(id).getId()
+                : id;
+        assertEquals(expectedId, data.getId());
+        assertEquals(changeType, cei.getChangeType());
+        assertEquals(type,
+                properties.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue());
     }
 
 }

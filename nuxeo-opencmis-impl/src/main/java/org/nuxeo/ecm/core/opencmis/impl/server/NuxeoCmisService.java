@@ -22,7 +22,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +68,7 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.enums.ChangeType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
@@ -81,6 +84,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Converter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ChangeEventInfoDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
@@ -90,6 +94,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderList
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdImpl;
 import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
@@ -110,6 +115,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
@@ -119,6 +125,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -131,6 +139,8 @@ public class NuxeoCmisService extends AbstractCmisService {
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
     public static final int DEFAULT_FOLDER_LEVELS = 2;
+
+    public static final int DEFAULT_CHANGE_LOG_SIZE = 100;
 
     public static final String NUXEO_WAR = "nuxeo.war";
 
@@ -241,7 +251,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         List<NuxeoRepository> repos = NuxeoRepositories.getRepositories();
         List<RepositoryInfo> infos = new ArrayList<RepositoryInfo>(repos.size());
         for (NuxeoRepository repo : repos) {
-            infos.add(repo.getRepositoryInfo());
+            String latestChangeLogToken = getLatestChangeLogToken(repo.getId());
+            infos.add(repo.getRepositoryInfo(latestChangeLogToken));
         }
         return infos;
     }
@@ -249,8 +260,9 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public RepositoryInfo getRepositoryInfo(String repositoryId,
             ExtensionsData extension) {
-        // TODO link LatestChangeLogToken to session state
-        return NuxeoRepositories.getRepository(repositoryId).getRepositoryInfo();
+        String latestChangeLogToken = getLatestChangeLogToken(repositoryId);
+        return NuxeoRepositories.getRepository(repositoryId).getRepositoryInfo(
+                latestChangeLogToken);
     }
 
     @Override
@@ -1003,7 +1015,117 @@ public class NuxeoCmisService extends AbstractCmisService {
             Holder<String> changeLogTokenHolder, Boolean includeProperties,
             String filter, Boolean includePolicyIds, Boolean includeAcl,
             BigInteger maxItems, ExtensionsData extension) {
-        throw new CmisNotSupportedException();
+        if (changeLogTokenHolder == null) {
+            throw new CmisInvalidArgumentException(
+                    "Missing change log token holder");
+
+        }
+        String changeLogToken = changeLogTokenHolder.getValue();
+        long minDate;
+        if (changeLogToken == null) {
+            minDate = 0;
+        } else {
+            try {
+                minDate = Long.parseLong(changeLogToken);
+            } catch (NumberFormatException e) {
+                throw new CmisInvalidArgumentException(
+                        "Invalid change log token");
+            }
+        }
+        try {
+            AuditReader reader = Framework.getService(AuditReader.class);
+            if (reader == null) {
+                throw new CmisRuntimeException("Cannot find audit service");
+            }
+            int max = maxItems == null ? -1 : maxItems.intValue();
+            if (max < 0) {
+                max = DEFAULT_CHANGE_LOG_SIZE;
+            }
+            // TODO XXX repositoryId as well
+            Map<String, Object> params = new HashMap<String, Object>();
+            String query = "FROM LogEntry log" //
+                    + " WHERE log.eventDate >= :minDate" //
+                    + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
+                    + " ORDER BY log.eventDate";
+            params.put("minDate", new Date(minDate));
+            params.put("evCreated", DocumentEventTypes.DOCUMENT_CREATED);
+            params.put("evModified", DocumentEventTypes.DOCUMENT_UPDATED);
+            params.put("evRemoved", DocumentEventTypes.DOCUMENT_REMOVED);
+            List<?> entries = reader.nativeQuery(query, params, 1, max + 1);
+            ObjectListImpl ol = new ObjectListImpl();
+            boolean hasMoreItems = entries.size() > max;
+            ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
+            if (hasMoreItems) {
+                entries = entries.subList(0, max);
+            }
+            List<ObjectData> ods = new ArrayList<ObjectData>(entries.size());
+            Date date = null;
+            for (Object entry : entries) {
+                LogEntry logEntry = (LogEntry) entry;
+                ObjectDataImpl od = new ObjectDataImpl();
+                ChangeEventInfoDataImpl cei = new ChangeEventInfoDataImpl();
+                // change type
+                String eventId = logEntry.getEventId();
+                ChangeType changeType;
+                if (DocumentEventTypes.DOCUMENT_CREATED.equals(eventId)) {
+                    changeType = ChangeType.CREATED;
+                } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(eventId)) {
+                    changeType = ChangeType.UPDATED;
+                } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(eventId)) {
+                    changeType = ChangeType.DELETED;
+                } else {
+                    continue;
+                }
+                cei.setChangeType(changeType);
+                // change time
+                GregorianCalendar changeTime = (GregorianCalendar) Calendar.getInstance();
+                date = logEntry.getEventDate();
+                changeTime.setTime(date);
+                cei.setChangeTime(changeTime);
+                od.setChangeEventInfo(cei);
+                // properties: id, doc type
+                PropertiesImpl properties = new PropertiesImpl();
+                properties.addProperty(new PropertyIdImpl(
+                        PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
+                properties.addProperty(new PropertyIdImpl(
+                        PropertyIds.OBJECT_TYPE_ID, logEntry.getDocType()));
+                od.setProperties(properties);
+                ods.add(od);
+            }
+            ol.setObjects(ods);
+            ol.setNumItems(BigInteger.valueOf(-1));
+            String latestChangeLogToken = date == null ? null
+                    : String.valueOf(date.getTime());
+            changeLogTokenHolder.setValue(latestChangeLogToken);
+            return ol;
+        } catch (Exception e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    protected String getLatestChangeLogToken(String repositoryId) {
+        try {
+            AuditReader reader = Framework.getService(AuditReader.class);
+            if (reader == null) {
+                throw new CmisRuntimeException("Cannot find audit service");
+            }
+            // TODO XXX repositoryId as well
+            Map<String, Object> params = new HashMap<String, Object>();
+            String query = "FROM LogEntry log" //
+                    + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
+                    + " ORDER BY log.eventDate DESC";
+            params.put("evCreated", DocumentEventTypes.DOCUMENT_CREATED);
+            params.put("evModified", DocumentEventTypes.DOCUMENT_UPDATED);
+            params.put("evRemoved", DocumentEventTypes.DOCUMENT_REMOVED);
+            List<?> entries = reader.nativeQuery(query, params, 1, 1);
+            if (entries.size() == 0) {
+                return "0";
+            }
+            LogEntry logEntry = (LogEntry) entries.get(0);
+            return String.valueOf(logEntry.getEventDate().getTime());
+        } catch (Exception e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @Override
