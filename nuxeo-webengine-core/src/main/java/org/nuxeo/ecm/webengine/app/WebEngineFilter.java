@@ -27,6 +27,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
 import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -36,6 +38,8 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import sun.util.logging.resources.logging;
 
 /**
  * This filter must be declared after the nuxeo authentication filter since it
@@ -68,6 +72,8 @@ public class WebEngineFilter implements Filter {
     protected boolean isAutoTxEnabled;
 
     protected boolean isStatefull;
+
+    protected static Log log = LogFactory.getLog(WebEngineFilter.class);
 
     // protected boolean enableJsp = false;
     // private static boolean isTaglibLoaded = false;
@@ -200,7 +206,10 @@ public class WebEngineFilter implements Filter {
         } finally {
             try {
                 if (config.locked) {
-                    NuxeoRequestControllerFilter.simpleReleaseSyncOnSession(request);
+                    boolean unlocked = NuxeoRequestControllerFilter.simpleReleaseSyncOnSession(request);
+                    if (!unlocked) {
+                        log.error("Error unlocking request for config : " + config.toString());
+                    }
                     config.locked = false;
                     // log.warn("request unlocked for " +
                     // request.getPathInfo());
@@ -255,6 +264,21 @@ public class WebEngineFilter implements Filter {
             }
             String spath = req.getServletPath();
             isStatic = spath.contains("/skin") || pathInfo.contains("/skin/");
+        }
+
+        @Override
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append("WebEngineFilter&Confi:");
+            sb.append("\nPath Info:");
+            sb.append(pathInfo);
+            sb.append("\nAuto TX:");
+            sb.append(autoTx);
+            sb.append("\nStateful:");
+            sb.append(stateful);
+            sb.append("\nStatic:");
+            sb.append(isStatic);
+            return sb.toString();
         }
     }
 }
