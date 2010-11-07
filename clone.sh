@@ -2,22 +2,25 @@
 
 VERSION=5.4
 
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-common
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-runtime
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-core
+for x in nuxeo-common nuxeo-runtime nuxeo-core \
+    nuxeo-services nuxeo-theme nuxeo-webengine nuxeo-jsf \
+    nuxeo-gwt nuxeo-features nuxeo-dm \
+    nuxeo-distribution
+do
+    if [ ! -e $x ]
+    then
+        hg clone https://hg.nuxeo.org/nuxeo/$x $x
+    fi
+done
 
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-services
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-theme
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-webengine
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-jsf
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-gwt
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-features
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-dm
-
-hg clone http://hg.nuxeo.org/nuxeo/nuxeo-distribution
-
-hg clone http://hg.nuxeo.org/addons ../nuxeo-addons
+if [ ! -e addons ]
+then
+    hg clone https://hg.nuxeo.org/addons addons
+fi
 
 svn export https://svn.nuxeo.org/nuxeo/tools/mercurial/.hgfunctions
 . .hgfunctions
-hgf up -C $VERSION
+hgf up $VERSION
+( cd addons ; hg up $VERSION )
+( cd addons ; ./clone.py $VERSION )
+
