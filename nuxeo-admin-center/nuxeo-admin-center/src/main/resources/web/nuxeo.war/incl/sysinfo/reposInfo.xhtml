@@ -21,18 +21,18 @@
 
   <p>
     <a4j:form id="repoInfoForm">
-    
+
      <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" reRender="repoInfos"/>
-    
+
      <h:panelGroup rendered="#{systemInfo.isStatInfoInProgress()}">
        <div><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
        <img src="/nuxeo/img/big_loading.gif"/>
      </h:panelGroup>
-    
+
      <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">
-    
+
         <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" />
-    
+
      </h:panelGroup>
     </a4j:form>
   </p>

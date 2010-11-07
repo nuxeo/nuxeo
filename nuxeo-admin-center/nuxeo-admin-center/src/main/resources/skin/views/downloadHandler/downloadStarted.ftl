@@ -23,7 +23,6 @@ function back() {
 }
 
 function install() {
- alert("start install");
  stopRefresh=true;
  var url = document.location.href;
  var idx = url.indexOf("/download/");

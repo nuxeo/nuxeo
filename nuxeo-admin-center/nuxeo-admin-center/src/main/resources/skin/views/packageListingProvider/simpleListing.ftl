@@ -6,7 +6,6 @@
  var detailIdx=0;
 
  function toggleTd(td) {
-  //alert($(td).html());
   $(td).toggleClass('opentd');
   $(td).toggleClass('closetd');
  }
