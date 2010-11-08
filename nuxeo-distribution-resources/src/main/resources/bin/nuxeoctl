@@ -363,18 +363,21 @@ generate_configuration() {
   if [ "$1" = "console" ]; then
     echo java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
     java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
   else
     java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
-      -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
+      -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
+      -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator > "$LOG" 2>&1
   fi

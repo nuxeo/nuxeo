@@ -51,13 +51,19 @@
       <artifact:resolveFile key="org.jboss:jboss-as:5.1.0.GA:zip"
                             classifier="light" />
       -->
+      <patternset>
+        <exclude name="**/server/all/**" />
+        <exclude name="**/server/standard/**" />
+        <exclude name="**/server/minimal/**" />
+        <exclude name="**/server/web/**" />
+      </patternset>
     </unzip>
     <!-- will use a skeleton instead
     <move todir="${jboss}">
       <fileset dir="${outdir}/jboss-5.1.0.GA" />
     </move>
     -->
-    <mkdir dir="${jboss}"/>
+    <mkdir dir="${jboss}" />
     <unzip dest="${jboss}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip"
                             classifier="doc" />
@@ -306,9 +312,9 @@ org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
 org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
     </echo>
   </target>
-  
+
   <target name="apply-ear">
-    <copy todir="${distribution.dir}" overwrite="true">
+    <copy todir="${distribution.dir}" overwrite="false">
       <fileset dir="${outdir}/jboss-5.1.0.GA" />
     </copy>
   </target>
