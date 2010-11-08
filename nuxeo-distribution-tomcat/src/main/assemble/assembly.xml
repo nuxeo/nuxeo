@@ -273,11 +273,11 @@
         <include name="nuxeo-connect-*" />
         <include name="nuxeo-admin-*" />
       </fileset>
-      <fileset dir="${distribution.dir}/templates/common/META-INF/templates">
+      <!--<fileset dir="${distribution.dir}/templates/common/META-INF/templates">
         <include name="faces-config.xml" />
         <include name="pages.xml" />
         <include name="components.xml" />
-      </fileset>
+      </fileset>-->
       <fileset dir="${distribution.dir}/templates/common/config">
         <include name="commentService-config-bundle.xml" />
         <include name="notification-config.xml" />
