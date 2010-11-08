@@ -727,4 +727,27 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(descendant).isEmpty());
     }
 
+    public void testRemoveNamedStyles() throws ThemeException {
+
+        String currentThemeName = "theme";
+
+        final String styleName1 = "named style 1";
+        Style namedStyle1 = (Style) FormatFactory.create("style");
+        namedStyle1.setName(styleName1);
+        themeManager.registerFormat(namedStyle1);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle1);
+
+        final String styleName2 = "named style 2";
+        Style namedStyle2 = (Style) FormatFactory.create("style");
+        namedStyle2.setName(styleName2);
+        themeManager.registerFormat(namedStyle2);
+        themeManager.setNamedObject(currentThemeName, "style", namedStyle2);
+
+        assertEquals(2, themeManager.getNamedStyles(currentThemeName).size());
+
+        themeManager.removeNamedStylesOf(currentThemeName);
+
+        assertTrue(themeManager.getNamedStyles(currentThemeName).isEmpty());
+    }
+
 }

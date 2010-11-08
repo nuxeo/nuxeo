@@ -860,10 +860,11 @@ public final class ThemeManager implements Registrable {
         removeOrphanedFormats();
     }
 
-    private void removeNamedStylesOf(String themeName) throws ThemeException {
+    public void removeNamedStylesOf(String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         final UidManager uidManager = Manager.getUidManager();
         for (Style style : themeManager.getNamedStyles(themeName)) {
+            removeNamedObject(themeName, "style", style.getName());
             deleteFormat(style);
             uidManager.unregister(style);
         }
