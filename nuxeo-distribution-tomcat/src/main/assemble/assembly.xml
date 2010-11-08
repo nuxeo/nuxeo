@@ -271,7 +271,7 @@
         <include name="nuxeo-connect-*" />
         <include name="nuxeo-admin-*" />
       </fileset>
-      <fileset dir="${distribution.dir}/nxserver/META-INF/templates">
+      <fileset dir="${distribution.dir}/templates/common/META-INF/templates">
         <include name="faces-config.xml" />
         <include name="pages.xml" />
         <include name="components.xml" />
