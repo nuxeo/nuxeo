@@ -229,6 +229,7 @@
         <include name="nuxeo-platform-annotations*" />
         <include name="nuxeo-platform-audit*" />
         <exclude name="nuxeo-platform-audit-api*" />
+        <exclude name="nuxeo-platform-audit-core*" />
         <include name="nuxeo-platform-comment*" />
         <include name="nuxeo-platform-forum*" />
         <include name="nuxeo-platform-imaging*" />
@@ -266,16 +267,19 @@
         <include name="nuxeo-webengine-*" />
         <exclude name="nuxeo-webengine-core*" />
         <exclude name="nuxeo-webengine-base*" />
+        <include name="nuxeo-platform-faceted*" />
+        <include name="nuxeo-connect-*" />
+        <include name="nuxeo-admin-*" />
       </fileset>
-      <fileset dir="${distribution.dir}/nxserver/config">
-        <include name="commentService-config-bundle.xml" />
-        <include name="notification-config.xml" />
-        <include name="default-opensocial-config.xml" />
-      </fileset>
-      <fileset dir="${distribution.dir}/nxserver/OSGI-INF/templates">
+      <fileset dir="${distribution.dir}/nxserver/META-INF/templates">
         <include name="faces-config.xml" />
         <include name="pages.xml" />
         <include name="components.xml" />
+      </fileset>
+      <fileset dir="${distribution.dir}/templates/common/config">
+        <include name="commentService-config-bundle.xml" />
+        <include name="notification-config.xml" />
+        <include name="default-opensocial-config.xml" />
       </fileset>
 
       <!-- Remove unused third-party libraries to reduce total size -->
