@@ -1393,13 +1393,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // check out
 
-        Holder<Boolean> bhold = new Holder<Boolean>();
-        verService.checkOut(repositoryId, idHolder, null, bhold);
+        Holder<Boolean> cchold = new Holder<Boolean>();
+        verService.checkOut(repositoryId, idHolder, null, cchold);
         String coid = idHolder.getValue();
         ObjectData co = getObject(coid);
 
         assertEquals(id, coid); // Nuxeo invariant
-        assertEquals(Boolean.TRUE, bhold.getValue()); // copied
+        assertEquals(Boolean.TRUE, cchold.getValue()); // copied
         checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, co);
         checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, co);
         checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, co);
@@ -1430,9 +1430,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver2);
         checkValue(PropertyIds.CHECKIN_COMMENT, "comment2", ver2);
 
-        // check out again
+        // check out again (with no content copied holder)
 
-        verService.checkOut(repositoryId, idHolder, null, bhold);
+        verService.checkOut(repositoryId, idHolder, null, null);
         coid = idHolder.getValue();
         co = getObject(coid);
         assertEquals(id, coid); // Nuxeo invariant

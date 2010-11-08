@@ -1580,7 +1580,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             pwc.checkOut();
             coreSession.save();
             objectIdHolder.setValue(pwc.getId());
-            contentCopiedHolder.setValue(Boolean.TRUE);
+            if (contentCopiedHolder != null) {
+                contentCopiedHolder.setValue(Boolean.TRUE);
+            }
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
