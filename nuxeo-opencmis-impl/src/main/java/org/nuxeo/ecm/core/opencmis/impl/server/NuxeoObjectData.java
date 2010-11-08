@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
@@ -213,6 +214,8 @@ public class NuxeoObjectData implements ObjectData {
     public static AllowableActions getAllowableActions(DocumentModel doc,
             boolean creation) {
         boolean isFolder = doc.isFolder();
+        Type[] th = doc.getDocumentType().getTypeHierarchy();
+        boolean isDocument = th[th.length - 1].getName().equals("Document");
         boolean canWrite;
         try {
             canWrite = creation
@@ -230,8 +233,22 @@ public class NuxeoObjectData implements ObjectData {
             set.add(Action.CAN_GET_FOLDER_PARENT);
             set.add(Action.CAN_GET_FOLDER_TREE);
             set.add(Action.CAN_GET_CHILDREN);
-        } else {
+        } else if (isDocument) {
             set.add(Action.CAN_GET_CONTENT_STREAM);
+            set.add(Action.CAN_GET_ALL_VERSIONS);
+            try {
+                if (doc.isCheckedOut()) {
+                    set.add(Action.CAN_CHECK_IN);
+                    set.add(Action.CAN_CANCEL_CHECK_OUT);
+                } else {
+                    set.add(Action.CAN_CHECK_OUT);
+                }
+            } catch (ClientException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+        }
+        if (isFolder || isDocument) {
+            set.add(Action.CAN_GET_RENDITIONS);
         }
         if (canWrite) {
             if (isFolder) {
@@ -241,21 +258,19 @@ public class NuxeoObjectData implements ObjectData {
                 set.add(Action.CAN_DELETE_TREE);
                 set.add(Action.CAN_ADD_OBJECT_TO_FOLDER);
                 set.add(Action.CAN_REMOVE_OBJECT_FROM_FOLDER);
-            } else {
+            } else if (isDocument) {
                 set.add(Action.CAN_SET_CONTENT_STREAM);
                 set.add(Action.CAN_DELETE_CONTENT_STREAM);
             }
             set.add(Action.CAN_UPDATE_PROPERTIES);
-            set.add(Action.CAN_MOVE_OBJECT);
+            if (isFolder || isDocument) {
+                // Relations are not fileable
+                set.add(Action.CAN_MOVE_OBJECT);
+            }
             set.add(Action.CAN_DELETE_OBJECT);
         }
         if (Boolean.FALSE.booleanValue()) {
             // TODO
-            set.add(Action.CAN_GET_RENDITIONS);
-            set.add(Action.CAN_CHECK_OUT);
-            set.add(Action.CAN_CANCEL_CHECK_OUT);
-            set.add(Action.CAN_CHECK_IN);
-            set.add(Action.CAN_GET_ALL_VERSIONS);
             set.add(Action.CAN_GET_OBJECT_RELATIONSHIPS);
             set.add(Action.CAN_APPLY_POLICY);
             set.add(Action.CAN_REMOVE_POLICY);

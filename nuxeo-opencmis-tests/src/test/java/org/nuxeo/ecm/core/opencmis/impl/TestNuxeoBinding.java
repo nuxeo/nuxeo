@@ -884,6 +884,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData ob;
         AllowableActions aa;
 
+        // folder
+
         ob = getObjectByPath("/testfolder1");
         aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
         assertNotNull(aa);
@@ -898,12 +900,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 Action.CAN_CREATE_FOLDER, //
                 Action.CAN_CREATE_RELATIONSHIP, //
                 Action.CAN_DELETE_TREE, //
+                Action.CAN_GET_RENDITIONS, //
                 Action.CAN_ADD_OBJECT_TO_FOLDER, //
                 Action.CAN_REMOVE_OBJECT_FROM_FOLDER, //
                 Action.CAN_UPDATE_PROPERTIES, //
                 Action.CAN_MOVE_OBJECT, //
                 Action.CAN_DELETE_OBJECT);
         assertEquals(expected, aa.getAllowableActions());
+
+        // checked out doc
 
         ob = getObjectByPath("/testfolder1/testfile1");
         aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
@@ -916,8 +921,35 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 Action.CAN_DELETE_CONTENT_STREAM, //
                 Action.CAN_UPDATE_PROPERTIES, //
                 Action.CAN_MOVE_OBJECT, //
-                Action.CAN_DELETE_OBJECT);
+                Action.CAN_DELETE_OBJECT, //
+                Action.CAN_GET_RENDITIONS, //
+                Action.CAN_GET_ALL_VERSIONS, //
+                Action.CAN_CANCEL_CHECK_OUT, //
+                Action.CAN_CHECK_IN);
         assertEquals(expected, aa.getAllowableActions());
+
+        // checked in doc
+
+        Holder<String> idHolder = new Holder<String>(ob.getId());
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null,
+                "comment", null, null, null, null);
+
+        aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
+        assertNotNull(aa);
+        expected = EnumSet.of( //
+                Action.CAN_GET_OBJECT_PARENTS, //
+                Action.CAN_GET_PROPERTIES, //
+                Action.CAN_GET_CONTENT_STREAM, //
+                Action.CAN_SET_CONTENT_STREAM, //
+                Action.CAN_DELETE_CONTENT_STREAM, //
+                Action.CAN_UPDATE_PROPERTIES, //
+                Action.CAN_MOVE_OBJECT, //
+                Action.CAN_DELETE_OBJECT, //
+                Action.CAN_GET_RENDITIONS, //
+                Action.CAN_GET_ALL_VERSIONS, //
+                Action.CAN_CHECK_OUT);
+        assertEquals(expected, aa.getAllowableActions());
+
     }
 
     @Test
@@ -1556,7 +1588,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(394, cs.getBigLength().longValue());
     }
 
-    @Ignore // has some problems when run from maven
+    @Ignore
+    // has some problems when run from maven
     @Test
     public void testGetContentChanges() throws Exception {
         ObjectList changes;
