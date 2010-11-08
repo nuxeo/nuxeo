@@ -47,7 +47,18 @@ public class StatelessUserSession extends UserSession {
     @Override
     public void terminateRequest(HttpServletRequest request) {
         super.terminateRequest(request);
-        uninstall();
+        try {
+            uninstall();
+        } catch (Throwable t) {
+            String pathInfo = request.getPathInfo();
+            if (pathInfo == null) {
+                pathInfo = "/";
+            }
+            String url = request.getRequestURL().toString();
+            log.error("Uninstall failed for Stateless UserSession. PathInfo: "
+                    + pathInfo + "; URL: " + url, t);
+            throw new RuntimeException(t);
+        }
     }
 
 }

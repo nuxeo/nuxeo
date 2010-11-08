@@ -53,7 +53,11 @@ public class StatefulUserSession extends UserSession implements
 
     public void valueUnbound(HttpSessionBindingEvent event) {
         // the user session was removed from the HTTP session
-        uninstall();
+        try {
+            uninstall();
+        } catch (Throwable t) {
+            log.error("Uninstall failed for Stateful UserSession", t);
+        }
     }
 
 }

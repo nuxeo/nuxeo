@@ -44,12 +44,12 @@ import sun.util.logging.resources.logging;
 /**
  * This filter must be declared after the nuxeo authentication filter since it
  * needs an authentication info.
- *
+ * 
  * The session synchronization is done only if NuxeoRequestControllerFilter was
  * not already done it and stateful flag for the request path is true.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class WebEngineFilter implements Filter {
 
@@ -216,6 +216,7 @@ public class WebEngineFilter implements Filter {
                 }
             } finally {
                 WebEngine.setActiveContext(null);
+                request.removeAttribute(WebContext.class.getName());
             }
         }
     }
