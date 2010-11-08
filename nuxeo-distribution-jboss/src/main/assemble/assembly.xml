@@ -315,7 +315,6 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   </target>
 
   <target name="apply-ear">
-    <echo message="Yo!"/>
     <delete failonerror="true">
       <fileset dir="${distribution.dir}">
         <include name="INSTALL.TXT" />
