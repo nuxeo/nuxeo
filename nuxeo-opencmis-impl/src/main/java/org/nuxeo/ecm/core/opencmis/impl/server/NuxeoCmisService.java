@@ -864,7 +864,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             info = getObjectInfoIntern(repositoryId, data);
             getObjectInfos().put(info.getId(), info);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.toString(), e);
         } finally {
             collectObjectInfos = true;
         }

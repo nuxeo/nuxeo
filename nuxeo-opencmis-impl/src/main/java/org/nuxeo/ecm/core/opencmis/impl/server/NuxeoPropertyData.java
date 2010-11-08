@@ -611,6 +611,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
          * Gets the value for the cmis:name property.
          */
         public static String getValue(DocumentModel doc) {
+            if (doc.getPath() == null) {
+                // not a real doc (content changes)
+                return "";
+            }
             if (doc.getPath().isRoot()) {
                 return ""; // Nuxeo root
             }

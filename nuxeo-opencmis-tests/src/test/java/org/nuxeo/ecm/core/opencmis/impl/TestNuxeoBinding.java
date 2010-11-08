@@ -242,7 +242,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(SecurityConstants.EVERYONE, info.getPrincipalIdAnyone());
         RepositoryCapabilities caps = info.getCapabilities();
         assertEquals(CapabilityAcl.NONE, caps.getAclCapability());
-        assertEquals(CapabilityChanges.PROPERTIES, caps.getChangesCapability());
+        assertEquals(CapabilityChanges.OBJECTIDSONLY,
+                caps.getChangesCapability());
         assertEquals(CapabilityContentStreamUpdates.PWCONLY,
                 caps.getContentStreamUpdatesCapability());
         assertEquals(CapabilityJoin.INNERANDOUTER, caps.getJoinCapability());

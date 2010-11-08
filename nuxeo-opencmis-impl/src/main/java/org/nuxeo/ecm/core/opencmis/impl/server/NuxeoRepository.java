@@ -176,7 +176,7 @@ public class NuxeoRepository {
         repositoryInfo.setAclCapabilities(aclCaps);
         caps.setAllVersionsSearchable(Boolean.TRUE);
         caps.setCapabilityAcl(CapabilityAcl.NONE);
-        caps.setCapabilityChanges(CapabilityChanges.PROPERTIES);
+        caps.setCapabilityChanges(CapabilityChanges.OBJECTIDSONLY);
         caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
         caps.setCapabilityJoin(CapabilityJoin.INNERANDOUTER);
         caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
