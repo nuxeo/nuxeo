@@ -56,6 +56,7 @@
         <exclude name="**/server/standard/**" />
         <exclude name="**/server/minimal/**" />
         <exclude name="**/server/web/**" />
+        <exclude name="**/bindings-jboss-beans.xml" />
       </patternset>
     </unzip>
     <!-- will use a skeleton instead
