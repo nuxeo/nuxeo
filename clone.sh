@@ -18,8 +18,8 @@ then
     hg clone https://hg.nuxeo.org/addons addons
 fi
 
-svn export https://svn.nuxeo.org/nuxeo/tools/mercurial/.hgfunctions
-. .hgfunctions
+. scripts/hgfunctions.sh
+
 hgf up $VERSION
 ( cd addons ; hg up $VERSION )
 ( cd addons ; ./clone.py $VERSION )

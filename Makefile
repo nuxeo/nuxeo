@@ -14,8 +14,14 @@ assemble-tomcat:
 assemble-jboss:
 	cd nuxeo-distribution ; mvn clean install -Pnuxeo-dm,jboss
 
+assemble-cap:
+	cd nuxeo-distribution ; mvn clean install -Pnuxeo-cap,tomcat
+
 selenium-tomcat:
-	./runtests.sh
+	./scripts/runtests.py tomcat
+
+selenium-cap:
+	./scripts/runtests.py cap
 
 clean:
 	find . "(" -name "*~" -or -name "*.orig" -or -name "*.rej" ")" -print0 | xargs -0 rm -f
