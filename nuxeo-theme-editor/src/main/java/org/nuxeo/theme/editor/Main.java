@@ -1467,7 +1467,12 @@ public class Main extends ModuleRoot {
         if (id == null) {
             return null;
         }
-        return ThemeManager.getElementById(id);
+        Element element = ThemeManager.getElementById(id);
+        // to avoid possible class cast exceptions
+        if (!(element instanceof Element)) {
+            return null;
+        }
+        return element;
     }
 
     public static String getClipboardElement() {
