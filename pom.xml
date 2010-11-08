@@ -11,7 +11,7 @@
     <version>5.4.0-I20101018_1103</version>
   </parent>
   
-  <version>5.4.0-SNAPSHOT</version>
+  <version>5.4.0</version>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
@@ -19,7 +19,7 @@
   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
 
   <properties>
-    <routing.version>5.4.0-SNAPSHOT</routing.version>
+    <routing.version>5.4.0</routing.version>
   </properties>
   <modules>
     <module>nuxeo-platform-document-routing-api</module>
