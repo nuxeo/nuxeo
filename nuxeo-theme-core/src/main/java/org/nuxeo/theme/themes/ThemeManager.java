@@ -986,6 +986,10 @@ public final class ThemeManager implements Registrable {
         // Add named styles
         if (themeName != null) {
             for (Identifiable object : getNamedObjects(themeName, "style")) {
+                if (!(object instanceof Style)) {
+                    log.error("Expected Style object, got instead " + object);
+                    continue;
+                }
                 styles.add((Style) object);
             }
         }
