@@ -698,12 +698,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-api</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.jsf.version}</version>
       </dependency>
 
       <dependency>
