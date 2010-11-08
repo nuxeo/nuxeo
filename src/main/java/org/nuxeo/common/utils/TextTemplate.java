@@ -39,13 +39,13 @@ import java.util.regex.Pattern;
  * Text template processing.
  * <p>
  * Copy files or directories replacing parameters matching pattern
- * '${[a-zA-Z_0-9\-\.]+}'
- * with values from a {@link Map} (deprecated) or a {@link Properties}.
+ * '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map} (deprecated) or a
+ * {@link Properties}.
  * <p>
  * Method {@link #setParsingExtensions(String)} allow to set list of files being
  * processed when using {@link #processDirectory(File, File)} or #pro, others
  * are simply copied.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
@@ -141,7 +141,7 @@ public class TextTemplate {
     /**
      * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
      * each file from "in" directory to "out" directory.
-     * 
+     *
      * @param in Directory to read files from
      * @param out Directory to write files to
      */
@@ -187,11 +187,13 @@ public class TextTemplate {
      */
     public void process(InputStream is, OutputStream os, boolean processText)
             throws IOException {
-        String text = FileUtils.read(is);
         if (processText) {
+            String text = FileUtils.read(is);
             text = process(text);
+            os.write(text.getBytes());
+        } else {
+            FileUtils.copy(is, os);
         }
-        os.write(text.getBytes());
     }
 
     /**
