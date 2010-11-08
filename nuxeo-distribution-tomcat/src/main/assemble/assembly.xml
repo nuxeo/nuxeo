@@ -219,7 +219,7 @@
            includes="*.sh,*ctl,*.command" />
 
     <!-- CoreServer resources -->
-    <copy todir="${distribution.dir}/templates/default"
+    <copy todir="${distribution.dir}/templates/"
           overwrite="true"
           failonerror="true">
       <fileset dir="src/main/resources-coreserver" />
