@@ -48,29 +48,29 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public void cancelCheckOut() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        service.cancelCheckOut(getId());
     }
 
     @Override
     public ObjectId checkIn(boolean major, Map<String, ?> properties,
             ContentStream contentStream, String checkinComment) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String verId = service.checkIn(getId(), major, properties, type,
+                contentStream, checkinComment);
+        return session.createObjectId(verId);
     }
 
     @Override
     public ObjectId checkIn(boolean major, Map<String, ?> properties,
             ContentStream contentStream, String checkinComment,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        // TODO policies, addAces, removeAces
+        return checkIn(major, properties, contentStream, checkinComment);
     }
 
     @Override
     public ObjectId checkOut() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String pwcId = service.checkOut(getId());
+        return session.createObjectId(pwcId);
     }
 
     @Override

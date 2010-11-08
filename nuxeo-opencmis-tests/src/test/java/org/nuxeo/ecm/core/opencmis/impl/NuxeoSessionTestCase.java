@@ -31,6 +31,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
@@ -498,6 +499,83 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         }
         Document doc2 = (Document) session.getObjectByPath("/testfolder1/testfile4");
         assertEquals(docId, doc2.getId());
+    }
+
+    public void testVersioning() throws Exception {
+        CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+
+        // checked out
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, id, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        String series = ob.getPropertyValue(PropertyIds.VERSION_SERIES_ID);
+
+        // check in major -> version 1.0
+
+        ObjectId vid = ((Document) ob).checkIn(true, null, null, "comment");
+
+        CmisObject ver = session.getObject(vid);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, ver);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
+                ver);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ver);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ver);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+
+        // look at the checked in document to verify
+        // that CMIS views it as a version
+
+        session.clear(); // clear cache
+        CmisObject ci = session.getObject(ob);
+
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.TRUE, ci);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ci);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, ci);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ci);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ci);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ci);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ci);
+
+        // check out
+
+        ObjectId coid = ((Document) ci).checkOut();
+        session.clear(); // clear cache
+        CmisObject co = session.getObject(coid);
+
+        assertEquals(id, coid.getId()); // Nuxeo invariant
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, co);
+        checkValue(PropertyIds.VERSION_LABEL, null, co);
+        checkValue(PropertyIds.VERSION_SERIES_ID, series, co);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, coid.getId(), co);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, "system", co);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
+    }
+
+    protected void checkValue(String prop, Object expected, CmisObject ob) {
+        Object value = ob.getPropertyValue(prop);
+        if (expected == NOT_NULL) {
+            assertNotNull(value);
+        } else {
+            assertEquals(expected, value);
+        }
     }
 
 }

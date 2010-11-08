@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
+import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
@@ -1545,6 +1546,28 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
     }
 
+    public String checkIn(String objectId, boolean major,
+            Map<String, ?> properties, ObjectType type,
+            ContentStream contentStream, String checkinComment) {
+        VersioningOption option = major ? VersioningOption.MAJOR
+                : VersioningOption.MINOR;
+        DocumentModel doc = getDocumentModel(objectId);
+        if (doc.isVersion() || doc.isProxy()) {
+            throw new CmisInvalidArgumentException("Cannot check in non-PWC: "
+                    + doc);
+        }
+        NuxeoObjectData object = new NuxeoObjectData(this, doc);
+        updateProperties(object, null, properties, type, false);
+        try {
+            coreSession.saveDocument(doc);
+            DocumentRef ver = doc.checkIn(option, checkinComment);
+            coreSession.save();
+            return getIdFromDocumentRef(ver);
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
     @Override
     public void checkOut(String repositoryId, Holder<String> objectIdHolder,
             ExtensionsData extension, Holder<Boolean> contentCopiedHolder) {
@@ -1553,9 +1576,15 @@ public class NuxeoCmisService extends AbstractCmisService {
                 || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");
         }
+        String pwcId = checkOut(objectId);
+        objectIdHolder.setValue(pwcId);
+        if (contentCopiedHolder != null) {
+            contentCopiedHolder.setValue(Boolean.TRUE);
+        }
+    }
 
+    public String checkOut(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
-
         try {
             if (doc.isProxy()) {
                 throw new CmisInvalidArgumentException(
@@ -1579,10 +1608,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             pwc.checkOut();
             coreSession.save();
-            objectIdHolder.setValue(pwc.getId());
-            if (contentCopiedHolder != null) {
-                contentCopiedHolder.setValue(Boolean.TRUE);
-            }
+            return pwc.getId();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -1591,6 +1617,10 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public void cancelCheckOut(String repositoryId, String objectId,
             ExtensionsData extension) {
+        cancelCheckOut(objectId);
+    }
+
+    public void cancelCheckOut(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
         try {
             if (doc.isVersion() || doc.isProxy() || !doc.isCheckedOut()) {
