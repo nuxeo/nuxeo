@@ -314,7 +314,7 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   </target>
 
   <target name="apply-ear">
-    <copy todir="${distribution.dir}" overwrite="true">
+    <copy todir="${distribution.dir}" overwrite="false">
       <fileset dir="${outdir}/jboss-5.1.0.GA" />
     </copy>
   </target>
