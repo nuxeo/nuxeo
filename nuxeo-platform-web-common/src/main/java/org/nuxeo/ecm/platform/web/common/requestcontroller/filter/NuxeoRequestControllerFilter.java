@@ -323,6 +323,9 @@ public class NuxeoRequestControllerFilter implements Filter {
                 log.debug("Unlock failed on request " + request.getRequestURI());
                 return false;
             }
+            if (request.getAttribute(SYNCED_REQUEST_FLAG) != null) {
+                request.removeAttribute(SYNCED_REQUEST_FLAG);
+            }
             if (log.isDebugEnabled()) {
                 log.debug("session unlocked on Thread ");
             }
@@ -350,7 +353,6 @@ public class NuxeoRequestControllerFilter implements Filter {
             httpResponse.addHeader("Cache-Control", "public, max-age="
                     + cacheTime);
         }
-
         // Generating expires using current date and adding cache time.
         // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
         Date date = new Date();
