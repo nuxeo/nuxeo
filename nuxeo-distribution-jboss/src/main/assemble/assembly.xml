@@ -56,6 +56,7 @@
         <exclude name="**/server/standard/**" />
         <exclude name="**/server/minimal/**" />
         <exclude name="**/server/web/**" />
+        <exclude name="**/bindings-jboss-beans.xml" />
       </patternset>
     </unzip>
     <!-- will use a skeleton instead
@@ -314,6 +315,11 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   </target>
 
   <target name="apply-ear">
+    <delete failonerror="true">
+      <fileset dir="${distribution.dir}">
+        <include name="INSTALL.TXT" />
+      </fileset>
+    </delete>
     <copy todir="${distribution.dir}" overwrite="false">
       <fileset dir="${outdir}/jboss-5.1.0.GA" />
     </copy>
