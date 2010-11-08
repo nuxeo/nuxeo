@@ -39,8 +39,6 @@ import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import sun.util.logging.resources.logging;
-
 /**
  * This filter must be declared after the nuxeo authentication filter since it
  * needs an authentication info.
@@ -208,7 +206,8 @@ public class WebEngineFilter implements Filter {
                 if (config.locked) {
                     boolean unlocked = NuxeoRequestControllerFilter.simpleReleaseSyncOnSession(request);
                     if (!unlocked) {
-                        log.error("Error unlocking request for config : " + config.toString());
+                        log.error("Error unlocking request for config : "
+                                + config.toString());
                     }
                     config.locked = false;
                     // log.warn("request unlocked for " +
