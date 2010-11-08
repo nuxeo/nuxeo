@@ -31,7 +31,7 @@
           <!-- for PostgreSQL (Text Search Configuration): <fulltext analyzer="english"/> -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <property name="URL">jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name}</property>
+        <property name="URL">jdbc:h2:${nuxeo.db.name}</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
       </repository>
