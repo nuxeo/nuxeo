@@ -110,7 +110,16 @@ public class NotificationEventListener implements PostCommitEventListener {
                     sendNotificationSignalForUser(notif, user, event, docCtx);
                 }
             } else {
-                String[] recipients = (String[]) properties.get(NotificationConstants.RECIPIENTS_KEY);
+                Object recipientProperty =  properties.get(NotificationConstants.RECIPIENTS_KEY);
+                String[] recipients = null;
+                if (recipientProperty != null) {
+                    if (recipientProperty instanceof String[]) {
+                        recipients = (String[]) properties.get(NotificationConstants.RECIPIENTS_KEY);
+                    } else if (recipientProperty instanceof String ) {
+                        recipients = new String[1];
+                        recipients[0] = (String) recipientProperty;
+                    }
+                }
                 if (recipients == null) {
                     continue;
                 }
