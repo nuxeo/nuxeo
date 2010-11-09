@@ -176,10 +176,16 @@ public class NavigationContextBean implements NavigationContextLocal,
         }
     }
 
+
+
+
     public void setCurrentDocument(DocumentModel documentModel)
             throws ClientException {
 
         if (!checkIfUpdateNeeded(currentDocument, documentModel)) {
+            if (checkIfChangeableResetNeeded()) {
+                setChangeableDocument(null);
+            }
             return;
         }
 
@@ -204,6 +210,34 @@ public class NavigationContextBean implements NavigationContextLocal,
         Contexts.getEventContext().remove("currentDocument");
 
         EventManager.raiseEventsOnDocumentSelected(currentDocument);
+    }
+
+    protected boolean isCreationEntered = false;
+
+    /**
+     * Changeable doc reset is needed when we're leaving from the document creation form
+     * for navigating the parent document itself.
+     * RestHelper is navigating the document when the user ask for creating a document.
+     * The field isCreationEntered is used for tracking that event.
+     *
+     * @return
+     * @throws ClientException
+     */
+    protected boolean checkIfChangeableResetNeeded() throws ClientException {
+        if (changeableDocument == null) {
+            return isCreationEntered = false;
+        }
+
+        if (changeableDocument.getRef() == null) {
+            isCreationEntered = !isCreationEntered;
+            return !isCreationEntered;
+        }
+        return isCreationEntered = false;
+    }
+
+    protected void updateChangeableDocument() {
+        changeableDocument = currentDocument;
+        Contexts.getEventContext().set("changeableDocument", currentDocument);
     }
 
     @BypassInterceptors
