@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -147,10 +149,9 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         // passing our application URL as service name
         String location = null;
         try {
-            // httpResponse.sendRedirect(serviceLoginURL + "?" + serviceKey +
-            // "=" + appURL);
-            location = getServiceURL(httpRequest, LOGIN_ACTION) + "?"
-                    + serviceKey + "=" + getAppURL(httpRequest);
+            Map<String, String> urlParameters = new HashMap<String, String>();
+            urlParameters.put("service", getAppURL(httpRequest));
+            location = URIUtils.addParametersToURIQuery(getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
             httpResponse.sendRedirect(location);
         } catch (IOException e) {
             log.error("Unable to redirect to CAS login screen to " + location,
@@ -162,7 +163,25 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     protected String getAppURL(HttpServletRequest httpRequest) {
         if (isValidStartupPage(httpRequest)) {
-            return httpRequest.getRequestURL().toString();
+            StringBuffer sb = new StringBuffer(
+                    VirtualHostHelper.getServerURL(httpRequest));
+            if (VirtualHostHelper.getServerURL(httpRequest).endsWith("/")) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            sb.append(httpRequest.getRequestURI());
+            if (httpRequest.getQueryString() != null) {
+                sb.append("?");
+                sb.append(httpRequest.getQueryString());
+
+                // remove ticket parameter from URL to correctly validate the
+                // service
+                int indexTicketKey = sb.lastIndexOf(ticketKey + "=");
+                if (indexTicketKey != -1) {
+                    sb.delete(indexTicketKey - 1, sb.length());
+                }
+            }
+
+            return sb.toString();
         }
         if (appURL == null || appURL.equals("")) {
             appURL = NUXEO_SERVER_PATTERN_KEY;
