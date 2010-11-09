@@ -232,6 +232,7 @@
         <include name="nuxeo-platform-audit*" />
         <exclude name="nuxeo-platform-audit-api*" />
         <exclude name="nuxeo-platform-audit-core*" />
+        <exclude name="nuxeo-platform-audit-ws*" />
         <include name="nuxeo-platform-comment*" />
         <include name="nuxeo-platform-forum*" />
         <include name="nuxeo-platform-imaging*" />
