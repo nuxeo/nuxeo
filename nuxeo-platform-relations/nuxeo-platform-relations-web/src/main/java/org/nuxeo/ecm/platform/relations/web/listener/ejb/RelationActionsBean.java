@@ -38,7 +38,6 @@ import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -151,12 +150,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     protected String comment;
 
     protected Boolean showCreateForm = false;
-
-    protected List<DocumentModel> resultDocuments;
-
-    protected boolean hasSearchResults = false;
-
-    protected String searchKeywords;
 
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
@@ -531,59 +524,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                             "label.relation.deleted"));
         }
         return "document_relations";
-    }
-
-    public String getSearchKeywords() {
-        return searchKeywords;
-    }
-
-    public void setSearchKeywords(String searchKeywords) {
-        this.searchKeywords = searchKeywords;
-    }
-
-    public String searchDocuments() throws ClientException {
-        log.debug("Making call to get documents list for keywords: "
-                + searchKeywords);
-        // reset existing search results
-        resultDocuments = null;
-        List<String> constraints = new ArrayList<String>();
-        if (searchKeywords != null) {
-            searchKeywords = searchKeywords.trim();
-            if (searchKeywords.length() > 0) {
-                if (!searchKeywords.equals("*")) {
-                    // full text search
-                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                            searchKeywords.replaceAll("'", "\\\\'")));
-                }
-            }
-        }
-        // no folderish doc nor hidden doc
-        constraints.add("ecm:mixinType != 'Folderish'");
-        constraints.add("ecm:mixinType != 'HiddenInNavigation'");
-        // no archived revisions
-        constraints.add("ecm:isCheckedInVersion = 0");
-        // filter current document
-        DocumentModel currentDocument = getCurrentDocument();
-        if (currentDocument != null) {
-            constraints.add(String.format("ecm:uuid != '%s'",
-                    currentDocument.getId()));
-        }
-        // search keywords
-        String query = String.format("SELECT * FROM Document WHERE %s",
-                StringUtils.join(constraints.toArray(), " AND "));
-        log.debug("query: " + query);
-        resultDocuments = documentManager.query(query, 100);
-        hasSearchResults = !resultDocuments.isEmpty();
-        log.debug("query result contains: " + resultDocuments.size() + " docs.");
-        return "create_relation_search_document";
-    }
-
-    public List<DocumentModel> getSearchDocumentResults() {
-        return resultDocuments;
-    }
-
-    public boolean getHasSearchResults() {
-        return hasSearchResults;
     }
 
     public Boolean getShowCreateForm() {

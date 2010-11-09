@@ -1,138 +1,62 @@
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+<div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="popUpContent">
 
-  <ui:define name="page title">
-    <h:outputText value="#{nuxeoApplicationName} - #{messages['title.search.form']}"/>
-  </ui:define>
+    <script language="javascript" type="text/javascript">
+      function updateParent(documentUid, documentTitle) {
+        parentInput = document.getElementById('createForm:objectDocumentUid');
+        parentInput.value = documentUid;
+        parentTitle = document.getElementById('createForm:objectDocumentTitle');
+        parentTitle.innerHTML = documentTitle;
+        parentTitleSaved = document.getElementById('createForm:objectDocumentTitleSaved');
+        parentTitleSaved.value = documentTitle;
+        self.close();
+      }
+    </script>
 
-  <ui:define name="body">
-    <div>
-      <h3><h:outputText value="#{messages['label.search.form.simple']}" /></h3>
-      <h:form>
-        <h:inputText value="#{relationActions.searchKeywords}" size="40"
-          class="searchField" />
-        <h:commandButton value="#{messages['command.search']}"
-          action="#{relationActions.searchDocuments}" class="button" />
-      </h:form>
-    </div>
+    <nxu:set var="contentViewName" value="relation_search">
+    <nxu:set var="contentViewId" value="0">
 
-    <div id="content">
-      <h3>
-        <h:outputText value="#{messages['label.search.results.keywords']}" />
-      </h3>
-      <h:outputText value="#{messages['label.content.emptyFolder']}"
-                    rendered="#{!relationActions.hasSearchResults}" />
-      <h:form id="search_results" rendered="#{relationActions.hasSearchResults}">
-      <h:selectOneRadio>
-        <nxu:dataTable
-          id="dataTable"
-          value="#{relationActions.searchDocumentResults}"
-          var="document"
-          rowClasses="dataRowEven,dataRowOdd"
-          styleClass="dataOutput">
-          <!-- id and selection -->
-          <nxu:column styleClass="iconColumn">
-            <input type="radio" id="selection" name="selection"
-                   value="#{document.id}"/>
-            <div style="display: none;" id="#{document.id}">
-              <h:outputText value="#{document.dublincore.title}" />
+      <div>
+        <h3><h:outputText value="#{messages['label.search.form.simple']}" /></h3>
+        <h:form>
+          <nxu:set var="contentView"
+            value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+            cache="true">
+            <c:if test="#{contentView != null}">
+              <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
+                value="#{contentView.searchDocumentModel}" />
+            </c:if>
+
+            <h:commandButton value="#{messages['command.search']}"
+              action="#{contentViewActions.resetPageProvider(contentViewName)}" class="button"
+              id="searchButton" />
+          </nxu:set>
+        </h:form>
+      </div>
+
+      <div id="content">
+        <ui:decorate template="/incl/content_view.xhtml">
+          <ui:define name="empty_folder_label">
+            <h:outputText value="#{messages['label.content.empty.search']}"
+              rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+          </ui:define>
+          <ui:define name="content_view_header_before_selector">
+            <div class="action_bar">
+              <h3>
+                <h:outputText value="#{messages['label.search.results']}" />
+              </h3>
             </div>
-          </nxu:column>
-          <!-- Icon + Type -->
-          <nxu:column styleClass="iconColumn">
-            <nxu:graphicImage value="#{nxd:iconPath(document)}" alt="#{document.type}" />
-          </nxu:column>
-          <!--  Title -->
-          <nxu:column>
-            <f:facet name="header">
-              <h:outputText value="#{messages['label.content.header.title']}" />
-            </f:facet>
-            <nxd:restDocumentLink document="#{document}" newConversation="true"
-              target="_blank">
-              <h:outputText value="#{nxd:titleOrId(document)}" />
-            </nxd:restDocumentLink>
-          </nxu:column>
-          <!--  Modification date -->
-          <nxu:column>
-            <f:facet name="header">
-              <h:outputText value="#{messages['label.content.header.modified']}" />
-            </f:facet>
-            <h:outputText value="#{document.dublincore.modified}">
-              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
-                timeZone="#{timeZone}" />
-            </h:outputText>
-          </nxu:column>
-          <!--  Author -->
-          <h:column>
-            <f:facet name="header">
-              <h:outputText value="#{messages['label.content.header.author']}" />
-            </f:facet>
-            <h:outputText value="#{document.dublincore.contributors[0]}" />
-          </h:column>
-          <!--  Life cycle -->
-          <h:column>
-            <f:facet name="header">
-              <h:outputText value="#{messages['label.content.header.currentLifecycleState']}" />
-            </f:facet>
-            <h:outputText value="#{messages[document.currentLifeCycleState]}" />
-          </h:column>
-        </nxu:dataTable>
-        </h:selectOneRadio>
-
-        <script language="javascript">
-          function getSelectedRadio(buttonGroup) {
-            if (buttonGroup[0]) {
-                for (var i=0; i&lt;buttonGroup.length; i++) {
-                  if (buttonGroup[i].checked) {
-                    return i
-                  }
-                }
-              } else {
-                if (buttonGroup.checked) { return 0; }
-              }
-              return -1;
-            }
-
-          function getSelectedRadioValue(buttonGroup) {
-              var i = getSelectedRadio(buttonGroup);
-              if (i == -1) {
-                return '';
-              } else {
-                if (buttonGroup[i]) {
-                return buttonGroup[i].value;
-                } else {
-                return buttonGroup.value;
-                }
-              }
-          }
-
-          function updateParent(form) {
-            button = form.elements.selection;
-            documentUid = getSelectedRadioValue(button);
-            documentTitle = document.getElementById(documentUid);
-            parentInput = opener.document.getElementById('createForm:objectDocumentUid');
-            parentInput.value = documentUid;
-            parentTitle = opener.document.getElementById('createForm:objectDocumentTitle');
-            parentTitle.innerHTML = documentTitle.innerHTML;
-            parentTitleSaved = opener.document.getElementById('createForm:objectDocumentTitleSaved');
-            parentTitleSaved.value = documentTitle.innerHTML;
-            self.close();
-          }
-        </script>
-          <input type="submit" id="button_update" styleClass="button"
-              value="#{messages['command.ok']}"
-              onclick="javascript:updateParent(this.form);" />
-
-      </h:form>
-
-    </div>
-
-  </ui:define>
-
-</nxthemes:composition>
+          </ui:define>
+          <ui:define name="content_view_header_after_selector" />
+          <ui:define name="syndication_buttons" />
+        </ui:decorate>
+      </div>
+    </nxu:set>
+    </nxu:set>
+</div>
