@@ -85,13 +85,13 @@
       </properties>
     </widget>
 
-    <widget name="listing_path" type="listing_path">
+    <widget name="listing_path" type="text">
       <labels>
         <label mode="any">label.ecm.path</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data</field>
+        <field>data.pathAsString</field>
       </fields>
     </widget>
 
