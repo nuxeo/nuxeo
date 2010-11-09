@@ -1234,15 +1234,19 @@
       <selector path=".rank_block, .publication_block, .attachments">
         <margin-top>15px</margin-top>
       </selector>
+      <selector path=".content_block table">
+        <width>100%</width>
+        <margin-bottom>10px</margin-bottom>
+      </selector>
       <selector path=".content_block td">
         <vertical-align>top</vertical-align>
-        <padding>0px 0px 10px 0px</padding>
+        <padding>0</padding>
       </selector>
       <selector path=".content_block .labelColumn">
         <width>100px</width>
       </selector>
-      <selector path=".content_block .fieldColumn div">
-        <padding>0px 0px 2px</padding>
+      <selector path=".content_block .actionsColumn">
+        <width>20%</width>
       </selector>
       <selector path=".content_block img">
         <padding>0px 5px</padding>
