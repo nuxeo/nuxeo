@@ -34,10 +34,13 @@ package edu.yale.its.tp.cas.client;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.nuxeo.common.utils.URIUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -197,18 +200,18 @@ public class ServiceTicketValidator {
       throw new IllegalStateException("must set validation URL and ticket");
     clear();
     attemptedAuthentication = true;
-    StringBuffer sb = new StringBuffer();
-    sb.append(casValidateUrl);
-    if (casValidateUrl.indexOf('?') == -1)
-      sb.append('?');
-    else
-      sb.append('&');
-    sb.append("service=" + service + "&ticket=" + st);
-    if (proxyCallbackUrl != null)
-      sb.append("&pgtUrl=" + proxyCallbackUrl);
-    if (renew)
-      sb.append("&renew=true");
-    String url = sb.toString();
+        
+    Map<String, String> urlParameters = new HashMap<String, String>();
+    urlParameters.put("service", service);
+    urlParameters.put("ticket", st);
+    if (proxyCallbackUrl != null) {
+      urlParameters.put("pgtUrl", proxyCallbackUrl);
+    }
+    if (renew) {
+      urlParameters.put("renew", "true");
+    }
+
+    String url = URIUtils.addParametersToURIQuery(casValidateUrl, urlParameters);
     String response = SecureURL.retrieve(url,false);
     this.entireResponse = response;
 
