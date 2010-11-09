@@ -110,8 +110,12 @@ log_misc() {
     file=$1
     echo "## Misc system info `date --rfc-3339=second`" > $file
     uname -a >> $file
+    echo "## os" >> $file
+    lsb_release -a >> $file 2> /dev/null 
     echo "## CPUs list" >> $file
     cat /proc/cpuinfo  | grep "model name" >> $file
+    echo "## CPU speed" >> $file
+    dmesg | grep -i bogomips >> $file 
     echo "## uptime" >> $file
     uptime >> $file
     echo "## free -m" >> $file
@@ -161,7 +165,6 @@ log_pgstat() {
     file=$1
     PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF
     \o $file
-\timing
 SELECT now(), Version();
 SELECT current_database() AS db_name,  pg_size_pretty(pg_database_size(current_database())) AS db_size, pg_size_pretty(SUM(pg_relation_size(indexrelid))::int8) AS index_size FROM pg_index;
 SELECT COUNT(*) AS documents_count FROM hierarchy WHERE NOT isproperty;
@@ -220,9 +223,11 @@ start() {
 
     # cpu by thread
     rm -f $LOG_DIR/thread-usage-*.html
-    $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
-    # mem pool info
-    $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+    if checkalive; then
+	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
+        # mem pool info
+	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+    fi
     echo "[`cat $SAR_PID`] Monitoring started."
 }
 
@@ -231,7 +236,6 @@ stop() {
 	kill -9 `cat "$SAR_PID"`
 	sleep 1
 	rm -f $SAR_PID
-	echo "Monitoring stopped."
 	if [ "$pglog" = "true" ]; then
 	    $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > $PG_MON_LOG
 	    rm -f $PG_LOG_OFFSET
@@ -245,6 +249,7 @@ stop() {
         # get cpu and pool info
 	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
 	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
+	echo "Monitoring stopped."
 	archive
 	return 0
     else
