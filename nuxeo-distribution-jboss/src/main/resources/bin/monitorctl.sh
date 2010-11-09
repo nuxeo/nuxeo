@@ -82,20 +82,19 @@ if [ -z $LOGTAIL ]; then
     if [ -e /usr/sbin/logtail ]; then
 	LOGTAIL='/usr/sbin/logtail'
     else
-	die "You need to install logtail package."
+	echo "No logtail package, won't monitor PostgreSQL log."
     fi
 fi
-if [ ! -z $PG_LOG ]; then
-    if [ -r $PG_LOG ]; then
-	pglog=true
-    fi 
+if [ ! -z $LOGTAIL ]; then
+    if [ ! -z $PG_LOG ]; then
+	if [ -r $PG_LOG ]; then
+	    pglog=true
+	    PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
+	    PG_MON_LOG="$LOG_DIR"/pgsql.log
+	fi 
+    fi
 fi
-PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
-PG_MON_LOG="$LOG_DIR"/pgsql.log
 
-###
-# misc sys 
-MISC_LOG="$LOG_DIR/misc-";
 
 moncheckalive() {
     if [ ! -r "$SAR_PID" ]; then
