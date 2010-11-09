@@ -13,12 +13,15 @@ This scipts captures system activities and logs that can be later
 processed by logchart
 (https://svn.nuxeo.org/nuxeo/tools/qa/logchart/trunk).
 
-The script generate the following new logs:
-  log/misc-*.log     miscellaneous information
-  log/systat*.log    system activity during monitoring
-  log/pgstat-*.log   PostgreSQL VCS store statistics
+The script generate the following reports and logs:
+
+  log/misc-*.txt     Miscellaneous information
+  log/pgstat-*.txt   VCS statistics and PostgreSQL configuration
+  log/nuxeo-conf.txt A copy of the nuxeo.conf file
+  log/thread-*.html  The list of JBoss thread CPU utilization and 
+                     memory pool usage
+  log/systat*.log    System activity during monitoring (sar)
   log/pgsql.log      PostgreSQL log during monitoring
-  log/nuxeo-conf.log The nuxeo.conf file
 
 
 Usage
@@ -79,20 +82,19 @@ if [ -z $LOGTAIL ]; then
     if [ -e /usr/sbin/logtail ]; then
 	LOGTAIL='/usr/sbin/logtail'
     else
-	die "You need to install logtail package."
+	echo "No logtail package, won't monitor PostgreSQL log."
     fi
 fi
-if [ ! -z $PG_LOG ]; then
-    if [ -r $PG_LOG ]; then
-	pglog=true
-    fi 
+if [ ! -z $LOGTAIL ]; then
+    if [ ! -z $PG_LOG ]; then
+	if [ -r $PG_LOG ]; then
+	    pglog=true
+	    PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
+	    PG_MON_LOG="$LOG_DIR"/pgsql.log
+	fi 
+    fi
 fi
-PG_LOG_OFFSET="$PID_DIR"/pgsql.offset
-PG_MON_LOG="$LOG_DIR"/pgsql.log
 
-###
-# misc sys 
-MISC_LOG="$LOG_DIR/misc-";
 
 moncheckalive() {
     if [ ! -r "$SAR_PID" ]; then
@@ -107,8 +109,12 @@ log_misc() {
     file=$1
     echo "## Misc system info `date --rfc-3339=second`" > $file
     uname -a >> $file
+    echo "## os" >> $file
+    lsb_release -a >> $file 2> /dev/null 
     echo "## CPUs list" >> $file
     cat /proc/cpuinfo  | grep "model name" >> $file
+    echo "## CPU speed" >> $file
+    dmesg | grep -i bogomips >> $file 
     echo "## uptime" >> $file
     uptime >> $file
     echo "## free -m" >> $file
@@ -129,6 +135,8 @@ log_misc() {
 	$JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
 	echo "## jstat -gc" >> $file
 	$JAVA_HOME/bin/jstat -gc $NXPID >> $file
+	echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
+	$HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
     fi
 }
 
@@ -139,7 +147,7 @@ get_nuxeo_conf_value() {
 }
 
 log_pgstat() {
-    CONF=$LOG_DIR/nuxeo-conf.log
+    CONF=$LOG_DIR/nuxeo-conf.txt
     TEMPLATE=`cat $CONF | grep nuxeo.templates | grep postgresql | cut -d= -f2`
     [ -z $TEMPLATE ] && return
     DBPORT=`cat $CONF | grep nuxeo.db.port | cut -d= -f2`
@@ -156,7 +164,6 @@ log_pgstat() {
     file=$1
     PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF
     \o $file
-\timing
 SELECT now(), Version();
 SELECT current_database() AS db_name,  pg_size_pretty(pg_database_size(current_database())) AS db_size, pg_size_pretty(SUM(pg_relation_size(indexrelid))::int8) AS index_size FROM pg_index;
 SELECT COUNT(*) AS documents_count FROM hierarchy WHERE NOT isproperty;
@@ -184,7 +191,7 @@ EOF
 }
 
 start() {
-  # start sar
+    # start sar
     if moncheckalive; then
 	die "Monitoring is already running with pid `cat $SAR_PID`"
     fi
@@ -193,7 +200,7 @@ start() {
     $SAR -d -o $SAR_DATA $SAR_INTERVAL $SAR_COUNT >/dev/null 2>&1 &
     echo $! > $SAR_PID
 
-  # logtail on pg log
+    # logtail on pg log
     if [ "$pglog" = "true" ]; then
 	[ -r $PG_LOG_OFFSET ] && rm -f $PG_LOG_OFFSET
 	[ -r $PG_MON_LOG ] && rm -f $PG_MON_LOG
@@ -202,17 +209,24 @@ start() {
 	echo "No PostgreSQL log file found."
     fi
 
-  # misc
-    rm -rf $LOG_DIR/misc-*.log
-    log_misc $LOG_DIR/misc-start.log
+    # misc
+    rm -f $LOG_DIR/misc-*.txt
+    log_misc $LOG_DIR/misc-start.txt
     
-  # get a copy of nuxeo.conf
-    grep -Ev '^$|^#' $HERE/nuxeo.conf > $LOG_DIR/nuxeo-conf.log
+    # get a copy of nuxeo.conf
+    grep -Ev '^$|^#' $HERE/nuxeo.conf > $LOG_DIR/nuxeo-conf.txt
 
-  # pg stats
-    rm -rf $LOG_DIR/pgstat-*.log
-    log_pgstat $LOG_DIR/pgstat-start.log
+    # pg stats
+    rm -f $LOG_DIR/pgstat-*.txt
+    log_pgstat $LOG_DIR/pgstat-start.txt
 
+    # cpu by thread
+    rm -f $LOG_DIR/thread-usage-*.html
+    if checkalive; then
+	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
+        # mem pool info
+	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+    fi
     echo "[`cat $SAR_PID`] Monitoring started."
 }
 
@@ -221,16 +235,20 @@ stop() {
 	kill -9 `cat "$SAR_PID"`
 	sleep 1
 	rm -f $SAR_PID
-	echo "Monitoring stopped."
 	if [ "$pglog" = "true" ]; then
 	    $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > $PG_MON_LOG
 	    rm -f $PG_LOG_OFFSET
 	fi
-    # Convert sar log into text
+        # Convert sar log into text
 	LC_ALL=C sar -Ap -f $SAR_DATA > $SAR_LOG
 	[ $? ] && rm -f $SAR_DATA
-	log_misc $LOG_DIR/misc-end.log
-	log_pgstat $LOG_DIR/pgstat-end.log
+	log_misc $LOG_DIR/misc-end.txt
+	log_pgstat $LOG_DIR/pgstat-end.txt
+
+        # get cpu and pool info
+	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
+	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
+	echo "Monitoring stopped."
 	archive
 	return 0
     else
@@ -254,7 +272,8 @@ archive() {
 	TAG=`date -u '+%Y%m%d-%H%M%S'`
     fi
     ARCH_FILE=$LOG_DIR/log-$TAG.tgz
-    (cd `dirname $LOG_DIR`; tar czf $ARCH_FILE `basename $LOG_DIR`/*.log)
+    logdir=`basename $LOG_DIR`
+    (cd `dirname $LOG_DIR`; tar czf $ARCH_FILE $logdir/*.txt $logdir/*.log $logdir/*.html)
     echo "Done: $ARCH_FILE"
 }
 
