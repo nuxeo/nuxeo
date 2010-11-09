@@ -36,9 +36,9 @@
   <#if base.canWrite>
     <form id="add_file" name="add_file" action="${This.path}/@file" accept-charset="utf-8" method="POST" enctype="multipart/form-data" >
       <div class="addFile">
-          <a onclick="return validateAttachedFile();"><img src="${skinPath}/images/action_add.gif" alt="${Context.getMessage("title.webapp.attached.files.attach.action")}" title="${Context.getMessage("title.webapp.attached.files.attach.action")}"></a>
           <input type="file" name="files:files" value="" id="file_to_add" required="true"/>
       </div>
+          <input type="button" class="button" value="${Context.getMessage("title.webapp.attached.files.attach.action")}" onclick="return validateAttachedFile();" />
     </form>
   </#if>
  </div>
