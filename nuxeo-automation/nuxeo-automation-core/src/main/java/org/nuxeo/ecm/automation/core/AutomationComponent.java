@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateVersion;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
+import org.nuxeo.ecm.automation.core.operations.document.FetchByProperty;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FilterDocuments;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
+import org.nuxeo.ecm.automation.core.operations.notification.FireEvent;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
@@ -136,6 +138,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(FetchDocument.class);
         service.putOperation(LockDocument.class);
         service.putOperation(Query.class);
+        service.putOperation(FetchByProperty.class);
         service.putOperation(FilterDocuments.class);
         service.putOperation(UnlockDocument.class);
         service.putOperation(GetDocumentChildren.class);
@@ -185,7 +188,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(AuditLog.class);
 
         // disabled operations
-        // service.putOperation(FireEvent.class);
+        service.putOperation(FireEvent.class);
         // service.putOperation(RunScriptFile.class);
 
         handlers = new EventHandlerRegistry(service);
