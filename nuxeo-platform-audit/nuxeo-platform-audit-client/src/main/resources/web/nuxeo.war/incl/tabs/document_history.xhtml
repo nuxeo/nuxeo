@@ -1,17 +1,25 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <ui:composition template="/incl/document_history_template.xhtml">
+  <div class="tabsBar subtabsBar">
+    <h:form id="document_manage">
+        <nxu:dataList layout="unorderedList" var="subTab"
+        value="#{subTabsActionsList}"
+        itemStyleClass="#{nxu:test(webActions.currentSubTabAction == subTab, 'selected', '')}">
+        <nxd:restDocumentLink document="#{currentDocument}"
+        tab="#{webActions.currentTabAction.id}" subTab="#{subTab.id}">
+          <h:outputText value="#{messages[subTab.label]}" />
+        </nxd:restDocumentLink>
+        </nxu:dataList>
+    </h:form>
+  </div>
+  <div style="clear: both"></div>
 
-    <ui:define name="document_history_buttons">
-
-      <ui:include src="/incl/document_history_buttons.xhtml" />
-
-    </ui:define>
-
-  </ui:composition>
+  <div class="tabsContent">
+    <ui:include src="#{webActions.currentSubTabAction.link}"/>
+  </div>
 
 </div>

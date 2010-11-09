@@ -13,7 +13,7 @@
       Contribute a new action related to document history.
     </documentation>
 
-    <action id="TAB_CONTENT_HISTORY" link="/incl/tabs/document_history.xhtml"
+    <action id="TAB_HISTORY" link="/incl/tabs/document_history.xhtml"
         enabled="true" label="action.view.history" icon="/icons/file.gif"
         order="100">
       <category>VIEW_ACTION_LIST</category>
@@ -22,6 +22,36 @@
           <type>WorkspaceRoot</type>
           <type>SectionRoot</type>
           <type>Server</type>
+        </rule>
+      </filter>
+      <filter id="has_subtabs">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('TAB_HISTORY_sub_tab').isEmpty()}
+          </condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="TAB_EVENTS" link="/incl/tabs/document_events.xhtml"
+        enabled="true" label="action.view.events" icon="/icons/file.gif"
+        order="50">
+      <category>TAB_HISTORY_sub_tab</category>
+      <filter id="view_content_history">
+        <rule grant="false">
+          <type>WorkspaceRoot</type>
+          <type>SectionRoot</type>
+          <type>Server</type>
+        </rule>
+      </filter>
+    </action>
+    <action id="TAB_VERSIONS" link="/incl/tabs/document_versions.xhtml"
+        enabled="true" label="action.view.versions" icon="/icons/file.gif"
+        order="100">
+      <category>TAB_HISTORY_sub_tab</category>
+      <filter id="versionable">
+        <rule grant="true">
+          <facet>Versionable</facet>
         </rule>
       </filter>
     </action>

@@ -1,15 +1,8 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  >
-
-    <h3><h:outputText value="#{messages['title.history']}" /></h3>
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
 
     <h:dataTable var="logEntry" value="${logEntries}"
       class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
@@ -75,35 +68,5 @@
         <h:outputText value="#{messages[logEntry.docLifeCycle]}" />
       </h:column>
     </h:dataTable>
-
-   <h:panelGroup rendered="#{nxd:hasPermission(currentDocument, 'ReadVersion') and
-          currentDocument.versionable and
-       !(currentDocument.version or currentDocument.proxy)}">
-    <h3><h:outputText value="#{messages['title.version']}" /></h3>
-
-    <h:form rendered="${not empty versionList}">
-    <h:dataTable var="versionItem" value="#{versionList}"
-      class="dataOutput" rowClasses="dataRowEven,dataRowOdd">
-      <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.version']}" />
-        </f:facet>
-        <h:outputText value="#{versionItem.description}" />
-      </h:column>
-
-      <h:column>
-        <f:facet name="header">
-          <h:outputText value="#{messages['label.action']}" />
-        </f:facet>
-
-      <ui:insert name="document_history_buttons" />
-
-      </h:column>
-    </h:dataTable>
-    </h:form>
-
-    <p><h:outputText rendered="${empty versionList}"
-      value="#{messages['label.noversion']}"/></p>
-   </h:panelGroup>
 
 </div>
