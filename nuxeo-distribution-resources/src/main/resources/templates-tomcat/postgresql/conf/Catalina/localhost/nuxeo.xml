@@ -74,6 +74,11 @@
     url="jdbc:postgresql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}"
     username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
 
+  <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.postgresql.Driver"
+    url="jdbc:postgresql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}"
+    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
+
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="300" />
