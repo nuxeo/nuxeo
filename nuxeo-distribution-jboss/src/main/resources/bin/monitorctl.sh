@@ -127,7 +127,7 @@ log_misc() {
     echo "## mount" >> $file
     mount >> $file
     echo "## df" >> $file
-    df >> $file
+    df -h >> $file
     echo "## du -shx $JBOSS_DATA_DIR" >> $file
     du -shx $(readlink -e $JBOSS_DATA_DIR) >> $file
     echo "## java -version" >> $file
@@ -227,8 +227,6 @@ start() {
 	[ -r $PG_LOG_OFFSET ] && rm -f $PG_LOG_OFFSET
 	[ -r $PG_MON_LOG ] && rm -f $PG_MON_LOG
 	$LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > /dev/null
-    else
-	echo "No PostgreSQL log file found."
     fi
 
     # misc
