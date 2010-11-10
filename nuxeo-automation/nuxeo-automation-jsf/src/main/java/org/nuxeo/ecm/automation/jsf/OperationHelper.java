@@ -18,7 +18,9 @@ package org.nuxeo.ecm.automation.jsf;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
 import org.nuxeo.ecm.webapp.contentbrowser.ContentViewActions;
+import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
@@ -44,4 +46,9 @@ public class OperationHelper {
     public static WebActions getWebActions() {
         return (WebActions) Contexts.getConversationContext().get("webActions");
     }
+
+    public static DocumentActions getDocumentActions() {
+        return (DocumentActions) SeamComponentCallHelper.getSeamComponentByName("documentActions");
+    }
+
 }

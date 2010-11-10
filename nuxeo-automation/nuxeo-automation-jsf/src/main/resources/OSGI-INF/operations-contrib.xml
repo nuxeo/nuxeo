@@ -31,7 +31,7 @@
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.RefreshUI" />
-
+    <operation class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentForm" />
   </extension>
 
 </component>
