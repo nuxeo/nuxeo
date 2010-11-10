@@ -1349,6 +1349,39 @@
       <selector path=".listShuttleTable .listShuttleSelectionActions a">
         <display>block</display>
       </selector>
+      <!-- Popup search document relation -->
+      <selector path=".genericPopUp">
+        <background-color>white</background-color>
+        <position>absolute</position>
+        <width>400px</width>
+        <border>1px solid #b5bcc6</border>
+        <z-index>10000</z-index>
+        <display>none</display>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader">
+        <text-align>right</text-align>
+        <border-bottom>1px dotted #dedede</border-bottom>
+        <background-color>#f6f8ff</background-color>
+        <padding>3px</padding>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader .closePopUp">
+        <float>right</float>
+        <cursor>pointer</cursor>
+      </selector>
+      <selector path=".genericPopUp .closePopUpHeader .popUpTitle">
+        <float>left</float>
+        <font-size>110%</font-size>
+      </selector>
+      <selector path=".genericPopUp .popUpContent">
+        <overflow>auto</overflow>
+        <height>390px</height>
+        <padding>10px</padding>
+      </selector>
+      <!-- huge popUp -->
+      <selector path=".bigPopUp">
+        <width>80%</width>
+        <height>70%</height>
+      </selector>
     </style>
     <style name="tree and clipboard column" inherit="common style 1">
       <selector path="div,dd,dt,dl,img,p,h1,h2,h3,h4,h5,form,hr,fieldset">
