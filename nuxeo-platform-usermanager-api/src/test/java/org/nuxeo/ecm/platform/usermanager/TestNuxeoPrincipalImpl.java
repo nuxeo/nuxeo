@@ -32,6 +32,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
     }
 

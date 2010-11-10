@@ -43,13 +43,13 @@ public class TestDirectoryUIManager extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
+
         // deploy directory service + sql factory
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        // deploy schemas for test dirs
-        deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");
-        deployContrib("org.nuxeo.ecm.directory.types.contrib",
-                "OSGI-INF/DirectoryTypes.xml");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
 
         // deploy directory ui service
         deployBundle("org.nuxeo.ecm.directory.web");

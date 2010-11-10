@@ -36,10 +36,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.platform.dublincore",
     "org.nuxeo.ecm.directory",
     "org.nuxeo.ecm.directory.sql",
-//    "org.nuxeo.ecm.directory.ldap",
+    "org.nuxeo.ecm.directory.types.contrib",
     "org.nuxeo.ecm.platform.usermanager.api",
     "org.nuxeo.ecm.platform.usermanager",
-    "org.nuxeo.ecm.platform.test:test-usermanagerimpl/schemas-config.xml",
     "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml"
 })
 @Features(CoreFeature.class)

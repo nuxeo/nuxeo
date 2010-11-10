@@ -62,7 +62,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql
       </artifactId>
-      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
     </dependency>
 
     <dependency>
@@ -120,7 +123,7 @@
       <artifactId>nuxeo-core-test</artifactId>
       <scope>compile</scope>
     </dependency>
-      
+
 
     <dependency>
       <groupId>junit</groupId>
