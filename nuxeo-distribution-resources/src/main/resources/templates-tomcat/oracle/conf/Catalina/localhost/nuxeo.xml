@@ -54,6 +54,10 @@
     maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
     url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
 
+  <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="oracle.jdbc.driver.OracleDriver"
+    url="jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}" />
+
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="300" />
