@@ -1,17 +1,19 @@
 <HTML>
 <BODY>
 <P>
-<#if eventId == "workflowStarted">
+<#if eventId == "workflowNewProcessStarted">
 Workflow started on document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
-<#elseif eventId == "workflowEnded">
+<#elseif eventId == "workflowProcessEnded">
 Ended workflow for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
 <#elseif eventId == "workflowAbandoned">
 Abandoned workflow for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
+<#elseif eventId == "workflowProcessCanceled">
+Canceled workflow for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
 <#elseif eventId == "workflowTaskAssigned">
 A task was assigned for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
 <#elseif eventId == "workflowTaskUnassigned">
 A task was unassigned for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
-<#elseif eventId == "workflowTaskEnded">
+<#elseif eventId == "workflowTaskCompleted">
 Task ended for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
 <#elseif eventId == "workflowTaskRemoved">
 Task removed for document (UID: ${docId}) by ${author} at ${dateTime?datetime?string("dd/MM/yyyy - HH:mm")}.
