@@ -14,6 +14,7 @@
   <name>Nuxeo DM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DM: Parent.</description>
+  <version>5.3.1-CP10</version>
 
   <properties>
     <nuxeo.common.version>1.6.1</nuxeo.common.version>
@@ -249,7 +250,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-webapp-core</artifactId>
-        <version>${nuxeo.services.version}-CP03</version>
+        <version>${nuxeo.services.version}-CP10</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
