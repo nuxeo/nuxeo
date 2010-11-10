@@ -22,6 +22,7 @@ The script generate the following reports and logs:
                      memory pool usage
   log/systat*.log    System activity during monitoring (sar)
   log/pgsql.log      PostgreSQL log during monitoring
+  log/vacuum.log     PostgreSQL vacuum log
 
 
 Usage
@@ -46,6 +47,10 @@ heapdump
 
 info
     Display some jvm info.
+
+vacuumdb
+    Vacuum PostgreSQL db and gets the vacuum report.
+    Perform a reindex after to keep indexes consistant.
 
 Requirement
 ============
@@ -123,7 +128,7 @@ log_misc() {
     mount >> $file
     echo "## df" >> $file
     df >> $file
-    echo "## du JBoss data directory" >> $file
+    echo "## du -shx $JBOSS_DATA_DIR" >> $file
     du -shx $(readlink -e $JBOSS_DATA_DIR) >> $file
     echo "## java -version" >> $file
     $JAVA_HOME/bin/java -version >> $file 2>&1
@@ -140,16 +145,13 @@ log_misc() {
     fi
 }
 
-get_nuxeo_conf_value() {
-    key=$1
-    value=$2
-    value=`grep -Ev '^$|^#' $HERE/nuxeo.conf | grep $key | cut -d= -f2`
-}
 
-log_pgstat() {
+get_pgconf() {
     CONF=$LOG_DIR/nuxeo-conf.txt
     TEMPLATE=`cat $CONF | grep nuxeo.templates | grep postgresql | cut -d= -f2`
-    [ -z $TEMPLATE ] && return
+    if [ -z $TEMPLATE ]; then
+	return
+    fi
     DBPORT=`cat $CONF | grep nuxeo.db.port | cut -d= -f2`
     DBHOST=`cat $CONF | grep nuxeo.db.host | cut -d= -f2`
     DBNAME=`cat $CONF | grep nuxeo.db.name | cut -d= -f2`
@@ -161,8 +163,14 @@ log_pgstat() {
     if [ -z $DBPORT ]; then 
 	DBPORT=5432
     fi
+    PGDB="true"
+}
+
+log_pgstat() {
+    get_pgconf
+    [ -z $PGDB ] && return
     file=$1
-    PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF
+    PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF &> /dev/null
     \o $file
 SELECT now(), Version();
 SELECT current_database() AS db_name,  pg_size_pretty(pg_database_size(current_database())) AS db_size, pg_size_pretty(SUM(pg_relation_size(indexrelid))::int8) AS index_size FROM pg_index;
@@ -190,11 +198,25 @@ SHOW ALL;
 EOF
 }
 
+vacuum() {
+    get_pgconf
+    rm -f "$LOG_DIR"/vacuum.log
+    if [ -z $PGDB ]; then
+	die "No PostgreSQL configuration found."
+    fi
+    echo "Vacuuming $DBNAME `date --rfc-3339=second` ..."
+    PGPASSWORD=$DBPWD vacuumdb -fzv $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/vacuum.log
+    echo "Reindexing $DBNAME `date --rfc-3339=second` ..."
+    PGPASSWORD=$DBPWD reindexdb $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/reindexdb.log
+    echo "Done `date --rfc-3339=second`"
+}
+
 start() {
     # start sar
     if moncheckalive; then
 	die "Monitoring is already running with pid `cat $SAR_PID`"
     fi
+    echo "Starting monitoring `date --rfc-3339=second` ..."
     [ -r "$SAR_DATA" ] && rm -f $SAR_DATA
     [ -r "$SAR_LOG" ] && rm -f $SAR_LOG
     $SAR -d -o $SAR_DATA $SAR_INTERVAL $SAR_COUNT >/dev/null 2>&1 &
@@ -232,6 +254,7 @@ start() {
 
 stop() {
     if moncheckalive; then
+	echo "Stopping monitoring `date --rfc-3339=second` ..."
 	kill -9 `cat "$SAR_PID"`
 	sleep 1
 	rm -f $SAR_PID
@@ -323,10 +346,13 @@ case "$1" in
 	$JAVA_HOME/bin/jmap -heap $NXPID
 	$JAVA_HOME/bin/jstat -gc $NXPID
 	;;
+    vacuumdb)
+	vacuum
+	;;
     help)
 	help
 	;;
     *)
-	echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|help)"
+	echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|vacuumdb|help)"
 	;;
 esac
