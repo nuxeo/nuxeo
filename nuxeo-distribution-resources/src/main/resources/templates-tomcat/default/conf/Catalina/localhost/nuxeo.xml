@@ -54,6 +54,10 @@
     maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
     url="jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true" />
 
+  <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+    url="jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true" />
+
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="300" />

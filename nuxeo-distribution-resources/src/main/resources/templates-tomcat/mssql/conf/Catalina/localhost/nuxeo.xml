@@ -74,6 +74,11 @@
     url="jdbc:jtds:sqlserver://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name};useCursors=true"
     username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
 
+  <Resource name="jdbc/nxuidsequencer" auth="Container" type="javax.sql.DataSource"
+    maxActive="100" maxIdle="30" maxWait="10000" driverClassName="net.sourceforge.jtds.jdbc.Driver"
+    url="jdbc:jtds:sqlserver://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name};useCursors=true"
+    username="${nuxeo.db.user}" password="${nuxeo.db.password}" />
+
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="300" />
