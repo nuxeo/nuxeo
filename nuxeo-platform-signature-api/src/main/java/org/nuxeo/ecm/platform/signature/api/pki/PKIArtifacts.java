@@ -14,31 +14,35 @@
  * Contributors:
  *    Wojciech Sulejman
  */
-package org.nuxeo.ecm.platform.signature.api.exception;
+package org.nuxeo.ecm.platform.signature.api.pki;
+
+import java.security.KeyPair;
+import java.security.cert.Certificate;
 
 /**
+ * DTO for pki artifacts
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
  */
+public class PKIArtifacts {
+    KeyPair keyPair;
+    Certificate cert;
 
-/**
- * An exception indicating certificate or key generation related problems
- * Provides error messages of security-administration level profile.
- *
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- */
-public class CertException extends SignException {
-    private static final long serialVersionUID = 1L;
-
-    public CertException(String message, Throwable e) {
-        super(message, e);
+    public PKIArtifacts(KeyPair keyPair,Certificate certificate){
+        setKeyPair(keyPair);
+        setCert(certificate);
     }
 
-    public CertException(String message) {
-        super(message);
+    public KeyPair getKeyPair() {
+        return keyPair;
     }
-
-    public CertException(Throwable e) {
-        super(e);
+    public void setKeyPair(KeyPair keyPair) {
+        this.keyPair = keyPair;
+    }
+    public Certificate getCert() {
+        return cert;
+    }
+    public void setCert(Certificate cert) {
+        this.cert = cert;
     }
 }

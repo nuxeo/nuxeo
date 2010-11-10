@@ -28,7 +28,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.pki.CAService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,29 +45,29 @@ public class CertServiceBusinessDelegate implements Serializable {
 
     private static final Log log = LogFactory.getLog(CertServiceBusinessDelegate.class);
 
-    protected CertService certService;
+    protected CAService cAService;
 
     @Unwrap
-    public CertService getService() throws ClientException {
-        if (certService == null) {
+    public CAService getService() throws ClientException {
+        if (cAService == null) {
             try {
-                certService = Framework.getService(CertService.class);
+                cAService = Framework.getService(CAService.class);
             } catch (Exception e) {
                 final String errMsg = "Error connecting to SignatureService. "
                         + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
-            if (certService == null) {
+            if (cAService == null) {
                 throw new ClientException("SignatureService service not bound");
             }
         }
-        return certService;
+        return cAService;
     }
 
     @Destroy
     public void destroy() {
-        if (certService != null) {
-            certService = null;
+        if (cAService != null) {
+            cAService = null;
         }
         log.debug("Destroyed the seam component");
     }

@@ -1,11 +1,6 @@
 /**
-  Public Key Infrastructure services
-
-  Following security entities are affected:
-  <ul>
-  <li>Private & Public Key
-  <li>Certificate,
-  <li>CSR & CA
+  Public Key Infrastructure services related to the following entities:
+  Private & Public Key, Certificate Generation as well as Certificate Authority related actions: Certificate Signing, Certificate Revocation.
   @author Wojciech Sulejman
   @version 1.0
  */

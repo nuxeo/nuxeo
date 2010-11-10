@@ -6,10 +6,8 @@
 
   <ui:define name="mainContent">
 
-  <h:form id="editUser"
+    <h:form id="editUser"
       rendered="#{userManagerActions.allowEditUser and notReadOnly}">
-      <nxl:layout name="certificate" mode="edit"
-        value="#{userManagerActions.selectedUser}" />
 
       <table class="dataInput">
         <tbody>
@@ -17,8 +15,8 @@
             <td></td>
             <td><h:commandButton type="submit"
               value="#{messages['command.save']}"
-              action="#{certActions.createCert}" styleClass="button" />
-            </td>
+              action="#{certActions.createCert(userManagerActions.selectedUser)}"
+              styleClass="button" /></td>
           </tr>
         </tbody>
       </table>

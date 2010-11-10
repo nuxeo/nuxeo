@@ -17,10 +17,9 @@
 package org.nuxeo.ecm.platform.signature.api.user;
 
 /**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * List of required fields
- * Note the Email and UserID fields
+ * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a> List of required
+ *         fields Note the Email and UserID fields
  */
 public enum CNField {
-    C, O, OU, CN,Email,UserID
+    C, O, OU, CN, Email, UserID
 }

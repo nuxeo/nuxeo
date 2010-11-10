@@ -16,10 +16,11 @@
  */
 package org.nuxeo.ecm.platform.signature.api.user;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -28,14 +29,17 @@ import org.junit.Test;
  */
 public class UserInfoTest {
 
-    static Map<CNField,String> userFields;
-
     /**
      * @throws java.lang.Exception
      */
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        userFields = new HashMap<CNField,String>();
+    /**
+     * Check that the returned field sequence is always the same
+     */
+    @Test
+    public void testGetDN() throws Exception {
+
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
         userFields.put(CNField.C, "US");
         userFields.put(CNField.O, "Nuxeo");
         userFields.put(CNField.OU, "IT");
@@ -43,20 +47,22 @@ public class UserInfoTest {
         userFields.put(CNField.Email, "wsulejman@nuxeo.com");
         userFields.put(CNField.UserID, "wsulejman");
 
-    }
+        UserInfo ui = new UserInfo(userFields);
+        assertEquals(ui.getDN(userFields),
+                ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
 
-    /**
-     * Test method for {@link org.nuxeo.ecm.platform.signature.api.user.UserInfo#getDN(java.util.Map)}.
-     */
-    @Test
-    public void testGetDN() throws Exception{
-        UserInfo ui=new UserInfo(userFields);
-        System.out.println(ui.getDN(userFields));
-    }
+        Map<CNField, String> userFields2;
+        userFields2 = new HashMap<CNField, String>();
+        userFields2.put(CNField.OU, "IT");
+        userFields2.put(CNField.Email, "wsulejman@nuxeo.com");
+        userFields2.put(CNField.O, "Nuxeo");
+        userFields2.put(CNField.C, "US");
+        userFields2.put(CNField.CN, "Wojciech Sulejman");
+        userFields2.put(CNField.UserID, "wsulejman");
 
-    @Test
-    public void testUserInfo() throws Exception{
-        UserInfo userInfo = new UserInfo(userFields);
-    }
+        UserInfo ui2 = new UserInfo(userFields2);
+        assertEquals(ui2.getDN(userFields2),
+                ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
 
+    }
 }

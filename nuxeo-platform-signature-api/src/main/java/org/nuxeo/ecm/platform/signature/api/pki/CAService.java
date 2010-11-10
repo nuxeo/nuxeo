@@ -18,20 +18,18 @@
 package org.nuxeo.ecm.platform.signature.api.pki;
 
 import java.io.File;
+import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
-import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
  *
- * Certificate Authority services that allows processing of certificates
- *
- * The primary functionality of this entity is signing CSRs (Certificate Signing
- * Requests) with the root certificate
- *
- * This entity also handles CRLs (certificate revocation lists)
+ * Certificate services allowing PKI key and certificate generation, signing CSRs (Certificate Signing
+ * Requests) with the root certificate and CRLs (certificate revocation lists)
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
@@ -47,19 +45,7 @@ public interface CAService {
     public X509Certificate getRootCertificate() throws CertException;
 
     /**
-     * Signs a submitted Certificate Signing Request
-     *
-     * @param csr
-     * @param certInfo
-     * @return
-     * @throws CertException
-     */
-    public X509Certificate createCertificateFromCSR(
-            PKCS10CertificationRequest csr, UserInfo userInfo)
-            throws CertException;
-
-    /**
-     * Retrieves a certificate from file
+     * Retrieves a certificate from a File
      *
      * @param certFile
      * @return
@@ -68,12 +54,52 @@ public interface CAService {
     public X509Certificate getCertificate(File certFile) throws CertException;
 
     /**
-     * Sets up a root certificate to be used for CA Services
+     * Sets up a root certificate to be used for CA type of services
+     * like certificate signing and revocation
      *
      * @param rootCertificate
      * @throws CertException
      */
     public void setRootCertificate(X509Certificate rootCertificate)
+            throws CertException;
+
+
+    /**
+     * Retrieves a KeyStore object from a supplied InputStream
+     *
+     * @param userId
+     * @return
+     */
+    public KeyStore getKeyStore(InputStream keystoreIS, UserInfo userInfo,
+            String password) throws CertException;
+
+    /**
+     * Retrieves existing private key from a KeyStore
+     *
+     * @param userId
+     * @return
+     */
+    public KeyPair getKeyPair(KeyStore keystore, UserInfo userInfo,
+            String password) throws CertException;
+
+    /**
+     * Retrieves an existing certificate from a keystore.
+     *
+     * @param userId
+     * @return
+     */
+    public X509Certificate getCertificate(KeyStore keystore,
+            UserInfo userInfo) throws CertException;
+
+    /**
+     * Generates a private key and a public certificate for a user whose X.509 field information
+     * is provided as a UserInfo parameter. Stores those artifacts in a password protected keystore.
+     *
+     * @param userId
+     * @return
+     */
+
+    public KeyStore initializeUser(UserInfo userInfo, String suppliedPassword)
             throws CertException;
 
 }

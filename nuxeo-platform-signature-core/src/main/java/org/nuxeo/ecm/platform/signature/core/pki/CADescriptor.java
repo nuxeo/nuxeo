@@ -22,22 +22,23 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Provides configuration for the key and certificate generation services
+ * like rootKeystore information required for automatic signing with the root certificate.
  *  @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 
 @XObject("configuration")
 public class CADescriptor {
 
-    @XNode("rootCertificateFilePath")
-    protected String rootCertificateFilePath;
+    @XNode("rootKeystoreFilePath")
+    protected String rootKeystoreFilePath;
 
-    public String getRootCertificateFilePath() {
-        return rootCertificateFilePath;
+    public String getRootKeystoreFilePath() {
+        return rootKeystoreFilePath;
     }
 
-    public void setRootCertificateFilePath(String rootCertificateFilePath) {
-        this.rootCertificateFilePath = rootCertificateFilePath;
+    public void setRootKeystoreFilePath(String rootKeystoreFilePath) {
+        this.rootKeystoreFilePath = rootKeystoreFilePath;
     }
 
     private boolean remove;

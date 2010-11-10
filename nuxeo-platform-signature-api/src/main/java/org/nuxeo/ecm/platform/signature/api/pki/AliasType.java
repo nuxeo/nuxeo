@@ -14,31 +14,19 @@
  * Contributors:
  *    Wojciech Sulejman
  */
-package org.nuxeo.ecm.platform.signature.api.exception;
+package org.nuxeo.ecm.platform.signature.api.pki;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
+ * Possible alias types to be saved in the keystore.
  */
-
-/**
- * An exception indicating certificate or key generation related problems
- * Provides error messages of security-administration level profile.
- *
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- */
-public class CertException extends SignException {
-    private static final long serialVersionUID = 1L;
-
-    public CertException(String message, Throwable e) {
-        super(message, e);
-    }
-
-    public CertException(String message) {
-        super(message);
-    }
-
-    public CertException(Throwable e) {
-        super(e);
-    }
+public enum AliasType {
+    /**
+     * This alias is used to store a key pair
+     */
+    KEY,
+    /**
+     * This alias is used to store a public certificate
+     */
+    CERT
 }

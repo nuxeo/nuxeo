@@ -54,7 +54,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="user">usercertificate</field>
+          <field schema="user">certificate</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>

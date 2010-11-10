@@ -15,19 +15,21 @@
  *     Wojciech Sulejman
  */
 
-package org.nuxeo.ecm.platform.signature.core.sign;
+package org.nuxeo.ecm.platform.signature.core.pki;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +39,9 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
-import org.nuxeo.ecm.platform.signature.core.pki.MockCAServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,8 +56,10 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.platform.signature.core","org.nuxeo.ecm.platform.signature.core.test" })
-public class SignatureServiceTest {
+        "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.platform.signature.core",
+        "org.nuxeo.ecm.platform.signature.core.test" })
+public class CAServiceTest {
 
     @Inject
     protected CAService cAService;
@@ -64,48 +67,65 @@ public class SignatureServiceTest {
     @Inject
     protected CoreSession session;
 
-    @Inject
-    SignatureService signatureService;
+    protected File userCertFile;
 
-    private final String CA_PASSWORD = "abc";
+    protected X509Certificate rootCertificate;
 
-    private final String USER_PASSWORD = "def";
+    private static final int EXPECTED_MIN_ENCODED_CERT_LENGTH = 100;
 
-    private static final Log log = LogFactory.getLog(SignatureServiceTest.class);
+    private final String PASSWORD = "abc";
 
-    /**
-     * mark this true if you want to keep the signed pdf for verification
-     * (integration testing scenario)
-     */
-    private static final boolean KEEP_SIGNED_PDF = true;
-
-    private File origPdfFile;
-
-    private KeyStore userKeystore;
-    protected String rootKeystorePath = "test-files/keystore.jks";
+    protected String keystorePath = "test-files/keystore.jks";
 
     @Before
     public void setup() throws Exception {
-        ((MockCAServiceImpl) cAService).setRoot(rootKeystorePath, getPDFCAInfo());
-        origPdfFile = FileUtils.getResourceFileFromContext("pdf-tests/original.pdf");
-        userKeystore = cAService.initializeUser(getUserInfo(), USER_PASSWORD);
+        ((MockCAServiceImpl) cAService).setRoot(keystorePath, getPDFCAInfo());
     }
 
-    @AfterClass
-    public static void destroy() throws Exception {
+    InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
+        File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
+        return new FileInputStream(keystoreFile);
+    }
 
+    KeyStore getKeystore() throws Exception {
+        KeyStore keystore = cAService.getKeyStore(getKeystoreIS(keystorePath),
+                getPDFCAInfo(), PASSWORD);
+        return keystore;
     }
 
     @Test
-    public void testSignPDF() throws Exception {
-        File outputFile = signatureService.signPDF(userKeystore, getUserInfo(),
-                USER_PASSWORD, "test reason", new FileInputStream(origPdfFile));
-        assertTrue(outputFile.exists());
-        if (KEEP_SIGNED_PDF) {
-            log.info("SIGNED PDF: " + outputFile.getAbsolutePath());
-        } else {
-            outputFile.deleteOnExit();
+    public void testGetKeys() throws Exception {
+        KeyPair keyPair = cAService.getKeyPair(getKeystore(), getPDFCAInfo(),
+                PASSWORD);
+        assertNotNull(keyPair.getPrivate());
+    }
+
+    @Test
+    public void testGetCertificate() throws Exception {
+        KeyStore keystore=generateUserKeystore();
+        Certificate cert = cAService.getCertificate(keystore,
+                getUserInfo());
+        assertNotNull(cert.getPublicKey());
+        assertTrue(cert.getPublicKey().getEncoded().length > EXPECTED_MIN_ENCODED_CERT_LENGTH);
+    }
+
+    @Test
+    public void testInitializeUser() throws Exception {
+        KeyStore keystore = generateUserKeystore();
+        assertNotNull(keystore.containsAlias(getUserInfo().getUserFields().get(
+                CNField.UserID)));
+    }
+
+    public KeyStore generateUserKeystore() throws Exception {
+        KeyStore keystore = cAService.initializeUser(getUserInfo(), PASSWORD);
+        return keystore;
+    }
+
+    public CAService getCAService() throws Exception {
+        if (cAService == null) {
+            cAService = Framework.getService(CAService.class);
         }
+        return cAService;
     }
 
     public UserInfo getPDFCAInfo() throws Exception {
@@ -133,4 +153,5 @@ public class SignatureServiceTest {
         UserInfo userInfo = new UserInfo(userFields);
         return userInfo;
     }
+
 }

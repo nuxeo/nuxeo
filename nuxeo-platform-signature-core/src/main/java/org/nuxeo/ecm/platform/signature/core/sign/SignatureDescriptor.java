@@ -22,8 +22,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Provides default and/or shared parameters for signing services.
  *  @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 
 @XObject("configuration")
