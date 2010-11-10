@@ -98,7 +98,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             Iterator<String> it = jsonContext.keys();
             while (it.hasNext()) {
                 String key = it.next();
-                String value = jsonParams.getString(key);
+                String value = jsonContext.getString(key);
                 req.setContextParam(key, value);
             }
         }
