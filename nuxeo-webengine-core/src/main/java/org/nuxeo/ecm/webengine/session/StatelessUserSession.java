@@ -57,7 +57,7 @@ public class StatelessUserSession extends UserSession {
             String url = request.getRequestURL().toString();
             log.error("Uninstall failed for Stateless UserSession. PathInfo: "
                     + pathInfo + "; URL: " + url, t);
-            throw new RuntimeException(t);
+            // throw new RuntimeException(t);
         }
     }
 

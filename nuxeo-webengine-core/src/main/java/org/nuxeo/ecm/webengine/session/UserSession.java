@@ -225,8 +225,9 @@ public abstract class UserSession extends HashMap<String, Object> {
         sessionProvider = null;
         try {
             oldSessionProvider.destroy(principal);
-        } catch (Exception e) {
-            log.error("Failed to destroy regisered core sessions", e);
+        } catch (Throwable e) {
+            // log.error("Failed to destroy registered core sessions", e);
+            throw new RuntimeException(e);
         }
         oldSessionProvider = null;
     }
