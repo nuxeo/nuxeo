@@ -1,0 +1,5 @@
+connect
+help query
+ls
+cd default-domain
+pwd

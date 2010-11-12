@@ -1,0 +1,12 @@
+{bold}NUXEO SHELL v.5.4{bold}
+
+This is the main Help page. Use help [command] for more details about a command.
+
+{bold}USAGE{bold}
+
+
+{bold}CREDITS{bold}
+
+Author: Bogdan Stefanescu -- bstefanescu@nuxeo.com
+
+This application uses Nuxeo Automation Client to access remote serves.
