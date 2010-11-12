@@ -156,7 +156,6 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "save")
     @Produces("text/html")
-    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object doSave() throws Exception {
         if (!isEditor()) {
             return null;
@@ -190,12 +189,22 @@ public class Distribution extends ModuleRoot{
         return ds.getDocumentationStats(getContext().getCoreSession());
     }
 
+    protected File getExportTmpFile() {
+        String fPath = System.getProperty("java.io.tmpdir") + "/export.zip";
+        File tmpFile = new File(fPath);
+        if (tmpFile.exists()) {
+            tmpFile.delete();
+            tmpFile = new File(fPath);
+        }
+        tmpFile.deleteOnExit();
+        return tmpFile;
+    }
+
     @GET
     @Path(value = "downloadDoc")
     public Response downloadDoc() throws Exception {
         DocumentationService ds = Framework.getService(DocumentationService.class);
-        File tmp = new File("/tmp/test.zip");
-        //tmp = File.createTempFile("export", ".zip");
+        File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
         ds.exportDocumentation(getContext().getCoreSession(), out);
@@ -209,19 +218,16 @@ public class Distribution extends ModuleRoot{
     @GET
     @Path(value = "download/{distributionId}")
     public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
-        File tmp = new File("/tmp/test.zip");
-        //tmp = File.createTempFile("export", ".zip");
+        File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
-
         getSnapshotManager().exportSnapshot(getContext().getCoreSession(), distribId, out);
         out.close();
+        String fName = "nuxeo-distribution-" + distribId + ".zip";
+        fName = fName.replace(" ", "_");
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
         return Response.ok(aFile).header("Content-Disposition",
-                 "attachment;filename=" + "nuxeo-documentation.zip").type("application/zip").build();
-        //return Response.ok(aFile).header("Content-Disposition",
-        //        "attachment;filename=" + "nuxeo-documentation.zip").build();
-
+                 "attachment;filename=" + fName).type("application/zip").build();
     }
 
     @POST

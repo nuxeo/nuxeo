@@ -49,7 +49,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
 
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {
-            url+="";
+            return url;
         }
         else if (obj.getArtifactType().equals(BundleInfo.TYPE_NAME)) {
             url+="viewBundle/";
