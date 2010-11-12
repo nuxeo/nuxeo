@@ -82,7 +82,6 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     public Collection<ExtensionInfo> getExtensions() {
-        log.error("getExtensions Not implemented");
 
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {

@@ -45,30 +45,33 @@ public class SeamRuntimeIntrospector {
 
     }
 
-    protected static List<SeamComponentInfo> listNuxeoComponents() {
+    protected static List<SeamComponentInfo> components=null;
 
-        List<SeamComponentInfo> components = new ArrayList<SeamComponentInfo>();
-        for(String cName : listAllComponentsNames()) {
-            SeamComponentInfoImpl desc = new SeamComponentInfoImpl();
-            Component comp = Component.forName(cName);
-            String className = comp.getBeanClass().getName();
-            //if (className.startsWith("org.nuxeo")) {
-            if (!className.startsWith("org.jboss")) {
-                desc.setName(cName);
-                desc.setScope(comp.getScope().toString());
-                desc.setClassName(className);
+    protected static synchronized List<SeamComponentInfo> listNuxeoComponents() {
+        if (components==null) {
+            components = new ArrayList<SeamComponentInfo>();
+            for(String cName : listAllComponentsNames()) {
+                SeamComponentInfoImpl desc = new SeamComponentInfoImpl();
+                Component comp = Component.forName(cName);
+                String className = comp.getBeanClass().getName();
+                //if (className.startsWith("org.nuxeo")) {
+                if (!className.startsWith("org.jboss")) {
+                    desc.setName(cName);
+                    desc.setScope(comp.getScope().toString());
+                    desc.setClassName(className);
 
-                Set<Class> ifaces = comp.getBusinessInterfaces();
-                if (ifaces!=null && ifaces.size()>0) {
-                    for (Class iface : ifaces) {
-                        desc.addInterfaceName(iface.getName());
+                    Set<Class> ifaces = comp.getBusinessInterfaces();
+                    if (ifaces!=null && ifaces.size()>0) {
+                        for (Class iface : ifaces) {
+                            desc.addInterfaceName(iface.getName());
+                        }
                     }
+                    desc.addInterfaceName(comp.getBeanClass().getName());
+                    components.add(desc);
                 }
-                desc.addInterfaceName(comp.getBeanClass().getName());
-                components.add(desc);
             }
+            Collections.sort(components);
         }
-        Collections.sort(components);
         return components;
     }
 }

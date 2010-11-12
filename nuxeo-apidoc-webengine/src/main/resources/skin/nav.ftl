@@ -6,7 +6,11 @@
 
 <A href="${Root.path}"> See all available distributions </A>
 
-<h3> ${Root.currentDistribution.name} ${Root.currentDistribution.version} </h3>
+<h3> ${Root.currentDistribution.name} ${Root.currentDistribution.version}
+<#if Root.currentDistribution.isLive()>
+ (Live)
+</#if>
+</h3>
 
 <h3> Seam Components </h3>
   <span

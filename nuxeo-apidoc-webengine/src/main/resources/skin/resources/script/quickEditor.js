@@ -48,7 +48,7 @@ function quickEditCancel(id) {
 
   $('#liveQuickEditor').remove();
   $('#liveQuickEditorTitle').remove();
-  $('#liveQuickEditorSave').remove();
+  $('#liveQuickEditoSave').remove();
   $('#liveQuickEditorCancel').remove();
 
   editorDisplayed=false;

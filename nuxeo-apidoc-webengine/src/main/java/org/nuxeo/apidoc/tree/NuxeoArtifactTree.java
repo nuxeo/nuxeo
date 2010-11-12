@@ -20,6 +20,7 @@ public class NuxeoArtifactTree extends JSonTree {
 
     public void setDs(DistributionSnapshot ds) {
         this.ds = ds;
+        tree.setContentProvider(new NuxeoArtifactContentProvider(ds));
     }
 
     @Override

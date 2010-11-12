@@ -42,6 +42,16 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected final DocumentModel doc;
 
+    protected static ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<CoreSession>();
+
+    public static void setLocalCoreSession(CoreSession session) {
+        localCoreSession.set(session);
+    }
+
+    public static void releaseLocalCoreSession() {
+        localCoreSession.remove();
+    }
+
     protected BaseNuxeoArtifactDocAdapter(DocumentModel doc) {
         this.doc = doc;
     }
@@ -78,10 +88,14 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     }
 
     protected CoreSession getCoreSession() {
-        if (doc == null) {
-            return null;
+        CoreSession session=null;
+        if (doc != null) {
+            session = doc.getCoreSession();
         }
-        return doc.getCoreSession();
+        if (session==null) {
+            session = localCoreSession.get();
+        }
+        return session;
     }
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {

@@ -15,9 +15,19 @@
 
  <#assign description=docs.getDescription(Context.getCoreSession())/>
 
+<div id="SeamComponent.${seamComponent.id}_frame" class="blocFrame">
+
+ <span id="${componentDesc.getEditId()}_doctitle"> ${componentDesc.title}</span>
+ <@quickEditorLinks docItem=componentDesc/>
+
+ <p><@docContent docItem=componentDesc /></p>
+
  <#include "/views/seamComponent/viewSimple.ftl">
 
-  <p><@docContent docItem=componentDesc /></p>
+ <@viewAdditionalDoc docsByCat=componentDocs.getDocumentationItems(Context.getCoreSession())/>
+
+</div>
+
 </@block>
 
 </@extends>

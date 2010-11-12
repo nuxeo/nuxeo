@@ -16,9 +16,6 @@ import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 
 public class NuxeoArtifactContentProvider implements ContentProvider {
 
-    /**
-    *
-    */
     private static final long serialVersionUID = 1L;
 
     protected DistributionSnapshot ds;

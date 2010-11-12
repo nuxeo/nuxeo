@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.common.utils.Path;
@@ -61,57 +62,62 @@ public class TreeHelper {
 
     public static String updateTree(WebContext ctx, String source) {
 
-        boolean anonymous = ((NuxeoPrincipal)ctx.getPrincipal()).isAnonymous();
+        BaseNuxeoArtifactDocAdapter.setLocalCoreSession(ctx.getCoreSession());
 
-        NuxeoArtifactTree tree=null;
-        String lastPath = null;
-        HttpSession httpSession=null;
-        if (anonymous) {
-            tree=getOrBuildAnonymousTree(ctx);
-        } else {
-            tree = getOrBuildTree(ctx);
-            httpSession = ctx.getRequest().getSession(true);
-            lastPath = (String) httpSession.getAttribute("tree-last-path");
-        }
+        try {
+            boolean anonymous = ((NuxeoPrincipal)ctx.getPrincipal()).isAnonymous();
 
-        if ("source".equalsIgnoreCase(source) || source==null) {
-            tree.enter(ctx, "/");
-            return tree.getTreeAsJSONArray(ctx);
-        }
-        else if (source.startsWith("source:")) {
-            String anonymousPath =source.replace("source:", "");
-            tree.enter(ctx, anonymousPath);
-            return tree.getTreeAsJSONArray(ctx);
-        }
-        else {
-            if (lastPath!=null) {
-                TreeItem lastNode = tree.getTree().find(lastPath);
-                if (lastNode!=null) {
-                    lastNode.collapse();
-                } else {
-                    log.warn("Unable to find previous selected tree node at path "+ lastPath);
-                }
+            NuxeoArtifactTree tree=null;
+            String lastPath = null;
+            HttpSession httpSession=null;
+            if (anonymous) {
+                tree=getOrBuildAnonymousTree(ctx);
+            } else {
+                tree = getOrBuildTree(ctx);
+                httpSession = ctx.getRequest().getSession(true);
+                lastPath = (String) httpSession.getAttribute("tree-last-path");
+            }
 
-                String lastBranch = new Path(lastPath).segment(0);
-                String currentBranch = new Path(source).segment(0);
-                if (!currentBranch.equals(lastBranch)) {
-                    TreeItem lastBranchItem =tree.getTree().find(lastBranch);
-                    if (lastBranchItem!=null) {
-                        lastBranchItem.collapse();
+            if ("source".equalsIgnoreCase(source) || source==null) {
+                tree.enter(ctx, "/");
+                return tree.getTreeAsJSONArray(ctx);
+            }
+            else if (source.startsWith("source:")) {
+                String anonymousPath =source.replace("source:", "");
+                tree.enter(ctx, anonymousPath);
+                return tree.getTreeAsJSONArray(ctx);
+            }
+            else {
+                if (lastPath!=null) {
+                    TreeItem lastNode = tree.getTree().find(lastPath);
+                    if (lastNode!=null) {
+                        lastNode.collapse();
                     } else {
-                        log.warn("Unable to find last branch " + lastBranch);
+                        log.warn("Unable to find previous selected tree node at path "+ lastPath);
+                    }
+
+                    String lastBranch = new Path(lastPath).segment(0);
+                    String currentBranch = new Path(source).segment(0);
+                    if (!currentBranch.equals(lastBranch)) {
+                        TreeItem lastBranchItem =tree.getTree().find(lastBranch);
+                        if (lastBranchItem!=null) {
+                            lastBranchItem.collapse();
+                        } else {
+                            log.warn("Unable to find last branch " + lastBranch);
+                        }
                     }
                 }
-            }
 
-            if (httpSession!=null) {
-                httpSession.setAttribute("tree-last-path", source);
-            }
-            ctx.getRequest().setAttribute("tree-last-path", source);
+                if (httpSession!=null) {
+                    httpSession.setAttribute("tree-last-path", source);
+                }
+                ctx.getRequest().setAttribute("tree-last-path", source);
 
-            return tree.enter(ctx, source);
+                return tree.enter(ctx, source);
+            }
+        }finally {
+            BaseNuxeoArtifactDocAdapter.releaseLocalCoreSession();
         }
-
     }
 
 }
