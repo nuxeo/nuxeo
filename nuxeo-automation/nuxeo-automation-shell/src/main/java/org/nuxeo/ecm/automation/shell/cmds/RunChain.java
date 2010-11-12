@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
-import org.nuxeo.ecm.automation.client.jaxrs.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.shell.ChainCompletor;
 import org.nuxeo.ecm.automation.shell.DocRefCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
@@ -44,12 +40,9 @@ public class RunChain implements Runnable {
     protected String path;
 
     public void run() {
-        Document doc = ctx.resolveDocument(path);
-        Map<String, OperationDocumentation> ops = ctx.getSession().getOperations();
-        for (String key : ops.keySet()) {
-            ctx.getShell().getConsole().println(
-                    key + " - " + ops.get(key).getCategory());
-        }
+        // Document doc = ctx.resolveDocument(path);
+        // ctx.getSession().newRequest(id)
+        // ctx.getSession().execute(request);
     }
 
 }
