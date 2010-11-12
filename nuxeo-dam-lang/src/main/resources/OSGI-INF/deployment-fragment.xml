@@ -1,11 +1,5 @@
 <?xml version="1.0"?>
-<fragment>
-
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
+<fragment version="1">
 
   <extension target="faces-config#APPLICATION">
     <locale-config>
@@ -29,8 +23,8 @@
 
   <install>
     <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
     </unzip>
   </install>
 

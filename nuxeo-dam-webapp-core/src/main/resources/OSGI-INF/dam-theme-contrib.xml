@@ -53,11 +53,26 @@
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
 
-      <resource>calendar-win2k-1.css</resource>
+      <!-- include calendar resources so that they're
+        available on all the pages -->
       <resource>calendar.js</resource>
-      <resource>calendar-setup.js</resource>
       <resource>calendar-en.js</resource>
+      <resource>calendar-ca.js</resource>
+      <resource>calendar-cn.js</resource>
+      <resource>calendar-cz.js</resource>
+      <resource>calendar-es.js</resource>
+      <resource>calendar-fr.js</resource>
+      <resource>calendar-it.js</resource>
+      <resource>calendar-jp.js</resource>
+      <resource>calendar-nl.js</resource>
+      <resource>calendar-pl.js</resource>
+      <resource>calendar-pt.js</resource>
+      <resource>calendar-ro.js</resource>
+      <resource>calendar-ru.js</resource>
+      <resource>calendar-sv.js</resource>
       <resource>calendar.css</resource>
+      <resource>calendar-border-radius.css</resource>
+      <resource>calendar-galaxy.css</resource>
 
       <resource>jquery.js</resource>
       <resource>toggle-panel.js</resource>
@@ -93,22 +108,62 @@
     </resource>
 
     <!-- calendar resources -->
-    <resource name="calendar-win2k-1.css">
-      <path>jscalendar/calendar-win2k-1.css
-      </path>
-    </resource>
     <resource name="calendar.js">
-      <path>jscalendar/calendar.js</path>
-    </resource>
-    <resource name="calendar-setup.js">
-      <path>jscalendar/calendar-setup.js</path>
+      <path>jscalendar/js/jscal2.js</path>
     </resource>
     <resource name="calendar-en.js">
-      <path>jscalendar/lang/calendar-en.js</path>
+      <path>jscalendar/js/lang/en.js</path>
+    </resource>
+    <resource name="calendar-ca.js">
+      <path>jscalendar/js/lang/ca.js</path>
+    </resource>
+    <resource name="calendar-cn.js">
+      <path>jscalendar/js/lang/cn.js</path>
+    </resource>
+    <resource name="calendar-cz.js">
+      <path>jscalendar/js/lang/cz.js</path>
+    </resource>
+    <resource name="calendar-es.js">
+      <path>jscalendar/js/lang/es.js</path>
+    </resource>
+    <resource name="calendar-fr.js">
+      <path>jscalendar/js/lang/fr.js</path>
+    </resource>
+    <resource name="calendar-it.js">
+      <path>jscalendar/js/lang/it.js</path>
+    </resource>
+    <resource name="calendar-jp.js">
+      <path>jscalendar/js/lang/jp.js</path>
+    </resource>
+    <resource name="calendar-nl.js">
+      <path>jscalendar/js/lang/nl.js</path>
+    </resource>
+    <resource name="calendar-pl.js">
+      <path>jscalendar/js/lang/pl.js</path>
+    </resource>
+    <resource name="calendar-pt.js">
+      <path>jscalendar/js/lang/pt.js</path>
+    </resource>
+    <resource name="calendar-ro.js">
+      <path>jscalendar/js/lang/ro.js</path>
+    </resource>
+    <resource name="calendar-ru.js">
+      <path>jscalendar/js/lang/ru.js</path>
+    </resource>
+    <resource name="calendar-sv.js">
+      <path>jscalendar/js/lang/sv.js</path>
     </resource>
     <resource name="calendar.css">
-      <path>css/calendar.css</path>
+      <path>jscalendar/css/jscal2.css</path>
+      <context-path>${org.nuxeo.ecm.contextPath}/jscalendar/css/</context-path>
     </resource>
+    <resource name="calendar-border-radius.css">
+      <path>jscalendar/css/border-radius.css</path>
+    </resource>
+    <resource name="calendar-galaxy.css">
+      <path>jscalendar/css/galaxy/galaxy.css</path>
+    </resource>
+
     <resource name="modal-popup.css">
       <path>css/modal_popup.css</path>
     </resource>

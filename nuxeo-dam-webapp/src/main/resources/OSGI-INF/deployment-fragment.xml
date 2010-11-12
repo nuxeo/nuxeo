@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
-<fragment>
+<fragment version="1">
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
+  <require>org.nuxeo.ecm.platform.ui</require>
 
   <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
     <context-param>
@@ -17,8 +13,8 @@
 
   <install>
     <!--  unzip the war template -->
-    <unzip from="${bundle.fileName}" to="/">
-      <include>nuxeo.war/**</include>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
     </unzip>
 
   </install>

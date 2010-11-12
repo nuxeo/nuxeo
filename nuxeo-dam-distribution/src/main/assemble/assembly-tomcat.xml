@@ -76,13 +76,15 @@
         <exclude name="**/nxserver/bundles/nuxeo-webengine-sites*" />
         <exclude name="**/nxserver/bundles/nuxeo-webengine-ui*" />
 
+        <exclude name="**/nxserver/bundles/nuxeo-platform-faceted-search-dm*" />
+
         <!-- OpenSocial libs -->
         <exclude name="**/nxserver/lib/shindig*" />
         <exclude name="**/nxserver/lib/oauth*" />
         <exclude name="**/nxserver/lib/caja*" />
 
         <exclude name="**/nxserver/config/nxmail-scheduler-config.xml" />
-        <exclude name="**/nxserver/config/default-opensocial-config.xml" />
+        <exclude name="**/templates/common/config/default-opensocial-config.xml" />
         <exclude name="**/templates/default/nxserver/config/opensocial.properties" />
       </patternset>
     </unzip>

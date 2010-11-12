@@ -6,7 +6,11 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
   <ui:define name="page title">
-   <h:outputText value="Nuxeo DAM" />
+    <h:outputText value="Nuxeo DAM" />
+  </ui:define>
+
+  <ui:define name="body">
+    <ui:include src="/incl/filtered_search_results_content.xhtml" />
   </ui:define>
 
 </nxthemes:composition>

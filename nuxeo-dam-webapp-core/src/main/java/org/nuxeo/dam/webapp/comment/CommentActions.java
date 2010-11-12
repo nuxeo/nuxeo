@@ -211,7 +211,7 @@ public class CommentActions implements Serializable {
         comments = null;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void cleanContextVariable() {
         showCreateForm = false;

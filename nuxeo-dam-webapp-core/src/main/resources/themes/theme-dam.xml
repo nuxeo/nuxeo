@@ -21,7 +21,7 @@
         </cell>
         <cell>
           <!-- dam filtered search results -->
-          <fragment type="generic fragment"/>
+          <fragment type="region fragment"/>
         </cell>
         <cell>
           <!-- main area -->
@@ -72,6 +72,11 @@
       </section>
     </page>
   </layout>
+  <properties element="page[1]/section[2]/cell[2]/fragment[1]">
+    <name>body</name>
+    <defaultBody />
+    <defaultSrc />
+  </properties>
   <properties element="page[2]/section[1]/cell[1]/fragment[1]">
     <name>body</name>
     <defaultBody />
@@ -186,7 +191,7 @@
       <view>dam search filters</view>
     </widget>
     <widget element="page[1]/section[2]/cell[2]/fragment[1]">
-      <view>dam filtered search results</view>
+      <view>facelet region</view>
     </widget>
     <widget element="page[1]/section[2]/cell[3]/fragment[1]">
       <view>dam selection view</view>

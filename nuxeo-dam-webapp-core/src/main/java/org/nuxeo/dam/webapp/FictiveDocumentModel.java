@@ -22,32 +22,26 @@ import java.util.List;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.webapp.bulkedit.FictiveDataModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class FictiveDocumentModel extends
-        org.nuxeo.ecm.webapp.bulkedit.FictiveDocumentModel {
+public class FictiveDocumentModel extends SimpleDocumentModel {
 
     public static DocumentModel createFictiveDocumentModelWith(
             List<String> schemas) {
-        FictiveDocumentModel doc = new FictiveDocumentModel();
-        for (String schema : schemas) {
-            DataModel dataModel = doc.dataModels.get(schema);
-            if (dataModel == null) {
-                dataModel = new FictiveDataModel(schema);
-                doc.dataModels.put(schema, dataModel);
-            }
-        }
-        return doc;
+        return new FictiveDocumentModel(schemas);
+    }
+
+    public FictiveDocumentModel(List<String> schemas) {
+        super(schemas);
     }
 
     @Override
