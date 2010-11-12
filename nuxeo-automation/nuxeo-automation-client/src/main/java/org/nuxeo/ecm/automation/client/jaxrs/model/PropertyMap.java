@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * A flat representation of a document properties. Dates are in
  * YYYY-MM-DDThh:mm:ssZ (UTC) format
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PropertyMap {
@@ -79,6 +79,18 @@ public class PropertyMap {
         return PropertiesHelper.getString(map.get(key), defValue);
     }
 
+    public Blob getBlob(String key) {
+        Object v = map.get(key);
+        if (v == null) {
+            return null;
+        }
+        if (v instanceof Blob) {
+            return (Blob) v;
+        }
+        throw new IllegalArgumentException("Property '" + key
+                + "' is not a blob");
+    }
+
     public Boolean getBoolean(String key, Boolean defValue) {
         return PropertiesHelper.getBoolean(map.get(key), defValue);
     }
@@ -113,6 +125,10 @@ public class PropertyMap {
 
     public int size() {
         return map.size();
+    }
+
+    public boolean isEmpty() {
+        return map.isEmpty();
     }
 
     public void set(String key, String value) {

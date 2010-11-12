@@ -37,6 +37,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -52,7 +53,7 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces( { "application/json+nxentity", "application/json" })
+@Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     @Context
@@ -79,7 +80,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             if (props == null || props.isEmpty()) {
                 obj = getJSON(doc, null);
             } else {
-                obj = getJSON(doc, props);
+                obj = getJSON(doc, StringUtils.split(props.get(0), ',', true));
             }
             arg6.write(obj.toString(2).getBytes("UTF-8"));
         } catch (Exception e) {
@@ -87,7 +88,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    public static JSONObject getJSON(DocumentModel doc, List<String> schemas)
+    public static JSONObject getJSON(DocumentModel doc, String[] schemas)
             throws Exception {
         JSONObject json = new JSONObject();
         json.element("entity-type", "document");
@@ -103,12 +104,12 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                     DateParser.formatW3CDateTime(cal.getTime()));
         }
 
-        if (schemas == null || schemas.isEmpty()) {
+        if (schemas == null || schemas.length == 0) {
             return json;
         }
 
         JSONObject props = new JSONObject();
-        if (schemas.size() == 1 && "*".equals(schemas.get(0))) { // full
+        if (schemas.length == 1 && "*".equals(schemas[0])) { // full
             // document
             for (String schema : doc.getDeclaredSchemas()) {
                 addSchema(props, doc, schema);
@@ -189,8 +190,10 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                 jsob.element("digest", v == null ? JSONNull.getInstance() : v);
                 v = Long.toString(blob.getLength());
                 jsob.element("length", v);
-                jsob.element("data", filesBaseUrl
-                        + URLEncoder.encode(prop.getPath(), "UTF-8"));
+                jsob.element(
+                        "data",
+                        filesBaseUrl
+                                + URLEncoder.encode(prop.getPath(), "UTF-8"));
                 return jsob;
             } else { // a complex property
                 ComplexProperty cp = (ComplexProperty) prop;

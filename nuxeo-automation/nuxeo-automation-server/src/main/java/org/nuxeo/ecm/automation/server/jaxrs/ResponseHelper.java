@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultipartBlobs;
@@ -41,8 +42,11 @@ public class ResponseHelper {
     }
 
     public static Response blob(Blob blob) {
-        return Response.ok(blob).type(blob.getMimeType()).header(
-                "Content-Disposition",
+        String type = blob.getMimeType();
+        if (type == null) {
+            type = MediaType.APPLICATION_OCTET_STREAM;
+        }
+        return Response.ok(blob).type(type).header("Content-Disposition",
                 "attachment; filename=" + blob.getFilename()).build();
     }
 

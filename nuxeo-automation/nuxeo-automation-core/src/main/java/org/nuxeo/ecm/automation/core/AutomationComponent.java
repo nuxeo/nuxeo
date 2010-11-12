@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentsInput;
+import org.nuxeo.ecm.automation.core.operations.RunInputScript;
 import org.nuxeo.ecm.automation.core.operations.RunScript;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.SetVar;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchByProperty;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FilterDocuments;
+import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChild;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
@@ -142,6 +144,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(FilterDocuments.class);
         service.putOperation(UnlockDocument.class);
         service.putOperation(GetDocumentChildren.class);
+        service.putOperation(GetDocumentChild.class);
         service.putOperation(GetDocumentParent.class);
         service.putOperation(MoveDocument.class);
         service.putOperation(ReloadDocument.class);
@@ -189,6 +192,7 @@ public class AutomationComponent extends DefaultComponent {
 
         // disabled operations
         service.putOperation(FireEvent.class);
+        service.putOperation(RunInputScript.class);
         // service.putOperation(RunScriptFile.class);
 
         handlers = new EventHandlerRegistry(service);

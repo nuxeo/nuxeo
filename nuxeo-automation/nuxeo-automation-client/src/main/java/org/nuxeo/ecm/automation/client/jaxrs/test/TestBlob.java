@@ -48,7 +48,7 @@ public class TestBlob {
             fb.setMimeType("image/jpeg");
 
             // TODO avoid getting the output from server
-            Blob blob = (Blob) session.newRequest(DocumentService.AttachBlob).setHeader(
+            Blob blob = (Blob) session.newRequest("Blob.Attach").setHeader(
                     Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
                     "document", "/titi").execute();
             System.out.println(blob);

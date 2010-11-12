@@ -73,7 +73,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(WebEngineFeature.class)
 @Jetty(port = 18080)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
 @LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class RestTest {
@@ -253,7 +253,7 @@ public class RestTest {
 
     /**
      * test blob input / output
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -272,8 +272,7 @@ public class RestTest {
         session.newRequest(CreateDocument.ID).setInput(root).set("type", "File").set(
                 "name", "myfile").set("properties", "dc:title=My File").execute();
 
-        FileBlob blob = (FileBlob) session.newRequest(
-                DocumentService.AttachBlob).setHeader(
+        FileBlob blob = (FileBlob) session.newRequest("Blob.Attach").setHeader(
                 Constants.HEADER_NX_VOIDOP, "true").setInput(fb).set(
                 "document", "/myfile").execute();
         // test that output was avoided using Constants.HEADER_NX_VOIDOP
