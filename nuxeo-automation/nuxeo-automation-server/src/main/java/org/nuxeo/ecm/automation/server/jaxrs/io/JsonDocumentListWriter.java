@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -31,6 +34,7 @@ import javax.ws.rs.ext.Provider;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.WebException;
@@ -39,9 +43,12 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Produces( { "application/json+nxentity", "application/json" })
+@Produces({ "application/json+nxentity", "application/json" })
 public class JsonDocumentListWriter implements
         MessageBodyWriter<DocumentModelList> {
+
+    @Context
+    protected HttpHeaders headers;
 
     public long getSize(DocumentModelList arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
@@ -60,8 +67,13 @@ public class JsonDocumentListWriter implements
         try {
             JSONObject json = new JSONObject();
             JSONArray ar = new JSONArray();
+            List<String> props = headers.getRequestHeader("X-NXDocumentProperties");
+            String[] schemas = null;
+            if (props != null && !props.isEmpty()) {
+                schemas = StringUtils.split(props.get(0), ',', true);
+            }
             for (DocumentModel doc : docs) {
-                ar.add(JsonDocumentWriter.getJSON(doc, null));
+                ar.add(JsonDocumentWriter.getJSON(doc, schemas));
             }
             json.element("entity-type", "documents");
             json.element("entries", ar);

@@ -183,4 +183,9 @@ public class PropertyList {
     public List<Object> list() {
         return list;
     }
+
+    @Override
+    public String toString() {
+        return list.toString();
+    }
 }

@@ -72,4 +72,19 @@ public abstract class Blob implements OperationInput {
 
     public abstract InputStream getStream() throws IOException;
 
+    protected String formatLength(int len) {
+        int k = len / 1024;
+        if (k <= 0) {
+            return "0 B";
+        } else if (k < 1024) {
+            return k + " K";
+        } else {
+            return (k / 1024) + " M";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return fileName + " - " + mimeType + " - " + formatLength(getLength());
+    }
 }

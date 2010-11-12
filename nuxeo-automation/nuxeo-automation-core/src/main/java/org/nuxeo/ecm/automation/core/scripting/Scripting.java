@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import groovy.lang.Binding;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -37,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 public class Scripting {
 
     protected static final Map<String, Script> cache = new ConcurrentHashMap<String, Script>();
+
+    protected static final GroovyScripting gscripting = new GroovyScripting();
 
     public static Expression newExpression(String expr) {
         return new MvelExpression(expr);
@@ -85,8 +90,8 @@ public class Scripting {
         map.put("Context", ctx);
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        map.put("CurrentUser", new PrincipalWrapper(
-                (NuxeoPrincipal) ctx.getPrincipal()));
+        map.put("CurrentUser",
+                new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
         map.put("Env", Framework.getProperties());
         map.put("Fn", Functions.INSTANCE);
         if (input instanceof DocumentModel) {
@@ -98,30 +103,39 @@ public class Scripting {
 
     public interface Script {
         // protected long lastModified;
-        void eval(OperationContext ctx) throws Exception;
+        Object eval(OperationContext ctx) throws Exception;
     }
 
     public static class MvelScript implements Script {
         final Serializable c;
 
+        public static MvelScript compile(String script) {
+            return new MvelScript(MVEL.compileExpression(script));
+        }
+
         public MvelScript(Serializable c) {
             this.c = c;
         }
 
-        public void eval(OperationContext ctx) throws Exception {
-            MVEL.executeExpression(c, Scripting.initBindings(ctx));
+        public Object eval(OperationContext ctx) throws Exception {
+            return MVEL.executeExpression(c, Scripting.initBindings(ctx));
         }
     }
 
     public static class GroovyScript implements Script {
-        final Serializable c;
+        final groovy.lang.Script c;
 
-        public GroovyScript(Serializable c) {
-            this.c = c;
+        public GroovyScript(String c) throws IOException {
+            this.c = gscripting.getScript(c, new Binding());
         }
 
-        public void eval(OperationContext ctx) throws Exception {
-
+        public Object eval(OperationContext ctx) throws Exception {
+            Binding binding = new Binding();
+            for (Map.Entry<String, Object> entry : initBindings(ctx).entrySet()) {
+                binding.setVariable(entry.getKey(), entry.getValue());
+            }
+            c.setBinding(binding);
+            return c.run();
         }
     }
 
