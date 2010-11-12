@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.shell.ChainCompletor;
-import org.nuxeo.ecm.automation.shell.DocRefCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
@@ -27,22 +25,27 @@ import org.nuxeo.ecm.shell.Context;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "run", help = "Run a server automation chain")
-public class RunChain implements Runnable {
+@Command(name = "update", help = "Update document properties")
+public class Update implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Argument(name = "chain", index = 0, required = true, completor = ChainCompletor.class, help = "The chain to run")
-    protected String chain;
+    @Argument(name = "properties", index = 0, help = "The propertis to update. Default separator is \n.")
+    protected String props;
 
-    @Argument(name = "doc", index = 1, required = false, completor = DocRefCompletor.class, help = "A reference to the new context document to use. To use UID references prefix them with 'doc:'.")
+    @Argument(name = "path", index = 1, required = true, help = "The document path")
     protected String path;
 
     public void run() {
-        // Document doc = ctx.resolveDocument(path);
-        // ctx.getSession().newRequest(id)
-        // ctx.getSession().execute(request);
+        // DocRef doc = ctx.resolveRef(path);
+        // PathRef parent = new PathRef(p.getParent().toString());
+        // try {
+        // PropertyMap map = new PropertyMap();
+        //
+        // ctx.getDocumentService().update(doc, type, p.lastSegment());
+        // } catch (Exception e) {
+        // throw new ShellException(e);
+        // }
     }
-
 }

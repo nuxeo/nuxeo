@@ -46,7 +46,8 @@ public class RemoteCommands extends CommandRegistry {
         addCommandType(DefaultCommandType.fromAnnotatedClass(Cat.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Tree.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Script.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(RunChain.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithDoc.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithFile.class));
     }
 
     public String getPrompt(Shell shell) {
