@@ -73,7 +73,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/nuxeo.war</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/web/nuxeo.war</outputDirectory>
             </configuration>
           </execution>
         </executions>
