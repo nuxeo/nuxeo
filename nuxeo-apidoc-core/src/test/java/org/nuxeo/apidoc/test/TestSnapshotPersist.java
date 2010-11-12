@@ -141,6 +141,8 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
         assertNotNull(persistent);
 
+        session.save();
+
         persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
         session.save();

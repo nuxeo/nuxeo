@@ -26,7 +26,9 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.JavaDocHelper;
 
 /**
  *
@@ -71,4 +73,13 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     List<Class> getSpi();
 
+    List<String> getSeamComponentIds();
+
+    List<SeamComponentInfo> getSeamComponents();
+
+    SeamComponentInfo getSeamComponent(String id);
+
+    boolean containsSeamComponents();
+
+    JavaDocHelper getJavaDocHelper();
 }

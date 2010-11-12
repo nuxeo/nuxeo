@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -32,6 +34,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public interface SnapshotManager {
+
+    void initSeamContext(HttpServletRequest request);
 
     DistributionSnapshot getRuntimeSnapshot();
 

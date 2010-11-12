@@ -8,9 +8,7 @@
   <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
   <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" type="text/css" media="screen" charset="utf-8" />
   <link rel="stylesheet" href="${skinPath}/css/code.css" type="text/css" media="screen" charset="utf-8" />
-
   <link rel="stylesheet" href="${skinPath}/script/jquery//treeview/jquery.treeview.css" type="text/css" media="screen" charset="utf-8">
-
 
   <@block name="stylesheets" />
    <script type="text/javascript">

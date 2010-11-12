@@ -9,13 +9,17 @@ import org.nuxeo.ecm.webengine.ui.tree.TreeModelImpl;
 
 public class NuxeoArtifactTree extends JSonTree {
 
-    DistributionSnapshot ds;
+    protected DistributionSnapshot ds;
 
     public NuxeoArtifactTree(WebContext ctx, DistributionSnapshot ds) {
         tree = new TreeModelImpl();
         this.ds=ds;
         tree.setContentProvider(getProvider(ctx));
         tree.setInput(ds);
+    }
+
+    public void setDs(DistributionSnapshot ds) {
+        this.ds = ds;
     }
 
     @Override

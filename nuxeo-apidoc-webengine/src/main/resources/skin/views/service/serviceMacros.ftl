@@ -27,7 +27,8 @@
 
     <p><@docContent docItem=serviceDesc /></p>
 
-    <#assign javaDocUrl="http://doc.nuxeo.org/current/apidocs/${serviceItem.id?replace('.','/')}.html"/>
+ 	<#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(serviceItem.id)}"/>
+    <#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${serviceItem.id?replace('.','/')}.html"/>
 
     Associated <span class="resourceToggle"> JavaDoc </span>
     <div class="hiddenResource"><br/>

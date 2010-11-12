@@ -148,6 +148,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return safeGet("nxcomponent:componentName");
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getServiceNames() {
         try {
             return (List<String>) doc.getPropertyValue("nxcomponent:services");

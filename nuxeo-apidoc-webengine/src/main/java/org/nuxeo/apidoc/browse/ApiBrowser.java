@@ -47,6 +47,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
@@ -480,6 +481,16 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
+    @Path(value = "viewSeamComponent/{componentId}")
+    public Resource viewSeamComponent(@PathParam("componentId") String componentId) {
+        try {
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("seamComponent", componentId);
+            return wo;
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
     @Path(value = "viewService/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
         try {
@@ -568,6 +579,30 @@ public class ApiBrowser extends DefaultObject {
 
     public String getLabel(String id) {
         return null;
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listSeamComponents")
+    public Object listSeamComponents() throws Exception {
+        return dolistSeamComponents("listSeamComponents", false);
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listSeamComponentsSimple")
+    public Object listSeamComponentsSimple() throws Exception {
+        return dolistSeamComponents("listSeamComponentsSimple", true);
+    }
+
+    protected Object dolistSeamComponents(String view, boolean hideNav) throws Exception {
+
+        getSnapshotManager().initSeamContext(getContext().getRequest());
+
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession());
+        List<SeamComponentInfo> seamComponents = snap.getSeamComponents();
+        return getView(view)
+        .arg("seamComponents", seamComponents).arg("distId", ctx.getProperty("distId")).arg("hideNav", hideNav);
     }
 
 }

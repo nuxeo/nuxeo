@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -53,8 +55,6 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     protected DistributionSnapshot runtimeSnapshot;
 
-    protected Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
-
     public static final String RUNTIME="current";
 
     public static final String RUNTIME_ADM="adm";
@@ -70,35 +70,27 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return runtimeSnapshot;
     }
 
-    public void addPersistentSnapshot(String key, DistributionSnapshot snapshot) {
-        persistentSnapshots.put(key, snapshot);
-    }
 
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
         if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
             return getRuntimeSnapshot();
         }
-        readPersistentSnapshots(session);
-        return persistentSnapshots.get(key);
+        return getPersistentSnapshots(session).get(key);
     }
 
     public List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> snaps = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
-
-        for (DistributionSnapshot snap : snaps) {
-            addPersistentSnapshot(snap.getKey(), snap);
-        }
         return snaps;
     }
 
     public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
-        if (persistentSnapshots == null || persistentSnapshots.isEmpty()) {
-            if (session!=null) {
-                readPersistentSnapshots(session);
-            } else {
-                persistentSnapshots = new HashMap<String, DistributionSnapshot>();
-            }
+
+        Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
+
+        for (DistributionSnapshot snap : readPersistentSnapshots(session)) {
+            persistentSnapshots.put(snap.getKey(), snap);
         }
+
         return persistentSnapshots;
     }
 
@@ -219,6 +211,15 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         } catch (Exception e) {
             log.error("Error while importing snapshot", e);
         }
+    }
+
+    public void initSeamContext(HttpServletRequest request) {
+        ((RuntimeSnapshot)getRuntimeSnapshot()).initSeamComponents(request);
+    }
+
+    @Override
+    public void addPersistentSnapshot(String key, DistributionSnapshot snapshot) {
+        // NOP
     }
 
 }

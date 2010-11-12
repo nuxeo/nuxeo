@@ -33,16 +33,29 @@ public class TreeHelper {
         if (tree==null) {
             tree = buildTree(ctx);
             httpSession.setAttribute("tree--" + ctx.getProperty("distId"), tree);
+        } else {
+            tree.setDs(getRequestDS(ctx));
         }
         return tree;
     }
 
+    public static DistributionSnapshot getRequestDS(WebContext ctx) {
+
+        String id = "tree--ds--" + ctx.getProperty("distId");
+
+        DistributionSnapshot ds = (DistributionSnapshot) ctx.getRequest().getAttribute(id);
+        if (ds==null) {
+            SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
+            ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
+            ctx.getRequest().setAttribute(id, ds);
+        }
+
+        return ds;
+    }
 
     public static NuxeoArtifactTree buildTree(WebContext ctx) {
-        SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
-        DistributionSnapshot ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
+        DistributionSnapshot ds = getRequestDS(ctx);
         return  new NuxeoArtifactTree(ctx, ds);
-
     }
 
 

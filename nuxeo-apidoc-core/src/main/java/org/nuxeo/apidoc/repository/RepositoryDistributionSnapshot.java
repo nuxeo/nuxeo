@@ -29,7 +29,9 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -44,6 +46,8 @@ import org.nuxeo.ecm.core.api.PathRef;
  *
  */
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
+
+    protected JavaDocHelper jdocHelper = null;
 
     public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session, String containerPath) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
@@ -329,4 +333,74 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return false;
     }
 
+    public SeamComponentInfo getSeamComponent(String id) {
+
+        String startPath = getDoc().getPathAsString();
+
+        String name = id.replace("seam:", "");
+        String query = "select * from NXSeamComponent where nxseam:componentName='" + name + "' AND ecm:path STARTSWITH '" + startPath + "/'";
+
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+
+            return docs.get(0).getAdapter(SeamComponentInfo.class);
+        }
+        catch (Exception e) {
+            log.error("Unable to fetch Seam Component",e);
+            return null;
+        }
+    }
+
+    public List<String> getSeamComponentIds() {
+        List<String> result = new ArrayList<String>();
+
+        String startPath = getDoc().getPathAsString();
+
+        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '" + startPath + "/'";
+
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+
+            for (DocumentModel doc : docs) {
+                result.add(doc.getAdapter(SeamComponentInfo.class).getId());
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to fetch NXService",e);
+        }
+        return result;
+    }
+
+    public List<SeamComponentInfo> getSeamComponents() {
+
+        List<SeamComponentInfo> result = new ArrayList<SeamComponentInfo>();
+
+        String startPath = getDoc().getPathAsString();
+
+        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '" + startPath + "/'";
+
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+
+            for (DocumentModel doc : docs) {
+                result.add(doc.getAdapter(SeamComponentInfo.class));
+            }
+        }
+        catch (Exception e) {
+            log.error("Unable to fetch NXService",e);
+        }
+        return result;
+    }
+
+    public boolean containsSeamComponents() {
+        return getSeamComponentIds().size()>0;
+    }
+
+    @Override
+    public JavaDocHelper getJavaDocHelper() {
+        if (jdocHelper==null) {
+            jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
+        }
+        return jdocHelper;
+    }
 }

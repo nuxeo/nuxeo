@@ -6,7 +6,21 @@
 
 <A href="${Root.path}"> See all available distributions </A>
 
-<h3>Explore distribution ${Root.currentDistribution.name} ${Root.currentDistribution.version}</h3>
+<h3> ${Root.currentDistribution.name} ${Root.currentDistribution.version} </h3>
+
+<h3> Seam Components </h3>
+  <span
+    <#if navPoint=="listSeamComponents">
+     class="currentNavPoint"
+    </#if>
+  >
+  <A href="${Root.path}/${distId}/listSeamComponents">
+   list deployed Seam components
+  </A>
+  </span>
+
+<h3>Nuxeo Runtime </h3>
+
 
 <b> Browse by category </b>
 <table border=0 style="padding:0px;margin:0px">

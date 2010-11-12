@@ -39,6 +39,7 @@ public class BundleIdReader {
 
     protected final Map<String, Long> ids = new HashMap<String, Long>();
 
+    @SuppressWarnings("unused")
     private long count = 0;
 
     public synchronized void load(File file) {

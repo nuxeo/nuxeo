@@ -69,6 +69,10 @@ public class Distribution extends ModuleRoot{
 
         if (currentUrl.contains("/listBundles")) {
             navPoint = "listBundles";
+        } else if (currentUrl.contains("/listSeamComponents")) {
+            navPoint = "listSeamComponents";
+        } else if (currentUrl.contains("/viewSeamComponent")) {
+            navPoint = "listSeamComponents";
         } else if (currentUrl.contains("/listComponents")) {
             navPoint = "listComponents";
         } else if (currentUrl.contains("/listServices")) {
@@ -157,9 +161,11 @@ public class Distribution extends ModuleRoot{
             return null;
         }
         log.info("Start Snapshot...");
+        boolean startedTx=false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx!=null) {
+        if (tx!=null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             tx.begin();
+            startedTx=true;
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession());
@@ -172,7 +178,7 @@ public class Distribution extends ModuleRoot{
             return getView("index");
         }
         log.info("Snapshot saved.");
-        if (tx!=null) {
+        if (tx!=null && startedTx) {
             tx.commit();
         }
         return getView("index");

@@ -170,6 +170,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, String> getAttachments() {
         Map<String, String> attachments = new LinkedMap();
         try {

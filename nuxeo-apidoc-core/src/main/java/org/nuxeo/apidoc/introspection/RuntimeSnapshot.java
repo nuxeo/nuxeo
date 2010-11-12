@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -33,7 +35,10 @@ import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.JavaDocHelper;
+import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
 /**
@@ -56,8 +61,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected final Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
     protected final List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
 
+    protected boolean seamInitialized=false;
+    protected List<SeamComponentInfo> seamComponents = new ArrayList<SeamComponentInfo>();
+
     public final static String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
 
+    protected JavaDocHelper jdocHelper = null;
+
+    @SuppressWarnings("unchecked")
     protected final List<Class> spi = new ArrayList<Class>();
 
     public RuntimeSnapshot() {
@@ -306,6 +317,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return getName() + "-" + getVersion();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Class> getSpi() {
         return spi;
     }
@@ -359,6 +371,50 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public String getHierarchyPath() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void initSeamComponents(HttpServletRequest request) {
+        if (seamInitialized) {
+            return;
+        }
+        seamComponents = SeamRuntimeIntrospector.listNuxeoComponents(request);
+        for (SeamComponentInfo seamComp : seamComponents) {
+            ((SeamComponentInfoImpl)seamComp).setVersion(getVersion());
+        }
+        seamInitialized=true;
+    }
+
+    public SeamComponentInfo getSeamComponent(String id) {
+        for (SeamComponentInfo sci : getSeamComponents()) {
+            if (sci.getId().equals(id)) {
+                return sci;
+            }
+        }
+        return null;
+    }
+
+    public List<String> getSeamComponentIds() {
+        List<String> ids = new ArrayList<String>();
+        for (SeamComponentInfo sci : getSeamComponents()) {
+            ids.add(sci.getId());
+        }
+        return ids;
+    }
+
+    public List<SeamComponentInfo> getSeamComponents() {
+        return seamComponents;
+    }
+
+    public boolean containsSeamComponents() {
+        return seamInitialized && getSeamComponentIds().size()>0;
+    }
+
+    @Override
+    public JavaDocHelper getJavaDocHelper() {
+        if (jdocHelper==null) {
+            jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
+        }
+        return jdocHelper;
     }
 
 }

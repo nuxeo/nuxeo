@@ -24,6 +24,11 @@
           <filter-id>only_for_manager</filter-id>
         </action>
 
+        <action id="PlatformExplorerSeam" link="/incl/apidoc/seamcomponents.xhtml"
+          label="tab.explorer.seam" order="40">
+          <category>NUXEO_ADMIN_PlatformExplorer</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
 
   </extension>
 

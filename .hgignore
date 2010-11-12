@@ -12,3 +12,5 @@ tomcat
 target
 bin/*
 atlassian-jira.log
+build/*
+*.zip

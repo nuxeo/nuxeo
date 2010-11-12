@@ -370,27 +370,36 @@ color:#fff;
   font-size:13pt;
  }
 
- .folder {
+.folder {
   color:red;
   background-color:green;
  }
 
 
- .currentTreeNode {
+.currentTreeNode {
   color:red;
   background-color:green;
   font-weight:bold;
  }
 
- .description {
+.description {
   background-color:#DDDDEE;
   margin:5 0 0 10;
   padding:2px;
  }
 
- .quickEdit {
+.quickEdit {
   border-style:solid;
   border-width:1px;
   border-color:#777777;
   background-color:#F8F8FF;
  }
+
+.row_odd {
+  background-color:#f6f6f6;
+}
+
+.row_even {
+  background-color:#eeeeff;
+}
+

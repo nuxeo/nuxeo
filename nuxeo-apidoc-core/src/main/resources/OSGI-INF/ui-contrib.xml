@@ -57,6 +57,17 @@
       </layouts>
     </type>
 
+    <type id="NXSeamComponent">
+      <label>Nuxeo EP Seam Component</label>
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>Nuxeo EP</category>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
     <type id="NXExtensionPoint">
       <label>Nuxeo EP Extension Point</label>
     <icon>/icons/file.gif</icon>

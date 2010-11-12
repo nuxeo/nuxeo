@@ -38,6 +38,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     protected String documentation;
 
+    @SuppressWarnings("unchecked")
     protected List<Class> spi = new ArrayList<Class>();
 
     public ExtensionPointInfoImpl(ComponentInfoImpl component, String name) {
@@ -77,6 +78,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
         return documentation;
     }
 
+    @SuppressWarnings("unchecked")
     public void addSpi(List<Class> spi) {
         this.spi.addAll(spi);
     }
