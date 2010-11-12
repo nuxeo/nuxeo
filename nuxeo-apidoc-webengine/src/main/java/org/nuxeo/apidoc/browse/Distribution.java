@@ -59,8 +59,6 @@ public class Distribution extends ModuleRoot{
 
     protected static final Log log = LogFactory.getLog(Distribution.class);
 
-    protected DistributionSnapshot currentDistribution =null;
-
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);
     }
@@ -107,7 +105,7 @@ public class Distribution extends ModuleRoot{
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView("index");
+        return getView("index").arg("hideNav", true);
     }
 
     @Path(value = "{distributionId}")
@@ -147,8 +145,10 @@ public class Distribution extends ModuleRoot{
 
     public DistributionSnapshot getCurrentDistribution() {
         String distId = (String) ctx.getProperty("distId");
+        DistributionSnapshot currentDistribution = (DistributionSnapshot) ctx.getProperty("currentDistribution");
         if (currentDistribution==null || !currentDistribution.getKey().equals(distId)) {
             currentDistribution = getSnapshotManager().getSnapshot(distId,ctx.getCoreSession());
+            ctx.setProperty("currentDistribution", currentDistribution);
         }
         return currentDistribution;
     }

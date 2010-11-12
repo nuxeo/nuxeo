@@ -18,7 +18,7 @@
              <exclude name="**/*-sources.jar"/>
           </fileset>
        </copy>
-       <zip destfile="platform-explorer-1.0.zip"
+       <zip destfile="platform-explorer-1.0.1.zip"
            basedir="build"
        />
     </target>
