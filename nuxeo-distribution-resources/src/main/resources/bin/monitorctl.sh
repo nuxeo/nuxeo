@@ -128,8 +128,8 @@ log_misc() {
     mount >> $file
     echo "## df" >> $file
     df -h >> $file
-    echo "## du -shx $JBOSS_DATA_DIR" >> $file
-    du -shx $(readlink -e $JBOSS_DATA_DIR) >> $file
+    echo "## du -shx $DATA_DIR" >> $file
+    du -shx $(readlink -e $DATA_DIR) >> $file
     echo "## java -version" >> $file
     $JAVA_HOME/bin/java -version >> $file 2>&1
     echo "## jps -v" >> $file
@@ -140,8 +140,10 @@ log_misc() {
 	$JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
 	echo "## jstat -gc" >> $file
 	$JAVA_HOME/bin/jstat -gc $NXPID >> $file
-	echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
-	$HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
+	if [ -e $HERE/twiddle.sh ]; then
+	    echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
+	    $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
+	fi
     fi
 }
 
@@ -243,9 +245,11 @@ start() {
     # cpu by thread
     rm -f $LOG_DIR/thread-usage-*.html
     if checkalive; then
-	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
-        # mem pool info
-	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+	if [ -e $HERE/twiddle.sh ]; then
+	    $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-start.html
+            # mem pool info
+	    $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-start.html
+	fi
     fi
     echo "[`cat $SAR_PID`] Monitoring started."
 }
@@ -266,9 +270,11 @@ stop() {
 	log_misc $LOG_DIR/misc-end.txt
 	log_pgstat $LOG_DIR/pgstat-end.txt
 
-        # get cpu and pool info
-	$HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
-	$HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
+	if [ -e $HERE/twiddle.sh ]; then
+            # get cpu and pool info    
+	    $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
+	    $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
+	fi
 	echo "Monitoring stopped."
 	archive
 	return 0
