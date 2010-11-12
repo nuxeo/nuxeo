@@ -16,10 +16,16 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
+import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.shell.DocRefCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
+import org.nuxeo.ecm.shell.Parameter;
+import org.nuxeo.ecm.shell.ShellException;
+import org.nuxeo.ecm.shell.utils.StringUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,21 +37,26 @@ public class Update implements Runnable {
     @Context
     protected RemoteContext ctx;
 
-    @Argument(name = "properties", index = 0, help = "The propertis to update. Default separator is \n.")
+    @Parameter(name = "-s", hasValue = true, help = "Use this to change the separator used in properties. The default is ','")
+    protected String sep = ",";
+
+    @Argument(name = "properties", index = 0, help = "The propertis to update.")
     protected String props;
 
-    @Argument(name = "path", index = 1, required = true, help = "The document path")
+    @Argument(name = "path", index = 1, required = false, completor = DocRefCompletor.class, help = "The document path")
     protected String path;
 
     public void run() {
-        // DocRef doc = ctx.resolveRef(path);
-        // PathRef parent = new PathRef(p.getParent().toString());
-        // try {
-        // PropertyMap map = new PropertyMap();
-        //
-        // ctx.getDocumentService().update(doc, type, p.lastSegment());
-        // } catch (Exception e) {
-        // throw new ShellException(e);
-        // }
+        DocRef doc = ctx.resolveRef(path);
+        try {
+            PropertyMap map = new PropertyMap();
+            for (String pair : props.split(sep)) {
+                String[] ar = StringUtils.split(pair, '=', true);
+                map.set(ar[0], ar[1]);
+            }
+            ctx.getDocumentService().update(doc, map);
+        } catch (Exception e) {
+            throw new ShellException(e);
+        }
     }
 }

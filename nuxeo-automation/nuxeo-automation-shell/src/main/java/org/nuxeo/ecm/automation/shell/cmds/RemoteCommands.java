@@ -41,6 +41,7 @@ public class RemoteCommands extends CommandRegistry {
         addCommandType(DefaultCommandType.fromAnnotatedClass(Popd.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Pushd.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(MkDir.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(Update.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Rm.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Query.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Cat.class));
