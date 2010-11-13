@@ -287,11 +287,11 @@ nxthemes css is not used in login.jsp */
          <form method="post" action="nxstartup.faces">
            <!-- To prevent caching -->
           <%
-		        response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
-		        response.setHeader("Pragma", "no-cache"); // HTTP 1.0
-		        response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
+            response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
+            response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+            response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
           %>
-      			<div class="login">
+            <div class="login">
               <% if (maintenanceMode) { %>
               <div class="maintenanceModeMessage">
                 <div class="warnMessage">
@@ -304,55 +304,55 @@ nxthemes css is not used in login.jsp */
                 </div>
               </div>
               <%} %>
-				      <table>
-				        <tr>
-				          <td class="login_label"><label for="username"> <fmt:message
-				            bundle="${messages}" key="label.login.username" /> </label></td>
-				          <td><input class="login_input" type="text"
-				            name="user_name" id="username" size="22"></td>
-				        </tr>
-				        <tr>
-				          <td class="login_label"><label for="password"> <fmt:message
-				            bundle="${messages}" key="label.login.password" /> </label></td>
-				          <td><input class="login_input" type="password"
-				            name="user_password" id="password" size="22"></td>
-				        </tr>
-				        <tr>
-				          <td class="login_label">
-				            <label for="language">
-				              <fmt:message bundle="${messages}" key="label.login.language" />
-				            </label>
-				          </td>
-				          <td>
-				            <select class="login_input" name="language" id="language">
-				              <option value="en" selected>English</option>
-				              <option value="fr">français</option>
-				              <option value="ar">العربية</option>
-				            </select>
-				          </td>
-				        </tr>
-				        <tr>
-				          <td></td>
-				          <td><input type="hidden" name="form_submitted_marker"
-				            id="form_submitted_marker"> <input
-				            class="login_button" type="submit" name="Submit"
-				            value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
-				        </tr>
-				        <tr>
-				          <td></td>
-				          <td><c:if test="${param.loginFailed}">
-				            <div class="errorMessage"><fmt:message
-				              bundle="${messages}"
-				              key="label.login.invalidUsernameOrPassword" /></div>
-					          </c:if> <c:if test="${param.loginMissing}">
-					            <div class="errorMessage"><fmt:message
-					              bundle="${messages}" key="label.login.missingUsername" /></div>
-					          </c:if>
-				          </td>
-				        </tr>
-				      </table>
-				    </div>
-     		  </form>
+              <table>
+                <tr>
+                  <td class="login_label"><label for="username"> <fmt:message
+                    bundle="${messages}" key="label.login.username" /> </label></td>
+                  <td><input class="login_input" type="text"
+                    name="user_name" id="username" size="22"></td>
+                </tr>
+                <tr>
+                  <td class="login_label"><label for="password"> <fmt:message
+                    bundle="${messages}" key="label.login.password" /> </label></td>
+                  <td><input class="login_input" type="password"
+                    name="user_password" id="password" size="22"></td>
+                </tr>
+                <tr>
+                  <td class="login_label">
+                    <label for="language">
+                      <fmt:message bundle="${messages}" key="label.login.language" />
+                    </label>
+                  </td>
+                  <td>
+                    <select class="login_input" name="language" id="language">
+                      <option value="en" selected>English</option>
+                      <option value="fr">français</option>
+                      <option value="ar">العربية</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><input type="hidden" name="form_submitted_marker"
+                    id="form_submitted_marker"> <input
+                    class="login_button" type="submit" name="Submit"
+                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><c:if test="${param.loginFailed}">
+                    <div class="errorMessage"><fmt:message
+                      bundle="${messages}"
+                      key="label.login.invalidUsernameOrPassword" /></div>
+                    </c:if> <c:if test="${param.loginMissing}">
+                      <div class="errorMessage"><fmt:message
+                        bundle="${messages}" key="label.login.missingUsername" /></div>
+                    </c:if>
+                  </td>
+                </tr>
+              </table>
+            </div>
+           </form>
         </td>
        <td class="news_container" align="right" valign="center">
         <% if (!request.getHeader("User-Agent").contains("Nuxeo-Selenium-Tester")) { %>
@@ -368,13 +368,13 @@ nxthemes css is not used in login.jsp */
             Photography: &#169; <a onclick="window.open(this.href); return false;" href="mailto:l.viatour@mm.be">Luc Viatour</a> GFDL/CC / <a href="http://www.lucnix.be/">www.lucnix.be</a>
           </div>
         </td>
-	      <td align="center" valign="bottom">
-		      <div class="loginLegal"><fmt:message bundle="${messages}"
-		        key="label.login.copyright" /></div>
-		    </td>
-	      <td align="right" class="version" valign="bottom">
-	      	<div class="loginLegal"><%=productName%> &nbsp; <%=productVersion%></div>
-	      </td>
+        <td align="center" valign="bottom">
+          <div class="loginLegal"><fmt:message bundle="${messages}"
+            key="label.login.copyright" /></div>
+        </td>
+        <td align="right" class="version" valign="bottom">
+          <div class="loginLegal"><%=productName%> &nbsp; <%=productVersion%></div>
+        </td>
       </tr>
     </tbody>
   </table>
