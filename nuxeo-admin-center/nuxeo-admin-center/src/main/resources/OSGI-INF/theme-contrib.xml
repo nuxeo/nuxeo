@@ -6,7 +6,6 @@
   <require>org.nuxeo.theme.fragments</require>
   <require>org.nuxeo.theme.html</require>
   <require>org.nuxeo.theme.jsf</require>
-  <require>org.nuxeo.theme.nuxeo.default</require>
 
   <!--  themes -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="themes">

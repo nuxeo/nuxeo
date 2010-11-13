@@ -1,7 +1,5 @@
 <component name="org.nuxeo.connect.client.actions">
 
-  <require>org.nuxeo.ecm.platform.actions</require>
-
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
