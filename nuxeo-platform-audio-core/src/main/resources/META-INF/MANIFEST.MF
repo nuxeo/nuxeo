@@ -8,10 +8,6 @@ Nuxeo-Component: OSGI-INF/audio-schemas-contrib.xml,
  OSGI-INF/filemanager-importer-contrib.xml 
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
-Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.platform.commandline.executor,
- org.nuxeo.ecm.platform.filemanager.core
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.commandline.executor
