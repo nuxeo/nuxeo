@@ -121,7 +121,7 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
 
         docModel = session.getDocument(ref);
         assertEquals("Audio", docModel.getType());
-        assertEquals("sample", docModel.getTitle());
+        assertEquals("sample.wav", docModel.getTitle());
 
         Blob contentBlob = (Blob) docModel.getProperty("file", "content");
         assertNotNull(contentBlob);

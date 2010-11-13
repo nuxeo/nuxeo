@@ -26,10 +26,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class will create a Document of type "Audio" from the uploaded file, if the uploaded file
@@ -71,11 +73,14 @@ public class AudioImporter extends AbstractFileImporter {
             docModel = overwriteAndIncrementversion(documentManager, docModel);
 
         } else {
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
 
-            // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
-
-            docModel = documentManager.createDocumentModel(path, docId, AUDIO_TYPE);
+            docModel = documentManager.createDocumentModel(AUDIO_TYPE);
             // update known attributes, format is: schema, attribute, value
             docModel.setProperty("dublincore", "title", title);
             docModel.setProperty("file", "content", content);
@@ -87,6 +92,7 @@ public class AudioImporter extends AbstractFileImporter {
                 String iconPath = docType.getIcon();
                 docModel.setProperty("common", "icon", iconPath);
             }
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
         return docModel;
