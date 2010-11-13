@@ -25,9 +25,13 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.GroovyScript;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.MvelScript;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
+ * Run a script given as the input of the operation (as a blob).
+ * 
+ * Note that this operation is available only as administrator
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -41,6 +45,10 @@ public class RunInputScript {
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
+        if (!((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+            throw new OperationException(
+                    "Not allowed. You must be administrator to run scripts");
+        }
         Object r = null;
         String fname = blob.getFilename();
         if (fname == null || fname.endsWith(".mvel")) {

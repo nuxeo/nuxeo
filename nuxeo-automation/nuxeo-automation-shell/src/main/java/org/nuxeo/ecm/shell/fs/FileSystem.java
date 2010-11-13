@@ -84,6 +84,8 @@ public class FileSystem {
     public File resolveFile(String path) {
         if (path.startsWith("/")) {
             return new File(path);
+        } else if (path.startsWith("~/")) {
+            return new File(System.getProperty("user.home"), path.substring(2));
         } else {
             return new File(pwd(), path);
         }
