@@ -30,14 +30,8 @@ public class FileValueAdapter implements ValueAdapter {
     @SuppressWarnings("unchecked")
     public <T> T getValue(Shell shell, Class<T> type, String value) {
         if (type == File.class) {
-            if (value.startsWith("/")) {
-                return (T) new File(value);
-            } else {
-                FileSystem fs = shell.getContextObject(FileSystem.class);
-                if (fs != null) {
-                    return (T) new File(fs.pwd(), value);
-                }
-            }
+            return (T) shell.getContextObject(FileSystem.class).resolveFile(
+                    value);
         }
         return null;
     }
