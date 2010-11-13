@@ -3,11 +3,15 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%
     String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
     String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+
+    boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
+    String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 %>
 <html>
 
@@ -84,6 +88,19 @@ H2 {
   padding:20px 75px 5px 70px;
   width:250px;
   }
+
+.maintenanceModeMessage {
+  color:red;
+  font-size:12px;
+ }
+
+.warnMessage, .infoMessage {
+  margin:0 0 10px;
+}
+
+.infoMessage {
+  color:#b31500;
+}
 
 .login_label {
   font:bold 10px "Lucida Grande", sans-serif;
@@ -275,6 +292,18 @@ nxthemes css is not used in login.jsp */
 		        response.setDateHeader("Expires", -1); // Prevents caching at the proxy server
           %>
       			<div class="login">
+              <% if (maintenanceMode) { %>
+              <div class="maintenanceModeMessage">
+                <div class="warnMessage">
+                  <fmt:message bundle="${messages}" key="label.maintenancemode.active" /><br/>
+                  <fmt:message bundle="${messages}" key="label.maintenancemode.adminLoginOnly" />
+                </div>
+                <div class="infoMessage">
+                  <fmt:message bundle="${messages}" key="label.maintenancemode.message" /> : <br/>
+                  <%=maintenanceMessage%>
+                </div>
+              </div>
+              <%} %>
 				      <table>
 				        <tr>
 				          <td class="login_label"><label for="username"> <fmt:message
