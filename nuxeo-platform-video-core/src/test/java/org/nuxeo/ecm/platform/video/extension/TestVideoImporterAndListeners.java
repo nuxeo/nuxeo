@@ -164,7 +164,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         docModel = session.getDocument(ref);
         assertEquals("Video", docModel.getType());
-        assertEquals("sample", docModel.getTitle());
+        assertEquals("sample.mpg", docModel.getTitle());
 
         assertNotNull(docModel.getProperty("file:content"));
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));

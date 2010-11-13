@@ -27,11 +27,13 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.video.VideoConstants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class will create a Document of type "Video" from the uploaded file, if
@@ -67,11 +69,13 @@ public class VideoImporter extends AbstractFileImporter {
             docModel.setPropertyValue("file:content", (Serializable) content);
             docModel.setPropertyValue("file:filename", filename);
         } else {
-            // Creating an unique identifier
-            String docId = IdUtils.generateId(title);
-
-            docModel = documentManager.createDocumentModel(path, docId,
-                    VideoConstants.VIDEO_TYPE);
+            PathSegmentService pss;
+            try {
+                pss = Framework.getService(PathSegmentService.class);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+            docModel = documentManager.createDocumentModel(VideoConstants.VIDEO_TYPE);
             docModel.setProperty("dublincore", "title", title);
             docModel.setPropertyValue("file:content", (Serializable) content);
             docModel.setPropertyValue("file:filename", filename);
@@ -82,6 +86,7 @@ public class VideoImporter extends AbstractFileImporter {
                 String iconPath = docType.getIcon();
                 docModel.setProperty("common", "icon", iconPath);
             }
+            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
         return docModel;
