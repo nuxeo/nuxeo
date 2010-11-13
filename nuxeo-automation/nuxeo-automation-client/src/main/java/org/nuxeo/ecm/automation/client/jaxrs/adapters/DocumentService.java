@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Blobs;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
+import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 
@@ -72,7 +73,7 @@ public class DocumentService {
 
     public static final String GetRelations = "Relations.GetRelations";
 
-    public static final String SetBlob = "Blob.Set";
+    public static final String SetBlob = "Blob.Attach";
 
     public static final String RemoveBlob = "Blob.Remove";
 
@@ -286,42 +287,43 @@ public class DocumentService {
                 "predicate", predicate).set("outgoing", outgoing).execute();
     }
 
-    public Document setBlob(DocRef doc, Blob blob) throws Exception {
-        return setBlob(doc, blob, null);
+    public void setBlob(DocRef doc, Blob blob) throws Exception {
+        setBlob(doc, blob, null);
     }
 
-    public Document setBlob(DocRef doc, Blob blob, String xpath)
-            throws Exception {
-        OperationRequest req = session.newRequest(SetBlob).setInput(doc).set(
-                "file", blob);
+    public void setBlob(DocRef doc, Blob blob, String xpath) throws Exception {
+        OperationRequest req = session.newRequest(SetBlob).setInput(blob).set(
+                "document", doc);
         if (xpath != null) {
             req.set("xpath", xpath);
         }
-        return (Document) req.execute();
+        req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
+        req.execute();
     }
 
-    public Document removeBlob(DocRef doc) throws Exception {
-        return setBlob(doc, null);
+    public void removeBlob(DocRef doc) throws Exception {
+        removeBlob(doc, null);
     }
 
-    public Document removeBlob(DocRef doc, String xpath) throws Exception {
+    public void removeBlob(DocRef doc, String xpath) throws Exception {
         OperationRequest req = session.newRequest(RemoveBlob).setInput(doc);
         if (xpath != null) {
             req.set("xpath", xpath);
         }
-        return (Document) req.execute();
+        req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
+        req.execute();
     }
 
-    public Blob getBlob(DocRef doc) throws Exception {
+    public FileBlob getBlob(DocRef doc) throws Exception {
         return getBlob(doc, null);
     }
 
-    public Blob getBlob(DocRef doc, String xpath) throws Exception {
+    public FileBlob getBlob(DocRef doc, String xpath) throws Exception {
         OperationRequest req = session.newRequest(GetBlob).setInput(doc);
         if (xpath != null) {
             req.set("xpath", xpath);
         }
-        return (Blob) req.execute();
+        return (FileBlob) req.execute();
     }
 
     public Blobs getBlobs(DocRef doc) throws Exception {

@@ -52,7 +52,7 @@ public class SetBlob implements Runnable {
         try {
             ctx.getDocumentService().setBlob(doc, new FileBlob(file), xpath);
         } catch (Exception e) {
-            throw new ShellException("Failed to attach files on " + doc, e);
+            throw new ShellException("Failed to attach file on " + doc, e);
         }
 
     }
