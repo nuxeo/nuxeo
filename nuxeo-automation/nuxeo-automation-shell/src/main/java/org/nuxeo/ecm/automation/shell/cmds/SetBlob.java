@@ -16,48 +16,44 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
-import org.nuxeo.ecm.automation.shell.DocTypeCompletor;
+import java.io.File;
+
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
+import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
+import org.nuxeo.ecm.automation.shell.DocRefCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "mkdir", help = "Create a document of the given type")
-public class MkDir implements Runnable {
+@Command(name = "putfile", help = "Attach a file to a document")
+public class SetBlob implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-title", hasValue = true, help = "An optional document title.")
-    protected String title;
+    @Parameter(name = "-xpath", hasValue = true, help = "The xpath of the blob property to get. Defaults to the one used by the File document type.")
+    protected String xpath;
 
-    @Argument(name = "type", index = 0, required = true, completor = DocTypeCompletor.class, help = "The document type")
-    protected String type;
+    @Argument(name = "file", index = 0, required = true, help = "The file to upload")
+    protected File file;
 
-    @Argument(name = "path", index = 1, required = true, help = "The document path")
+    @Argument(name = "doc", index = 1, required = false, completor = DocRefCompletor.class, help = "The target document. If not specified the current document is used. To use UID references prefix them with 'doc:'.")
     protected String path;
 
     public void run() {
-        Path p = ctx.resolvePath(path);
-        PathRef parent = new PathRef(p.getParent().toString());
-        PropertyMap props = new PropertyMap();
-        if (title != null) {
-            props.set("dc:title", title);
-        }
+        DocRef doc = ctx.resolveRef(path);
         try {
-            ctx.getDocumentService().createDocument(parent, type,
-                    p.lastSegment(), props);
+            ctx.getDocumentService().setBlob(doc, new FileBlob(file), xpath);
         } catch (Exception e) {
-            throw new ShellException(e);
+            throw new ShellException("Failed to attach files on " + doc, e);
         }
+
     }
 }

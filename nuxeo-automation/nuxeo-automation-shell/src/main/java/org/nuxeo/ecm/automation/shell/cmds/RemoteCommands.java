@@ -47,6 +47,9 @@ public class RemoteCommands extends CommandRegistry {
         addCommandType(DefaultCommandType.fromAnnotatedClass(Cat.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Tree.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(Script.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(SetBlob.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(GetBlob.class));
+        addCommandType(DefaultCommandType.fromAnnotatedClass(GetBlobs.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithDoc.class));
         addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithFile.class));
     }

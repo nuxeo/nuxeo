@@ -81,6 +81,14 @@ public class FileSystem {
         return null;
     }
 
+    public File resolveFile(String path) {
+        if (path.startsWith("/")) {
+            return new File(path);
+        } else {
+            return new File(pwd(), path);
+        }
+    }
+
     public static void deleteTree(File dir) {
         emptyDirectory(dir);
         dir.delete();

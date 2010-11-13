@@ -23,6 +23,7 @@ import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.fs.FileSystem;
+import org.nuxeo.ecm.shell.fs.FolderCompletor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,7 +35,7 @@ public class Cd implements Runnable {
     @Context
     protected Shell shell;
 
-    @Argument(name = "file", index = 0, required = true, help = "A local directory to change to")
+    @Argument(name = "file", index = 0, required = true, completor = FolderCompletor.class, help = "A local directory to change to")
     protected File file;
 
     public void run() {
