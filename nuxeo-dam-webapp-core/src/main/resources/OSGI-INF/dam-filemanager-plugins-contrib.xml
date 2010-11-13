@@ -14,7 +14,7 @@
     </plugin>
 
     <plugin name="OfficeFileImporter"
-      class="org.nuxeo.dam.webapp.fileimporter.OfficeFileImporter"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter"
       order="8">
       <filter>application/msword</filter>
       <filter>application/vnd.ms-excel</filter>

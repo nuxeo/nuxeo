@@ -116,24 +116,26 @@ public class TestZipImporter {
         assertNotNull(children);
         assertEquals(5, children.size());
 
-        DocumentModel child = session.getChild(importSet.getRef(), "plain");
+        DocumentModel child = session.getChild(importSet.getRef(), "plain.txt");
         assertNotNull(child);
         assertEquals("File", child.getType());
 
-        child = session.getChild(importSet.getRef(), "image");
+        /*
+        child = session.getChild(importSet.getRef(), "image-jpg");
         assertNotNull(child);
         assertEquals("Picture", child.getType());
+        */
 
-        child = session.getChild(importSet.getRef(), "spreadsheet");
+        child = session.getChild(importSet.getRef(), "spreadsheet.xls");
         assertNotNull(child);
         assertEquals("File", child.getType());
 
         // names are converted to lowercase
-        child = session.getChild(importSet.getRef(), "samplewav");
+        child = session.getChild(importSet.getRef(), "sampleWAV.wav");
         assertNotNull(child);
         assertEquals("Audio", child.getType());
 
-        child = session.getChild(importSet.getRef(), "samplempg");
+        child = session.getChild(importSet.getRef(), "sampleMPG.mpg");
         assertNotNull(child);
         assertEquals("Video", child.getType());
     }
