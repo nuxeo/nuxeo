@@ -1,31 +1,24 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <extension target="faces-config#APPLICATION">
-    <locale-config>
-      <default-locale>en</default-locale>
-      <supported-locale>en_GB</supported-locale>
-      <supported-locale>en_US</supported-locale>
-      <supported-locale>ar</supported-locale>
-      <supported-locale>cn</supported-locale>
-      <supported-locale>de</supported-locale>
-      <supported-locale>es</supported-locale>
-      <supported-locale>fr</supported-locale>
-      <supported-locale>it</supported-locale>
-      <supported-locale>ja</supported-locale>
-      <supported-locale>pt_BR</supported-locale>
-      <supported-locale>ru</supported-locale>
-      <supported-locale>vn</supported-locale>
-    </locale-config>
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.platform.lang.ext</require>
 
-    <message-bundle>messages</message-bundle>
-  </extension>
+  <install>\
 
-  <install>
-    <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
-    <unzip from="${bundle.fileName}" to="/" prefix="web">
-      <include>web/nuxeo.war/**</include>
-    </unzip>
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_ar.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_ar.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
   </install>
 
 </fragment>

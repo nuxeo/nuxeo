@@ -58,7 +58,6 @@
         <exclude name="**/nxserver/bundles/nuxeo-platform-ear*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-forum*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-imaging-dm*" />
-        <exclude name="**/nxserver/bundles/nuxeo-platform-lang*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-mail*" />
         <exclude name="**/nxserver/bundles/nuxeo-platform-notification-web*" />
         <exclude name="**/nxserver/bundles/nuxeo-opensocial*" />
