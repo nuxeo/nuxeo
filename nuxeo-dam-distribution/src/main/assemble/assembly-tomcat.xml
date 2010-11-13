@@ -8,6 +8,8 @@
 
 
   <target name="init" unless="init.done">
+    <tstamp />
+
     <condition property="no.build">
       <and>
         <or>
@@ -110,15 +112,33 @@
 
     <antcall target="copy-resources" />
 
+    <antcall target="set-distribution-properties">
+      <param name="distribution.properties.file" value="${tomcatdir}/templates/common/config/distribution.properties" />
+      <param name="org.nuxeo.distribution.name" value="dam" />
+      <param name="org.nuxeo.distribution.server" value="tomcat"/>
+      <param name="org.nuxeo.distribution.version" value="${maven.project.version}" />
+      <param name="org.nuxeo.distribution.date" value="${DSTAMP}${TSTAMP}"/>
+    </antcall>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
-         basedir="${stagedir}"
-         includes="${tomcat}/**" />
-      <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
-                       type="zip"
-                       classifier="tomcat"
-                       target="${maven.project.groupId}:${maven.project.artifactId}" />
+      basedir="${stagedir}"
+      includes="${tomcat}/**" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tomcat.zip"
+      type="zip"
+      classifier="tomcat"
+      target="${maven.project.groupId}:${maven.project.artifactId}" />
 
     <antcall target="create-http-importer-distribution" />
+  </target>
+
+  <target name="set-distribution-properties">
+    <echo append="false" file="${distribution.properties.file}">
+## DO NOT MANUALLY EDIT THIS FILE
+org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
+org.nuxeo.distribution.server=${org.nuxeo.distribution.server}
+org.nuxeo.distribution.version=${org.nuxeo.distribution.version}
+org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
+</echo>
   </target>
 
   <target name="create-http-importer-distribution" if="importer">
