@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import jline.ANSIBuffer;
+
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.automation.shell.Scripting;
@@ -29,6 +31,7 @@ import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
+import org.nuxeo.ecm.shell.utils.ANSICodes;
 import org.nuxeo.ecm.shell.utils.StringUtils;
 
 /**
@@ -61,7 +64,9 @@ public class Script implements Runnable {
             }
         }
         try {
-            console.println(Scripting.runScript(ctx, blob, args));
+            ANSIBuffer buf = new ANSIBuffer();
+            ANSICodes.appendTemplate(buf, Scripting.runScript(ctx, blob, args));
+            console.println(buf.toString());
         } catch (Exception e) {
             throw new ShellException("Failed to run script", e);
         }
