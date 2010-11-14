@@ -19,12 +19,6 @@
     <dependency>
       <groupId>org.jbpm.jbpm3</groupId>
       <artifactId>jbpm-jpdl</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.jackrabbit</groupId>
-          <artifactId>jackrabbit-core</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
