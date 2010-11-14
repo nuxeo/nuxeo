@@ -46,6 +46,9 @@ public class Perms implements Runnable {
     @Parameter(name = "-acl", hasValue = true, help = "The ACL to view or modify. If not specified then in write mode the local ACL is used and in view mode all acls are printed.")
     protected String acl;
 
+    @Parameter(name = "-remove", hasValue = false, help = "Remove the given acl.")
+    protected boolean remove;
+
     @Parameter(name = "-grant", hasValue = true, help = "If used the ACL will be modified by granting the specified permission on the specified user. The grant value format is \"user:permission\".")
     protected String grant;
 
@@ -58,7 +61,9 @@ public class Perms implements Runnable {
     public void run() {
         DocRef doc = ctx.resolveRef(path);
         try {
-            if (grant == null && deny == null) {
+            if (remove) {
+                removeAcl(doc, acl);
+            } else if (grant == null && deny == null) {
                 printAcl(ctx.getShell().getConsole(), doc, acl);
             } else {
                 setAcl(doc, acl, grant, deny);
@@ -102,6 +107,14 @@ public class Perms implements Runnable {
         ANSIBuffer buf = new ANSIBuffer();
         ANSICodes.appendTemplate(buf, result);
         console.println(buf.toString());
+    }
+
+    protected void removeAcl(DocRef doc, String acl) throws Exception {
+        if (acl == null) {
+            throw new ShellException(
+                    "In remove mode the -acl parameter is required!");
+        }
+        ctx.getDocumentService().removeAcl(doc, acl);
     }
 
 }

@@ -35,12 +35,12 @@
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -67,7 +67,7 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
-    </resources>      
+    </resources>
       <pluginManagement>
       <plugins>
         <plugin>

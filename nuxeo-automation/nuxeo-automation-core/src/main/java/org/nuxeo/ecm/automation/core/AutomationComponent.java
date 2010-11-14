@@ -71,6 +71,7 @@ import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.notification.FireEvent;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
+import org.nuxeo.ecm.automation.core.operations.services.AuditQuery;
 import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
 import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
@@ -189,6 +190,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(Logout.class);
 
         service.putOperation(AuditLog.class);
+        service.putOperation(AuditQuery.class);
 
         // disabled operations
         service.putOperation(FireEvent.class);

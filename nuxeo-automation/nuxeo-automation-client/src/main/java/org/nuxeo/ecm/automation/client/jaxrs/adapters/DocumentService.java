@@ -83,6 +83,8 @@ public class DocumentService {
 
     public static final String CreateVersion = "Document.CreateVersion";
 
+    public static final String FireEvent = "Notification.SendEvent";
+
     // The following are not yet implemented
 
     public static final String CheckOut = "Document.CheckOut";
@@ -362,4 +364,13 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
+    public void fireEvent(String event) throws Exception {
+        fireEvent(null, event);
+    }
+
+    public void fireEvent(DocRef doc, String event) throws Exception {
+        OperationRequest req = session.newRequest(CreateVersion).setInput(doc);
+        req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
+        req.execute();
+    }
 }
