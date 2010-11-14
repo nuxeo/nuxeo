@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.GroovyScript;
 import org.nuxeo.ecm.automation.core.scripting.Scripting.MvelScript;
 import org.nuxeo.ecm.core.api.Blob;
@@ -43,6 +44,9 @@ public class RunInputScript {
     @Context
     protected OperationContext ctx;
 
+    @Param(name = "type", required = false, values = { "mvel", "groovy" }, widget = Constants.W_OPTION)
+    protected String type = "mvel";
+
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
         if (!((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
@@ -50,14 +54,12 @@ public class RunInputScript {
                     "Not allowed. You must be administrator to run scripts");
         }
         Object r = null;
-        String fname = blob.getFilename();
-        if (fname == null || fname.endsWith(".mvel")) {
+        if (type.equals("mvel")) {
             r = MvelScript.compile(blob.getString()).eval(ctx);
-        } else if (fname.endsWith(".groovy")) {
+        } else if (type.equals("groovy")) {
             r = new GroovyScript(blob.getString()).eval(ctx);
         } else {
-            throw new OperationException("Unknown scripting language for: "
-                    + fname);
+            throw new OperationException("Unknown scripting language " + type);
         }
         if (r != null) {
             StringBlob b = new StringBlob(r.toString());
