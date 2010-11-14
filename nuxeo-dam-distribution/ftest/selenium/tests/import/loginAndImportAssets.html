@@ -10,7 +10,7 @@
 <table cellpadding="1" cellspacing="1" border="1">
   <thead>
   <tr>
-    <td rowspan="1" colspan="3">login</td>
+    <td rowspan="1" colspan="3">loginAndImportAssets</td>
   </tr>
   </thead>
   <tbody>
@@ -20,7 +20,6 @@
     <td>120000</td>
     <td></td>
   </tr>
-
   <tr>
     <td>open</td>
     <td>/nuxeo/logout</td>
@@ -56,6 +55,29 @@
     <td>Import</td>
     <td></td>
   </tr>
+
+  <!-- import assets -->
+  <tr>
+    <td>retrieveTestFolderPath</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>storeExpression</td>
+    <td>javascript{'/nuxeo/site/damImporter/run?inputPath=' + storedVars.testfolderpath + '/data/toImport&interactive=true&nbThreads=1&importSetTitle=Test%20import%20set%20title';}</td>
+    <td>importUrl</td>
+  </tr>
+  <tr>
+    <td>echo</td>
+    <td>${importUrl}</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>open</td>
+    <td>${importUrl}</td>
+    <td></td>
+  </tr>
+
   </tbody>
 </table>
 </body>
