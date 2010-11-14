@@ -26,7 +26,7 @@ import org.nuxeo.ecm.shell.Shell;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "use", help = "Switch the current command namespace. If namespace is specified the current namepsace name is printed")
+@Command(name = "use", help = "Switch the current command namespace. If no namespace is specified the current namepsace name is printed.")
 public class Use implements Runnable {
 
     @Context

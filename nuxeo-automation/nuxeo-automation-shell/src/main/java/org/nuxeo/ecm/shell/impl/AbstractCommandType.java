@@ -223,4 +223,7 @@ public abstract class AbstractCommandType implements CommandType {
         }
     }
 
+    public int compareTo(CommandType o) {
+        return getName().compareTo(o.getName());
+    }
 }
