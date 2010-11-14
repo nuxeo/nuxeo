@@ -19,13 +19,10 @@
 
 package org.nuxeo.ecm.shell.cmds.completors;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jline.ArgumentCompletor.WhitespaceArgumentDelimiter;
 import jline.Completor;
-import jline.FileNameCompletor;
 
 import org.nuxeo.ecm.shell.CommandType;
 import org.nuxeo.ecm.shell.Shell;
@@ -41,23 +38,9 @@ public class ShellCompletor implements Completor {
 
     private final CommandCompletor completor;
 
-    final Map<String, Completor> completors = new HashMap<String, Completor>();
-
     public ShellCompletor(Interactive interactive) {
         this.interactive = interactive;
         completor = new CommandCompletor(interactive.getShell());
-        completors.put("cmd", completor);
-        completors.put("file", new FileNameCompletor());
-        // //completors.put("class", new ClassNameCompletor());
-        // completors.put("doc", new DocumentNameCompletor(service));
-    }
-
-    public void setCompletor(String name, Completor completor) {
-        completors.put(name, completor);
-    }
-
-    public void removeCompletor(String name) {
-        completors.remove(name);
     }
 
     @SuppressWarnings("rawtypes")
