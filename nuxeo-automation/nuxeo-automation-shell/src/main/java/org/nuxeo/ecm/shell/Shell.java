@@ -32,7 +32,6 @@ import java.util.ServiceLoader;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.cmds.Interactive;
 import org.nuxeo.ecm.shell.fs.FileSystem;
-import org.nuxeo.ecm.shell.fs.FileSystemShell;
 import org.nuxeo.ecm.shell.impl.DefaultCompletorProvider;
 import org.nuxeo.ecm.shell.impl.DefaultConsole;
 import org.nuxeo.ecm.shell.impl.DefaultValueAdapter;
@@ -58,33 +57,34 @@ public abstract class Shell {
 
     public static Shell get() {
         if (shell == null) {
-            shell = loadShell();
+            String caps = System.getProperty("shell.capabilities");
+            if (caps == null) {
+                caps = "automation";
+            }
+            shell = loadShell(caps);
         }
         return shell;
     }
 
-    private static Shell loadShell() {
-        Shell shell = null;
-        String shellClass = System.getProperty("shell");
-        if (shellClass == null) {
-            ServiceLoader<Shell> loader = ServiceLoader.load(Shell.class,
-                    Shell.class.getClassLoader());
-            Iterator<Shell> it = loader.iterator();
-            if (it.hasNext()) {
-                shell = it.next();
-            }
-        } else {
-            try {
-                shell = (Shell) Class.forName(shellClass).newInstance();
-            } catch (Throwable e) {
-                throw new ShellException("Failed to initialize shell: "
-                        + shellClass, e);
+    @SuppressWarnings("rawtypes")
+    public static Shell loadShell(String capabilities) {
+        if (capabilities == null) {
+            throw new IllegalArgumentException("Capabilities are required");
+        }
+        String[] caps = StringUtils.split(capabilities, ',', true);
+        ShellFactory factory = null;
+        ServiceLoader<ShellFactory> loader = ServiceLoader.load(
+                ShellFactory.class, Shell.class.getClassLoader());
+        Iterator<ShellFactory> it = loader.iterator();
+        while (it.hasNext()) {
+            factory = it.next();
+            if (factory.hasCapabilities(caps)) {
+                return factory.getShell();
             }
         }
-        if (shell == null) {
-            shell = new FileSystemShell();
-        }
-        return shell;
+        throw new ShellException(
+                "No shell found with the requested capabilities: "
+                        + capabilities);
     }
 
     protected LinkedHashMap<String, String> mainArgs;
@@ -396,7 +396,7 @@ public abstract class Shell {
     }
 
     public void bye() {
-        console.println("Bye");
+        console.println("Bye.");
     }
 
 }

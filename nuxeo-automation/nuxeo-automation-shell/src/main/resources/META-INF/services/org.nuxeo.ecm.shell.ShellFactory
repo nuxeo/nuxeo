@@ -1,0 +1,2 @@
+org.nuxeo.ecm.shell.automation.AutomationShellFactory
+org.nuxeo.ecm.shell.fs.FileSystemShellFactory
