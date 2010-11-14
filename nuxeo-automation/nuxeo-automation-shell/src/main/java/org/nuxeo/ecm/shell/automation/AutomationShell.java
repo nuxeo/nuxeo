@@ -36,19 +36,20 @@ import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.fs.FileSystemShell;
 import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
 import org.nuxeo.ecm.shell.impl.DefaultCommandType;
-import org.nuxeo.ecm.shell.impl.DefaultCompletorProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class AutomationShell extends FileSystemShell implements ValueAdapter {
+public class AutomationShell extends FileSystemShell implements ValueAdapter,
+        CompletorProvider {
 
     public final static String AUTOMATION_NS = "automation";
 
     protected RemoteContext ctx;
 
     public AutomationShell() {
+        addCompletorProvider(this);
         addValueAdapter(this);
         GlobalCommands.INSTANCE.addCommandType(DefaultCommandType.fromAnnotatedClass(Connect.class));
     }
@@ -122,22 +123,11 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter {
         return result;
     }
 
-    @Override
-    protected CompletorProvider createCompletorProvider() {
-        return new DefaultCompletorProvider() {
-            @Override
-            public Completor getCompletor(Shell shell, CommandType cmd,
-                    Class<?> type) {
-                Completor c = super.getCompletor(shell, cmd, type);
-                if (c == null) {
-                    if (DocRef.class.isAssignableFrom(type)) {
-                        return new DocRefCompletor(
-                                ((AutomationShell) shell).getContext());
-                    }
-                }
-                return c;
-            }
-        };
+    public Completor getCompletor(Shell shell, CommandType cmd, Class<?> type) {
+        if (DocRef.class.isAssignableFrom(type)) {
+            return new DocRefCompletor(((AutomationShell) shell).getContext());
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")

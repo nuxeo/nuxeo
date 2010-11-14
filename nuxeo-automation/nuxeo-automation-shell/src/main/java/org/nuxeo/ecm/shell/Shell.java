@@ -89,7 +89,7 @@ public abstract class Shell {
 
     protected LinkedHashMap<String, String> mainArgs;
 
-    protected CompletorProvider completorProvider;
+    protected CompositeCompletorProvider completorProvider;
 
     protected CompositeValueAdapter adapter;
 
@@ -116,8 +116,9 @@ public abstract class Shell {
         ctxObjects.put(Shell.class, this);
         adapter = new CompositeValueAdapter();
         console = createConsole();
-        completorProvider = createCompletorProvider();
+        completorProvider = new CompositeCompletorProvider();
 
+        addCompletorProvider(new DefaultCompletorProvider());
         addValueAdapter(new DefaultValueAdapter());
         addRegistry(GlobalCommands.INSTANCE);
     }
@@ -249,6 +250,10 @@ public abstract class Shell {
         this.adapter.addAdapter(adapter);
     }
 
+    public void addCompletorProvider(CompletorProvider provider) {
+        this.completorProvider.addProvider(provider);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getContextObject(Class<T> type) {
         return (T) ctxObjects.get(type);
@@ -261,10 +266,6 @@ public abstract class Shell {
     @SuppressWarnings("unchecked")
     public <T> T removeContextObject(Class<T> type) {
         return (T) ctxObjects.remove(type);
-    }
-
-    protected CompletorProvider createCompletorProvider() {
-        return new DefaultCompletorProvider();
     }
 
     public CompletorProvider getCompletorProvider() {
