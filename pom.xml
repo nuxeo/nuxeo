@@ -636,6 +636,12 @@
         <groupId>org.jbpm.jbpm3</groupId>
         <artifactId>jbpm-jpdl</artifactId>
         <version>3.3.0.GA</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
