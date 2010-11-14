@@ -270,8 +270,8 @@ public class DocumentService {
                 "target", section).set("override", override).execute();
     }
 
-    public Document createRelation(DocRef subject, DocRef object,
-            String predicate) throws Exception {
+    public Document createRelation(DocRef subject, String predicate,
+            DocRef object) throws Exception {
         return (Document) session.newRequest(CreateRelation).setInput(subject).set(
                 "object", object).set("predicate", predicate).execute();
     }

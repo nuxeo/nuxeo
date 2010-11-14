@@ -17,19 +17,19 @@
 package org.nuxeo.ecm.automation.shell.cmds;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
+import org.nuxeo.ecm.automation.shell.Scripting;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
+import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.fs.FileSystem;
+import org.nuxeo.ecm.shell.utils.StringUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,6 +41,12 @@ public class Script implements Runnable {
     @Context
     protected RemoteContext ctx;
 
+    @Parameter(name = "-ctx", hasValue = true, help = "Use this to set execution context variables. Syntax is: \"k1=v1,k1=v2\"")
+    protected String ctxVars;
+
+    @Parameter(name = "-s", hasValue = true, help = "Use this to change the separator used in context variables. THe default is ','")
+    protected String sep = ",";
+
     @Argument(name = "file", index = 0, required = true, help = "The script file. Must have a .mvel or .groovy extension")
     protected File file;
 
@@ -48,23 +54,14 @@ public class Script implements Runnable {
         ShellConsole console = ctx.getShell().getConsole();
         FileBlob blob = new FileBlob(file);
         Map<String, String> args = new HashMap<String, String>();
-        // TODO
-        try {
-            Blob response = (Blob) ctx.getSession().newRequest(
-                    "Context.RunInputScript", args).setInput(blob).execute();
-            if (response != null) {
-                InputStream in = response.getStream();
-                String str = null;
-                try {
-                    str = FileSystem.readContent(in);
-                } finally {
-                    in.close();
-                }
-                console.println(str);
-                if (response instanceof FileBlob) {
-                    ((FileBlob) response).getFile().delete();
-                }
+        if (ctxVars != null) {
+            for (String pair : ctxVars.split(sep)) {
+                String[] ar = StringUtils.split(pair, '=', true);
+                args.put(ar[0], ar[1]);
             }
+        }
+        try {
+            console.println(Scripting.runScript(ctx, blob, args));
         } catch (Exception e) {
             throw new ShellException("Failed to run script", e);
         }
