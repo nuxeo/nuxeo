@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,8 +48,8 @@ public abstract class ExecutableResource {
     }
 
     @POST
-    public Object doPost(@Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    public Object doPost(@Context HttpServletRequest request,
+            ExecutionRequest xreq) {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
@@ -63,6 +64,8 @@ public abstract class ExecutableResource {
                 return ResponseHelper.blob((Blob) result);
             } else if (result instanceof BlobList) {
                 return ResponseHelper.blobs((BlobList) result);
+            } else if (result instanceof DocumentRef) {
+                return getCoreSession().getDocument((DocumentRef) result);
             } else {
                 return result;
             }

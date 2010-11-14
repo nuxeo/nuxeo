@@ -16,49 +16,42 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.shell.DocRefCompletor;
-import org.nuxeo.ecm.automation.shell.DocTypeCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "mkdir", help = "Create a document of the given type")
-public class MkDir implements Runnable {
+@Command(name = "rename", help = "Rename a document")
+public class Rename implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-title", hasValue = true, help = "An optional document title.")
-    protected String title;
+    @Parameter(name = "-name", hasValue = true, help = "A new name for the document. This parameter is required.")
+    protected String name;
 
-    @Argument(name = "type", index = 0, required = true, completor = DocTypeCompletor.class, help = "The document type")
-    protected String type;
-
-    @Argument(name = "path", index = 1, required = true, completor = DocRefCompletor.class, help = "The document path")
-    protected String path;
+    @Argument(name = "doc", index = 0, required = false, completor = DocRefCompletor.class, help = "The document to rename. To use UID references prefix them with 'doc:'.")
+    protected String src;
 
     public void run() {
-        Path p = ctx.resolvePath(path);
-        PathRef parent = new PathRef(p.getParent().toString());
-        PropertyMap props = new PropertyMap();
-        if (title != null) {
-            props.set("dc:title", title);
+        if (name == null) {
+            throw new ShellException("-name parameter is required!");
         }
+        DocRef srcRef = ctx.resolveRef(src);
         try {
-            ctx.getDocumentService().createDocument(parent, type,
-                    p.lastSegment(), props);
+            DocRef dstRef = ctx.getDocumentService().getParent(srcRef);
+            ctx.getDocumentService().move(srcRef, dstRef, name);
         } catch (Exception e) {
-            throw new ShellException(e);
+            throw new ShellException("Failed to rename document " + srcRef, e);
         }
+
     }
 }

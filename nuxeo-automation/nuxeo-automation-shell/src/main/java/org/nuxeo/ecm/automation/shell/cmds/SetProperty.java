@@ -16,49 +16,48 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.shell.DocRefCompletor;
-import org.nuxeo.ecm.automation.shell.DocTypeCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "mkdir", help = "Create a document of the given type")
-public class MkDir implements Runnable {
+@Command(name = "setp", help = "Set a property on a document")
+public class SetProperty implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-title", hasValue = true, help = "An optional document title.")
-    protected String title;
+    @Parameter(name = "-xpath", hasValue = true, help = "The xpath of the property to set. This parameter is required.")
+    protected String xpath;
 
-    @Argument(name = "type", index = 0, required = true, completor = DocTypeCompletor.class, help = "The document type")
-    protected String type;
+    @Parameter(name = "-value", hasValue = true, help = "The property value. If not specified the current property value is removed.")
+    protected String value;
 
-    @Argument(name = "path", index = 1, required = true, completor = DocRefCompletor.class, help = "The document path")
+    @Argument(name = "doc", index = 0, required = false, completor = DocRefCompletor.class, help = "The target document. If not specified the current document is used. To use UID references prefix them with 'doc:'.")
     protected String path;
 
     public void run() {
-        Path p = ctx.resolvePath(path);
-        PathRef parent = new PathRef(p.getParent().toString());
-        PropertyMap props = new PropertyMap();
-        if (title != null) {
-            props.set("dc:title", title);
+        DocRef doc = ctx.resolveRef(path);
+        if (xpath == null) {
+            throw new ShellException("-xpath parameter is required!");
         }
         try {
-            ctx.getDocumentService().createDocument(parent, type,
-                    p.lastSegment(), props);
+            if (value != null) {
+                ctx.getDocumentService().setProperty(doc, xpath, value);
+            } else {
+                ctx.getDocumentService().removeProperty(doc, xpath);
+            }
         } catch (Exception e) {
-            throw new ShellException(e);
+            throw new ShellException("Failed to set property on " + doc, e);
         }
+
     }
 }

@@ -239,7 +239,7 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document unlock(DocRef doc, String lock) throws Exception {
+    public Document unlock(DocRef doc) throws Exception {
         return (Document) session.newRequest(UnlockDocument).setInput(doc).execute();
     }
 
