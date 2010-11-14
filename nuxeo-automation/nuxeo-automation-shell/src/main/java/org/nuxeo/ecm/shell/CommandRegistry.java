@@ -20,8 +20,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A command registry associated to a given domain name.
@@ -93,6 +95,24 @@ public class CommandRegistry {
             }
         });
         return ar;
+    }
+
+    protected void collectCommandTypesByNamespace(
+            Map<String, Set<CommandType>> map) {
+        if (parent != null) {
+            parent.collectCommandTypesByNamespace(map);
+        }
+        TreeSet<CommandType> set = new TreeSet<CommandType>();
+        for (CommandType cmd : cmds.values()) {
+            set.add(cmd);
+        }
+        map.put(getName(), set);
+    }
+
+    public Map<String, Set<CommandType>> getCommandTypesByNamespace() {
+        LinkedHashMap<String, Set<CommandType>> map = new LinkedHashMap<String, Set<CommandType>>();
+        collectCommandTypesByNamespace(map);
+        return map;
     }
 
     public Set<String> getCommandNameSet() {
