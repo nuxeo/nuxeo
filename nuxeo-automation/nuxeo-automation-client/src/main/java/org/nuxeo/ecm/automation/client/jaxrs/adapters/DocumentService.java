@@ -239,7 +239,7 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document unlock(DocRef doc, String lock) throws Exception {
+    public Document unlock(DocRef doc) throws Exception {
         return (Document) session.newRequest(UnlockDocument).setInput(doc).execute();
     }
 
@@ -270,8 +270,8 @@ public class DocumentService {
                 "target", section).set("override", override).execute();
     }
 
-    public Document createRelation(DocRef subject, DocRef object,
-            String predicate) throws Exception {
+    public Document createRelation(DocRef subject, String predicate,
+            DocRef object) throws Exception {
         return (Document) session.newRequest(CreateRelation).setInput(subject).set(
                 "object", object).set("predicate", predicate).execute();
     }

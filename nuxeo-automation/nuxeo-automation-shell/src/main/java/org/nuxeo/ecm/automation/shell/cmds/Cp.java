@@ -16,49 +16,43 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.shell.DocRefCompletor;
-import org.nuxeo.ecm.automation.shell.DocTypeCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "mkdir", help = "Create a document of the given type")
-public class MkDir implements Runnable {
+@Command(name = "cp", help = "Copy a document")
+public class Cp implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-title", hasValue = true, help = "An optional document title.")
-    protected String title;
+    @Parameter(name = "-name", hasValue = true, help = "A new name for the copy. I not specified preserve the source name")
+    protected String name;
 
-    @Argument(name = "type", index = 0, required = true, completor = DocTypeCompletor.class, help = "The document type")
-    protected String type;
+    @Argument(name = "src", index = 0, required = true, completor = DocRefCompletor.class, help = "The document to copy. To use UID references prefix them with 'doc:'.")
+    protected String src;
 
-    @Argument(name = "path", index = 1, required = true, completor = DocRefCompletor.class, help = "The document path")
-    protected String path;
+    @Argument(name = "dst", index = 1, required = true, completor = DocRefCompletor.class, help = "The target parent. To use UID references prefix them with 'doc:'.")
+    protected String dst;
 
     public void run() {
-        Path p = ctx.resolvePath(path);
-        PathRef parent = new PathRef(p.getParent().toString());
-        PropertyMap props = new PropertyMap();
-        if (title != null) {
-            props.set("dc:title", title);
-        }
+        DocRef srcRef = ctx.resolveRef(src);
+        DocRef dstRef = ctx.resolveRef(dst);
         try {
-            ctx.getDocumentService().createDocument(parent, type,
-                    p.lastSegment(), props);
+            ctx.getDocumentService().copy(srcRef, dstRef, name);
         } catch (Exception e) {
-            throw new ShellException(e);
+            throw new ShellException("Failed to copy document " + srcRef
+                    + " to " + dstRef, e);
         }
+
     }
 }

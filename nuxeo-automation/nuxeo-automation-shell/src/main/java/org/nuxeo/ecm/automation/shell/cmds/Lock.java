@@ -16,49 +16,38 @@
  */
 package org.nuxeo.ecm.automation.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.shell.DocRefCompletor;
-import org.nuxeo.ecm.automation.shell.DocTypeCompletor;
 import org.nuxeo.ecm.automation.shell.RemoteContext;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.utils.Path;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "mkdir", help = "Create a document of the given type")
-public class MkDir implements Runnable {
+@Command(name = "lock", help = "Lock a document")
+public class Lock implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-title", hasValue = true, help = "An optional document title.")
-    protected String title;
+    @Parameter(name = "-key", hasValue = true, help = "An optional lock key. If not specified the default one is used.")
+    protected String key;
 
-    @Argument(name = "type", index = 0, required = true, completor = DocTypeCompletor.class, help = "The document type")
-    protected String type;
-
-    @Argument(name = "path", index = 1, required = true, completor = DocRefCompletor.class, help = "The document path")
+    @Argument(name = "doc", index = 0, required = false, completor = DocRefCompletor.class, help = "The document to lock. If not specified the current document is used. To use UID references prefix them with 'doc:'.")
     protected String path;
 
     public void run() {
-        Path p = ctx.resolvePath(path);
-        PathRef parent = new PathRef(p.getParent().toString());
-        PropertyMap props = new PropertyMap();
-        if (title != null) {
-            props.set("dc:title", title);
-        }
+        DocRef doc = ctx.resolveRef(path);
         try {
-            ctx.getDocumentService().createDocument(parent, type,
-                    p.lastSegment(), props);
+            ctx.getDocumentService().lock(doc, key);
         } catch (Exception e) {
-            throw new ShellException(e);
+            throw new ShellException("Failed to lock " + doc, e);
         }
+
     }
 }
