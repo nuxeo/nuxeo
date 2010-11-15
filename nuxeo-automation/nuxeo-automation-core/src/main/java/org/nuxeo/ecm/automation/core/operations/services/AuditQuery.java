@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -42,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = AuditQuery.ID, category = Constants.CAT_SERVICES, label = "Query Audit Service", description = "Execute a JPA query against the Audit Service. This is returning a blob with the query result. The result is a serialized JSON array. You can use the context to set query variables.")
+@Operation(id = AuditQuery.ID, category = Constants.CAT_SERVICES, label = "Query Audit Service", description = "Execute a JPA query against the Audit Service. This is returning a blob with the query result. The result is a serialized JSON array. You can use the context to set query variables but you must prefix using 'audit.query.' the context variable keys that match the ones in the query.")
 public class AuditQuery {
 
     public static final String ID = "Audit.Query";
@@ -97,12 +100,38 @@ public class AuditQuery {
                     q.setMaxResults(maxResults);
                     q.setFirstResult((pageNo - 1) * maxResults);
                 }
-                // TODO handle vars
-                // q.setParameter("from", ctx.get("from"));
+                for (Map.Entry<String, Object> entry : ctx.entrySet()) {
+                    String key = entry.getKey();
+                    if (key.startsWith("audit.query.")) {
+                        setQueryParam(q,
+                                key.substring("audit.query.".length()),
+                                entry.getValue());
+                    }
+                }
                 return q.getResultList();
             }
         });
 
     }
 
+    protected void setQueryParam(Query q, String key, Object value) {
+        if (value instanceof String) {
+            String v = (String) value;
+            if (v.startsWith("{d ") && v.endsWith("}")) {
+                v = v.substring(3, v.length() - 1).trim();
+                int i = v.indexOf(' ');
+                if (i == -1) {
+                    Date date = Date.valueOf(v);
+                    q.setParameter(key, date);
+                } else {
+                    Timestamp ts = Timestamp.valueOf(v);
+                    q.setParameter(key, ts);
+                }
+            } else {
+                q.setParameter(key, v);
+            }
+        } else {
+            q.setParameter(key, value);
+        }
+    }
 }

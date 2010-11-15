@@ -20,7 +20,6 @@ import org.nuxeo.ecm.shell.CommandRegistry;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.fs.FileSystem;
-import org.nuxeo.ecm.shell.impl.DefaultCommandType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,17 +31,17 @@ public class FileSystemCommands extends CommandRegistry {
 
     public FileSystemCommands() {
         super(GlobalCommands.INSTANCE, "local");
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Ls.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Pwd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Pushd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Popd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(MkDir.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Touch.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Rm.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cp.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Mv.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cat.class));
+        addAnnotatedCommand(Ls.class);
+        addAnnotatedCommand(Pwd.class);
+        addAnnotatedCommand(Pushd.class);
+        addAnnotatedCommand(Popd.class);
+        addAnnotatedCommand(Cd.class);
+        addAnnotatedCommand(MkDir.class);
+        addAnnotatedCommand(Touch.class);
+        addAnnotatedCommand(Rm.class);
+        addAnnotatedCommand(Cp.class);
+        addAnnotatedCommand(Mv.class);
+        addAnnotatedCommand(Cat.class);
     }
 
     public String getPrompt(Shell shell) {
