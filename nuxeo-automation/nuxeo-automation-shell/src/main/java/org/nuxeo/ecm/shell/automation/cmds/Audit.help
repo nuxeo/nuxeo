@@ -5,7 +5,7 @@ The specify the first page use 1 as value, for the second page use 2 and so on.
 
 When saving results in a file - they are in JSON format - and dates are specified using a long value timestamp. 
 Results printed on the screen are printed in tab separated columns:
-eventId\tcategory\teventDate\tprincipal\tdocUUID\tdocType\tdocLifeCycle\tcomment 
+eventId category    eventDate   principal   docUUID docType docLifeCycle    comment 
 
 {bold}EXAMPLES{bold}
 
