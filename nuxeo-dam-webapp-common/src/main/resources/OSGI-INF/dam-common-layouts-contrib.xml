@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.common.layouts">
 
-  <require>org.nuxeo.ecm.platform.forms.layout.WebLayoutManager</require>
-  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
-
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
              point="layouts">
 
@@ -13,10 +10,10 @@
       </templates>
       <rows>
         <row>
-          <widget>author</widget>
+          <widget>damc_author</widget>
         </row>
         <row>
-          <widget>authoringDate</widget>
+          <widget>damc_authoringDate</widget>
         </row>
       </rows>
     </layout>
@@ -26,7 +23,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
              point="widgets">
 
-    <widget name="author" type="text">
+    <widget name="damc_author" type="text">
       <labels>
         <label mode="any">label.dam_common.author</label>
       </labels>
@@ -39,7 +36,7 @@
       </properties>
     </widget>
 
-    <widget name="authoringDate" type="datetime">
+    <widget name="damc_authoringDate" type="datetime">
       <labels>
         <label mode="any">label.dam_common.authoringDate</label>
       </labels>
