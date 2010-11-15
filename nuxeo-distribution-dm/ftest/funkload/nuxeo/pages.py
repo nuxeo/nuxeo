@@ -128,7 +128,7 @@ class BasePage:
         if not outcome:
             outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-               quote(path) + "@" + outcome,
+               quote(path) + "@" + outcome + '?conversationId=0NXMAIN1',
                description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')
@@ -442,7 +442,7 @@ class BasePage:
 
     def history(self):
         ret = self.viewDocumentUid(self.getDocUid(),
-                                   tab='TAB_CONTENT_HISTORY',
+                                   tab='TAB_HISTORY',
                                    description="View history tab")
         self.fl.assert_('Event log' in self.fl.getBody())
         return ret
