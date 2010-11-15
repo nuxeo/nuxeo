@@ -23,7 +23,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anahide Tchertchian
@@ -40,6 +42,8 @@ public class VirtualTaskInstance implements Serializable {
     protected String comment;
 
     protected Date dueDate;
+
+    protected Map<String, Serializable> parameters = new HashMap<String,  Serializable>();
 
     public VirtualTaskInstance() {
     }
@@ -101,6 +105,14 @@ public class VirtualTaskInstance implements Serializable {
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public Map<String, Serializable> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Serializable> parameters) {
+        this.parameters = parameters;
     }
 
 }

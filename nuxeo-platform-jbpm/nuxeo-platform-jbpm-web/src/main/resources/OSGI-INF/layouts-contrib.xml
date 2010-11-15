@@ -13,6 +13,9 @@
           <widget>actors</widget>
         </row>
         <row>
+          <widget>right</widget>
+        </row>
+        <row>
           <widget>directive</widget>
         </row>
         <row>
@@ -37,6 +40,20 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="right" type="template">
+        <fields>
+          <field>parameters.right</field>
+        </fields>
+        <labels>
+          <label mode="any">label.review.right</label>
+        </labels>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="template">
+            /widgets/workflow_task_right_widget_template.xhtml
+          </property>
         </properties>
       </widget>
       <widget name="directive" type="template">
