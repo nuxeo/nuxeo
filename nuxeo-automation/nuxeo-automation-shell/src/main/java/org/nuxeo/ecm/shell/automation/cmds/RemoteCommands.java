@@ -21,7 +21,6 @@ import org.nuxeo.ecm.shell.CommandRegistry;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.automation.RemoteContext;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
-import org.nuxeo.ecm.shell.impl.DefaultCommandType;
 import org.nuxeo.ecm.shell.utils.Path;
 
 /**
@@ -34,37 +33,38 @@ public class RemoteCommands extends CommandRegistry {
 
     public RemoteCommands() {
         super(GlobalCommands.INSTANCE, "remote");
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Disconnect.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Ls.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Pwd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Popd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Pushd.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(MkDir.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Update.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Rm.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Query.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cat.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Tree.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Script.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(SetBlob.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(GetBlob.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(GetBlobs.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithDoc.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(RunChainWithFile.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(MkRelation.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(GetRelations.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(SetProperty.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Lock.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Unlock.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Cp.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Mv.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Rename.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Publish.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Perms.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(LifeCycleState.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Fire.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Audit.class));
+        addAnnotatedCommand(Disconnect.class);
+        addAnnotatedCommand(Ls.class);
+        addAnnotatedCommand(Cd.class);
+        addAnnotatedCommand(Pwd.class);
+        addAnnotatedCommand(Popd.class);
+        addAnnotatedCommand(Pushd.class);
+        addAnnotatedCommand(MkDir.class);
+        addAnnotatedCommand(Update.class);
+        addAnnotatedCommand(Rm.class);
+        addAnnotatedCommand(Query.class);
+        addAnnotatedCommand(Cat.class);
+        addAnnotatedCommand(Tree.class);
+        addAnnotatedCommand(Script.class);
+        addAnnotatedCommand(SetBlob.class);
+        addAnnotatedCommand(GetBlob.class);
+        addAnnotatedCommand(GetBlobs.class);
+        addAnnotatedCommand(RemoveBlob.class);
+        addAnnotatedCommand(RunChainWithDoc.class);
+        addAnnotatedCommand(RunChainWithFile.class);
+        addAnnotatedCommand(MkRelation.class);
+        addAnnotatedCommand(GetRelations.class);
+        addAnnotatedCommand(SetProperty.class);
+        addAnnotatedCommand(Lock.class);
+        addAnnotatedCommand(Unlock.class);
+        addAnnotatedCommand(Cp.class);
+        addAnnotatedCommand(Mv.class);
+        addAnnotatedCommand(Rename.class);
+        addAnnotatedCommand(Publish.class);
+        addAnnotatedCommand(Perms.class);
+        addAnnotatedCommand(LifeCycleState.class);
+        addAnnotatedCommand(Fire.class);
+        addAnnotatedCommand(Audit.class);
     }
 
     public String getPrompt(Shell shell) {

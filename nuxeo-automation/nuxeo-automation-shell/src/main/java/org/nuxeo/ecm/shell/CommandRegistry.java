@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.nuxeo.ecm.shell.impl.DefaultCommandType;
+
 /**
  * A command registry associated to a given domain name.
  * 
@@ -67,6 +69,10 @@ public class CommandRegistry {
                 cmds.put(alias, type);
             }
         }
+    }
+
+    public void addAnnotatedCommand(Class<? extends Runnable> clazz) {
+        addCommandType(DefaultCommandType.fromAnnotatedClass(clazz));
     }
 
     public CommandType getCommandType(String name) {

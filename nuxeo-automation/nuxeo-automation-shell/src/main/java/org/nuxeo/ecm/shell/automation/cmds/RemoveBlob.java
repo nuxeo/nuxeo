@@ -16,10 +16,7 @@
  */
 package org.nuxeo.ecm.shell.automation.cmds;
 
-import java.io.File;
-
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
-import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
@@ -32,27 +29,24 @@ import org.nuxeo.ecm.shell.automation.RemoteContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "putfile", help = "Attach a file to a document")
-public class SetBlob implements Runnable {
+@Command(name = "rmfile", help = "Remove an attached from a document")
+public class RemoveBlob implements Runnable {
 
     @Context
     protected RemoteContext ctx;
 
-    @Parameter(name = "-xpath", hasValue = true, help = "The xpath of the blob property to set. Defaults to the one used by the File document type.")
+    @Parameter(name = "-xpath", hasValue = true, help = "The xpath of the blob property to remove. Defaults to the one used by the File document type.")
     protected String xpath;
 
-    @Argument(name = "file", index = 0, required = true, help = "The file to upload")
-    protected File file;
-
-    @Argument(name = "doc", index = 1, required = false, completor = DocRefCompletor.class, help = "The target document. If not specified the current document is used. To use UID references prefix them with 'doc:'.")
+    @Argument(name = "doc", index = 0, required = false, completor = DocRefCompletor.class, help = "The target document. If not specified the current document is used. To use UID references prefix them with 'doc:'.")
     protected String path;
 
     public void run() {
         DocRef doc = ctx.resolveRef(path);
         try {
-            ctx.getDocumentService().setBlob(doc, new FileBlob(file), xpath);
+            ctx.getDocumentService().removeBlob(doc, xpath);
         } catch (Exception e) {
-            throw new ShellException("Failed to attach file on " + doc, e);
+            throw new ShellException("Failed to remove file from " + doc, e);
         }
 
     }

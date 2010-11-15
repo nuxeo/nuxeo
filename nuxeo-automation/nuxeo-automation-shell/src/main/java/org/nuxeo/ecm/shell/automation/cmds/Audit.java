@@ -24,6 +24,7 @@ import java.util.Date;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.nuxeo.ecm.automation.client.jaxrs.OperationRequest;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Blob;
 import org.nuxeo.ecm.automation.client.jaxrs.model.FileBlob;
 import org.nuxeo.ecm.shell.Argument;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.shell.ShellException;
 import org.nuxeo.ecm.shell.automation.RemoteContext;
 import org.nuxeo.ecm.shell.fs.FileCompletor;
 import org.nuxeo.ecm.shell.fs.FileSystem;
+import org.nuxeo.ecm.shell.utils.StringUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -61,13 +63,20 @@ public class Audit implements Runnable {
     @Parameter(name = "-page", hasValue = true, help = "The current page to return. To be used in conjunction with -max.")
     protected int page = 1;
 
-    @Argument(name = "query", index = 0, required = true, help = "The query to run. Query is in format. Use -ctx to set query parameters.")
+    @Argument(name = "query", index = 0, required = true, help = "The query to run. Query is in JPQL format")
     protected String query;
 
     public void run() {
         try {
-            Blob blob = (Blob) ctx.getSession().newRequest("Audit.Query").set(
-                    "query", query).set("maxResults", max).set("pageNo", page).execute();
+            OperationRequest req = ctx.getSession().newRequest("Audit.Query").set(
+                    "query", query).set("maxResults", max).set("pageNo", page);
+            if (queryVars != null) {
+                for (String pair : queryVars.split(sep)) {
+                    String[] ar = StringUtils.split(pair, '=', true);
+                    req.setContextProperty("audit.query." + ar[0], ar[1]);
+                }
+            }
+            Blob blob = (Blob) req.execute();
             String content = null;
             if (file != null) {
                 ((FileBlob) blob).getFile().renameTo(file);
