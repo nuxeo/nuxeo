@@ -33,10 +33,6 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jbpm.jbpm3</groupId>
-      <artifactId>jbpm-jpdl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>
     </dependency>
