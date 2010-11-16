@@ -75,6 +75,10 @@
     <event type="node-enter">
       <action
         class="org.nuxeo.ecm.platform.jbpm.core.helper.RemoveRightsActionHandler" />
+      <action class="org.nuxeo.ecm.platform.jbpm.core.helper.SendEventActionHandler">
+        <eventName>workflowProcessEnded</eventName>
+        <recipients>initiator</recipients>
+      </action>
     </event>
   </end-state>
 </process-definition>
