@@ -16,9 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import org.apache.tools.ant.filters.StringInputStream;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,8 +72,8 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
         String filenamePropertyName = DEFAULT_SCHEMA + ":"
                 + DEFAULT_FILENAME_FIELD;
         restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
-                filenamePropertyName, new StringInputStream(
-                        "Content of the file."));
+                filenamePropertyName, new ByteArrayInputStream(
+                        "Content of the file.".getBytes("UTF-8")));
 
         // check that the upload has been done correctly
         doc = session.getDocument(doc.getRef());
@@ -130,8 +130,8 @@ public class TestUploadFileRestlet extends SQLRepositoryTestCase implements
         String filenamePropertyName = DEFAULT_SCHEMA + ":"
                 + DEFAULT_FILENAME_FIELD;
         restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
-                filenamePropertyName, new StringInputStream(
-                        "Content of the file."));
+                filenamePropertyName, new ByteArrayInputStream(
+                        "Content of the file.".getBytes("UTF-8")));
 
         // check that the upload has been done correctly
         doc = session.getDocument(doc.getRef());
