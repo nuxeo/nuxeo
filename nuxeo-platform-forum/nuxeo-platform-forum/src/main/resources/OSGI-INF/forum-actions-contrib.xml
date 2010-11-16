@@ -60,7 +60,7 @@
       </filter>
     </action>
 
-    <action id="TAB_CONTENT_HISTORY">
+    <action id="TAB_HISTORY">
       <filter id="no_history_on_thread">
         <rule grant="false">
           <type>Thread</type>
