@@ -115,7 +115,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
 
             CmdParameters params = new CmdParameters();
             params.addNamedParameter("inFilePath",
-                    inputFile.file.getAbsolutePath());
+                    quoteFilePath(inputFile.file.getAbsolutePath()));
 
             // read the duration with a first command to adjust the best rate:
             ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND,
@@ -141,7 +141,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
             // add the command line parameters for the storyboard extraction and
             // run it
             params.addNamedParameter("outFolderPath",
-                    outFolder.getAbsolutePath());
+                    quoteFilePath(outFolder.getAbsolutePath()));
             params.addNamedParameter(RATE_PARAM, rateParam);
             params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
             params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));

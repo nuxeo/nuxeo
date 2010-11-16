@@ -92,4 +92,8 @@ public abstract class BaseVideoConverter {
                         + StringUtils.join(output, " "));
     }
 
+    public static String quoteFilePath(String filePath) {
+        return String.format("\"%s\"", filePath);
+    }
+
 }
