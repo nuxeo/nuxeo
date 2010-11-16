@@ -77,8 +77,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
 
             CmdParameters params = new CmdParameters();
             params.addNamedParameter("inFilePath",
-                    inputFile.file.getAbsolutePath());
-            params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
+                    quoteFilePath(inputFile.file.getAbsolutePath()));
+            params.addNamedParameter("outFilePath", quoteFilePath(outFile.getAbsolutePath()));
             Double position = 0.0;
             if (parameters != null) {
                 position = (Double) parameters.get(POSITION_PARAMETER);
