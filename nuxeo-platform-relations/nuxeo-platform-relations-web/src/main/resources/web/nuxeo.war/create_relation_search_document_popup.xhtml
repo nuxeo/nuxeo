@@ -5,7 +5,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  class="popUpContent">
+  class="popUpContent" id="popUpContent">
 
     <script language="javascript" type="text/javascript">
       function updateParent(documentUid, documentTitle) {
@@ -15,7 +15,7 @@
         parentTitle.innerHTML = documentTitle;
         parentTitleSaved = document.getElementById('createForm:objectDocumentTitleSaved');
         parentTitleSaved.value = documentTitle;
-        self.close();
+        hidePopUp();
       }
     </script>
 
