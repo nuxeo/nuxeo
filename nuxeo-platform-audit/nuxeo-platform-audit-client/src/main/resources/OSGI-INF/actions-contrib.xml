@@ -24,7 +24,7 @@
           <type>Server</type>
         </rule>
       </filter>
-      <filter id="has_subtabs">
+      <filter id="TAB_HISTORY_has_subtabs">
         <rule grant="false">
           <condition>
             #{webActions.getActionsList('TAB_HISTORY_sub_tab').isEmpty()}
