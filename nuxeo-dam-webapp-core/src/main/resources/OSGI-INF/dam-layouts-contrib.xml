@@ -48,10 +48,10 @@
           <widget>description</widget>
         </row>
         <row>
-          <widget>author</widget>
+          <widget>damc_author</widget>
         </row>
         <row>
-          <widget>authoringDate</widget>
+          <widget>damc_authoringDate</widget>
         </row>
         <row>
           <widget>coverage</widget>
@@ -366,10 +366,10 @@
           <widget>description</widget>
         </row>
         <row>
-          <widget>author</widget>
+          <widget>damc_author</widget>
         </row>
         <row>
-          <widget>authoringDate</widget>
+          <widget>damc_authoringDate</widget>
         </row>
         <row>
           <widget>language</widget>
