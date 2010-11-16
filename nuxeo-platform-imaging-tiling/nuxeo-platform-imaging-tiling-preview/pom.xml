@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-imaging-tiling-parent</artifactId>
-    <version>5.4.0</version>
+    <version>5.4.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
@@ -73,7 +73,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/nuxeo.war</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/web/nuxeo.war</outputDirectory>
             </configuration>
           </execution>
         </executions>
