@@ -44,6 +44,7 @@
     <c:set var="hideSearchTypeText" value="#{nxu:test(!empty widget.properties.hideSearchTypeText, widget.properties.hideSearchTypeText, false)}" />
     <c:set var="displayHorizontally" value="#{nxu:test(!empty widget.properties.displayHorizontally, widget.properties.displayHorizontally, true)}" />
     <c:set var="displayHelpLabel" value="#{nxu:test(!empty widget.properties.displayHelpLabel, widget.properties.displayHelpLabel, true)}" />
+    <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
 
     <c:if test="#{!hideSearchTypeText}">
       <h:outputText value="#{messages['label.security.searchUsers']}"
@@ -76,6 +77,7 @@
             var="result"
             fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+            width="#{suggestionWidth}"
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />

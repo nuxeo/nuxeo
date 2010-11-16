@@ -35,6 +35,7 @@
     value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
   <c:set var="maxSearchResults"
     value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+  <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">
@@ -55,6 +56,7 @@
           var="result" fetchValue=""
           nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
           minChars="#{minChars}" frequency="#{frequency}"
+          width="#{suggestionWidth}"
           requestDelay="#{requestDelay}">
           <f:param name="userSuggestionSearchType" value="#{searchType}" />
           <f:param name="userSuggestionMaxSearchResults"

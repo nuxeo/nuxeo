@@ -38,6 +38,7 @@
     <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
     <c:set var="searchType" value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
     <c:set var="maxSearchResults" value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
+    <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
 
     <h:outputText value="#{messages['label.security.searchUsers']}"
       rendered="#{searchType =='USER_TYPE'}"
@@ -68,6 +69,7 @@
             var="result"
             fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
+            width="#{suggestionWidth}"
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
