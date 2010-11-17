@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>addTags</title>
 </head>
 <body>
@@ -11,16 +14,15 @@
 <!--Identification-->
 <!--@Test groups:AddTags|depends:CreateNote-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium addTags</td>
-        <td></td>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium addTags</td>
+	<td></td>
 </tr>
 <tr>
 	<td>open</td>
 	<td>logout</td>
 	<td></td>
 </tr>
-
 <!-- log as user administrator -->
 <tr>
 	<td>open</td>
@@ -48,7 +50,6 @@
 	<td></td>
 </tr>
 <!-- Add a tag as user administrator -->
-
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -106,14 +107,12 @@
 	<td>admintag</td>
 	<td></td>
 </tr>
-
 <!--Déconnexion-->
 <tr>
 	<td>open</td>
 	<td>logout</td>
 	<td></td>
 </tr>
-
 <!-- log as user jdoe -->
 <tr>
 	<td>open</td>
@@ -141,7 +140,6 @@
 	<td></td>
 </tr>
 <!-- Add a tag as user jdoe -->
-
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -191,7 +189,7 @@
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>10000</td>
+	<td>20000</td>
 	<td></td>
 </tr>
 <tr>
@@ -199,13 +197,13 @@
 	<td>newtag</td>
 	<td></td>
 </tr>
-
 <!--Déconnexion-->
 <tr>
 	<td>open</td>
 	<td>logout</td>
 	<td></td>
 </tr>
+
 </tbody></table>
 </body>
 </html>
