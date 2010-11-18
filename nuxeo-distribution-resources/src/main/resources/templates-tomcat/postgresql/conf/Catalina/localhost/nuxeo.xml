@@ -93,8 +93,8 @@
   <Resource auth="Container" name="Mail" type="javax.mail.Session"
     mail.store.protocol="${mail.store.protocol}" mail.transport.protocol="${mail.transport.protocol}"
     mail.user="${mail.user}" mail.pop3.host="${mail.pop3.host}" mail.smtp.host="${mail.smtp.host}"
-    mail.smtp.port="${mail.smtp.port}" mail.smtp.username="${mail.smtp.username}"
-    mail.smtp.password="${mail.smtp.password}" mail.from="${mail.from}"
+    mail.smtp.port="${mail.smtp.port}" username="${mail.smtp.username}"
+    password="${mail.smtp.password}" mail.from="${mail.from}"
     mail.debug="${mail.debug}" />
 
 </Context>
