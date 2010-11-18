@@ -44,14 +44,17 @@ public class TaggedDocumentRemovedListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        for (Event event : events) {
-            if (DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
+        if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED)) {
+            for (Event event : events) {
                 handleEvent(event);
             }
         }
     }
 
     public void handleEvent(Event event) {
+        if (! DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())) {
+            return;
+        }
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
