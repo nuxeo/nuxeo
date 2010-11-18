@@ -18,6 +18,9 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Action handler that fire an event using EventProducer
+ *
+ * @see org.nuxeo.ecm.core.event.EventProducer
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class SendEventActionHandler extends AbstractJbpmHandlerHelper {
