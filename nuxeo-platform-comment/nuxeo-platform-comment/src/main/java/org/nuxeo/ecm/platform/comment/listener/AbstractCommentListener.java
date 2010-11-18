@@ -38,8 +38,10 @@ public abstract class AbstractCommentListener {
     private static final Log log = LogFactory.getLog(AbstractCommentListener.class);
 
     public void handleEvent(EventBundle events) {
-        for (Event event : events) {
-            handleEvent(event);
+        if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED) {
+            for (Event event : events) {
+                handleEvent(event);
+            }
         }
     }
 
