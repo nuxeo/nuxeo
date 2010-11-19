@@ -359,7 +359,7 @@ BEGIN
 END;
 
 #IF: ! aclOptimizationsEnabled
-ALTER TRIGGER nx_trig_acls_modified DISABLE;
+ALTER TRIGGER nx_trig_acls_modified DISABLE
 
 
 CREATE OR REPLACE TRIGGER nx_trig_hierarchy_insert
@@ -372,7 +372,7 @@ BEGIN
 END;
 
 #IF: ! aclOptimizationsEnabled
-ALTER TRIGGER nx_trig_hierarchy_insert DISABLE;
+ALTER TRIGGER nx_trig_hierarchy_insert DISABLE
 
 
 CREATE OR REPLACE TRIGGER nx_trig_hierarchy_update
@@ -385,7 +385,7 @@ BEGIN
 END;
 
 #IF: ! aclOptimizationsEnabled
-ALTER TRIGGER nx_trig_hierarchy_update DISABLE;
+ALTER TRIGGER nx_trig_hierarchy_update DISABLE
 
 
 CREATE OR REPLACE TRIGGER nx_trig_hier_read_acl_mod
@@ -401,7 +401,7 @@ BEGIN
 END;
 
 #IF: ! aclOptimizationsEnabled
-ALTER TRIGGER nx_trig_hier_read_acl_mod DISABLE;
+ALTER TRIGGER nx_trig_hier_read_acl_mod DISABLE
 
 
 CREATE OR REPLACE PROCEDURE nx_rebuild_read_acls
