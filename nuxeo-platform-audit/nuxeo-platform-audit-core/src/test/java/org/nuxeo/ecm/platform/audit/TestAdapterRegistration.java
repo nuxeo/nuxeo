@@ -11,10 +11,13 @@ public class TestAdapterRegistration extends NXRuntimeTestCase{
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+                deployBundle("org.nuxeo.runtime.management");
+                deployBundle("org.nuxeo.ecm.core.event");
 		deployBundle("org.nuxeo.ecm.platform.audit.api");
-	    deployBundle("org.nuxeo.ecm.platform.audit"); // the audit.core
-	    //deployTestContrib("org.nuxeo.ecm.platform.audit", "OSGI-INF/test-audit-contrib.xml");
-	    deployTestContrib("org.nuxeo.ecm.platform.audit", "test-audit-contrib.xml");
+                deployBundle("org.nuxeo.ecm.platform.audit"); // the audit.core
+                deployBundle("org.nuxeo.ecm.platform.audit.tests"); // the audit.core
+                //deployTestContrib("org.nuxeo.ecm.platform.audit", "OSGI-INF/test-audit-contrib.xml");
+                deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "test-audit-contrib.xml");
 	}
 
 	

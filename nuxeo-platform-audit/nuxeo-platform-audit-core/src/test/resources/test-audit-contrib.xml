@@ -26,4 +26,10 @@
 		<event name="lifecycle_transition_event" />
 	</extension>
 
+    <extension point="extendedInfo"
+           target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+        <extendedInfo expression="${source.dublincore.title}" key="title" />
+        <extendedInfo expression="${principal.name}" key="user" />
+    </extension>
+
 </component>

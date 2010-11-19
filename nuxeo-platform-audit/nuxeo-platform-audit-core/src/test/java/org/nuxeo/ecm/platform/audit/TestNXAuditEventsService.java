@@ -62,10 +62,12 @@ public class TestNXAuditEventsService extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit");
+        deployBundle("org.nuxeo.ecm.platform.audit.tests");
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.platform.management");
 
-        deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "nxaudit-tests.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.audit.tests", "test-audit-contrib.xml");
 
         serviceUnderTest = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
         assertNotNull(serviceUnderTest);
