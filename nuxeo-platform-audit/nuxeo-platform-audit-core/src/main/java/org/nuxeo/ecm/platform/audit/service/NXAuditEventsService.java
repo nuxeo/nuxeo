@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.el.ELException;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
@@ -259,8 +260,14 @@ public class NXAuditEventsService extends DefaultComponent implements
 
         Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
         for (ExtendedInfoDescriptor descriptor : extendedInfoDescriptors) {
-            Serializable value = expressionEvaluator.evaluateExpression(
-                    context, descriptor.getExpression(), Serializable.class);
+            String exp = descriptor.getExpression();
+            Serializable value = null;
+            try {
+                value = expressionEvaluator.evaluateExpression(
+                    context, exp, Serializable.class);
+            } catch (ELException e) {
+                continue;
+            }
             if (value == null) {
                 continue;
             }

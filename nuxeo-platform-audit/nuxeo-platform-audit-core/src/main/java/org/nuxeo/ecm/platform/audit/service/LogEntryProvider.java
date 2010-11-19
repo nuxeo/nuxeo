@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -54,11 +55,16 @@ public class LogEntryProvider {
         em.persist(entry);
     }
 
+
     protected List<LogEntry> doPublish(List<LogEntry> entries) {
+        for (LogEntry entry:entries) {
+            doPublish(entry);
+        }
         return entries;
     }
 
     protected LogEntry doPublish(LogEntry entry) {
+        entry.getExtendedInfos().size(); // force lazy loading
         return entry;
     }
 
