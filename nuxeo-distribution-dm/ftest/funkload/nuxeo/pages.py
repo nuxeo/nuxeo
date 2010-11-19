@@ -442,7 +442,7 @@ class BasePage:
 
     def history(self):
         ret = self.viewDocumentUid(self.getDocUid(),
-                                   tab='TAB_HISTORY',
+                                   tab='TAB_CONTENT_HISTORY',
                                    description="View history tab")
         self.fl.assert_('Event log' in self.fl.getBody())
         return ret
