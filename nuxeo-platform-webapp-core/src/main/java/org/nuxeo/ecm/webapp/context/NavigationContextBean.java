@@ -235,11 +235,6 @@ public class NavigationContextBean implements NavigationContextLocal,
         return isCreationEntered = false;
     }
 
-    protected void updateChangeableDocument() {
-        changeableDocument = currentDocument;
-        Contexts.getEventContext().set("changeableDocument", currentDocument);
-    }
-
     @BypassInterceptors
     public DocumentModel getChangeableDocument() {
         return changeableDocument;
