@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -167,6 +168,10 @@ public class EventHandlerRegistry {
             }
         }
         return _lookup;
+    }
+
+    public Set<String> getPostCommitEventNames() {
+        return pclookup().keySet();
     }
 
     // TODO: impl remove handlers method? or should refactor runtime to be able

@@ -36,6 +36,16 @@ public class PostCommitOperationEventListener implements
         if (registry == null) {
             registry = Framework.getLocalService(EventHandlerRegistry.class);
         }
+        boolean processEvents = false;
+        for (String name : registry.getPostCommitEventNames()) {
+            if (events.containsEventName(name)) {
+                processEvents = true;
+                break;
+            }
+        }
+        if (! processEvents) {
+            return;
+        }
         for (Event event : events) {
             List<EventHandler> handlers = registry.getPostCommitEventHandlers(event.getName());
             registry.handleEvent(event, handlers, true);
