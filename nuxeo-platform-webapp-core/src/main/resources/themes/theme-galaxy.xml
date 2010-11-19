@@ -1247,6 +1247,7 @@
       </selector>
       <selector path=".content_block .actionsColumn">
         <width>20%</width>
+        <vertical-align>top</vertical-align>
       </selector>
       <selector path=".content_block img">
         <padding>0px 5px</padding>
