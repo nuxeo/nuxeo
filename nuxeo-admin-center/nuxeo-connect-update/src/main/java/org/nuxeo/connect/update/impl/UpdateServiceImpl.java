@@ -45,11 +45,13 @@ import org.nuxeo.connect.update.impl.task.commands.Flush;
 import org.nuxeo.connect.update.impl.task.commands.FlushCoreCache;
 import org.nuxeo.connect.update.impl.task.commands.FlushJaasCache;
 import org.nuxeo.connect.update.impl.task.commands.Install;
+import org.nuxeo.connect.update.impl.task.commands.LoadJar;
 import org.nuxeo.connect.update.impl.task.commands.ParametrizedCopy;
 import org.nuxeo.connect.update.impl.task.commands.ReloadProperties;
 import org.nuxeo.connect.update.impl.task.commands.Undeploy;
 import org.nuxeo.connect.update.impl.task.commands.UndeployConfig;
 import org.nuxeo.connect.update.impl.task.commands.Uninstall;
+import org.nuxeo.connect.update.impl.task.commands.UnloadJar;
 import org.nuxeo.connect.update.impl.xml.FormsDefinition;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -57,7 +59,7 @@ import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class UpdateServiceImpl implements PackageUpdateService {
 
@@ -149,6 +151,8 @@ public class UpdateServiceImpl implements PackageUpdateService {
         addCommand(Undeploy.ID, Undeploy.class);
         addCommand(DeployConfig.ID, DeployConfig.class);
         addCommand(UndeployConfig.ID, UndeployConfig.class);
+        addCommand(LoadJar.ID, LoadJar.class);
+        addCommand(UnloadJar.ID, UnloadJar.class);
         startInstalledPackages();
     }
 

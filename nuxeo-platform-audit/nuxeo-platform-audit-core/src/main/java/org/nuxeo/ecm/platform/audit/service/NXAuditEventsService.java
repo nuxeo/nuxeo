@@ -725,6 +725,16 @@ public class NXAuditEventsService extends DefaultComponent implements
     }
 
     public void logEvents(EntityManager em, EventBundle eventBundle) {
+        boolean processEvents = false;
+        for (String name : getAuditableEventNames()) {
+            if (eventBundle.containsEventName(name)) {
+                processEvents = true;
+                break;
+            }
+        }
+        if (! processEvents) {
+            return;
+        }
         for (Event event : eventBundle) {
             logEvent(em, event);
         }

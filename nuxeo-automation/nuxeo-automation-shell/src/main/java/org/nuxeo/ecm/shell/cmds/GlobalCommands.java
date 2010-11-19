@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.shell.cmds;
 
 import org.nuxeo.ecm.shell.CommandRegistry;
-import org.nuxeo.ecm.shell.impl.DefaultCommandType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,11 +28,11 @@ public class GlobalCommands extends CommandRegistry {
 
     public GlobalCommands() {
         super(null, "global");
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Interactive.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Help.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Commands.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Exit.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Use.class));
-        addCommandType(DefaultCommandType.fromAnnotatedClass(Trace.class));
+        addAnnotatedCommand(Interactive.class);
+        addAnnotatedCommand(Help.class);
+        addAnnotatedCommand(Commands.class);
+        addAnnotatedCommand(Exit.class);
+        addAnnotatedCommand(Use.class);
+        addAnnotatedCommand(Trace.class);
     }
 }

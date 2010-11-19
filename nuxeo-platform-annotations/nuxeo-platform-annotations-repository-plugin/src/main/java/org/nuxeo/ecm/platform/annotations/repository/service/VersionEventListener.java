@@ -53,6 +53,7 @@ public class VersionEventListener implements PostCommitEventListener {
         for (String eventName : eventNames) {
             if (events.containsEventName(eventName)) {
                 processEvents = true;
+                break;
             }
         }
 

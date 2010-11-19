@@ -25,7 +25,14 @@
       hideAllPopUps();
 
       var popUp = jQuery("#relationSearchPopUp");
-      popUp.css('top', 100 + getScrollTop());
+      popUp.css('top', 0.1 * getDocumentHeight() + getScrollTop());
+      popUp.css('left', 0.15 * getDocumentWidth());
+
+      var popUpheader = jQuery("#closePopUpHeader");
+
+      var content = jQuery("#popUpContent");
+      content.css('height', popUp.height() - popUpheader.height() - 40);
+
       popUp.show();
     }
 
@@ -37,6 +44,14 @@
 
     function hidePopUp() {
       jQuery("#relationSearchPopUp").hide();
+    }
+
+    function getDocumentHeight() {
+      return jQuery(document).height();
+    }
+
+    function getDocumentWidth() {
+      return jQuery(document).width();
     }
 
     function getScrollTop() {
@@ -55,7 +70,7 @@
     jQuery(document).click(function(event) {
       var element = jQuery(event.target);
       if (!(element.is('.relationSearchPopUp') || element.parents().is('.relationSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
-        hideAllPopups();
+        hideAllPopUps();
       }
     });
   </script>
@@ -123,8 +138,7 @@
               <nxu:set var="urlWithConversation"
                 value="#{restHelper.addCurrentConversationParameters(url)}">
                 <input type="button" value="#{messages['command.search']}" class="button"
-                  onclick="javascript:showPopUpSearch();"
-                  onfocus="javascript:selectObjectType(2)" />
+                  onclick="javascript:selectObjectType(2);showPopUpSearch();" />
               </nxu:set>
             </nxu:set>
           </h:panelGroup>
@@ -150,10 +164,10 @@
   </h:form>
 
   <!-- Search document popUp -->
-  <div id="relationSearchPopUp" class="relationSearchPopUp">
-    <div class="closePopUpHeader"><span class="popUpTitle"><h:outputText
-      value="#{messages['label.relation.search.popup.title']}" /></span> <span
-      class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">Close</span>
+  <div id="relationSearchPopUp" class="genericPopUp bigPopUp">
+    <div class="closePopUpHeader" id="closePopUpHeader"><span class="popUpTitle">
+      <h:outputText value="#{messages['label.relation.search.popup.title']}" /></span>
+      <span class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">Close</span>
     <div style="clear: both;"></div>
     </div>
     <ui:include src="/create_relation_search_document_popup.xhtml" />

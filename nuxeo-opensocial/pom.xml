@@ -79,14 +79,6 @@
         <module>nuxeo-opensocial-container</module>
       </modules>
     </profile>
-    <profile>
-      <id>nogwt</id>
-      <activation>
-        <property>
-          <name>nogwt</name>
-        </property>
-      </activation>
-    </profile>
   </profiles>
 
 </project>

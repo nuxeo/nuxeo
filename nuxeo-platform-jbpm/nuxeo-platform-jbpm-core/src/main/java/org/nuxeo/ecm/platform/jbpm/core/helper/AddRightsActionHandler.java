@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,6 +47,8 @@ import org.nuxeo.ecm.platform.jbpm.VirtualTaskInstance;
 public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
+
+    private static final String RIGHT_PARAMETER = "right";
 
     private String list;
 
@@ -86,7 +90,8 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                     acl.add(new ACE(initiator, SecurityConstants.READ_WRITE,
                             true));
                 }
-                // add read permission for every review participant
+                // add permission for every review participant according to
+                // the 'right' parameter of the VirtualTaskInstance
                 for (VirtualTaskInstance participant : participants) {
                     for (String pname : participant.getActors()) {
                         // get rid of user/group prefix
@@ -95,7 +100,12 @@ public class AddRightsActionHandler extends AbstractJbpmHandlerHelper {
                         } else if (pname.startsWith(NuxeoGroup.PREFIX)) {
                             pname = pname.substring(NuxeoGroup.PREFIX.length());
                         }
-                        acl.add(new ACE(pname, SecurityConstants.READ, true));
+                        String permission = SecurityConstants.READ;
+                        Map<String, Serializable> parameters = participant.getParameters();
+                        if (parameters.containsKey(RIGHT_PARAMETER)) {
+                            permission = (String) parameters.get(RIGHT_PARAMETER);
+                        }
+                        acl.add(new ACE(pname, permission, true));
                     }
                 }
                 acp.addACL(acl);
