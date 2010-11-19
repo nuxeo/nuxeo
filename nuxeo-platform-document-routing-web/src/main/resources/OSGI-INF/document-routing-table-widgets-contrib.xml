@@ -253,10 +253,9 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data.parent.routeElement.document</field>
-        <field>data.parent.routeElement.document.id</field>
-        <field>data.parent.routeElement.document.hasFacet('Folderish')</field>
-        <field>data</field>
+        <field>routeElement.document</field>
+        <field>routeElement.document.id</field>
+        <field>routeElement.document.hasFacet('Folderish')</field>
       </fields>
     </widget>
 
