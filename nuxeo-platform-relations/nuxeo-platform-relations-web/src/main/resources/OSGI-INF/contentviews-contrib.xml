@@ -27,7 +27,7 @@
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
+        <pageSize>5</pageSize>
       </coreQueryPageProvider>
 
       <searchLayout name="relation_search" />
