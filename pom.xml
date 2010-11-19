@@ -15,7 +15,7 @@
   <name>Nuxeo Features - Parent POM</name>
   <packaging>pom</packaging>
   <description>Nuxeo Features: Parent.</description>
-  <version>5.3.2-CP03</version>
+  <version>5.3.2-CP04</version>
 
   <properties>
     <nuxeo.common.version>1.6.2</nuxeo.common.version>
@@ -282,7 +282,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment-web</artifactId>
-        <version>${nuxeo.features.version}</version>
+        <version>${nuxeo.features.version}-CP04</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
