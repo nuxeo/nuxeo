@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.doc.JSONExporter;
 import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 
 /**
@@ -47,8 +48,8 @@ public class OperationResource extends ExecutableResource {
     public Object doGet() {
         try {
             OperationDocumentation doc = ((OperationTypeImpl) type).getDocumentation();
-            JSONObject json = org.nuxeo.ecm.automation.core.doc.JSONExporter.toJSON(doc);
-            return javax.ws.rs.core.Response.ok(json.toString(2)).type(
+            JSONObject json = JSONExporter.toJSON(doc);
+            return Response.ok(json.toString(2)).type(
                     "application/json").build();
         } catch (IOException e) {
             return Response.status(500).build();

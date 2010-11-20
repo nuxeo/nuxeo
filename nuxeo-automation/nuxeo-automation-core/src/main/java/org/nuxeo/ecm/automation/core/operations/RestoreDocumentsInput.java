@@ -56,6 +56,7 @@ public class RestoreDocumentsInput {
             for (DocumentRef ref : refs) {
                 list.add(session.getDocument(ref));
             }
+            // FIXME: variable list is never used!
         }
         throw new OperationException(
                 "Illegal state error for restore documents operation. The context stack doesn't contains a documents variable with the name "

@@ -38,7 +38,7 @@ public class RestOperationContext extends OperationContext {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Must be called before context execution
+     * Must be called before context execution.
      */
     public void addRequestCleanupHandler(HttpServletRequest request) {
         UserSession.addRequestCleanupHandler(request,

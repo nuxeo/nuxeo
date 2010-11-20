@@ -31,7 +31,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK, label = "Pull Document List", description = "Restore the first saved input document list in the context input stack")
+@Operation(id = PullDocumentList.ID, category = Constants.CAT_EXECUTION_STACK,
+        label = "Pull Document List", description = "Restore the first saved input document list in the context input stack")
 public class PullDocumentList {
 
     public static final String ID = "Document.PullList";
@@ -52,6 +53,7 @@ public class PullDocumentList {
             for (DocumentRef ref : refs) {
                 list.add(session.getDocument(ref));
             }
+            // FIXME: variable list is never used!
         }
         throw new OperationException(
                 "Illegal state error for pull document operation. The context stack doesn't contains a document list on its bottom");
