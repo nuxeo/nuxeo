@@ -60,31 +60,32 @@ public class EngineService extends DefaultObject {
     @Path("test")
     public String doTest() {
         try {
-        System.out.println("open session1");
-        CoreSession session1 = openSession("default");
-        System.out.println("open session2");
-        CoreSession session2 = openSession("default");
-        org.nuxeo.common.utils.Path path =  new org.nuxeo.common.utils.Path("/default-domain/workspaces");
+            System.out.println("open session1");
+            CoreSession session1 = openSession("default");
+            System.out.println("open session2");
+            CoreSession session2 = openSession("default");
+            org.nuxeo.common.utils.Path path = new org.nuxeo.common.utils.Path(
+                    "/default-domain/workspaces");
 
-        System.out.println("modify doc in session1 without saving");
-        DocumentModel w1 = session1.getDocument(new PathRef(path.toString()));
-        w1.setPropertyValue("dc:title", "test1");
-        System.out.println("saving doc in session 1");
-        session1.saveDocument(w1);
+            System.out.println("modify doc in session1 without saving");
+            DocumentModel w1 = session1.getDocument(new PathRef(path.toString()));
+            w1.setPropertyValue("dc:title", "test1");
+            System.out.println("saving doc in session 1");
+            session1.saveDocument(w1);
 
-        System.out.println("modify doc in session2 and then save session");
-        DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
-        w2.setPropertyValue("dc:title", "test2");
-        session2.saveDocument(w2);
-        session2.save();
-        System.out.println("session2 SAVE OK ");
+            System.out.println("modify doc in session2 and then save session");
+            DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
+            w2.setPropertyValue("dc:title", "test2");
+            session2.saveDocument(w2);
+            session2.save();
+            System.out.println("session2 SAVE OK ");
 
-        System.out.println("trying to save session 1 ...");
-        session1.save();
+            System.out.println("trying to save session 1 ...");
+            session1.save();
 
-        System.out.println("session 1 saved => Test OK");
+            System.out.println("session 1 saved => Test OK");
 
-        return "Test OK";
+            return "Test OK";
         } catch (Throwable t) {
             log.error(t, t);
             throw WebException.wrap(t);
@@ -95,36 +96,38 @@ public class EngineService extends DefaultObject {
     @Path("test2")
     public String doTest2() {
         try {
-        System.out.println("open session1");
-        CoreSession session1 = openSession("default");
-        System.out.println("open session2");
-        CoreSession session2 = openSession("default");
-        org.nuxeo.common.utils.Path path =  new org.nuxeo.common.utils.Path("/default-domain/workspaces");
+            System.out.println("open session1");
+            CoreSession session1 = openSession("default");
+            System.out.println("open session2");
+            CoreSession session2 = openSession("default");
+            org.nuxeo.common.utils.Path path = new org.nuxeo.common.utils.Path(
+                    "/default-domain/workspaces");
 
-        System.out.println("modify doc in session1 without saving");
-//        DocumentModel w1 = session1.getDocument(new PathRef(path.toString()));
-        DocumentModel doc = new DocumentModelImpl(path.toString(), "doc1", "Folder");
-        doc = session1.createDocument(doc);
-//        session1.save();
-//        w1.setPropertyValue("dc:title", "test1");
-        System.out.println("creating doc in session 1 "+doc.getName());
-//        session1.saveDocument(w1);
+            System.out.println("modify doc in session1 without saving");
+            // DocumentModel w1 = session1.getDocument(new PathRef(path.toString()));
+            DocumentModel doc = new DocumentModelImpl(path.toString(), "doc1",
+                    "Folder");
+            doc = session1.createDocument(doc);
+            // session1.save();
+            // w1.setPropertyValue("dc:title", "test1");
+            System.out.println("creating doc in session 1 " + doc.getName());
+            // session1.saveDocument(w1);
 
-        System.out.println("creating doc in session2 and then save session");
-        doc = new DocumentModelImpl(path.toString(), "doc2", "Folder");
-        doc = session2.createDocument(doc);
-//        DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
-//        w2.setPropertyValue("dc:title", "test2");
-//        session2.saveDocument(w2);
-        session2.save();
-        System.out.println("session2 SAVE OK ");
+            System.out.println("creating doc in session2 and then save session");
+            doc = new DocumentModelImpl(path.toString(), "doc2", "Folder");
+            doc = session2.createDocument(doc);
+            // DocumentModel w2 = session2.getDocument(new PathRef(path.toString()));
+            // w2.setPropertyValue("dc:title", "test2");
+            // session2.saveDocument(w2);
+            session2.save();
+            System.out.println("session2 SAVE OK ");
 
-        System.out.println("trying to save session 1 ...");
-        session1.save();
+            System.out.println("trying to save session 1 ...");
+            session1.save();
 
-        System.out.println("session 1 saved => Test OK");
+            System.out.println("session 1 saved => Test OK");
 
-        return "Test OK";
+            return "Test OK";
         } catch (Throwable t) {
             log.error(t, t);
             throw WebException.wrap(t);

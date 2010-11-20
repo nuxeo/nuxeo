@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import java.util.Map;
 
 /**
- *
  * Implementation of the {@link PublishedDocumentFactory} for simple core
  * implementation using native proxy system.
  *

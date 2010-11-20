@@ -50,9 +50,8 @@ public class JsonLoginInfoWriter implements MessageBodyWriter<LoginInfo> {
         return LoginInfo.class.isAssignableFrom(arg0);
     }
 
-    public void writeTo(LoginInfo login, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4,
-            MultivaluedMap<String, Object> arg5, OutputStream arg6)
+    public void writeTo(LoginInfo login, Class<?> arg1, Type arg2, Annotation[] arg3,
+            MediaType arg4, MultivaluedMap<String, Object> arg5, OutputStream arg6)
             throws IOException, WebApplicationException {
         JSONObject json = new JSONObject();
         json.element("entity-type", "login");

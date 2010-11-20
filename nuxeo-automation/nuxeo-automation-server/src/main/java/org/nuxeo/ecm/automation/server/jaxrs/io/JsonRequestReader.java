@@ -77,8 +77,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
                 String[] ar = StringUtils.split(input.substring(5).trim(), ',',
                         true);
                 DocumentRefList list = new DocumentRefListImpl(ar.length);
-                for (int i = 0; i < ar.length; i++) {
-                    list.add(docRefFromString(ar[i]));
+                for (String s : ar) {
+                    list.add(docRefFromString(s));
                 }
                 inObj = list;
             }

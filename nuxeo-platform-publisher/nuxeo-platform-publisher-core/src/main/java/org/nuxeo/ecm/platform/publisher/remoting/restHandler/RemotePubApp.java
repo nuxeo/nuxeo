@@ -29,14 +29,14 @@ public class RemotePubApp extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> set = new HashSet<Class<?>>();
+        Set<Class<?>> set = new HashSet<Class<?>>();
         set.add(RestPublishingHandler.class);
         return set;
     }
 
     @Override
     public Set<Object> getSingletons() {
-        HashSet<Object> set = new HashSet<Object>();
+        Set<Object> set = new HashSet<Object>();
         set.add(new RemotePubMessageWriter());
         set.add(new RemotePubMessageReader());
         return set;

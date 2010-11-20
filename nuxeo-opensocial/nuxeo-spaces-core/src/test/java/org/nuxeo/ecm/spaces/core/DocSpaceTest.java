@@ -43,6 +43,7 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
     private VirtualUnivers univers;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -62,10 +63,9 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
     @Test
     public void iGetTheHomeSpaceProvider() throws Exception {
-
         List<SpaceProvider> spacesProvider = service.getSpacesProvider(univers);
-
         assertEquals(1, spacesProvider.size());
+
         List<Space> spaces = service.getSpacesForUnivers(univers, session);
         assertEquals(1, spaces.size());
 
@@ -76,7 +76,6 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
     @Test
     public void iCanCreateAUrlGadget() throws Exception {
-
         List<Space> spaces = service.getSpacesForUnivers(univers, session);
         assertEquals(1, spaces.size());
 
@@ -88,6 +87,7 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
         List<Gadget> gadgets = space.getGadgets();
         assertEquals(1, gadgets.size());
+
         gadget = gadgets.get(0);
         assertEquals(null, gadget.getName());
         assertEquals("http://localhost:8080/gadgetDef.xml",
@@ -96,7 +96,6 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
 
     @Test
     public void iCanChangePrefs() throws Exception {
-
         Space space = service.getSpacesForUnivers(univers, session).get(0);
         Gadget gadget = space.createGadget(new URL(
                 "http://localhost:8080/gadgetDef.xml"));
@@ -113,7 +112,6 @@ public class DocSpaceTest extends SQLRepositoryTestCase {
         gadget = doc.getAdapter(Gadget.class);
 
         assertEquals("test", gadget.getPref("pref"));
-
     }
 
 }
