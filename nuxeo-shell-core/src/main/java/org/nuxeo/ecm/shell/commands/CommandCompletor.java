@@ -21,13 +21,14 @@ package org.nuxeo.ecm.shell.commands;
 
 import java.util.List;
 
+import jline.SimpleCompletor;
 import org.nuxeo.ecm.shell.CommandLineService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class CommandCompletor extends jline.SimpleCompletor {
+public class CommandCompletor extends SimpleCompletor {
 
     final CommandLineService svc;
 
