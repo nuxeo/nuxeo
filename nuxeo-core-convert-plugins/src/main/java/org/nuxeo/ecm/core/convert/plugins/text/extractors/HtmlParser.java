@@ -31,7 +31,6 @@ import org.apache.xerces.xni.QName;
 import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XMLLocator;
 import org.apache.xerces.xni.XMLString;
-import org.apache.xerces.xni.XNIException;
 import org.cyberneko.html.HTMLConfiguration;
 import org.xml.sax.SAXException;
 
@@ -105,7 +104,7 @@ public class HtmlParser extends AbstractSAXParser {
 
     @Override
     public void startElement(QName element, XMLAttributes attributes,
-            Augmentations augs) throws XNIException {
+            Augmentations augs) {
         super.startElement(element, attributes, augs);
         if (!noFilter && tagFilter.equalsIgnoreCase(element.localpart)) {
             inFilter = true;
@@ -120,8 +119,7 @@ public class HtmlParser extends AbstractSAXParser {
     }
 
     @Override
-    public void endElement(QName element, Augmentations augs)
-            throws XNIException {
+    public void endElement(QName element, Augmentations augs) {
         super.endElement(element, augs);
         if (!noFilter && tagFilter.equals(element.localpart)) {
             inFilter = false;
@@ -137,14 +135,13 @@ public class HtmlParser extends AbstractSAXParser {
 
     @Override
     public void startDocument(XMLLocator arg0, String arg1,
-            NamespaceContext arg2, Augmentations arg3) throws XNIException {
+            NamespaceContext arg2, Augmentations arg3) {
         super.startDocument(arg0, arg1, arg2, arg3);
         buffer = new StringBuilder();
     }
 
     @Override
-    public void characters(XMLString xmlString, Augmentations augmentations)
-            throws XNIException {
+    public void characters(XMLString xmlString, Augmentations augmentations) {
         super.characters(xmlString, augmentations);
         if ((noFilter || inFilter) && skipUntillClosed == null) {
             buffer.append(xmlString.toString());

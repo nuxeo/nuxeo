@@ -27,11 +27,12 @@ public class PropertyConversionException extends InvalidPropertyValueException {
     private static final long serialVersionUID = -7766425583638251741L;
 
     public PropertyConversionException(Class<?> fromClass, Class<?> toClass) {
-        super("Property Conversion failed from "+fromClass+" to "+toClass);
+        super("Property Conversion failed from " + fromClass + " to " + toClass);
     }
 
     public PropertyConversionException(Class<?> fromClass, Class<?> toClass, String message) {
-        super("Property Conversion failed from "+fromClass+" to "+toClass+": "+message);
+        super("Property Conversion failed from " + fromClass + " to " + toClass
+                + ": " + message);
     }
 
     public PropertyConversionException(String message) {

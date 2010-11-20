@@ -139,15 +139,15 @@ public class CachingDocumentList implements DocumentModelList {
 
     public Object[] toArray() {
         Object[] ar = list.toArray();
-        for (int i=ar.length-1; i>=0; i--) {
-            ar[i] = cache.cacheDocument((DocumentModel)ar[i]);
+        for (int i = ar.length - 1; i >= 0; i--) {
+            ar[i] = cache.cacheDocument((DocumentModel) ar[i]);
         }
         return ar;
     }
 
     public <T> T[] toArray(T[] a) {
         T[] ar = list.toArray(a);
-        for (int i=ar.length-1; i>=0; i--) {
+        for (int i = ar.length - 1; i >= 0; i--) {
             ar[i] = (T) cache.cacheDocument((DocumentModel) ar[i]);
         }
         return ar;

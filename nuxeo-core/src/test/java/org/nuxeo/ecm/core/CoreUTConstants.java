@@ -22,7 +22,7 @@ package org.nuxeo.ecm.core;
 /**
  * @author Anahide Tchertchian
  */
-public class CoreUTConstants {
+public final class CoreUTConstants {
 
     public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
 

@@ -56,7 +56,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 // We're declaring variables as HashMaps / ArrayLists so they can be
 // Serializable
-@SuppressWarnings( { "CollectionDeclaredAsConcreteClass" })
+@SuppressWarnings({ "CollectionDeclaredAsConcreteClass" })
 public class TestPropertyModel extends NXRuntimeTestCase {
 
     protected RuntimeService runtime;

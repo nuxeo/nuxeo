@@ -334,17 +334,17 @@ public abstract class Operation<T> implements Serializable {
 
     // application data support
 
-    public Object getData () {
+    public Object getData() {
         return (flags & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
     }
 
-    public Object getData (String key) {
+    public Object getData(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Data Key must not be null");
         }
         if ((flags & KEYED_DATA) != 0) {
             Object [] table = (Object []) data;
-            for (int i=1; i<table.length; i+=2) {
+            for (int i = 1; i < table.length; i += 2) {
                 if (key.equals(table[i])) {
                     return table[i + 1];
                 }
@@ -380,7 +380,7 @@ public abstract class Operation<T> implements Serializable {
             if ((flags & KEYED_DATA) != 0) {
                 if (index == table.length) {
                     Object [] newTable = new Object [table.length + 2];
-                    System.arraycopy (table, 0, newTable, 0, table.length);
+                    System.arraycopy(table, 0, newTable, 0, table.length);
                     data = table = newTable;
                 }
             } else {
@@ -400,8 +400,8 @@ public abstract class Operation<T> implements Serializable {
                         flags &= ~KEYED_DATA;
                     } else {
                         Object [] newTable = new Object [length];
-                        System.arraycopy (table, 0, newTable, 0, index);
-                        System.arraycopy (table, index + 2, newTable, index, length - index);
+                        System.arraycopy(table, 0, newTable, 0, index);
+                        System.arraycopy(table, index + 2, newTable, index, length - index);
                         data = newTable;
                     }
                 }

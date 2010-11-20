@@ -41,7 +41,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  */
-@SuppressWarnings( { "IOResourceOpenedButNotSafelyClosed", "UnusedAssignment" })
+@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed", "UnusedAssignment" })
 public class TestBlob extends NXRuntimeTestCase {
 
     private URL url;
