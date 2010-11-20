@@ -51,8 +51,6 @@ public interface ClipboardActions {
 
     /**
      * Called when the delete button is clicked on the clipboard.
-     *
-     * @throws ClientException
      */
     String removeWorkListItem(DocumentRef ref) throws ClientException;
 
@@ -63,15 +61,11 @@ public interface ClipboardActions {
 
     /**
      * Called when the "paste all" button is clicked on the clipboard.
-     *
-     * @throws ClientException
      */
     String pasteWorkingList() throws ClientException;
 
     /**
      * Called when the "move all" button is clicked on the clipboard/selection
-     *
-     * @throws ClientException
      */
     String moveWorkingList() throws ClientException;
 
@@ -80,7 +74,6 @@ public interface ClipboardActions {
      * Pastes the documents passed to the clipboard.
      *
      * @param docPaste the list of doc we want to paste
-     * @throws ClientException
      */
     String pasteDocumentList(List<DocumentModel> docPaste) throws ClientException;
 
@@ -88,9 +81,6 @@ public interface ClipboardActions {
 
     /**
      * Pastes the content of the list listName into the current context document.
-     *
-     * @param listName
-     * @throws ClientException
      */
     String pasteDocumentList(String listName) throws ClientException;
 
@@ -126,24 +116,16 @@ public interface ClipboardActions {
 
     /**
      * Checks if the currently selected WorkList is empty.
-     *
-     * @return
      */
     boolean isWorkListEmpty();
 
     /**
      * Shortcut for getCanPaste on the currently selected workList.
-     *
-     * @return
-     * @throws ClientException
      */
     boolean getCanPasteWorkList() throws ClientException;
 
     /**
      * Shortcut for getCanPaste on the clipboard.
-     *
-     * @return
-     * @throws ClientException
      */
     boolean getCanPasteFromClipboard() throws ClientException;
 
@@ -159,10 +141,6 @@ public interface ClipboardActions {
      * <p>
      * - checks if the list is empty<br>
      * - checks if the user has the needed rights in the current context
-     *
-     * @param listName
-     * @return
-     * @throws ClientException
      */
     boolean getCanPaste(String listName) throws ClientException;
 
@@ -170,8 +148,6 @@ public interface ClipboardActions {
 
     /**
      * Checks if there are selected items that can be copied into the current worklist.
-     *
-     * @return
      */
     boolean getCanCopy();
 
@@ -187,8 +163,6 @@ public interface ClipboardActions {
 
     /**
      * Copies docsList into the current WorkList.
-     *
-     * @param docsList
      */
     void putSelectionInWorkList(List<DocumentModel> docsList);
 
@@ -262,7 +236,6 @@ public interface ClipboardActions {
      *
      * @return <code>true</code> if the current selected docs (from clipboard) are editable by
      *         the current user
-     * @throws ClientException
      */
     boolean getCanEditSelectedDocs() throws ClientException;
 
@@ -272,7 +245,6 @@ public interface ClipboardActions {
      *
      * @return <code>true</code> if the docs from the specified working list
      *         are editable by the current user
-     * @throws ClientException
      */
     boolean getCanEditListDocs(String listName) throws ClientException;
 

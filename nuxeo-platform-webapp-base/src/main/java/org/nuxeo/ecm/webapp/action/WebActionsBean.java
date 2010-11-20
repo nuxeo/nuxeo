@@ -334,4 +334,5 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
         return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
     }
+
 }

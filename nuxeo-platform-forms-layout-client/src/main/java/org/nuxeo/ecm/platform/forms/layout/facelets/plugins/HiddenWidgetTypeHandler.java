@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Hidden widget
+ * Hidden widget.
  *
  * @author <a href="mailto:cpriceputu@nuxeo.com">Cristian Priceputu</a>
  */

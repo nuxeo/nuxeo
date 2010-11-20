@@ -37,8 +37,6 @@ public interface SelectDataModelRow {
      * <p>
      * This is supposed to trigger SelectModelListener methods declared on the
      * SelectModel.
-     *
-     * @param event ValueChangeEvent
      */
     void selectionChanged(ValueChangeEvent event);
 

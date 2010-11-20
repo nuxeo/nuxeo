@@ -88,4 +88,5 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);
         res.getEntity().setCharacterSet(CharacterSet.UTF_8);
     }
+
 }

@@ -37,7 +37,7 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Html text widget
+ * Html text widget.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

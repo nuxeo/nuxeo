@@ -45,7 +45,7 @@ import com.sun.facelets.tag.ui.DecorateHandler;
 import com.sun.facelets.tag.ui.ParamHandler;
 
 /**
- * Template widget type
+ * Template widget type.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

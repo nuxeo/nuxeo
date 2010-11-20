@@ -37,7 +37,6 @@ import com.sun.facelets.FaceletHandler;
  * null.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class LeafFaceletHandler implements FaceletHandler {
 

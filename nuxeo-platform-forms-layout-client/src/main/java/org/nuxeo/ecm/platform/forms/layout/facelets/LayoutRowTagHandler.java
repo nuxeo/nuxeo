@@ -76,7 +76,7 @@ public class LayoutRowTagHandler extends TagHandler {
      * aliases.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+            throws IOException, FacesException, ELException {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();

@@ -33,7 +33,6 @@ import com.sun.facelets.tag.TagConfig;
  * Widget type handler interface.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public interface WidgetTypeHandler extends Serializable {
 
