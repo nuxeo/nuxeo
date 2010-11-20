@@ -42,6 +42,8 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     Cas2Authenticator cas2Authenticator;
 
+    protected URLPolicyService urlService;
+
     public SecurityExceptionHandler() throws Exception {
     }
 
@@ -75,23 +77,21 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
     }
 
     protected Cas2Authenticator getCasAuthenticator() throws ClientException {
+        if (cas2Authenticator != null) {
+            return cas2Authenticator;
+        }
+
+        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        if (service == null) {
+            throw new ClientException(
+                    "Can't initialize Nuxeo Pluggable Authentication Service");
+        }
+
+        cas2Authenticator = (Cas2Authenticator) service.getPlugin("CAS2_AUTH");
 
         if (cas2Authenticator == null) {
-
-            PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
-
-            if (service == null) {
-                throw new ClientException(
-                        "Can't initialize Nuxeo Pluggable Authentication Service");
-            }
-
-            cas2Authenticator = (Cas2Authenticator) service.getPlugin("CAS2_AUTH");
-
-            if (cas2Authenticator == null) {
-                throw new ClientException("Can't get CAS authenticator");
-            }
-
+            throw new ClientException("Can't get CAS authenticator");
         }
         return cas2Authenticator;
     }
@@ -100,8 +100,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         DocumentView docView = (DocumentView) request.getAttribute(URLPolicyService.DOCUMENT_VIEW_REQUEST_KEY);
 
         if (docView != null) {
-            String urlToReach = getURLPolicyService().getUrlFromDocumentView(
-                    docView, "");
+            String urlToReach = getURLPolicyService().getUrlFromDocumentView(docView, "");
 
             if (urlToReach != null) {
                 return urlToReach;
@@ -110,8 +109,6 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         return request.getRequestURL().toString() + "?"
                 + request.getQueryString();
     }
-
-    protected URLPolicyService urlService;
 
     protected URLPolicyService getURLPolicyService() {
         if (urlService == null) {

@@ -44,6 +44,8 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
 
     protected static final Log log = LogFactory.getLog(AnonymousAuthenticatorForCAS2.class);
 
+    protected Cas2Authenticator casAuthenticator;
+
     @Override
     public Boolean handleLogout(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
@@ -76,26 +78,24 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
         return super.handleLogout(httpRequest, httpResponse);
     }
 
-    protected Cas2Authenticator casAuthenticator;
-
     public Cas2Authenticator getCas2Authenticator() {
-
-        if (casAuthenticator == null) {
-            PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
-
-            if (service == null) {
-                log.error("Can't get PluggableAuthenticationService");
-            }
-
-            NuxeoAuthenticationPlugin plugin = service.getPlugin("CAS2_AUTH");
-
-            if (plugin == null) {
-                log.error("Can't get Cas Authenticator from PluggableAuthenticationService");
-            }
-            casAuthenticator = (Cas2Authenticator) plugin;
+        if (casAuthenticator != null) {
+            return casAuthenticator;
         }
 
+        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        if (service == null) {
+            log.error("Can't get PluggableAuthenticationService");
+            return null;
+        }
+
+        NuxeoAuthenticationPlugin plugin = service.getPlugin("CAS2_AUTH");
+        if (plugin == null) {
+            log.error("Can't get Cas Authenticator from PluggableAuthenticationService");
+        }
+
+        casAuthenticator = (Cas2Authenticator) plugin;
         return casAuthenticator;
     }
 

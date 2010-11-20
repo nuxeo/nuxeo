@@ -55,7 +55,7 @@ public final class CAS2Parameters {
     public final static String ERROR_PAGE = "errorPage";
 
     // Constant utility class.
-    protected CAS2Parameters() {
+    private CAS2Parameters() {
     }
 
 }

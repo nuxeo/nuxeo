@@ -109,7 +109,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected boolean promptLogin = true;
 
     protected List<String> excludePromptURLs;
-    
+
     protected String errorPage;
 
     public List<String> getUnAuthenticatedURLPrefix() {
@@ -212,8 +212,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         }
         return false;
     }
-            
-    
+
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String casTicket = httpRequest.getParameter(ticketKey);
