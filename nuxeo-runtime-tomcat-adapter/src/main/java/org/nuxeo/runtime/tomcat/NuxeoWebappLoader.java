@@ -27,10 +27,10 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 
 /**
- * Shared attribute is experimental. do not use it yet.
+ * Shared attribute is experimental. Do not use it yet.
  * <p>
  * (Its purpose is to be able to deploy multiple WARs using the same nuxeo instance
- * but it is not working yet)
+ * but it is not working yet).
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

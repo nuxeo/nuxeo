@@ -42,7 +42,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     private static final Log log = LogFactory.getLog(ReloadComponent.class);
 
-    public static String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
+    public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
 
     protected static Bundle bundle;
 
@@ -80,10 +80,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     /**
-     * Add a JAR to the application classloader - expermiental.
-     * 
-     * @param file
-     * @throws Exception
+     * Add a JAR to the application classloader - experimental.
      */
     public void addJar(File file) throws Exception {
         MutableClassLoaderDelegate mcl = new MutableClassLoaderDelegate(
@@ -92,10 +89,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     /**
-     * Remove a JAR from the application classloader - expermiental.
-     * 
-     * @param file
-     * @throws Exception
+     * Remove a JAR from the application classloader - experimental.
      */
     public void removeJar(File file) throws Exception {
         // TODO

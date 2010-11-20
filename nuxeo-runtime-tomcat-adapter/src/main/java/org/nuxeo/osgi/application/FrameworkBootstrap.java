@@ -39,9 +39,10 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @deprecated needs to be kept in sync with the one from nuxeo-runtime-launcher
  *             until they are merged
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated
 public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
@@ -189,7 +190,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     * 
+     *
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
