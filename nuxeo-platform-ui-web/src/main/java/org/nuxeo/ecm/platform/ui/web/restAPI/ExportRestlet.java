@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -93,36 +94,32 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             }
             if (docid == null || docid.equals("*")) {
                 root = session.getRootDocument();
-            } else {
-                if (session.hasPermission(new IdRef(docid),
+            } else if (session.hasPermission(new IdRef(docid),
                         SecurityConstants.READ)) {
-                    root = session.getDocument(new IdRef(docid));
-                } else {
-                    UnrestrictedVersionExporter runner = new UnrestrictedVersionExporter(
-                            session, docid);
-                    runner.runUnrestricted();
-                    root = runner.root;
-                    needUnrestricted = true;
+                root = session.getDocument(new IdRef(docid));
+            } else {
+                UnrestrictedVersionExporter runner = new UnrestrictedVersionExporter(session, docid);
+                runner.runUnrestricted();
+                root = runner.root;
+                needUnrestricted = true;
 
-                    // if user can't read version, export is authorized
-                    // if he can at least read a proxy pointing to this version
-                    if (root.isVersion()) {
-                        DocumentModelList docs = session.getProxies(root.getRef(), null);
-                        boolean hasReadableProxy = false;
-                        for (DocumentModel doc : docs) {
-                            if (session.hasPermission(doc.getRef(), SecurityConstants.READ)) {
-                                hasReadableProxy = true;
-                                break;
-                            }
-                        }
-                        if (!hasReadableProxy) {
-                            throw new ClientException(
-                                    "Current user doesn't have access to any proxy pointing to version "
-                                            + root.getPathAsString());
-                        }
+                // if user can't read version, export is authorized
+                // if he can at least read a proxy pointing to this version
+                if (!root.isVersion()) {
+                    throw new DocumentSecurityException("Not enough rights to export " + root.getPathAsString());
+                }
+                DocumentModelList docs = session.getProxies(root.getRef(), null);
+                boolean hasReadableProxy = false;
+                for (DocumentModel doc : docs) {
+                    if (session.hasPermission(doc.getRef(), SecurityConstants.READ)) {
+                        hasReadableProxy = true;
+                        break;
                     }
                 }
-            }
+                if (!hasReadableProxy) {
+                    throw new DocumentSecurityException("Current user doesn't have access to any proxy pointing to version " + root.getPathAsString());
+                }
+          }
         } catch (ClientException e) {
             handleError(res, e);
             return;
