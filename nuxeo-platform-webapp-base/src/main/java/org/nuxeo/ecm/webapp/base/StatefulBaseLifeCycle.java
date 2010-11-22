@@ -21,9 +21,9 @@ package org.nuxeo.ecm.webapp.base;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 public interface StatefulBaseLifeCycle {
+
     /**
      * Passivate method.
      *

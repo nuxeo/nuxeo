@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * Contains generic functionality usable by all action listeners.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 public abstract class InputController {
 
@@ -170,7 +169,7 @@ public abstract class InputController {
 
     /**
      * Returns null.
-     *
+     * <p>
      * Previous behavior was: Utility method to return non 'null' JSF outcome
      * that do not change the current view. The problem with null outcome is
      * that some seam components are not refetched and thus the JSF tree might

@@ -132,4 +132,5 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
             handleError(res, e);
         }
     }
+
 }

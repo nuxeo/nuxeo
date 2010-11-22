@@ -128,7 +128,7 @@ public class LayoutTagHandler extends TagHandler {
     // TODO: add javadoc about variables exposed
     @SuppressWarnings("unchecked")
     public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+            throws IOException, FacesException, ELException {
         WebLayoutManager layoutService;
         try {
             layoutService = Framework.getService(WebLayoutManager.class);

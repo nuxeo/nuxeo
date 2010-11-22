@@ -28,7 +28,7 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
 import com.sun.facelets.tag.jsf.ValidatorConfig;
 
 /**
- * Helper for generating configs outside of a library context
+ * Helper for generating configs outside of a library context.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

@@ -61,4 +61,5 @@ public class ActionContextProvider implements Serializable {
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
         return ctx;
     }
+
 }

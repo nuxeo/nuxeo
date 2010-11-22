@@ -42,7 +42,7 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
 import com.sun.facelets.tag.jsf.core.ConvertNumberHandler;
 
 /**
- * Int widget
+ * Int widget.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

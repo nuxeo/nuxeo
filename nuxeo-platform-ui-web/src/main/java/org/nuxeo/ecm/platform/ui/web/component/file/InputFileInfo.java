@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
  * File information used to manage a file adding/removal.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InputFileInfo {
 

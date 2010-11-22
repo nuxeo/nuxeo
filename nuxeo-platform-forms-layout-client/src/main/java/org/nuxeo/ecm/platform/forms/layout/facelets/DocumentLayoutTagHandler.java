@@ -84,7 +84,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
      * If resolved document has layouts, apply each of them.
      */
     public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
+            throws IOException, FacesException, ELException {
         Object document = value.getObject(ctx, DocumentModel.class);
         if (!(document instanceof DocumentModel)) {
             return;

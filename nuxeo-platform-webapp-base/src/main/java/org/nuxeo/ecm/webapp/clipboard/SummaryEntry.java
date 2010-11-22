@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * working list.
  *
  * @author <a href="bchaffangeon@nuxeo.com">Brice Chaffangeon</a>
- *
  */
 public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
 

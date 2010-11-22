@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
+// Never used. Remove?
 public class ThreadSafeCacheHolder<T extends Serializable> implements Serializable {
 
     public static final int DEFAULT_SIZE = 20;

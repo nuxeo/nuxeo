@@ -39,7 +39,6 @@ import com.sun.faces.util.MessageFactory;
  * "10Ko", "10Mo" or "10Go".
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class InputFileSizeValidator implements Validator, StateHolder {
 

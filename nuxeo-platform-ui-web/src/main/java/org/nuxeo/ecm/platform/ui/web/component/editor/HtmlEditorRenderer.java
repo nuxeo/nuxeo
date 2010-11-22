@@ -43,7 +43,6 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
  * Uses TinyMCE javascript editor.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 

@@ -21,7 +21,9 @@
 
   <ui:insert name="error_message" />
 
-  <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  <ui:insert name="pageNavigationControls" >
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  </ui:insert>
 
   <c:choose>
 
@@ -64,7 +66,9 @@
 
   </c:choose>
 
-  <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  <ui:insert name="pageNavigationControls" >
+    <ui:include src="/pagination/pageNavigationControls.xhtml" />
+  </ui:insert>
 
   <ui:insert name="buttons" />
 

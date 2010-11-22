@@ -200,8 +200,6 @@ public class TypesTool implements Serializable {
      * through @DataModelSelection callback (i.e. the user will select the type
      * from a list), this method should be called with <code>null</code>
      * parameter before.
-     *
-     * @param type
      */
     public void setSelectedType(Type type) {
         if (typesMap == null) {

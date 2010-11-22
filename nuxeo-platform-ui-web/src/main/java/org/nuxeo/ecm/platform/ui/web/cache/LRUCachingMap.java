@@ -23,12 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Inner class to manage LRU cache clean up
+ * Inner class to manage LRU cache clean up.
  *
  * @author tiry
- *
- * @param <K>
- * @param <V>
  */
 public class LRUCachingMap<K, V> extends LinkedHashMap<K, V> {
 

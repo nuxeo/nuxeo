@@ -36,7 +36,7 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Textarea widget
+ * Textarea widget.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */

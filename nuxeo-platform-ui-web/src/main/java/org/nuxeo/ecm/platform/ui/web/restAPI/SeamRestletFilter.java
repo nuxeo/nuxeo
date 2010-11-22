@@ -68,7 +68,7 @@ public class SeamRestletFilter extends Filter {
     protected void beforeHandle(Request request, Response response) {
         FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
-             // Complete HTTP call with convesation
+             // Complete HTTP call with conversation
             HttpCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
@@ -81,7 +81,6 @@ public class SeamRestletFilter extends Filter {
                 ServletLifecycle.resumeConversation(httpServletRequest);
                 Manager.instance().handleConversationPropagation(httpServletRequest.getParameterMap());
                 return;
-
             }
         }
         // Standard call without conversation
@@ -104,7 +103,6 @@ public class SeamRestletFilter extends Filter {
         }
         Lifecycle.endCall();
     }
-
 
     @Override
     protected void doHandle(Request request, Response response) {
