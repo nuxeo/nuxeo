@@ -817,6 +817,11 @@
         <version>1.5</version>
       </dependency>
       <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-transaction-client</artifactId>
+        <version>4.0.4.GA</version>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.client</groupId>
         <artifactId>jbossall-client</artifactId>
         <version>5.0.0.GA</version>
@@ -826,6 +831,11 @@
         <artifactId>logging-monitor</artifactId>
         <version>4.2.3.GA</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-client</artifactId>
+        <version>4.0.2</version>
       </dependency>
 
       <!-- Jetty mortbay -->
