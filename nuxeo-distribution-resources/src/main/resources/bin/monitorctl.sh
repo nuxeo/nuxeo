@@ -236,7 +236,7 @@ start() {
     log_misc $LOG_DIR/misc-start.txt
     
     # get a copy of nuxeo.conf
-    grep -Ev '^$|^#' $HERE/nuxeo.conf > $LOG_DIR/nuxeo-conf.txt
+    grep -Ev '^$|^#' $HERE/nuxeo.conf | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
 
     # pg stats
     rm -f $LOG_DIR/pgstat-*.txt
