@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import net.sf.json.JSONObject;
 
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.theme.webwidgets.Manager;
@@ -161,10 +162,7 @@ public class Main extends ModuleRoot {
     @POST
     @Path("update_widget_preferences")
     @SuppressWarnings("unchecked")
-    public void updateWidgetPreferences(
-            @FormParam("provider") String providerName,
-            @FormParam("widget_uid") String widgetUid,
-            @FormParam("preferences") String preferences_map) {
+    public void updateWidgetPreferences(@FormParam("provider") String providerName,  @FormParam("widget_uid") String widgetUid, @FormParam("preferences") String preferences_map ) {
         Map<String, String> preferencesMap = JSONObject.fromObject(preferences_map);
         Editor.updateWidgetPreferences(providerName, widgetUid, preferencesMap);
     }
