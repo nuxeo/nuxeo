@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.notification.api;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class holds data about the notifications.
@@ -34,6 +35,13 @@ public interface NotificationRegistry extends Serializable {
     void registerNotification(Notification notif, List<String> events);
 
     void unregisterNotification(Notification notif, List<String> events);
+
+    /**
+     * Gets the list of event names used by notifications.
+     *
+     * @since 5.4.1
+     */
+    Set<String> getNotificationEventNames();
 
     List<Notification> getNotificationsForEvent(String eventId);
 

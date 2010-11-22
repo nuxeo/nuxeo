@@ -22,8 +22,10 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
@@ -72,6 +74,17 @@ public class NotificationRegistryImpl implements NotificationRegistry {
                 getNotificationsForEvent(event).remove(notification);
             }
         }
+    }
+
+    @Override
+    public Set<String> getNotificationEventNames() {
+        Set<String> ret = new HashSet<String>();
+        for (String name : notificationRegistry.keySet()) {
+            if (! notificationRegistry.get(name).isEmpty()) {
+                ret.add(name);
+            }
+        }
+        return ret;
     }
 
     /**

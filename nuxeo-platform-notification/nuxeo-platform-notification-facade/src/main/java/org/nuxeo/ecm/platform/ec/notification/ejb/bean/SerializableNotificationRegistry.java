@@ -23,8 +23,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationRegistryImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
@@ -92,6 +94,17 @@ public class SerializableNotificationRegistry implements Serializable,
 
     public void unregisterNotification(Notification notif, List<String> events) {
         throw new IllegalStateException("This method is not availble via remote interface");
+    }
+
+    @Override
+    public Set<String> getNotificationEventNames() {
+        Set<String> ret = new HashSet<String>();
+        for (String name : notificationRegistry.keySet()) {
+            if (! notificationRegistry.get(name).isEmpty()) {
+                ret.add(name);
+            }
+        }
+        return ret;
     }
 
 }

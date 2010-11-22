@@ -70,7 +70,16 @@ public class NotificationEventListener implements PostCommitEventListener {
             log.error("Unable to get NotificationService, exiting");
             return;
         }
-
+        boolean processEvents = false;
+        for (String name : service.getNotificationEventNames()) {
+            if (events.containsEventName(name)) {
+                processEvents = true;
+                break;
+            }
+        }
+        if (! processEvents) {
+            return;
+        }
         for (Event event : events) {
             List<Notification> notifs = service.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {

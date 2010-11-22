@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.notification.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -106,5 +107,12 @@ public interface NotificationManager {
     List<Notification> getNotificationsForSubscriptions(String parentType);
 
     List<Notification> getNotificationsForEvents(String eventId);
+
+    /**
+     * Gets the list of event names used by notifications.
+     *
+     * @since 5.4.1
+     */
+    Set<String> getNotificationEventNames();
 
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ec.notification.ejb.bean;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
- * 
+ *
  */
 @Stateless
 @Local(NotificationServiceLocal.class)
@@ -127,5 +128,10 @@ public class NotificationServiceBean implements NotificationServiceLocal {
 
     public List<Notification> getNotificationsForEvents(String eventId) {
         return service.getNotificationsForEvents(eventId);
+    }
+
+    @Override
+    public Set<String> getNotificationEventNames() {
+        return service.getNotificationEventNames();
     }
 }
