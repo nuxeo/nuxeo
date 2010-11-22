@@ -20,17 +20,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.persistence.HibernateConfiguration;
-import org.nuxeo.ecm.core.persistence.HibernateConfigurator;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
@@ -42,112 +42,28 @@ import org.nuxeo.theme.webwidgets.WidgetState;
 
 public class PersistentProvider implements Provider {
 
-    private static final class UnsupportedEntityManager implements EntityManager {
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
+    private static final Log log = LogFactory.getLog(PersistentProvider.class);
 
-        public void close() {
-            throw new UnsupportedOperationException();
-        }
+    protected PersistenceProvider persistenceProvider;
 
-        public boolean contains(Object arg0) {
-            throw new UnsupportedOperationException();
-        }
+    public void activate() {
+        PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+        persistenceProvider = persistenceProviderFactory.newProvider("nxwebwidgets");
+        persistenceProvider.openPersistenceUnit();
+    }
 
-        public Query createNamedQuery(String arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public Query createNativeQuery(String arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public Query createNativeQuery(String arg0, Class arg1) {
-            throw new UnsupportedOperationException();
-        }
-
-        public Query createNativeQuery(String arg0, String arg1) {
-            throw new UnsupportedOperationException();
-        }
-
-        public Query createQuery(String arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public <T> T find(Class<T> arg0, Object arg1) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void flush() {
-            throw new UnsupportedOperationException();
-        }
-
-        public Object getDelegate() {
-            throw new UnsupportedOperationException();
-        }
-
-        public FlushModeType getFlushMode() {
-            throw new UnsupportedOperationException();
-        }
-
-        public <T> T getReference(Class<T> arg0, Object arg1) {
-            throw new UnsupportedOperationException();
-        }
-
-        public EntityTransaction getTransaction() {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean isOpen() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void joinTransaction() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void lock(Object arg0, LockModeType arg1) {
-            throw new UnsupportedOperationException();
-        }
-
-        public <T> T merge(T arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void persist(Object arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void refresh(Object arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void remove(Object arg0) {
-            throw new UnsupportedOperationException();
-        }
-
-        public void setFlushMode(FlushModeType arg0) {
-            throw new UnsupportedOperationException();
+    public void deactivate() {
+        if (persistenceProvider != null) {
+            persistenceProvider.closePersistenceUnit();
+            persistenceProvider = null;
         }
     }
 
-    private static final Log log = LogFactory.getLog(PersistentProvider.class);
-
-    protected EntityManager em = new UnsupportedEntityManager();
-
-    protected EntityTransaction et;
-
-    public void activate() {
-        HibernateConfigurator configurator;
-        try {
-            configurator = Framework.getService(HibernateConfigurator.class);
-        } catch (Exception e) {
-            log.error("No hibernate configurator available, aborting", e);
-            return;
+    public PersistenceProvider getPersistenceProvider() {
+        if (persistenceProvider == null) {
+            activate();
         }
-        HibernateConfiguration config = configurator.getHibernateConfiguration("nxwebwidgets");
-        em = config.getFactory(HibernateConfiguration.RESOURCE_LOCAL).createEntityManager();
+        return persistenceProvider;
     }
 
     public Principal getCurrentPrincipal() {
@@ -158,30 +74,50 @@ public class PersistentProvider implements Provider {
         return null;
     }
 
-    public void addWidget(Widget widget, String regionName, int order)
-            throws ProviderException {
+    public void addWidget(final Widget widget, final String regionName,
+            final int order) throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
         if (regionName == null) {
             throw new ProviderException("Region name is undefined");
         }
+
         List<Widget> widgets = new ArrayList<Widget>(getWidgets(regionName));
-        ((WidgetEntity) widget).setRegion(regionName);
         widgets.add(order, widget);
         reorderWidgets(widgets);
+
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    ((WidgetEntity) widget).setRegion(regionName);
+                    em.merge(widget);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
     }
 
-    public synchronized Widget createWidget(String widgetTypeName)
+    public synchronized Widget createWidget(final String widgetTypeName)
             throws ProviderException {
         if (widgetTypeName == null) {
             throw new ProviderException("Widget type name is undefined");
         }
-        final WidgetEntity widget = new WidgetEntity(widgetTypeName);
-        begin();
-        em.persist(widget);
-        commit();
-        return widget;
+
+        try {
+            return getPersistenceProvider().run(true,
+                    new RunCallback<Widget>() {
+                        public Widget runWith(EntityManager em) {
+                            final WidgetEntity widget = new WidgetEntity(
+                                    widgetTypeName);
+                            em.persist(widget);
+                            return widget;
+                        }
+                    });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
     }
 
     public String getRegionOfWidget(Widget widget) throws ProviderException {
@@ -198,9 +134,22 @@ public class PersistentProvider implements Provider {
         return ((WidgetEntity) widget).getState();
     }
 
-    public synchronized Widget getWidgetByUid(String uid)
+    public synchronized Widget getWidgetByUid(final String uid)
             throws ProviderException {
-        Widget widget = em.find(WidgetEntity.class, Integer.valueOf(uid));
+        Widget widget;
+        try {
+            widget = getPersistenceProvider().run(false,
+                    new RunCallback<Widget>() {
+                        public Widget runWith(EntityManager em) {
+                            Widget widget = em.find(WidgetEntity.class,
+                                    Integer.valueOf(uid));
+                            return widget;
+                        }
+                    });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+
         if (widget == null) {
             throw new ProviderException("Widget not found: " + uid);
         }
@@ -208,15 +157,25 @@ public class PersistentProvider implements Provider {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized List<Widget> getWidgets(String regionName)
+    public synchronized List<Widget> getWidgets(final String regionName)
             throws ProviderException {
         if (regionName == null) {
             throw new ProviderException("Region name is undefined.");
         }
-        List<Widget> widgets = new ArrayList<Widget>();
-        widgets.addAll(em.createNamedQuery("Widget.findAll").setParameter(
-                "region", regionName).getResultList());
-        return widgets;
+
+        try {
+            return getPersistenceProvider().run(true,
+                    new RunCallback<List<Widget>>() {
+                        public List<Widget> runWith(EntityManager em) {
+                            Query query = em.createNamedQuery("Widget.findAll");
+                            query.setParameter("region", regionName);
+                            return new ArrayList<Widget>(query.getResultList());
+                        }
+                    });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+
     }
 
     public void moveWidget(Widget widget, String destRegionName, int order)
@@ -244,26 +203,29 @@ public class PersistentProvider implements Provider {
         reorderWidgets(destWidgets);
     }
 
-    public synchronized void removeWidget(Widget widget)
+    public synchronized void removeWidget(final Widget widget)
             throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
+
         WidgetEntity widgetEntity = (WidgetEntity) widget;
+
+        final int id = widgetEntity.getId();
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    WidgetEntity w = em.getReference(WidgetEntity.class, id);
+                    em.remove(w);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+
         List<Widget> widgets = new ArrayList<Widget>(
                 getWidgets(widgetEntity.getRegion()));
-        widgets.remove(widgetEntity.getOrder());
         reorderWidgets(widgets);
-        begin();
-        em.remove(widget);
-        commit();
-    }
-
-    public void removeWidgets() throws ProviderException {
-        begin();
-        Query query = em.createNamedQuery("Widget.removeAll");
-        query.executeUpdate();
-        commit();
     }
 
     public void reorderWidget(Widget widget, int order)
@@ -287,20 +249,29 @@ public class PersistentProvider implements Provider {
         return ((WidgetEntity) widget).getPreferences();
     }
 
-    public void setWidgetPreferences(Widget widget,
-            Map<String, String> preferences) throws ProviderException {
+    public void setWidgetPreferences(final Widget widget,
+            final Map<String, String> preferences) throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
         if (preferences == null) {
             throw new ProviderException("Widget preferences are undefined");
         }
-        begin();
-        ((WidgetEntity) widget).setPreferences(preferences);
-        commit();
+
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    ((WidgetEntity) widget).setPreferences(preferences);
+                    em.merge(widget);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+
     }
 
-    public void setWidgetState(Widget widget, WidgetState state)
+    public void setWidgetState(final Widget widget, final WidgetState state)
             throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
@@ -308,24 +279,71 @@ public class PersistentProvider implements Provider {
         if (state == null) {
             throw new ProviderException("Widget state is undefined");
         }
-        begin();
-        ((WidgetEntity) widget).setState(state);
-        em.persist(widget);
-        commit();
-    }
 
-    protected synchronized void reorderWidgets(List<Widget> widgets) {
-        int i = 0;
-        begin();
-        for (Widget w : widgets) {
-            em.merge(w);
-            ((WidgetEntity) w).setOrder(i);
-            i++;
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    ((WidgetEntity) widget).setState(state);
+                    em.merge(widget);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
         }
-        commit();
+
     }
 
-    public synchronized WidgetData getWidgetData(Widget widget, String dataName)
+    protected synchronized void reorderWidgets(final List<Widget> widgets)
+            throws ProviderException {
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    int i = 0;
+                    for (Widget w : widgets) {
+                        ((WidgetEntity) w).setOrder(i);
+                        em.merge(w);
+                        i++;
+                    }
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+    }
+
+    public synchronized WidgetData getWidgetData(final Widget widget,
+            final String dataName) throws ProviderException {
+        if (widget == null) {
+            throw new ProviderException("Widget is undefined");
+        }
+        if (dataName == null || "".equals(dataName)) {
+            throw new ProviderException("Data name is undefined");
+        }
+
+        try {
+            return getPersistenceProvider().run(true,
+                    new RunCallback<WidgetData>() {
+                        public WidgetData runWith(EntityManager em) {
+                            Query query = em.createNamedQuery("Data.findByWidgetAndName");
+                            query.setParameter("widgetUid", widget.getUid());
+                            query.setParameter("dataName", dataName);
+                            List<?> results = query.getResultList();
+                            if (results.size() > 0) {
+                                DataEntity dataEntity = (DataEntity) results.get(0);
+                                return dataEntity.getData();
+                            }
+                            return null;
+                        }
+
+                    });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+
+    }
+
+    public synchronized void setWidgetData(final Widget widget,
+            final String dataName, final WidgetData data)
             throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
@@ -333,48 +351,46 @@ public class PersistentProvider implements Provider {
         if (dataName == null || "".equals(dataName)) {
             throw new ProviderException("Data name is undefined");
         }
-        List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
-                "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
-        if (results.size() > 0) {
-            DataEntity dataEntity = (DataEntity) results.get(0);
-            return dataEntity.getData();
+
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    Query query = em.createNamedQuery("Data.findByWidgetAndName");
+                    query.setParameter("widgetUid", widget.getUid());
+                    query.setParameter("dataName", dataName);
+                    List<?> results = query.getResultList();
+                    final DataEntity dataEntity = results.size() > 0 ? (DataEntity) results.get(0)
+                            : new DataEntity(widget.getUid(), dataName);
+                    dataEntity.setData(data);
+                    em.merge(dataEntity);
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
         }
-        return null;
+
     }
 
-    public synchronized void setWidgetData(Widget widget, String dataName,
-            WidgetData data) throws ProviderException {
-        if (widget == null) {
-            throw new ProviderException("Widget is undefined");
-        }
-        if (dataName == null || "".equals(dataName)) {
-            throw new ProviderException("Data name is undefined");
-        }
-        List<?> results = em.createNamedQuery("Data.findByWidgetAndName").setParameter(
-                "widgetUid", widget.getUid()).setParameter("dataName", dataName).getResultList();
-        DataEntity dataEntity = null;
-        if (results.size() > 0) {
-            dataEntity = (DataEntity) results.get(0);
-        } else {
-            dataEntity = new DataEntity(widget.getUid(), dataName);
-        }
-        dataEntity.setData(data);
-        begin();
-        em.persist(dataEntity);
-        commit();
-    }
-
-    public synchronized void deleteWidgetData(Widget widget)
+    public synchronized void deleteWidgetData(final Widget widget)
             throws ProviderException {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
-        begin();
-        for (Object dataEntity : em.createNamedQuery("Data.findByWidget").setParameter(
-                "widgetUid", widget.getUid()).getResultList()) {
-            em.remove(dataEntity);
+
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    Query query = em.createNamedQuery("Data.findByWidget");
+                    query.setParameter("widgetUid", widget.getUid());
+                    for (Object dataEntity : query.getResultList()) {
+                        em.remove(dataEntity);
+                    }
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
         }
-        commit();
+
     }
 
     /*
@@ -391,29 +407,6 @@ public class PersistentProvider implements Provider {
             return false;
         }
         return ((NuxeoPrincipal) currentNuxeoPrincipal).isMemberOf(SecurityConstants.ADMINISTRATORS);
-    }
-
-    /*
-     * Transactions
-     */
-    protected void begin() {
-        if (et != null) {
-            log.warn("transaction begin called twice");
-        }
-        et = em.getTransaction();
-        if (!et.isActive()) {
-            et.begin();
-        }
-    }
-
-    protected void commit() {
-        try {
-            if (et != null && et.isActive()) {
-                et.commit();
-            }
-        } finally {
-            et = null;
-        }
     }
 
 }

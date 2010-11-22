@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
-public class Service extends DefaultComponent implements FrameworkListener {
+public class Service extends DefaultComponent {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.theme.webwidgets.Service");
@@ -55,8 +55,6 @@ public class Service extends DefaultComponent implements FrameworkListener {
         widgetCategories = new HashSet<String>();
         providerTypes = new LinkedHashMap<String, ProviderType>();
         decorationTypes = new LinkedHashMap<String, DecorationType>();
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                this);
         log.debug("Web widgets service activated");
     }
 
@@ -66,23 +64,7 @@ public class Service extends DefaultComponent implements FrameworkListener {
         widgetCategories = null;
         providerTypes = null;
         decorationTypes = null;
-        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
-                this);
         log.debug("Web widgets service deactivated");
-    }
-
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            for (String name : getProviderNames()) {
-                try {
-                    getProvider(name).activate();
-                } catch (WidgetException e) {
-                    log.error("Web widgets provider: '" + name
-                            + "' activativation failed.", e);
-                }
-                log.info("Web widgets provider '" + name + "' activated.");
-            }
-        }
     }
 
     @Override

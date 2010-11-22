@@ -39,6 +39,9 @@ public class DefaultProvider implements Provider {
     public void activate() {
     }
 
+    public void deactivate() {
+    }
+
     public DefaultProviderSession getDefaultProviderSession() {
         UserSession userSession = WebEngine.getActiveContext().getUserSession();
         DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
