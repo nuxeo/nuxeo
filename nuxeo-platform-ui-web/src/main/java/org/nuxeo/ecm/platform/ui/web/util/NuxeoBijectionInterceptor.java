@@ -21,6 +21,7 @@ import org.jboss.seam.util.Exceptions;
  */
 @Interceptor
 public class NuxeoBijectionInterceptor extends AbstractInterceptor {
+
     private static final long serialVersionUID = 4686458105931528659L;
 
     private boolean injected;
@@ -98,22 +99,25 @@ public class NuxeoBijectionInterceptor extends AbstractInterceptor {
                 cyclicDependencyException.addInvocation(
                         getComponent().getName(), invocation.getMethod());
             }
+            // NXP-5988: disinject as it is needed only in case of error (for
+            // instance when method invoked throws a ValidationException)
+            if (injected) {
+                lock.lock();
+                try {
+                    counter--;
+
+                    if (counter == 0) {
+                        injected = false;
+                        component.disinject(invocation.getTarget());
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            }
             throw e;
         } finally {
-            // NXP-5988: comment out this part that misbehaves in reentrance cases
-            // if (injected) {
-            // lock.lock();
-            // try {
-            // counter--;
-            //
-            // if (counter == 0) {
-            // injected = false;
-            // component.disinject(invocation.getTarget());
-            // }
-            // } finally {
-            // lock.unlock();
-            // }
-            // }
+            // NXP-5988: do not disinject here as it misbehaves in reentrance
+            // cases, and is needed only in case of error
         }
     }
 
