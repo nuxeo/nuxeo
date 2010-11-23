@@ -26,11 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Seam;
-import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
-import org.jboss.seam.core.ConversationPropagation;
-import org.jboss.seam.core.Manager;
 import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
@@ -85,24 +81,31 @@ public class SeamExceptionHandlingListener extends
             log.debug("Using existing faces context for exception handling");
         }
 
+        // NXP-5998: conversation initialization seems to be already handled by
+        // SeamPhaseListener => do not handle conversation as otherwise it'll
+        // stay unlocked.
+
         // if the event context was cleaned up, fish the conversation id
         // directly out of the ServletRequest attributes, else get it from
         // the event context
-        Manager manager = Contexts.isEventContextActive() ? (Manager) Contexts.getEventContext().get(
-                Manager.class)
-                : (Manager) request.getAttribute(Seam.getComponentName(Manager.class));
-        String conversationId = manager == null ? null
-                : manager.getCurrentConversationId();
+        // Manager manager = Contexts.isEventContextActive() ? (Manager)
+        // Contexts.getEventContext().get(
+        // Manager.class)
+        // : (Manager)
+        // request.getAttribute(Seam.getComponentName(Manager.class));
+        // String conversationId = manager == null ? null
+        // : manager.getCurrentConversationId();
+
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
 
         // If there is an existing long-running conversation on
         // the failed request, propagate it
-        if (conversationId == null) {
-            Manager.instance().initializeTemporaryConversation();
-        } else {
-            ConversationPropagation.instance().setConversationId(conversationId);
-            Manager.instance().restoreConversation();
-        }
+        // if (conversationId == null) {
+        // Manager.instance().initializeTemporaryConversation();
+        // } else {
+        // ConversationPropagation.instance().setConversationId(conversationId);
+        // Manager.instance().restoreConversation();
+        // }
     }
 
     /**
@@ -125,7 +128,8 @@ public class SeamExceptionHandlingListener extends
     public void afterDispatch(Throwable t, HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
         FacesContext context = FacesContext.getCurrentInstance();
-        // XXX: it's not clear what should be done here: current tests depending
+        // XXX: it's not clear what should be done here: current tests
+        // depending
         // on the faces context just allow to avoid errors after
         if (context instanceof MockFacesContext) {
             // do not end the request if it's a real faces context, otherwise
@@ -140,8 +144,8 @@ public class SeamExceptionHandlingListener extends
              * .afterServletPhase(SeamPhaseListener.java:241) at
              * org.jboss.seam.jsf
              * .SeamPhaseListener.afterPhase(SeamPhaseListener.java:192) at
-             * com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175) at
-             * com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
+             * com.sun.faces.lifecycle.Phase.handleAfterPhase(Phase.java:175)
+             * at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:114) at
              * com.sun.faces
              * .lifecycle.LifecycleImpl.render(LifecycleImpl.java:139)
              */
