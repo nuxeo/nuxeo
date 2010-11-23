@@ -72,8 +72,10 @@
   <target name="retrieve" depends="package-macosx,package-unix,package-windows">
     <zip destfile="${outdir}/NuxeoCtl.zip">
       <zipfileset file="${outdir}/NuxeoCtl/bin/Release/NuxeoCtl.exe" />
+	  <zipfileset file="${outdir}/NuxeoCtl/bin/Release/NuxeoCtl.exe.config" />
       <zipfileset file="${outdir}/NuxeoProcess/bin/Release/NuxeoProcess.dll" />
       <zipfileset file="${outdir}/NuxeoService/bin/Release/NuxeoService.exe" />
+      <zipfileset file="${outdir}/NuxeoService/bin/Release/NuxeoService.exe.config" />
     </zip>
     <artifact:attach file="${outdir}/NuxeoCtl.zip"
                      type="zip"
