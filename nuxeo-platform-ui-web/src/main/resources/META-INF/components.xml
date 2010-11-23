@@ -22,7 +22,10 @@
       <!-- <value>org.jboss.seam.bpm.BusinessProcessInterceptor</value> -->
       <value>org.jboss.seam.core.ConversationInterceptor</value>
 
-      <value>org.jboss.seam.core.BijectionInterceptor</value>
+      <!-- NXP-5988: patch bijection interceptor -->
+      <!--  <value>org.jboss.seam.core.BijectionInterceptor</value> -->
+      <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value>
+
       <value>org.jboss.seam.transaction.RollbackInterceptor</value>
       <value>org.jboss.seam.transaction.TransactionInterceptor</value>
 
