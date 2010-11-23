@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-<module name="Admin" root-type="Admin" path="/admin" extends="base">
-
-  <!-- The management API must be put in another project 
-  <resources>
-  	<resource path="/server" class="org.nuxeo.ecm.webengine.admin.management.ServerManagement" />  	
-  </resources>
-  -->
+<module>
+  <shortcuts>
+    <shortcut href="/admin">
+      <title>Administration</title>
+    </shortcut>
+  </shortcuts>
   
   <links>
     <link id="tab_content" path="/@views/content_page">
