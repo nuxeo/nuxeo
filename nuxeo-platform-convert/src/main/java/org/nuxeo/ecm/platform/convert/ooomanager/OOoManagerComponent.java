@@ -31,6 +31,8 @@ import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeManager;
+import org.artofsolving.jodconverter.office.OfficeUtils;
+import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -55,6 +57,8 @@ public class OOoManagerComponent extends DefaultComponent implements
     private static final String TASK_QUEUE_TIMEOUT_PROPERTY_KEY = "jod.task.queue.timeout";
 
     private static final String TEMPLATE_PROFILE_DIR_PROPERTY_KEY = "jod.template.profile.dir";
+
+    private static final String DEFAULT_LINUX_OO_HOME = "/usr/lib/openoffice/";
 
     protected static String CONFIG_EP = "oooManagerConfig";
 
@@ -131,6 +135,18 @@ public class OOoManagerComponent extends DefaultComponent implements
         String officeHome = Framework.getProperty(OFFICE_HOME_PROPERTY_KEY);
         if (officeHome != null && !"".equals(officeHome)) {
             configuration.setOfficeHome(officeHome);
+        } else {
+            if (PlatformUtils.isLinux()) {
+                File officeHomeDirectory = new File(DEFAULT_LINUX_OO_HOME);
+                if (officeHomeDirectory.isDirectory()) {
+                    File officeExecutable = OfficeUtils.getOfficeExecutable(officeHomeDirectory);
+                    if (officeExecutable.exists()) {
+                        configuration.setOfficeHome(DEFAULT_LINUX_OO_HOME);
+                    }
+                    officeExecutable = null;
+                }
+                officeHomeDirectory = null;
+            }
         }
 
         String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
