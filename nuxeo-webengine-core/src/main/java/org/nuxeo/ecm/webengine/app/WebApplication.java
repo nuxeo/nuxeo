@@ -39,12 +39,18 @@ public abstract class WebApplication extends Application {
     /**
      * Create a web module which doesn't extend another module
      * 
-     * @param name
+     * @param name the module name
      */
     protected WebApplication(String name) {
         this(name, null);
     }
 
+    /**
+     * Create a web module which extends a base module
+     * 
+     * @param name the module name
+     * @param baseModule the baseModule name
+     */
     protected WebApplication(String name, String baseModule) {
         cfg = new ModuleConfiguration();
         cfg.base = baseModule;

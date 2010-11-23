@@ -58,8 +58,6 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-distribution-tools</artifactId>
-      <!-- temporary force version until distribution-tools is released -->
-      <version>1.4-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
