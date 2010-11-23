@@ -39,6 +39,8 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.app.BundledApplication;
+import org.nuxeo.ecm.webengine.app.WebApplication;
 import org.nuxeo.ecm.webengine.app.impl.DefaultApplicationManager;
 import org.nuxeo.ecm.webengine.debug.ReloadManager;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
@@ -135,6 +137,8 @@ public class WebEngine implements ResourceLocator {
     protected ReloadManager reloadMgr;
 
     protected RequestConfiguration requestConfig;
+
+    protected volatile boolean isDirty;
 
     public WebEngine(File root) {
         this(new EmptyRegistry(), root);
@@ -273,7 +277,7 @@ public class WebEngine implements ResourceLocator {
         return annoMgr;
     }
 
-    public boolean isDevMode() {
+    public final boolean isDevMode() {
         return devMode != null;
     }
 
@@ -359,6 +363,17 @@ public class WebEngine implements ResourceLocator {
                     for (File mod : registeredModules.toArray(new File[registeredModules.size()])) {
                         moduleMgr.loadModule(mod);
                     }
+                    for (BundledApplication app : apps.getApplications()) {
+                        if (app.getApplication() instanceof WebApplication) {
+                            try {
+                                ModuleConfiguration mc = ((WebApplication) (app.getApplication())).resolve();
+                                moduleMgr.loadModule(mc);
+                            } catch (Exception e) {
+                                log.error("Failed to load WebEngine module: "
+                                        + app.getId(), e);
+                            }
+                        }
+                    }
                     // set member at the end to be sure moduleMgr is completely
                     // initialized
                     this.moduleMgr = moduleMgr;
@@ -398,6 +413,9 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * Manage jax-rs root resource bindings
+     * 
+     * @deprecated resources are deprecated - you should use a jax-rs
+     *             application to declare more resources.
      */
     public void addResourceBinding(ResourceBinding binding) {
         try {
@@ -408,21 +426,40 @@ public class WebEngine implements ResourceLocator {
         }
     }
 
+    /**
+     * @deprecated resources are deprecated - you should use a jax-rs
+     *             application to declare more resources.
+     */
     public void removeResourceBinding(ResourceBinding binding) {
         registry.removeBinding(binding);
     }
 
+    /**
+     * @deprecated resources are deprecated - you should use a jax-rs
+     *             application to declare more resources.
+     */
     public ResourceBinding[] getBindings() {
         return registry.getBindings();
     }
 
-    /**
-     * reload for we 2.
-     */
-    public synchronized void reload2() {
-        log.info("Reloading WebEngine");
-        webLoader.flushCache();
-        apps.reload();
+    public synchronized void setDirty(boolean dirty) {
+        isDirty = dirty;
+    }
+
+    public boolean tryReload() {
+        if (isDirty) {
+            synchronized (this) {
+                if (isDirty) {
+                    reload();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean isDirty() {
+        return isDirty;
     }
 
     /**
@@ -430,27 +467,24 @@ public class WebEngine implements ResourceLocator {
      */
     public synchronized void reload() {
         log.info("Reloading WebEngine");
+        isDirty = false;
+        webLoader.flushCache();
         apps.reload();
         if (moduleMgr != null) { // avoid synchronizing if not needed
             for (ModuleConfiguration mc : moduleMgr.getModules()) {
                 if (mc.isLoaded()) {
-                    // this is needed even if the module manager
-                    // is rebuild since it may remove groovy file caches
+                    // remove module level caches
                     mc.get().flushCache();
                 }
             }
-            synchronized (this) {
-                if (moduleMgr != null) {
-                    moduleMgr = null;
-                }
-            }
+            moduleMgr = null;
         }
-        webLoader.flushCache();
-        apps.reload();
     }
 
     public synchronized void reloadModules() {
-        moduleMgr.reloadModules();
+        if (moduleMgr != null) {
+            moduleMgr.reloadModules();
+        }
     }
 
     public void start() {

@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.gwt.GwtBundleActivator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
@@ -46,13 +46,14 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     private static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
     protected static NuxeoApp app;
+
     protected static RedirectService redirect;
 
     /**
      * You can overwrite this to add your own pom artifacts in the graph.
      */
     protected void initializeGraph(NuxeoApp app) {
-        //app.addPom("org.my", "my-artifact", "1.0", 1);
+        // app.addPom("org.my", "my-artifact", "1.0", 1);
     }
 
     protected void buildDone(NuxeoApp app) {
@@ -69,9 +70,10 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
     }
 
     /**
-     * Gets a custom configuration for the Nuxeo to build.
-     * By default no custom configuration is used - but bult-in configuration selected through profiles.
-     *
+     * Gets a custom configuration for the Nuxeo to build. By default no custom
+     * configuration is used - but bult-in configuration selected through
+     * profiles.
+     * 
      * @return null if no custom configuration is wanted.
      */
     protected URL getConfiguration() {
@@ -93,21 +95,24 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         System.setProperty(GwtBundleActivator.GWT_DEV_MODE_PROP, "true");
         app = createApplication(config);
 
-        Runtime.getRuntime().addShutdownHook(new Thread("Nuxeo Server Shutdown") {
-            @Override
-            public void run() {
-                try {
-                    if (app != null) app.shutdown();
-                } catch (Exception e) {
-                    log.error(e, e);
-                }
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(
+                new Thread("Nuxeo Server Shutdown") {
+                    @Override
+                    public void run() {
+                        try {
+                            if (app != null)
+                                app.shutdown();
+                        } catch (Exception e) {
+                            log.error(e, e);
+                        }
+                    }
+                });
 
         super.init(config);
     }
 
-    protected NuxeoApp createApplication(FilterConfig config) throws ServletException {
+    protected NuxeoApp createApplication(FilterConfig config)
+            throws ServletException {
         URL cfg = getConfiguration();
         String homeParam = config.getInitParameter("home");
         String hostParam = config.getInitParameter("host");
@@ -115,6 +120,8 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         String profileParam = config.getInitParameter("profile");
         String updatePolicy = config.getInitParameter("updatePolicy");
         String offline = config.getInitParameter("offline");
+        String isolated = config.getInitParameter("isolated");
+        boolean isIsolated = Boolean.parseBoolean(isolated);
 
         String redirectPrefix = config.getInitParameter("redirectPrefix");
         String redirectTrace = config.getInitParameter("redirectTrace");
@@ -123,13 +130,15 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         File home = null;
         String host = hostParam == null ? "localhost" : null;
         int port = portParam == null ? 8081 : Integer.parseInt(portParam);
-        String profile = profileParam == null ? NuxeoApp.CORE_SERVER_531 :profileParam;
+        String profile = profileParam == null ? NuxeoApp.CORE_SERVER_541_SNAPSHOT
+                : profileParam;
         if (homeParam == null) {
             String userDir = System.getProperty("user.home");
             String sep = userDir.endsWith("/") ? "" : "/";
-            home = new File(userDir+sep+".nxserver-gwt");
+            home = new File(userDir + sep + ".nxserver-gwt");
         } else {
-            homeParam = StringUtils.expandVars(homeParam, System.getProperties());
+            homeParam = StringUtils.expandVars(homeParam,
+                    System.getProperties());
             home = new File(homeParam);
         }
 
@@ -141,22 +150,26 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         if (redirectTrace != null && Boolean.parseBoolean(redirectTrace)) {
             redirect.setTrace(true);
         }
-        if (redirectTraceContent != null && Boolean.parseBoolean(redirectTraceContent)) {
+        if (redirectTraceContent != null
+                && Boolean.parseBoolean(redirectTraceContent)) {
             redirect.setTrace(true);
             redirect.setTraceContent(true);
         }
 
         System.out.println("+---------------------------------------------------------");
-        System.out.println("| Nuxeo Server Profile: "+(profile==null?"custom":profile));
-        System.out.println("| Home Directory: "+home);
-        System.out.println("| HTTP server at: "+host+":"+port);
-        System.out.println("| Use cache: "+useCache()+"; Snapshot update policy: "+updatePolicy+"; offline: "+offline);
+        System.out.println("| Nuxeo Server Profile: "
+                + (profile == null ? "custom" : profile));
+        System.out.println("| Home Directory: " + home);
+        System.out.println("| HTTP server at: " + host + ":" + port);
+        System.out.println("| Use cache: " + useCache()
+                + "; Snapshot update policy: " + updatePolicy + "; offline: "
+                + offline);
         System.out.println("+---------------------------------------------------------\n");
 
         NuxeoApp.setHttpServerAddress(host, port);
 
         try {
-            MyNuxeoApp app = new MyNuxeoApp(home);
+            MyNuxeoApp app = new MyNuxeoApp(home, null, isIsolated);
             if (updatePolicy != null) {
                 app.setUpdatePolicy(updatePolicy);
             }
@@ -178,26 +191,36 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
     public class MyNuxeoApp extends NuxeoApp {
         public MyNuxeoApp(File home) throws Exception {
-            super (home);
+            super(home, null, false);
         }
+
         public MyNuxeoApp(File home, ClassLoader cl) throws Exception {
-            super (home, cl);
+            super(home, cl, false);
         }
+
+        public MyNuxeoApp(File home, ClassLoader cl, boolean isIsolated)
+                throws Exception {
+            super(home, cl, isIsolated);
+        }
+
         @Override
         protected void initializeGraph() throws Exception {
             super.initializeGraph();
             NuxeoLauncher.this.initializeGraph(this);
         }
+
         @Override
         protected void aboutToStartFramework() throws Exception {
             super.aboutToStartFramework();
             NuxeoLauncher.this.aboutToStartFramework(this);
         }
+
         @Override
         protected void buildDone() {
             super.buildDone();
             NuxeoLauncher.this.buildDone(this);
         }
+
         @Override
         protected void frameworkStarted() throws Exception {
             super.frameworkStarted();

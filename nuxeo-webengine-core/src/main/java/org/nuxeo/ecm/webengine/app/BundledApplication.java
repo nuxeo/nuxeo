@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
+import java.io.File;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -26,10 +27,11 @@ import org.osgi.framework.Bundle;
 /**
  * A JAX-RS application deployed from a bundle.
  * <p>
- * This is a wrapper of the original application specified by the used in the the bundle MANIFEST.
- * A bundle may deploy at most one application. A bundled application is uniquely identified by
- * the type name of the wrapped application class.
- *
+ * This is a wrapper of the original application specified by the used in the
+ * the bundle MANIFEST. A bundle may deploy at most one application. A bundled
+ * application is uniquely identified by the type name of the wrapped
+ * application class.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class BundledApplication extends Application {
@@ -49,7 +51,6 @@ public class BundledApplication extends Application {
      */
     protected int hash = 0;
 
-
     public BundledApplication(Bundle bundle, Application app) {
         this.bundle = bundle;
         this.app = app;
@@ -59,11 +60,24 @@ public class BundledApplication extends Application {
      * Reloads the application class in the context of web engine loader.
      */
     public void reload(WebEngine engine) throws Exception {
-        app = (Application)engine.loadClass(app.getClass().getName()).newInstance();
+        if (isWebApplication()) {
+            File dir = ((WebApplication) app).getConfiguration().getDirectory();
+            reInstantiate(engine);
+            if (isWebApplication()) {
+                ((WebApplication) app).setModuleDirectory(dir);
+            }
+        } else {
+            reInstantiate(engine);
+        }
+    }
+
+    protected void reInstantiate(WebEngine engine) throws Exception {
+        app = (Application) engine.loadClass(app.getClass().getName()).newInstance();
     }
 
     /**
-     * The application ID. This is the same as the bundle symbolic name owning the application.
+     * The application ID. This is the same as the bundle symbolic name owning
+     * the application.
      */
     public String getId() {
         return app.getClass().getName();
@@ -71,6 +85,10 @@ public class BundledApplication extends Application {
 
     public boolean isWebEngineModule() {
         return app instanceof WebEngineModule;
+    }
+
+    public boolean isWebApplication() {
+        return app instanceof WebApplication;
     }
 
     public Bundle getBundle() {
@@ -97,7 +115,7 @@ public class BundledApplication extends Application {
             return true;
         }
         if (obj instanceof BundledApplication) {
-            return ((BundledApplication)obj).getId().equals(getId());
+            return ((BundledApplication) obj).getId().equals(getId());
         }
         return false;
     }

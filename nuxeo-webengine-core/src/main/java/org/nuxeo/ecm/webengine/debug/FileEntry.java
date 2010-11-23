@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.debug;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -24,6 +25,7 @@ import java.io.File;
 public class FileEntry {
 
     protected long lastModified;
+
     protected final File file;
 
     public FileEntry(File file) {
@@ -41,6 +43,11 @@ public class FileEntry {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return file.getAbsolutePath() + " [" + new Date(lastModified) + "]";
     }
 
 }

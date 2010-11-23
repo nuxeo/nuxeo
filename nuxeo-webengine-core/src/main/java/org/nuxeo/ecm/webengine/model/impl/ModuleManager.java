@@ -42,9 +42,10 @@ public class ModuleManager {
     private static final Log log = LogFactory.getLog(ModuleManager.class);
 
     protected final Map<String, ModuleConfiguration> modules;
-    protected final Map<String, ModuleConfiguration> paths;
-    protected WebEngine engine;
 
+    protected final Map<String, ModuleConfiguration> paths;
+
+    protected WebEngine engine;
 
     public ModuleManager(WebEngine engine) {
         this.engine = engine;
@@ -54,7 +55,7 @@ public class ModuleManager {
 
     /**
      * Gets a module given its name.
-     *
+     * 
      * @return the module or null if none
      */
     public ModuleConfiguration getModule(String key) {
@@ -90,13 +91,17 @@ public class ModuleManager {
         log.info("Registering web module: " + descriptor.name);
         modules.put(descriptor.name, descriptor);
         String path = descriptor.path;
-        if (!path.startsWith("/")) {
-            path = "/" + path;
+        if (path != null) {
+            // compat. method now modules should be declared through
+            // WebApplication class
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            paths.put(path, descriptor);
         }
-        paths.put(path, descriptor);
     }
 
-    //TODO the class path is not updated by this operation ...
+    // TODO the class path is not updated by this operation ...
     public synchronized File unregisterModule(String name) {
         ModuleConfiguration md = modules.remove(name);
         if (md == null) {
@@ -127,6 +132,13 @@ public class ModuleManager {
                 loadModule(file);
             }
         }
+    }
+
+    public void loadModule(ModuleConfiguration mc) {
+        // this should be called after the class path is updated ...
+        loadModuleRootResources(mc);
+        mc.setEngine(engine);
+        registerModule(mc);
     }
 
     public void loadModule(File file) {
@@ -163,24 +175,31 @@ public class ModuleManager {
         }
     }
 
-
     protected ModuleConfiguration loadConfiguration(File file) {
         if (engine == null) {
             engine = Framework.getLocalService(WebEngine.class);
         }
         try {
-            XMap xmap = new XMap();
-            xmap.register(ModuleConfiguration.class);
-            InputStream in = new BufferedInputStream(new FileInputStream(file));
-            ModuleConfiguration mc = (ModuleConfiguration) xmap.load(createXMapContext(), in);
+            ModuleConfiguration mc = readConfiguration(engine, file);
             mc.file = file;
             if (mc.directory == null) {
                 mc.directory = file.getParentFile().getCanonicalFile();
             }
             return mc;
         } catch (Exception e) {
-            throw WebException.wrap("Faile to load module configuration: " + file, e);
+            throw WebException.wrap("Faile to load module configuration: "
+                    + file, e);
         }
+    }
+
+    public static ModuleConfiguration readConfiguration(final WebEngine engine,
+            File file) throws Exception {
+        XMap xmap = new XMap();
+        xmap.register(ModuleConfiguration.class);
+        InputStream in = new BufferedInputStream(new FileInputStream(file));
+        ModuleConfiguration mc = (ModuleConfiguration) xmap.load(
+                createXMapContext(engine), in);
+        return mc;
     }
 
     public void loadModuleRootResources(ModuleConfiguration mc) {
@@ -190,13 +209,14 @@ public class ModuleManager {
                     rb.resolve(engine);
                     engine.addResourceBinding(rb);
                 } catch (Exception e) {
-                    throw WebException.wrap("Faile to load module root resource: " + rb, e);
+                    throw WebException.wrap(
+                            "Faile to load module root resource: " + rb, e);
                 }
             }
         }
     }
 
-    protected Context createXMapContext() {
+    protected static Context createXMapContext(final WebEngine engine) {
         return new Context() {
             private static final long serialVersionUID = 1L;
 

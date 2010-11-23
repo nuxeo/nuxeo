@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.Reloadable;
-import org.nuxeo.ecm.webengine.app.Reloader;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -32,46 +31,52 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 /**
  * JAX-RS servlet based on jersey servlet to provide hot reloading.
  * <p>
- * Use it as the webengine servlet in web.xml if you want hot reload,
- * otherwise use {@link ServletContainer}.
- *
+ * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
+ * use {@link ServletContainer}.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ReloadingJerseyServlet extends ServletContainer implements Reloadable {
+public class ReloadingJerseyServlet extends ServletContainer implements
+        Reloadable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Reloader reloader;
+    protected WebEngine engine;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        reloader = new Reloader(Framework.getLocalService(WebEngine.class));
-        reloader.addListener(this);
+        engine = Framework.getLocalService(WebEngine.class);
     }
 
     @Override
     public void destroy() {
-        reloader.removeListener(this);
+        engine = null;
         super.destroy();
     }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        reloader.check();
+        if (engine == null) {
+            engine = Framework.getLocalService(WebEngine.class);
+        }
+        if (engine.isDevMode()) {
+            reloadIfNeeded();
+        }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
-            // force reading properties because jersey is consuming one character
+            // force reading properties because jersey is consuming one
+            // character
             // from the input stream - see WebComponent.isEntityPresent.
             request.getParameterMap();
         }
         super.service(request, response);
     }
 
-    @Override
-    public void reload() {
-        super.reload();
+    public synchronized void reloadIfNeeded() {
+        if (engine.tryReload()) {
+            reload();
+        }
     }
-
 }

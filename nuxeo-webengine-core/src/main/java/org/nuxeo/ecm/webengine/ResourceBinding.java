@@ -25,15 +25,17 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Defines a JAX-RS root resource binding.
- * This is an extension to JAX-RS to be able to declare root resource binding dynamically
- * without using {@link Path} annotations on classes.
- *
+ * Defines a JAX-RS root resource binding. This is an extension to JAX-RS to be
+ * able to declare root resource binding dynamically without using {@link Path}
+ * annotations on classes.
+ * 
+ * @deprecated resources are deprecated - you should use a jax-rs application to
+ *             declare more resources.
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  * @see Path
  */
-@XObject(value="resource", order={"@path", "@class"})
+@XObject(value = "resource", order = { "@path", "@class" })
 public class ResourceBinding {
 
     @XNode("@path")
@@ -51,7 +53,6 @@ public class ResourceBinding {
     public String className;
 
     public Class<?> clazz;
-
 
     public ResourceBinding() {
     }
@@ -72,7 +73,8 @@ public class ResourceBinding {
                 hasUserPath = false;
                 Path p = clazz.getAnnotation(Path.class);
                 if (p == null) {
-                    throw new WebException("Invalid resource binding. Path not defined");
+                    throw new WebException(
+                            "Invalid resource binding. Path not defined");
                 }
                 path = p.value();
             } else {
@@ -97,7 +99,7 @@ public class ResourceBinding {
             return true;
         }
         if (obj instanceof ResourceBinding) {
-            ResourceBinding binding = (ResourceBinding)obj;
+            ResourceBinding binding = (ResourceBinding) obj;
             return binding.path.equals(path) && binding.clazz == clazz;
         }
         return false;
@@ -128,7 +130,7 @@ public class ResourceBinding {
 
     @Override
     public String toString() {
-        return path+" -> "+clazz;
+        return path + " -> " + clazz;
     }
 
 }

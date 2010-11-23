@@ -36,6 +36,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.app.BundledApplication;
 import org.nuxeo.ecm.webengine.app.ModuleHandler;
+import org.nuxeo.ecm.webengine.app.WebApplication;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.app.extensions.ExtensibleResource;
 import org.nuxeo.ecm.webengine.app.extensions.ResourceContribution;
@@ -48,21 +49,21 @@ import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DefaultApplicationManager implements ApplicationManager {
 
     /** Pattern to read manifest value parameters */
-    public static final Pattern PARAMS_PATTERN
-        = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
+    public static final Pattern PARAMS_PATTERN = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
     private static final Log log = LogFactory.getLog(DefaultApplicationManager.class);
 
     protected WebEngine engine;
 
     /**
-     * Collected user applications keyed by application ID. Deployment order is preserved.
-     * The application ID (i.e. bundle symbolic name is used as the key in the map)
+     * Collected user applications keyed by application ID. Deployment order is
+     * preserved. The application ID (i.e. bundle symbolic name is used as the
+     * key in the map)
      */
     protected LinkedHashMap<String, BundledApplication> apps;
 
@@ -71,7 +72,6 @@ public class DefaultApplicationManager implements ApplicationManager {
 
     /** A lock used to synchronize mutable operations on the registry. */
     private final Object lock = new Object();
-
 
     public DefaultApplicationManager(WebEngine engine) {
         this.engine = engine;
@@ -141,15 +141,19 @@ public class DefaultApplicationManager implements ApplicationManager {
         return getRegistry().getContribution(target, key);
     }
 
-    public List<ResourceContribution> getContributions(ExtensibleResource target, String category) {
+    public List<ResourceContribution> getContributions(
+            ExtensibleResource target, String category) {
         return getRegistry().getContributions(target, category);
     }
 
-    public List<ResourceContribution> getContributions(Class<? extends ExtensibleResource> target, String category) {
+    public List<ResourceContribution> getContributions(
+            Class<? extends ExtensibleResource> target, String category) {
         return getRegistry().getContributions(target, category);
     }
 
-    public ResourceContribution getContribution(Class<? extends ExtensibleResource> target, String key) throws Exception {
+    public ResourceContribution getContribution(
+            Class<? extends ExtensibleResource> target, String key)
+            throws Exception {
         return getRegistry().getContribution(target, key);
     }
 
@@ -158,7 +162,8 @@ public class DefaultApplicationManager implements ApplicationManager {
     }
 
     /**
-     * Reload modules - this is useful for hot reload when application classes changes
+     * Reload modules - this is useful for hot reload when application classes
+     * changes
      */
     public void reload() {
         synchronized (lock) {
@@ -167,7 +172,7 @@ public class DefaultApplicationManager implements ApplicationManager {
                 try {
                     app.reload(engine);
                 } catch (Exception e) {
-                    log.error("Failed to reload web module: "+app.getId(), e);
+                    log.error("Failed to reload web module: " + app.getId(), e);
                 }
                 _registry.addApplication(app);
             }
@@ -176,7 +181,7 @@ public class DefaultApplicationManager implements ApplicationManager {
     }
 
     public boolean deployApplication(Bundle bundle) throws Exception {
-        String webAppEntry = (String)bundle.getHeaders().get("Nuxeo-WebModule");
+        String webAppEntry = (String) bundle.getHeaders().get("Nuxeo-WebModule");
         if (webAppEntry == null) {
             return false;
         }
@@ -186,7 +191,7 @@ public class DefaultApplicationManager implements ApplicationManager {
                     "This webengine module should not define a Nuxeo Service, please split up.");
         }
         StringBuilder result = new StringBuilder();
-        Map<String,String> attrs = readManifestEntryValue(webAppEntry, result);
+        Map<String, String> attrs = readManifestEntryValue(webAppEntry, result);
         String type = result.toString();
         boolean explode = false;
         boolean compat = false;
@@ -194,23 +199,25 @@ public class DefaultApplicationManager implements ApplicationManager {
             String v = attrs.get("explode");
             if ("true".equals(v)) {
                 explode = true;
-            } else if ("false".equals(v)) {
-                explode = false;
-            } else { // not specified
-                // load the class to check if a WebEngine Module is present
-                explode = isWebEngineModule(bundle, type);
             }
             v = attrs.get("compat");
             if ("true".equals(v)) {
                 compat = true;
             }
+        } else {
+            // load the class to check if a WebEngine Module is present
+            explode = isWebEngineModule(bundle, type);
         }
 
-        if (explode) { // this will also add the exploded directory to WebEngine class loader
-            File moduleDir = explodeBundle(bundle);
+        File moduleDir = null;
+        if (explode) { // this will also add the exploded directory to WebEngine
+                       // class loader
+            moduleDir = explodeBundle(bundle);
             if (compat) { // old style deploy
                 File config = new File(moduleDir, "module.xml");
-                if (config.isFile()) { // the module is already in the classpath because of explodeBundle()
+                if (config.isFile()) {
+                    // the module is already in the classpath because of
+                    // explodeBundle()
                     engine.registerModule(config, false);
                 }
             }
@@ -219,19 +226,30 @@ public class DefaultApplicationManager implements ApplicationManager {
         try {
             // load the class using WebEngine loader
             Class<?> appClass = engine.loadClass(type);
-            Application app = (Application)appClass.newInstance();
+            Application app = (Application) appClass.newInstance();
             addApplication(bundle, app);
+            if (moduleDir != null && (app instanceof WebApplication)) {
+                ((WebApplication) app).setModuleDirectory(moduleDir);
+            }
         } catch (ClassCastException e) {
-            throw new Error("Invalid web module specified in MANIFEST for bundle "+bundleId+". Must be an instance of "+Application.class);
+            throw new Error(
+                    "Invalid web module specified in MANIFEST for bundle "
+                            + bundleId + ". Must be an instance of "
+                            + Application.class);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to instantiate web module "+type+" found in bundle "+bundleId, e);
+            throw new RuntimeException("Failed to instantiate web module "
+                    + type + " found in bundle " + bundleId, e);
         }
         log.info("Deployed web module found in bundle: " + bundleId);
         return true;
     }
 
     protected boolean isWebEngineModule(Bundle b, String type) throws Exception {
-        return WebEngineModule.class.isAssignableFrom(b.loadClass(type));
+        Class<?> clazz = b.loadClass(type);
+        // TODO WebApplication is for compatibility - the 2 classes
+        // WebEngineModule and WebApplication should be merged in the future
+        return WebEngineModule.class.isAssignableFrom(clazz)
+                || WebApplication.class.isAssignableFrom(clazz);
     }
 
     protected File explodeBundle(Bundle bundle) throws IOException {
@@ -259,7 +277,8 @@ public class DefaultApplicationManager implements ApplicationManager {
         }
     }
 
-    protected static Map<String,String> readManifestEntryValue(String value, StringBuilder result) {
+    protected static Map<String, String> readManifestEntryValue(String value,
+            StringBuilder result) {
         int p = value.indexOf(';');
         if (p > 0) {
             result.append(value.substring(0, p).trim());
@@ -278,10 +297,9 @@ public class DefaultApplicationManager implements ApplicationManager {
 
     protected boolean checkHasNuxeoService(String bundleId) {
 
-        ComponentManager cpManager = Framework.getRuntime()
-                .getComponentManager();
-        RegistrationInfo regInfo = cpManager
-                .getRegistrationInfo(new ComponentName(bundleId));
+        ComponentManager cpManager = Framework.getRuntime().getComponentManager();
+        RegistrationInfo regInfo = cpManager.getRegistrationInfo(new ComponentName(
+                bundleId));
         if (null == regInfo) {
             return false;
         }
