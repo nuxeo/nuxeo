@@ -34,9 +34,10 @@
     <module>nuxeo-platform-forms-layout-demo</module>
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-platform-sync</module>
+    <module>nuxeo-platform-audio</module>
+    <module>nuxeo-platform-video</module>
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
-      <module>nuxeo-platform-audio</module>
       <module>nuxeo-platform-audit-web-access</module>
       <module>nuxeo-platform-categorization</module>
       <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
@@ -52,7 +53,6 @@
       <module>nuxeo-platform-sync</module>
       <module>nuxeo-platform-userdata</module>
       <module>nuxeo-platform-userdata-core-contrib</module>
-      <module>nuxeo-platform-video</module>
       <module>nuxeo-platform-webdav-server</module>
       <module>nuxeo-platform-xmlrpc-connector</module>
       <module>nuxeo-samples</module>
