@@ -10,7 +10,7 @@
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.6.2</version>
+  <version>1.6.2-NXP-6020</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
