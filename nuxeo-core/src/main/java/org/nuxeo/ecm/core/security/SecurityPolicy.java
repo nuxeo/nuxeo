@@ -36,8 +36,8 @@ public interface SecurityPolicy {
     /**
      * Checks given permission for doc and principal.
      * <p>
-     * Note that for the {@code Browse} permission, which is also implemented in
-     * SQL using {@link #getQueryTransformer}, a security policy must never
+     * Note that for the {@code Browse} permission, which is also implemented
+     * in SQL using {@link #getQueryTransformer}, a security policy must never
      * bypass standard ACL access, it must only return DENY or UNKNOWN. Failing
      * to do this would make direct access and queries behave differently.
      *
@@ -48,7 +48,6 @@ public interface SecurityPolicy {
      * @param resolvedPermissions permissions or groups of permissions
      *            containing permission
      * @param additionalPrincipals
-     *
      * @return access: GRANT, DENY, or UNKNOWN. When UNKNOWN is returned,
      *         following policies or default core security are applied.
      */
@@ -67,21 +66,23 @@ public interface SecurityPolicy {
     boolean isRestrictingPermission(String permission);
 
     /**
-     * Checks if this policy can be expressed in a query.
+     * Checks if this policy can be expressed in a query for given repository.
      * <p>
      * If not, then any query made will have to be post-filtered.
      *
+     * @param repositoryName the target repository name.
      * @return {@code true} if the policy can be expressed in a query
      */
-    boolean isExpressibleInQuery();
+    boolean isExpressibleInQuery(String repositoryName);
 
     /**
      * Get the transformer to use to apply this policy to a query.
      * <p>
      * Called only when {@link #isExpressibleInQuery()} returned {@code true}
      *
+     * @param repositoryName the target repository name.
      * @return the transformer
      */
-    SQLQuery.Transformer getQueryTransformer();
+    SQLQuery.Transformer getQueryTransformer(String repositoryName);
 
 }

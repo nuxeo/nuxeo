@@ -71,19 +71,24 @@ public interface SecurityPolicyService extends Serializable {
     boolean arePoliciesRestrictingPermission(String permission);
 
     /**
-     * Checks if the policies can be expressed in a query.
+     * Checks if the policies can be expressed in a query for a given
+     * repository.
      * <p>
      * If not, then any query made will have to be post-filtered.
      *
+     * @param repositoryName the target repository name.
      * @return {@code true} if all policies can be expressed in a query
      */
-    boolean arePoliciesExpressibleInQuery();
+    boolean arePoliciesExpressibleInQuery(String repositoryName);
 
     /**
-     * Get the transformers to apply the policies to a query.
+     * Get the transformers to apply the policies to a query for given
+     * repository.
      *
+     * @param repositoryName the target repository name.
      * @return the transformers.
      */
-    Collection<SQLQuery.Transformer> getPoliciesQueryTransformers();
+    Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
+            String repositoryName);
 
 }

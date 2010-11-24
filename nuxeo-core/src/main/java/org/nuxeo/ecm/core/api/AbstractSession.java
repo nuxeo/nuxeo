@@ -1453,7 +1453,8 @@ public abstract class AbstractSession implements CoreSession,
             String permission = BROWSE;
             if (compiledQuery instanceof FilterableQuery) {
                 postFilterPermission = false;
-                postFilterPolicies = !securityService.arePoliciesExpressibleInQuery();
+                String repoName = getRepositoryName();
+                postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
                 postFilterFilter = filter != null
                         && !(filter instanceof FacetFilter);
                 postFilter = postFilterPolicies || postFilterFilter;
@@ -1468,7 +1469,7 @@ public abstract class AbstractSession implements CoreSession,
                         principals, permissions,
                         filter instanceof FacetFilter ? (FacetFilter) filter
                                 : null,
-                        securityService.getPoliciesQueryTransformers(),
+                        securityService.getPoliciesQueryTransformers(repoName),
                         postFilter ? 0 : limit, postFilter ? 0 : offset);
                 results = ((FilterableQuery) compiledQuery).execute(
                         queryFilter, countTotal && !postFilter);
@@ -1544,10 +1545,11 @@ public abstract class AbstractSession implements CoreSession,
             String[] permissions = securityService.getPermissionsToCheck(permission);
             Collection<Transformer> transformers;
             if ("NXQL".equals(queryType)) {
-                if (!securityService.arePoliciesExpressibleInQuery()) {
+                String repoName = getRepositoryName();
+                if (!securityService.arePoliciesExpressibleInQuery(repoName)) {
                     log.warn("Security policy cannot be expressed in query");
                 }
-                transformers = securityService.getPoliciesQueryTransformers();
+                transformers = securityService.getPoliciesQueryTransformers(repoName);
             } else {
                 transformers = Collections.emptyList();
             }
