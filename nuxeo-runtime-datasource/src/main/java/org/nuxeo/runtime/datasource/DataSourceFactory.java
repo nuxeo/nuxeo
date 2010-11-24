@@ -72,7 +72,7 @@ public class DataSourceFactory implements ObjectFactory {
 
         boolean xa = ref.get(BasicManagedDataSourceFactory.PROP_XADATASOURCE) != null;
         log.info(String.format("Creating pooled %s datasource: %s/%s",
-                xa ? "XA" : "non-XA", nameCtx, name));
+                xa ? "XA" : "non-XA", nameCtx.getNameInNamespace(), name));
 
         if (xa && transactionManager == null) {
             throw new RuntimeException("Cannot configure XA datasource " + name
