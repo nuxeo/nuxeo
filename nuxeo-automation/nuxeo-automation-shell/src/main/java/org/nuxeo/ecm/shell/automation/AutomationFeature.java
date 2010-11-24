@@ -33,7 +33,6 @@ import org.nuxeo.ecm.shell.automation.cmds.OperationCommandType;
 import org.nuxeo.ecm.shell.automation.cmds.RemoteCommands;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
-import org.nuxeo.ecm.shell.impl.DefaultCommandType;
 
 /**
  * The automation feature is providing connection with Nuxeo servers through
@@ -53,7 +52,7 @@ public class AutomationFeature implements ShellFeature, ValueAdapter,
         shell.putContextObject(AutomationFeature.class, this);
         shell.addCompletorProvider(this);
         shell.addValueAdapter(this);
-        GlobalCommands.INSTANCE.addCommandType(DefaultCommandType.fromAnnotatedClass(Connect.class));
+        GlobalCommands.INSTANCE.addAnnotatedCommand(Connect.class);
     }
 
     public HttpAutomationClient connect(String url, String username,

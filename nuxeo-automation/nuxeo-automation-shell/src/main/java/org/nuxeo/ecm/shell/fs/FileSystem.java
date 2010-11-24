@@ -38,8 +38,6 @@ import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
  */
 public class FileSystem implements ShellFeature {
 
-    public static final String KEY = "fs";
-
     protected List<File> wdStack;
 
     public FileSystem() {
