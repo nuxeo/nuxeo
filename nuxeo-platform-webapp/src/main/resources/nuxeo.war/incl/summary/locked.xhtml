@@ -17,7 +17,7 @@
   </c:if>
 
   <c:if test="#{empty currentDocumentLockDetails}">
-    <h:outputText value="#{messages['label.summary.locked.intro']}"/> 
+    <h:outputText value="#{messages['label.summary.locked.intro']} "/> 
     <h:outputText class="summary_unlocked" value="#{messages['label.summary.unlocked']} "/>
     <c:if test="#{currentDocumentCanBeLocked}" >
       <h:outputText value=" | " />
