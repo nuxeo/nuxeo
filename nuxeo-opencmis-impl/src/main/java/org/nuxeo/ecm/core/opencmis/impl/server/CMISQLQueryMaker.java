@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -175,7 +176,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         boolean addSystemColumns = true; // TODO
 
-        hierTable = database.getTable(model.HIER_TABLE_NAME);
+        hierTable = database.getTable(Model.HIER_TABLE_NAME);
 
         query = new QueryObject(typeManager);
         CmisQueryWalker walker;
@@ -292,7 +293,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // join other fragments for qualifier
 
-            String tableMainId = table.getColumn(model.MAIN_KEY).getFullQuotedName();
+            String tableMainId = table.getColumn(Model.MAIN_KEY).getFullQuotedName();
 
             for (Table t : allTables.get(qual).values()) {
                 if (t.getKey().equals(table.getKey())) {
@@ -309,7 +310,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 from.append(" LEFT JOIN ");
                 from.append(n);
                 from.append(" ON ");
-                from.append(t.getColumn(model.MAIN_KEY).getFullQuotedName());
+                from.append(t.getColumn(Model.MAIN_KEY).getFullQuotedName());
                 from.append(" = ");
                 from.append(tableMainId);
             }
@@ -882,6 +883,8 @@ public class CMISQLQueryMaker implements QueryMaker {
      */
     public class AnalyzingWalker extends AbstractPredicateWalker {
 
+        public static final String NX_FULLTEXT_INDEX_PREFIX = "nx:";
+
         public boolean hasContains;
 
         @Override
@@ -893,10 +896,35 @@ public class CMISQLQueryMaker implements QueryMaker {
             hasContains = true;
 
             String qual = qualNode == null ? null : qualNode.getText();
-            String statement = (String) super.walkString(queryNode);
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
+            String statement = (String) super.walkString(queryNode);
+            String indexName = Model.FULLTEXT_DEFAULT_INDEX;
+
+            // micro parsing of the fulltext statement to perform fulltext
+            // search on a non default index
+            if (statement.startsWith(NX_FULLTEXT_INDEX_PREFIX)) {
+                statement = statement.substring(NX_FULLTEXT_INDEX_PREFIX.length());
+                int firstColumnIdx = statement.indexOf(':');
+                if (firstColumnIdx > 0
+                        && firstColumnIdx < statement.length() - 1) {
+                    String requestedIndexName = statement.substring(0, firstColumnIdx);
+                    statement = statement.substring(firstColumnIdx + 1);
+                    if (model.fulltextInfo.indexNames.contains(requestedIndexName)) {
+                        indexName = requestedIndexName;
+                    } else {
+                        log.warn(String.format(
+                                "'%s' is not a registered fulltext index name:"
+                                        + " fallback to '%s'",
+                                requestedIndexName, indexName));
+                    }
+                } else {
+                    log.warn(String.format(
+                            "fail to microparse custom fulltext index:"
+                                    + " fallback to '%s'", indexName));
+                }
+            }
             fulltextMatchInfo = dialect.getFulltextScoredMatchInfo(statement,
-                    Model.FULLTEXT_DEFAULT_INDEX, 1, column, model, database);
+                    indexName, 1, column, model, database);
             return null;
         }
     }

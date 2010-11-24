@@ -1293,16 +1293,61 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(0, res.getNumItems().intValue());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testQueryContains() throws Exception {
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        PropertyData<?> propTitle = factory.createPropertyStringData(
+                "dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData(
+                "dc:description", "new description1");
+        Properties properties = factory.createPropertiesData(Arrays.asList(
+                propTitle, propDescription));
+
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null,
+                properties, null);
+
         ObjectList res;
         String statement;
 
-        statement = "SELECT cmis:name FROM File" //
-                + " WHERE CONTAINS('testfile1_Title')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('title1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        assertEquals("testfile1_Title",
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE CONTAINS('description1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        // specific query for title index (the description token do not match)
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE CONTAINS('nx:title:description1')";
+        res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+
+        statement = "SELECT cmis:name FROM File"
+                + " WHERE CONTAINS('nx:title:title1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
+                getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        // specific query for invalid index name should not break (but log a
+        // warning instead and fallback to the default index)
+        statement = "SELECT cmis:name FROM File" //
+                + " WHERE CONTAINS('nx:borked:title1')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1",
                 getString(res.getObjects().get(0), PropertyIds.NAME));
     }
 
