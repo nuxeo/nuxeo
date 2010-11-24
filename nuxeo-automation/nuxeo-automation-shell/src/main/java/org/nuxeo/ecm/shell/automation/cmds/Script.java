@@ -65,7 +65,8 @@ public class Script implements Runnable {
         }
         try {
             ANSIBuffer buf = new ANSIBuffer();
-            ANSICodes.appendTemplate(buf, Scripting.runScript(ctx, blob, args));
+            ANSICodes.appendTemplate(buf, Scripting.runScript(ctx, blob, args),
+                    false);
             console.println(buf.toString());
         } catch (Exception e) {
             throw new ShellException("Failed to run script", e);

@@ -79,6 +79,7 @@ public class ANSICodes {
 
     static {
         map.put("off", OFF);
+        map.put("header", BOLD);
         map.put("bold", BOLD);
         map.put("underscore", UNDERSCORE);
         map.put("blink", BLINK);
@@ -105,17 +106,34 @@ public class ANSICodes {
     public static int getCode(String key) {
         Integer code = map.get(key.toLowerCase());
         if (code == null) {
-            return Integer.parseInt(key);
+            try {
+                return Integer.parseInt(key);
+            } catch (NumberFormatException e) {
+                return -1;
+            }
         } else {
             return code.intValue();
         }
     }
 
-    public static void append(ANSIBuffer buf, String text, String codeKey) {
-        buf.attrib(text, getCode(codeKey));
+    public static void append(ANSIBuffer buf, String text, String codeKey,
+            boolean wiki) {
+        int code = getCode(codeKey);
+        if (code > -1) {
+            if (wiki && code == BOLD) {
+                buf.append("*" + text + "*");
+            } else {
+                buf.attrib(text, code);
+            }
+        } else if (wiki) {
+            buf.append("{" + codeKey + "}" + text + "{" + codeKey + "}");
+        } else {
+            buf.append(text);
+        }
     }
 
-    public static void appendTemplate(ANSIBuffer buf, String content) {
+    public static void appendTemplate(ANSIBuffer buf, String content,
+            boolean wiki) {
         Matcher m = TPL.matcher(content);
         int s = 0;
         while (m.find(s)) {
@@ -128,7 +146,7 @@ public class ANSICodes {
             } else {
                 buf.append(content.substring(s, m.start()));
                 String text = content.substring(m.end(), i);
-                ANSICodes.append(buf, text, token);
+                ANSICodes.append(buf, text, token, wiki);
                 s = i + key.length();
             }
         }

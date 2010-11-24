@@ -65,8 +65,7 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
 
         // switch to automation command namespace
         addRegistry(RemoteCommands.INSTANCE);
-        CommandRegistry reg = new CommandRegistry(GlobalCommands.INSTANCE,
-                AUTOMATION_NS);
+        CommandRegistry reg = new AutomationRegistry();
         // build automation registry
         buildCommands(reg, session);
         addRegistry(reg);
@@ -138,4 +137,19 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
         return null;
     }
 
+    static class AutomationRegistry extends CommandRegistry {
+        public AutomationRegistry() {
+            super(GlobalCommands.INSTANCE, AUTOMATION_NS);
+        }
+
+        @Override
+        public String getTitle() {
+            return "Nuxeo Automation Commands";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Commands exposed by the Nuxeo Server through automation";
+        }
+    }
 }

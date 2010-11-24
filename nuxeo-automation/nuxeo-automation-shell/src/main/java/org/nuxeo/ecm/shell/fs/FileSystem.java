@@ -191,6 +191,10 @@ public class FileSystem {
         ArrayList<String> result = new ArrayList<String>();
         StringBuilder lastLine = null;
         for (String line : lines) {
+            line = line.trim();
+            if (line.length() == 0 || line.startsWith("#")) {
+                continue;
+            }
             if (line.endsWith("\\")) {
                 line = line.substring(0, line.length() - 1);
                 if (lastLine != null) {

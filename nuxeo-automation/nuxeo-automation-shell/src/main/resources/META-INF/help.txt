@@ -3,6 +3,8 @@
 This is the main Help page. To see the list of available commands type 'cmds'.
 Also, you can use help [command] for more details about a command.
 
+For online documentation go to http://doc.nuxeo.com/display/NXDOC/Nuxeo+HTTP+Shell
+
 {bold}COMMAND NAMESPACES{bold}
 
 Nuxeo Shell is providing the capability to define multiple command namespaces in the same shell.
@@ -11,13 +13,14 @@ A namespace is just a registry of commands - so while in a given namespace you w
 Namespaces are hierarchical so a namespace my extend another one to adds more commands. 
 Available namespaces are setup by the Shell implementation. See using a specific shell implementation section for more information. 
    
-The default implementation comes with 3 command namespaces:
-    global - the global namespace. This provides global commands like 'help', 'use', 'cmds' etc.  
-    local  - provides file system commands like: 'ls', 'cd', 'cat' etc. Extends the global namespace. 
-    tremote - provides remote commands against a nuxeo server. Extends the global namespace.
+The default implementation comes with 4 command namespaces:
+    global - the global namespace. This provides global commands like 'help', 'use', 'cmds' etc.
+    local  - provides file system commands like: 'ls', 'cd', 'cat' etc. Extends the global namespace.
+    remote - provides remote commands against a nuxeo server. Extends the global namespace. Available only after connecting to a remote server.
+    automation - expose remote automation operations as commands. Available only after connecting to a remote server.
 
-When launching the shell the 'local' namespace is 
-When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting
+When launching the shell the 'local' namespace is automatically activated.
+When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting it will go back to the 'local' namespace.
    
 {bold}Loading a specific shell implementation{bold}
 You can write your own shell implementation to provide additional command namespaces. 

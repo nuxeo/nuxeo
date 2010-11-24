@@ -50,6 +50,8 @@ public class FetchByProperty {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
+        // TODO use SQLQueryParser.prepareStringLiteral to escape the string
+        // values.
         if (query != null && query.trim().length() == 0) {
             query = null;
         }

@@ -39,10 +39,10 @@ public class Connect implements Runnable {
     @Argument(name = "url", index = 0, required = false, help = "The url of the automation server")
     protected String url;
 
-    @Parameter(name = "-u", hasValue = true, help = "The url of the automation server")
+    @Parameter(name = "-u", hasValue = true, help = "The username")
     protected String username;
 
-    @Parameter(name = "-p", hasValue = true, help = "the password")
+    @Parameter(name = "-p", hasValue = true, help = "The password")
     protected String password;
 
     public void run() {
