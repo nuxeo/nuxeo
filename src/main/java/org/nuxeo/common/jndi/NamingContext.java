@@ -427,7 +427,7 @@ public class NamingContext implements Context {
      * @see javax.naming.Context#getNameInNamespace()
      */
     public String getNameInNamespace() throws NamingException {
-        throw new RuntimeException("Method not implemented");
+        return getCompoundStringName();
     }
 
     /**
