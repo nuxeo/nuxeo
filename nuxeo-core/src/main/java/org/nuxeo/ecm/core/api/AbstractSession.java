@@ -98,8 +98,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
 /**
  * Abstract implementation of the client interface.
  * <p>
- * This handles all the aspects that are independent on the final implementation
- * (like running inside a J2EE platform or not).
+ * This handles all the aspects that are independent on the final
+ * implementation (like running inside a J2EE platform or not).
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
@@ -166,7 +166,8 @@ public abstract class AbstractSession implements CoreSession,
     private String sessionId;
 
     /**
-     * Internal method: Gets the current session based on the client session id.
+     * Internal method: Gets the current session based on the client session
+     * id.
      *
      * @return the repository session
      */
@@ -188,16 +189,15 @@ public abstract class AbstractSession implements CoreSession,
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
         // register this session locally -> this way document models can
-        // retrieve
-        // their session on the server side
+        // retrieve their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
         // <------------ begin repository initialization
         // we need to initialize the repository if this is the first time it is
-        // accessed in this JVM session
-        // for this we get the session and test if the "REPOSITORY_FIRST_ACCESS"
-        // is set after the session is created
-        // we need to synchronize the call to be sure we initialize only once.
+        // accessed in this JVM session.
+        // For this we get the session and test if the
+        // "REPOSITORY_FIRST_ACCESS" is set after the session is created. We
+        // need to synchronize the call to be sure we initialize it only once.
         synchronized (AbstractSession.class) {
             Session session = getSession(); // force the creation of the
             // underlying session
@@ -211,17 +211,17 @@ public abstract class AbstractSession implements CoreSession,
                     try {
                         // change current principal to give all right to the
                         // handler
-                        // FIXME : this should be fixed by using SystemPrincipal
-                        // -> we must synchronize this with SecurityService
-                        // check
+                        // FIXME: this should be fixed by using
+                        // SystemPrincipal => we must synchronize this with
+                        // SecurityService check
                         sessionContext.put("principal", new SimplePrincipal(
                                 SecurityConstants.SYSTEM_USERNAME));
                         try {
                             handler.initializeRepository(this);
                             session.save();
                         } catch (ClientException e) {
-                            // shouldn't remove the root? ... to restart with an
-                            // empty repository
+                            // shouldn't remove the root? ... to restart with
+                            // an empty repository
                             log.error(
                                     "Failed to initialize repository content",
                                     e);
@@ -249,13 +249,12 @@ public abstract class AbstractSession implements CoreSession,
      * <p>
      * The ID has the following format:
      * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid name
-     * clashes with sessions on different machines (the repository name should
-     * be unique in the system)
-     *
+     * an unique ID on a running JVM and repository-name is a used to avoid
+     * name clashes with sessions on different machines (the repository name
+     * should be unique in the system)
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
+     * <li>A is the repository name (which uniquely identifies the repository
+     * in the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -271,8 +270,8 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Utility method to generate VersionModel labels.
      *
-     * @return the String representation of an auto-incremented counter that not
-     *         used in any label of docRef
+     * @return the String representation of an auto-incremented counter that
+     *         not used in any label of docRef
      */
     @Override
     public String generateVersionLabelFor(DocumentRef docRef)
@@ -458,8 +457,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
-    public boolean hasPermission(Principal principal, DocumentRef docRef, String permission)
-    throws ClientException {
+    public boolean hasPermission(Principal principal, DocumentRef docRef,
+            String permission) throws ClientException {
         try {
             Session session = getSession();
             Document doc = DocumentResolver.resolveReference(session, docRef);
@@ -492,8 +491,8 @@ public abstract class AbstractSession implements CoreSession,
             throws DocumentException {
         // TODO: optimize this - usually ACP is already available when calling
         // this method.
-        // -> cache ACP at securitymanager level or try to reuse the ACP when it
-        // is known
+        // -> cache ACP at securitymanager level or try to reuse the ACP when
+        // it is known
         return getSecurityService().checkPermission(doc, getPrincipal(),
                 permission);
         // return doc.getSession().getSecurityManager().checkPermission(doc,
@@ -508,8 +507,8 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Gets the document model for the given core document.
      * <p>
-     * If no schemas are specified (schemas are null) use the default schemas as
-     * configured in the document type manager.
+     * If no schemas are specified (schemas are null) use the default schemas
+     * as configured in the document type manager.
      *
      * @param doc the document
      * @param schemas the schemas if any, null otherwise
@@ -1740,8 +1739,8 @@ public abstract class AbstractSession implements CoreSession,
             options.put("docTitle", docModel.getTitle());
         }
 
-        // notify different events depending on wether the document is a version
-        // or not
+        // notify different events depending on wether the document is a
+        // version or not
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
                     null, null, true, true);
@@ -2273,7 +2272,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
-    public DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException {
+    public DocumentModel getWorkingCopy(DocumentRef docRef)
+            throws ClientException {
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
@@ -2457,8 +2457,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Update the proxy for doc in the given section to point to the new target.
-     * Do nothing if there are several proxies.
+     * Update the proxy for doc in the given section to point to the new
+     * target. Do nothing if there are several proxies.
      *
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
