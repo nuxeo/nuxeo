@@ -40,28 +40,30 @@ public class NavTreeService extends DefaultComponent {
 
     protected List<NavTreeDescriptor> descriptors;
 
-    protected boolean directoryTreesFetched;
-
     public List<NavTreeDescriptor> getTreeDescriptors() {
-        maybeFetchDirectoryTrees();
-        return descriptors;
+        List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
+        allTrees.addAll(descriptors);
+        List<NavTreeDescriptor> directoryTrees = getDirectoryTrees();
+        if (directoryTrees != null) {
+            allTrees.addAll(directoryTrees);
+        }
+        Collections.sort(allTrees, NavTreeDescriptorOrderComparator.INSTANCE);
+        return allTrees;
     }
 
-    protected synchronized void maybeFetchDirectoryTrees() {
-        if (directoryTreesFetched) {
-            return;
-        }
+    protected synchronized List<NavTreeDescriptor> getDirectoryTrees() {
         DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
                 DirectoryTreeService.NAME);
         if (directoryTreeService == null) {
-            return;
+            return null;
         }
         List<String> treeNames = directoryTreeService.getNavigationDirectoryTrees();
+        List<NavTreeDescriptor> trees = new ArrayList<NavTreeDescriptor>();
         for (String dTreeName : treeNames) {
-            descriptors.add(new NavTreeDescriptor(dTreeName, "label."
-                    + dTreeName, true));
+            trees.add(new NavTreeDescriptor(dTreeName, "label." + dTreeName,
+                    true));
         }
-        directoryTreesFetched = true;
+        return trees;
     }
 
     @Override
@@ -70,14 +72,11 @@ public class NavTreeService extends DefaultComponent {
             throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
             descriptors.add((NavTreeDescriptor) contribution);
-            Collections.sort(descriptors,
-                    NavTreeDescriptorOrderComparator.INSTANCE);
         }
     }
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        directoryTreesFetched = false;
         descriptors = new ArrayList<NavTreeDescriptor>();
     }
 

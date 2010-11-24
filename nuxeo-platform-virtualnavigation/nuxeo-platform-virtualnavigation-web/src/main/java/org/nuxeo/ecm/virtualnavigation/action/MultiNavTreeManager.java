@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -51,18 +49,15 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String STD_NAV_TREE = "CONTENT_TREE";
 
     public static final String STD_NAV_TREE_LABEL = "label.content.tree";
 
-    private static final long serialVersionUID = 1L;
+    protected List<NavTreeDescriptor> availableNavigationTrees;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(MultiNavTreeManager.class);
-
-    private static List<NavTreeDescriptor> availableNavigationTrees;
-
-    private static String thePath = "";
+    protected String thePath = "";
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
