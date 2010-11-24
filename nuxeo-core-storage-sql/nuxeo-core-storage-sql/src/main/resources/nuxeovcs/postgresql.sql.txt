@@ -359,6 +359,7 @@ DECLARE
   first boolean := true;
   read_acl varchar(4096);
   ret varchar(4096);
+  pos integer;
 BEGIN
   WHILE curid IS NOT NULL LOOP
     SELECT nx_get_local_read_acl(curid) INTO read_acl;
@@ -375,6 +376,12 @@ BEGIN
     END IF;
     first := false;
     curid := newid;
+    -- Remove everything after a deny on Everyone
+    SELECT position('-${everyone}' in ret) INTO pos;
+    IF pos > 0 THEN
+      ret := substring(ret from 1 for pos + length(${everyone}));
+      curid := NULL;
+    END IF;
   END LOOP;
   IF ret is NULL THEN
     ret = '_empty';
