@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
+import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 import org.nuxeo.ecm.core.security.SecurityPolicy;
 
 /**
@@ -29,7 +30,8 @@ import org.nuxeo.ecm.core.security.SecurityPolicy;
  *
  * @author Florent Guillaume
  */
-public class NoFileSecurityPolicy implements SecurityPolicy {
+public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements
+        SecurityPolicy {
 
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,

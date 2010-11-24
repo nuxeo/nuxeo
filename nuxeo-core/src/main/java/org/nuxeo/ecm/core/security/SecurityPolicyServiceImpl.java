@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 /**
  * Security policy service implementation.
  * <p>
- * Iterates over ordered policies. First policy to give a known access (grant or
- * deny) applies.
+ * Iterates over ordered policies. First policy to give a known access (grant
+ * or deny) applies.
  *
  * @author Anahide Tchertchian
  */
@@ -108,20 +108,21 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return false;
     }
 
-    public boolean arePoliciesExpressibleInQuery() {
+    public boolean arePoliciesExpressibleInQuery(String repositoryName) {
         for (SecurityPolicy policy : getPolicies()) {
-            if (!policy.isExpressibleInQuery()) {
+            if (!policy.isExpressibleInQuery(repositoryName)) {
                 return false;
             }
         }
         return true;
     }
 
-    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
+            String repositoryName) {
         List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
         for (SecurityPolicy policy : getPolicies()) {
-            if (policy.isExpressibleInQuery()) {
-                transformers.add(policy.getQueryTransformer());
+            if (policy.isExpressibleInQuery(repositoryName)) {
+                transformers.add(policy.getQueryTransformer(repositoryName));
             }
         }
         return transformers;

@@ -62,21 +62,23 @@ public interface SecurityPolicy {
     boolean isRestrictingPermission(String permission);
 
     /**
-     * Checks if this policy can be expressed in a query.
+     * Checks if this policy can be expressed in a query for given repository.
      * <p>
      * If not, then any query made will have to be post-filtered.
      *
+     * @param repositoryName the target repository name.
      * @return {@code true} if the policy can be expressed in a query
      */
-    boolean isExpressibleInQuery();
+    boolean isExpressibleInQuery(String repositoryName);
 
     /**
      * Get the transformer to use to apply this policy to a query.
      * <p>
      * Called only when {@link #isExpressibleInQuery()} returned {@code true}
      *
+     * @param repositoryName the target repository name.
      * @return the transformer
      */
-    SQLQuery.Transformer getQueryTransformer();
+    SQLQuery.Transformer getQueryTransformer(String repositoryName);
 
 }

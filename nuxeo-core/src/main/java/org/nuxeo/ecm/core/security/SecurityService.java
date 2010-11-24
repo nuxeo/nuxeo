@@ -51,7 +51,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Bogdan Stefanescu
  * @author Olivier Grisel
  * @author Anahide Tchertchian
- *
  */
 // TODO: improve caching invalidation
 // TODO: remove "implements SecurityConstants" and check that it doesn't break
@@ -135,12 +134,13 @@ public class SecurityService extends DefaultComponent {
         return securityPolicyService.arePoliciesRestrictingPermission(permission);
     }
 
-    public boolean arePoliciesExpressibleInQuery() {
-        return securityPolicyService.arePoliciesExpressibleInQuery();
+    public boolean arePoliciesExpressibleInQuery(String repositoryName) {
+        return securityPolicyService.arePoliciesExpressibleInQuery(repositoryName);
     }
 
-    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers() {
-        return securityPolicyService.getPoliciesQueryTransformers();
+    public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
+            String repositoryName) {
+        return securityPolicyService.getPoliciesQueryTransformers(repositoryName);
     }
 
     public boolean checkPermission(Document doc, Principal principal,
@@ -188,8 +188,7 @@ public class SecurityService extends DefaultComponent {
      * Provides the full list of all permissions or groups of permissions that
      * contain the given one (inclusive).
      * <p>
-     * It is exposed remotely through
-     * {@link CoreSession#getPermissionsToCheck}.
+     * It is exposed remotely through {@link CoreSession#getPermissionsToCheck}.
      *
      * @param permission
      * @return the list, as an array of strings.
