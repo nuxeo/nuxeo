@@ -70,7 +70,8 @@ public class NavTreeService extends DefaultComponent {
             throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
             descriptors.add((NavTreeDescriptor) contribution);
-            Collections.sort(descriptors, NavTreeDescriptorOrderComparator.INSTANCE);
+            Collections.sort(descriptors,
+                    NavTreeDescriptorOrderComparator.INSTANCE);
         }
     }
 
@@ -83,12 +84,14 @@ public class NavTreeService extends DefaultComponent {
     /**
      * Comparator of {@link NavTreeDescriptor}s according to their order..
      */
-    public static class NavTreeDescriptorOrderComparator implements Comparator<NavTreeDescriptor> {
+    public static class NavTreeDescriptorOrderComparator implements
+            Comparator<NavTreeDescriptor> {
 
         public static final NavTreeDescriptorOrderComparator INSTANCE = new NavTreeDescriptorOrderComparator();
 
         @Override
-        public int compare(NavTreeDescriptor descriptor1, NavTreeDescriptor descriptor2) {
+        public int compare(NavTreeDescriptor descriptor1,
+                NavTreeDescriptor descriptor2) {
             return descriptor1.getOrder() - descriptor2.getOrder();
         }
     }
