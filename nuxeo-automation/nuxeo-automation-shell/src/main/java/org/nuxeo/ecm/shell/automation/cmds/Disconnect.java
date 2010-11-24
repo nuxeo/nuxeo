@@ -20,7 +20,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.automation.AutomationShell;
+import org.nuxeo.ecm.shell.automation.AutomationFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,7 +34,7 @@ public class Disconnect implements Runnable {
 
     public void run() {
         shell.removeContextObject(Session.class);
-        ((AutomationShell) shell).disconnect();
+        shell.getFeature(AutomationFeature.class).disconnect();
     }
 
 }

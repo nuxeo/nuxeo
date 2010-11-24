@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.automation.client.jaxrs.model.PathRef;
+import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
 import org.nuxeo.ecm.shell.utils.Path;
 
@@ -36,7 +37,9 @@ import org.nuxeo.ecm.shell.utils.Path;
  */
 public class RemoteContext {
 
-    protected AutomationShell shell;
+    protected Shell shell;
+
+    protected AutomationFeature feature;
 
     protected HttpAutomationClient client;
 
@@ -52,9 +55,9 @@ public class RemoteContext {
 
     protected String host;
 
-    public RemoteContext(AutomationShell shell, HttpAutomationClient client,
-            Session session) throws Exception {
-        this.shell = shell;
+    public RemoteContext(AutomationFeature feature,
+            HttpAutomationClient client, Session session) throws Exception {
+        this.shell = Shell.get();
         this.client = client;
         this.session = session;
         ds = session.getAdapter(DocumentService.class);
@@ -84,8 +87,12 @@ public class RemoteContext {
         shell.removeContextObject(DocumentService.class);
     }
 
-    public AutomationShell getShell() {
+    public Shell getShell() {
         return shell;
+    }
+
+    public AutomationFeature getFeature() {
+        return feature;
     }
 
     public HttpAutomationClient getClient() {

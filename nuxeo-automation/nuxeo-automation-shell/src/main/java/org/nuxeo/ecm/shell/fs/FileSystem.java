@@ -27,12 +27,16 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.shell.Shell;
+import org.nuxeo.ecm.shell.ShellFeature;
+import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
+
 /**
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class FileSystem {
+public class FileSystem implements ShellFeature {
 
     public static final String KEY = "fs";
 
@@ -45,6 +49,13 @@ public class FileSystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void install(Shell shell) {
+        shell.putContextObject(FileSystem.class, this);
+        shell.addValueAdapter(new FileValueAdapter());
+        shell.addRegistry(FileSystemCommands.INSTANCE);
+        shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
     }
 
     public List<File> getStack() {

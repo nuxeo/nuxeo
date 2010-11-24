@@ -35,6 +35,10 @@ public class CompositeValueAdapter implements ValueAdapter {
         adapters.add(adapter);
     }
 
+    public void removeAdapter(ValueAdapter adapter) {
+        adapters.remove(adapter);
+    }
+
     public <T> T getValue(Shell shell, Class<T> type, String value) {
         for (ValueAdapter adapter : adapters) {
             T result = adapter.getValue(shell, type, value);

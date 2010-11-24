@@ -14,23 +14,32 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.automation;
+package org.nuxeo.ecm.shell;
 
-import org.nuxeo.ecm.shell.ShellFactory;
+import java.util.ServiceLoader;
 
 /**
+ * Services implementing this interface will be used to add new features to the
+ * shell, like custom command namespaces, completors etc.
+ * 
+ * Registered (i.e. available) features are exposed by the Shell#getFeatures()
+ * method
+ * 
+ * Registration of a feature implementation is done as described by the Java
+ * {@link ServiceLoader} mechanism that is used for service discovery.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class AutomationShellFactory extends ShellFactory<AutomationShell> {
+public interface ShellFeature {
 
-    public AutomationShellFactory() {
-        super("fs", "automation");
-    }
-
-    @Override
-    public AutomationShell getShell() {
-        return new AutomationShell();
-    }
+    /**
+     * Install the feature in the given shell instance. This is typically
+     * registering new global commands, namespaces, value adapters or
+     * completors.
+     * 
+     * @param shell
+     */
+    public void install(Shell shell);
 
 }
