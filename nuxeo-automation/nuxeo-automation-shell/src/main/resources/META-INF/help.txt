@@ -50,6 +50,14 @@ You can either pass thse arguments to the connect command itself or to the shell
 You can use -u for the username, -p for the password and the URL should be given as argument.
 If password is not specified you will be prompted for a password when in interactive mode.
 
+{bold}SHELL VERSION{bold}
+You can launch the shell using
+
+java -jar nuxeo-shell.jar --version
+
+to get information about the shell version and the minimal server version required by the shell to correctly run against a remote server.
+You can also have this information by using the version command.
+
 {bold}EXAMPLE{bold}
 Here is an example of a short session: 
 After launching the shell you are in 'local' mode. So you can use the provided file system commands like:
