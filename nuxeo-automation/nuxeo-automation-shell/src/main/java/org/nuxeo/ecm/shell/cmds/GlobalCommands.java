@@ -34,6 +34,7 @@ public class GlobalCommands extends CommandRegistry {
         addAnnotatedCommand(Exit.class);
         addAnnotatedCommand(Use.class);
         addAnnotatedCommand(Trace.class);
+        addAnnotatedCommand(Version.class);
     }
 
     @Override

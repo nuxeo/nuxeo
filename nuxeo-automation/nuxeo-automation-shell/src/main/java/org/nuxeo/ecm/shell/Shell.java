@@ -31,6 +31,7 @@ import java.util.ServiceLoader;
 
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.cmds.Interactive;
+import org.nuxeo.ecm.shell.cmds.Version;
 import org.nuxeo.ecm.shell.fs.FileSystem;
 import org.nuxeo.ecm.shell.impl.DefaultCompletorProvider;
 import org.nuxeo.ecm.shell.impl.DefaultConsole;
@@ -127,6 +128,12 @@ public final class Shell {
 
     public void main(String[] args) throws Exception {
         mainArgs = collectArgs(args);
+        String v = mainArgs.get("--version");
+        if (v != null) {
+            System.out.println(Version.getShellVersionMessage());
+            System.out.println(Version.getServerVersionMessage());
+            return;
+        }
         String path = mainArgs.get("-f");
         if (path != null) {
             FileInputStream in = new FileInputStream(new File(path));

@@ -1,9 +1,9 @@
-{bold}NUXEO SHELL v.5.4{bold}
+{bold}NUXEO SHELL ${version}{bold}
 
 This is the main Help page. To see the list of available commands type 'cmds'.
 Also, you can use help [command] for more details about a command.
 
-For online documentation go to http://doc.nuxeo.com/display/NXDOC/Nuxeo+HTTP+Shell
+For online documentation go to http://doc.nuxeo.com/display/NXDOC/Nuxeo+Shell
 
 {bold}COMMAND NAMESPACES{bold}
 
@@ -22,15 +22,6 @@ The default implementation comes with 4 command namespaces:
 When launching the shell the 'local' namespace is automatically activated.
 When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting it will go back to the 'local' namespace.
    
-{bold}Loading a specific shell implementation{bold}
-You can write your own shell implementation to provide additional command namespaces. 
-This way you can for example add a CMIS namespace to provide a CMIS based shell over a remote Nuxeo. 
-
-To force a specific shell implementation to be used when starting - you can use -Dshell.capabilities="caps" in the command line.
-The capabilities is a comma separated list of capabilties that the shell should provide. 
-The default capabilities string is "automation" - which will load the first shell found that is providing "automation".
-To load the right shell implementation - the Java service loader is used. 
-
 {bold}AUTO COMPLETION{bold}
 Each command may provide custom auto-completion for its parameter or argument values. 
 Also, the shell is providing built-in auto-completion for commands and parameter names.

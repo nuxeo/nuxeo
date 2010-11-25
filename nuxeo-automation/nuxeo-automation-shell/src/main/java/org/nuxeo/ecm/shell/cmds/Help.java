@@ -95,6 +95,13 @@ public class Help implements Runnable {
         if (in != null) {
             try {
                 String content = FileSystem.readContent(in);
+                String versionVar = "${version}";
+                int i = content.indexOf(versionVar);
+                if (i > -1) {
+                    content = content.substring(0, i)
+                            + Shell.class.getPackage().getImplementationVersion()
+                            + content.substring(i + versionVar.length());
+                }
                 ANSICodes.appendTemplate(buf, content, false);
                 buf.append(ShellConsole.CRLF);
             } catch (IOException e) {
