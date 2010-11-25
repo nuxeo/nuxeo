@@ -461,11 +461,17 @@ namespace NuxeoProcess
 					" -Djboss.server.temp.dir.overrideJavaTmpDir=true";
 			}
 
-			String NUXEO_BOOTJAR_ROOTPATH=Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"lib");
-			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-runtime-deploy*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("nuxeo-common*.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("log4j.jar")[0].ToString());
-			NUXEO_BOOTJAR_PATH+=Path.PathSeparator+Path.Combine(NUXEO_BOOTJAR_ROOTPATH,new DirectoryInfo(NUXEO_BOOTJAR_ROOTPATH).GetFiles("commons-logging.jar")[0].ToString());
+            String NUXEO_BOOTJAR_ROOTPATH = Path.Combine(NuxeoEAR, "bundles");
+            FileInfo[] files = getFileInfo(NUXEO_BOOTJAR_ROOTPATH, "nuxeo-runtime-deploy*.jar");
+			String NUXEO_BOOTJAR_PATH=Path.Combine(NUXEO_BOOTJAR_ROOTPATH, files[0].ToString());
+            files = getFileInfo(NUXEO_BOOTJAR_ROOTPATH, "nuxeo-common*.jar");
+            NUXEO_BOOTJAR_PATH += Path.PathSeparator + Path.Combine(NUXEO_BOOTJAR_ROOTPATH, files[0].ToString());
+
+            String JBOSS_COMMONS = Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"], "common"), "lib");
+            files = getFileInfo(JBOSS_COMMONS, "log4j.jar");
+            NUXEO_BOOTJAR_PATH += Path.PathSeparator + Path.Combine(JBOSS_COMMONS, files[0].ToString());
+            files = getFileInfo(JBOSS_COMMONS, "commons-logging.jar");
+            NUXEO_BOOTJAR_PATH += Path.PathSeparator + Path.Combine(JBOSS_COMMONS, files[0].ToString());
 			
 			String LOG4J_CONF="file:"+Path.Combine(Path.Combine(Path.Combine(Path.Combine(nxEnv["NUXEO_HOME"],"server"),"default"),"conf"),"jboss-log4j.xml");
 			confArgs=nxEnv["JAVA_OPTS"]+" -classpath \""+NUXEO_BOOTJAR_PATH+"\""+
@@ -498,7 +504,16 @@ namespace NuxeoProcess
 			return true;
 			
 		} // End SetupJboss
-		
+
+        private FileInfo[] getFileInfo(String path, String pattern)
+        {
+            FileInfo[] ret = new DirectoryInfo(path).GetFiles(pattern);
+            if (ret.Length == 0)
+            {
+                throw new Exception("Path " + path + " is empty from file with this pattern :" + pattern);
+            }
+            return ret;
+        }
 		
 		private bool SetupTomcat(String srvStartJar, String srvVersion) {
 			
