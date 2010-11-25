@@ -72,7 +72,8 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.core.persistence");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit.api");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit");
-        nuxeotc.deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/audit-persistence-config.xml");
 
         nuxeotc.openSession();
 
