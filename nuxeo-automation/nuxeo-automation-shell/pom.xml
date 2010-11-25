@@ -12,6 +12,9 @@
   <artifactId>nuxeo-automation-shell</artifactId>
   <name>Nuxeo Automation Shell</name>
   <description>Automation Shell provides a command line client that is using automation to invoke a remove nuxeo server.</description>
+  <properties>
+    <nuxeo.server.version>5.4.1-SNAPSHOT</nuxeo.server.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -90,7 +93,7 @@
                 src/main/resources/META-INF/MANIFEST.MF
               </manifestFile>
               <manifestEntries>
-                <Specification-Version>${parent.version}</Specification-Version>
+                <Specification-Version>${nuxeo.server.version}</Specification-Version>
                 <Implementation-Title>Nuxeo Shell</Implementation-Title>
                 <Implementation-Version>${project.version}</Implementation-Version>
                 <Implementation-Vendor>Nuxeo</Implementation-Vendor>
