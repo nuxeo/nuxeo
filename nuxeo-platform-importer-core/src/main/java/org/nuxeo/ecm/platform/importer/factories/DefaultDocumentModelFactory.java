@@ -30,11 +30,34 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 /**
  *
  * Default implementation for DocumentModel factory
+ * The default empty constructor create Folder for folderish file and
+ * File for other. But you can specify them using the other constructor.
  *
  * @author Thierry Delprat
  *
  */
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
+
+    protected String folderishType;
+
+    protected String leafType;
+
+    /**
+     * Instantiate a DefaultDocumentModelFactory that creates Folder and File
+     */
+    public DefaultDocumentModelFactory() {
+        this("Folder", "File");
+    }
+
+    /**
+     * Instantiate a DefaultDocumentModelFactory that creates specified types doc
+     * @param folderishType the folderish type
+     * @param leafType the other type
+     */
+    public DefaultDocumentModelFactory(String folderishType, String leafType) {
+        this.folderishType = folderishType;
+        this.leafType = leafType;
+    }
 
     /*
      * (non-Javadoc)
@@ -46,11 +69,10 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      */
     public DocumentModel createFolderishNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
-        String docType = "Folder";
         String name = getValidNameFromFileName(node.getName());
 
         Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(docType, options);
+        DocumentModel doc = session.createDocumentModel(folderishType, options);
         doc.setPathInfo(parent.getPathAsString(), name);
         doc.setProperty("dublincore", "title", node.getName());
         doc = session.createDocument(doc);
@@ -67,12 +89,11 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      */
     public DocumentModel createLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
-        String docType = "File";
-        return defaultCreateLeafNode(session, parent, node, docType);
+        return defaultCreateLeafNode(session, parent, node);
     }
 
     protected DocumentModel defaultCreateLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node, String docType)
+            DocumentModel parent, SourceNode node)
             throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
@@ -86,7 +107,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         String fileName = node.getName();
 
         Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(docType, options);
+        DocumentModel doc = session.createDocumentModel(leafType, options);
         doc.setPathInfo(parent.getPathAsString(), name);
         doc.setProperty("dublincore", "title", node.getName());
         doc.setProperty("file", "filename", fileName);
