@@ -17,10 +17,17 @@
 
 package org.nuxeo.ecm.platform.publisher.test;
 
+import java.util.List;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -33,10 +40,6 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.platform.publisher.impl.service.ProxyTree;
 import org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.util.List;
 
 /**
  *
@@ -337,6 +340,35 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
 
         assertNotNull(node.getParent());
         assertEquals(tree.getPath(), node.getParent().getPath());
+    }
+
+    protected void publishDocAndReopenSession() throws Exception {
+        createInitialDocs();
+        RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
+        DocumentModel section = session.getDocument(new PathRef("/default-domain/sections/section1"));
+        DocumentModel workspace = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
+        rootSectionsManager.addSection(section.getId(), workspace);
+        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
+        PublicationNode target = tree.getNodeByPath("/default-domain/sections/section1");
+        srv.publish(doc2Publish, target);
+        closeSession();
+        openSession();
+    }
+
+    public void testUnpublish() throws Exception {
+        publishDocAndReopenSession();
+
+        PathRef sectionRef = new PathRef("/default-domain/sections/section1");
+        PathRef proxyRef = new PathRef("/default-domain/sections/section1/file");
+        assertTrue(session.exists(proxyRef));
+        PublisherService srv = Framework.getLocalService(PublisherService.class);
+        PublicationTree tree = srv.getPublicationTreeFor(doc2Publish, session);
+        PublicationNode target = tree.getNodeByPath(sectionRef.value);
+        // Unpublish check-in version  (SUPNXP-3013)
+        DocumentModel publishedDocVersion = session.getSourceDocument(proxyRef);
+        tree.unpublish(publishedDocVersion, target);
+        assertFalse(session.exists(proxyRef));
     }
 
 }
