@@ -379,7 +379,7 @@ BEGIN
     -- Remove everything after a deny on Everyone
     SELECT position('-${everyone}' in ret) INTO pos;
     IF pos > 0 THEN
-      ret := substring(ret from 1 for pos + length(${everyone}));
+      ret := substring(ret from 1 for pos + length('${everyone}'));
       curid := NULL;
     END IF;
   END LOOP;
