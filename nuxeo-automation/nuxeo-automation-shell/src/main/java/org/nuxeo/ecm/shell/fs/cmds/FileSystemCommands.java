@@ -44,6 +44,16 @@ public class FileSystemCommands extends CommandRegistry {
         addAnnotatedCommand(Cat.class);
     }
 
+    @Override
+    public String getTitle() {
+        return "File System Commands";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Commands available on the local file system";
+    }
+
     public String getPrompt(Shell shell) {
         return System.getProperty("user.name") + ":"
                 + shell.getContextObject(FileSystem.class).pwd().getName()

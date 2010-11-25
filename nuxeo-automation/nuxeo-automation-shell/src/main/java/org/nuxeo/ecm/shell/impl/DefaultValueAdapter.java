@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.shell.impl;
 
+import org.nuxeo.ecm.shell.CommandRegistry;
 import org.nuxeo.ecm.shell.CommandType;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
@@ -68,6 +69,12 @@ public class DefaultValueAdapter implements ValueAdapter {
                 throw new ShellException("Unknown command: " + value);
             }
             return (T) cmd;
+        } else if (CommandRegistry.class.isAssignableFrom(type)) {
+            CommandRegistry reg = shell.getRegistry(value);
+            if (reg == null) {
+                throw new ShellException("Unknown namespace: " + value);
+            }
+            return (T) reg;
         }
         return null;
 

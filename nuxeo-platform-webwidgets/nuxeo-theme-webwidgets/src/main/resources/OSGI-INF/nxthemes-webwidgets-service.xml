@@ -4,6 +4,18 @@
   <require>org.nuxeo.theme.services.ThemeService</require>
   <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
   
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+    point="hibernate">
+    <hibernateConfiguration name="nxwebwidgets">
+      <datasource>nxwebwidgets</datasource>
+      <properties>
+        <class>org.nuxeo.theme.webwidgets.providers.DataEntity</class>
+        <class>org.nuxeo.theme.webwidgets.providers.WidgetEntity</class>  
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+    
   <documentation>
     Service providing an extension mechanism for Web widgets.
     @author Jean-Marc Orliaguet (jmo@chalmers.se)

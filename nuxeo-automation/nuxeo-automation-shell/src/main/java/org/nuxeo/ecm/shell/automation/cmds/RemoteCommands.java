@@ -75,4 +75,14 @@ public class RemoteCommands extends CommandRegistry {
         return ctx.getUserName() + "@" + ctx.getHost() + ":" + p + "> ";
     }
 
+    @Override
+    public String getTitle() {
+        return "Nuxeo Server Commands";
+    }
+
+    @Override
+    public String getDescription() {
+        return "High level commands exposed by a remote Nuxeo Server";
+    }
+
 }

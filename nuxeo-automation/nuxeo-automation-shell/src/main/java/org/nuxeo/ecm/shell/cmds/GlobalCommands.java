@@ -34,5 +34,17 @@ public class GlobalCommands extends CommandRegistry {
         addAnnotatedCommand(Exit.class);
         addAnnotatedCommand(Use.class);
         addAnnotatedCommand(Trace.class);
+        addAnnotatedCommand(Version.class);
     }
+
+    @Override
+    public String getTitle() {
+        return "Built-in Commands";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Basic commands provided by the shell";
+    }
+
 }

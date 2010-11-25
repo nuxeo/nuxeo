@@ -1,5 +1,5 @@
-{bold}EXAMPLES{bold} 
+{header}EXAMPLES{header} 
 
-query "SELECT * FROM Document WHERE ecm:primaryType='Folder'"
+{code}query "SELECT * FROM Document WHERE ecm:primaryType='Folder'"{code}
 
-query -uid "SELECT * FROM Document WHERE ecm:primaryType=\"Folder\""
+{code}query -uid "SELECT * FROM Document WHERE ecm:primaryType=\"Folder\""{code}

@@ -1,7 +1,9 @@
-{bold}NUXEO SHELL v.5.4{bold}
+{bold}NUXEO SHELL ${version}{bold}
 
 This is the main Help page. To see the list of available commands type 'cmds'.
 Also, you can use help [command] for more details about a command.
+
+For online documentation go to http://doc.nuxeo.com/display/NXDOC/Nuxeo+Shell
 
 {bold}COMMAND NAMESPACES{bold}
 
@@ -11,23 +13,15 @@ A namespace is just a registry of commands - so while in a given namespace you w
 Namespaces are hierarchical so a namespace my extend another one to adds more commands. 
 Available namespaces are setup by the Shell implementation. See using a specific shell implementation section for more information. 
    
-The default implementation comes with 3 command namespaces:
-    global - the global namespace. This provides global commands like 'help', 'use', 'cmds' etc.  
-    local  - provides file system commands like: 'ls', 'cd', 'cat' etc. Extends the global namespace. 
-    tremote - provides remote commands against a nuxeo server. Extends the global namespace.
+The default implementation comes with 4 command namespaces:
+    global - the global namespace. This provides global commands like 'help', 'use', 'cmds' etc.
+    local  - provides file system commands like: 'ls', 'cd', 'cat' etc. Extends the global namespace.
+    remote - provides remote commands against a nuxeo server. Extends the global namespace. Available only after connecting to a remote server.
+    automation - expose remote automation operations as commands. Available only after connecting to a remote server.
 
-When launching the shell the 'local' namespace is 
-When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting
+When launching the shell the 'local' namespace is automatically activated.
+When connecting to a remote server the shell will automatically switch to 'remote' namespace. When disconnecting it will go back to the 'local' namespace.
    
-{bold}Loading a specific shell implementation{bold}
-You can write your own shell implementation to provide additional command namespaces. 
-This way you can for example add a CMIS namespace to provide a CMIS based shell over a remote Nuxeo. 
-
-To force a specific shell implementation to be used when starting - you can use -Dshell.capabilities="caps" in the command line.
-The capabilities is a comma separated list of capabilties that the shell should provide. 
-The default capabilities string is "automation" - which will load the first shell found that is providing "automation".
-To load the right shell implementation - the Java service loader is used. 
-
 {bold}AUTO COMPLETION{bold}
 Each command may provide custom auto-completion for its parameter or argument values. 
 Also, the shell is providing built-in auto-completion for commands and parameter names.
@@ -55,6 +49,14 @@ To connect to a server you should use the global 'connect' command. This command
 You can either pass thse arguments to the connect command itself or to the shell command line when starting.
 You can use -u for the username, -p for the password and the URL should be given as argument.
 If password is not specified you will be prompted for a password when in interactive mode.
+
+{bold}SHELL VERSION{bold}
+You can launch the shell using
+
+java -jar nuxeo-shell.jar --version
+
+to get information about the shell version and the minimal server version required by the shell to correctly run against a remote server.
+You can also have this information by using the version command.
 
 {bold}EXAMPLE{bold}
 Here is an example of a short session: 

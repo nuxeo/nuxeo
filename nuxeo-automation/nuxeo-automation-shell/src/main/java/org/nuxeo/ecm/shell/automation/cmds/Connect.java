@@ -24,7 +24,7 @@ import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.automation.AutomationShell;
+import org.nuxeo.ecm.shell.automation.AutomationFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,10 +39,10 @@ public class Connect implements Runnable {
     @Argument(name = "url", index = 0, required = false, help = "The url of the automation server")
     protected String url;
 
-    @Parameter(name = "-u", hasValue = true, help = "The url of the automation server")
+    @Parameter(name = "-u", hasValue = true, help = "The username")
     protected String username;
 
-    @Parameter(name = "-p", hasValue = true, help = "the password")
+    @Parameter(name = "-p", hasValue = true, help = "The password")
     protected String password;
 
     public void run() {
@@ -60,7 +60,8 @@ public class Connect implements Runnable {
             password = shell.getConsole().readLine("Password: ", '*');
         }
         try {
-            ((AutomationShell) shell).connect(url, username, password);
+            shell.getFeature(AutomationFeature.class).connect(url, username,
+                    password);
         } catch (Exception e) {
             throw new ShellException("Failed to connect to " + url, e);
         }

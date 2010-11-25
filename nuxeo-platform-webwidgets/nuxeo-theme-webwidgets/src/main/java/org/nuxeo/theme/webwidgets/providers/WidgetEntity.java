@@ -36,7 +36,6 @@ import org.nuxeo.theme.webwidgets.WidgetState;
 @Entity
 @Table(name = "NXP_WEBW_WIDG")
 @NamedQueries( {
-        @NamedQuery(name = "Widget.removeAll", query = "DELETE WidgetEntity"),
         @NamedQuery(name = "Widget.findAll", query = "FROM WidgetEntity widget WHERE widget.region=:region ORDER BY widget.order"),
         @NamedQuery(name = "Widget.findByScope", query = "FROM WidgetEntity widget WHERE widget.region=:region AND widget.scope=:scope ORDER BY widget.order") })
 public class WidgetEntity implements Widget, Serializable {
@@ -139,6 +138,22 @@ public class WidgetEntity implements Widget, Serializable {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof WidgetEntity) {
+            return ((WidgetEntity) other).id == id;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
 }

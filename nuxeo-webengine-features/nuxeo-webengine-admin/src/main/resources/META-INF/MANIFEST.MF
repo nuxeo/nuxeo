@@ -63,3 +63,4 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.runtime.osgi,
  org.osgi.framework;version="1.4"
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.admin;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.admin.AdminApp

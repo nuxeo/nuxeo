@@ -47,7 +47,7 @@ public class RunChainWithFile implements Runnable {
     @Parameter(name = "-ctx", hasValue = true, help = "Use this to set execution context variables. Syntax is: k1=v1,k1=v2")
     protected String ctxVars;
 
-    @Parameter(name = "-s", hasValue = true, help = "Use this to change the separator used in context variables. THe default is ','")
+    @Parameter(name = "-s", hasValue = true, help = "Use this to change the separator used in context variables. The default is ','")
     protected String sep = ",";
 
     @Argument(name = "chain", index = 0, required = true, completor = ChainCompletor.class, help = "The chain to run")

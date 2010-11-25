@@ -14,29 +14,34 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.fs;
+package org.nuxeo.ecm.webengine.admin;
 
-import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.webengine.app.WebApplication;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class FileSystemShell extends Shell {
+public class AdminApp extends WebApplication {
 
-    protected FileSystem fs;
-
-    public FileSystemShell() {
-        fs = new FileSystem();
-        putContextObject(FileSystem.class, fs);
-        addValueAdapter(new FileValueAdapter());
-        addRegistry(FileSystemCommands.INSTANCE);
-        setActiveRegistry(FileSystemCommands.INSTANCE.getName());
+    public AdminApp() {
+        super("Admin", "base");
     }
 
-    public FileSystem getFileSystem() {
-        return fs;
+    @Override
+    public Set<Class<?>> getClasses() {
+        HashSet<Class<?>> classes = new HashSet<Class<?>>();
+        classes.add(Main.class);
+        return classes;
+    }
+
+    @Override
+    public Class<?>[] getWebTypes() {
+        return new Class<?>[] { Main.class, User.class, Group.class,
+                UserService.class, EngineService.class };
     }
 
 }

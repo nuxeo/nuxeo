@@ -31,6 +31,10 @@ public class CommandRegistryCompletor extends jline.SimpleCompletor {
 
     final Shell shell;
 
+    public CommandRegistryCompletor() {
+        this(Shell.get());
+    }
+
     public CommandRegistryCompletor(Shell shell) {
         super(new String[0]);
         this.shell = shell;

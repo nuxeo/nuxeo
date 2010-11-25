@@ -14,27 +14,40 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.automation.cmds;
+package org.nuxeo.ecm.shell.cmds;
 
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.automation.AutomationFeature;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "disconnect", help = "Close current connection to server. If not connected nothing is done.")
-public class Disconnect implements Runnable {
+@Command(name = "version", help = "Print Nuxeo Shell Version")
+public class Version implements Runnable {
 
     @Context
-    protected Shell shell;
+    Shell shell;
 
     public void run() {
-        shell.removeContextObject(Session.class);
-        shell.getFeature(AutomationFeature.class).disconnect();
+        shell.getConsole().println(getShellVersionMessage());
+        shell.getConsole().println(getServerVersionMessage());
     }
 
+    public static String getShellVersionMessage() {
+        return "Nuxeo Shell Version: " + getShellVersion();
+    }
+
+    public static String getServerVersionMessage() {
+        return "Nuxeo Server Minimal Version: " + getServerVersion();
+    }
+
+    public static String getShellVersion() {
+        return Shell.class.getPackage().getImplementationVersion();
+    }
+
+    public static String getServerVersion() {
+        return Shell.class.getPackage().getSpecificationVersion();
+    }
 }

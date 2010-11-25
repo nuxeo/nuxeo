@@ -39,7 +39,7 @@ import org.nuxeo.ecm.shell.impl.DefaultCommandType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class CommandRegistry {
+public abstract class CommandRegistry {
 
     protected String name;
 
@@ -52,6 +52,10 @@ public class CommandRegistry {
         this.parent = parent;
         this.name = name;
     }
+
+    public abstract String getTitle();
+
+    public abstract String getDescription();
 
     public String getName() {
         return name;
@@ -95,6 +99,16 @@ public class CommandRegistry {
     public CommandType[] getCommandTypes() {
         Set<CommandType> set = getCommandTypeSet();
         CommandType[] ar = set.toArray(new CommandType[set.size()]);
+        Arrays.sort(ar, new Comparator<CommandType>() {
+            public int compare(CommandType o1, CommandType o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return ar;
+    }
+
+    public CommandType[] getLocalCommandTypes() {
+        CommandType[] ar = cmds.values().toArray(new CommandType[cmds.size()]);
         Arrays.sort(ar, new Comparator<CommandType>() {
             public int compare(CommandType o1, CommandType o2) {
                 return o1.getName().compareTo(o2.getName());

@@ -8,9 +8,13 @@
     <version>5.4.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <version>1.0-SNAPSHOT</version>
   <artifactId>nuxeo-automation-shell</artifactId>
   <name>Nuxeo Automation Shell</name>
   <description>Automation Shell provides a command line client that is using automation to invoke a remove nuxeo server.</description>
+  <properties>
+    <nuxeo.server.version>5.4.1-SNAPSHOT</nuxeo.server.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -78,6 +82,26 @@
       </plugins>
       </pluginManagement>
       <plugins>
+      <!-- needed to add correct Implementation-Version -->
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3</version>
+          <configuration>
+            <archive>
+              <manifestFile>
+                src/main/resources/META-INF/MANIFEST.MF
+              </manifestFile>
+              <manifestEntries>
+                <Specification-Version>${nuxeo.server.version}</Specification-Version>
+                <Implementation-Title>Nuxeo Shell</Implementation-Title>
+                <Implementation-Version>${project.version}</Implementation-Version>
+                <Implementation-Vendor>Nuxeo</Implementation-Vendor>
+              </manifestEntries>
+            </archive>
+          </configuration>
+      </plugin>
+      <!-- needed for building the all in one JAR -->
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
         <executions>

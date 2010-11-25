@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
+import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
 import org.nuxeo.ecm.shell.automation.DocRefCompletor;
@@ -38,17 +39,29 @@ public class Ls implements Runnable {
     protected RemoteContext ctx;
 
     @Argument(name = "doc", index = 0, required = false, completor = DocRefCompletor.class, help = "A document to list its content. If not specified list the current document content. To use UID references prefix them with 'doc:'.")
-    protected String path;
+    protected DocRef root;
+
+    @Parameter(name = "-uid", hasValue = false, help = "If used the documents will be printed using the document UID.")
+    protected boolean uid = false;
 
     public void run() {
         ShellConsole console = ctx.getShell().getConsole();
-        DocRef root = ctx.resolveRef(path);
+        if (root == null) {
+            // get the current document if target doc was not specified.
+            root = ctx.getDocument();
+        }
         try {
-            for (Document doc : ctx.getDocumentService().getChildren(root)) {
-                DocumentHelper.printName(console, doc);
+            if (uid) {
+                for (Document doc : ctx.getDocumentService().getChildren(root)) {
+                    console.println(doc.getId());
+                }
+            } else {
+                for (Document doc : ctx.getDocumentService().getChildren(root)) {
+                    DocumentHelper.printName(console, doc);
+                }
             }
         } catch (Exception e) {
-            throw new ShellException("Failed to list document " + path, e);
+            throw new ShellException("Failed to list document " + root, e);
         }
 
     }

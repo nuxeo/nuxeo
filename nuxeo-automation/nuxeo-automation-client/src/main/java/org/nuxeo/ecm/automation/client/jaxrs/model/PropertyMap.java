@@ -24,12 +24,12 @@ import java.util.Set;
 /**
  * A flat representation of a document properties. Dates are in
  * YYYY-MM-DDThh:mm:ssZ (UTC) format
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PropertyMap {
 
-    protected LinkedHashMap<String, Object> map;
+    protected final LinkedHashMap<String, Object> map;
 
     public PropertyMap() {
         map = new LinkedHashMap<String, Object>();
@@ -39,8 +39,8 @@ public class PropertyMap {
         map = new LinkedHashMap<String, Object>(props.map);
     }
 
-    public PropertyMap(Map<String, String> map) {
-        map = new LinkedHashMap<String, String>(map);
+    public PropertyMap(Map<String, Object> map) {
+        this.map = new LinkedHashMap<String, Object>(map);
     }
 
     public PropertyMap(int size) {
@@ -184,6 +184,7 @@ public class PropertyMap {
         return map;
     }
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {

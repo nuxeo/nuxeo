@@ -31,6 +31,7 @@ import java.util.ServiceLoader;
 
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.cmds.Interactive;
+import org.nuxeo.ecm.shell.cmds.Version;
 import org.nuxeo.ecm.shell.fs.FileSystem;
 import org.nuxeo.ecm.shell.impl.DefaultCompletorProvider;
 import org.nuxeo.ecm.shell.impl.DefaultConsole;
@@ -38,6 +39,9 @@ import org.nuxeo.ecm.shell.impl.DefaultValueAdapter;
 import org.nuxeo.ecm.shell.utils.StringUtils;
 
 /**
+ * 
+ * There is a single instance of the shell in the VM. To get it call
+ * {@link Shell#get()}.
  * 
  * parse args if no cmd attempt to read from stdin a list of cmds or from a
  * faile -f if cmd run it. A cmd line instance is parsing a single command.
@@ -48,43 +52,24 @@ import org.nuxeo.ecm.shell.utils.StringUtils;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public abstract class Shell {
+public final class Shell {
 
     /**
      * The shell instance
      */
-    private static Shell shell;
+    private volatile static Shell shell;
 
     public static Shell get() {
-        if (shell == null) {
-            String caps = System.getProperty("shell.capabilities");
-            if (caps == null) {
-                caps = "automation";
-            }
-            shell = loadShell(caps);
-        }
-        return shell;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static Shell loadShell(String capabilities) {
-        if (capabilities == null) {
-            throw new IllegalArgumentException("Capabilities are required");
-        }
-        String[] caps = StringUtils.split(capabilities, ',', true);
-        ShellFactory factory = null;
-        ServiceLoader<ShellFactory> loader = ServiceLoader.load(
-                ShellFactory.class, Shell.class.getClassLoader());
-        Iterator<ShellFactory> it = loader.iterator();
-        while (it.hasNext()) {
-            factory = it.next();
-            if (factory.hasCapabilities(caps)) {
-                return factory.getShell();
+        Shell _shell = shell;
+        if (_shell == null) {
+            synchronized (Shell.class) {
+                if (shell == null) {
+                    shell = new Shell();
+                    _shell = shell;
+                }
             }
         }
-        throw new ShellException(
-                "No shell found with the requested capabilities: "
-                        + capabilities);
+        return _shell;
     }
 
     protected LinkedHashMap<String, String> mainArgs;
@@ -103,12 +88,15 @@ public abstract class Shell {
 
     protected Map<Class<?>, Object> ctxObjects;
 
-    protected Shell() {
+    protected Map<Class<?>, ShellFeature> features;
+
+    private Shell() {
         if (shell != null) {
             throw new ShellException("Shell already loaded");
         }
         shell = this;
 
+        features = new HashMap<Class<?>, ShellFeature>();
         activeRegistry = GlobalCommands.INSTANCE;
         cmds = new HashMap<String, CommandRegistry>();
         ctx = new HashMap<String, Object>();
@@ -121,6 +109,17 @@ public abstract class Shell {
         addCompletorProvider(new DefaultCompletorProvider());
         addValueAdapter(new DefaultValueAdapter());
         addRegistry(GlobalCommands.INSTANCE);
+
+        loadFeatures();
+    }
+
+    protected void loadFeatures() {
+        ServiceLoader<ShellFeature> loader = ServiceLoader.load(
+                ShellFeature.class, Shell.class.getClassLoader());
+        Iterator<ShellFeature> it = loader.iterator();
+        while (it.hasNext()) {
+            addFeature(it.next());
+        }
     }
 
     public LinkedHashMap<String, String> getMainArguments() {
@@ -129,6 +128,12 @@ public abstract class Shell {
 
     public void main(String[] args) throws Exception {
         mainArgs = collectArgs(args);
+        String v = mainArgs.get("--version");
+        if (v != null) {
+            System.out.println(Version.getShellVersionMessage());
+            System.out.println(Version.getServerVersionMessage());
+            return;
+        }
         String path = mainArgs.get("-f");
         if (path != null) {
             FileInputStream in = new FileInputStream(new File(path));
@@ -248,6 +253,10 @@ public abstract class Shell {
 
     public void addValueAdapter(ValueAdapter adapter) {
         this.adapter.addAdapter(adapter);
+    }
+
+    public void removeValueAdapter(ValueAdapter adapter) {
+        this.adapter.removeAdapter(adapter);
     }
 
     public void addCompletorProvider(CompletorProvider provider) {
@@ -397,6 +406,24 @@ public abstract class Shell {
 
     public void bye() {
         console.println("Bye.");
+    }
+
+    public ShellFeature[] getFeatures() {
+        return features.values().toArray(new ShellFeature[features.size()]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ShellFeature> T getFeature(Class<T> type) {
+        return (T) features.get(type);
+    }
+
+    public void addFeature(ShellFeature feature) {
+        if (features.containsKey(feature.getClass())) {
+            throw new ShellException("Feature already registered: "
+                    + feature.getClass());
+        }
+        feature.install(this);
+        features.put(feature.getClass(), feature);
     }
 
 }

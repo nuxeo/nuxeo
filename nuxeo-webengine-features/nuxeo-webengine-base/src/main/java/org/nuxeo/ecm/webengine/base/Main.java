@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.webengine.base;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,13 +42,14 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.ecm.webengine.model.impl.ModuleShortcut;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 
 /**
  * The web entry point of WebEngine.
  * <p>
  * This is a mix between an webengine module and a JAX-RS root resource
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Path("/")
@@ -52,6 +58,7 @@ import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 public class Main extends ModuleRoot {
 
     protected final ModuleManager mgr;
+
     protected Module module;
 
     public Main(@Context UriInfo info, @Context HttpHeaders headers) {
@@ -80,7 +87,26 @@ public class Main extends ModuleRoot {
     @GET
     public Object doGet() {
         init();
-        return getView("index");
+        ArrayList<ModuleShortcut> list = new ArrayList<ModuleShortcut>();
+        for (ModuleConfiguration mc : ctx.getEngine().getModuleManager().getModules()) {
+            List<ModuleShortcut> items = mc.getShortcuts();
+            if (items != null && !items.isEmpty()) {
+                for (ModuleShortcut item : items) {
+                    if (item.title == null) {
+                        item.title = mc.name;
+                    }
+                }
+                list.addAll(items);
+            } else if (!mc.isHeadless && mc.path != null) {
+                list.add(new ModuleShortcut(mc.path, mc.name));
+            }
+        }
+        Collections.sort(list, new Comparator<ModuleShortcut>() {
+            public int compare(ModuleShortcut o1, ModuleShortcut o2) {
+                return o1.title.compareTo(o2.title);
+            }
+        });
+        return getView("index").arg("moduleLinks", list);
     }
 
     @GET
@@ -103,7 +129,8 @@ public class Main extends ModuleRoot {
         if (md != null) {
             return md.get().getRootObject(ctx);
         } else {
-            throw new WebResourceNotFoundException("No resource found at " + path);
+            throw new WebResourceNotFoundException("No resource found at "
+                    + path);
         }
     }
 
@@ -111,9 +138,11 @@ public class Main extends ModuleRoot {
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
-            return Response.status(401).entity(getTemplate("error/error_401.ftl")).type("text/html").build();
+            return Response.status(401).entity(
+                    getTemplate("error/error_401.ftl")).type("text/html").build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
+            return Response.status(404).entity(
+                    getTemplate("error/error_404.ftl")).type("text/html").build();
         } else {
             return super.handleError(e);
         }

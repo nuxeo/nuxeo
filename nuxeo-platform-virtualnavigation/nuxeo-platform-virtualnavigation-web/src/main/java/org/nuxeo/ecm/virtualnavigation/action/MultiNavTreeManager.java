@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -36,8 +34,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.navigation.Page;
-import org.jboss.seam.navigation.Pages;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
@@ -50,21 +46,18 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("multiNavTreeManager")
 @Scope(CONVERSATION)
-@Install(precedence=FRAMEWORK)
+@Install(precedence = FRAMEWORK)
 public class MultiNavTreeManager implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String STD_NAV_TREE = "CONTENT_TREE";
 
     public static final String STD_NAV_TREE_LABEL = "label.content.tree";
 
-    private static final long serialVersionUID = 1L;
+    protected List<NavTreeDescriptor> availableNavigationTrees;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(MultiNavTreeManager.class);
-
-    private static List<NavTreeDescriptor> availableNavigationTrees;
-
-    private static String thePath = "";
+    protected String thePath = "";
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
@@ -89,7 +82,7 @@ public class MultiNavTreeManager implements Serializable {
         return availableNavigationTrees;
     }
 
-    @Factory(value="selectedNavigationTree", scope=ScopeType.EVENT)
+    @Factory(value = "selectedNavigationTree", scope = ScopeType.EVENT)
     public String getSelectedNavigationTree() {
         if (selectedNavigationTree == null) {
             setSelectedNavigationTree(STD_NAV_TREE);
@@ -97,7 +90,7 @@ public class MultiNavTreeManager implements Serializable {
         return selectedNavigationTree;
     }
 
-    @Factory(value="selectedNavigationTreeDescriptor", scope=ScopeType.EVENT)
+    @Factory(value = "selectedNavigationTreeDescriptor", scope = ScopeType.EVENT)
     public NavTreeDescriptor getSelectedNavigationTreeDescriptor() {
         String navTreeName = getSelectedNavigationTree();
         for (NavTreeDescriptor desc : getAvailableNavigationTrees()) {

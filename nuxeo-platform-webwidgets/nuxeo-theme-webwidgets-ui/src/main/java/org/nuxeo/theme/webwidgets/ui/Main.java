@@ -25,13 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -70,49 +70,39 @@ public class Main extends ModuleRoot {
 
     @POST
     @Path("add_widget")
-    public void addWidget() {
-        FormData form = ctx.getForm();
-        int area = Integer.valueOf(form.getString("area"));
-        String widgetName = form.getString("widget_name");
-        int order = Integer.valueOf(form.getString("order"));
+    public void addWidget(@FormParam("area") int area,
+            @FormParam("widget_name") String widgetName,
+            @FormParam("order") int order) {
         Editor.addWidget(area, widgetName, order);
     }
 
     @POST
     @Path("move_widget")
-    public String moveWidget() {
-        FormData form = ctx.getForm();
-        int srcArea = Integer.valueOf(form.getString("src_area"));
-        String srcUid = form.getString("src_uid");
-        int destArea = Integer.valueOf(form.getString("dest_area"));
-        int destOrder = Integer.valueOf(form.getString("dest_order"));
+    public String moveWidget(@FormParam("src_area") int srcArea,
+            @FormParam("src_uid") String srcUid,
+            @FormParam("dest_area") int destArea,
+            @FormParam("dest_order") int destOrder) {
         return Editor.moveWidget(srcArea, srcUid, destArea, destOrder);
     }
 
     @POST
     @Path("remove_widget")
-    public void removeWidget() {
-        FormData form = ctx.getForm();
-        String providerName = form.getString("provider");
-        String widgetUid = form.getString("widget_uid");
+    public void removeWidget(@FormParam("provider") String providerName,
+            @FormParam("widget_uid") String widgetUid) {
         Editor.removeWidget(providerName, widgetUid);
     }
 
     @POST
     @Path("set_widget_state")
-    public void setWidgetState() {
-        FormData form = ctx.getForm();
-        String providerName = form.getString("provider");
-        String widgetUid = form.getString("widget_uid");
-        String state = form.getString("state");
+    public void setWidgetState(@FormParam("provider") String providerName,
+            @FormParam("widget_uid") String widgetUid,
+            @FormParam("state") String state) {
         Editor.setWidgetState(providerName, widgetUid, state);
     }
 
     @POST
     @Path("set_widget_category")
-    public void setWidgetCategory() {
-        FormData form = ctx.getForm();
-        String category = form.getString("category");
+    public void setWidgetCategory(@FormParam("category") String category) {
         SessionManager.setWidgetCategory(category);
     }
 
@@ -140,7 +130,6 @@ public class Main extends ModuleRoot {
         String dataUrl = String.format("nxwebwidgets://data/%s/%s/%s/%s",
                 providerName, widgetUid, dataName, timestamp);
         Editor.setWidgetPreference(providerName, widgetUid, dataName, dataUrl);
-
         return res;
     }
 
@@ -173,11 +162,7 @@ public class Main extends ModuleRoot {
     @POST
     @Path("update_widget_preferences")
     @SuppressWarnings("unchecked")
-    public void updateWidgetPreferences() {
-        FormData form = ctx.getForm();
-        String providerName = form.getString("provider");
-        String widgetUid = form.getString("widget_uid");
-        String preferences_map = form.getString("preferences");
+    public void updateWidgetPreferences(@FormParam("provider") String providerName,  @FormParam("widget_uid") String widgetUid, @FormParam("preferences") String preferences_map ) {
         Map<String, String> preferencesMap = JSONObject.fromObject(preferences_map);
         Editor.updateWidgetPreferences(providerName, widgetUid, preferencesMap);
     }

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.shell.automation;
 
 import jline.Completor;
 
-import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.model.DocRef;
@@ -27,31 +26,33 @@ import org.nuxeo.ecm.shell.CommandRegistry;
 import org.nuxeo.ecm.shell.CommandType;
 import org.nuxeo.ecm.shell.CompletorProvider;
 import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.ShellException;
+import org.nuxeo.ecm.shell.ShellFeature;
 import org.nuxeo.ecm.shell.ValueAdapter;
 import org.nuxeo.ecm.shell.automation.cmds.Connect;
 import org.nuxeo.ecm.shell.automation.cmds.OperationCommandType;
 import org.nuxeo.ecm.shell.automation.cmds.RemoteCommands;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
-import org.nuxeo.ecm.shell.fs.FileSystemShell;
 import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
-import org.nuxeo.ecm.shell.impl.DefaultCommandType;
 
 /**
+ * The automation feature is providing connection with Nuxeo servers through
+ * automation service and remote commands based on operations.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class AutomationShell extends FileSystemShell implements ValueAdapter,
+public class AutomationFeature implements ShellFeature, ValueAdapter,
         CompletorProvider {
 
     public final static String AUTOMATION_NS = "automation";
 
     protected RemoteContext ctx;
 
-    public AutomationShell() {
-        addCompletorProvider(this);
-        addValueAdapter(this);
-        GlobalCommands.INSTANCE.addCommandType(DefaultCommandType.fromAnnotatedClass(Connect.class));
+    public void install(Shell shell) {
+        shell.putContextObject(AutomationFeature.class, this);
+        shell.addCompletorProvider(this);
+        shell.addValueAdapter(this);
+        GlobalCommands.INSTANCE.addAnnotatedCommand(Connect.class);
     }
 
     public HttpAutomationClient connect(String url, String username,
@@ -59,19 +60,19 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
         if (isConnected()) {
             disconnect();
         }
+        Shell shell = Shell.get();
         HttpAutomationClient client = new HttpAutomationClient(url);
         Session session = client.getSession(username, password);
         ctx = new RemoteContext(this, client, session);
 
         // switch to automation command namespace
-        addRegistry(RemoteCommands.INSTANCE);
-        CommandRegistry reg = new CommandRegistry(GlobalCommands.INSTANCE,
-                AUTOMATION_NS);
+        shell.addRegistry(RemoteCommands.INSTANCE);
+        CommandRegistry reg = new AutomationRegistry();
         // build automation registry
         buildCommands(reg, session);
-        addRegistry(reg);
+        shell.addRegistry(reg);
 
-        setActiveRegistry(RemoteCommands.INSTANCE.getName());
+        shell.setActiveRegistry(RemoteCommands.INSTANCE.getName());
         return client;
     }
 
@@ -92,11 +93,10 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
         if (ctx != null) {
             ctx.getClient().shutdown();
             ctx.dispose();
-            setActiveRegistry(FileSystemCommands.INSTANCE.getName());
-            removeRegistry(RemoteCommands.INSTANCE.getName());
-            removeRegistry(AUTOMATION_NS);
-            removeContextObject(AutomationClient.class);
-            removeContextObject(Session.class);
+            Shell shell = Shell.get();
+            shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
+            shell.removeRegistry(RemoteCommands.INSTANCE.getName());
+            shell.removeRegistry(AUTOMATION_NS);
             ctx = null;
         }
     }
@@ -113,19 +113,9 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
         return ctx;
     }
 
-    @Override
-    public <T> T getContextObject(Class<T> type) {
-        T result = super.getContextObject(type);
-        if (result == null && AutomationClient.class.isAssignableFrom(type)) {
-            throw new ShellException(
-                    "You are not connected! Use the connect command to connect to a remote server first.");
-        }
-        return result;
-    }
-
     public Completor getCompletor(Shell shell, CommandType cmd, Class<?> type) {
         if (DocRef.class.isAssignableFrom(type)) {
-            return new DocRefCompletor(((AutomationShell) shell).getContext());
+            return new DocRefCompletor(ctx);
         }
         return null;
     }
@@ -136,6 +126,22 @@ public class AutomationShell extends FileSystemShell implements ValueAdapter,
             return (T) ctx.resolveRef(value);
         }
         return null;
+    }
+
+    static class AutomationRegistry extends CommandRegistry {
+        public AutomationRegistry() {
+            super(GlobalCommands.INSTANCE, AUTOMATION_NS);
+        }
+
+        @Override
+        public String getTitle() {
+            return "Nuxeo Automation Commands";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Commands exposed by the Nuxeo Server through automation";
+        }
     }
 
 }

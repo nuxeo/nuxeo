@@ -27,14 +27,16 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.shell.Shell;
+import org.nuxeo.ecm.shell.ShellFeature;
+import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
+
 /**
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class FileSystem {
-
-    public static final String KEY = "fs";
+public class FileSystem implements ShellFeature {
 
     protected List<File> wdStack;
 
@@ -45,6 +47,13 @@ public class FileSystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void install(Shell shell) {
+        shell.putContextObject(FileSystem.class, this);
+        shell.addValueAdapter(new FileValueAdapter());
+        shell.addRegistry(FileSystemCommands.INSTANCE);
+        shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
     }
 
     public List<File> getStack() {
@@ -191,6 +200,10 @@ public class FileSystem {
         ArrayList<String> result = new ArrayList<String>();
         StringBuilder lastLine = null;
         for (String line : lines) {
+            line = line.trim();
+            if (line.length() == 0 || line.startsWith("#")) {
+                continue;
+            }
             if (line.endsWith("\\")) {
                 line = line.substring(0, line.length() - 1);
                 if (lastLine != null) {
