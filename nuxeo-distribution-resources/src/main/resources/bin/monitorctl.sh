@@ -149,16 +149,16 @@ log_misc() {
 
 
 get_pgconf() {
-    CONF=$LOG_DIR/nuxeo-conf.txt
-    TEMPLATE=`cat $CONF | grep nuxeo.templates | grep postgresql | cut -d= -f2`
+    CONF=$HERE/nuxeo.conf
+    TEMPLATE=`grep "^nuxeo.templates" $CONF | grep postgresql | cut -d= -f2`
     if [ -z $TEMPLATE ]; then
 	return
     fi
-    DBPORT=`cat $CONF | grep nuxeo.db.port | cut -d= -f2`
-    DBHOST=`cat $CONF | grep nuxeo.db.host | cut -d= -f2`
-    DBNAME=`cat $CONF | grep nuxeo.db.name | cut -d= -f2`
-    DBUSER=`cat $CONF | grep nuxeo.db.user | cut -d= -f2`
-    DBPWD=`cat $CONF | grep nuxeo.db.password | cut -d= -f2`
+    DBPORT=`grep "^nuxeo.db.port" $CONF| cut -d= -f2`
+    DBHOST=`grep "^nuxeo.db.host" $CONF | cut -d= -f2`
+    DBNAME=`grep "^nuxeo.db.name" $CONF | cut -d= -f2`
+    DBUSER=`grep "^nuxeo.db.user" $CONF | cut -d= -f2`
+    DBPWD=`grep "^nuxeo.db.password" $CONF | cut -d= -f2`
     if [ -z $DBHOST ]; then 
 	DBHOST=localhost
     fi
@@ -207,7 +207,7 @@ vacuum() {
 	die "No PostgreSQL configuration found."
     fi
     echo "Vacuuming $DBNAME `date --rfc-3339=second` ..."
-    PGPASSWORD=$DBPWD vacuumdb -fzv $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/vacuum.log
+    PGPASSWORD=$DBPWD LC_ALL=C vacuumdb -fzv $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/vacuum.log
     echo "Reindexing $DBNAME `date --rfc-3339=second` ..."
     PGPASSWORD=$DBPWD reindexdb $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT &> "$LOG_DIR"/reindexdb.log
     echo "Done `date --rfc-3339=second`"
