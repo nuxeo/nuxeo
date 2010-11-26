@@ -78,6 +78,12 @@ public class TestHelpers extends NXRuntimeTestCase {
         expression = ValueExpressionHelper.createExpressionString(
                 "pageSelection", fieldDef);
         assertEquals("#{pageSelection['data']['ref']}", expression);
+
+        fieldDef = new FieldDescriptor(null, "contextData['request/comment']");
+        expression = ValueExpressionHelper.createExpressionString("document",
+                fieldDef);
+        assertEquals("#{document.contextData['request/comment']}", expression);
+
     }
 
     public static String getTestFile(String filePath) {

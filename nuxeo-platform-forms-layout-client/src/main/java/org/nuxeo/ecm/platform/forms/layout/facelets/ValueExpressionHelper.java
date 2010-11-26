@@ -61,9 +61,9 @@ public class ValueExpressionHelper {
         }
 
         String dmResolverValue;
-        if (fieldName.contains(".")) {
-            expressionElements.add(fieldName);
+        if (fieldName.contains(".") || fieldName.contains("[")) {
             // already formatted as an EL expression => do not use brackets
+            expressionElements.add(fieldName);
             dmResolverValue = String.format("#{%s}", StringUtils.join(
                     expressionElements, "."));
         } else {
