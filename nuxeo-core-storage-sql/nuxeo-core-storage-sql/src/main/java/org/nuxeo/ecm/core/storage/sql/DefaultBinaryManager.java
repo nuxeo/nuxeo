@@ -77,7 +77,7 @@ public class DefaultBinaryManager implements BinaryManager {
     @Override
     public void initialize(RepositoryDescriptor repositoryDescriptor)
             throws IOException {
-        String path = repositoryDescriptor.binaryStorePath;
+        String path = Framework.expandVars(repositoryDescriptor.binaryStorePath);
         if (path == null || path.trim().length() == 0) {
             path = DEFAULT_PATH;
         }
