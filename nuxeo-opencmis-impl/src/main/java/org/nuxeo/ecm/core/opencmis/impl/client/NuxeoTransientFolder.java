@@ -56,9 +56,6 @@ public class NuxeoTransientFolder extends NuxeoTransientFileableObject
         super(object);
     }
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     @Override
     public Document createDocument(Map<String, ?> properties,
             ContentStream contentStream, VersioningState versioningState,

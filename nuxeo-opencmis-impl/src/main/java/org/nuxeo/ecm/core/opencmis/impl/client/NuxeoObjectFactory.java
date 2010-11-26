@@ -63,9 +63,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoObjectFactory implements ObjectFactory {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     private final NuxeoSession session;
 
     public NuxeoObjectFactory(NuxeoSession session) {

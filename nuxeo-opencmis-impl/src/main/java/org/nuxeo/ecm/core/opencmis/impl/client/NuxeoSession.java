@@ -64,9 +64,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
  */
 public class NuxeoSession implements Session {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     public static final OperationContext DEFAULT_CONTEXT = new OperationContextImpl(
             null, false, true, false, IncludeRelationships.NONE, null, true,
             null, true, 10);

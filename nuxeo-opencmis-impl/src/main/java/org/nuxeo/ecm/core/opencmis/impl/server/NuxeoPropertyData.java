@@ -71,9 +71,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
  */
 public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected final String name;
 
     protected final boolean readOnly;

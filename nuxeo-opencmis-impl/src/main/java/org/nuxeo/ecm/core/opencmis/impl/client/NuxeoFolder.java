@@ -75,9 +75,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     public NuxeoFolder(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);

@@ -34,9 +34,6 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 public class NuxeoTransientDocument extends NuxeoTransientFileableObject
         implements TransientDocument {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected ContentStream contentStream;
 
     protected boolean contentStreamOverwrite;

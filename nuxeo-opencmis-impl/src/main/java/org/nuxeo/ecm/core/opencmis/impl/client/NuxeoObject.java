@@ -63,9 +63,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyDataBase;
  */
 public abstract class NuxeoObject implements CmisObject {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected static final Set<Updatability> UPDATABILITY_READWRITE = Collections.singleton(Updatability.READWRITE);
 
     protected final NuxeoSession session;

@@ -29,9 +29,6 @@ import org.apache.chemistry.opencmis.client.api.TransientFileableCmisObject;
 public class NuxeoTransientFileableObject extends NuxeoTransientObject
         implements TransientFileableCmisObject {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     public NuxeoTransientFileableObject(NuxeoObject object) {
         super(object);
     }

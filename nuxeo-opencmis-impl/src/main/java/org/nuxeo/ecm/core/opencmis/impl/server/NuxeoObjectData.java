@@ -68,9 +68,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
  */
 public class NuxeoObjectData implements ObjectData {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     public static final String STREAM_ICON = "nx:icon";
 
     public DocumentModel doc;

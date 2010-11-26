@@ -32,9 +32,6 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public class NuxeoContentStream implements ContentStream {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected final Blob blob;
 
     public NuxeoContentStream(Blob blob) {

@@ -52,9 +52,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoPropertyData;
  */
 public class NuxeoTransientObject implements TransientCmisObject {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected final NuxeoObject object;
 
     /** Updated properties. */

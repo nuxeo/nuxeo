@@ -41,9 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public abstract class NuxeoPropertyDataBase<T> implements PropertyData<T> {
 
-    /** But this is NOT Serializable */
-    private static final long serialVersionUID = 1L;
-
     protected final PropertyDefinition<T> propertyDefinition;
 
     protected final DocumentModel doc;
