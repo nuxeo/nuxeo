@@ -37,6 +37,7 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
@@ -246,16 +247,18 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Document doc;
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
-        doc.setProperty("dc:title", "new title");
-        doc.setProperty("dc:subjects", Arrays.asList("a", "b", "c"));
-        doc.updateProperties();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("dc:title", "new title");
+        map.put("dc:subjects", Arrays.asList("a", "b", "c"));
+        doc.updateProperties(map);
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         assertEquals("new title", doc.getPropertyValue("dc:title"));
         assertEquals(Arrays.asList("a", "b", "c"),
                 doc.getPropertyValue("dc:subjects"));
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        // TODO test transient object API
+        map.clear();
         map.put("dc:title", "other title");
         map.put("dc:subjects", Arrays.asList("foo"));
         doc.updateProperties(map);
@@ -369,9 +372,31 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("text.png", ren.getTitle());
         assertEquals(394, ren.getBigLength().longValue());
         assertEquals(394, ren.getLength());
-
         // get rendition stream
         ContentStream cs = ren.getContentStream();
+        assertEquals("image/png", cs.getMimeType());
+        if (!isAtomPub) {
+            assertEquals("text.png", cs.getFileName());
+            assertEquals(394, cs.getBigLength().longValue());
+        }
+
+        // get renditions directly with object
+
+        session.clear();
+        OperationContextImpl oc = new OperationContextImpl();
+        oc.setRenditionFilterString("*");
+        ob = session.getObject(session.createObjectId(ob.getId()), oc);
+        renditions = ob.getRenditions();
+        assertEquals(1, renditions.size());
+        ren = renditions.get(0);
+        assertEquals("cmis:thumbnail", ren.getKind());
+        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
+        assertEquals("image/png", ren.getMimeType());
+        assertEquals("text.png", ren.getTitle());
+        assertEquals(394, ren.getBigLength().longValue());
+        assertEquals(394, ren.getLength());
+        // get rendition stream
+        cs = ren.getContentStream();
         assertEquals("image/png", cs.getMimeType());
         if (!isAtomPub) {
             assertEquals("text.png", cs.getFileName());

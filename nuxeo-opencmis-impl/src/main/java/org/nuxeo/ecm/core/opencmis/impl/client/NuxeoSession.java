@@ -31,18 +31,24 @@ import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
+import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
+import org.apache.chemistry.opencmis.client.runtime.util.EmptyItemIterable;
 import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
+import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -57,6 +63,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
  * {@link CoreSession}.
  */
 public class NuxeoSession implements Session {
+
+    /** But this is NOT Serializable */
+    private static final long serialVersionUID = 1L;
 
     public static final OperationContext DEFAULT_CONTEXT = new OperationContextImpl(
             null, false, true, false, IncludeRelationships.NONE, null, true,
@@ -106,12 +115,6 @@ public class NuxeoSession implements Session {
     public void clear() {
     }
 
-    @Override
-    public void cancel() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void save() {
         try {
             coreSession.save();
@@ -364,6 +367,35 @@ public class NuxeoSession implements Session {
             boolean searchAllVersions, OperationContext context) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ItemIterable<Relationship> getRelationships(ObjectId objectId,
+            boolean includeSubRelationshipTypes,
+            RelationshipDirection relationshipDirection, ObjectType type,
+            OperationContext context) {
+        return EmptyItemIterable.instance();
+    }
+
+    @Override
+    public Acl getAcl(ObjectId objectId, boolean onlyBasicPermissions) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public Acl applyAcl(ObjectId objectId, List<Ace> addAces,
+            List<Ace> removeAces, AclPropagation aclPropagation) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public void applyPolicy(ObjectId objectId, ObjectId... policyIds) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public void removePolicy(ObjectId objectId, ObjectId... policyIds) {
+        throw new CmisNotSupportedException();
     }
 
 }

@@ -31,7 +31,8 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Rendition;
-import org.apache.chemistry.opencmis.client.runtime.PersistentPropertyImpl;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.runtime.PropertyImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.DocumentTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.FolderTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.PolicyTypeImpl;
@@ -62,10 +63,19 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoObjectFactory implements ObjectFactory {
 
+    /** But this is NOT Serializable */
+    private static final long serialVersionUID = 1L;
+
     private final NuxeoSession session;
 
     public NuxeoObjectFactory(NuxeoSession session) {
         this.session = session;
+    }
+
+    @Override
+    public void initialize(Session session, Map<String, String> parameters) {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -107,7 +117,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
     @Override
     public <T> Property<T> createProperty(PropertyDefinition<T> type,
             List<T> values) {
-        return new PersistentPropertyImpl<T>(type, values);
+        return new PropertyImpl<T>(type, values);
     }
 
     @Override
