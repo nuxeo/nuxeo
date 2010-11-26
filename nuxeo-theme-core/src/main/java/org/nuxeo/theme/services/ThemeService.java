@@ -56,10 +56,8 @@ import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
-public class ThemeService extends DefaultComponent implements FrameworkListener {
+public class ThemeService extends DefaultComponent {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.theme.services.ThemeService");
@@ -90,31 +88,24 @@ public class ThemeService extends DefaultComponent implements FrameworkListener 
     public void activate(ComponentContext ctx) {
         context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
-        ctx.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                this);
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
         registries = null;
-        ctx.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
-                this);
         log.debug("Theme service deactivated");
     }
 
     @Override
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
-                registerTheme(themeDescriptor);
-            }
-            registerCustomThemes();
+    public void applicationStarted(ComponentContext context) throws Exception {
+        for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
+            registerTheme(themeDescriptor);
         }
+        registerCustomThemes();
         ThemeManager.updateThemeDescriptors();
 
         // setup resource banks
-
         BankManager.setupBanks();
     }
 
