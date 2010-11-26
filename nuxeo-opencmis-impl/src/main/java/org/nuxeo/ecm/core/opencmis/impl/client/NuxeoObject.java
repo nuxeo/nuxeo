@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.CmisObjectAdapter;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.Policy;
@@ -100,16 +99,16 @@ public abstract class NuxeoObject implements CmisObject {
         this.type = type;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public CmisObjectAdapter getAdapter(
-            Class<? extends CmisObjectAdapter> adapterInterface) {
+    public <T> T getAdapter(Class<T> adapterInterface) {
         if (TransientDocument.class.isAssignableFrom(adapterInterface)
                 && this instanceof NuxeoDocument) {
-            return new NuxeoTransientDocument(this);
+            return (T) new NuxeoTransientDocument(this);
         }
         if (TransientFolder.class.isAssignableFrom(adapterInterface)
                 && this instanceof NuxeoFolder) {
-            return new NuxeoTransientFolder(this);
+            return (T) new NuxeoTransientFolder(this);
         }
         throw new CmisRuntimeException("Cannot adapt to "
                 + adapterInterface.getName());
