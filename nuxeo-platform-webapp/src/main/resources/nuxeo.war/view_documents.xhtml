@@ -8,6 +8,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
@@ -46,7 +47,8 @@
       <ui:include src="/incl/message_banner.xhtml"/>
 
       <p class="currentDocumentDescription">
-        <h:outputText value="#{currentDocument.dublincore.description}"/>
+        <nxl:widgetType name="textarea" mode="view"
+          value="#{currentDocument.dublincore.description}" /> 
       </p>
 
       <ui:include src="/incl/document_action_tabs.xhtml"/>
