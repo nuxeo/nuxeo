@@ -38,11 +38,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 public class OOoManagerComponent extends DefaultComponent implements
-        OOoManagerService, FrameworkListener {
+        OOoManagerService {
 
     protected static final Log log = LogFactory.getLog(OOoManagerComponent.class);
 
@@ -80,12 +78,6 @@ public class OOoManagerComponent extends DefaultComponent implements
             OOoManagerDescriptor desc = (OOoManagerDescriptor) contribution;
             descriptor = desc;
         }
-    }
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                this);
     }
 
     @Override
@@ -214,13 +206,12 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            try {
-                startOOoManager();
-            } catch (IOException e) {
-                throw new RuntimeException("Could not start OOoManager.", e);
-            }
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        try {
+            startOOoManager();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not start OOoManager.", e);
         }
     }
 
