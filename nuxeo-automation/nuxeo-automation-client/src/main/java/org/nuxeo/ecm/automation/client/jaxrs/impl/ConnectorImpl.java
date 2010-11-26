@@ -38,7 +38,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 
 /**
  * Connector wrapping a {@link HttpClient} instance.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ConnectorImpl implements Connector {
