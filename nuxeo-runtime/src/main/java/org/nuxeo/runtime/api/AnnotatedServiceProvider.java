@@ -14,7 +14,7 @@
  * Contributors:
  *     "Stephane Lacoin at Nuxeo (aka matic)"
  */
-package org.nuxeo.runtime.binding;
+package org.nuxeo.runtime.api;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -23,9 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceProvider;
 import org.nuxeo.runtime.transaction.Transacted;
 import org.nuxeo.runtime.transaction.TransactedServiceProvider;
 

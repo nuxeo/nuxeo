@@ -18,7 +18,7 @@ package org.nuxeo.runtime.transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.binding.AnnotatedServiceProvider;
+import org.nuxeo.runtime.api.AnnotatedServiceProvider;
 
 /**
  * Allocate transacted invocation handlers and return proxies if
