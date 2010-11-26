@@ -41,38 +41,48 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * This component registers and configures an embedded Jetty server.
  * <p>
  * Contexts are registered like this:
  * <p>
- * First, if there is a {@code jetty.xml} config file, the contexts defined there are registered first;
- * if there is no {@code jetty.xml}, a log context will be create programatically and registered first.
+ * First, if there is a {@code jetty.xml} config file, the contexts defined
+ * there are registered first; if there is no {@code jetty.xml}, a log context
+ * will be create programatically and registered first.
  * <p>
- * Second an empty collection context is registered. Here will be registered all regular war contexts.
+ * Second an empty collection context is registered. Here will be registered all
+ * regular war contexts.
  * <p>
- * Third, the root collection is registered. This way all requests not handled by regular wars are directed
- * to the root war, which usually is the webengine war in a nxserver application.
- *
+ * Third, the root collection is registered. This way all requests not handled
+ * by regular wars are directed to the root war, which usually is the webengine
+ * war in a nxserver application.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class JettyComponent extends DefaultComponent implements FrameworkListener {
+public class JettyComponent extends DefaultComponent {
 
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
+    public static final ComponentName NAME = new ComponentName(
+            "org.nuxeo.runtime.server");
+
     public static final String XP_WEB_APP = "webapp";
+
     public static final String XP_DATA_SOURCE = "datasource";
+
     public static final String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
 
     protected Server server;
+
     // here we are putting all regular war contexts
-    // the root context will be appended after this context collection to be sure the regular contexts are checked first
-    // This is because the root context is bound to / so if it is checked first it will consume
+    // the root context will be appended after this context collection to be
+    // sure the regular contexts are checked first
+    // This is because the root context is bound to / so if it is checked first
+    // it will consume
     // all requests even if there is a context that is the target of the request
     protected ContextHandlerCollection warContexts;
+
     protected File config;
+
     protected File log;
 
     private static final Log logger = LogFactory.getLog(JettyComponent.class);
@@ -83,8 +93,6 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
 
         // apply bundled configuration
         URL cfg = null;
@@ -100,7 +108,8 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
                 }
             }
         } else {
-            File file = new File(Environment.getDefault().getConfig(), "jetty.xml");
+            File file = new File(Environment.getDefault().getConfig(),
+                    "jetty.xml");
             if (file.isFile()) {
                 cfg = file.toURI().toURL();
             }
@@ -109,13 +118,13 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
         if (cfg != null) {
             hasConfigFile = true;
             XmlConfiguration configuration = new XmlConfiguration(cfg);
-            server = (Server)configuration.configure();
+            server = (Server) configuration.configure();
         } else {
             int p = 8080;
             String port = Environment.getDefault().getProperty("http_port");
             if (port != null) {
                 try {
-                p = Integer.parseInt(port);
+                    p = Integer.parseInt(port);
                 } catch (NumberFormatException e) {
                     // do noting
                 }
@@ -123,15 +132,18 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
             server = new Server(p);
         }
 
-        // if a jetty.xml is present we don't configure logging - this should be done in that file.
+        // if a jetty.xml is present we don't configure logging - this should be
+        // done in that file.
         if (!hasConfigFile) {
             RequestLogHandler requestLogHandler = new RequestLogHandler();
             File logDir = Environment.getDefault().getLog();
             logDir.mkdirs();
             File logFile = new File(logDir, "jetty.log");
-            NCSARequestLog requestLog = new NCSARequestLog(logFile.getAbsolutePath());
+            NCSARequestLog requestLog = new NCSARequestLog(
+                    logFile.getAbsolutePath());
             requestLogHandler.setRequestLog(requestLog);
-            //handlers = new Handler[] {contexts, new DefaultHandler(), requestLogHandler};
+            // handlers = new Handler[] {contexts, new DefaultHandler(),
+            // requestLogHandler};
             server.addHandler(requestLogHandler);
             server.setSendServerVersion(true);
             server.setStopAtShutdown(true);
@@ -150,7 +162,8 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
         }
 
         // start the server
-        //server.start(); -> server will be start after frameworks starts to be sure that all services
+        // server.start(); -> server will be start after frameworks starts to be
+        // sure that all services
         // used by web.xml filters are registered.
     }
 
@@ -166,7 +179,7 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
-            WebApplication app = (WebApplication)contribution;
+            WebApplication app = (WebApplication) contribution;
 
             if (app.needsWarPreprocessing()) {
                 logger.info("Starting deployment preprocessing");
@@ -188,20 +201,22 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
                 File file = new File(home, root);
                 ctx.setDescriptor(file.getAbsolutePath());
             }
-            File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
+            File defWebXml = new File(Environment.getDefault().getConfig(),
+                    "default-web.xml");
             if (defWebXml.isFile()) {
-              ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
+                ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
-            if ("/".equals(app.getContextPath())) { // the root context must be put at the end
+            if ("/".equals(app.getContextPath())) { // the root context must be
+                                                    // put at the end
                 server.addHandler(ctx);
             } else {
                 warContexts.addHandler(ctx);
             }
             org.mortbay.log.Log.setLog(new Log4JLogger(logger));
-            //ctx.start();
-            //HandlerWrapper wrapper = (HandlerWrapper)ctx.getHandler();
-            //wrapper = (HandlerWrapper)wrapper.getHandler();
-            //wrapper.setHandler(new NuxeoServletHandler());
+            // ctx.start();
+            // HandlerWrapper wrapper = (HandlerWrapper)ctx.getHandler();
+            // wrapper = (HandlerWrapper)wrapper.getHandler();
+            // wrapper.setHandler(new NuxeoServletHandler());
 
             if (ctx.isFailed()) {
                 logger.error("Error in war deployment");
@@ -231,14 +246,13 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
         return null;
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            if (server != null) {
-                try {
-                    server.start();
-                } catch (Exception e) {
-                    logger.error("Failed to start Jetty server", e);
-                }
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        if (server != null) {
+            try {
+                server.start();
+            } catch (Exception e) {
+                logger.error("Failed to start Jetty server", e);
             }
         }
     }
@@ -253,19 +267,22 @@ public class JettyComponent extends DefaultComponent implements FrameworkListene
             for (File root : roots) {
                 String name = root.getName();
                 if (name.endsWith(".war")) {
-                    logger.info("Found war: "+name);
-                    name = name.substring(0, name.length()-4);
+                    logger.info("Found war: " + name);
+                    name = name.substring(0, name.length() - 4);
                     boolean isRoot = "root".equals(name);
-                    String ctxPath = isRoot ? "/" : basePath+"/"+name;
-                    WebAppContext ctx = new WebAppContext(root.getAbsolutePath(), ctxPath);
-                    ctx.setConfigurations(new Configuration[] {new WebInfConfiguration(), new WebXmlConfiguration()});
+                    String ctxPath = isRoot ? "/" : basePath + "/" + name;
+                    WebAppContext ctx = new WebAppContext(
+                            root.getAbsolutePath(), ctxPath);
+                    ctx.setConfigurations(new Configuration[] {
+                            new WebInfConfiguration(),
+                            new WebXmlConfiguration() });
                     if (isRoot) {
                         server.addHandler(ctx);
                     } else {
                         warContexts.addHandler(ctx);
                     }
                 } else if (root.isDirectory()) {
-                    scanForWars(root, basePath+"/"+name);
+                    scanForWars(root, basePath + "/" + name);
                 }
             }
         }

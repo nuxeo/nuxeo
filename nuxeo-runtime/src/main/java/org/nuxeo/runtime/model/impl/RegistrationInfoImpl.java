@@ -35,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -47,7 +48,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 @XObject("component")
 public class RegistrationInfoImpl implements RegistrationInfo {
@@ -105,7 +106,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     /**
      * To be set when deploying configuration components that are not in a
      * bundle (e.g. from config. dir).
-     *
+     * 
      * Represent the bundle that will be assumed to be the owner of the
      * component.
      */
@@ -133,7 +134,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Useful when dynamically registering components
-     *
+     * 
      * @param name the component name
      */
     public RegistrationInfoImpl(ComponentName name) {
@@ -300,6 +301,15 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public synchronized void restart() throws Exception {
         deactivate();
         activate();
+    }
+
+    public void notifyApplicationStarted() throws Exception {
+        if (component != null) {
+            Object ci = component.getInstance();
+            if (ci instanceof Component) {
+                ((Component) ci).applicationStarted(component);
+            }
+        }
     }
 
     public synchronized void activate() throws Exception {
