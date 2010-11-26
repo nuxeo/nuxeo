@@ -44,7 +44,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class RemotingService extends DefaultComponent {
 
@@ -65,14 +65,14 @@ public class RemotingService extends DefaultComponent {
 
     private ServiceBindings serviceBindings;
 
-
     public static Server connect(String locatorURI) throws Exception {
-        return (Server) TransporterClient.createTransporterClient(new InvokerLocator(locatorURI), Server.class);
+        return (Server) TransporterClient.createTransporterClient(
+                new InvokerLocator(locatorURI), Server.class);
     }
 
     /**
      * Helper method to connect to a remote nuxeo runtime server.
-     *
+     * 
      * @param host the remote host
      * @param port the remote port
      * @return the server object
@@ -89,18 +89,20 @@ public class RemotingService extends DefaultComponent {
     }
 
     /**
-     * @deprecated must be removed since from runtime 1.5.1 the invoker protocol may be configurable
+     * @deprecated must be removed since from runtime 1.5.1 the invoker protocol
+     *             may be configurable
      */
     @Deprecated
     public static String getServerURI(String host, int port) {
-        return "socket://" + host + ':' + port+"/?datatype=nuxeo";
+        return "socket://" + host + ':' + port + "/?datatype=nuxeo";
     }
 
     /**
      * Tests the connection with a remote server.
-     *
+     * 
      * @return the product info if successful, null otherwise
-     * @deprecated should no more be used - use instead {@link AutoConfigurationService}
+     * @deprecated should no more be used - use instead
+     *             {@link AutoConfigurationService}
      */
     @Deprecated
     public static String ping(String host, int port) {
@@ -121,31 +123,42 @@ public class RemotingService extends DefaultComponent {
         // register the configuration handlers
         ConfigurationFactory.registerFactory(new ConfigurationFactory1());
         // register the marshaller
-        MarshalFactory.addMarshaller("nuxeo", new SerializableMarshaller(), new NuxeoUnMarshaller());
+        MarshalFactory.addMarshaller("nuxeo", new SerializableMarshaller(),
+                new NuxeoUnMarshaller());
         // startup server if needed
-        String val = Framework.getProperty("org.nuxeo.runtime.server.enabled", "true");
+        String val = Framework.getProperty("org.nuxeo.runtime.server.enabled",
+                "true");
         isServer = val.equalsIgnoreCase("true");
         if (isServer) {
-            String locator = Framework.getProperty("org.nuxeo.runtime.server.locator", DEFAULT_LOCATOR);
+            String locator = Framework.getProperty(
+                    "org.nuxeo.runtime.server.locator", DEFAULT_LOCATOR);
             RuntimeContext runtimeContext = context.getRuntimeContext();
             server = new ServerImpl(this, runtimeContext.getRuntime());
             serverLocator = new InvokerLocator(locator);
             transporterServer = TransporterServer.createTransporterServer(
                     serverLocator, server, Server.class.getName());
 
-            //TODO: the current version of jboss remoting doesn't support
+            // TODO: the current version of jboss remoting doesn't support
             // locatorUrl on the servlet impl. - see docs
-            // when this will be supported ignore registering the mbean and use locatorUrl to retrieve the invoker
+            // when this will be supported ignore registering the mbean and use
+            // locatorUrl to retrieve the invoker
             // (this approach is more portable)
             Iterator<?> it = MBeanServerFactory.findMBeanServer(null).iterator();
             if (it.hasNext()) {
-                MBeanServer mb = (MBeanServer)it.next();
+                MBeanServer mb = (MBeanServer) it.next();
                 if (mb != null) {
-                    mb.registerMBean(transporterServer.getConnector().getServerInvoker(),
+                    mb.registerMBean(
+                            transporterServer.getConnector().getServerInvoker(),
                             new ObjectName(INVOKER_NAME));
                 }
             }
-            serviceBindings = new ServiceBindings(runtimeContext.getBundle().getBundleContext());
+            /**
+             * TODO
+             * 
+             * @deprecated ServiceBindings is not used and will be removed
+             */
+            // serviceBindings = new
+            // ServiceBindings(runtimeContext.getBundle().getBundleContext());
         }
     }
 

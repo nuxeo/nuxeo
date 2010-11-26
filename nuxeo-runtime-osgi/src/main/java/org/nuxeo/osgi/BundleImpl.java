@@ -37,7 +37,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class BundleImpl implements Bundle {
 
@@ -88,6 +88,12 @@ public class BundleImpl implements Bundle {
     }
 
     public BundleContext getBundleContext() {
+        // ensure BundleContext is not visible in RESOLVED state - to ensure
+        // OSGi compat. - in our component activate method.
+        if (state == RESOLVED) {
+            throw new IllegalStateException(
+                    "You cannot use a BundleContext when in RESOLVED state. Do not use this in your component activate method!");
+        }
         return context;
     }
 
@@ -96,7 +102,7 @@ public class BundleImpl implements Bundle {
     }
 
     public void stop(int options) throws BundleException {
-        //TODO
+        // TODO
     }
 
     public String getLocation() {
@@ -323,7 +329,7 @@ public class BundleImpl implements Bundle {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Bundle) {
-            return symbolicName.equals(((Bundle)obj).getSymbolicName());
+            return symbolicName.equals(((Bundle) obj).getSymbolicName());
         }
         return false;
     }
