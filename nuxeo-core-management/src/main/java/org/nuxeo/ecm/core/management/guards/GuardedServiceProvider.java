@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.runtime.binding.AnnotatedServiceProvider;
+import org.nuxeo.runtime.api.AnnotatedServiceProvider;
 /**
  * Return a proxy if the service is annotated by Administrated
  *
