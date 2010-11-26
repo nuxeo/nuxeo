@@ -48,21 +48,17 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * Relation service.
  * <p>
  * It handles a registry of graph instances through extension points.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public class RelationService extends DefaultComponent implements
-        RelationManager, FrameworkListener {
+        RelationManager {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.relations.services.RelationService");
@@ -175,7 +171,7 @@ public class RelationService extends DefaultComponent implements
      * Gets a graph given a name.
      * <p>
      * This is used to instantiate graphs with a given name
-     *
+     * 
      * @param graphType
      * @return the prefixed resource instance initialized with no value or null
      *         if prefix is not found
@@ -461,59 +457,32 @@ public class RelationService extends DefaultComponent implements
         return new ArrayList<String>(graphDescriptionRegistry.keySet());
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-
-        if (event.getType() == FrameworkEvent.STARTED) {
-
-            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-            ClassLoader nuxeoCL = RelationService.class.getClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(nuxeoCL);
-                log.info("Relation Service initialization");
-
-                for (String graphName : graphDescriptionRegistry.keySet()) {
-                    log.info("create RDF Graph " + graphName);
-                    try {
-                        Graph graph = this.getGraphByName(graphName);
-                        graph.size();
-                    } catch (Exception e) {
-                        log.error(
-                                "Error while initializing graph " + graphName,
-                                e);
-                    }
-                }
-            } finally {
-                Thread.currentThread().setContextClassLoader(jbossCL);
-                log.debug("JBoss ClassLoader restored");
-            }
-        }
-    }
-
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) throws Exception {
         if (!Boolean.parseBoolean(Framework.getProperty(
                 "org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
             return;
         }
-        Bundle host = context.getRuntimeContext().getBundle();
-        BundleContext ctx = host.getBundleContext();
-        if (ctx == null) {
-            log.error("Cannot get access to OSGI framework for registering activation listener");
-            return;
-        }
-        ctx.addFrameworkListener(this);
-    }
 
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        // this is doing nothing if listener was not registered
+        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader nuxeoCL = RelationService.class.getClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(nuxeoCL);
+            log.info("Relation Service initialization");
 
-        Bundle host = context.getRuntimeContext().getBundle();
-        BundleContext ctx = host.getBundleContext();
-        if (ctx == null) {
-            return;
+            for (String graphName : graphDescriptionRegistry.keySet()) {
+                log.info("create RDF Graph " + graphName);
+                try {
+                    Graph graph = this.getGraphByName(graphName);
+                    graph.size();
+                } catch (Exception e) {
+                    log.error("Error while initializing graph " + graphName, e);
+                }
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(jbossCL);
+            log.debug("JBoss ClassLoader restored");
         }
-        ctx.removeFrameworkListener(this);
     }
 
 }

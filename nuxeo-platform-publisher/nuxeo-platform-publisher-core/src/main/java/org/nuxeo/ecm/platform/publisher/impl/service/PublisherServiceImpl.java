@@ -49,17 +49,15 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * POJO implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}.
- *
+ * 
  * @author tiry
  */
 public class PublisherServiceImpl extends DefaultComponent implements
-        PublisherService, RemotePublicationTreeManager, FrameworkListener {
+        PublisherService, RemotePublicationTreeManager {
 
     protected static Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
 
@@ -88,9 +86,23 @@ public class PublisherServiceImpl extends DefaultComponent implements
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
     @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader nuxeoCL = PublisherServiceImpl.class.getClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(nuxeoCL);
+            log.info("Publisher Service initialization");
+            registerPendingDescriptors();
+        } catch (Exception e) {
+            log.error("Unable to register pending descriptors", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(jbossCL);
+            log.debug("JBoss ClassLoader restored");
+        }
+    }
+
+    @Override
     public void activate(ComponentContext context) throws Exception {
-        context.getRuntimeContext().getBundle().getBundleContext()
-                .addFrameworkListener(this);
         liveTrees = new HashMap<String, PublicationTree>();
         treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
         factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
@@ -502,7 +514,8 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     public void validatorPublishDocument(String sid,
-            PublishedDocument publishedDocument, String comment) throws ClientException {
+            PublishedDocument publishedDocument, String comment)
+            throws ClientException {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.validatorPublishDocument(publishedDocument, comment);
@@ -640,30 +653,6 @@ public class PublisherServiceImpl extends DefaultComponent implements
             }
         }
         return null;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        // this is doing nothing if listener was not registered
-        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
-                this);
-    }
-
-    public void frameworkEvent(FrameworkEvent frameworkEvent) {
-        if (frameworkEvent.getType() == FrameworkEvent.STARTED) {
-            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-            ClassLoader nuxeoCL = PublisherServiceImpl.class.getClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(nuxeoCL);
-                log.info("Publisher Service initialization");
-                registerPendingDescriptors();
-            } catch (Exception e) {
-                log.error("Unable to register pending descriptors", e);
-            } finally {
-                Thread.currentThread().setContextClassLoader(jbossCL);
-                log.debug("JBoss ClassLoader restored");
-            }
-        }
     }
 
     protected void registerPendingDescriptors() throws Exception {

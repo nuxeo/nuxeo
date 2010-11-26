@@ -40,14 +40,11 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
-public class JbpmComponent extends DefaultComponent implements
-        FrameworkListener {
+public class JbpmComponent extends DefaultComponent {
 
     private static final String START_JOB_EXECUTOR = "org.nuxeo.ecm.platform.jbpm.startJobExecutor";
 
@@ -128,9 +125,20 @@ public class JbpmComponent extends DefaultComponent implements
     }
 
     @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader nuxeoCL = Framework.class.getClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(nuxeoCL);
+            ((DbPersistenceServiceFactory) getConfiguration().createJbpmContext().getServiceFactory(
+                    Services.SERVICENAME_PERSISTENCE)).getSessionFactory();
+        } finally {
+            Thread.currentThread().setContextClassLoader(jbossCL);
+        }
+    }
+
+    @Override
     public void activate(ComponentContext context) throws Exception {
-        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(
-                this);
         for (Map.Entry<ProcessDefinitionDescriptor, ComponentInstance> entry : pdDesc.entrySet()) {
             ProcessDefinitionDescriptor pdDescriptor = entry.getKey();
             ProcessDefinitionDeployer deployer = deployerDesc.get(pdDescriptor.getDeployer());
@@ -154,8 +162,6 @@ public class JbpmComponent extends DefaultComponent implements
         if (jobExecutor != null && jobExecutor.isStarted()) {
             jobExecutor.stop();
         }
-        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(
-                this);
     }
 
     @SuppressWarnings("unchecked")
@@ -229,19 +235,4 @@ public class JbpmComponent extends DefaultComponent implements
         }
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-        // creating schema outside transaction if needed
-        if (event.getType() == FrameworkEvent.STARTED) {
-
-            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-            ClassLoader nuxeoCL = Framework.class.getClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(nuxeoCL);
-                ((DbPersistenceServiceFactory) getConfiguration().createJbpmContext().getServiceFactory(
-                        Services.SERVICENAME_PERSISTENCE)).getSessionFactory();
-            } finally {
-                Thread.currentThread().setContextClassLoader(jbossCL);
-            }
-        }
-    }
 }
