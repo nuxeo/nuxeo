@@ -1372,6 +1372,31 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryBad() throws Exception {
+        try {
+            query("SELECT foo bar baz");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "line 1:15 missing FROM at 'baz'"));
+        }
+        try {
+            query("SELECT foo FROM bar");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "bar is neither a type query name nor an alias"));
+        }
+        try {
+            query("SELECT foo FROM cmis:folder");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "foo is not a property query name in any of the types"));
+        }
+    }
+
+    @Test
     public void testVersioning() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
