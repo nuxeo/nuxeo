@@ -32,8 +32,7 @@ public class LockableDocumentAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes") Class clazz) {
-        String type = doc.getType();
-        if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(type)) {
+        if (doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             return new LockableDocumentRouteImpl(doc);
         }
         return null;

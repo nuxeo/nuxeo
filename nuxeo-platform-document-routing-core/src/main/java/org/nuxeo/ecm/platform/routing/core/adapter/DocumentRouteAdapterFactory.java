@@ -42,7 +42,7 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
     public Object getAdapter(DocumentModel doc,
             @SuppressWarnings("rawtypes") Class itf) {
         String type = doc.getType();
-        if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equalsIgnoreCase(type)) {
+        if (doc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             ExecutionTypeValues executionType = getExecutionType(doc, type);
             switch (executionType) {
             case serial:

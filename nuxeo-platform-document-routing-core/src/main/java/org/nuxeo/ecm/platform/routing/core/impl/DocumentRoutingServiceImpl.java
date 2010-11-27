@@ -419,7 +419,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     private DocumentRoute getParentRouteModel(DocumentRef documentRef,
             CoreSession session) throws ClientException {
         DocumentModel parentDoc = session.getDocument(documentRef);
-        if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(parentDoc.getType())) {
+        if (parentDoc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             return parentDoc.getAdapter(DocumentRoute.class);
         }
         DocumentRouteElement rElement = parentDoc.getAdapter(DocumentRouteElement.class);

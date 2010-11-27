@@ -29,6 +29,7 @@
     </doctype>
 
     <doctype name="DocumentRoute" extends="StepFolder">
+      <facet name ="DocumentRoute"/> 
       <schema name="document_route_instance" />
       <schema name="document_route_model" />
       <subtypes>

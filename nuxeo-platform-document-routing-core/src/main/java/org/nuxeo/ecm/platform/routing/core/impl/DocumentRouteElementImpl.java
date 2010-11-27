@@ -80,7 +80,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         DocumentModel parent = document;
         while (true) {
             try {
-                if (DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE.equals(parent.getType())) {
+                if (parent.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
                     break;
                 }
                 parent = session.getParentDocument(parent.getRef());
