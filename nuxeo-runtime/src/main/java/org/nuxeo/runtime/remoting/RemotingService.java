@@ -43,7 +43,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class RemotingService extends DefaultComponent {
 
@@ -69,7 +69,7 @@ public class RemotingService extends DefaultComponent {
 
     /**
      * Helper method to connect to a remote nuxeo runtime server.
-     * 
+     *
      * @param host the remote host
      * @param port the remote port
      * @return the server object
@@ -96,7 +96,7 @@ public class RemotingService extends DefaultComponent {
 
     /**
      * Tests the connection with a remote server.
-     * 
+     *
      * @return the product info if successful, null otherwise
      * @deprecated should no more be used - use instead
      *             {@link AutoConfigurationService}

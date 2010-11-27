@@ -40,7 +40,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- * 
+ *
  */
 public class ResourcePublisherService extends DefaultComponent implements
         ResourcePublisher, ResourcePublisherMBean {

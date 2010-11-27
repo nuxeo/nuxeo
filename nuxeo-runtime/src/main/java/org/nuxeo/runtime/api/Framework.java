@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.login.LoginService;
  * type of service allows multiple service instances for the same class of
  * services. Each instance is uniquely defined in the system by an URI.
  * </ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class Framework {
@@ -111,7 +111,7 @@ public final class Framework {
 
     /**
      * Tests whether or not the runtime was initialized.
-     * 
+     *
      * @return true if the runtime was initialized, false otherwise
      */
     public static synchronized boolean isInitialized() {
@@ -128,7 +128,7 @@ public final class Framework {
 
     /**
      * Gets the runtime service instance.
-     * 
+     *
      * @return the runtime service instance
      */
     public static RuntimeService getRuntime() {
@@ -172,7 +172,7 @@ public final class Framework {
     /**
      * Login in the system as the system user (a pseudo-user having all
      * privileges).
-     * 
+     *
      * @return the login session if successful. Never returns null.
      * @throws LoginException on login failure
      */
@@ -191,7 +191,7 @@ public final class Framework {
      * Login in the system as the system user (a pseudo-user having all
      * privileges). The given username will be used to identify the user id that
      * called this method.
-     * 
+     *
      * @param username the originating user id
      * @return the login session if successful. Never returns null.
      * @throws LoginException on login failure
@@ -209,7 +209,7 @@ public final class Framework {
 
     /**
      * Login in the system as the given user using the given password.
-     * 
+     *
      * @param username the username to login
      * @param password the password
      * @return a login session if login was successful. Never returns null.
@@ -227,7 +227,7 @@ public final class Framework {
     /**
      * Login in the system using the given callback handler for login info
      * resolution.
-     * 
+     *
      * @param cbHandler used to fetch the login info
      * @return the login context
      * @throws LoginException
@@ -252,7 +252,7 @@ public final class Framework {
      * Registers a listener to be notified about runtime events.
      * <p>
      * If the listener is already registered, do nothing.
-     * 
+     *
      * @param listener the listener to register
      */
     public static void addListener(RuntimeServiceListener listener) {
@@ -263,7 +263,7 @@ public final class Framework {
      * Removes the given listener.
      * <p>
      * If the listener is not registered, do nothing.
-     * 
+     *
      * @param listener the listener to remove
      */
     public static void removeListener(RuntimeServiceListener listener) {
@@ -275,7 +275,7 @@ public final class Framework {
      * <p>
      * The framework properties will be searched first then if any matching
      * property is found the system properties are searched too.
-     * 
+     *
      * @param key the property key
      * @return the property value if any or null otherwise
      */
@@ -289,7 +289,7 @@ public final class Framework {
      * <p>
      * The framework properties will be searched first then if any matching
      * property is found the system properties are searched too.
-     * 
+     *
      * @param key the property key
      * @param defValue the default value to use
      * @return the property value if any otherwise the default value
@@ -301,7 +301,7 @@ public final class Framework {
     /**
      * Gets all the framework properties. The system properties are not included
      * in the returned map.
-     * 
+     *
      * @return the framework properties map. Never returns null.
      */
     public static Properties getProperties() {
@@ -404,7 +404,7 @@ public final class Framework {
      * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be
      * resolved to a resource)
      * </ul>
-     * 
+     *
      * @param t the exception or null if none
      */
     public static void handleDevError(Throwable t) {
@@ -417,7 +417,7 @@ public final class Framework {
 
     /**
      * Deletes the given file when the marker object is collected by GC.
-     * 
+     *
      * @param file The file to delete
      * @param marker the marker Object
      */
@@ -429,7 +429,7 @@ public final class Framework {
      * Deletes the given file when the marker object is collected by GC. The
      * fileDeleteStrategy can be used for instance do delete only empty
      * directory or force deletion.
-     * 
+     *
      * @param file The file to delete
      * @param marker the marker Object
      * @param fileDeleteStrategy add a custom delete strategy

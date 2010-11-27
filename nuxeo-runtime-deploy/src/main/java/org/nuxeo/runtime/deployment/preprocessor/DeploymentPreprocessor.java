@@ -58,7 +58,7 @@ public class DeploymentPreprocessor {
 
     public static final String CONTAINER_FILE_COMPAT = "OSGI-INF/deployment-container.xml";
 
-    private static Pattern ARTIFACT_NAME_PATTERN = Pattern.compile("-[0-9]+");
+    private static final Pattern ARTIFACT_NAME_PATTERN = Pattern.compile("-[0-9]+");
 
     private static final Log log = LogFactory.getLog(DeploymentPreprocessor.class);
 
@@ -487,12 +487,12 @@ public class DeploymentPreprocessor {
 
     protected ContainerDescriptor getDefaultContainer(File directory)
             throws Exception {
-        ContainerDescriptor cd = null;
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
         if (!file.isFile()) {
             file = new File(directory.getAbsolutePath() + '/'
                     + CONTAINER_FILE_COMPAT);
         }
+        ContainerDescriptor cd = null;
         if (file.isFile()) {
             cd = getContainer(directory, file);
         }

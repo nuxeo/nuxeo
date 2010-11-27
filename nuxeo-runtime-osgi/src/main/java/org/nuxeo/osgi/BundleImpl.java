@@ -37,7 +37,7 @@ import org.osgi.framework.Version;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BundleImpl implements Bundle {
 

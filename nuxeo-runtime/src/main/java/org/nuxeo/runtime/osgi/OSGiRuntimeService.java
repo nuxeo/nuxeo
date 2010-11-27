@@ -58,7 +58,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- * 
+ *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */

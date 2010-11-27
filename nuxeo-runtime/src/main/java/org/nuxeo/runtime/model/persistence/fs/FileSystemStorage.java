@@ -42,11 +42,11 @@ import org.w3c.dom.Node;
  */
 public class FileSystemStorage implements ContributionStorage {
 
-    public static Log log = LogFactory.getLog(FileSystemStorage.class);
+    public static final Log log = LogFactory.getLog(FileSystemStorage.class);
 
-    protected File root;
+    protected static final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    protected static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    protected final File root;
 
     public FileSystemStorage() {
         root = new File(Environment.getDefault().getData(), "contribs");

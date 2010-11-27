@@ -57,7 +57,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Third, the root collection is registered. This way all requests not handled
  * by regular wars are directed to the root war, which usually is the webengine
  * war in a nxserver application.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JettyComponent extends DefaultComponent {

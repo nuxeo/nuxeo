@@ -26,9 +26,9 @@ import java.net.URL;
  */
 public class URLStreamRef implements StreamRef {
 
-    protected URL url;
+    protected final URL url;
 
-    protected String name;
+    protected final String name;
 
     public URLStreamRef(URL url) {
         this(url, url.toString());
@@ -50,4 +50,5 @@ public class URLStreamRef implements StreamRef {
     public URL asURL() {
         return url;
     }
+
 }

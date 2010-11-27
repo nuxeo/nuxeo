@@ -39,7 +39,13 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
 
     boolean installed = false;
 
-    public  void installSelf() {
+    protected final Map<Class<?>, Entry<?>> registry = new HashMap<Class<?>, Entry<?>>();
+
+    protected abstract Class<? extends Annotation> annotationClass();
+    protected abstract <T> T newProxy(T object, Class<T> clazz);
+
+
+    public void installSelf() {
         // next provider can be null, we need a flag
         if (installed) {
             return;
@@ -48,9 +54,6 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
         nextProvider = DefaultServiceProvider.getProvider();
         DefaultServiceProvider.setProvider(this);
     }
-
-    protected abstract Class<? extends Annotation> annotationClass();
-    protected abstract <T> T newProxy(T object, Class<T> clazz);
 
     protected class Entry<T> {
         final Class<T> srvClass;
@@ -89,9 +92,6 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
         }
     }
 
-
-   protected Map<Class<?>, Entry<?>> registry = new HashMap<Class<?>, Entry<?>>();
-
    @Override
     public <T> T getService(Class<T> srvClass) {
         if (!registry.containsKey(srvClass)) {
@@ -99,6 +99,5 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
         }
         return srvClass.cast(registry.get(srvClass).getService());
     }
-
 
 }

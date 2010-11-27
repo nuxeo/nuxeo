@@ -29,7 +29,7 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class MyTestComponent implements Component {
 

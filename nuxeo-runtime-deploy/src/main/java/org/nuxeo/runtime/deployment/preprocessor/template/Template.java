@@ -39,7 +39,7 @@ public class Template {
 
     public static final String END = "END";
 
-    protected static String JBOSS5_COMPAT = "org.nuxeo.runtme.preprocessing.jboss5";
+    protected static final String JBOSS5_COMPAT = "org.nuxeo.runtme.preprocessing.jboss5";
 
     // we should use a linked hash map to preserve the
     // insertion order when iterating over the elements in the map

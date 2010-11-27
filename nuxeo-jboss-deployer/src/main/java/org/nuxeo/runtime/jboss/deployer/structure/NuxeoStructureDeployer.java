@@ -206,7 +206,6 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
     protected void createContext(StructureContext structureContext,
             DeploymentStructure.Context ctx) throws IOException {
         VirtualFile root = structureContext.getFile();
-        ContextInfo ci;
         String path = ctx.getPath();
         if (path.indexOf('*') > -1) {
             PathPattern pattern = PathPattern.parse(path);
@@ -217,7 +216,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
                 return;
             }
         }
-        ci = createNamedContext(structureContext, path);
+        ContextInfo ci = createNamedContext(structureContext, path);
         String[] mp = ctx.getMetaDataPath();
         if (mp != null) {
             for (String p : mp) {
@@ -374,7 +373,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
         Class<?> klass = cl.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
         Method process = klass.getMethod("process", File.class, File.class,
                 File[].class);
-        process.invoke(null, new Object[] { md.getHome(), metadata, bundles });
+        process.invoke(null, md.getHome(), metadata, bundles);
         log.info("Nuxeo Preprocessing took "
                 + ((System.currentTimeMillis() - start) / 1000) + " sec.");
     }
@@ -392,7 +391,6 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
         Unmarshaller unmarshaller = unmarshallerFactory.newUnmarshaller();
         unmarshaller.setValidation(useValidation);
         EarMetaData specMetaData = null;
-        JBossAppMetaData appMetaData = null;
         if (applicationXml != null) {
             InputStream in = applicationXml.openStream();
             try {
@@ -402,6 +400,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
                 in.close();
             }
         }
+        JBossAppMetaData appMetaData = null;
         if (jbossAppXml != null) {
             InputStream in = jbossAppXml.openStream();
             try {

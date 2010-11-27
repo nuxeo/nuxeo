@@ -30,15 +30,15 @@ import org.nuxeo.runtime.model.persistence.AbstractContribution;
  */
 public class ContributionFile extends AbstractContribution {
 
-    protected String name;
+    protected final String name;
+
+    protected final File file;
 
     protected String description;
 
     protected boolean disabled;
 
     protected boolean loaded;
-
-    protected File file;
 
     public ContributionFile(String name, File file) {
         this.name = name;
@@ -94,4 +94,5 @@ public class ContributionFile extends AbstractContribution {
     public InputStream getStream() {
         return new ByteArrayInputStream(getContent().getBytes());
     }
+
 }

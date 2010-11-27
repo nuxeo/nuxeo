@@ -141,7 +141,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     @SuppressWarnings("cast")
     protected MBeanServer doFindServer(String domainName) {
-        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
             String domain = server.getDefaultDomain();
             if (domain == null || !domain.equals(domainName)) {
                 continue;
@@ -163,7 +163,7 @@ public class ServerLocatorService extends DefaultComponent implements
         if (defaultServer.isRegistered(qualifiedName)) {
             return defaultServer;
         }
-        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
             if (server.isRegistered(qualifiedName)) {
                 return server;
             }
