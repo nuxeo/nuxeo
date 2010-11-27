@@ -95,6 +95,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
+
 /**
  * Abstract implementation of the client interface.
  * <p>
@@ -108,11 +110,13 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * @author Florent Guillaume
  */
 public abstract class AbstractSession implements CoreSession,
-        SecurityConstants, OperationHandler, Serializable {
+        OperationHandler, Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
             "anonymous");
 
+    // Never used.
+    @Deprecated
     public static final NuxeoPrincipal ADMINISTRATOR = new UserPrincipal(
             SecurityConstants.ADMINISTRATOR);
 
@@ -215,7 +219,7 @@ public abstract class AbstractSession implements CoreSession,
                         // SystemPrincipal => we must synchronize this with
                         // SecurityService check
                         sessionContext.put("principal", new SimplePrincipal(
-                                SecurityConstants.SYSTEM_USERNAME));
+                                SYSTEM_USERNAME));
                         try {
                             handler.initializeRepository(this);
                             session.save();
@@ -832,9 +836,9 @@ public abstract class AbstractSession implements CoreSession,
 
             // get initial life cycle state info
             String initialLifecycleState = null;
-            Object lifecycleStateinfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
-            if (lifecycleStateinfo instanceof String) {
-                initialLifecycleState = (String) lifecycleStateinfo;
+            Object lifecycleStateInfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
+            if (lifecycleStateInfo instanceof String) {
+                initialLifecycleState = (String) lifecycleStateInfo;
             }
 
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
@@ -2867,7 +2871,7 @@ public abstract class AbstractSession implements CoreSession,
                 return true;
             }
         }
-        if (SecurityConstants.SYSTEM_USERNAME.equals(principal.getName())) {
+        if (SYSTEM_USERNAME.equals(principal.getName())) {
             return true;
         }
         if (principal instanceof NuxeoPrincipal) {
@@ -2890,7 +2894,7 @@ public abstract class AbstractSession implements CoreSession,
         ACP acp = new ACPImpl();
 
         UserEntry userEntry = new UserEntryImpl(userOrGroupName);
-        userEntry.addPrivilege(SecurityConstants.READ, true, false);
+        userEntry.addPrivilege(READ, true, false);
 
         acp.setRules(new UserEntry[] { userEntry });
 

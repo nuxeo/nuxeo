@@ -156,6 +156,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         Object blobValue = doc.getPropertyValue("extfile:content");
         assertNotNull(blobValue);
         assertTrue(blobValue instanceof Blob);
+
         Blob blob = (Blob) blobValue;
         assertEquals("Hello External Blob", blob.getString());
         assertEquals(file.getName(), blob.getFilename());
@@ -173,6 +174,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         blobValue = doc.getPropertyValue("extfile:content");
         assertNotNull(blobValue);
         assertTrue(blobValue instanceof Blob);
+
         blob = (Blob) blobValue;
         assertEquals("Hello External Blob", blob.getString());
         assertEquals(file.getName(), blob.getFilename());
