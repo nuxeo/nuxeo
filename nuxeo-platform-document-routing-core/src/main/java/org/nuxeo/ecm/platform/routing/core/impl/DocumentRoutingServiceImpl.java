@@ -346,7 +346,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
                 lifecycleState);
         docRouteElement = session.createDocument(docRouteElement);
-        session.orderBefore(parentDocumentRef, routeElement.getName(),
+        session.orderBefore(parentDocumentRef, docRouteElement.getName(),
                 sourceName);
         session.save();
     }

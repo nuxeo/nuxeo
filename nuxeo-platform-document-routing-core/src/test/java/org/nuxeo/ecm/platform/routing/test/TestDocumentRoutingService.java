@@ -126,6 +126,29 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals("step33bis", step.getTitle());
     }
 
+    public void testAddSameNamedStepToRunningRoute() throws Exception {
+        deployBundle(TEST_BUNDLE);
+        DocumentRoute route = createDocumentRoute(session, ROUTE1);
+        DocumentModelList childrens = session.getChildren(route.getDocument().getRef());
+        String firstStepId = childrens.get(0).getId();
+        String secondStepId = childrens.get(1).getId();
+        String folderId = childrens.get(2).getId();
+        service.lockDocumentRoute(route, session);
+        DocumentModel newStep = session.createDocumentModel(
+                route.getDocument().getPathAsString(), "step1",
+                DocumentRoutingConstants.STEP_DOCUMENT_TYPE);
+        service.addRouteElementToRoute(route.getDocument().getRef(), null, newStep.getAdapter(DocumentRouteElement.class), session);
+        session.save();
+        assertNotNull(route);
+        childrens = session.getChildren(route.getDocument().getRef());
+        assertEquals(4, childrens.size());
+        assertEquals(firstStepId, childrens.get(0).getId());
+        assertEquals(secondStepId, childrens.get(1).getId());
+        assertEquals(folderId, childrens.get(2).getId());
+        // the new step's name should be step1.xxxxxx
+        assertTrue(!"step1".equals(childrens.get(3).getName()));
+    }
+
     public void testAddStepToRunningRoute() throws Exception {
         deployBundle(TEST_BUNDLE);
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
