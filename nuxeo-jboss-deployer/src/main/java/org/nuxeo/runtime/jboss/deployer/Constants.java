@@ -55,4 +55,7 @@ public class Constants {
 
     public static final String ARGS = "org.nuxeo.app.args";
 
+    private Constants() {
+    }
+
 }

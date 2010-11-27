@@ -58,12 +58,12 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
     protected class Entry<T> {
         final Class<T> srvClass;
 
-        final boolean isAnnoted;
+        final boolean isAnnotated;
 
         protected Entry(Class<T> srvClass) {
             this.srvClass = srvClass;
-            this.isAnnoted = srvClass.isInterface() && hasAnnotations(srvClass);
-            if (isAnnoted) {
+            this.isAnnotated = srvClass.isInterface() && hasAnnotations(srvClass);
+            if (isAnnotated) {
                 log.info("handling  " + srvClass.getSimpleName() + " for " + annotationClass().getSimpleName());
             }
         }
@@ -85,7 +85,7 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
             // do not cache srv objects because we don't know if service is
             // adapted or not (CoreSession for instance)
             T srvObject = nextProvider != null ? nextProvider.getService(srvClass) : Framework.getRuntime().getService(srvClass);
-            if (!isAnnoted) {
+            if (!isAnnotated) {
                 return srvObject;
             }
             return newProxy(srvObject, srvClass);

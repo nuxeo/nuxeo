@@ -8,7 +8,8 @@ How to start nuxeo inside tomcat
 ------------------------
 
 Why it is needed the context.xml file?
-This file is used to overide the tomcat context to be able to install a classloader that will be used by nuxeo
+
+This file is used to override the tomcat context to be able to install a classloader that will be used by nuxeo
 and then to start the framework after the context is started.
 
 The custom WebApp classloader will insert a URLClassLoader parent in the classloader chain
@@ -16,9 +17,9 @@ and pass it to nuxeo to use it to start the framework.
 The nuxeo classloader will be unique inside tomcat - since you only can have a single nuxeo instance inside tomcat.
 You can deploy multiple wars that are using nuxeo 9and start it if needed). These webapps will use the same nuxeo classloader as their parent classloader so that any webapp will see nuxeo classes.
 Web classes must be put in WEB-INF/lib and will not be visible between different nuxeo wars.
-This mechanism allows you having multiple wars sharing the sdame nuxeo instance.
+This mechanism allows you having multiple wars sharing the same nuxeo instance.
 The first started webapp will also start nuxeo - the next ones will only retrieve the nuxeo class loader and use it.
-The last stoped webapp will stop nuxeo. 
+The last stopped webapp will stop nuxeo.
 For this to work you need to add the context.xml file described above.
 
 context.xml configuration

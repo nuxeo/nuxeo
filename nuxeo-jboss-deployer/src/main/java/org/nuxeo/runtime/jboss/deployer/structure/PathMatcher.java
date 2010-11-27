@@ -36,11 +36,11 @@ import org.nuxeo.runtime.jboss.deployer.Utils;
  */
 public class PathMatcher {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected List<String> exactPaths;
+    protected final List<String> exactPaths;
 
-    protected Map<String, PathPattern> patterns;
+    protected final Map<String, PathPattern> patterns;
 
     public PathMatcher() {
         exactPaths = new ArrayList<String>();

@@ -55,11 +55,8 @@ public class SystemLoginRestrictionManager {
 
     public boolean isRemoteSystemLoginRestricted() {
         if (restrictRemoteSystemLogin == null) {
-            if (Framework.getProperty(RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true").equalsIgnoreCase("false")) {
-                restrictRemoteSystemLogin = false;
-            } else {
-                restrictRemoteSystemLogin = true;
-            }
+            String prop = Framework.getProperty(RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true");
+            this.restrictRemoteSystemLogin = !prop.equalsIgnoreCase("false");
         }
         return restrictRemoteSystemLogin.booleanValue();
     }
@@ -83,6 +80,5 @@ public class SystemLoginRestrictionManager {
     public boolean isRemoveSystemLoginAllowedForInstance(String instanceId) {
         return getAllowedInstanceForSystemLogin().contains(instanceId);
     }
-
 
 }

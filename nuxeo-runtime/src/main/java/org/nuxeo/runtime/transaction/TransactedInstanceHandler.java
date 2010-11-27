@@ -32,7 +32,7 @@ import java.lang.reflect.Proxy;
  */
 public class TransactedInstanceHandler<T> implements InvocationHandler{
 
-    protected T object;
+    protected final T object;
 
     public static <T> T newProxy(T object, Class<T> itf) {
          InvocationHandler h = new TransactedInstanceHandler<T>(object);

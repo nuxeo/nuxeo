@@ -40,7 +40,7 @@ import org.jboss.virtual.VirtualFileFilter;
  */
 public abstract class PathPattern {
 
-    protected String path;
+    protected final String path;
 
     protected PathPattern next;
 
@@ -63,8 +63,6 @@ public abstract class PathPattern {
     /**
      * Get the determined part of the path. For exact match this is the exact
      * file path, for wildcard match this is the exact parent path.
-     *
-     * @return
      */
     public String getPath() {
         return path;
@@ -105,10 +103,7 @@ public abstract class PathPattern {
     }
 
     /**
-     * Match the name of the given path. (only name segment is matched)
-     *
-     * @param name
-     * @return
+     * Match the name of the given path. (Only name segment is matched).
      */
     public abstract boolean doMatch(String name);
 
@@ -139,7 +134,7 @@ public abstract class PathPattern {
 
     public static class ExactMatchPattern extends PathPattern {
 
-        protected String name;
+        protected final String name;
 
         public ExactMatchPattern(String path, String name) {
             super(path);
@@ -159,7 +154,7 @@ public abstract class PathPattern {
 
     public static class SuffixPattern extends PathPattern {
 
-        protected String prefix;
+        protected final String prefix;
 
         public SuffixPattern(String path, String name) {
             super(path);
@@ -174,7 +169,7 @@ public abstract class PathPattern {
 
     public static class PrefixPattern extends PathPattern {
 
-        protected String suffix;
+        protected final String suffix;
 
         public PrefixPattern(String path, String name) {
             super(path);
@@ -189,9 +184,9 @@ public abstract class PathPattern {
 
     public static class WildcardPattern extends PathPattern {
 
-        protected String prefix;
+        protected final String prefix;
 
-        protected String suffix;
+        protected final String suffix;
 
         public WildcardPattern(String path, String prefix, String suffix) {
             super(path);
@@ -208,7 +203,7 @@ public abstract class PathPattern {
     }
 
     public static class CompositePattern extends PathPattern {
-        protected List<PathPattern> patterns;
+        protected final List<PathPattern> patterns;
 
         public CompositePattern(String path) {
             super(path);

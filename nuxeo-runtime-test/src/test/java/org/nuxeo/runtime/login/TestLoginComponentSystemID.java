@@ -31,10 +31,12 @@ public class TestLoginComponentSystemID extends NXRuntimeTestCase {
                 LoginComponent.SYSTEM_USERNAME);
         Principal user2 = new LoginComponent.SystemID(
                 LoginComponent.SYSTEM_USERNAME);
-        assertTrue(user1.equals(user2));
-        assertFalse(user1.equals(null));
+        assertNotNull(user1);
+        assertEquals(user1, user2);
+
         Principal otherUser = new LoginComponent.SystemID("toto");
         assertFalse(user1.equals(otherUser));
+
         Principal nullUser = new LoginComponent.SystemID();
         assertFalse(user1.equals(nullUser));
     }

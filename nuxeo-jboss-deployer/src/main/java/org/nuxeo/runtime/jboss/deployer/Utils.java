@@ -41,6 +41,9 @@ public class Utils {
 
     private static final Log log = LogFactory.getLog(Utils.class);
 
+    private Utils() {
+    }
+
     public static File tryGetFile(URL url) throws Exception {
         String protocol = url.getProtocol().toLowerCase();
         if ("file".equals(protocol)) {

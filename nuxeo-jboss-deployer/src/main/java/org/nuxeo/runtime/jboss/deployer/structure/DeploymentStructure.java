@@ -40,7 +40,7 @@ public class DeploymentStructure {
      */
     protected String[] resolvedBundlePaths;
 
-    protected VirtualFile vhome;
+    protected final VirtualFile vhome;
 
     protected File home;
 
@@ -48,7 +48,7 @@ public class DeploymentStructure {
 
     protected String[] children;
 
-    protected List<Context> ctxs = new ArrayList<Context>();
+    protected final List<Context> ctxs = new ArrayList<Context>();
 
     protected boolean requirePreprocessing = true;
 
@@ -188,7 +188,7 @@ public class DeploymentStructure {
     }
 
     public static class Context {
-        protected String path;
+        protected final String path;
 
         protected String[] classpath;
 

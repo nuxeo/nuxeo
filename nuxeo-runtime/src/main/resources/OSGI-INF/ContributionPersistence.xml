@@ -5,7 +5,7 @@
   Manage (install and persist) external contributions.
   
   The default contribution storage is implemented using the file system.
-  To change the storage implementation you must contirbute to the extension point storage.
+  To change the storage implementation you must contribute to the extension point storage.
   
   Note that you should contribute only one storage implementation.
   Contributing multiple implementation may lead to inconsistent states (changing the storage on the fly).

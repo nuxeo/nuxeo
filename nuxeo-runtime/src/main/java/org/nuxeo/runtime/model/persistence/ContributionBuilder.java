@@ -37,17 +37,17 @@ import org.w3c.dom.Element;
  */
 public class ContributionBuilder extends AbstractContribution {
 
-    protected DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    protected final DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 
-    protected String name;
+    protected final String name;
+
+    protected final List<String> extensions;
 
     protected String bundle;
 
     protected String description;
 
     protected boolean disabled;
-
-    protected List<String> extensions;
 
     public ContributionBuilder(String name) {
         this.name = name;
