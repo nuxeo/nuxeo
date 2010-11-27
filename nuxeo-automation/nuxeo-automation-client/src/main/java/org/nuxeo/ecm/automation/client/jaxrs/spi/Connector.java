@@ -21,10 +21,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
  */
 public interface Connector {
 
-    void setBasicAuth(String auth);
-
-    String getBasicAuth();
-
-    Object execute(Request request) throws Exception;
+    Object execute(Request request);
 
 }

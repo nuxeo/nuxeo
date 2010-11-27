@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.Documents;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class Test {
+public class SampleTwo {
 
     public static void main(String[] args) throws Exception {
         try {
@@ -37,13 +37,9 @@ public class Test {
             Session session = client.getSession("Administrator",
                     "Administrator");
             DocumentService rs = session.getAdapter(DocumentService.class);
-            Document doc = (Document) session.newRequest(
-                    DocumentService.FetchDocument).set("value",
-                    "/default-domain").execute();
-            System.out.println(doc);
-            System.out.println(doc.getTitle());
-            Documents docs = (Documents) session.newRequest(
-                    DocumentService.GetDocumentChildren).setInput(doc).execute();
+            Document doc = rs.getDocument("/default-domain");
+            System.out.println(doc + " - " + doc.getTitle());
+            Documents docs = rs.getChildren(doc);
             System.out.println(docs);
             Document dd = null;
             for (Document d : docs) {
@@ -52,14 +48,11 @@ public class Test {
                 }
                 System.out.println(d.getTitle() + " at " + d.getLastModified());
             }
-            DocRef wsRef = new DocRef("/default-domain/workspaces");
-            // doc =
-            // (Document)session.newRequest(CreateDocument.ID).setInput(wsRef)
-            // .set("type", "Workspace").set("name", "hello").execute();
+            // doc = rs.createDocument(dd, "Workspace", "hello");
             // System.out.println(doc + " - "+doc.getTitle());
             System.out.println("@@@@@@@@@@@@@@@@@@@");
-            docs = (Documents) session.newRequest(
-                    DocumentService.GetDocumentChildren).setInput(wsRef).execute();
+            DocRef wsRef = new DocRef("/default-domain/workspaces");
+            docs = rs.getChildren(wsRef);
             System.out.println(docs);
             for (Document d : docs) {
                 System.out.println(d.getTitle() + " at " + d.getLastModified()

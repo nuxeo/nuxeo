@@ -31,7 +31,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.model.PropertyMap;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class TestBlob {
+public class SampleBlob {
 
     public static void main(String[] args) throws Exception {
         try {

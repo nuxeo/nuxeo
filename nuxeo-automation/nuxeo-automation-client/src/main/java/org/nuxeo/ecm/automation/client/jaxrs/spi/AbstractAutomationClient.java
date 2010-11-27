@@ -28,8 +28,9 @@ import org.nuxeo.ecm.automation.client.jaxrs.AdapterFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.AsyncCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.AutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.LoginInfo;
+import org.nuxeo.ecm.automation.client.jaxrs.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,19 +43,37 @@ public abstract class AbstractAutomationClient implements AutomationClient {
 
     protected Map<Class<?>, List<AdapterFactory<?>>> adapters;
 
+    protected RequestInterceptor requestInterceptor;
+
     protected AbstractAutomationClient(String url) {
-        adapters = new HashMap<Class<?>, List<AdapterFactory<?>>>();
+        this.adapters = new HashMap<Class<?>, List<AdapterFactory<?>>>();
         this.url = url.endsWith("/") ? url : url + "/";
     }
 
+    @Override
+    public void setRequestInterceptor(RequestInterceptor interceptor) {
+        requestInterceptor = interceptor;
+    }
+
+    @Override
+    public RequestInterceptor getRequestInterceptor() {
+        return requestInterceptor;
+    }
+
+    @Override
     public String getBaseUrl() {
         return url;
+    }
+
+    public void setBasicAuth(String username, String password) {
+        setRequestInterceptor(new BasicAuthInterceptor(username, password));
     }
 
     protected OperationRegistry getRegistry() {
         return registry;
     }
 
+    @Override
     public void registerAdapter(AdapterFactory<?> factory) {
         Class<?> adapter = factory.getAdapterType();
         List<AdapterFactory<?>> factories = adapters.get(adapter);
@@ -66,6 +85,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T getAdapter(Object objToAdapt, Class<T> adapterType) {
         Class<?> cls = objToAdapt.getClass();
         List<AdapterFactory<?>> factories = adapters.get(adapterType);
@@ -79,16 +99,11 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return null;
     }
 
-    protected synchronized void connect(String username, String password)
-            throws Exception {
+    protected OperationRegistry connect(Connector connector) {
         Request req = new Request(Request.GET, url);
         req.put("Accept", CTYPE_AUTOMATION);
-        if (username != null) {
-            String auth = "Basic " + Base64.encode(username + ":" + password);
-            req.put("Authorization", auth);
-        }
         // TODO handle authorization failure
-        registry = (OperationRegistry) newConnector().execute(req);
+        return (OperationRegistry) connector.execute(req);
     }
 
     public synchronized void shutdown() {
@@ -97,28 +112,37 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         adapters = null;
     }
 
-    public Session getSession(final String username, final String password)
-            throws Exception {
+    public Session getSession() {
+        Connector connector = newConnector();
+        if (requestInterceptor != null) {
+            connector = new ConnectorHandler(connector, requestInterceptor);
+        }
         if (registry == null) { // not yet connected
             synchronized (this) {
                 if (registry == null) {
-                    connect(username, password);
+                    registry = connect(connector);
                 }
             }
         }
-        if (username != null) {
-            return login(username, password);
-        } else {
-            return createSession(newConnector(), LoginInfo.ANONYNMOUS);
-        }
+        return login(connector);
+    }
+
+    public Session getSession(final String username, final String password) {
+        setRequestInterceptor(new BasicAuthInterceptor(username, password));
+        return getSession();
     }
 
     public void getSession(final String username, final String password,
             final AsyncCallback<Session> cb) {
+        setBasicAuth(username, password);
+        getSession(cb);
+    }
+
+    public void getSession(final AsyncCallback<Session> cb) {
         asyncExec(new Runnable() {
             public void run() {
                 try {
-                    Session session = getSession(username, password);
+                    Session session = getSession();
                     // TODO handle failures
                     cb.onSuccess(session);
                 } catch (Throwable t) {
@@ -128,14 +152,10 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         });
     }
 
-    public Session login(String username, String password) throws Exception {
+    protected Session login(Connector connector)  {
         Request request = new Request(Request.POST, url
                 + getRegistry().getPath("login"));
-        String auth = "Basic " + Base64.encode(username + ":" + password);
-        request.put("Authorization", auth);
         request.put("Accept", CTYPE_ENTITY);
-        Connector connector = newConnector();
-        connector.setBasicAuth(auth);
         LoginInfo login = (LoginInfo) connector.execute(request);
         return createSession(connector, login);
     }

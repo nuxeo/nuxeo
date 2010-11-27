@@ -61,6 +61,6 @@ public class HttpAutomationClient extends AsyncAutomationClient {
 
     @Override
     protected Connector newConnector() {
-        return new ConnectorImpl(http);
+        return new HttpConnector(http);
     }
 }

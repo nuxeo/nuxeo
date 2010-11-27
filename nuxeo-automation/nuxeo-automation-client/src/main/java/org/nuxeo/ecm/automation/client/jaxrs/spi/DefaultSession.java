@@ -96,9 +96,6 @@ public class DefaultSession implements Session {
         }
         req.put("Accept", REQUEST_ACCEPT_HEADER);
         req.put("Content-Type", ctype);
-        if (connector.getBasicAuth() != null) {
-            req.put("Authorization", connector.getBasicAuth());
-        }
         return connector.execute(req);
     }
 
@@ -117,17 +114,11 @@ public class DefaultSession implements Session {
 
     public Blob getFile(String path) throws Exception {
         Request req = new Request(Request.GET, client.getBaseUrl() + path);
-        if (connector.getBasicAuth() != null) {
-            req.put("Authorization", connector.getBasicAuth());
-        }
         return (Blob) connector.execute(req);
     }
 
     public Blobs getFiles(String path) throws Exception {
         Request req = new Request(Request.GET, client.getBaseUrl() + path);
-        if (connector.getBasicAuth() != null) {
-            req.put("Authorization", connector.getBasicAuth());
-        }
         return (Blobs) connector.execute(req);
     }
 

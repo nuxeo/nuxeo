@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs;
 
+
 /**
  * The connection to the automation service is done the first time you create a
  * session. To create a session you need to pass the authentication
@@ -40,9 +41,36 @@ public interface AutomationClient {
     String getBaseUrl();
 
     /**
+     * Can be used for intercepting requests before they are being sent
+     * to the server.
+     */
+    void setRequestInterceptor(RequestInterceptor interceptor);
+
+    /**
+     * Get access to this request interceptor
+     *
+     * @return
+     */
+    RequestInterceptor getRequestInterceptor();
+
+    /**
+     * Creates a new session. If no interceptors configured connect
+     * anonymously.
+     *
+     * @return
+     */
+    Session getSession();
+
+    /**
+     * Creates asynchronously a new session. The given
+     * callback will be notified after the session is created.
+     */
+    void getSession(AsyncCallback<Session> cb);
+
+    /**
      * Creates a new session using the given login.
      */
-    Session getSession(String username, String password) throws Exception;
+    Session getSession(String username, String password);
 
     /**
      * Creates asynchronously a new session using the given login. The given
@@ -75,5 +103,6 @@ public interface AutomationClient {
      * is no more usable.
      */
     void shutdown();
+
 
 }

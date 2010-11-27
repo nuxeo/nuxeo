@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
@@ -26,9 +27,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -38,36 +41,30 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 
 /**
  * Connector wrapping a {@link HttpClient} instance.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ConnectorImpl implements Connector {
+public class HttpConnector implements Connector {
 
-    protected final HttpClient http;
+    protected final AbstractHttpClient http;
 
     protected final HttpContext ctx;
 
     protected String basicAuth;
 
-    public ConnectorImpl(HttpClient http) {
+    public HttpConnector(HttpClient http) {
         this(http, new BasicHttpContext());
     }
 
-    public ConnectorImpl(HttpClient http, HttpContext ctx) {
+    public HttpConnector(HttpClient http, HttpContext ctx) {
         ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
-        this.http = http;
+        this.http = (AbstractHttpClient)http;
         this.ctx = ctx;
     }
 
-    public void setBasicAuth(String auth) {
-        this.basicAuth = auth;
-    }
-
-    public String getBasicAuth() {
-        return basicAuth;
-    }
-
-    public Object execute(Request request) throws Exception {
+    @Override
+    public Object execute(Request request) {
+        HttpRequestBase httpRequest = null;
         if (request.getMethod() == Request.POST) {
             HttpPost post = new HttpPost(request.getUrl());
             Object obj = request.getEntity();
@@ -76,14 +73,22 @@ public class ConnectorImpl implements Connector {
                 if (request.isMultiPart()) {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
-                    entity = new StringEntity(obj.toString(), "UTF-8");
+                    try {
+                        entity = new StringEntity(obj.toString(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new Error("Cannot encode into UTF-8", e);
+                    }
                 }
                 post.setEntity(entity);
             }
-            return execute(request, post);
+            httpRequest = post;
         } else {
-            HttpGet get = new HttpGet(request.getUrl());
-            return execute(request, get);
+            httpRequest = new HttpGet(request.getUrl());
+        }
+        try {
+            return execute(request, httpRequest);
+        } catch (Exception e) {
+            throw new Error("Cannot execute " + request, e);
         }
     }
 
