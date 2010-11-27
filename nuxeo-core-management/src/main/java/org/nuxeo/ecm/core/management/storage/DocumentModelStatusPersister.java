@@ -62,7 +62,7 @@ public class DocumentModelStatusPersister implements
 
         protected final AdministrativeStatus status;
 
-        public StatusSaver(AdministrativeStatus status) {
+        private StatusSaver(AdministrativeStatus status) {
             this.status = status;
         }
 
@@ -105,7 +105,7 @@ public class DocumentModelStatusPersister implements
                     administrativeContainer.getPathAsString() + "/"
                             + getAdministrativeStatusDocName(status));
 
-            DocumentModel doc = null;
+            DocumentModel doc;
             boolean create = false;
             if (!session.exists(statusDocRef)) {
                 create = true;

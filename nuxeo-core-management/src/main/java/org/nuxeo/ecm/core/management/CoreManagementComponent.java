@@ -50,7 +50,7 @@ public class CoreManagementComponent extends DefaultComponent {
 
     protected static CoreManagementComponent defaultComponent;
 
-    protected final GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
+    protected final GlobalAdministrativeStatusManager globalManager = new GlobalAdministrativeStatusManagerImpl();
 
     protected final ProbeManagerImpl probeRunner = new ProbeManagerImpl();
 

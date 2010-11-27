@@ -37,6 +37,7 @@ public class StatusesManagementFactory extends AbstractResourceFactory {
         }
     }
 
+    @Override
     public void registerResources() {
 
         AdministrativeStatusManagerImpl adminStatus = Framework.getLocalService(AdministrativeStatusManagerImpl.class);

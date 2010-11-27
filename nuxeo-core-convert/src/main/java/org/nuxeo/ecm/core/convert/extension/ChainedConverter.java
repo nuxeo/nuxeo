@@ -81,7 +81,7 @@ public class ChainedConverter implements Converter {
 
             for (String converterName : subConverters) {
 
-                ConverterDescriptor desc = ConversionServiceImpl.getConverterDesciptor(converterName);
+                ConverterDescriptor desc = ConversionServiceImpl.getConverterDescriptor(converterName);
                 if (!desc.getSourceMimeTypes().contains(srcMT)) {
                     throw new ConversionException(
                             "Conversion Chain is not well defined");
@@ -94,7 +94,7 @@ public class ChainedConverter implements Converter {
             return result;
         } catch (ClientException e) {
             throw new ConversionException(
-                    "error while trying to executre converters chain", e);
+                    "error while trying to execute converters chain", e);
         }
     }
 
@@ -134,8 +134,8 @@ public class ChainedConverter implements Converter {
             steps.addAll(descriptor.getSteps());
             steps.add(descriptor.getDestinationMimeType());
         } else {
-            ConverterDescriptor fconv = ConversionServiceImpl.getConverterDesciptor(subConverters.get(0));
-            ConverterDescriptor lconv = ConversionServiceImpl.getConverterDesciptor(subConverters.get(subConverters.size() - 1));
+            ConverterDescriptor fconv = ConversionServiceImpl.getConverterDescriptor(subConverters.get(0));
+            ConverterDescriptor lconv = ConversionServiceImpl.getConverterDescriptor(subConverters.get(subConverters.size() - 1));
 
             descriptor.sourceMimeTypes = fconv.sourceMimeTypes;
             descriptor.destinationMimeType = lconv.destinationMimeType;

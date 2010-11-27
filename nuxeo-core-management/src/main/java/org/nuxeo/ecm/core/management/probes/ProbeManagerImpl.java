@@ -54,42 +54,52 @@ public class ProbeManagerImpl implements ProbeManager {
         return names;
     }
 
+    @Override
     public Collection<ProbeInfo> getAllProbeInfos() {
         return Collections.unmodifiableCollection(infosByTypes.values());
     }
 
+    @Override
     public Collection<ProbeInfo> getInSuccessProbeInfos() {
         return Collections.unmodifiableCollection(succeed);
     }
 
+    @Override
     public Collection<ProbeInfo> getInFailureProbeInfos() {
         return Collections.unmodifiableCollection(failed);
     }
 
+    @Override
     public Collection<String> getProbeNames() {
         return infosByShortcuts.keySet();
     }
 
+    @Override
     public int getProbesCount() {
         return infosByTypes.size();
     }
 
+    @Override
     public Collection<String> getProbesInError() {
         return doExtractProbesName(failed);
     }
 
+    @Override
     public int getProbesInErrorCount() {
         return failed.size();
     }
 
+    @Override
     public Collection<String> getProbesInSuccess() {
         return doExtractProbesName(succeed);
     }
 
+    @Override
     public int getProbesInSuccessCount() {
         return succeed.size();
     }
 
+    @Override
     public ProbeInfo getProbeInfo(Class<? extends Probe> probeClass) {
         ProbeInfo info = infosByTypes.get(probeClass);
         if (info == null) {
@@ -99,16 +109,19 @@ public class ProbeManagerImpl implements ProbeManager {
         return info;
     }
 
+    @Override
     public boolean runAllProbes() {
         doRun();
         return getProbesInErrorCount() <= 0;
     }
 
+    @Override
     public ProbeInfo runProbe(ProbeInfo probe) {
         doRunProbe(probe);
         return probe;
     }
 
+    @Override
     public ProbeInfo runProbe(String name) {
         ProbeInfo probeInfo = getProbeInfo(name);
         if (probeInfo == null) {
@@ -118,6 +131,7 @@ public class ProbeManagerImpl implements ProbeManager {
         return runProbe(probeInfo);
     }
 
+    @Override
     public ProbeInfo getProbeInfo(String name) {
         return infosByShortcuts.get(name);
     }

@@ -37,7 +37,7 @@ public class CacheKeyGenerator {
     public static String computeKey(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(converterName);
         sb.append(":");

@@ -50,6 +50,10 @@ public class ConversionCacheHolder {
     public static int subPathPartSize = 2;
     public static long cacheHits = 0;
 
+    // Utility class.
+    private ConversionCacheHolder() {
+    }
+
     public static long getCacheHits() {
         return cacheHits;
     }
@@ -110,7 +114,7 @@ public class ConversionCacheHolder {
         try {
             persisted = cce.persist(getCacheEntryPath(key));
         } catch (Exception e) {
-            log.error("Error while trying to persit cache entry", e);
+            log.error("Error while trying to persist cache entry", e);
         }
 
         if (persisted) {

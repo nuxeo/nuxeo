@@ -39,12 +39,11 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.management");
         deployBundle("org.nuxeo.ecm.core.management.test");
         DocumentStoreSessionRunner.setRepositoryName(REPOSITORY_NAME);
-        super.fireFrameworkStarted();
+        fireFrameworkStarted();
         openSession();
     }
 
     public void testServiceLookups() {
-
         // local manager lookup
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
         assertNotNull(localManager);
@@ -59,11 +58,9 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
 
         ProbeManager pm = Framework.getLocalService(ProbeManager.class);
         assertNotNull(pm);
-
     }
 
     public void testInstanceStatus() {
-
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
 
         AdministrativeStatus status = localManager.getNuxeoInstanceStatus();
@@ -83,11 +80,9 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
 
         status = localManager.getNuxeoInstanceStatus();
         assertTrue(status.isPassive());
-
     }
 
     public void testMiscStatusWithDefaultValue() {
-
         final String serviceId = "org.nuxeo.ecm.administrator.message";
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
 
@@ -100,15 +95,12 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
 
         status = localManager.deactivate(serviceId, "", "Administrator");
         assertTrue(status.isPassive());
-
     }
 
     public void testNonExistingStatus() {
-
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
         AdministrativeStatus nonExistingStatus = localManager.getStatus("org.nawak");
         assertNull(nonExistingStatus);
-
     }
 
     public void testServiceListing() {
@@ -116,11 +108,9 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         List<AdministrativeStatus> statuses = localManager.getAllStatuses();
         assertNotNull(statuses);
         assertEquals(3, statuses.size());
-
     }
 
     public void testGlobalManager() {
-
         final String serviceId = "org.nuxeo.ecm.administrator.message";
 
         GlobalAdministrativeStatusManager globalManager = Framework.getLocalService(GlobalAdministrativeStatusManager.class);
@@ -141,7 +131,7 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
         assertNotNull(sm);
 
         AdministrativeStatus status = sm.deactivateNuxeoInstance(
-                "ClusterNode2 is desactivated for now", "system");
+                "ClusterNode2 is deactivated for now", "system");
         assertNotNull(status);
 
         // check that we now have 2 instances
@@ -157,6 +147,7 @@ public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
                 serviceId);
         assertNotNull(statusNode1);
         assertEquals("Yo Man", statusNode1.getMessage());
+
         AdministrativeStatus statusNode2 = sm.getStatus(serviceId);
         assertNotNull(statusNode2);
         assertEquals("Yo Man", statusNode2.getMessage());

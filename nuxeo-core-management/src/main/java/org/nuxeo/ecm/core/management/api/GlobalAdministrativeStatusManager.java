@@ -56,4 +56,9 @@ public interface GlobalAdministrativeStatusManager {
     AdministrableServiceDescriptor getServiceDescriptor(
             String serviceIdentifier);
 
+    /**
+     * Registers a service given its descriptor.
+     */
+    void registerService(AdministrableServiceDescriptor desc);
+
 }

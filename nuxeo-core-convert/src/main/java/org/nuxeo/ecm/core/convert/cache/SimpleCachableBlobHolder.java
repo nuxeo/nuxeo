@@ -75,12 +75,12 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
         for (File file : directoryContent) {
             if (file.isDirectory()) {
                 int beginIndex = prefix.length();
-                prefix = prefix.concat(file.getName() + File.separatorChar);
+                prefix = prefix + file.getName() + File.separatorChar;
                 addDirectoryToList(file, prefix);
                 prefix = prefix.substring(0, beginIndex);
             } else {
                 Blob blob = new FileBlob(file);
-                blob.setFilename(prefix.concat(file.getName()));
+                blob.setFilename(prefix + file.getName());
                 if (file.getName().equalsIgnoreCase("index.html")) {
                     blobs.add(0, blob);
                 } else {
@@ -104,7 +104,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
             File dir = new File(path.toString());
             dir.mkdir();
             for (Blob blob : blobs) {
-                File file = new File((path.append(blob.getFilename())).toString());
+                File file = new File(path.append(blob.getFilename()).toString());
                 blob.transferTo(file);
             }
             return dir.getAbsolutePath();

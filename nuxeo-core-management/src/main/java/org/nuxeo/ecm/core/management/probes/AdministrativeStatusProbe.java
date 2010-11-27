@@ -32,6 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AdministrativeStatusProbe implements Probe {
 
+    @Override
     public ProbeStatus run() {
         AdministrativeStatusManager adm = Framework.getLocalService(AdministrativeStatusManager.class);
         AdministrativeStatus status = adm.getNuxeoInstanceStatus();

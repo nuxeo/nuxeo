@@ -96,7 +96,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return desc.getConverterInstance();
     }
 
-    public static ConverterDescriptor getConverterDesciptor(String converterName) {
+    public static ConverterDescriptor getConverterDescriptor(String converterName) {
         return converterDescriptors.get(converterName);
     }
 

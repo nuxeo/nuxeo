@@ -54,7 +54,7 @@ public class TestService extends NXRuntimeTestCase {
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
         assertNotNull(cv1);
 
-        ConverterDescriptor desc1 = ConversionServiceImpl.getConverterDesciptor("dummy1");
+        ConverterDescriptor desc1 = ConversionServiceImpl.getConverterDescriptor("dummy1");
         assertNotNull(desc1);
 
         assertEquals("test/me", desc1.getDestinationMimeType());

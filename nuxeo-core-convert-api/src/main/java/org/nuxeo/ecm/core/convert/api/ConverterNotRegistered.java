@@ -29,7 +29,7 @@ public class ConverterNotRegistered extends ConversionException {
     private static final long serialVersionUID = 1L;
 
     public ConverterNotRegistered(String message) {
-        super("Converter " + message + " is not registred");
+        super("Converter " + message + " is not registered");
     }
 
 }

@@ -68,6 +68,7 @@ public class GlobalAdministrativeStatusManagerImpl implements
         }
     }
 
+    @Override
     public void registerService(AdministrableServiceDescriptor desc) {
         descriptors.add(desc);
         descriptorsByServiceId.put(desc.getId(), desc);
@@ -78,6 +79,7 @@ public class GlobalAdministrativeStatusManagerImpl implements
         return descriptors;
     }
 
+    @Override
     public AdministrableServiceDescriptor getServiceDescriptor(
             String serviceIdentifier) {
         return descriptorsByServiceId.get(serviceIdentifier);

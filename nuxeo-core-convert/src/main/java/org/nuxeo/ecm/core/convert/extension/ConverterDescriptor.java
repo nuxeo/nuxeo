@@ -90,7 +90,7 @@ public class ConverterDescriptor implements Serializable {
             if (className == null
                     || converterType.equals(CHAINED_CONVERTER_TYPE)) {
 
-                if (subConverters == null || subConverters.size() == 0) {
+                if (subConverters == null || subConverters.isEmpty()) {
                     // create a Chained converter based on mimetypes
                     instance = new ChainedConverter();
                 } else {
@@ -120,7 +120,7 @@ public class ConverterDescriptor implements Serializable {
 
     public ConverterDescriptor merge(ConverterDescriptor other) {
 
-        if (!other.getConverterName().equals(converterName)) {
+        if (!other.converterName.equals(converterName)) {
             throw new UnsupportedOperationException(
                     "Can not merge ConverterDesciptors with different names");
         }
@@ -152,7 +152,7 @@ public class ConverterDescriptor implements Serializable {
         if (other.converterType != null) {
             converterType = other.converterType;
         }
-        if (other.steps != null && other.steps.size() > 0) {
+        if (other.steps != null && !other.steps.isEmpty()) {
             steps = other.steps;
         }
 
