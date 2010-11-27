@@ -100,6 +100,8 @@ if [ "$cygwin" = "true" ]; then
   [ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
   [ -n "$JETTY_HOME" ] && JETTY_HOME=`cygpath --unix "$JETTY_HOME"`
   [ -n "$NUXEO_HOME" ] && NUXEO_HOME=`cygpath --unix "$NUXEO_HOME"`
+  [ -n "$TMP_DIR" ] && TMP_DIR=`cygpath --unix "$TMP_DIR"`
+  [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --unix "$DATA_DIR"`
 fi
 
 
@@ -252,7 +254,9 @@ if [ "$jboss" = "true" ]; then
   NUXEO_CLASSPATH="$CLASSPATH:$jbossjar"
   NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
   NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
+  NUXEO_CONFIG_CLASSPATH="$CLASSPATH:$NUXEO_BOOTJAR_PATH"
   LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
+  LOG4J_CONF_WIN="$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #
 # TOMCAT
@@ -267,8 +271,10 @@ elif [ "$tomcat" = "true" ]; then
   DATA_DIR=${DATA_DIR:-nxserver/data}
   NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
   NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
+  NUXEO_CONFIG_CLASSPATH="$CLASSPATH:$NUXEO_BOOTJAR_PATH"
   TMP_DIR=${TMP_DIR:-$NUXEO_HOME/temp}
   LOG4J_CONF="file:$NUXEO_HOME/lib/log4j.xml"
+  LOG4J_CONF_WIN="$NUXEO_HOME/lib/log4j.xml"
 
 #
 # JETTY
@@ -280,12 +286,14 @@ elif [ "$jetty" = "true" ]; then
   NXC_VERSION=`basename $jettyjar | cut -d"-" -f4-`
   NUXEO_CLASSPATH="$CLASSPATH:$jettyjar"
   NUXEO_BOOTJAR_PATH="$NUXEO_HOME/bundles/*:$NUXEO_HOME/lib/*"
+  NUXEO_CONFIG_CLASSPATH="$CLASSPATH:$NUXEO_BOOTJAR_PATH"
   NUXEO_BUNDLES="$NUXEO_HOME/bundles/.:$NUXEO_HOME/lib/.:$NUXEO_HOME/config"
   JAVA_OPTS="$JAVA_OPTS -Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader"
   JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true"
   JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=$DATA_DIR/derby"
   JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.launcher.libdirs=lib"
   LOG4J_CONF="file:$NUXEO_HOME/config/log4j.xml"
+  LOG4J_CONF_WIN="$NUXEO_HOME/config/log4j.xml"
 
 #
 # Oops
@@ -293,18 +301,6 @@ elif [ "$jetty" = "true" ]; then
 
 else
   die "Oops, something went very wrong, I'm not supposed to be here !"
-fi
-
-if [ "$cygwin" = "true" ]; then
-  NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
-  NUXEO_BOOTJAR_PATH=`cygpath --path --windows "$NUXEO_BOOTJAR_PATH"`
-  NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
-  NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
-  LOG4J_CONF=`cygpath --absolute --windows "$LOG4J_CONF"`
-
-  [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
-  [ "$tomcat" = "true" ] && CATALINA_TEMP==`cygpath --absolute --windows "$CATALINA_TEMP"`
-  [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
 fi
 
 # Set absolute path for data directory
@@ -317,6 +313,21 @@ if [ -n "$TMP_DIR" ]; then
   if [[ "$TMP_DIR" != /* ]]; then
     TMP_DIR="$NUXEO_HOME/$TMP_DIR"
   fi
+fi
+
+if [ "$cygwin" = "true" ]; then
+  NUXEO_CLASSPATH=`cygpath --path --windows "$NUXEO_CLASSPATH"`
+  NUXEO_CONFIG_CLASSPATH=`cygpath --path --windows "$NUXEO_CONFIG_CLASSPATH"`
+  NUXEO_HOME=`cygpath --absolute --windows "$NUXEO_HOME"`
+  NUXEO_CONF=`cygpath --absolute --windows "$NUXEO_CONF"`
+  [ -n "$TMP_DIR" ] && TMP_DIR=`cygpath --absolute --windows "$TMP_DIR"`
+  [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --absolute --windows "$DATA_DIR"`
+  LOG_DIR=`cygpath --absolute --windows "$LOG_DIR"`
+  LOG4J_CONF="file:///"`cygpath --absolute --mixed "$LOG4J_CONF_WIN"`
+
+  [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
+  [ "$tomcat" = "true" ] && CATALINA_TEMP=`cygpath --absolute --windows "$CATALINA_TEMP"`
+  [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
 fi
 
 # Check old paths (NXP-5370, NXP-5460)
@@ -369,20 +380,20 @@ generate_configuration() {
   createdirs
   check_old_paths
   if [ "$1" = "console" ]; then
-    echo java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+    echo java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
       -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
-    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+    java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
       -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
       org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator
   else
-    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+    java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Djboss.server.log.dir="$LOG_DIR" -Dnuxeo.log.dir="$LOG_DIR" \
       -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
@@ -582,7 +593,7 @@ console() {
 }
 
 pack() {
-    java $JAVA_OPTS -classpath "$CLASSPATH:$NUXEO_BOOTJAR_PATH" \
+    java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
       -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
       -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR" -Dnuxeo.tmp.dir="$TMP_DIR" \
       -Dlog4j.configuration="$LOG4J_CONF" \
