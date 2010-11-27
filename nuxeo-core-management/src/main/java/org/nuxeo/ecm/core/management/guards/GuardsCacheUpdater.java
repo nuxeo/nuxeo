@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
  * state in a map.
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
- *
  */
 public class GuardsCacheUpdater implements EventListener {
     @Override

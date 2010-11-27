@@ -80,14 +80,14 @@ public class AdministrativeStatusManagerImpl implements
 
     public void onNuxeoServerStartup() {
 
-        List<AdministrativeStatus> savedSatuses = persister.getAllStatuses(serverInstanceName);
+        List<AdministrativeStatus> savedStatuses = persister.getAllStatuses(serverInstanceName);
 
         // iterate throw declared services and init them if needed
         List<AdministrableServiceDescriptor> descs = globalManager.listRegistredServices();
 
         for (AdministrableServiceDescriptor desc : descs) {
             boolean serviceExist = false;
-            for (AdministrativeStatus status : savedSatuses) {
+            for (AdministrativeStatus status : savedStatuses) {
                 if (desc.getId().equals(status.getServiceIdentifier())) {
                     serviceExist = true;
                     break;
@@ -101,8 +101,8 @@ public class AdministrativeStatusManagerImpl implements
             }
         }
 
-        savedSatuses = persister.getAllStatuses(serverInstanceName);
-        for (AdministrativeStatus status : savedSatuses) {
+        savedStatuses = persister.getAllStatuses(serverInstanceName);
+        for (AdministrativeStatus status : savedStatuses) {
             notifyOnStatus(status);
         }
     }

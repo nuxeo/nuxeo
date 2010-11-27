@@ -50,7 +50,7 @@ public class ProbeDescriptor {
 
     public String getDescription() {
         if (description == null) {
-            return "decription." + shortcutName;
+            return "description." + shortcutName;
         }
         return description;
     }

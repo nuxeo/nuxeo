@@ -170,7 +170,7 @@ public class ProbeManagerImpl implements ProbeManager {
                 probeInfoImpl.lastStatus = runnableProbe.run();
                 if (probeInfoImpl.lastStatus.isSuccess()) {
                     probeInfoImpl.lastSucceedDate = probeInfoImpl.lastRunnedDate;
-                    probeInfoImpl.lastSuccesStatus = probeInfoImpl.lastStatus;
+                    probeInfoImpl.lastSuccessStatus = probeInfoImpl.lastStatus;
                     probeInfoImpl.successCount += 1;
                 } else {
                     probeInfoImpl.lastFailureStatus = probeInfoImpl.lastStatus;

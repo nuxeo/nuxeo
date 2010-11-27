@@ -19,6 +19,9 @@ package org.nuxeo.ecm.core.management.api;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class ProbeStatus {
 
     protected boolean neverExecuted = false;
@@ -48,26 +51,26 @@ public class ProbeStatus {
     }
 
     public static ProbeStatus newFailure(String info) {
-        return new ProbeStatus(info, false);
+        return new ProbeStatus(info, FALSE);
     }
 
     public static ProbeStatus newFailure(Map<String, String> infos) {
-        return new ProbeStatus(infos, false);
+        return new ProbeStatus(infos, FALSE);
     }
 
     public static ProbeStatus newError(Throwable t) {
         Map<String, String> infos = new HashMap<String, String>();
         infos.put(ERROR_FIELD, t.toString());
         infos.put(DEFAULT_INFO_FIELD, "Caught error " + t.toString());
-        return new ProbeStatus(infos, false);
+        return new ProbeStatus(infos, FALSE);
     }
 
     public static ProbeStatus newSuccess(String info) {
-        return new ProbeStatus(info, true);
+        return new ProbeStatus(info, TRUE);
     }
 
     public static ProbeStatus newSuccess(Map<String, String> infos) {
-        return new ProbeStatus(infos, true);
+        return new ProbeStatus(infos, TRUE);
     }
 
     public boolean isSuccess() {
@@ -90,7 +93,7 @@ public class ProbeStatus {
             return infos.values().iterator().next();
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String key : infos.keySet()) {
             sb.append(key);
             sb.append(" : ");
@@ -106,7 +109,7 @@ public class ProbeStatus {
     }
 
     public String getAsXML() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("<dl>");
         for (String key : infos.keySet()) {
             sb.append("<dt>");

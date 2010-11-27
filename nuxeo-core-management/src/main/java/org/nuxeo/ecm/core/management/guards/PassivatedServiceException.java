@@ -19,11 +19,10 @@ package org.nuxeo.ecm.core.management.guards;
 import java.lang.reflect.Method;
 
 /**
- * That exception is throwed by the {@link GuardedServiceHandler} whenever a call is made
+ * That exception is thrown by the {@link GuardedServiceHandler} whenever a call is made
  * onto a service guarded while the server is passivated.
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
- *
  */
 public class PassivatedServiceException extends RuntimeException {
 
@@ -33,7 +32,8 @@ public class PassivatedServiceException extends RuntimeException {
     public final Method method;
 
     protected PassivatedServiceException(Method m, String statusId) {
-        super(m.getDeclaringClass().getCanonicalName().concat(".").concat(m.getName()).concat(" cannot being accessed while status ").concat(statusId).concat(" is passive"));
+        super(m.getDeclaringClass().getCanonicalName() + "." + m.getName()
+                + " cannot being accessed while status " + statusId + " is passive");
         this.statusId = statusId;
         this.method = m;
     }

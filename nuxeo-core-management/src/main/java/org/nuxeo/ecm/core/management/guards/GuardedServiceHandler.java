@@ -44,7 +44,7 @@ public class GuardedServiceHandler<T> implements InvocationHandler {
             return m.getAnnotation(Guarded.class);
         }
         Class<?> declaringClass = m.getDeclaringClass();
-        if (declaringClass.isAnnotationPresent(Guarded.class)) {;
+        if (declaringClass.isAnnotationPresent(Guarded.class)) {
             return declaringClass.getAnnotation(Guarded.class);
         }
         return null;

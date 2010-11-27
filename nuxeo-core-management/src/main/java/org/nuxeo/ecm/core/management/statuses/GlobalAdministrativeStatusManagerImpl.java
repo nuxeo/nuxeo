@@ -79,8 +79,8 @@ public class GlobalAdministrativeStatusManagerImpl implements
     }
 
     public AdministrableServiceDescriptor getServiceDescriptor(
-            String serviceIndentifier) {
-        return descriptorsByServiceId.get(serviceIndentifier);
+            String serviceIdentifier) {
+        return descriptorsByServiceId.get(serviceIdentifier);
     }
 
 }

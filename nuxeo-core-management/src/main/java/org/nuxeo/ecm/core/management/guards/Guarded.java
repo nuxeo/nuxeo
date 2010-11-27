@@ -24,12 +24,10 @@ import java.lang.annotation.Target;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 
 /**
- *
  * Indicates that a method or class cannot be invoked if the specified
  * status is in passive state.
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
- *
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

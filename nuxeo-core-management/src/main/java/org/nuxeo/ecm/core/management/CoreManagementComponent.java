@@ -48,10 +48,6 @@ public class CoreManagementComponent extends DefaultComponent {
 
     public static final String STORAGE_CONFIG_EP = "storageConfiguration";
 
-    public CoreManagementComponent() {
-        super(); // enables breaking
-    }
-
     protected static CoreManagementComponent defaultComponent;
 
     protected final GlobalAdministrativeStatusManagerImpl globalManager = new GlobalAdministrativeStatusManagerImpl();
@@ -60,8 +56,13 @@ public class CoreManagementComponent extends DefaultComponent {
 
     protected final DocumentStoreManager storageManager = new DocumentStoreManager();
 
+    public CoreManagementComponent() {
+        super(); // enables breaking
+    }
+
     public AdministrativeStatusManagerImpl getLocalManager() {
-        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
+        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(
+                globalManager.getLocalNuxeoInstanceIdentifier());
     }
 
     @Override
@@ -121,7 +122,6 @@ public class CoreManagementComponent extends DefaultComponent {
         storageManager.uninstall();
         getLocalManager().onNuxeoServerShutdown();
     }
-
 
     public void onNuxeoServerStartup() {
         getLocalManager().onNuxeoServerStartup();

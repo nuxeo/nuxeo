@@ -37,7 +37,6 @@ import static org.nuxeo.ecm.core.management.storage.DocumentModelStatusPersister
  *
  * @author Mariana Cedica
  */
-
 public class DocumentModelStatusPersister implements
         AdministrativeStatusPersister {
 
@@ -149,7 +148,7 @@ public class DocumentModelStatusPersister implements
                 + status.getServiceIdentifier();
     }
 
-    public class StatusFetcher extends DocumentStoreSessionRunner {
+    public static class StatusFetcher extends DocumentStoreSessionRunner {
 
         protected final String instanceId;
 
@@ -166,7 +165,7 @@ public class DocumentModelStatusPersister implements
 
         @Override
         protected String errorMessage() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("Cannot fetch statuses ");
             if (instanceId != null) {
                 sb.append(" for ").append(instanceId);
@@ -179,12 +178,10 @@ public class DocumentModelStatusPersister implements
 
         @Override
         public void run() throws ClientException {
-
-            boolean onlyFetchIds = false;
-
-            StringBuffer sb = new StringBuffer("select * from ");
+            StringBuilder sb = new StringBuilder("select * from ");
             sb.append(ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 
+            boolean onlyFetchIds = false;
             if (instanceId == null) {
                 onlyFetchIds = true;
             } else {
@@ -226,10 +223,7 @@ public class DocumentModelStatusPersister implements
             String state = (String) doc.getPropertyValue(STATUS_PROPERTY);
             Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
 
-            AdministrativeStatus status = new AdministrativeStatus(state,
-                    message, modified, userLogin, id, service);
-
-            return status;
+            return new AdministrativeStatus(state, message, modified, userLogin, id, service);
         }
     }
 

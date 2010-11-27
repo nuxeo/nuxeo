@@ -43,7 +43,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     public static final String MANAGEMENT_ROOT_NAME = "management";
 
     public static PathRef newPath(String ...components) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("/management");
         for (String component:components) {
             sb.append("/").append(component);

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.management.api.ProbeStatus;
 
 public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
 
-    protected ProbeDescriptor descriptor;
+    protected final ProbeDescriptor descriptor;
 
     protected boolean isEnabled = true;
 
@@ -44,7 +44,7 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
 
     protected Date lastSucceedDate = new Date(0);
 
-    protected ProbeStatus lastSuccesStatus = ProbeStatus.newBlankProbStatus();
+    protected ProbeStatus lastSuccessStatus = ProbeStatus.newBlankProbStatus();
 
     protected long failureCount = 0L;
 
@@ -54,8 +54,8 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
 
     protected ProbeInfoImpl(ProbeDescriptor descriptor) {
         this.descriptor = descriptor;
-        this.shortcutName = descriptor.getShortcut();
-        this.qualifiedName = descriptor.getQualifiedName();
+        shortcutName = descriptor.getShortcut();
+        qualifiedName = descriptor.getQualifiedName();
     }
 
     @Override
@@ -98,10 +98,12 @@ public class ProbeInfoImpl implements ProbeMBean, ProbeInfo {
         return successCount;
     }
 
+    @Override
     public void disable() {
         isEnabled = false;
     }
 
+    @Override
     public void enable() {
         isEnabled = true;
     }

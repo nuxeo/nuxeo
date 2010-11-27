@@ -24,44 +24,28 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 public interface AdministrativeStatusPersister {
 
     /**
-     * Lists all instance identifiers persisted in the backend
-     *
-     * @return
+     * Lists all instance identifiers persisted in the backend.
      */
     List<String> getAllInstanceIds();
 
     /**
      * Saves the {@link AdministrativeStatus} of a service of a given instance
-     *
-     * @param instanceId
-     * @param serviceIdentifier
-     * @param status
-     * @return
      */
     AdministrativeStatus saveStatus(AdministrativeStatus status);
 
     /**
      * Reads the {@link AdministrativeStatus} of a service for a given instance
-     *
-     * @param instanceId
-     * @param serviceIdentifier
-     * @return
      */
     AdministrativeStatus getStatus(String instanceId, String serviceIdentifier);
 
     /**
      * Retrieves the {@link AdministrativeStatus} for all services of a given
      * instance
-     *
-     * @param instanceId
-     * @return
      */
     List<AdministrativeStatus> getAllStatuses(String instanceId);
 
     /**
-     * Removes all persisted states for a given instance
-     *
-     * @param instanceId
+     * Removes all persisted states for a given instance.
      */
     void remove(String instanceId);
 

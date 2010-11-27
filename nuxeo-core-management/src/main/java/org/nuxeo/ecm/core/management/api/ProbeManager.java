@@ -34,4 +34,5 @@ public interface ProbeManager extends ProbeRunnerMBean {
     ProbeInfo getProbeInfo(String name);
 
     ProbeInfo getProbeInfo(Class<? extends Probe> probeClass);
+
 }

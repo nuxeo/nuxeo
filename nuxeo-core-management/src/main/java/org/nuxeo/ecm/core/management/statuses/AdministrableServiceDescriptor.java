@@ -67,7 +67,7 @@ public class AdministrableServiceDescriptor implements Serializable {
 
     public String getName() {
         if (name == null) {
-            return getId();
+            return id;
         }
         return name;
     }

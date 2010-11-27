@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.AnnotatedServiceProvider;
  */
 public class GuardedServiceProvider extends AnnotatedServiceProvider {
 
-   public final static GuardedServiceProvider INSTANCE = new GuardedServiceProvider();
+   public static final GuardedServiceProvider INSTANCE = new GuardedServiceProvider();
 
    public static void install() {
        INSTANCE.installSelf();
