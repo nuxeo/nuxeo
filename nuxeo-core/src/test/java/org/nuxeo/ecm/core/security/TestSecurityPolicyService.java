@@ -20,14 +20,19 @@ package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
 
-import org.nuxeo.ecm.core.CoreUTConstants;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.security.Access;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.MockDocument;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.nuxeo.ecm.core.CoreUTConstants.CORE_BUNDLE;
+import static org.nuxeo.ecm.core.CoreUTConstants.CORE_TESTS_BUNDLE;
+import static org.nuxeo.ecm.core.api.security.Access.DENY;
+import static org.nuxeo.ecm.core.api.security.Access.GRANT;
+import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
@@ -45,12 +50,9 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib(CoreUTConstants.CORE_BUNDLE,
-                "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreUTConstants.CORE_BUNDLE,
-                "OSGI-INF/permissions-contrib.xml");
-        deployContrib(CoreUTConstants.CORE_BUNDLE,
-                "OSGI-INF/security-policy-contrib.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/SecurityService.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/permissions-contrib.xml");
+        deployContrib(CORE_BUNDLE, "OSGI-INF/security-policy-contrib.xml");
         service = Framework.getService(SecurityPolicyService.class);
         assertNotNull(service);
 
@@ -63,49 +65,49 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     }
 
     public void testPolicies() throws Exception {
-        String permission = SecurityConstants.WRITE;
-        String[] permissions = { SecurityConstants.WRITE };
+        String permission = WRITE;
+        String[] permissions = { WRITE };
         Document doc = new MockDocument("Test", creator);
 
         // without lock
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 userPrincipal, permission, permissions, null));
 
         // with lock
         doc.setLock(user + ':');
-        assertEquals(Access.DENY, service.checkPermission(doc, null,
+        assertSame(DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 userPrincipal, permission, permissions, null));
 
         // test creator policy with lower order takes over lock
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
+        deployContrib(CORE_TESTS_BUNDLE,
                 "test-security-policy-contrib.xml");
-        assertEquals(Access.GRANT, service.checkPermission(doc, null,
+        assertSame(GRANT, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 userPrincipal, permission, permissions, null));
     }
 
     public void testCheckOutPolicy() throws Exception {
-        String permission = SecurityConstants.WRITE;
-        String[] permissions = { SecurityConstants.WRITE, SecurityConstants.WRITE_PROPERTIES };
+        String permission = WRITE;
+        String[] permissions = { WRITE, WRITE_PROPERTIES };
         MockDocument doc = new MockDocument("uuid1", null);
 
         doc.checkedout = true;
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
 
         doc.checkedout = false;
-        assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,
+        assertSame(UNKNOWN, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
 
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE,
+        deployContrib(CORE_TESTS_BUNDLE,
                 "test-security-policy2-contrib.xml");
 
-        assertEquals(Access.DENY, service.checkPermission(doc, null,
+        assertSame(DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
     }
 

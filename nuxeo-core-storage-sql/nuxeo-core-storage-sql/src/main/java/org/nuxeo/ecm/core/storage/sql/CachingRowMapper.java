@@ -90,7 +90,7 @@ public class CachingRowMapper implements RowMapper {
     /**
      * The propagator of event invalidations to all event queues.
      */
-    private InvalidationsPropagator eventPropagator;
+    private final InvalidationsPropagator eventPropagator;
 
     /**
      * The session, used for event propagation.

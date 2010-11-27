@@ -170,7 +170,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected List<Join> joins;
 
-    protected LinkedList<String> whereClauses;
+    protected List<String> whereClauses;
 
     protected List<Serializable> whereParams;
 

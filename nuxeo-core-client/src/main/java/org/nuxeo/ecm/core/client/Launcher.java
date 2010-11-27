@@ -23,10 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.nuxeo.osgi.application.client.NuxeoApp;
@@ -36,7 +33,7 @@ import org.nuxeo.osgi.application.client.NuxeoApp;
  */
 public class Launcher implements Runnable {
 
-    public void addProperties(Hashtable<String, String> props){
+    public void addProperties(Map<String, String> props){
         for (Entry<String, String> entry : props.entrySet()) {
             System.setProperty(entry.getKey(), entry.getValue());
         }

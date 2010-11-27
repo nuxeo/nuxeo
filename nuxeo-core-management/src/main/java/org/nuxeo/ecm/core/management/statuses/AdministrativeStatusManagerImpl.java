@@ -26,6 +26,11 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
 
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.ACTIVE;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTIVATED_EVENT;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
+
 /**
  * Implementation class for the {@link AdministrativeStatusManager} service.
  * For each Nuxeo Instance in the cluster one instance of this class is
@@ -42,7 +47,7 @@ public class AdministrativeStatusManagerImpl implements
 
     protected final String serverInstanceName;
 
-    protected Notifier[] notifiers = { new CoreEventNotifier(),
+    protected final Notifier[] notifiers = { new CoreEventNotifier(),
             new RuntimeEventNotifier() };
 
     public AdministrativeStatusManagerImpl(
@@ -75,7 +80,7 @@ public class AdministrativeStatusManagerImpl implements
 
     public void onNuxeoServerStartup() {
 
-        List<AdministrativeStatus> savedSatuses = persister.getAllStatuses(getServerInstanceName());
+        List<AdministrativeStatus> savedSatuses = persister.getAllStatuses(serverInstanceName);
 
         // iterate throw declared services and init them if needed
         List<AdministrableServiceDescriptor> descs = globalManager.listRegistredServices();
@@ -91,12 +96,12 @@ public class AdministrativeStatusManagerImpl implements
             if (!serviceExist) {
                 AdministrativeStatus newStatus = new AdministrativeStatus(
                         desc.getInitialState(), "", Calendar.getInstance(),
-                        "system", getServerInstanceName(), desc.getId());
+                        "system", serverInstanceName, desc.getId());
                 persister.saveStatus(newStatus);
             }
         }
 
-        savedSatuses = persister.getAllStatuses(getServerInstanceName());
+        savedSatuses = persister.getAllStatuses(serverInstanceName);
         for (AdministrativeStatus status : savedSatuses) {
             notifyOnStatus(status);
         }
@@ -108,11 +113,11 @@ public class AdministrativeStatusManagerImpl implements
 
     protected void notifyOnStatus(AdministrativeStatus status) {
         if (status.isActive()) {
-            notifyEvent(AdministrativeStatusManager.ACTIVATED_EVENT,
+            notifyEvent(ACTIVATED_EVENT,
                     status.getInstanceIdentifier(),
                     status.getServiceIdentifier());
         } else if (status.isPassive()) {
-            notifyEvent(AdministrativeStatusManager.PASSIVATED_EVENT,
+            notifyEvent(PASSIVATED_EVENT,
                     status.getInstanceIdentifier(),
                     status.getServiceIdentifier());
         }
@@ -121,43 +126,40 @@ public class AdministrativeStatusManagerImpl implements
     @Override
     public AdministrativeStatus activateNuxeoInstance(String message,
             String login) {
-        return activate(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
+        return activate(GLOBAL_INSTANCE_AVAILABILITY,
                 message, login);
     }
 
     @Override
     public AdministrativeStatus deactivateNuxeoInstance(String message,
             String login) {
-        return deactivate(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
+        return deactivate(GLOBAL_INSTANCE_AVAILABILITY,
                 message, login);
     }
 
     @Override
     public AdministrativeStatus getNuxeoInstanceStatus() {
-        return getStatus(AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY);
+        return getStatus(GLOBAL_INSTANCE_AVAILABILITY);
     }
 
     @Override
     public AdministrativeStatus setNuxeoInstanceStatus(String state,
             String message, String login) {
-        return setStatus(
-                AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY,
+        return setStatus(GLOBAL_INSTANCE_AVAILABILITY,
                 state, message, login);
     }
 
     @Override
     public AdministrativeStatus activate(String serviceIdentifier,
             String message, String login) {
-        return setStatus(serviceIdentifier, AdministrativeStatus.ACTIVE,
+        return setStatus(serviceIdentifier, ACTIVE,
                 message, login);
     }
 
     @Override
     public AdministrativeStatus deactivate(String serviceIdentifier,
             String message, String login) {
-        return setStatus(serviceIdentifier, AdministrativeStatus.PASSIVE,
+        return setStatus(serviceIdentifier, PASSIVE,
                 message, login);
     }
 

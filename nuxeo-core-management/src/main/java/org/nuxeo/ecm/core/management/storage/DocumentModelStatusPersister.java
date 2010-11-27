@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
+import static org.nuxeo.ecm.core.management.storage.DocumentModelStatusPersister.*;
+
 /**
  * Used to control the server administrative status: the status of the server
  * can be passive or active.
@@ -59,7 +61,7 @@ public class DocumentModelStatusPersister implements
 
     private class StatusSaver extends DocumentStoreSessionRunner {
 
-        protected AdministrativeStatus status;
+        protected final AdministrativeStatus status;
 
         public StatusSaver(AdministrativeStatus status) {
             this.status = status;
@@ -116,16 +118,15 @@ public class DocumentModelStatusPersister implements
                 doc = session.getDocument(statusDocRef);
             }
 
-            doc.setPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY,
+            doc.setPropertyValue(LOGIN_PROPERTY,
                     status.getUserLogin());
-            doc.setPropertyValue(
-                    DocumentModelStatusPersister.INSTANCE_PROPERTY,
+            doc.setPropertyValue(INSTANCE_PROPERTY,
                     status.getInstanceIdentifier());
-            doc.setPropertyValue(DocumentModelStatusPersister.SERVICE_PROPERTY,
+            doc.setPropertyValue(SERVICE_PROPERTY,
                     status.getServiceIdentifier());
-            doc.setPropertyValue(DocumentModelStatusPersister.MESSAGE_PROPERTY,
+            doc.setPropertyValue(MESSAGE_PROPERTY,
                     status.getMessage());
-            doc.setPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY,
+            doc.setPropertyValue(STATUS_PROPERTY,
                     status.getState());
 
             doc.setPropertyValue("dc:title",
@@ -150,13 +151,13 @@ public class DocumentModelStatusPersister implements
 
     public class StatusFetcher extends DocumentStoreSessionRunner {
 
-        protected String instanceId;
+        protected final String instanceId;
 
-        protected String serviceId;
+        protected final String serviceId;
 
-        protected List<String> allInstanceIds = new ArrayList<String>();
+        protected final List<String> allInstanceIds = new ArrayList<String>();
 
-        protected List<AdministrativeStatus> statuses = new ArrayList<AdministrativeStatus>();
+        protected final List<AdministrativeStatus> statuses = new ArrayList<AdministrativeStatus>();
 
         public StatusFetcher(String instanceId, String serviceId) {
             this.instanceId = instanceId;
@@ -182,19 +183,19 @@ public class DocumentModelStatusPersister implements
             boolean onlyFetchIds = false;
 
             StringBuffer sb = new StringBuffer("select * from ");
-            sb.append(DocumentModelStatusPersister.ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
+            sb.append(ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 
             if (instanceId == null) {
                 onlyFetchIds = true;
             } else {
                 sb.append(" where ");
-                sb.append(DocumentModelStatusPersister.INSTANCE_PROPERTY);
+                sb.append(INSTANCE_PROPERTY);
                 sb.append("='");
                 sb.append(instanceId);
                 sb.append("'");
                 if (serviceId != null) {
                     sb.append(" AND ");
-                    sb.append(DocumentModelStatusPersister.SERVICE_PROPERTY);
+                    sb.append(SERVICE_PROPERTY);
                     sb.append("='");
                     sb.append(serviceId);
                     sb.append("'");
@@ -205,7 +206,7 @@ public class DocumentModelStatusPersister implements
 
             for (DocumentModel doc : result) {
                 if (onlyFetchIds) {
-                    String id = (String) doc.getPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY);
+                    String id = (String) doc.getPropertyValue(INSTANCE_PROPERTY);
                     if (!allInstanceIds.contains(id)) {
                         allInstanceIds.add(id);
                     }
@@ -218,11 +219,11 @@ public class DocumentModelStatusPersister implements
         protected AdministrativeStatus wrap(DocumentModel doc)
                 throws ClientException {
 
-            String userLogin = (String) doc.getPropertyValue(DocumentModelStatusPersister.LOGIN_PROPERTY);
-            String id = (String) doc.getPropertyValue(DocumentModelStatusPersister.INSTANCE_PROPERTY);
-            String service = (String) doc.getPropertyValue(DocumentModelStatusPersister.SERVICE_PROPERTY);
-            String message = (String) doc.getPropertyValue(DocumentModelStatusPersister.MESSAGE_PROPERTY);
-            String state = (String) doc.getPropertyValue(DocumentModelStatusPersister.STATUS_PROPERTY);
+            String userLogin = (String) doc.getPropertyValue(LOGIN_PROPERTY);
+            String id = (String) doc.getPropertyValue(INSTANCE_PROPERTY);
+            String service = (String) doc.getPropertyValue(SERVICE_PROPERTY);
+            String message = (String) doc.getPropertyValue(MESSAGE_PROPERTY);
+            String state = (String) doc.getPropertyValue(STATUS_PROPERTY);
             Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
 
             AdministrativeStatus status = new AdministrativeStatus(state,
@@ -284,7 +285,6 @@ public class DocumentModelStatusPersister implements
 
     @Override
     public AdministrativeStatus saveStatus(AdministrativeStatus status) {
-
         try {
             StatusSaver saver = new StatusSaver(status);
             saver.runUnrestricted();
@@ -293,7 +293,6 @@ public class DocumentModelStatusPersister implements
             log.error("Error while saving status", e);
             return null;
         }
-
     }
 
 }

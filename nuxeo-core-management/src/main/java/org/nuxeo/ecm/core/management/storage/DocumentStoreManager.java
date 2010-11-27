@@ -103,8 +103,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     }
 
     protected DocumentModel createRootlet(CoreSession session) throws ClientException {
-        DocumentModel rootlet;
-        rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
+        DocumentModel rootlet = session.createDocumentModel("/", "management", "ManagementRoot");
         rootlet = session.createDocument(rootlet);
 
         ACP acp = rootlet.getACP();

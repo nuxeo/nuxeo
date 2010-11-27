@@ -17,8 +17,6 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
@@ -44,7 +42,7 @@ public class TestVersioningDocumentAdapter extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    public void testVersionLabel() throws DocumentException, ClientException {
+    public void testVersionLabel() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "testfile1",
                 "File");
         doc = session.createDocument(doc);

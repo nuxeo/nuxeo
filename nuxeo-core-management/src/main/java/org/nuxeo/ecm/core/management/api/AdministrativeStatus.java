@@ -33,17 +33,17 @@ public class AdministrativeStatus implements Serializable {
 
     public static final String PASSIVE = "passive";
 
-    protected String state;
+    protected final String state;
 
-    protected String message;
+    protected final String message;
 
-    protected Calendar modificationDate;
+    protected final Calendar modificationDate;
 
-    protected String userLogin;
+    protected final String userLogin;
 
-    protected String instanceIdentifier;
+    protected final String instanceIdentifier;
 
-    protected String serviceIdentifier;
+    protected final String serviceIdentifier;
 
     protected String label;
 

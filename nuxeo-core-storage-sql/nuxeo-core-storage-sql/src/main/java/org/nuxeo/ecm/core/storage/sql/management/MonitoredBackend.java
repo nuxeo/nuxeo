@@ -29,7 +29,7 @@ import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 
 public abstract class MonitoredBackend implements RepositoryBackend {
 
-    RepositoryBackend wrapped;
+    final RepositoryBackend wrapped;
 
     protected MonitoredBackend(RepositoryBackend wrapped) {
         this.wrapped = wrapped;

@@ -809,7 +809,7 @@ public class SQLSession implements Session {
         }
         List<Document> versions = new ArrayList<Document>(versionNodes.size());
         for (Node versionNode : versionNodes) {
-            versions.add((Document) newDocument(versionNode));
+            versions.add(newDocument(versionNode));
         }
         return versions;
     }

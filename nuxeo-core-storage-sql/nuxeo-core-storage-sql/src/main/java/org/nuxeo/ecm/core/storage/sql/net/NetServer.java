@@ -183,7 +183,7 @@ public class NetServer {
         return contextPath;
     }
 
-    protected Map<Connector, AtomicLong> connectorRefs = new HashMap<Connector, AtomicLong>();
+    protected final Map<Connector, AtomicLong> connectorRefs = new HashMap<Connector, AtomicLong>();
 
     protected void addConnector(ServerDescriptor serverDescriptor)
             throws Exception {
@@ -236,7 +236,7 @@ public class NetServer {
         return null;
     }
 
-    protected Map<Context, AtomicLong> contextRefs = new HashMap<Context, AtomicLong>();
+    protected final Map<Context, AtomicLong> contextRefs = new HashMap<Context, AtomicLong>();
 
     protected Context addContext(String path) throws Exception {
         Context context = getContext(path);

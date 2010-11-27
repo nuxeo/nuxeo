@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.repository.cache;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -169,7 +170,7 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
     }
 
     private void handleUpdateModification(DocumentModelCache cache,
-            HashSet<DocumentModel> updatedDocs, DocumentModel doc)
+            Collection<DocumentModel> updatedDocs, DocumentModel doc)
             throws ClientException {
         if (updatedDocs.add(doc)) {
             doc.refresh();
@@ -177,7 +178,7 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
     }
 
     private void handleContainerModification(DocumentModelCache cache,
-            HashSet<DocumentModel> updatedTrees, Modification modif,
+            Collection<DocumentModel> updatedTrees, Modification modif,
             DocumentModel doc, DocumentRef childRef) throws ClientException {
         if (childRef != null && modif.isRemoveChild()) {
             cache.uncacheDocument(childRef);

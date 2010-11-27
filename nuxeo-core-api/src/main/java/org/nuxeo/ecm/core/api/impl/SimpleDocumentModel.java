@@ -58,7 +58,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     private static final long serialVersionUID = 1L;
 
-    protected boolean anySchema;
+    protected final boolean anySchema;
 
     protected final DataModelMap dataModels = new DataModelMapImpl();
 
@@ -91,9 +91,9 @@ public class SimpleDocumentModel implements DocumentModel {
 
         private static final long serialVersionUID = 1L;
 
-        public String schema;
+        public final String schema;
 
-        public Map<String, Object> data = new HashMap<String, Object>();
+        public final Map<String, Object> data = new HashMap<String, Object>();
 
         public SimpleDataModel(String schema) {
             this.schema = schema;

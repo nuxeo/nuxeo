@@ -34,13 +34,16 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.Access;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
+
+import static org.nuxeo.ecm.core.api.security.Access.DENY;
+import static org.nuxeo.ecm.core.api.security.Access.GRANT;
+import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 /**
  * @author Florent Guillaume
@@ -97,7 +100,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         if (acp == null) {
             acp = new ACPImpl();
         }
-        UserEntryImpl userEntry = new UserEntryImpl(SecurityConstants.EVERYONE);
+        UserEntryImpl userEntry = new UserEntryImpl(EVERYONE);
         for (String perm : perms) {
             userEntry.addPrivilege(perm, true, false);
         }
@@ -125,7 +128,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     public void testSecurity() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
-        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+        setPermissionToAnonymous(EVERYTHING);
 
         CoreSession anonSession = openSessionAs("anonymous");
         try {
@@ -154,12 +157,12 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             assertEquals("a", acp.getACL(ACL.LOCAL_ACL).get(0).getUsername());
             assertEquals("b", acp.getACL(ACL.LOCAL_ACL).get(1).getUsername());
 
-            assertEquals(Access.GRANT, acp.getAccess("a", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("a", "Write"));
-            assertEquals(Access.GRANT, acp.getAccess("b", "Write"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("b", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Write"));
+            assertSame(GRANT, acp.getAccess("a", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+            assertSame(GRANT, acp.getAccess("b", "Write"));
+            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
             // insert a deny ACE before the GRANT
 
@@ -169,12 +172,12 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             // refetch ac
             acp = folder.getACP();
             // check perms now
-            assertEquals(Access.GRANT, acp.getAccess("a", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("a", "Write"));
-            assertEquals(Access.DENY, acp.getAccess("b", "Write"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("b", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Read"));
-            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Write"));
+            assertSame(GRANT, acp.getAccess("a", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+            assertSame(DENY, acp.getAccess("b", "Write"));
+            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
             // create a child document and grant on it the write for b
 
@@ -192,7 +195,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
                 // ok
             }
 
-            setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+            setPermissionToAnonymous(EVERYTHING);
             anonSession.save(); // process invalidations
 
             root = anonSession.getRootDocument();
@@ -210,21 +213,19 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             folder2.setACP(acp2, true);
             acp2 = folder2.getACP();
 
-            assertEquals(Access.GRANT, acp2.getAccess("a", "Read"));
-            assertEquals(Access.UNKNOWN, acp2.getAccess("a", "Write"));
-            assertEquals(Access.GRANT, acp2.getAccess("b", "Write"));
-            assertEquals(Access.UNKNOWN, acp2.getAccess("b", "Read"));
-            assertEquals(Access.UNKNOWN, acp2.getAccess("c", "Read"));
-            assertEquals(Access.UNKNOWN, acp2.getAccess("c", "Write"));
+            assertSame(GRANT, acp2.getAccess("a", "Read"));
+            assertSame(UNKNOWN, acp2.getAccess("a", "Write"));
+            assertSame(GRANT, acp2.getAccess("b", "Write"));
+            assertSame(UNKNOWN, acp2.getAccess("b", "Read"));
+            assertSame(UNKNOWN, acp2.getAccess("c", "Read"));
+            assertSame(UNKNOWN, acp2.getAccess("c", "Write"));
 
             // remove anonymous Everything privileges on the root
             // so that it not influence test results
             removePermissionToAnonymous();
             anonSession.save(); // process invalidations
 
-            setPermissionToEveryone(SecurityConstants.WRITE,
-                    SecurityConstants.REMOVE, SecurityConstants.ADD_CHILDREN,
-                    SecurityConstants.REMOVE_CHILDREN, SecurityConstants.READ);
+            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
             root = anonSession.getRootDocument();
 
             DocumentModel folder3 = new DocumentModelImpl(
@@ -234,7 +235,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             anonSession.removeDocument(folder3.getRef());
 
             removePermissionToEveryone();
-            setPermissionToEveryone(SecurityConstants.REMOVE);
+            setPermissionToEveryone(REMOVE);
             anonSession.save(); // process invalidations
 
             try {
@@ -253,7 +254,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     public void testACLEscaping() throws ClientException {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
-        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+        setPermissionToAnonymous(EVERYTHING);
 
         DocumentModel root = session.getRootDocument();
 
@@ -284,7 +285,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
     public void testGetParentDocuments() throws ClientException {
 
-        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+        setPermissionToAnonymous(EVERYTHING);
 
         DocumentModel root = session.getRootDocument();
 
@@ -307,7 +308,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         session.createDocument(ws2);
 
         ACP acp = new ACPImpl();
-        ACE denyRead = new ACE("test", SecurityConstants.READ, false);
+        ACE denyRead = new ACE("test", READ, false);
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { denyRead });
         acp.addACL(acl);
@@ -458,18 +459,15 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         ACP acp = doc.getACP();
         ACL localACL = acp.getOrCreateACL();
 
-        localACL.add(new ACE("joe_reader", SecurityConstants.READ, true));
+        localACL.add(new ACE("joe_reader", READ, true));
 
-        localACL.add(new ACE("joe_contributor", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_contributor",
-                SecurityConstants.WRITE_PROPERTIES, true));
-        localACL.add(new ACE("joe_contributor", SecurityConstants.ADD_CHILDREN,
-                true));
+        localACL.add(new ACE("joe_contributor", READ, true));
+        localACL.add(new ACE("joe_contributor", WRITE_PROPERTIES, true));
+        localACL.add(new ACE("joe_contributor", ADD_CHILDREN, true));
 
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.WRITE, true));
-        localACL.add(new ACE("joe_localmanager",
-                SecurityConstants.WRITE_SECURITY, true));
+        localACL.add(new ACE("joe_localmanager", READ, true));
+        localACL.add(new ACE("joe_localmanager", WRITE, true));
+        localACL.add(new ACE("joe_localmanager", WRITE_SECURITY, true));
 
         acp.addACL(localACL);
         doc.setACP(acp, true);
@@ -478,7 +476,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         ACP rootACP = root.getACP();
         ACL rootACL = rootACP.getOrCreateACL();
         rootACL.add(new ACE("joe_localmanager",
-                SecurityConstants.REMOVE_CHILDREN, true));
+                REMOVE_CHILDREN, true));
         rootACP.addACL(rootACL);
         root.setACP(rootACP, true);
 
@@ -498,7 +496,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         // Check that all permissions that contain Browse enable to list a
         // document using aclOptimization
         SecurityService securityService = NXCore.getSecurityService();
-        String[] browsePermissions = securityService.getPermissionsToCheck(SecurityConstants.BROWSE);
+        String[] browsePermissions = securityService.getPermissionsToCheck(BROWSE);
         // Check for test permission contribution
         assertTrue(Arrays.asList(browsePermissions).contains("ViewTest"));
         List<String> docNames = new ArrayList<String>(browsePermissions.length);

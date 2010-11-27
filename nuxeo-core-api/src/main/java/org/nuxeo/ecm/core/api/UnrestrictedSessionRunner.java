@@ -111,8 +111,6 @@ public abstract class UnrestrictedSessionRunner {
     /**
      * Calls the {@link #run()} method with an unrestricted {@link #session}.
      * During this call, {@link #isUnrestricted} is set to {@code true}.
-     *
-     * @throws ClientException
      */
     public void runUnrestricted() throws ClientException {
         isUnrestricted = true;
@@ -129,10 +127,9 @@ public abstract class UnrestrictedSessionRunner {
                 throw new ClientException(e);
             }
             try {
-                Repository repository;
                 CoreSession baseSession = session;
                 try {
-                    repository = Framework.getService(RepositoryManager.class).getRepository(
+                    Repository repository = Framework.getService(RepositoryManager.class).getRepository(
                             repositoryName);
                     if (repository == null) {
                         throw new ClientException("Cannot get repository: "
@@ -182,8 +179,6 @@ public abstract class UnrestrictedSessionRunner {
      * It can also be called directly in which case the {@link #session}
      * available will be the one passed to {@code
      * #UnrestrictedSessionRunner(CoreSession)}.
-     *
-     * @throws ClientException
      */
     public abstract void run() throws ClientException;
 

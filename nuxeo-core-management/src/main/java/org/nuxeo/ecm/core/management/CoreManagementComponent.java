@@ -27,13 +27,10 @@ import org.nuxeo.ecm.core.management.statuses.GlobalAdministrativeStatusManagerI
 import org.nuxeo.ecm.core.management.storage.DocumentStoreConfigurationDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)

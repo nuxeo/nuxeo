@@ -75,7 +75,7 @@ public class PathSegmentComponent extends DefaultComponent implements
             log.error("Invalid contribution class: " + desc.className);
             return;
         }
-        if (!(PathSegmentService.class.isAssignableFrom(klass))) {
+        if (!PathSegmentService.class.isAssignableFrom(klass)) {
             log.error("Invalid contribution class: " + desc.className);
             return;
         }
@@ -101,10 +101,10 @@ public class PathSegmentComponent extends DefaultComponent implements
         } catch (ClassNotFoundException e) {
             return;
         }
-        if (!(klass.isAssignableFrom(PathSegmentService.class))) {
+        if (!klass.isAssignableFrom(PathSegmentService.class)) {
             return;
         }
-        contribs.remove((Class<PathSegmentService>) klass);
+        contribs.remove(klass);
         log.info("Unregistered path segment service: " + desc.className);
         recompute = true;
     }
@@ -120,7 +120,7 @@ public class PathSegmentComponent extends DefaultComponent implements
 
     protected void recompute() throws ClientException {
         Class<? extends PathSegmentService> klass;
-        if (contribs.size() == 0) {
+        if (contribs.isEmpty()) {
             klass = PathSegmentServiceDefault.class;
         } else {
             klass = contribs.getLast();

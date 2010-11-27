@@ -32,7 +32,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -207,6 +206,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
             // session has not saved (committed) yet, so still unchanged
             assertEquals("before", title.getString());
             assertEquals(1, EVENTS.size());
+
             session.save();
             // after save, remote invalidations have been processed
             assertEquals("after", title.getString());
@@ -218,6 +218,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         public void testNetInvalidations_Change() throws Exception {
             title.setValue("new");
             assertEquals(2, EVENTS.size());
+
             session.save();
             // server self inval
             checkEvent(2, true, SERVER_REPO_NAME, node.getId());
@@ -241,24 +242,25 @@ public class TestSQLBackendNet extends TestSQLBackend {
         // change title
         title.setValue("after");
         assertEquals(0, EVENTS.size());
+
         // save session and queue its invalidations to others
         // note that to be correct this has to also send the invalidations
         // server-side
         session.save();
         assertEquals("after", title.getString());
+
         // events received
         // repo 1 self inval
         checkEvent(0, true, CLIENT_REPO_NAME, nodeId);
-
         serverVCS.serverCall("testNetInvalidations_Check");
-
         // now change prop on the server
         serverVCS.serverCall("testNetInvalidations_Change");
-
         // check visible change after save
         assertEquals("after", title.getString());
+
         session.save();
         assertEquals("new", title.getString());
+
         // remote inval from server to client
         checkEvent(3, false, CLIENT_REPO_NAME, nodeId);
     }
@@ -294,14 +296,16 @@ public class TestSQLBackendNet extends TestSQLBackend {
         // server-side
         session1.save();
         assertEquals("after", title1.getString());
+
         // repo 1 self inval
         checkEvent(0, true, CLIENT_REPO_NAME, nodeId);
-
         // session2 has not saved (committed) yet, so still unchanged
         assertEquals("before", title2.getString());
+
         session2.save();
         // after commit/save, invalidations have been processed
         assertEquals("after", title2.getString());
+
         // and event sent from repo 1 to repo 2
         checkEvent(1, false, CLIENT_REPO_NAME_2, nodeId);
     }
@@ -314,7 +318,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         return prop;
     }
 
-    public void testSerializeRepoBinaries() throws IOException, ClassNotFoundException {
+    public void testSerializeRepoBinaries() throws Exception {
         BinaryManager binMgr = ((RepositoryImpl) repository).binaryManager;
         StringBlob blob = new StringBlob("dummy");
         Binary data = binMgr.getBinary(blob.getStream());
@@ -333,7 +337,7 @@ public class TestSQLBackendNet extends TestSQLBackend {
         assertEquals(unmarshalledString, originalString);
     }
 
-    public void testSerializeDisconnectedBinaries() throws IOException, ClassNotFoundException {
+    public void testSerializeDisconnectedBinaries() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
         file.deleteOnExit();
         Binary data = new Binary(file, "abc");
@@ -343,10 +347,13 @@ public class TestSQLBackendNet extends TestSQLBackend {
     protected static void checkEvent(int i, boolean local, String repo, Serializable id) {
         assertTrue("size=" + EVENTS.size() + ", i=" + i, i < EVENTS.size());
         assertEquals(i, EVENTS.size() - 1);
+
         Event event = EVENTS.get(i);
         assertEquals(EventConstants.EVENT_VCS_INVALIDATIONS, event.getName());
+
         EventContext ctx = event.getContext();
         assertEquals(repo, ctx.getRepositoryName());
+
         @SuppressWarnings("unchecked")
         Set<String> set = (Set<String>) ctx.getProperty(EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(Collections.singleton(id), set);

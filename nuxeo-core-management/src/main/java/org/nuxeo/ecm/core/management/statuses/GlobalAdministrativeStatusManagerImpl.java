@@ -30,13 +30,13 @@ import org.nuxeo.ecm.core.management.storage.DocumentModelStatusPersister;
 public class GlobalAdministrativeStatusManagerImpl implements
         GlobalAdministrativeStatusManager {
 
-    protected AdministrativeStatusPersister persister = new DocumentModelStatusPersister();
+    protected final AdministrativeStatusPersister persister = new DocumentModelStatusPersister();
 
-    protected Map<String, AdministrativeStatusManager> managers = new HashMap<String, AdministrativeStatusManager>();
+    protected final Map<String, AdministrativeStatusManager> managers = new HashMap<String, AdministrativeStatusManager>();
 
-    protected List<AdministrableServiceDescriptor> descriptors = new ArrayList<AdministrableServiceDescriptor>();
+    protected final List<AdministrableServiceDescriptor> descriptors = new ArrayList<AdministrableServiceDescriptor>();
 
-    protected Map<String, AdministrableServiceDescriptor> descriptorsByServiceId = new HashMap<String, AdministrableServiceDescriptor>();
+    protected final Map<String, AdministrableServiceDescriptor> descriptorsByServiceId = new HashMap<String, AdministrableServiceDescriptor>();
 
     @Override
     public String getLocalNuxeoInstanceIdentifier() {

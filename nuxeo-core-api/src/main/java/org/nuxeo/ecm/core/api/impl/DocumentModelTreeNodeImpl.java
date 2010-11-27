@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 

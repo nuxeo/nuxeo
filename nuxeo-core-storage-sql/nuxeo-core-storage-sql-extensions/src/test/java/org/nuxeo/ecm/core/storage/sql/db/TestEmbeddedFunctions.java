@@ -38,7 +38,7 @@ public class TestEmbeddedFunctions extends TestCase {
     }
 
     public void testSplit() {
-        checkSplit("", new String[0]);
+        checkSplit("");
         checkSplit("A", "A");
         checkSplit("A|B|C", "A", "B", "C");
         checkSplit("A||B", "A", "B", "");

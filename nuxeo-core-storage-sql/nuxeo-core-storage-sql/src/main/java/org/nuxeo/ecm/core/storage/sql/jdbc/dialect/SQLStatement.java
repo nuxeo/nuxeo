@@ -65,10 +65,10 @@ public class SQLStatement {
         public static final String VAR_EMPTY_RESULT = "emptyResult";
 
         /** Tag: TAG_TEST, TAG_IF */
-        public String key;
+        public final String key;
 
         /** The value behind a tag, used for TAG_IF */
-        public String value;
+        public final String value;
 
         public Tag(String key, String value) {
             this.key = key;

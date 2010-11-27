@@ -532,7 +532,6 @@ public class H2Functions extends EmbeddedFunctions {
             String usersSeparator) throws SQLException {
         SimpleResultSet result = new SimpleResultSet();
         PreparedStatement ps = null;
-        int rowCount = 0;
         try {
             // New hierarchy_read_acl entry
             ps = conn.prepareStatement(String.format(
@@ -543,7 +542,7 @@ public class H2Functions extends EmbeddedFunctions {
                             + "   WHERE is_new AND" //
                             + "     EXISTS (SELECT 1 FROM hierarchy WHERE hierarchy_modified_acl.id=hierarchy.id)) AS uids;",
                     usersSeparator));
-            rowCount = ps.executeUpdate();
+            int rowCount = ps.executeUpdate();
             ps = conn.prepareStatement("DELETE FROM hierarchy_modified_acl WHERE is_new;");
             ps.executeUpdate();
             // Update hierarchy_read_acl entry

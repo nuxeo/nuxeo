@@ -22,14 +22,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- * Invoke proxied service only  if service is available regarding administrative statuses
+ * Invoke proxied service only if service is available regarding administrative statuses.
  *
  * @author "Stephane Lacoin at Nuxeo (aka matic)"
- *
  */
 public class GuardedServiceHandler<T> implements InvocationHandler {
 
-    protected T object;
+    protected final T object;
 
     public static <T> T newProxy(T object, Class<T> itf) {
          InvocationHandler h = new GuardedServiceHandler<T>(object);

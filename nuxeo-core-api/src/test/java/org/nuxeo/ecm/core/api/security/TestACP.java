@@ -27,6 +27,10 @@ import junit.framework.TestCase;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
+import static org.nuxeo.ecm.core.api.security.Access.GRANT;
+import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
+
 public class TestACP extends TestCase {
 
     private ACP acp;
@@ -96,24 +100,22 @@ public class TestACP extends TestCase {
 
     public void testCheckAccess() {
         ACL acl1 = new ACLImpl("acl1");
-        ACE ace1 = new ACE("joe", SecurityConstants.EVERYTHING, true);
+        ACE ace1 = new ACE("joe", EVERYTHING, true);
         acl1.add(ace1);
         acp.addACL(acl1);
 
-        assertEquals(Access.GRANT, acp.getAccess("joe", SecurityConstants.READ));
-        assertEquals(Access.UNKNOWN, acp.getAccess("joe",
-                SecurityConstants.RESTRICTED_READ));
-        assertEquals(Access.UNKNOWN, acp.getAccess("jack",
-                SecurityConstants.READ));
+        assertSame(GRANT, acp.getAccess("joe", READ));
+        assertSame(UNKNOWN, acp.getAccess("joe", RESTRICTED_READ));
+        assertSame(UNKNOWN, acp.getAccess("jack", READ));
     }
 
     public void testPermissionsAPI() {
         ACL acl = new ACLImpl("acl1");
 
-        ACE bart = new ACE("bart", SecurityConstants.EVERYTHING, true);
-        ACE notbart = new ACE("notbart", SecurityConstants.EVERYTHING, false);
-        ACE homer = new ACE("homer", SecurityConstants.BROWSE, true);
-        ACE lisa = new ACE("lisa", SecurityConstants.BROWSE, true);
+        ACE bart = new ACE("bart", EVERYTHING, true);
+        ACE notbart = new ACE("notbart", EVERYTHING, false);
+        ACE homer = new ACE("homer", BROWSE, true);
+        ACE lisa = new ACE("lisa", BROWSE, true);
 
         acl.add(bart);
         acl.add(notbart);
@@ -121,16 +123,16 @@ public class TestACP extends TestCase {
         acl.add(lisa);
         acp.addACL(acl);
 
-        String[] usernames = acp.listUsernamesForPermission(SecurityConstants.BROWSE);
+        String[] usernames = acp.listUsernamesForPermission(BROWSE);
         assertEquals(2, usernames.length);
 
-        usernames = acp.listUsernamesForPermission(SecurityConstants.EVERYTHING);
+        usernames = acp.listUsernamesForPermission(EVERYTHING);
         assertEquals(1, usernames.length);
 
         Set<String> perms = new HashSet<String>(3);
-        perms.add(SecurityConstants.BROWSE);
-        perms.add(SecurityConstants.READ);
-        perms.add(SecurityConstants.WRITE);
+        perms.add(BROWSE);
+        perms.add(READ);
+        perms.add(WRITE);
         usernames = acp.listUsernamesForAnyPermission(perms);
         assertEquals(2, usernames.length);
     }

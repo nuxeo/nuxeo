@@ -51,9 +51,9 @@ public class HtmlParser extends AbstractSAXParser {
 
     protected String skipUntillClosed;
 
-    protected Set<String> newLinesTags = new HashSet<String>();
+    protected final Set<String> newLinesTags = new HashSet<String>();
 
-    protected Set<String> skippedTags = new HashSet<String>();
+    protected final Set<String> skippedTags = new HashSet<String>();
 
     public HtmlParser() {
         super(new HTMLConfiguration());

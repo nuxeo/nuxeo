@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 
 public class TestBlobExtractor extends NXRuntimeTestCase {
 
-    Log log = LogFactory.getLog(TestBlobExtractor.class);
+    static final Log log = LogFactory.getLog(TestBlobExtractor.class);
 
     @Override
     public void setUp() throws Exception {
@@ -73,7 +73,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals("blobinlist", paths.keySet().toArray()[0]);
         assertEquals(1, paths.get("blobinlist").size());
         assertEquals("/files/*/file", paths.get("blobinlist").get(0));
-
     }
 
     public void testGetBlobsFromDocumentModelNoBlob() throws Exception {
@@ -85,7 +84,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
 
         List<Property> blobProperties = bec.getBlobsProperties(noBlob);
         assertEquals(0, blobProperties.size());
-
     }
 
     public void testGetBlobsFromDocumentModelSimpleBlob() throws Exception {
@@ -154,8 +152,10 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
 
         blobs = bec.getBlobsProperties(blobInListWithBlobs);
         assertEquals(2, blobs.size());
+
         Blob blob = (Blob) blobs.get(0).getValue();
         assertEquals("test1.pdf", blob.getFilename());
+
         blob = (Blob) blobs.get(1).getValue();
         assertEquals("test2.pdf", blob.getFilename());
     }

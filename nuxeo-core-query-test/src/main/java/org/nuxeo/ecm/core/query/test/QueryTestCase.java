@@ -357,7 +357,7 @@ public abstract class QueryTestCase extends NXRuntimeTestCase {
         assertEquals(1, dml.size()); // 1 note
     }
 
-    public void testQueryAfterEdit() throws ClientException, IOException {
+    public void testQueryAfterEdit() throws Exception {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1";

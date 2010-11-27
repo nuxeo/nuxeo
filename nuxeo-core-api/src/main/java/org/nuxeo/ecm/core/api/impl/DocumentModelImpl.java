@@ -184,7 +184,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @SuppressWarnings({ "CollectionDeclaredAsConcreteClass" })
     protected HashMap<String, Serializable> prefetch;
 
-    protected static Boolean strictSessionManagement = null;
+    protected static Boolean strictSessionManagement;
 
     // ThreadLocal CoreSession used when DocumenModelImpl uses the CoreSession
     // from within the DocumentManagerBean
@@ -192,7 +192,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // because there can be several CoreSessions in parallele, we need to use a
     // Map where sessionId is used as key
 
-    public static ThreadLocal<HashMap<String, CoreSession>> reentrantCoreSession = new ThreadLocal<HashMap<String, CoreSession>>() {
+    public static final ThreadLocal<HashMap<String, CoreSession>> reentrantCoreSession = new ThreadLocal<HashMap<String, CoreSession>>() {
         @Override
         protected HashMap<String, CoreSession> initialValue() {
             return new HashMap<String, CoreSession>();
@@ -207,8 +207,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * document.
      * <p>
      * It must at least contain the type.
-     *
-     * @param type String
      */
     public DocumentModelImpl(String type) {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
@@ -221,9 +219,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * document.
      * <p>
      * It must at least contain the type.
-     *
-     * @param sid String
-     * @param type String
      */
     public DocumentModelImpl(String sid, String type) {
         this(type);
@@ -235,10 +230,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * <p>
      * A client constructed data model must contain at least the path and the
      * type.
-     *
-     * @param parentPath
-     * @param name
-     * @param type
      */
     public DocumentModelImpl(String parentPath, String name, String type) {
         this(parentPath, name, type, null);
@@ -246,10 +237,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     *
-     * @param parent DocumentModel
-     * @param name String
-     * @param type String
      */
     public DocumentModelImpl(DocumentModel parent, String name, String type) {
         this(parent.getPathAsString(), name, type, null);
@@ -257,11 +244,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     *
-     * @param parent DocumentModel
-     * @param name String
-     * @param type String
-     * @param data DataModelMap
      */
     public DocumentModelImpl(DocumentModel parent, String name, String type,
             DataModelMap data) {
@@ -270,11 +252,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     *
-     * @param parentPath
-     * @param name
-     * @param type
-     * @param data allows to initialize a document with initial data
      */
     public DocumentModelImpl(String parentPath, String name, String type,
             DataModelMap data) {
@@ -287,15 +264,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor to be used on server side to create a document model.
-     *
-     * @param sid
-     * @param type
-     * @param id
-     * @param path
-     * @param docRef
-     * @param parentRef
-     * @param schemas
-     * @param facets
      */
     public DocumentModelImpl(String sid, String type, String id, Path path,
             DocumentRef docRef, DocumentRef parentRef, String[] schemas,
@@ -305,16 +273,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     *
-     * @param sid String
-     * @param type String
-     * @param id String
-     * @param path Path
-     * @param lock String
-     * @param docRef DocumentRef
-     * @param parentRef DocumentRef
-     * @param schemas String[]
-     * @param facets
      */
     @Deprecated
     public DocumentModelImpl(String sid, String type, String id, Path path,
@@ -335,18 +293,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor for DocumentModelImpl.
-     *
-     * @param sid String
-     * @param type String
-     * @param id String
-     * @param path Path
-     * @param lock String
-     * @param docRef DocumentRef
-     * @param parentRef DocumentRef
-     * @param schemas String[]
-     * @param facets
-     * @param sourceId String
-     * @param repositoryName String
      */
     public DocumentModelImpl(String sid, String type, String id, Path path,
             String lock, DocumentRef docRef, DocumentRef parentRef,
@@ -375,8 +321,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Gets the title from the dublincore schema.
      *
-     * @return String
-     * @throws ClientException
      * @see DocumentModel#getTitle()
      */
     @Override
@@ -509,10 +453,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Lazily loads the given data model.
-     *
-     * @param schema
-     * @return DataModel
-     * @throws ClientException
      */
     protected final DataModel loadDataModel(String schema)
             throws ClientException {
@@ -614,9 +554,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * <p>
      * Get property is also consulting the prefetched properties.
      *
-     * @param schemaName String
-     * @param name String
-     * @return Object
      * @see DocumentModel#getProperty(String, String)
      */
     @Override

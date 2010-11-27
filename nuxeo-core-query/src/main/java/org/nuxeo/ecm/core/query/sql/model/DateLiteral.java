@@ -62,7 +62,7 @@ public class DateLiteral extends Literal {
     }
 
     public Calendar toCalendar() {
-        return ((AbstractDateTime)value).toGregorianCalendar();
+        return value.toGregorianCalendar();
     }
 
     @Override

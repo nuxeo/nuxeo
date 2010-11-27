@@ -91,7 +91,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
         assertEquals(1, l.size());
-        assertEquals(DummyQueryMaker1.class, l.get(0));
+        assertSame(DummyQueryMaker1.class, l.get(0));
 
         // second
         d = new QueryMakerDescriptor();
@@ -100,8 +100,8 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
         assertEquals(2, l.size());
-        assertEquals(DummyQueryMaker1.class, l.get(0));
-        assertEquals(DummyQueryMaker2.class, l.get(1));
+        assertSame(DummyQueryMaker1.class, l.get(0));
+        assertSame(DummyQueryMaker2.class, l.get(1));
 
         // disable first
         d = new QueryMakerDescriptor();
@@ -110,7 +110,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
         assertEquals(1, l.size());
-        assertEquals(DummyQueryMaker2.class, l.get(0));
+        assertSame(DummyQueryMaker2.class, l.get(0));
 
         // override second
         d = new QueryMakerDescriptor();
@@ -119,7 +119,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
         assertEquals(1, l.size());
-        assertEquals(DummyQueryMaker1.class, l.get(0));
+        assertSame(DummyQueryMaker1.class, l.get(0));
 
         // add another of the first
         d = new QueryMakerDescriptor();
@@ -128,8 +128,8 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
         queryMakerService.registerQueryMaker(d);
         l = queryMakerService.getQueryMakers();
         assertEquals(2, l.size());
-        assertEquals(DummyQueryMaker1.class, l.get(0));
-        assertEquals(DummyQueryMaker2.class, l.get(1));
+        assertSame(DummyQueryMaker1.class, l.get(0));
+        assertSame(DummyQueryMaker2.class, l.get(1));
     }
 
 }

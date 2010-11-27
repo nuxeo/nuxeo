@@ -107,11 +107,10 @@ public class EventStatsHolder {
     }
 
     protected static String getStringSummary(Map<String, CallStat> stats) {
-
-        long totalTime = 0;
         StringBuffer sb = new StringBuffer();
         synchronized (stats) {
 
+            long totalTime = 0;
             for (String name : stats.keySet()) {
                 totalTime += stats.get(name).getAccumulatedTime();
             }

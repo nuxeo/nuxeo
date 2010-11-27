@@ -30,8 +30,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class MapperClientInfo {
 
-    protected String remoteIP;
-    protected String remoteUser;
+    protected final String remoteIP;
+    protected final String remoteUser;
+
     protected long requestCount;
     protected long lastRequestTime;
 

@@ -35,7 +35,7 @@ public class AsyncProcessorConfig {
 
     protected static Boolean forceJMSUsage;
 
-    protected static String forceJMSUsageKey = "org.nuxeo.ecm.event.forceJMS";
+    protected static final String forceJMSUsageKey = "org.nuxeo.ecm.event.forceJMS";
 
     public static boolean forceJMSUsage() {
         if (forceJMSUsage == null) {

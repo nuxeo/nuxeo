@@ -33,9 +33,8 @@ public class NuxeoInstanceIdentifierHelper {
             serverInstanceName = Framework.getProperties().getProperty(
                     AdministrativeStatusManager.ADMINISTRATIVE_INSTANCE_ID);
             if (StringUtils.isEmpty(serverInstanceName)) {
-                InetAddress addr;
                 try {
-                    addr = InetAddress.getLocalHost();
+                    InetAddress addr = InetAddress.getLocalHost();
                     serverInstanceName = addr.getHostName();
                 } catch (UnknownHostException e) {
                     serverInstanceName = "localhost";

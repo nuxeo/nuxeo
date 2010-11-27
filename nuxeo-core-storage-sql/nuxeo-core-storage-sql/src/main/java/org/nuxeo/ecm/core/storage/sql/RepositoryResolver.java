@@ -25,22 +25,21 @@ import java.util.Map;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
+import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 
 /**
- *
- * Locate a repository giving it's name. Try access through NXCore first (JNDI)
+ * Locate a repository given its name. Try access through NXCore first (JNDI)
  * and then fall-back by using the repository manager.
  *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
- *
  */
 public class RepositoryResolver {
 
+    public static final Map<String,RepositoryImpl> repositories = new HashMap<String,RepositoryImpl>();
+
     private RepositoryResolver() {
-
     }
-
-    public static Map<String,RepositoryImpl> repositories = new HashMap<String,RepositoryImpl>();
 
     public static void registerTestRepository(RepositoryImpl repo) {
         repositories.put(repo.getName(), repo);
@@ -48,7 +47,7 @@ public class RepositoryResolver {
 
     public static List<Repository> getRepositories() {
         List<Repository> repositories = new ArrayList<Repository>();
-        for (org.nuxeo.ecm.core.repository.RepositoryDescriptor desc:NXCore.getRepositoryService().getRepositoryManager().getDescriptors()) {
+        for (RepositoryDescriptor desc : NXCore.getRepositoryService().getRepositoryManager().getDescriptors()) {
             repositories.add(getRepository(desc.getName()));
         }
         return repositories;
@@ -75,10 +74,10 @@ public class RepositoryResolver {
         if (repo instanceof Repository) {
             // (JCA) ConnectionFactoryImpl already implements Repository
             return (Repository)repo;
-        } else if (repo instanceof org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository) {
+        } else if (repo instanceof SQLRepository) {
             // (LocalSession not pooled) SQLRepository
             // from SQLRepositoryFactory called by descriptor at registration
-            return ((org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository) repo).repository;
+            return ((SQLRepository) repo).repository;
         } else {
             throw new Error("Unknown repository class: " + repo.getClass().getName());
         }

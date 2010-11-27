@@ -3193,7 +3193,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         assertEquals("The title",
                 (String) doc.getProperty("dublincore", "title"));
-        assertNull((String) doc.getProperty("dublincore", "description"));
+        assertNull(doc.getProperty("dublincore", "description"));
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertNull(doc2.getParentRef());

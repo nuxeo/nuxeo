@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+import static junit.framework.Assert.assertNotNull;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -77,20 +79,25 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         Collection<Field> fields = schema.getFields();
         assertEquals(5, fields.size());
+
         Iterator<Field> it = fields.iterator();
         Field field;
         field = it.next();
         assertEquals("title", field.getName().getPrefixedName());
         assertEquals("myString", field.getType().getName());
+
         field = it.next();
         assertEquals("numericId", field.getName().getPrefixedName());
         assertEquals("long", field.getType().getName());
+
         field = it.next();
         assertEquals("data", field.getName().getPrefixedName());
         assertEquals("newsml", field.getType().getName());
+
         field = it.next();
         assertEquals("description", field.getName().getPrefixedName());
         assertEquals("string", field.getType().getName());
+
         field = it.next();
         assertEquals("person", field.getName().getPrefixedName());
         assertEquals("personInfo", field.getType().getName());
@@ -103,6 +110,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         assertNotNull(docType);
         assertEquals(1, docType.getSchemas().size());
+
         Schema schema = docType.getSchema("schema2");
         assertNotNull(schema);
         assertEquals(2, schema.getFields().size());
@@ -137,6 +145,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     public void testList() throws Exception {
         URL url = getResource("schema/testList.xsd");
         assertNotNull(url);
+
         Schema schema = reader.loadSchema("testList", "", url);
         Field field = schema.getField("strings");
         ListType type = (ListType) field.getType();
@@ -159,19 +168,20 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         // test attributes
         Field rule = schema.getField("RULE");
-        Assert.assertNotNull(rule);
+        assertNotNull(rule);
         Field name = ((ComplexType) rule.getType()).getField("name");
-        Assert.assertNotNull(name);
+        assertNotNull(name);
         Assert.assertEquals(name.getType().getName(), StringType.INSTANCE.getName());
 
         // recursivity
 
         Field ruleGroup = schema.getField("RULE-GROUP");
-        Assert.assertNotNull(ruleGroup);
+        assertNotNull(ruleGroup);
+
         ComplexType ct = (ComplexType) ruleGroup.getType();
         ruleGroup = ct.getField("RULE-GROUP");
-        Assert.assertNotNull(ruleGroup);
-        Assert.assertNotNull(ct.getField("RULE"));
+        assertNotNull(ruleGroup);
+        assertNotNull(ct.getField("RULE"));
     }
 
 }
