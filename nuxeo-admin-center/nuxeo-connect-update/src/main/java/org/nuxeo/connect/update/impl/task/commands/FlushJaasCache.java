@@ -31,11 +31,10 @@ import org.w3c.dom.Element;
 /**
  * Flush any cache held by the core. This should be used when document types are
  * installed or removed.
- *
+ * <p>
  * The inverse of this command is itself.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FlushJaasCache extends PostInstallCommand {
 
@@ -55,7 +54,7 @@ public class FlushJaasCache extends PostInstallCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
-            Framework.getLocalService(ReloadService.class).flushJassCache();
+            Framework.getLocalService(ReloadService.class).flushJaasCache();
         } catch (Exception e) {
             throw new PackageException("Failed to reload repository", e);
         }

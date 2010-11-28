@@ -32,7 +32,6 @@ import org.w3c.dom.Element;
  * Flush all nuxeo caches.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Flush extends PostInstallCommand {
 
@@ -51,7 +50,7 @@ public class Flush extends PostInstallCommand {
     public static void flush() throws Exception {
         Framework.getRuntime().reloadProperties();
         ReloadService deployer = Framework.getLocalService(ReloadService.class);
-        deployer.flushJassCache();
+        deployer.flushJaasCache();
         deployer.reloadRepository();
     }
 
