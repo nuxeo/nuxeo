@@ -207,6 +207,7 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * a remoting invocation on the target remoting server (using a
      * NameBaseInvocation).
      */
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         String methodName = method.getName();

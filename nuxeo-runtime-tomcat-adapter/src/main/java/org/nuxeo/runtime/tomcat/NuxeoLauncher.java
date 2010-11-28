@@ -51,6 +51,7 @@ public class NuxeoLauncher implements LifecycleListener {
         return home;
     }
 
+    @Override
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {

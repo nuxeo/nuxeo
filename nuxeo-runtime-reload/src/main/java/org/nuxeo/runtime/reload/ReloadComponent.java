@@ -82,6 +82,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * Add a JAR to the application classloader - experimental.
      */
+    @Override
     public void addJar(File file) throws Exception {
         MutableClassLoaderDelegate mcl = new MutableClassLoaderDelegate(
                 ReloadComponent.class.getClassLoader());
@@ -91,6 +92,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * Remove a JAR from the application classloader - experimental.
      */
+    @Override
     public void removeJar(File file) throws Exception {
         // TODO
     }
@@ -121,6 +123,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         deployBundle(file, true);
     }
 
+    @Override
     public void reloadProperties() throws Exception {
         Framework.getRuntime().reloadProperties();
     }

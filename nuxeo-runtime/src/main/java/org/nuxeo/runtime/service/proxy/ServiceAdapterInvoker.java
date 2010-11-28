@@ -42,6 +42,7 @@ public class ServiceAdapterInvoker implements InvocationHandler {
         return invoker;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MethodInvocation invocation = new MethodInvocation(method);
         try {

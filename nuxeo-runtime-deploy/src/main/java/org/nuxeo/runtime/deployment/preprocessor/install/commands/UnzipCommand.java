@@ -58,6 +58,7 @@ public class UnzipCommand implements Command {
         this.prefix=prefix;
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
         File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
@@ -96,6 +97,7 @@ public class UnzipCommand implements Command {
         return "unzip " + src.toString() + " > " + dst.toString();
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return "unzip " + ctx.expandVars(src.toString()) + " > " +
                 ctx.expandVars(dst.toString());

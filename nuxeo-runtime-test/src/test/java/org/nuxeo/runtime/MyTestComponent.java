@@ -35,15 +35,18 @@ public class MyTestComponent implements Component {
 
     private static final Log log = LogFactory.getLog(MyTestComponent.class);
 
+    @Override
     public void activate(ComponentContext context) {
         Assert.assertEquals("value", context.getProperty("myString").getValue());
         Assert.assertEquals(2, context.getProperty("myInt").getValue());
     }
 
+    @Override
     public void deactivate(ComponentContext context) {
         // Auto-generated method stub
     }
 
+    @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
@@ -51,6 +54,7 @@ public class MyTestComponent implements Component {
         }
     }
 
+    @Override
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {

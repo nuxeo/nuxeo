@@ -53,6 +53,7 @@ public abstract class AdaptableObject implements Adaptable {
      * @return the adapted object or <code>null</code>
      * @see Adaptable#getAdapter(Class)
      */
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         //TODO
         return null;

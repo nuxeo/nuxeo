@@ -50,6 +50,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
     }
 
 
+    @Override
     public String getOutputLocation() {
         if (file == null) {
             return "/dev/null";
@@ -61,11 +62,13 @@ public class MetricSerializer implements MetricSerializerMXBean {
         return file;
     }
 
+    @Override
     public void resetOutput(String path) throws IOException {
         file = new File(path);
         resetOutput();
     }
 
+    @Override
     public void resetOutput() throws IOException {
         if (file == null) {
             createTempFile();
@@ -81,6 +84,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
         outputStream.flush();
     }
 
+    @Override
     public void closeOutput() throws IOException {
         if (outputStream == null) {
             return;
@@ -93,10 +97,12 @@ public class MetricSerializer implements MetricSerializerMXBean {
         file = File.createTempFile("nx-samples-", ".xml");
     }
 
+    @Override
     public int getCount() {
         return count;
     }
 
+    @Override
     public long getLastUsage() {
         return lastUsage;
     }

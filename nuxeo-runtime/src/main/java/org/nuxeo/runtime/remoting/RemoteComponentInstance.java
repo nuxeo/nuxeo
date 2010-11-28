@@ -39,62 +39,77 @@ public class RemoteComponentInstance implements ComponentInstance {
         this.context = context;
     }
 
+    @Override
     public void activate() throws Exception {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public void deactivate() throws Exception {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public void destroy() throws Exception {
 
     }
 
+    @Override
     public RuntimeContext getContext() {
         return context;
     }
 
+    @Override
     public Object getInstance() {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public ComponentName getName() {
         return name;
     }
 
+    @Override
     public Property getProperty(String property) {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public String[] getPropertyNames() {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public RuntimeContext getRuntimeContext() {
         return context;
     }
 
+    @Override
     public void registerExtension(Extension extension) throws Exception {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public void unregisterExtension(Extension extension) throws Exception {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         return null;
     }
 
+    @Override
     public Object getPropertyValue(String property) {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public Object getPropertyValue(String property, Object defValue) {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
+    @Override
     public String[] getProvidedServiceNames() {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }

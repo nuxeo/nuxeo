@@ -105,11 +105,13 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         super(name);
     }
 
+    @Override
     public void addWorkingDirectoryConfigurator(
             WorkingDirectoryConfigurator config) {
         wdConfigs.add(config);
     }
 
+    @Override
     public File getWorkingDir() {
         return workingDir;
     }
@@ -127,6 +129,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         }
     }
 
+    @Override
     public void start() throws Exception {
         setUp();
     }
@@ -147,6 +150,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     /**
      * Fire the event {@code FrameworkEvent.STARTED}.
      */
+    @Override
     public void fireFrameworkStarted() throws Exception {
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
                 runtimeBundle, null));
@@ -167,10 +171,12 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         super.tearDown();
     }
 
+    @Override
     public void stop() throws Exception {
         tearDown();
     }
 
+    @Override
     public boolean isStarted() {
         return runtime != null;
     }
@@ -316,6 +322,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     /**
      * @deprecated use <code>deployContrib()</code> instead
      */
+    @Override
     @Deprecated
     public void deploy(String contrib) {
         deployContrib(contrib);
@@ -342,6 +349,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      *             {@link #deployContrib(BundleFile,String)}
      * @param contrib the relative path to the contribution file
      */
+    @Override
     @Deprecated
     public void deployContrib(String contrib) {
         URL url = getResource(contrib);
@@ -371,6 +379,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * @param bundle the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
      */
+    @Override
     public void deployContrib(String bundle, String contrib) throws Exception {
         deployContrib(lookupBundle(bundle), contrib);
     }
@@ -389,6 +398,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * @param bundle the bundle that becomes the contribution owner
      * @param contrib the contribution to deploy as part of the given bundle
      */
+    @Override
     public RuntimeContext deployTestContrib(String bundle, String contrib)
             throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
@@ -401,6 +411,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         }
     }
 
+    @Override
     public RuntimeContext deployTestContrib(String bundle, URL contrib)
             throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
@@ -416,6 +427,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     /**
      * @deprecated use {@link #undeployContrib(String, String)} instead
      */
+    @Override
     @Deprecated
     public void undeploy(String contrib) {
         undeployContrib(contrib);
@@ -424,6 +436,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     /**
      * @deprecated use {@link #undeployContrib(String, String)} instead
      */
+    @Override
     @Deprecated
     public void undeployContrib(String contrib) {
         URL url = getResource(contrib);
@@ -441,6 +454,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      * @param bundle the bundle
      * @param contrib the contribution
      */
+    @Override
     public void undeployContrib(String bundle, String contrib) throws Exception {
         BundleFile b = lookupBundle(bundle);
         URL url = b.getEntry(contrib);
@@ -512,6 +526,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
      *
      * @param bundle the symbolic name
      */
+    @Override
     public void deployBundle(String bundle) throws Exception {
         // install only if not yet installed
         if (bundleLoader.getOSGi().getRegistry().getBundle(bundle) == null) {
@@ -589,6 +604,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         return bundleFile;
     }
 
+    @Override
     public void deployFolder(File folder, ClassLoader loader) throws Exception {
         DirectoryBundleFile bf = new DirectoryBundleFile(folder);
         BundleImpl bundle = new BundleImpl(osgi, bf, loader);

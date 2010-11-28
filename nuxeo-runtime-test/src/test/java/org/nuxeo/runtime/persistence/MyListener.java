@@ -32,10 +32,12 @@ public class MyListener implements EventListener {
     public MyListener() {
     }
 
+    @Override
     public boolean aboutToHandleEvent(Event event) {
         return true;
     }
 
+    @Override
     public void handleEvent(Event event) {
         cnt++;
     }

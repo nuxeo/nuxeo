@@ -39,10 +39,12 @@ public class Context implements JexlContext {
         vars = map;
     }
 
+    @Override
     public Map<String, Object> getVars() {
         return vars;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void setVars(Map vars) {
         this.vars = vars;

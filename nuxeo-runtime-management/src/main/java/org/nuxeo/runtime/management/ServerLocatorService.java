@@ -157,6 +157,7 @@ public class ServerLocatorService extends DefaultComponent implements
         }
     }
 
+    @Override
     @SuppressWarnings("cast")
     public MBeanServer lookupServer(ObjectName qualifiedName) {
         if (defaultServer.isRegistered(qualifiedName)) {
@@ -175,6 +176,7 @@ public class ServerLocatorService extends DefaultComponent implements
         return defaultServer;
     }
 
+    @Override
     public MBeanServer lookupServer(String domainName) {
         return doFindServer(domainName);
     }

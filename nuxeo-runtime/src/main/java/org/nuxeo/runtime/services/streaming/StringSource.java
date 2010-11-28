@@ -41,6 +41,7 @@ public class StringSource extends AbstractStreamSource {
         return string.length();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return new ByteArrayInputStream(string.getBytes());
     }

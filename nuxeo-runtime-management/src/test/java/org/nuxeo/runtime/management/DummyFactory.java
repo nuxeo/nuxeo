@@ -21,6 +21,7 @@ package org.nuxeo.runtime.management;
  */
 public class DummyFactory extends AbstractResourceFactory {
 
+    @Override
     public void registerResources() {
         service.registerResource("dummy", "org.nuxeo:name=dummy", DummyMBean.class, new DummyService());
     }

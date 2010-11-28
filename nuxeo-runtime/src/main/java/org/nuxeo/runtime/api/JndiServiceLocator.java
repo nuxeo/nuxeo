@@ -35,10 +35,12 @@ public class JndiServiceLocator implements ServiceLocator {
     /**
      * Initializes and creates the JNDI initial context.
      */
+    @Override
     public void initialize(String host, int port, Properties properties) throws Exception {
         context = new InitialContext();
     }
 
+    @Override
     public void dispose() {
         context = null;
     }
@@ -47,6 +49,7 @@ public class JndiServiceLocator implements ServiceLocator {
         return context;
     }
 
+    @Override
     public Object lookup(ServiceDescriptor sd) throws Exception {
         String locator = sd.getLocator();
         if (locator == null) {
@@ -56,6 +59,7 @@ public class JndiServiceLocator implements ServiceLocator {
         return lookup(locator);
     }
 
+    @Override
     public Object lookup(String serviceId) throws Exception {
         return context.lookup(serviceId);
     }

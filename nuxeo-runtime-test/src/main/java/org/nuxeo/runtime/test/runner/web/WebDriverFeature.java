@@ -107,12 +107,14 @@ public class WebDriverFeature extends SimpleFeature {
     public void configure(final FeaturesRunner runner, Binder binder) {
         binder.bind(Configuration.class).toInstance(config);
         binder.bind(WebDriver.class).toProvider(new Provider<WebDriver>() {
+            @Override
             public WebDriver get() {
                 return config.getDriver();
             }
         });
         if (config.getHomePageClass() != null) {
             binder.bind(config.getHomePageClass()).toProvider(new Provider() {
+                @Override
                 public Object get() {
                     Object obj = PageFactory.initElements(config.getDriver(),
                             config.getHomePageClass());

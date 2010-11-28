@@ -35,6 +35,7 @@ public class URLSource extends AbstractStreamSource {
         this.url = url;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return url.openStream();
     }

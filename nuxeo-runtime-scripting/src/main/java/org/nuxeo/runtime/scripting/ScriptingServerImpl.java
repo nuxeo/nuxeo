@@ -42,6 +42,7 @@ public class ScriptingServerImpl implements ScriptingServer {
         this.comp = comp;
     }
 
+    @Override
     public Object[] eval(String name, String script, Map<String, Object> context)
             throws Exception {
         ScriptEngine engine = comp.getEngineByFileName(name);
@@ -64,6 +65,7 @@ public class ScriptingServerImpl implements ScriptingServer {
         return response;
     }
 
+    @Override
     public Object[] invoke(String name, String script,
             Map<String, Object> context, String method, Object[] args)
             throws Exception {

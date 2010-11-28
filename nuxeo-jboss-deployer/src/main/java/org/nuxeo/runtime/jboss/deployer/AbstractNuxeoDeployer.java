@@ -28,6 +28,7 @@ import org.jboss.virtual.VirtualFile;
  */
 public abstract class AbstractNuxeoDeployer extends AbstractDeployer {
 
+    @Override
     public void deploy(DeploymentUnit unit) throws DeploymentException {
         if (unit.isTopLevel()) {
             if (unit instanceof VFSDeploymentUnit) {

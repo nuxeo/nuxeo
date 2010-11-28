@@ -328,14 +328,17 @@ public class ResourcePublisherService extends DefaultComponent implements
         shortcutsRegistry.doUnregisterShortcut(shortName);
     }
 
+    @Override
     public Set<String> getShortcutsName() {
         return new HashSet<String>(shortcutsRegistry.registry.keySet());
     }
 
+    @Override
     public Set<ObjectName> getResourcesName() {
         return new HashSet<ObjectName>(resourcesRegistry.registry.keySet());
     }
 
+    @Override
     public ObjectName lookupName(String name) {
         if (!shortcutsRegistry.registry.containsKey(name)) {
             return ObjectNameFactory.getObjectName(name);
@@ -351,6 +354,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void bindResources() {
         doBindResources();
     }
@@ -363,6 +367,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unbindResources() {
         doUnbindResources();
     }

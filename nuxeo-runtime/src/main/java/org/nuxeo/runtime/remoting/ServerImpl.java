@@ -69,6 +69,7 @@ public class ServerImpl implements Server {
         this.runtime = runtime;
     }
 
+    @Override
     public String getName() {
         String name = Framework.getRuntime().getProperty("org.nuxeo.ecm.instance.name");
         if (name == null) {
@@ -77,6 +78,7 @@ public class ServerImpl implements Server {
         return name;
     }
 
+    @Override
     public String getProductInfo() {
         String name = Framework.getRuntime().getProperty("org.nuxeo.ecm.product.name");
         String version = Framework.getRuntime().getProperty("org.nuxeo.ecm.product.version");
@@ -89,6 +91,7 @@ public class ServerImpl implements Server {
         return name + ' ' + version;
     }
 
+    @Override
     public String[] getServiceBindings() {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         ServiceDescriptor[] services = sm.getServiceDescriptors();
@@ -102,6 +105,7 @@ public class ServerImpl implements Server {
         return result.toArray(new String[result.size()]);
     }
 
+    @Override
     public Properties[] getServiceHosts() throws Exception {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         ServiceHost[] servers = sm.getServers();
@@ -130,6 +134,7 @@ public class ServerImpl implements Server {
         return result.toArray(new Properties[result.size()]);
     }
 
+    @Override
     public Map<String, Object[][]> getSecurityDomains() throws Exception {
         LoginService loginService = Framework.getLocalService(LoginService.class);
         Map<String, Object[][]> result = new HashMap<String, Object[][]>();
@@ -149,6 +154,7 @@ public class ServerImpl implements Server {
         return result;
     }
 
+    @Override
     public Properties getProperties() {
          Properties props = new Properties();
          Properties rtProps = Framework.getRuntime().getProperties();
@@ -160,6 +166,7 @@ public class ServerImpl implements Server {
          return props;
     }
 
+    @Override
     public ComponentName[] getComponents() {
         Collection<RegistrationInfo> regs = Framework.getRuntime().getComponentManager().getRegistrations();
         List<ComponentName> comps = new ArrayList<ComponentName>();
@@ -169,39 +176,47 @@ public class ServerImpl implements Server {
         return comps.toArray(new ComponentName[comps.size()]);
     }
 
+    @Override
     public boolean hasComponent(ComponentName name) {
         // TODO Auto-generated method stub
         return false;
     }
 
+    @Override
     public Collection<ComponentInstance> getActiveComponents() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ComponentInstance getComponent(String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ComponentInstance getComponent(ComponentName name) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public String getDescription() {
         return runtime.getDescription();
     }
 
+    @Override
     public Collection<RegistrationInfo> getRegistrations() {
         return runtime.getComponentManager().getRegistrations();
     }
 
+    @Override
     public String getServerAddress() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ServerConfiguration getConfiguration(InvokerLocator locator, Version version)
             throws ConfigurationException {
         ConfigurationFactory factory = ConfigurationFactory.getFactory(version);
@@ -217,10 +232,12 @@ public class ServerImpl implements Server {
 
     // ------------------- resource loader handler ------------
 
+    @Override
     public byte[] getLocalResource(ComponentName component, String name) {
         return getResource(component, name);
     }
 
+    @Override
     public byte[] getResource(ComponentName component, String name) {
         log.info("Loading resource: " + name + " using " + component
                 + " context");
@@ -239,6 +256,7 @@ public class ServerImpl implements Server {
         return null;
     }
 
+    @Override
     public byte[] getClass(ComponentName component, String name) {
         log.info("Loading class: " + name + " using " + component + " context");
         ComponentInstance ci = Framework.getRuntime().getComponentInstance(component);

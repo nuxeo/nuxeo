@@ -35,11 +35,13 @@ public class IncludeFilter extends AbstractFilter {
         super(new Path(pattern));
     }
 
+    @Override
     public boolean accept(Path path) {
         // the default policy is to not accept if the path doesn't match to our patterns
         return accept(path, false);
     }
 
+    @Override
     public boolean isExclusive() {
         return false;
     }

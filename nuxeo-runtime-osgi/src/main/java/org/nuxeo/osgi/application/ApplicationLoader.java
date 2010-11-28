@@ -237,10 +237,12 @@ public abstract class ApplicationLoader {
 
     public abstract class DefaultCallback implements BundleWalker.Callback {
 
+        @Override
         public void visitBundle(BundleFile bundleFile) throws IOException {
             visitNestedBundles(bundleFile);
         }
 
+        @Override
         public void visitJar(BundleFile bundleFile) throws IOException {
             visitNestedBundles(bundleFile);
         }

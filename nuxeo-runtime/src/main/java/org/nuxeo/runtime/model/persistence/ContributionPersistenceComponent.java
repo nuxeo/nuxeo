@@ -80,26 +80,32 @@ public class ContributionPersistenceComponent extends DefaultComponent
         storage = null;
     }
 
+    @Override
     public List<Contribution> getContributions() throws Exception {
         return storage.getContributions();
     }
 
+    @Override
     public Contribution getContribution(String name) throws Exception {
         return storage.getContribution(name);
     }
 
+    @Override
     public Contribution addContribution(Contribution contrib) throws Exception {
         return storage.addContribution(contrib);
     }
 
+    @Override
     public boolean removeContribution(Contribution contrib) throws Exception {
         return storage.removeContribution(contrib);
     }
 
+    @Override
     public boolean isInstalled(Contribution contrib) throws Exception {
         return ctx.isDeployed(contrib);
     }
 
+    @Override
     public synchronized boolean installContribution(Contribution contrib)
             throws Exception {
         RegistrationInfo ri = ctx.deploy(contrib);
@@ -110,21 +116,25 @@ public class ContributionPersistenceComponent extends DefaultComponent
         return true;
     }
 
+    @Override
     public boolean uninstallContribution(Contribution contrib) throws Exception {
         boolean ret = isInstalled(contrib);
         ctx.undeploy(contrib);
         return ret;
     }
 
+    @Override
     public Contribution updateContribution(Contribution contribution)
             throws Exception {
         return storage.updateContribution(contribution);
     }
 
+    @Override
     public boolean isPersisted(Contribution contrib) throws Exception {
         return storage.getContribution(contrib.getName()) != null;
     }
 
+    @Override
     public void start() throws Exception {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {
@@ -133,6 +143,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
         }
     }
 
+    @Override
     public void stop() throws Exception {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {

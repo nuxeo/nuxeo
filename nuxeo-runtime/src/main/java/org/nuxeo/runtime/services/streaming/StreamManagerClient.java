@@ -53,14 +53,17 @@ public class StreamManagerClient implements StreamManager {
     }
 
 
+    @Override
     public void start() throws Exception {
         // do nothing
     }
 
+    @Override
     public void stop() {
         TransporterClient.destroyTransporterClient(server);
     }
 
+    @Override
     public synchronized  String addStream(StreamSource src) throws IOException {
         InputStream in = src.getStream();
         String uri = server.createUploadSession();
@@ -108,15 +111,18 @@ public class StreamManagerClient implements StreamManager {
         }
     }
 
+    @Override
     public synchronized StreamSource getStream(String uri) throws IOException {
         RemoteInputStream in = new RemoteInputStream(this, uri);
         return new InputStreamSource(in);
     }
 
+    @Override
     public synchronized boolean hasStream(String uri) {
         return server.hasStream(uri);
     }
 
+    @Override
     public synchronized void removeStream(String uri) {
         server.removeStream(uri);
     }

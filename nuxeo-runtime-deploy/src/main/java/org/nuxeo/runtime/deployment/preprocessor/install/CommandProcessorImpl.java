@@ -33,11 +33,13 @@ public class CommandProcessorImpl implements CommandProcessor {
 
     Log log;
 
+    @Override
     public List<Command> getCommands() {
         return commands;
     }
 
     // TODO: I think this should throw an exception in case of failure.
+    @Override
     public void exec(CommandContext ctx) {
         try {
             for (Command cmd : commands) {
@@ -51,6 +53,7 @@ public class CommandProcessorImpl implements CommandProcessor {
         }
     }
 
+    @Override
     public void setLogger(Log log) {
         this.log = log;
     }

@@ -84,12 +84,14 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         transporterServer.addHandler(this, StreamingServer.class.getName());
     }
 
+    @Override
     public void start() throws Exception {
         if (transporterServer != null) {
             transporterServer.start();
         }
     }
 
+    @Override
     public void stop() throws Exception {
         if (transporterServer != null) {
             transporterServer.stop();
@@ -97,6 +99,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
     }
 
 
+    @Override
     public String addStream(StreamSource src) throws IOException {
         long up;
         synchronized (uploads) {
@@ -112,14 +115,17 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         //System.out.println("Added resource: "+uri);
     }
 
+    @Override
     public StreamSource getStream(String uri) {
         return streams.get(uri);
     }
 
+    @Override
     public boolean hasStream(String uri) {
         return streams.containsKey(uri);
     }
 
+    @Override
     public void removeStream(String uri) {
         StreamSource src = streams.remove(uri);
         if (src != null) {
@@ -178,6 +184,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         }
     }
 
+    @Override
     public DownloadInfo createDownloadSession(String uri) throws IOException {
         StreamSource src = streams.get(uri);
         if (src == null) {
@@ -192,6 +199,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         return new DownloadInfo(ds.id, ds.in.available());
     }
 
+    @Override
     public byte[] downloadBytes(long sid, int size) throws IOException {
         DownloadSession ds;
          synchronized (downloads) {
@@ -215,6 +223,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         return null;
     }
 
+    @Override
     public void closeDownloadSession(long sid) throws IOException {
         DownloadSession ds;
         synchronized (downloads) {
@@ -230,6 +239,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         }
     }
 
+    @Override
     public String createUploadSession() throws IOException {
         synchronized (uploads) {
             UploadSession us = new UploadSession();
@@ -238,6 +248,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         }
     }
 
+    @Override
     public void uploadBytes(String uri, byte[] bytes) throws IOException {
         UploadSession us;
         synchronized (uploads) {
@@ -253,6 +264,7 @@ public class StreamManagerServer implements StreamingServer, StreamManager {
         }
     }
 
+    @Override
     public void closeUploadSession(String uri) throws IOException {
         UploadSession us;
         synchronized (uploads) {

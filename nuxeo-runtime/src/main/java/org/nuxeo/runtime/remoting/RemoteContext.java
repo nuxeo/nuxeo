@@ -50,62 +50,77 @@ public class RemoteContext implements RuntimeContext {
         cl = new RemoteClassLoader(sd, component, localClassLoader);
     }
 
+    @Override
     public URL getLocalResource(String name) {
         return getResource(name);
     }
 
+    @Override
     public URL getResource(String name) {
         return cl.getResource(name);
     }
 
+    @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return cl.loadClass(className);
     }
 
+    @Override
     public RuntimeService getRuntime() {
         return Framework.getRuntime();
     }
 
+    @Override
     public boolean isDeployed(URL url) {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public boolean isDeployed(String location) {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public void undeploy(URL url) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public void undeploy(String location) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public RegistrationInfo deploy(StreamRef ref) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public void undeploy(StreamRef ref) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public RegistrationInfo deploy(URL url) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public RegistrationInfo deploy(String location) throws Exception {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public boolean isDeployed(StreamRef ref) {
         throw new UnsupportedOperationException("Not yet Implemented");
     }
 
+    @Override
     public void destroy() {
 
     }
 
+    @Override
     public Bundle getBundle() {
         return null;
     }

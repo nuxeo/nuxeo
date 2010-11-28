@@ -126,6 +126,7 @@ public class PathMatcher {
             VirtualFile dir = path.length() == 0 ? root : root.getChild(path);
             if (dir != null) {
                 result.addAll(dir.getChildren(new VirtualFileFilter() {
+                    @Override
                     public boolean accepts(VirtualFile file) {
                         return pattern.match(file.getName());
                     }

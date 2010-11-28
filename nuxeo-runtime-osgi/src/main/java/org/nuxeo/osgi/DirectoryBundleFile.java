@@ -52,12 +52,14 @@ public class DirectoryBundleFile implements BundleFile {
         this.mf = mf;
     }
 
+    @Override
     public Enumeration<URL> findEntries(String name, String pattern,
             boolean recurse) {
         throw new UnsupportedOperationException(
                 "The operation BundleFile.findEntries() is not yet implemented");
     }
 
+    @Override
     public URL getEntry(String name) {
         File entry = new File(file, name);
         if (entry.exists()) {
@@ -70,27 +72,33 @@ public class DirectoryBundleFile implements BundleFile {
         return null;
     }
 
+    @Override
     public Enumeration<String> getEntryPaths(String path) {
         throw new UnsupportedOperationException(
                 "The operation BundleFile.geEntryPaths() is not yet implemented");
     }
 
+    @Override
     public File getFile() {
         return file;
     }
 
+    @Override
     public String getFileName() {
         return file.getName();
     }
 
+    @Override
     public String getLocation() {
         return file.getPath();
     }
 
+    @Override
     public Manifest getManifest() {
         return mf;
     }
 
+    @Override
     public Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException {
         Attributes attrs = mf.getMainAttributes();
         String cp = attrs.getValue(Constants.BUNDLE_CLASSPATH);
@@ -113,6 +121,7 @@ public class DirectoryBundleFile implements BundleFile {
         return nested;
     }
 
+    @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir)
             throws IOException {
         List<BundleFile> nested = new ArrayList<BundleFile>();
@@ -127,6 +136,7 @@ public class DirectoryBundleFile implements BundleFile {
         return nested;
     }
 
+    @Override
     public String getSymbolicName() {
         try {
             String value = mf.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
@@ -137,6 +147,7 @@ public class DirectoryBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public URL getURL() {
         try {
             return file.toURI().toURL();
@@ -145,10 +156,12 @@ public class DirectoryBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public boolean isDirectory() {
         return true;
     }
 
+    @Override
     public boolean isJar() {
         return false;
     }

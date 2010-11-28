@@ -39,6 +39,7 @@ public class DelegateLoader implements SharedClassLoader {
         }
     }
 
+    @Override
     public void addURL(URL url) {
         try {
             addUrl.invoke(loader, url);
@@ -47,10 +48,12 @@ public class DelegateLoader implements SharedClassLoader {
         }
     }
 
+    @Override
     public URL[] getURLs() {
         return loader.getURLs();
     }
 
+    @Override
     public ClassLoader getLoader() {
         return loader;
     }

@@ -44,6 +44,7 @@ public class SystemLoginModule implements LoginModule {
     protected Map sharedState;
     protected boolean trace;
 
+    @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler,
             Map sharedState, Map options) {
         this.subject = subject;
@@ -52,6 +53,7 @@ public class SystemLoginModule implements LoginModule {
         trace = log.isTraceEnabled();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean login() throws LoginException {
         if (trace) {
@@ -84,6 +86,7 @@ public class SystemLoginModule implements LoginModule {
         return false;
     }
 
+    @Override
     public boolean commit() throws LoginException {
         if (trace) {
             log.trace("commit, subject=" + subject);
@@ -91,6 +94,7 @@ public class SystemLoginModule implements LoginModule {
         return true;
     }
 
+    @Override
     public boolean abort() throws LoginException {
         if (trace) {
             log.trace("abort, subject=" + subject);
@@ -98,6 +102,7 @@ public class SystemLoginModule implements LoginModule {
         return true;
     }
 
+    @Override
     public boolean logout() throws LoginException {
         if (trace) {
             log.trace("logout, subject=" + subject);

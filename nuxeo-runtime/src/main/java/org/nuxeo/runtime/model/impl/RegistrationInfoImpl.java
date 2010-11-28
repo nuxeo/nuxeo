@@ -145,6 +145,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         this.context = rc;
     }
 
+    @Override
     public boolean isDisabled() {
         return disabled;
     }
@@ -157,10 +158,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return waitsFor;
     }
 
+    @Override
     public final boolean isPersistent() {
         return isPersistent;
     }
 
+    @Override
     public void setPersistent(boolean isPersistent) {
         this.isPersistent = isPersistent;
     }
@@ -191,18 +194,22 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return name == null;
     }
 
+    @Override
     public ExtensionPoint[] getExtensionPoints() {
         return extensionPoints;
     }
 
+    @Override
     public ComponentInstance getComponent() {
         return component;
     }
 
+    @Override
     public ComponentName getName() {
         return name;
     }
 
+    @Override
     public Map<String, Property> getProperties() {
         return properties;
     }
@@ -216,30 +223,37 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return null;
     }
 
+    @Override
     public int getState() {
         return state;
     }
 
+    @Override
     public Extension[] getExtensions() {
         return extensions;
     }
 
+    @Override
     public Set<ComponentName> getRequiredComponents() {
         return requires;
     }
 
+    @Override
     public RuntimeContext getContext() {
         return context;
     }
 
+    @Override
     public String getBundle() {
         return bundle;
     }
 
+    @Override
     public Version getVersion() {
         return version;
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
@@ -249,6 +263,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return "RegistrationInfo: " + name;
     }
 
+    @Override
     public ComponentManager getManager() {
         return manager;
     }
@@ -293,6 +308,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         activate();
     }
 
+    @Override
     public void notifyApplicationStarted() throws Exception {
         if (component != null) {
             Object ci = component.getInstance();
@@ -427,14 +443,17 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentEvent.COMPONENT_UNRESOLVED, this));
     }
 
+    @Override
     public synchronized boolean isActivated() {
         return state == ACTIVATED;
     }
 
+    @Override
     public synchronized boolean isResolved() {
         return state == RESOLVED;
     }
 
+    @Override
     public String[] getProvidedServiceNames() {
         if (serviceDescriptor != null) {
             return serviceDescriptor.services;
@@ -446,6 +465,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return serviceDescriptor;
     }
 
+    @Override
     public String getImplementation() {
         return implementation;
     }
@@ -479,6 +499,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
+    @Override
     public URL getXmlFileUrl() {
         return xmlFileUrl;
     }

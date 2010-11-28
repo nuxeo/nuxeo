@@ -32,6 +32,7 @@ public class ServiceProvider<T> implements Provider<T> {
         this.clazz = clazz;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T get() {
         try {

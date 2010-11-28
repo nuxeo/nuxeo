@@ -61,18 +61,22 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         this.version = version;
     }
 
+    @Override
     public InvokerLocator getLocator() {
         return locator;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public Version getVersion() {
         return version;
     }
 
+    @Override
     public String getProductInfo() {
         String name = Framework.getRuntime().getProperty("org.nuxeo.ecm.product.name");
         String version = Framework.getRuntime().getProperty("org.nuxeo.ecm.product.version");
@@ -85,6 +89,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         return name + ' ' + version;
     }
 
+    @Override
     public Properties getProperties() {
         return properties;
     }
@@ -117,6 +122,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         streamingLocator = locator;
     }
 
+    @Override
     public String[] getPeers() {
         return peers;
     }
@@ -125,6 +131,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         this.peers = peers;
     }
 
+    @Override
     public Properties getJndiProperties() {
         if (jndiProperties == null) {
             jndiProperties = AutoConfigurationService.readJndiProperties(properties);
@@ -145,6 +152,7 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 //        this.serviceLocator = serviceLocator;
 //    }
 
+    @Override
     public abstract void install() throws Exception;
 
 }

@@ -32,30 +32,37 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public abstract class AbstractStreamSource implements StreamSource {
 
+    @Override
     public long getLength() throws IOException {
         return -1L;
     }
 
+    @Override
     public boolean canReopen() {
         return false;
     }
 
+    @Override
     public byte[] getBytes() throws IOException {
         return FileUtils.readBytes(getStream());
     }
 
+    @Override
     public String getString() throws IOException {
         return new String(getBytes());
     }
 
+    @Override
     public void copyTo(File file) throws IOException {
         copyTo(new FileOutputStream(file));
     }
 
+    @Override
     public void copyTo(OutputStream out) throws IOException {
         FileUtils.copy(getStream(), out);
     }
 
+    @Override
     public void destroy() {
         // do nothing
     }

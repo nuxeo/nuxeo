@@ -69,6 +69,7 @@ public class DefaultCallbackHandler implements CallbackHandler {
      *                thrown if any callback of type other than NameCallback or
      *                PasswordCallback are seen.
      */
+    @Override
     public void handle(Callback[] callbacks)
             throws UnsupportedCallbackException {
         for (Callback c : callbacks) {

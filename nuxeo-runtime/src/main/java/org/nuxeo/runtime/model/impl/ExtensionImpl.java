@@ -65,47 +65,58 @@ public class ExtensionImpl implements Extension {
     // declaring component
     transient ComponentInstance component;
 
+    @Override
     public void dispose() {
         element = null;
         contributions = null;
     }
 
+    @Override
     public Element getElement() {
         return element;
     }
 
+    @Override
     public void setElement(Element element) {
         this.element = element;
     }
 
+    @Override
     public String getExtensionPoint() {
         return extensionPoint;
     }
 
+    @Override
     public ComponentName getTargetComponent() {
         return target;
     }
 
+    @Override
     public Object[] getContributions() {
         return contributions;
     }
 
+    @Override
     public void setContributions(Object[] contributions) {
         this.contributions = contributions;
     }
 
+    @Override
     public void setComponent(ComponentInstance component) {
         this.component = component;
     }
 
+    @Override
     public ComponentInstance getComponent() {
         return component;
     }
 
+    @Override
     public RuntimeContext getContext() {
         return component.getContext();
     }
 
+    @Override
     public String getId() {
         if (id == null) {
             if (component != null) {
@@ -118,6 +129,7 @@ public class ExtensionImpl implements Extension {
         return id;
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
@@ -140,6 +152,7 @@ public class ExtensionImpl implements Extension {
     /**
      * Gets the XML string for this extension.
      */
+    @Override
     public String toXML() {
         try {
             return DOMSerializer.toString(element);

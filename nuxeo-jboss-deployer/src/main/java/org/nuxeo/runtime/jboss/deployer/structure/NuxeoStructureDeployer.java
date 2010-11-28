@@ -149,6 +149,7 @@ public class NuxeoStructureDeployer extends AbstractVFSStructureDeployer {
         return useValidation;
     }
 
+    @Override
     public boolean determineStructure(StructureContext structureContext)
             throws DeploymentException {
         VirtualFile root = structureContext.getFile();

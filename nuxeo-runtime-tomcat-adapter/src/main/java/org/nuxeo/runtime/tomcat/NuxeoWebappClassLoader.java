@@ -50,6 +50,7 @@ public class NuxeoWebappClassLoader extends WebappClassLoader implements Mutable
         return parent;
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return this;
     }

@@ -78,6 +78,7 @@ public class Resizer extends TimerTask {
         this.handler = handler;
     }
 
+    @Override
     public void run() {
         debug("Resizer for pool " + poolName);
         resizePool(true);

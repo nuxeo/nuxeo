@@ -52,6 +52,7 @@ public class DefaultServiceProvider implements ServiceProvider {
 
     protected final Map<Class<?>, ServiceRef> registry = new Hashtable<Class<?>, ServiceRef>();
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) {
         ServiceRef ref = registry.get(serviceClass);

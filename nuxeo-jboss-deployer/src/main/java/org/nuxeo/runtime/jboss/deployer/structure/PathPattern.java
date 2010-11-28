@@ -74,6 +74,7 @@ public abstract class PathPattern {
             return null;
         }
         List<VirtualFile> result = dir.getChildren(new VirtualFileFilter() {
+            @Override
             public boolean accepts(VirtualFile file) {
                 return match(file.getName());
             }

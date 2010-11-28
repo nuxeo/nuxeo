@@ -56,6 +56,7 @@ public class DataSourceFactory implements ObjectFactory {
 
     private static final String URL_LOWER = "url";
 
+    @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
             Hashtable<?, ?> env) throws Exception {
         Reference ref = (Reference) obj;

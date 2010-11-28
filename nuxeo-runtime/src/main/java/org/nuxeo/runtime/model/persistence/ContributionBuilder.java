@@ -54,10 +54,12 @@ public class ContributionBuilder extends AbstractContribution {
         this.extensions = new ArrayList<String>();
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public URL asURL() {
         return null;
     }
@@ -66,18 +68,22 @@ public class ContributionBuilder extends AbstractContribution {
         this.bundle = bundle;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public boolean isDisabled() {
         return disabled;
     }
 
+    @Override
     public void setDisabled(boolean isDisabled) {
         this.disabled = isDisabled;
     }
@@ -116,6 +122,7 @@ public class ContributionBuilder extends AbstractContribution {
         extensions.add(DOMSerializer.toStringOmitXml(root));
     }
 
+    @Override
     public String getContent() {
         StringBuilder buf = new StringBuilder(1024 * 32);
         buf.append("<component name=\"").append(
@@ -136,6 +143,7 @@ public class ContributionBuilder extends AbstractContribution {
         return buf.toString();
     }
 
+    @Override
     public InputStream getStream() {
         return new ByteArrayInputStream(getContent().getBytes());
     }

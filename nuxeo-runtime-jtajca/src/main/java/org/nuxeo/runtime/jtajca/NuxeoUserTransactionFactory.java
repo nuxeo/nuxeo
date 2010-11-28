@@ -30,6 +30,7 @@ import javax.transaction.UserTransaction;
  */
 public class NuxeoUserTransactionFactory implements ObjectFactory {
 
+    @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
             Hashtable<?, ?> env) throws Exception {
         Reference ref = (Reference) obj;

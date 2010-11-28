@@ -69,18 +69,21 @@ public class ClassPath implements ClassPathScanner.Callback {
         new ClassPathScanner(this, scanForNestedJARs, blacklist).scan(files);
     }
 
+    @Override
     public File handleBundle(BundleFile bf) {
         bundles.add(bf);
         loader.addURL(bf.getURL());
         return nestedJARsDir;
     }
 
+    @Override
     public File handleJar(BundleFile bf) {
         jars.add(bf);
         loader.addURL(bf.getURL());
         return nestedJARsDir;
     }
 
+    @Override
     public void handleNestedJar(BundleFile bf) {
         nestedJars.add(bf);
         loader.addURL(bf.getURL());

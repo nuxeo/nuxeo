@@ -87,6 +87,7 @@ public class BundleImpl implements Bundle {
         return new OSGiBundleContext(this);
     }
 
+    @Override
     public BundleContext getBundleContext() {
         // ensure BundleContext is not visible in RESOLVED state - to ensure
         // OSGi compat. - in our component activate method.
@@ -97,26 +98,32 @@ public class BundleImpl implements Bundle {
         return context;
     }
 
+    @Override
     public void start(int options) throws BundleException {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public void stop(int options) throws BundleException {
         // TODO
     }
 
+    @Override
     public String getLocation() {
         return file.getLocation();
     }
 
+    @Override
     public URL getResource(String name) {
         return loader.getResource(name);
     }
 
+    @Override
     public Enumeration<URL> getResources(String name) throws IOException {
         return loader.getResources(name);
     }
 
+    @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         try {
             return loader.loadClass(name);
@@ -125,35 +132,43 @@ public class BundleImpl implements Bundle {
         }
     }
 
+    @Override
     public URL getEntry(String name) {
         return file.getEntry(name);
     }
 
+    @Override
     public Enumeration<URL> findEntries(String path, String filePattern,
             boolean recurse) {
         return file.findEntries(path, filePattern, recurse);
     }
 
+    @Override
     public Enumeration<String> getEntryPaths(String path) {
         return file.getEntryPaths(path);
     }
 
+    @Override
     public long getBundleId() {
         return id;
     }
 
+    @Override
     public Dictionary<String, String> getHeaders() {
         return headers;
     }
 
+    @Override
     public Dictionary<String, String> getHeaders(String locale) {
         return headers; // TODO
     }
 
+    @Override
     public long getLastModified() {
         return lastModified;
     }
 
+    @Override
     public ServiceReference[] getRegisteredServices() {
         // RegistrationInfo ri =
         // (RegistrationInfo)di.context.get("RegistrationInfo");
@@ -161,19 +176,23 @@ public class BundleImpl implements Bundle {
         return null;
     }
 
+    @Override
     public ServiceReference[] getServicesInUse() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public int getState() {
         return state;
     }
 
+    @Override
     public String getSymbolicName() {
         return symbolicName;
     }
 
+    @Override
     public boolean hasPermission(Object permission) {
         return true; // TODO
     }
@@ -196,6 +215,7 @@ public class BundleImpl implements Bundle {
         return activator;
     }
 
+    @Override
     public void start() throws BundleException {
         try {
             setStarting();
@@ -207,6 +227,7 @@ public class BundleImpl implements Bundle {
         }
     }
 
+    @Override
     public void stop() throws BundleException {
         try {
             setStopping();
@@ -230,16 +251,19 @@ public class BundleImpl implements Bundle {
         }
     }
 
+    @Override
     public void uninstall() throws BundleException {
         osgi.uninstall(this);
     }
 
+    @Override
     public void update() throws BundleException {
         lastModified = System.currentTimeMillis();
         throw new UnsupportedOperationException(
                 "Bundle.update() operations was not yet implemented");
     }
 
+    @Override
     public void update(InputStream in) throws BundleException {
         lastModified = System.currentTimeMillis();
         throw new UnsupportedOperationException(

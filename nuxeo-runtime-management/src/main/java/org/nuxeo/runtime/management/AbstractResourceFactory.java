@@ -28,6 +28,7 @@ public abstract class AbstractResourceFactory implements ResourceFactory {
     protected ResourcePublisherService service;
     protected ResourceFactoryDescriptor descriptor;
 
+    @Override
     public void configure(ResourcePublisherService service, ResourceFactoryDescriptor descriptor) {
         this.service = service;
         this.descriptor = descriptor;

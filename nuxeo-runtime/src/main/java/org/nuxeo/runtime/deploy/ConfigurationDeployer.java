@@ -114,6 +114,7 @@ public class ConfigurationDeployer implements FileChangeListener {
         }
     }
 
+    @Override
     public void fileChanged(FileChangeNotifier.FileEntry entry, long now) throws Exception {
         Entry e = urls.get(entry.id);
         if (e != null) {

@@ -38,12 +38,15 @@ public class ComponentWithXPoint implements Component {
 
     final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
 
+    @Override
     public void activate(ComponentContext context) {
     }
 
+    @Override
     public void deactivate(ComponentContext context) {
     }
 
+    @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
@@ -52,6 +55,7 @@ public class ComponentWithXPoint implements Component {
         }
     }
 
+    @Override
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {

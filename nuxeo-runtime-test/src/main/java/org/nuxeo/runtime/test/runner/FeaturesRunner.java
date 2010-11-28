@@ -191,6 +191,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected Injector createInjector() {
         Module module = new Module() {
+            @Override
             public void configure(Binder arg0) {
                 configureBindings(arg0);
             }

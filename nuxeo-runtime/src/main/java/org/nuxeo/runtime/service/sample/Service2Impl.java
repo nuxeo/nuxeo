@@ -34,6 +34,7 @@ public class Service2Impl extends AdaptableServiceImpl implements Service2 {
         this.s1 = s1;
     }
 
+    @Override
     public void m2() {
         System.out.println("method: Service2Impl::m2()");
     }

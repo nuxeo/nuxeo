@@ -53,10 +53,12 @@ public class TestRuntime extends AbstractRuntimeService {
         }
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public Version getVersion() {
         return VERSION;
     }
@@ -84,6 +86,7 @@ public class TestRuntime extends AbstractRuntimeService {
         }
     }
 
+    @Override
     public void reloadProperties() throws Exception {
         throw new UnsupportedOperationException("Not yet implemented");
     }

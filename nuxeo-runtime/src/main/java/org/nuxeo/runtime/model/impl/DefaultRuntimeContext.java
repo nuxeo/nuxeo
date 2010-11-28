@@ -65,6 +65,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         this.runtime = runtime;
     }
 
+    @Override
     public RuntimeService getRuntime() {
         return runtime;
     }
@@ -73,23 +74,28 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return deployedFiles;
     }
 
+    @Override
     public URL getResource(String name) {
         return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 
+    @Override
     public URL getLocalResource(String name) {
         return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 
+    @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return Thread.currentThread().getContextClassLoader().loadClass(
                 className);
     }
 
+    @Override
     public RegistrationInfo deploy(URL url) throws Exception {
         return deploy(new URLStreamRef(url));
     }
 
+    @Override
     public RegistrationInfo deploy(StreamRef ref) throws Exception {
         String name = ref.getId();
         if (deployedFiles.containsKey(name)) {
@@ -104,6 +110,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return ri;
     }
 
+    @Override
     public void undeploy(URL url) throws Exception {
         ComponentName name = deployedFiles.remove(url.toString());
         if (name != null) {
@@ -111,6 +118,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    @Override
     public void undeploy(StreamRef ref) throws Exception {
         ComponentName name = deployedFiles.remove(ref.getId());
         if (name != null) {
@@ -118,14 +126,17 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    @Override
     public boolean isDeployed(URL url) {
         return deployedFiles.containsKey(url.toString());
     }
 
+    @Override
     public boolean isDeployed(StreamRef ref) {
         return deployedFiles.containsKey(ref.getId());
     }
 
+    @Override
     public RegistrationInfo deploy(String location) throws Exception {
         URL url = getLocalResource(location);
         if (url != null) {
@@ -135,6 +146,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
+    @Override
     public void undeploy(String location) throws Exception {
         URL url = getLocalResource(location);
         if (url != null) {
@@ -144,6 +156,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    @Override
     public boolean isDeployed(String location) {
         URL url = getLocalResource(location);
         if (url != null) {
@@ -154,6 +167,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    @Override
     public void destroy() {
         Iterator<ComponentName> it = deployedFiles.values().iterator();
         ComponentManager mgr = runtime.getComponentManager();
@@ -164,6 +178,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
         }
     }
 
+    @Override
     public Bundle getBundle() {
         return null;
     }

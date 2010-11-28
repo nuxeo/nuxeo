@@ -63,6 +63,7 @@ public class WebDriverWait implements Wait<WebDriver> {
     this.sleepTimeOut = sleepTimeOut;
   }
 
+  @Override
   public <T> T until(Function<WebDriver, T> isTrue) {
     long end = clock.laterBy(timeOutInMillis);
     NotFoundException lastException = null;

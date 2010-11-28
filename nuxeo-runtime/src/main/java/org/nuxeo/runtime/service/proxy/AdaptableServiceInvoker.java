@@ -46,10 +46,12 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
         this.remote = remote;
     }
 
+    @Override
     public T getRemote() {
         return remote;
     }
 
+    @Override
     public <A> A getAdapter(Class<A> adapter) {
         A adapterInst = AdapterManager.getInstance().getAdapter(this, adapter);
         if (adapterInst != null) {
@@ -71,6 +73,7 @@ public class AdaptableServiceInvoker<T extends AdaptableService> implements Serv
         throw t;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Method m = methods.get(method);
         if (m == null) {

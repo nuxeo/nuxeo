@@ -41,6 +41,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     protected OSGiComponentLoader componentLoader;
 
 
+    @Override
     public void start(BundleContext context) throws Exception {
         log.info("Starting Runtime Activator");
         // create the runtime
@@ -60,6 +61,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
         // TODO register osgi services
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         log.info("Stopping Runtime Activator");
         // remove component loader

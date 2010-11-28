@@ -39,6 +39,7 @@ public class PropertyCommand implements Command {
         this.value = value;
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         if (value == null || value.length() == 0) {
             ctx.remove(name);
@@ -52,6 +53,7 @@ public class PropertyCommand implements Command {
         return "set " + name + " = \"" + value + '"';
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return toString();
     }

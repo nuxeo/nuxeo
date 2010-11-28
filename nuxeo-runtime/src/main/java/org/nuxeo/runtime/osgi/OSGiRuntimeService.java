@@ -132,10 +132,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         log.debug("Working directory: " + workingDir);
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public Version getVersion() {
         return VERSION;
     }
@@ -280,6 +282,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         String[] names = dir.list();
         if (names != null) {
             Arrays.sort(names, new Comparator<String>() {
+                @Override
                 public int compare(String o1, String o2) {
                     return o1.compareToIgnoreCase(o2);
                 }
@@ -319,11 +322,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         loadDefaultConfig();
     }
 
+    @Override
     public void reloadProperties() throws Exception {
         File dir = Environment.getDefault().getConfig();
         String[] names = dir.list();
         if (names != null) {
             Arrays.sort(names, new Comparator<String>() {
+                @Override
                 public int compare(String o1, String o2) {
                     return o1.compareToIgnoreCase(o2);
                 }
@@ -435,6 +440,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     /* --------------- FrameworkListener API ------------------ */
 
+    @Override
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
             fireApplicationStarted();

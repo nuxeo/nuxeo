@@ -57,15 +57,18 @@ public class EventService implements Component, Adaptable {
         contributions = new Hashtable<String, Object[]>();
     }
 
+    @Override
     public void activate(ComponentContext context) throws Exception {
 
     }
 
+    @Override
     public void deactivate(ComponentContext context) throws Exception {
         topics.clear();
         contributions.clear();
     }
 
+    @Override
     public void registerExtension(Extension extension) throws Exception {
         Object[] descriptors = extension.getContributions();
         if (descriptors.length == 0) {
@@ -87,6 +90,7 @@ public class EventService implements Component, Adaptable {
         }
     }
 
+    @Override
     public void unregisterExtension(Extension extension) throws Exception {
         String name = extension.getId();
         synchronized (this) {
@@ -197,6 +201,7 @@ public class EventService implements Component, Adaptable {
     // });
     // }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         return adapter == getClass() ? (T) this : null;

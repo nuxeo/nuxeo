@@ -26,12 +26,15 @@ package org.nuxeo.runtime.model;
  */
 public class DefaultComponent implements Component, Adaptable {
 
+    @Override
     public void activate(ComponentContext context) throws Exception {
     }
 
+    @Override
     public void deactivate(ComponentContext context) throws Exception {
     }
 
+    @Override
     public void registerExtension(Extension extension) throws Exception {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
@@ -43,6 +46,7 @@ public class DefaultComponent implements Component, Adaptable {
         }
     }
 
+    @Override
     public void unregisterExtension(Extension extension) throws Exception {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
@@ -64,6 +68,7 @@ public class DefaultComponent implements Component, Adaptable {
             throws Exception {
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         return adapter.cast(this);
     }

@@ -47,64 +47,79 @@ public enum BrowserFamily {
     }
 
     class FirefoxDriverFactory implements DriverFactory {
+        @Override
         public WebDriver createDriver() {
             FirefoxDriver ff = new FirefoxDriver();
             ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
+        @Override
         public void disposeDriver(WebDriver driver) {
         }
+        @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
     }
 
     class ChromeDriverFactory implements DriverFactory {
+        @Override
         public WebDriver createDriver() {
             ChromeDriver ff = new ChromeDriver();
             ff.manage().setSpeed(Speed.FAST);
             return ff;
         }
+        @Override
         public void disposeDriver(WebDriver driver) {
         }
+        @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
     }
 
     class IEDriverFactory implements DriverFactory {
+        @Override
         public WebDriver createDriver() {
             InternetExplorerDriver driver = new InternetExplorerDriver();
             driver.setVisible(true);
             driver.manage().setSpeed(Speed.FAST);
             return driver;
         }
+        @Override
         public void disposeDriver(WebDriver driver) {
         }
+        @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
     }
 
     class HtmlUnitDriverFactory implements DriverFactory {
+        @Override
         public WebDriver createDriver() {
             return new HtmlUnitDriver();
         }
+        @Override
         public void disposeDriver(WebDriver driver) {
         }
+        @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
     }
 
     class HtmlUnitJsDriverFactory implements DriverFactory {
+        @Override
         public WebDriver createDriver() {
             HtmlUnitDriver driver = new HtmlUnitDriver();
             driver.setJavascriptEnabled(true);
             return driver;
         }
+        @Override
         public void disposeDriver(WebDriver driver) {
         }
+        @Override
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }

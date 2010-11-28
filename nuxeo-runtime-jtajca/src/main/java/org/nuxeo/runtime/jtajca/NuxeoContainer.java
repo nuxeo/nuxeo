@@ -153,6 +153,7 @@ public class NuxeoContainer {
                 config.partitionBySubject);
         final Subject subject = new Subject();
         SubjectSource subjectSource = new SubjectSource() {
+            @Override
             public Subject getSubject() {
                 return subject;
             }
@@ -186,6 +187,7 @@ public class NuxeoContainer {
             this.config = config;
         }
 
+        @Override
         public Object allocateConnection(ManagedConnectionFactory managedConnectionFactory,
                 ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
             return cm.allocateConnection(managedConnectionFactory, connectionRequestInfo);

@@ -62,10 +62,12 @@ public class ListenerDescriptor {
 
 class NullListener implements EventListener {
 
+    @Override
     public boolean aboutToHandleEvent(Event event) {
         return false;
     }
 
+    @Override
     public void handleEvent(Event event) {
     }
 

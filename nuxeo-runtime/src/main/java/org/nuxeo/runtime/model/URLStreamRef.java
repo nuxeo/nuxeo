@@ -39,14 +39,17 @@ public class URLStreamRef implements StreamRef {
         this.name = name;
     }
 
+    @Override
     public String getId() {
         return url.toString();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return url.openStream();
     }
 
+    @Override
     public URL asURL() {
         return url;
     }
