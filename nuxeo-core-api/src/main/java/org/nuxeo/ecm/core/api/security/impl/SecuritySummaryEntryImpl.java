@@ -41,14 +41,17 @@ public class SecuritySummaryEntryImpl implements SecuritySummaryEntry, Serializa
         this.acp = acp;
     }
 
+    @Override
     public ACP getAcp() {
         return acp;
     }
 
+    @Override
     public PathRef getDocPath() {
         return docPath;
     }
 
+    @Override
     public IdRef getIdRef() {
         return idRef;
     }

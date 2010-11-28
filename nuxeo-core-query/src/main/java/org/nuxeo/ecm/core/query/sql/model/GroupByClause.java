@@ -51,6 +51,7 @@ public class GroupByClause extends Clause {
         elements = groupBy.toArray(new String[groupBy.size()]);
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitGroupByClause(this);
     }

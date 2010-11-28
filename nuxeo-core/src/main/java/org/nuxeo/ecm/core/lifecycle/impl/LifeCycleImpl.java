@@ -57,22 +57,27 @@ public class LifeCycleImpl implements LifeCycle {
         this.transitions = transitions;
     }
 
+    @Override
     public String getDefaultInitialStateName() {
         return defaultInitialStateName;
     }
 
+    @Override
     public Collection<String> getInitialStateNames() {
         return initialStateNames;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public Collection<LifeCycleState> getStates() {
         return states;
     }
 
+    @Override
     public LifeCycleState getStateByName(String stateName) {
         LifeCycleState lifeCycleState = null;
         for (LifeCycleState state : states) {
@@ -84,6 +89,7 @@ public class LifeCycleImpl implements LifeCycle {
         return lifeCycleState;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitionsFrom(String stateName)
             throws LifeCycleException {
         LifeCycleState lifeCycleState = getStateByName(stateName);
@@ -94,10 +100,12 @@ public class LifeCycleImpl implements LifeCycle {
         }
     }
 
+    @Override
     public Collection<LifeCycleTransition> getTransitions() {
         return transitions;
     }
 
+    @Override
     public LifeCycleTransition getTransitionByName(String transitionName) {
         LifeCycleTransition lifeCycleTransition = null;
         for (LifeCycleTransition itransition : transitions) {

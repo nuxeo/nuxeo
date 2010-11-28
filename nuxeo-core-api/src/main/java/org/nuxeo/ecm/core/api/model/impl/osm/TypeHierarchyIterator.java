@@ -38,10 +38,12 @@ public class TypeHierarchyIterator implements Iterator<Class<?>> {
         queue = new LinkedList<Class<?>>();
     }
 
+    @Override
     public boolean hasNext() {
         return type != null;
     }
 
+    @Override
     public Class<?> next() {
         if (type == null) {
             throw new NoSuchElementException();
@@ -58,6 +60,7 @@ public class TypeHierarchyIterator implements Iterator<Class<?>> {
         return prev;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("remove not supported");
     }

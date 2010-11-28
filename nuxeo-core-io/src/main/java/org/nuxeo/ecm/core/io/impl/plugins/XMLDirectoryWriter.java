@@ -67,6 +67,7 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
         this.destination = destination;
     }
 
+    @Override
     public void close() {
         destination = null;
     }

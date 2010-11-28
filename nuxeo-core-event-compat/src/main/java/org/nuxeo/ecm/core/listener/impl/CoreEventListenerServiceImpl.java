@@ -55,10 +55,12 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
 
     private final ListenerList eventListeners = new ListenerList();
 
+    @Override
     public void addEventListener(EventListener listener) {
         eventListeners.add(listener);
     }
 
+    @Override
     public void notifyEventListeners(CoreEvent coreEvent) {
         if (coreEvent != null) {
             Object source = coreEvent.getSource();
@@ -94,6 +96,7 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void removeEventListener(EventListener listener) {
         eventListeners.remove(listener);
     }
@@ -141,6 +144,7 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
         super.unregisterExtension(extension);
     }
 
+    @Override
     public EventListener getEventListenerByName(String name) {
         EventListener listener = null;
         for (EventListener elistener : getEventListeners()) {
@@ -152,6 +156,7 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
         return listener;
     }
 
+    @Override
     public Collection<EventListener> getEventListeners() {
         Collection<EventListener> listeners = new ArrayList<EventListener>();
         for (Object object : eventListeners.getListenersCopy()) {
@@ -160,22 +165,27 @@ public class CoreEventListenerServiceImpl extends DefaultComponent implements
         return listeners;
     }
 
+    @Override
     public void fireOperationStarted(Operation<?> command) {
         throw new UnsupportedOperationException("operation not supported");
     }
 
+    @Override
     public void fireOperationTerminated(Operation<?> command) {
         throw new UnsupportedOperationException("operation not supported");
     }
 
+    @Override
     public void transactionCommited() {
         throw new UnsupportedOperationException("operation not supported");
     }
 
+    @Override
     public void transactionRollbacked() {
         throw new UnsupportedOperationException("operation not supported");
     }
 
+    @Override
     public void transactionStarted() {
         throw new UnsupportedOperationException("operation not supported");
     }

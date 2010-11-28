@@ -44,10 +44,12 @@ public class BlobHolderDummyImpl extends AbstractBlobHolder {
         return null;
     }
 
+    @Override
     public Serializable getProperty(String name) {
         return null;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         return null;
     }

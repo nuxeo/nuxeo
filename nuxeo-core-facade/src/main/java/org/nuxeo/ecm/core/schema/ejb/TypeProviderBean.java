@@ -46,30 +46,37 @@ public class TypeProviderBean implements TypeProviderLocal {
         typeProvider = Framework.getLocalService(SchemaManager.class);
     }
 
+    @Override
     public Type getType(String name) {
         return typeProvider.getType(name);
     }
 
+    @Override
     public Type getType(String schema, String name) {
         return typeProvider.getType(schema, name);
     }
 
+    @Override
     public Schema getSchema(String schema) {
         return typeProvider.getSchema(schema);
     }
 
+    @Override
     public DocumentType getDocumentType(String docType) {
         return typeProvider.getDocumentType(docType);
     }
 
+    @Override
     public Schema[] getSchemas() {
         return typeProvider.getSchemas();
     }
 
+    @Override
     public Type[] getTypes() {
         return typeProvider.getTypes();
     }
 
+    @Override
     public DocumentType[] getDocumentTypes() {
         return typeProvider.getDocumentTypes();
     }

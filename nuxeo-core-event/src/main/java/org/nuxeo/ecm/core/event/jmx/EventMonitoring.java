@@ -34,61 +34,75 @@ public class EventMonitoring implements EventMonitoringMBean {
         return Framework.getLocalService(EventServiceAdmin.class);
     }
 
+    @Override
     public boolean isAsyncHandlersTrackingEnabled() {
         return EventStatsHolder.isCollectAsyncHandlersExecTime();
     }
 
+    @Override
     public void setAsyncHandlersTrackingEnabled(boolean collectAsyncHandlersExecTime) {
         EventStatsHolder
                 .setCollectAsyncHandlersExecTime(collectAsyncHandlersExecTime);
     }
 
+    @Override
     public boolean isSyncHandlersTrackingEnabled() {
         return EventStatsHolder.isCollectSyncHandlersExecTime();
     }
 
+    @Override
     public void setSyncHandlersTrackingEnabled(boolean collectSyncHandlersExecTime) {
         EventStatsHolder
                 .setCollectSyncHandlersExecTime(collectSyncHandlersExecTime);
     }
 
+    @Override
     public int getActiveThreadsCount() {
         return getAdminService().getActiveThreadsCount();
     }
 
+    @Override
     public int getEventsInQueueCount() {
         return getAdminService().getEventsInQueueCount();
     }
 
+    @Override
     public String getAsyncHandlersExecTime() {
         return EventStatsHolder.getAsyncHandlersExecTime();
     }
 
+    @Override
     public String getSyncHandlersExecTime() {
         return EventStatsHolder.getSyncHandlersExecTime();
     }
 
+    @Override
     public boolean isBlockAsyncHandlers() {
         return getAdminService().isBlockAsyncHandlers();
     }
 
+    @Override
     public void setBlockAsyncHandlers(boolean blockAsyncHandlers) {
         getAdminService().setBlockAsyncHandlers(blockAsyncHandlers);
     }
 
+    @Override
     public boolean isBlockSyncPostCommitHandlers() {
         return getAdminService().isBlockSyncPostCommitHandlers();
     }
 
+    @Override
     public void setBlockSyncPostCommitHandlers(boolean blockSyncPostCommitHandlers) {
         getAdminService().setBlockSyncPostCommitHandlers(
                 blockSyncPostCommitHandlers);
     }
 
+    @Override
     public void resetHandlersExecTime() {
         EventStatsHolder.resetHandlersExecTime();
     }
 
+    @Override
     public String getListenersConfig() {
 
         EventListenerList listenerList = getAdminService().getListenerList();
@@ -117,14 +131,17 @@ public class EventMonitoring implements EventMonitoringMBean {
         return sb.toString();
     }
 
+    @Override
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
         getAdminService().setListenerEnabledFlag(listenerName, enabled);
     }
 
+    @Override
     public boolean isBulkModeEnabled() {
         return getAdminService().isBulkModeEnabled();
     }
 
+    @Override
     public void setBulkModeEnabled(boolean bulkModeEnabled) {
         getAdminService().setBulkModeEnabled(bulkModeEnabled);
     }

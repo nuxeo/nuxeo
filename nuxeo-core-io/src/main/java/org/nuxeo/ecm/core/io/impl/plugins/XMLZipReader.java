@@ -66,6 +66,7 @@ public class XMLZipReader extends AbstractDocumentReader {
         return null;
     }
 
+    @Override
     public void close() {
         if (zip != null) {
             try {

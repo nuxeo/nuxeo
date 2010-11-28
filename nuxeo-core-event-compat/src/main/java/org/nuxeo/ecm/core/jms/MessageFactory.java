@@ -33,6 +33,7 @@ public interface MessageFactory extends Serializable {
 
     MessageFactory DEFAULT = new MessageFactory() {
         private static final long serialVersionUID = -5609402306633995881L;
+        @Override
         public Message createMessage(Session session, Object object) throws JMSException {
             if (object instanceof Serializable) {
                 return session.createObjectMessage((Serializable) object);

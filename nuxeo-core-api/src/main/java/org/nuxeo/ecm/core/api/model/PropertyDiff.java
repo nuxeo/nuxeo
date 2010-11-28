@@ -67,6 +67,7 @@ public class PropertyDiff implements Iterable<PropertyDiff> {
         children.add(new PropertyDiff(ADDED, name, value));
     }
 
+    @Override
     public Iterator<PropertyDiff> iterator() {
         return children.iterator();
     }

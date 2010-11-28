@@ -114,7 +114,6 @@ public class MultiNuxeoCoreRunner extends ParentRunner<FeaturesRunner> {
         return runners;
     }
 
-
     @Override
     protected void runChild(FeaturesRunner child, RunNotifier notifier) {
         for (RepositorySettings config : configs) {

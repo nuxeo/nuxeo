@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class BlobHolderDummyFactory implements BlobHolderFactory {
 
+    @Override
     public BlobHolder getBlobHolder(DocumentModel doc) {
         return new BlobHolderDummyImpl();
     }

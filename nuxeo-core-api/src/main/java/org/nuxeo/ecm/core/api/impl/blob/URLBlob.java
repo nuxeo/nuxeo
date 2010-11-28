@@ -56,14 +56,17 @@ public class URLBlob extends DefaultStreamBlob {
         this.digest = digest;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return url.openStream();
     }
 
+    @Override
     public Blob persist() throws IOException {
         return this;
     }
 
+    @Override
     public boolean isPersistent() {
         return true;
     }

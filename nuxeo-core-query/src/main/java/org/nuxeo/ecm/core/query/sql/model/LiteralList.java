@@ -30,6 +30,7 @@ public class LiteralList extends ArrayList<Literal> implements Operand {
     private static final long serialVersionUID = 4590326082296853715L;
 
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitLiteralList(this);
     }

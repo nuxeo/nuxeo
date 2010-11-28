@@ -38,14 +38,17 @@ public abstract class AbstractExternalBlobAdapter implements
 
     protected Map<String, String> properties;
 
+    @Override
     public String getPrefix() {
         return prefix;
     }
 
+    @Override
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
+    @Override
     public Map<String, String> getProperties() {
         // de-reference
         if (properties == null) {
@@ -54,6 +57,7 @@ public abstract class AbstractExternalBlobAdapter implements
         return Collections.unmodifiableMap(properties);
     }
 
+    @Override
     public String getProperty(String name) {
         Map<String, String> props = getProperties();
         String prop = props.get(name);
@@ -61,6 +65,7 @@ public abstract class AbstractExternalBlobAdapter implements
         return prop;
     }
 
+    @Override
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }

@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
  */
 public abstract class AbstractDocument implements Document {
 
+    @Override
     public boolean followTransition(String transition)
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
@@ -46,6 +47,7 @@ public abstract class AbstractDocument implements Document {
         return true;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions()
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();

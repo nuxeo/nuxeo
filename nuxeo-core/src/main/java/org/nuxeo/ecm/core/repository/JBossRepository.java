@@ -45,10 +45,12 @@ public class JBossRepository implements JBossRepositoryMBean {
         return NXCore.getRepository(name);
     }
 
+    @Override
     public String listDocumentLocks() {
         return "Not Implemented";
     }
 
+    @Override
     public String listOpenedSessions() throws NoSuchRepositoryException, DocumentException {
         Repository repo = getRepository();
         Session[] sessions = repo.getOpenedSessions();
@@ -67,21 +69,25 @@ public class JBossRepository implements JBossRepositoryMBean {
         return buf.toString();
     }
 
+    @Override
     public String listRegisteredDocumentTypes() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public String listRegisteredSchemas() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public String listRegisteredTypes() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public void restart(boolean reloadTypes) {
         // TODO Auto-generated method stub
     }

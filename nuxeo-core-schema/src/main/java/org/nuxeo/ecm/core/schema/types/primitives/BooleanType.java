@@ -41,6 +41,7 @@ public final class BooleanType extends PrimitiveType {
         return object instanceof Boolean;
     }
 
+    @Override
     public Object convert(Object value) {
         if (value instanceof Boolean) {
             return value;

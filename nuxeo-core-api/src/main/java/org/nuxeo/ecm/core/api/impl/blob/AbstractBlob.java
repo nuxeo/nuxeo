@@ -62,6 +62,7 @@ public abstract class AbstractBlob implements Blob {
         }
     }
 
+    @Override
     public void transferTo(Writer writer) throws IOException {
         Reader reader = getReader();
         if (reader != null && reader != EMPTY_READER) {
@@ -73,6 +74,7 @@ public abstract class AbstractBlob implements Blob {
         }
     }
 
+    @Override
     public void transferTo(OutputStream out) throws IOException {
         InputStream in = getStream();
         if (in != null && in != EMPTY_INPUT_STREAM) {
@@ -84,6 +86,7 @@ public abstract class AbstractBlob implements Blob {
         }
     }
 
+    @Override
     public void transferTo(File file) throws IOException {
         FileOutputStream out = null;
         try {

@@ -42,6 +42,7 @@ public abstract class DocumentModelReader extends AbstractDocumentReader {
     @Override
     public abstract ExportedDocument read() throws IOException;
 
+    @Override
     public void close() {
         session = null;
     }

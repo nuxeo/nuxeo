@@ -47,14 +47,17 @@ public class DefaultDocumentTreeSorter implements DocumentTreeSorter {
 
     protected String sortPropertyPath;
 
+    @Override
     public String getSortPropertyPath() {
         return sortPropertyPath;
     }
 
+    @Override
     public void setSortPropertyPath(String sortPropertyPath) {
         this.sortPropertyPath = sortPropertyPath;
     }
 
+    @Override
     public int compare(DocumentModel doc1, DocumentModel doc2) {
         if (sortPropertyPath == null) {
             log.error("Cannot sort: no sort property path set");

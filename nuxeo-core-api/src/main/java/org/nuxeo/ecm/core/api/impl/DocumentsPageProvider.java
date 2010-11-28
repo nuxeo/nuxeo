@@ -81,10 +81,12 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         getPage(page);
     }
 
+    @Override
     public int getCurrentPageIndex() {
         return currentPageIndex;
     }
 
+    @Override
     public DocumentModelList getCurrentPage() {
         if (currentPageIndex == -1) {
             // avanse
@@ -93,6 +95,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         return getPage(currentPageIndex);
     }
 
+    @Override
     public DocumentModelList getPage(int page) {
         if (page < 0) {
             page = 0;
@@ -125,6 +128,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         return docsPage;
     }
 
+    @Override
     public boolean isNextPageAvailable() {
         return docsIterator.hasNext() || currentPageIndex < loadedPages.size() - 1;
     }
@@ -170,6 +174,7 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         }
     }
 
+    @Override
     public long getResultsCount() {
         long resultsCount = totalResultsCount;
         if (DocumentModelIterator.UNKNOWN_SIZE == resultsCount) {
@@ -178,10 +183,12 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         return resultsCount;
     }
 
+    @Override
     public boolean isPreviousPageAvailable() {
         return currentPageIndex > 0;
     }
 
+    @Override
     public void last() {
         int lastPage = getNumberOfPages();
         if (lastPage == UNKNOWN_SIZE) {
@@ -193,24 +200,29 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         }
     }
 
+    @Override
     public DocumentModelList getNextPage() {
         return getPage(currentPageIndex + 1);
     }
 
+    @Override
     public void next() {
         getPage(currentPageIndex + 1);
     }
 
+    @Override
     public void previous() {
         if (currentPageIndex > 0) {
             setCurrentPage(currentPageIndex - 1);
         }
     }
 
+    @Override
     public void rewind() {
         getPage(0);
     }
 
+    @Override
     public int getNumberOfPages() {
         long size = docsIterator.size();
         if (size == DocumentModelIterator.UNKNOWN_SIZE) {
@@ -223,10 +235,12 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
      * Nothing can't be done to refresh this provider's pages
      * the whole provider should be instead replaced
      */
+    @Override
     public void refresh() {
     }
 
     // TODO stop duplication
+    @Override
     public String getCurrentPageStatus() {
         int total = getNumberOfPages();
         int current = currentPageIndex + 1;
@@ -237,32 +251,39 @@ public class DocumentsPageProvider implements PagedDocumentsProvider {
         }
     }
 
+    @Override
     public int getCurrentPageOffset() {
         // Might become inappropriate if previous documents have changed
         return currentPageIndex * pageSize;
     }
 
+    @Override
     public int getCurrentPageSize() {
         // page getters are cached, hence cheap
         return getCurrentPage().size();
     }
 
+    @Override
     public int getPageSize() {
         return pageSize;
     }
 
+    @Override
     public String getName() {
         return providerName;
     }
 
+    @Override
     public SortInfo getSortInfo() {
         return null;
     }
 
+    @Override
     public boolean isSortable() {
         return false;
     }
 
+    @Override
     public void setName(String name) {
         providerName = name;
     }

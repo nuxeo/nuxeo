@@ -40,15 +40,18 @@ public class CacheCGTaskActivator implements BundleActivator, FrameworkListener 
 
     protected static Thread gcThread;
 
+    @Override
     public void start(BundleContext context) throws Exception {
         context.addFrameworkListener(this);
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         endGC();
         context.removeFrameworkListener(this);
     }
 
+    @Override
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
             long interval = ConversionServiceImpl.getGCIntervalInMinutes();

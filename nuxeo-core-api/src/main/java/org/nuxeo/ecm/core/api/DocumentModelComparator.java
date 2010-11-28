@@ -93,6 +93,7 @@ public class DocumentModelComparator implements Sorter {
         return asc ? cmp : -cmp;
     }
 
+    @Override
     public int compare(DocumentModel doc1, DocumentModel doc2) {
         if (doc1 == null && doc2 == null) {
             return 0;

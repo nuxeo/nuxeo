@@ -40,23 +40,28 @@ public class CachingDocumentIterator implements DocumentModelIterator {
         this.cache = cache;
     }
 
+    @Override
     public boolean hasNext() {
         return it.hasNext();
     }
 
+    @Override
     public DocumentModel next() {
         return cache.cacheDocument(it.next());
     }
 
+    @Override
     public void remove() {
         //TODO remove from cache too
         it.remove();
     }
 
+    @Override
     public Iterator<DocumentModel> iterator() {
         return this;
     }
 
+    @Override
     public long size() {
         return it.size();
     }

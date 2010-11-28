@@ -106,7 +106,6 @@ public class RepositorySettings implements Provider<CoreSession> {
         username = settings.username;
     }
 
-
     public BackendType getBackendType() {
         return type;
     }
@@ -138,7 +137,6 @@ public class RepositorySettings implements Provider<CoreSession> {
     public void setGranularity(Granularity granularity) {
         this.granularity = granularity;
     }
-
 
     public void initialize() {
         try {
@@ -227,6 +225,7 @@ public class RepositorySettings implements Provider<CoreSession> {
         return session;
     }
 
+    @Override
     public CoreSession get() {
         return getSession();
     }

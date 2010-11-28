@@ -37,10 +37,12 @@ public class EventProducerBean implements EventProducerLocal {
 
     protected final EventProducer service = Framework.getLocalService(EventProducer.class);
 
+    @Override
     public void fireEvent(Event event) throws ClientException {
         service.fireEvent(event);
     }
 
+    @Override
     public void fireEventBundle(EventBundle event) throws ClientException {
         service.fireEventBundle(event);
     }

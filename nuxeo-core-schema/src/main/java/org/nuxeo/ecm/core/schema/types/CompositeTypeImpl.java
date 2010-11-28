@@ -63,18 +63,22 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
         }
     }
 
+    @Override
     public final boolean hasSchemas() {
         return !schemas.isEmpty();
     }
 
+    @Override
     public final void addSchema(String schema) {
         schemas.put(schema, new TypeRef<Schema>(SchemaNames.SCHEMAS, schema));
     }
 
+    @Override
     public final void addSchema(Schema schema) {
         schemas.put(schema.getName(), schema.getRef());
     }
 
+    @Override
     public final Schema getSchema(String name) {
         TypeRef<Schema> proxy = schemas.get(name);
         if (proxy != null) {
@@ -83,6 +87,7 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
         return null;
     }
 
+    @Override
     public final Schema getSchemaByPrefix(String prefix) {
         if (prefix2schemas == null) {
             prefix2schemas = new HashMap<String, Schema>();
@@ -93,14 +98,17 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
         return prefix2schemas.get(prefix);
     }
 
+    @Override
     public final boolean hasSchema(String name) {
         return schemas.containsKey(name);
     }
 
+    @Override
     public final String[] getSchemaNames() {
         return schemas.keySet().toArray(new String[schemas.size()]);
     }
 
+    @Override
     public final Collection<Schema> getSchemas() {
         List<Schema> schemas = new ArrayList<Schema>();
         for (TypeRef<Schema> proxy : this.schemas.values()) {

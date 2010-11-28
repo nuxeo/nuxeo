@@ -74,6 +74,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         this.constraints = constraints;
     }
 
+    @Override
     public SimpleType getPrimitiveType() {
         if (primitiveType == null) {
             primitiveType = ((SimpleType) getSuperType()).getPrimitiveType();
@@ -81,6 +82,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return primitiveType;
     }
 
+    @Override
     public boolean isPrimitive() {
         return false;
     }
@@ -100,6 +102,7 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return getPrimitiveType().encode(value);
     }
 
+    @Override
     public Object convert(Object value) throws TypeException {
         return getPrimitiveType().convert(value);
     }

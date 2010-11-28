@@ -202,6 +202,7 @@ public class RFC822ToTextConverter implements Converter {
         return res;
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -222,6 +223,7 @@ public class RFC822ToTextConverter implements Converter {
         return new SimpleCachableBlobHolder(outputBlob);
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
     }

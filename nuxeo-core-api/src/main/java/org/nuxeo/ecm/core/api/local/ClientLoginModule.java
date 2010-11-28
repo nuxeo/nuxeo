@@ -76,6 +76,7 @@ public class ClientLoginModule implements LoginModule {
    /**
     * Initialize this LoginModule.
     */
+   @Override
    public void initialize(Subject subject, CallbackHandler callbackHandler,
             Map sharedState, Map options) {
         this.subject = subject;
@@ -106,6 +107,7 @@ public class ClientLoginModule implements LoginModule {
    /**
     * Authenticates a Subject (phase 1).
     */
+   @Override
    public boolean login() throws LoginException {
         // If useFirstPass is true, look for the shared password
         if (useFirstPass) {
@@ -154,6 +156,7 @@ public class ClientLoginModule implements LoginModule {
      * is used to build the SimplePrincipal. Both may be overridden if the
      * resulting authenticated Subject principals set it not empty.
      */
+    @Override
     public boolean commit() throws LoginException {
         Set<Principal> principals = subject.getPrincipals();
         Principal p;
@@ -181,6 +184,7 @@ public class ClientLoginModule implements LoginModule {
    /**
     * Aborts the authentication process (phase 2).
     */
+   @Override
    public boolean abort() throws LoginException {
         int length = password != null ? password.length : 0;
         for (int n = 0; n < length; n++) {
@@ -190,6 +194,7 @@ public class ClientLoginModule implements LoginModule {
         return true;
     }
 
+    @Override
     public boolean logout() throws LoginException {
         stack.pop();
         return true;
@@ -210,6 +215,7 @@ public class ClientLoginModule implements LoginModule {
         }
 
         return new Principal() {
+            @Override
             public String getName() {
                 return name;
             }

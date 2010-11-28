@@ -35,34 +35,42 @@ public abstract class DefaultBlob extends AbstractBlob implements Serializable {
     protected String encoding;
     protected String mimeType;
 
+    @Override
     public String getDigest() {
         return digest;
     }
 
+    @Override
     public String getEncoding() {
         return encoding;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public String getMimeType() {
         return mimeType;
     }
 
+    @Override
     public void setDigest(String digest) {
         this.digest = digest;
     }
 
+    @Override
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }

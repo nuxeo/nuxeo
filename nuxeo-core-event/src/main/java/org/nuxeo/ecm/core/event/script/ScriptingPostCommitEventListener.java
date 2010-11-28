@@ -35,6 +35,7 @@ public class ScriptingPostCommitEventListener implements
         this.script = script;
     }
 
+    @Override
     public void handleEvent(EventBundle bundle) throws ClientException {
         Bindings bindings = new SimpleBindings();
         bindings.put("bundle", bundle);

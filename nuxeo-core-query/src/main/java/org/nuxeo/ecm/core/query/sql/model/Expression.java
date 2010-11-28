@@ -42,6 +42,7 @@ public class Expression implements Operand {
         this.operator = operator;
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitExpression(this);
     }

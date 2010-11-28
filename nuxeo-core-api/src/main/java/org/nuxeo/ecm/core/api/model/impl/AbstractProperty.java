@@ -83,6 +83,7 @@ public abstract class AbstractProperty implements Property {
 
     public abstract Serializable internalGetValue() throws PropertyException;
 
+    @Override
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be
             // considered PHANTOMS
@@ -99,19 +100,23 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
     public void setValue(int index, Object value) throws PropertyException {
         Property property = get(index);
         property.setValue(value);
     }
 
+    @Override
     public int size() {
         return getChildren().size();
     }
 
+    @Override
     public Iterator<Property> iterator() {
         return getChildren().iterator();
     }
 
+    @Override
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
         if (parent != null && parent.isList()) { // remove from list is
@@ -126,10 +131,12 @@ public abstract class AbstractProperty implements Property {
         return value;
     }
 
+    @Override
     public Property getParent() {
         return parent;
     }
 
+    @Override
     public String getPath() {
         Path path = collectPath(new Path("/"));
         return path.toString();
@@ -147,42 +154,52 @@ public abstract class AbstractProperty implements Property {
         return path.append(name);
     }
 
+    @Override
     public Schema getSchema() {
         return getRoot().getSchema();
     }
 
+    @Override
     public boolean isList() {
         return getType().isListType();
     }
 
+    @Override
     public boolean isComplex() {
         return getType().isComplexType();
     }
 
+    @Override
     public boolean isScalar() {
         return getType().isSimpleType();
     }
 
+    @Override
     public boolean isNew() {
         return areFlagsSet(IS_NEW);
     }
 
+    @Override
     public boolean isRemoved() {
         return areFlagsSet(IS_REMOVED);
     }
 
+    @Override
     public boolean isMoved() {
         return areFlagsSet(IS_MOVED);
     }
 
+    @Override
     public boolean isModified() {
         return areFlagsSet(IS_MODIFIED);
     }
 
+    @Override
     public boolean isPhantom() {
         return areFlagsSet(IS_PHANTOM);
     }
 
+    @Override
     public final boolean isDirty() {
         return (flags & IS_DIRTY) != 0;
     }
@@ -195,14 +212,17 @@ public abstract class AbstractProperty implements Property {
         flags |= (dirtyFlags & DIRTY_MASK);
     }
 
+    @Override
     public boolean isValidating() {
         return areFlagsSet(IS_VALIDATING);
     }
 
+    @Override
     public boolean isReadOnly() {
         return areFlagsSet(IS_READONLY);
     }
 
+    @Override
     public void setReadOnly(boolean value) {
         if (value) {
             setFlags(IS_READONLY);
@@ -211,6 +231,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
     public void setValidating(boolean value) {
         if (value) {
             setFlags(IS_VALIDATING);
@@ -231,10 +252,12 @@ public abstract class AbstractProperty implements Property {
         this.flags &= ~flags;
     }
 
+    @Override
     public int getDirtyFlags() {
         return flags & DIRTY_MASK;
     }
 
+    @Override
     public void clearDirtyFlags() {
         if ((flags & IS_REMOVED) != 0) {
             // if is removed the property becomes a phantom
@@ -296,10 +319,12 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
     }
 
+    @Override
     public void setValue(Object value) throws PropertyException {
         // 1. check the read only flag
         if (isReadOnly()) {
@@ -321,18 +346,22 @@ public abstract class AbstractProperty implements Property {
         setIsModified();
     }
 
+    @Override
     public void setValue(String path, Object value) throws PropertyException {
         resolvePath(path).setValue(value);
     }
 
+    @Override
     public <T> T getValue(Class<T> type, String path) throws PropertyException {
         return resolvePath(path).getValue(type);
     }
 
+    @Override
     public Serializable getValue(String path) throws PropertyException {
         return resolvePath(path).getValue();
     }
 
+    @Override
     public Serializable getValue() throws PropertyException {
         if (isPhantom() || isRemoved()) {
             return getDefaultValue();
@@ -340,6 +369,7 @@ public abstract class AbstractProperty implements Property {
         return internalGetValue();
     }
 
+    @Override
     public Serializable getValueForWrite() throws PropertyException {
         return getValue();
     }
@@ -348,6 +378,7 @@ public abstract class AbstractProperty implements Property {
         return (Serializable) getField().getDefaultValue();
     }
 
+    @Override
     public void moveTo(int index) {
         if (parent == null || !parent.isList()) {
             throw new UnsupportedOperationException("Not a list item property");
@@ -358,14 +389,17 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
     public DocumentPart getRoot() {
         return parent == null ? (DocumentPart) this : parent.getRoot();
     }
 
+    @Override
     public Property resolvePath(String path) throws PropertyNotFoundException {
         return resolvePath(new Path(path));
     }
 
+    @Override
     public Property resolvePath(Path path) throws PropertyNotFoundException {
         // handle absolute paths -> resolve them relative to the root
         if (path.isAbsolute()) {
@@ -415,6 +449,7 @@ public abstract class AbstractProperty implements Property {
         return property;
     }
 
+    @Override
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
@@ -424,24 +459,29 @@ public abstract class AbstractProperty implements Property {
                 Serializable.class, getPath());
     }
 
+    @Override
     public boolean isNormalized(Object value) {
         return value == null || value instanceof Serializable;
     }
 
+    @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         // TODO FIXME XXX make it abstract at this level
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    @Override
     public boolean validateType(Class<?> type) {
         return true; // TODO XXX FIXME
     }
 
+    @Override
     public boolean validate(Serializable value) {
         return true; // TODO XXX FIXME
     }
 
+    @Override
     public Object newInstance() {
         return null; // TODO XXX FIXME
     }
@@ -464,10 +504,12 @@ public abstract class AbstractProperty implements Property {
     /**
      * application data impl. was copied from eclipse Widget class
      */
+    @Override
     public Object getData() {
         return (flags & KEYED_DATA) != 0 ? ((Object[]) data)[0] : data;
     }
 
+    @Override
     public Object getData(String key) {
         if (key == null) {
             throw new IllegalArgumentException("Data Key must not be null");
@@ -483,6 +525,7 @@ public abstract class AbstractProperty implements Property {
         return null;
     }
 
+    @Override
     public void setData(Object value) {
         if ((flags & KEYED_DATA) != 0) {
             ((Object[]) data)[0] = value;
@@ -491,6 +534,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Override
     public void setData(String key, Object value) {
         if (key == null) {
             throw new IllegalArgumentException("Data Key must not be null");

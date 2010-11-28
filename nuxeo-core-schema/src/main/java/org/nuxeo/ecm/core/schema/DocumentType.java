@@ -106,6 +106,7 @@ public interface DocumentType extends CompositeType {
      */
     void addSchemas(String[] schemas);
 
+    @Override
     TypeRef<DocumentType> getRef();
 
     /**

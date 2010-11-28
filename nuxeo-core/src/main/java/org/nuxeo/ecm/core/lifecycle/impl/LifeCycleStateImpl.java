@@ -51,18 +51,22 @@ public class LifeCycleStateImpl implements LifeCycleState {
         this.initial = initial;
     }
 
+    @Override
     public Collection<String> getAllowedStateTransitions() {
         return allowedStateTransitions;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public boolean isInitial() {
         return initial;
     }

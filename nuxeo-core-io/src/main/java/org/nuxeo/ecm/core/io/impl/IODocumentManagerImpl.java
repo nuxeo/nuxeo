@@ -79,6 +79,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
         return systemSession;
     }
 
+    @Override
     public DocumentTranslationMap importDocuments(InputStream in, String repo,
             DocumentRef root) throws ImportDocumentException, ClientException {
         CoreSession coreSession = getCoreSession(repo);
@@ -109,6 +110,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
         }
      }
 
+    @Override
     public DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
             throws ImportDocumentException {
 
@@ -135,6 +137,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
         }
     }
 
+    @Override
     public DocumentTranslationMap exportDocuments(OutputStream out,
             String repo, Collection<DocumentRef> sources, boolean recurse,
             String format) throws ExportDocumentException, ClientException {
@@ -178,6 +181,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
         }
     }
 
+    @Override
     public DocumentTranslationMap exportDocuments(OutputStream out,
             DocumentReader customDocReader, String format)
             throws ExportDocumentException {
@@ -208,6 +212,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
         }
     }
 
+    @Override
     public DocumentTranslationMap importDocuments(
             DocumentReader customDocReader, DocumentWriter customDocWriter)
             throws ImportDocumentException {

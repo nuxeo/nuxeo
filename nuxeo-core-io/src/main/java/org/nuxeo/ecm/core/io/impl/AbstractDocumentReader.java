@@ -38,8 +38,10 @@ public abstract class AbstractDocumentReader implements DocumentReader {
     private static final Log log = LogFactory.getLog(AbstractDocumentReader.class);
 
     // this abstract method is needed
+    @Override
     public abstract ExportedDocument read() throws IOException;
 
+    @Override
     public ExportedDocument[] read(int count) throws IOException {
         List<ExportedDocument> docs = new ArrayList<ExportedDocument>(count);
         for (int i = 0; i < count; i++) {

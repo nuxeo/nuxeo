@@ -92,18 +92,22 @@ public class CoreEventImpl implements CoreEvent {
         return null;
     }
 
+    @Override
     public String getEventId() {
         return eventId;
     }
 
+    @Override
     public Map<String, ?> getInfo() {
         return info;
     }
 
+    @Override
     public Object getSource() {
         return source;
     }
 
+    @Override
     public String getCategory() {
         if (category != null) {
             return category;
@@ -117,6 +121,7 @@ public class CoreEventImpl implements CoreEvent {
         }
     }
 
+    @Override
     public String getComment() {
         if (comment != null) {
             return comment;
@@ -130,10 +135,12 @@ public class CoreEventImpl implements CoreEvent {
         }
     }
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public Principal getPrincipal() {
         return principal;
     }

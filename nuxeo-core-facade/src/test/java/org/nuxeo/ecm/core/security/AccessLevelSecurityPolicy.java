@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.model.Document;
  */
 public class AccessLevelSecurityPolicy extends AbstractSecurityPolicy {
 
+    @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {

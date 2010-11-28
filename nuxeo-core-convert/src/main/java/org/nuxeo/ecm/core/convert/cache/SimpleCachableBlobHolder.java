@@ -51,6 +51,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     }
 
 
+    @Override
     public void load(String path) {
         blobs = new ArrayList<Blob>();
         File base = new File(path);
@@ -90,6 +91,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
         }
     }
 
+    @Override
     public String persist(String basePath) throws Exception {
         if (blobs == null || blobs.isEmpty()) {
             return null;

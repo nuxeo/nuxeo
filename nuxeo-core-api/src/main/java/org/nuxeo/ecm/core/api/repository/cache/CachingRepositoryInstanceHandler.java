@@ -108,6 +108,7 @@ implements DocumentModelCache {
      * end up with garbage in the path cache (path mappings to IDs that doesn't exists anymore in
      * the doc cache)
      */
+    @Override
     public synchronized DocumentModel cacheDocument(DocumentModel doc) {
         String id = doc.getId();
         if (id == null) { // doc is not yet in repository, avoid caching it
@@ -122,6 +123,7 @@ implements DocumentModelCache {
         return doc;
     }
 
+    @Override
     public synchronized DocumentModel uncacheDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             String id = ((IdRef) ref).value;
@@ -140,6 +142,7 @@ implements DocumentModelCache {
         return null;
     }
 
+    @Override
     public synchronized DocumentModel getCachedDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
             return cache.get(((IdRef) ref).value);
@@ -154,6 +157,7 @@ implements DocumentModelCache {
         return cache.get(id);
     }
 
+    @Override
     public synchronized void flushDocumentCache() {
         // Race condition: try to clean until we succeed - this may not work from first time
         // because we are not in a synchronized block
@@ -163,6 +167,7 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public DocumentModel fetchDocument(DocumentRef ref) throws ClientException {
         DocumentModel doc = getCachedDocument(ref);
         if (doc != null) {
@@ -325,6 +330,7 @@ implements DocumentModelCache {
     /**
      * This will modify the given list and replace documents with the cached versions.
      */
+    @Override
     public void cacheChildren(DocumentRef parent, DocumentModelList children) {
         String id = getDocumentId(parent);
         if (id != null) {
@@ -341,6 +347,7 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public void uncacheChildren(DocumentRef parent) {
         String id = getDocumentId(parent);
         if (id != null) {
@@ -350,6 +357,7 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public DocumentModelList fetchChildren(DocumentRef parent)
     throws Exception {
         return getSession().getChildren(parent);
@@ -385,6 +393,7 @@ implements DocumentModelCache {
         return result;
     }
 
+    @Override
     public DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException {
         try {
             DocumentModelList children =  getSession().getChildren(parent);
@@ -397,6 +406,7 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public DocumentModelList getCachedChildren(DocumentRef parent) throws ClientException {
         String id = getDocumentId(parent);
         if (id != null) {
@@ -486,6 +496,7 @@ implements DocumentModelCache {
         return null;
     }
 
+    @Override
     public void cacheChild(DocumentRef parent, DocumentRef child) {
         String id = getDocumentId(parent);
         if (id != null) {
@@ -500,6 +511,7 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public void uncacheChild(DocumentRef parent, DocumentRef child) {
         String id = getDocumentId(parent);
         if (id != null) {
@@ -519,6 +531,7 @@ implements DocumentModelCache {
 
     protected Object dirtyUpdateTag;
 
+    @Override
     public void handleDirtyUpdateTag(Object tag) {
         dirtyUpdateTag = DirtyUpdateChecker.earliestTag(dirtyUpdateTag, tag);
     }
@@ -533,10 +546,12 @@ implements DocumentModelCache {
         }
     }
 
+    @Override
     public void addListener(DocumentModelCacheListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeListener(DocumentModelCacheListener listener) {
         listeners.remove(listener);
     }

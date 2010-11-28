@@ -43,10 +43,12 @@ public class MethodAccessor implements MemberAccessor {
         }
     }
 
+    @Override
     public boolean isReadOnly() {
         return setter == null;
     }
 
+    @Override
     public Object get(Object instance)  throws AccessException {
         try {
             return getter.invoke(instance);
@@ -55,6 +57,7 @@ public class MethodAccessor implements MemberAccessor {
         }
     }
 
+    @Override
     public void set(Object instance, Object value) throws AccessException {
         if (isReadOnly()) {
             throw new ReadOnlyAccessException("Attempted to write on a read only field: "
@@ -68,10 +71,12 @@ public class MethodAccessor implements MemberAccessor {
     }
 
 
+    @Override
     public Class<?> getType() {
         return getter.getReturnType();
     }
 
+    @Override
     public Class<?> getDeclaringClass() {
         return getter.getDeclaringClass();
     }

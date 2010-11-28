@@ -61,6 +61,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void addEventListener(EventListener listener) {
         if (txEventMgr != null && listener instanceof TransactedListener) {
             txEventMgr.addListener((TransactedListener)listener);
@@ -69,6 +70,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void removeEventListener(EventListener listener) {
         if (txEventMgr != null && listener instanceof TransactedListener) {
             txEventMgr.removeListener((TransactedListener)listener);
@@ -77,6 +79,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public EventListener getEventListenerByName(String name) {
         EventListener listener = null;
         for (EventListener elistener : getEventListeners()) {
@@ -88,6 +91,7 @@ public class DefaultEventService extends DefaultComponent implements
         return listener;
     }
 
+    @Override
     public Collection<EventListener> getEventListeners() {
         Collection<EventListener> listeners = new ArrayList<EventListener>();
         for (Object object : eventListeners.getListenersCopy()) {
@@ -96,6 +100,7 @@ public class DefaultEventService extends DefaultComponent implements
         return listeners;
     }
 
+    @Override
     public void notifyEventListeners(CoreEvent coreEvent) {
         if (coreEvent == null) {
             throw new IllegalArgumentException("Cannot fire null events");
@@ -140,6 +145,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void fireOperationStarted(Operation<?> command) {
         // record event for post commit notifications
         if (txEventMgr != null) {
@@ -160,6 +166,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void fireOperationTerminated(Operation<?> command) {
         // record event for post commit notifications
         if (txEventMgr != null) {
@@ -180,6 +187,7 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void transactionCommited() {
         if (txEventMgr != null) {
             if (log.isDebugEnabled()) {
@@ -189,12 +197,14 @@ public class DefaultEventService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void transactionRollbacked() {
         if (txEventMgr != null) {
             txEventMgr.transactionRollbacked();
         }
     }
 
+    @Override
     public void transactionStarted() {
         if (txEventMgr != null) {
             txEventMgr.transactionStarted();

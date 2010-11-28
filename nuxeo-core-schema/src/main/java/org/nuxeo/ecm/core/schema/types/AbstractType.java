@@ -68,10 +68,12 @@ public abstract class AbstractType implements Type {
     }
 
 
+    @Override
     public TypeRef<? extends Type> getRef() {
         return new TypeRef<Type>(schema, name, this);
     }
 
+    @Override
     public TypeHelper getHelper() {
         if (helper == null) {
             try {
@@ -84,22 +86,27 @@ public abstract class AbstractType implements Type {
         return helper;
     }
 
+    @Override
     public Type getSuperType() {
         return superType.get();
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getSchemaName() {
         return schema;
     }
 
+    @Override
     public Schema getSchema() {
         return Framework.getLocalService(TypeProvider.class).getSchema(schema);
     }
 
+    @Override
     public boolean isSuperTypeOf(Type type) {
         Type t = type;
         do {
@@ -116,6 +123,7 @@ public abstract class AbstractType implements Type {
         return false;
     }
 
+    @Override
     public Type[] getTypeHierarchy() {
         Type type = getSuperType();
         if (type == null) {
@@ -129,34 +137,42 @@ public abstract class AbstractType implements Type {
         return types.toArray(new Type[types.size()]);
     }
 
+    @Override
     public boolean isSimpleType() {
         return false;
     }
 
+    @Override
     public boolean isComplexType() {
         return false;
     }
 
+    @Override
     public boolean isListType() {
         return false;
     }
 
+    @Override
     public boolean isAnyType() {
         return false;
     }
 
+    @Override
     public boolean isCompositeType() {
         return false;
     }
 
+    @Override
     public boolean isNotNull() {
         return isFlagSet(F_NOTNULL);
     }
 
+    @Override
     public boolean isReadOnly() {
         return isFlagSet(F_READONLY);
     }
 
+    @Override
     public boolean validate(Object object) throws TypeException {
         return !(object == null && isNotNull());
     }
@@ -189,14 +205,17 @@ public abstract class AbstractType implements Type {
         return (this.flags & flags) == flags;
     }
 
+    @Override
     public Object decode(String string) {
         return null;
     }
 
+    @Override
     public String encode(Object object) {
         return null;
     }
 
+    @Override
     public Object newInstance() {
         return null;
     }

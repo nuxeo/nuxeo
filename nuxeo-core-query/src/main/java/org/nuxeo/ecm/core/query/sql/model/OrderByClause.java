@@ -53,6 +53,7 @@ public class OrderByClause extends Clause {
         return elements.hashCode();
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitOrderByClause(this);
     }

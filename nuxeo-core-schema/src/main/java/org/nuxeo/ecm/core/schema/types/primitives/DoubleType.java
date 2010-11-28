@@ -41,6 +41,7 @@ public final class DoubleType extends PrimitiveType {
         return object instanceof Number;
     }
 
+    @Override
     public Object convert(Object value) {
         if (value instanceof Double) {
             return value;

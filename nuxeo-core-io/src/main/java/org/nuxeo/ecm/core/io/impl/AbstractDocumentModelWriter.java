@@ -111,6 +111,7 @@ public abstract class AbstractDocumentModelWriter extends
         }
     }
 
+    @Override
     public void close() {
         if (unsavedDocuments > 0) {
             try {

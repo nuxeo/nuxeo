@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
  */
 public class OverridingMethodInvoker implements MethodInvoker {
 
+    @Override
     public Object invoke(RepositoryInstanceHandler handler, Method method,
             Object[] args) throws Throwable {
         // TODO Auto-generated method stub

@@ -88,10 +88,12 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         this(superType, schema, name, Namespace.DEFAULT_NS, F_UNSTRUCT_DEFAULT);
     }
 
+    @Override
     public Namespace getNamespace() {
         return ns;
     }
 
+    @Override
     public boolean isUnstructured() {
         if (unstructured == F_UNSTRUCT_DEFAULT) {
             unstructured = hasFields() ? F_UNSTRUCT_FALSE : F_UNSTRUCT_TRUE;
@@ -99,6 +101,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return unstructured == F_UNSTRUCT_TRUE;
     }
 
+    @Override
     public Field getField(String name) {
         Field field = fieldsCache.get(name);
         if (field == null) {
@@ -111,32 +114,39 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return field;
     }
 
+    @Override
     public Field getField(QName name) {
         return fields.get(name);
     }
 
+    @Override
     public Collection<Field> getFields() {
         return Collections.unmodifiableCollection(fields.values());
     }
 
+    @Override
     public int getFieldsCount() {
         return fields.size();
     }
 
+    @Override
     public Field addField(String name, TypeRef<? extends Type> type) {
         return addField(QName.valueOf(name, ns.prefix), type, null, 0);
     }
 
+    @Override
     public Field addField(QName name, TypeRef<? extends Type> type) {
         return addField(name, type, null, 0);
     }
 
+    @Override
     public Field addField(String name, TypeRef<? extends Type> type,
             String defaultValue, int flags) {
         return addField(QName.valueOf(name, ns.prefix), type, defaultValue,
                 flags);
     }
 
+    @Override
     public Field addField(QName name, TypeRef<? extends Type> type,
             String defaultValue, int flags) {
         FieldImpl field = new FieldImpl(name, getRef(), type, defaultValue,
@@ -145,6 +155,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return field;
     }
 
+    @Override
     public boolean hasField(String name) {
         if (fieldsCache.containsKey(name)) {
             return true;
@@ -152,10 +163,12 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return null != getField(name);
     }
 
+    @Override
     public boolean hasField(QName name) {
         return fields.containsKey(name);
     }
 
+    @Override
     public boolean hasFields() {
         return !fields.isEmpty();
     }
@@ -213,6 +226,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return map;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object convert(Object object) throws TypeException {
         if (object instanceof Map) {

@@ -78,6 +78,7 @@ public class FromClause extends Clause {
         return type;
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitFromClause(this);
     }

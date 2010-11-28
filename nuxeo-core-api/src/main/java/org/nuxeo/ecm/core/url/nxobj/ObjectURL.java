@@ -57,6 +57,7 @@ public class ObjectURL  implements URLStreamHandlerFactory {
         return objects.get(url.getHost());
     }
 
+    @Override
     public URLStreamHandler createURLStreamHandler(String protocol) {
         if ("nxobj".equals(protocol)) {
             return new Handler();

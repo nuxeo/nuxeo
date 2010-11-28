@@ -27,81 +27,102 @@ public class EmptyResultsProvider implements PagedDocumentsProvider {
 
     private static final long serialVersionUID = 1090501391257515681L;
 
+    @Override
     public DocumentModelList getCurrentPage() {
         return new DocumentModelListImpl();
     }
 
+    @Override
     public int getCurrentPageIndex() {
         return 0;
     }
 
+    @Override
     public int getCurrentPageOffset() {
         return 0;
     }
 
+    @Override
     public int getCurrentPageSize() {
         return 0;
     }
 
+    @Override
     public String getCurrentPageStatus() {
         return "";
     }
 
+    @Override
     public DocumentModelList getNextPage() {
         return null;
     }
 
+    @Override
     public int getNumberOfPages() {
         return 0;
     }
 
+    @Override
     public DocumentModelList getPage(int page) {
         return null;
     }
 
+    @Override
     public long getResultsCount() {
         return 0;
     }
 
+    @Override
     public boolean isNextPageAvailable() {
         return false;
     }
 
+    @Override
     public boolean isPreviousPageAvailable() {
         return false;
     }
 
+    @Override
     public void last() {
     }
 
+    @Override
     public void next() {
     }
 
+    @Override
     public void previous() {
     }
 
+    @Override
     public void refresh() {
     }
 
+    @Override
     public void rewind() {
     }
 
+    @Override
     public int getPageSize() {
         return 0;
     }
 
+    @Override
     public String getName() {
         return null;
     }
 
+    @Override
     public SortInfo getSortInfo() {
         return null;
     }
 
+    @Override
     public boolean isSortable() {
         return false;
     }
 
+    @Override
     public void setName(String name) {
     }
 

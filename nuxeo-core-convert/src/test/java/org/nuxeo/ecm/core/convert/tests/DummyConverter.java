@@ -27,11 +27,13 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 public class DummyConverter implements Converter {
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         return null;
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

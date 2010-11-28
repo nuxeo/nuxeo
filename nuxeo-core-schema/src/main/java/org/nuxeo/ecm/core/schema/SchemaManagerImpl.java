@@ -112,6 +112,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public Type getType(String schema, String name) {
         if (SchemaNames.BUILTIN.equals(schema)) {
             return typeReg.get(name);
@@ -163,6 +164,7 @@ public class SchemaManagerImpl implements SchemaManager {
     // }
     //
 
+    @Override
     public void registerType(Type type) {
         String schema = type.getSchemaName();
         if (SchemaNames.BUILTIN.equals(schema)) {
@@ -179,18 +181,22 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public Type unregisterType(String name) {
         return typeReg.remove(name);
     }
 
+    @Override
     public Type getType(String name) {
         return typeReg.get(name);
     }
 
+    @Override
     public Type[] getTypes() {
         return typeReg.values().toArray(new Type[typeReg.size()]);
     }
 
+    @Override
     public Type[] getTypes(String schema) {
         Schema ownerSchema = schemaReg.get(schema);
         if (schema != null) {
@@ -199,10 +205,12 @@ public class SchemaManagerImpl implements SchemaManager {
         return null;
     }
 
+    @Override
     public int getTypesCount() {
         return typeReg.size();
     }
 
+    @Override
     public void registerSchema(Schema schema) {
         synchronized (schemaReg) {
             Namespace ns = schema.getNamespace();
@@ -212,6 +220,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public Schema unregisterSchema(String name) {
         Schema schema = schemaReg.get(name);
         if (schema == null) {
@@ -226,24 +235,28 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public Schema getSchema(String name) {
         synchronized (schemaReg) {
             return schemaReg.get(name);
         }
     }
 
+    @Override
     public Schema getSchemaFromPrefix(String schemaPrefix) {
         synchronized (schemaReg) {
             return prefix2schemaReg.get(schemaPrefix);
         }
     }
 
+    @Override
     public Schema getSchemaFromURI(String schemaURI) {
         synchronized (schemaReg) {
             return uri2schemaReg.get(schemaURI);
         }
     }
 
+    @Override
     public Field getField(String prefixedName) {
         Field field = fields.get(prefixedName);
         if (field == null) {
@@ -264,12 +277,14 @@ public class SchemaManagerImpl implements SchemaManager {
         return field;
     }
 
+    @Override
     public Schema[] getSchemas() {
         synchronized (schemaReg) {
             return schemaReg.values().toArray(new Schema[schemaReg.size()]);
         }
     }
 
+    @Override
     public int getSchemasCount() {
         synchronized (schemaReg) {
             return schemaReg.size();
@@ -286,6 +301,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     // Document Types
 
+    @Override
     public void registerDocumentType(DocumentType docType) {
         log.info("Register document type: " + docType.getName());
         synchronized (docTypeReg) {
@@ -365,6 +381,7 @@ public class SchemaManagerImpl implements SchemaManager {
         inheritanceCache.remove(name);
     }
 
+    @Override
     public DocumentType unregisterDocumentType(String name) {
         log.info("Unregister document type: " + name);
         // TODO handle the case when the doctype to unreg is in the reg. pending
@@ -390,18 +407,21 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public DocumentType getDocumentType(String name) {
         synchronized (docTypeReg) {
             return docTypeReg.get(name);
         }
     }
 
+    @Override
     public DocumentType[] getDocumentTypes() {
         synchronized (docTypeReg) {
             return docTypeReg.values().toArray(new DocumentType[docTypeReg.size()]);
         }
     }
 
+    @Override
     public int getDocumentTypesCount() {
         synchronized (docTypeReg) {
             return docTypeReg.size();
@@ -410,6 +430,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     // Misc
 
+    @Override
     public void clear() {
         synchronized (docTypeReg) {
             docTypeReg.clear();
@@ -459,6 +480,7 @@ public class SchemaManagerImpl implements SchemaManager {
      *
      * Tested in nuxeo-core
      */
+    @Override
     public Set<String> getDocumentTypeNamesForFacet(String facet) {
         if (facetsCache == null) {
             initFacetsCache();
@@ -493,6 +515,7 @@ public class SchemaManagerImpl implements SchemaManager {
      * This is tested in nuxeo-core and SearchBackendTestCase (hence compass
      * plugin).
      */
+    @Override
     public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
         Set<String> res = inheritanceCache.get(docTypeName);
         if (res != null) {
@@ -525,6 +548,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public String getXmlSchemaDefinition(String name) {
         File file = getSchemaFile(name);
         if (file != null) {
@@ -540,6 +564,7 @@ public class SchemaManagerImpl implements SchemaManager {
         return null;
     }
 
+    @Override
     public void registerHelper(String schema, String type, TypeHelper helper) {
         if (schema == null) { // a primitive type helper
             helpers.put(type, helper);
@@ -548,6 +573,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public void unregisterHelper(String schema, String type) {
         if (schema == null) { // a primitive type helper
             helpers.remove(type);
@@ -556,6 +582,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
     public TypeHelper getHelper(String schema, String type) {
         if (schema == null) { // a primitive type helper
             return helpers.get(type);

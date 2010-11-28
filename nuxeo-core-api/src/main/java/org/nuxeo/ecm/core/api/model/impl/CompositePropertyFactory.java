@@ -80,6 +80,7 @@ public class CompositePropertyFactory implements PropertyFactory {
         return factory;
     }
 
+    @Override
     public Property createProperty(Property parent, Field field, int flags) {
         Type type = field.getType();
         PropertyFactory factory = getFactory(type.getSchemaName(), type.getName());

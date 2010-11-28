@@ -39,10 +39,12 @@ public class AnnotatedDocumentAdapter implements AnnotatedDocument {
         annotations = new HashMap<String, Object>();
     }
 
+    @Override
     public Object getAnnotation(String name) {
         return annotations.get(name);
     }
 
+    @Override
     public void putAnnotation(String name, Object value) {
         annotations.put(name, value);
     }

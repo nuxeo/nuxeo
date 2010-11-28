@@ -45,10 +45,12 @@ public class PathRef implements DocumentRef {
         value = path;
     }
 
+    @Override
     public int type() {
         return PATH;
     }
 
+    @Override
     public Object reference() {
         return value;
     }

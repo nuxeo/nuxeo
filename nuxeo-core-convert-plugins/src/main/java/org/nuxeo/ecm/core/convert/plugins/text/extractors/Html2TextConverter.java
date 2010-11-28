@@ -47,6 +47,7 @@ public class Html2TextConverter implements Converter {
 
     public static final String TAG_FILTER_PARAMETER = "tagFilter";
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -85,6 +86,7 @@ public class Html2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

@@ -67,6 +67,7 @@ public class EventPublisherExecutor {
 
     public void publish(final Object content) {
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 try {
                     log.info("############ serial publishing from thread "

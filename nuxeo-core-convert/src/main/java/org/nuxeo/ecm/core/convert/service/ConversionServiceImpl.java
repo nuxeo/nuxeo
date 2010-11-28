@@ -136,12 +136,14 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     /* Service API */
 
+    @Override
     public List<String> getRegistredConverters() {
         List<String> converterNames = new ArrayList<String>();
         converterNames.addAll(converterDescriptors.keySet());
         return converterNames;
     }
 
+    @Override
     public BlobHolder convert(String converterName, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -177,6 +179,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public BlobHolder convertToMimeType(String destinationMimeType,
             BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
@@ -199,11 +202,13 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return convert(converterName, blobHolder, parameters);
     }
 
+    @Override
     public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
         return MimeTypeTranslationHelper.getConverterNames(sourceMimeType,
                 destinationMimeType);
     }
 
+    @Override
     public String getConverterName(String sourceMimeType,
             String destinationMimeType) {
         List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType);
@@ -213,6 +218,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public ConverterCheckResult isConverterAvailable(String converterName)
             throws ConversionException {
         return isConverterAvailable(converterName, false);
@@ -221,6 +227,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
     protected final Map<String, ConverterCheckResult> checkResultCache
             = new HashMap<String, ConverterCheckResult>();
 
+    @Override
     public ConverterCheckResult isConverterAvailable(String converterName,
             boolean refresh) throws ConversionException {
 

@@ -40,6 +40,7 @@ public class BlobHolderAdapterFactory implements DocumentAdapterFactory {
         return bhas;
     }
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         return getService().getBlobHolderAdapter(doc);
     }

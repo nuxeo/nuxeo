@@ -49,6 +49,7 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
 
     protected static class CoreSessionInvocationHandler implements
             InvocationHandler {
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
             final String name = method.getName();

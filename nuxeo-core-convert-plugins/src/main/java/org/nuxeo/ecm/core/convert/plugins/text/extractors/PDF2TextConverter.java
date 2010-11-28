@@ -44,6 +44,7 @@ public class PDF2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PDF2TextConverter.class);
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -104,6 +105,7 @@ public class PDF2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
  */
 public abstract class AbstractSecurityPolicy implements SecurityPolicy {
 
+    @Override
     public boolean isRestrictingPermission(String permission) {
         // by default, we don't know, so yes
         return true;

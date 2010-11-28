@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
  */
 public class DefaultRepositoryInit implements RepositoryInit {
 
+    @Override
     public void populate(CoreSession session) throws ClientException {
         DocumentModel doc = session.createDocumentModel("/", "default-domain",
                 "Domain");

@@ -51,6 +51,7 @@ public final class BinaryType extends PrimitiveType {
         return true;
     }
 
+    @Override
     public Object convert(Object value) {
         if (value instanceof CharSequence) {
             return new ByteArrayInputStream(value.toString().getBytes());

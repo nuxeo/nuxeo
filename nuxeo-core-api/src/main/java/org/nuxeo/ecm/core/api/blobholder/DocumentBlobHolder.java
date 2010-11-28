@@ -100,10 +100,12 @@ public class
         return doc.getId() + xPath + getModificationDate().toString();
     }
 
+    @Override
     public Serializable getProperty(String name) throws ClientException {
         return doc.getPropertyValue(name);
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         return doc.getPrefetch();
     }

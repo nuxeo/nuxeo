@@ -33,10 +33,12 @@ public class NXCoreActivator implements BundleActivator {
 
     private static final Log log = LogFactory.getLog(NXCoreActivator.class);
 
+    @Override
     public void start(BundleContext context) throws Exception {
         log.info("---------------- Starting Nuxeo Core ------------------");
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
         log.info("---------------- Stopping Nuxeo Core ------------------");
     }

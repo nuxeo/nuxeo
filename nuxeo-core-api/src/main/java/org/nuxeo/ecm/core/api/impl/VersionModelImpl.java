@@ -39,34 +39,42 @@ public class VersionModelImpl implements VersionModel {
 
     protected String description;
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public Calendar getCreated() {
         return created;
     }
 
+    @Override
     public void setCreated(Calendar created) {
         this.created = created;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public void setLabel(String label) {
         this.label = label;
     }

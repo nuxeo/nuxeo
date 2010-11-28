@@ -65,6 +65,7 @@ public class DocumentRefListImpl extends ArrayList<DocumentRef> implements
         this.totalSize = totalSize;
     }
 
+    @Override
     public long totalSize() {
         if (totalSize == -1) {
             return size();

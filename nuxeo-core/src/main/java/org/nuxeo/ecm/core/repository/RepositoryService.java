@@ -78,11 +78,13 @@ public class RepositoryService extends DefaultComponent implements EventListener
     }
 
     // org.nuxeo.runtime.services.event.EventListener
+    @Override
     public boolean aboutToHandleEvent(Event event) {
         return false;
     }
 
     // org.nuxeo.runtime.services.event.EventListener
+    @Override
     public void handleEvent(Event event) {
         if (event.getId().equals(REPOSITORY_UNREGISTERED)) {
             String name = (String) event.getData();

@@ -49,6 +49,7 @@ public class CompatibilityListener implements EventListener {
         return new CoreEventImpl(event.getName(), src, ctx.getProperties(), ctx.getPrincipal(), null, null);
     }
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
         if (eventId.startsWith("!OPERATION_")) {

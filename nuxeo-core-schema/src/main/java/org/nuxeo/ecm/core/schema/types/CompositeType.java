@@ -93,6 +93,7 @@ public interface CompositeType extends ComplexType {
      */
     Collection<Schema> getSchemas();
 
+    @Override
     TypeRef<? extends CompositeType> getRef();
 
 }

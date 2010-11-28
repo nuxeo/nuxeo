@@ -34,26 +34,32 @@ import org.nuxeo.ecm.core.listener.PreCommitListener;
 public class TestTransactedListener extends AbstractEventListener implements PostCommitListener,
         OnSaveListener, PreCommitListener {
 
+    @Override
     public void onCommit(CoreEvent[] events) {
         System.out.println(">>>>> CORE_EVENTS > ON COMMIT: "+events.length);
     }
 
+    @Override
     public void onCommit(Operation<?>[] events) {
         System.out.println(">>>>> OPERATION_EVENTS > ON COMMIT: "+events.length);
     }
 
+    @Override
     public void onSave(CoreEvent[] events) {
         System.out.println(">>>>> CORE_EVENTS > ON SAVE: "+events.length);
     }
 
+    @Override
     public void onSave(Operation<?>[] events) {
         System.out.println(">>>>> OPERATION_EVENTS > ON SAVE: "+events.length);
     }
 
+    @Override
     public void aboutToCommit(CoreEvent[] events) {
         System.out.println(">>>>> CORE_EVENTS > ABOUT TO COMMIT: "+events.length);
     }
 
+    @Override
     public void aboutToCommit(Operation<?>[] events) {
         System.out.println(">>>>> OPERATION_EVENTS > ABOUT TO COMMIT: "+events.length);
     }

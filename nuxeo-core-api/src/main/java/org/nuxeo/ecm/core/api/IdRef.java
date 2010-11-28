@@ -35,10 +35,12 @@ public class IdRef implements DocumentRef {
         this.value = value;
     }
 
+    @Override
     public int type() {
         return ID;
     }
 
+    @Override
     public Object reference() {
         return value;
     }

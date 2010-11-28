@@ -111,6 +111,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public void addEventListener(EventListenerDescriptor listener) {
         try {
             listenerDescriptors.add(listener);
@@ -122,6 +123,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public void removeEventListener(EventListenerDescriptor listener) {
         try {
             listenerDescriptors.removeDescriptor(listener);
@@ -133,11 +135,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public void fireEvent(String name, EventContext context)
             throws ClientException {
         fireEvent(new EventImpl(name, context));
     }
 
+    @Override
     public void fireEvent(Event event) throws ClientException {
 
         if (!event.isInline()) { // record the event
@@ -179,6 +183,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public void fireEventBundle(EventBundle event) throws ClientException {
         boolean comesFromJMS = false;
 
@@ -235,6 +240,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public void fireEventBundleSync(EventBundle event) throws ClientException {
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
@@ -244,10 +250,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public List<EventListener> getEventListeners() {
          return listenerDescriptors.getInLineListeners();
     }
 
+    @Override
     public List<PostCommitEventListener> getPostCommitEventListeners() {
         List<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
 
@@ -257,11 +265,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         return result;
     }
 
+    @Override
     public void transactionStarted() {
         bundle.get().setTransacted(true);
         fireTxStarted();
     }
 
+    @Override
     public void transactionCommitted() throws ClientException {
         EventBundleImpl b = bundle.get();
         bundle.remove();
@@ -271,11 +281,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         fireTxCommited();
     }
 
+    @Override
     public void transactionRolledback() {
         bundle.remove();
         fireTxRollbacked();
     }
 
+    @Override
     public boolean isTransactionStarted() {
         return bundle.get().isTransacted();
     }
@@ -286,10 +298,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     // methods for monitoring
 
+    @Override
     public EventListenerList getListenerList() {
         return listenerDescriptors;
     }
 
+    @Override
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
         if (!listenerDescriptors.getListenerNames().contains(listenerName)) {
             return;
@@ -326,42 +340,52 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         }
     }
 
+    @Override
     public int getActiveThreadsCount() {
         return asyncExec.getActiveCount();
     }
 
+    @Override
     public int getEventsInQueueCount() {
         return asyncExec.getUnfinishedCount();
     }
 
+    @Override
     public boolean isBlockAsyncHandlers() {
         return blockAsyncProcessing;
     }
 
+    @Override
     public boolean isBlockSyncPostCommitHandlers() {
         return blockSyncPostCommitProcessing;
     }
 
+    @Override
     public void setBlockAsyncHandlers(boolean blockAsyncHandlers) {
         blockAsyncProcessing = blockAsyncHandlers;
     }
 
+    @Override
     public void setBlockSyncPostCommitHandlers(boolean blockSyncPostComitHandlers) {
         blockSyncPostCommitProcessing = blockSyncPostComitHandlers;
     }
 
+    @Override
     public boolean isBulkModeEnabled() {
         return bulkModeEnabled;
     }
 
+    @Override
     public void setBulkModeEnabled(boolean bulkModeEnabled) {
         this.bulkModeEnabled = bulkModeEnabled;
     }
 
+    @Override
     public void addTransactionListener(EventTransactionListener listener) {
         txListeners.add(listener);
     }
 
+    @Override
     public void removeTransactionListener(EventTransactionListener listener) {
         txListeners.remove(listener);
     }

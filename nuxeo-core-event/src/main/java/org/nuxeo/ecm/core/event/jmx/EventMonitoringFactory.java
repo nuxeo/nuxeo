@@ -28,6 +28,7 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
  */
 public class EventMonitoringFactory extends AbstractResourceFactory {
 
+    @Override
     public void registerResources() {
         EventMonitoring instance = new EventMonitoring();
          service.registerResource("EventMonitoring",

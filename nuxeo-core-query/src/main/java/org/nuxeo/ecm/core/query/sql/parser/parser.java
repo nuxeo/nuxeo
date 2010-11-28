@@ -53,6 +53,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\006\000\002\013\003\000\002\013\005" });
 
   /** Access to production table. */
+  @Override
   public short[][] production_table() {return _production_table;}
 
   /** Parse-action table. */
@@ -288,6 +289,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\uffea\020\uffea\023\uffea\045\uffea\001\002" });
 
   /** Access to parse-action table. */
+  @Override
   public short[][] action_table() {return _action_table;}
 
   /** <code>reduce_goto</code> table. */
@@ -373,18 +375,21 @@ public class parser extends java_cup.runtime.lr_parser {
     "\002\001\001\000\002\001\001\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
+  @Override
   public short[][] reduce_table() {return _reduce_table;}
 
   /** Instance of action encapsulation class. */
   protected CUP$parser$actions action_obj;
 
   /** Action encapsulation object initializer. */
+  @Override
   protected void init_actions()
     {
       action_obj = new CUP$parser$actions(this);
     }
 
   /** Invoke a user supplied parse action. */
+  @Override
   public java_cup.runtime.Symbol do_action(
     int                        act_num,
     java_cup.runtime.lr_parser parser,
@@ -397,32 +402,40 @@ public class parser extends java_cup.runtime.lr_parser {
   }
 
   /** Indicates start state. */
+  @Override
   public int start_state() {return 0;}
   /** Indicates start production. */
+  @Override
   public int start_production() {return 0;}
 
   /** <code>EOF</code> Symbol index. */
+  @Override
   public int EOF_sym() {return 0;}
 
   /** <code>error</code> Symbol index. */
+  @Override
   public int error_sym() {return 1;}
 
 
 
 
+ @Override
  public void report_error(String message, Object info) {
      // do nothing
  }
 
+ @Override
  public void report_fatal_error(String message, Object info) throws QueryParseException {
      if (info instanceof Symbol) parseFailed(message, (Symbol)info);
      else parseFailed(message, null);
  }
 
+ @Override
  public void syntax_error(Symbol cur_token) {
      // do nothing
  }
 
+ @Override
  public void unrecovered_syntax_error(Symbol cur_token) throws QueryParseException {
      parseFailed("Syntax error", cur_token);
  }

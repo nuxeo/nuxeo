@@ -61,6 +61,7 @@ public class ChainedConverter implements Converter {
         steps = null;
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -129,6 +130,7 @@ public class ChainedConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         if (!subConvertersBased) {
             steps.addAll(descriptor.getSteps());

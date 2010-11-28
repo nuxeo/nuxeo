@@ -87,27 +87,33 @@ public class ListTypeImpl extends AbstractType implements ListType {
     }
 
 
+    @Override
     public void setLimits(int minOccurs, int maxOccurs) {
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
     }
 
+    @Override
     public void setDefaultValue(String value) {
         defaultValue = value;
     }
 
+    @Override
     public String getFieldName() {
         return field.getName().getLocalName();
     }
 
+    @Override
     public Type getFieldType() {
         return field.getType();
     }
 
+    @Override
     public Field getField() {
         return field;
     }
 
+    @Override
     public Object getDefaultValue() {
         return type.get().decode(defaultValue);
     }
@@ -116,10 +122,12 @@ public class ListTypeImpl extends AbstractType implements ListType {
         return type.get();
     }
 
+    @Override
     public int getMinCount() {
         return minOccurs;
     }
 
+    @Override
     public int getMaxCount() {
         return maxOccurs;
     }
@@ -185,6 +193,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object convert(Object object) throws TypeException {
         if (object instanceof List) {
@@ -205,10 +214,12 @@ public class ListTypeImpl extends AbstractType implements ListType {
         return new TypeRef<ListType>(schema, name, this);
     }
 
+    @Override
     public boolean isArray() {
         return isArray;
     }
 
+    @Override
     public boolean isScalarList() {
         return field.getType().isSimpleType();
     }

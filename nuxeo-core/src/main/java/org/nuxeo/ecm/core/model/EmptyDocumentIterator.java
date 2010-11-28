@@ -29,18 +29,22 @@ public class EmptyDocumentIterator implements DocumentIterator {
 
     public static final EmptyDocumentIterator INSTANCE = new EmptyDocumentIterator();
 
+    @Override
     public boolean hasNext() {
         return false;
     }
 
+    @Override
     public Document next() {
         throw new NoSuchElementException();
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("remove is unsupported");
     }
 
+    @Override
     public long getSize() {
         return 0;
     }

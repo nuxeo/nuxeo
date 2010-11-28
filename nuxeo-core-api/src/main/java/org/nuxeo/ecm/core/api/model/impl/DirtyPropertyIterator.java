@@ -40,6 +40,7 @@ public class DirtyPropertyIterator implements Iterator<Property> {
         this.it = it;
     }
 
+    @Override
     public boolean hasNext() {
         if (next != null) {
             return true;
@@ -54,6 +55,7 @@ public class DirtyPropertyIterator implements Iterator<Property> {
         return false;
     }
 
+    @Override
     public Property next() {
         if (!hasNext()) {
             throw new NoSuchElementException("No more elements to iterate over");
@@ -63,6 +65,7 @@ public class DirtyPropertyIterator implements Iterator<Property> {
         return property;
     }
 
+    @Override
     public void remove() {
         if (property == null) {
             throw new IllegalStateException("Cannot call remove on a non initialized iterator");

@@ -67,34 +67,42 @@ public class FieldImpl implements Field {
     }
 
 
+    @Override
     public ComplexType getDeclaringType() {
         return (ComplexType) declaringType.get();
     }
 
+    @Override
     public QName getName() {
         return name;
     }
 
+    @Override
     public Type getType() {
         return type.get();
     }
 
+    @Override
     public Object getDefaultValue() {
         return type.get().decode(defaultValue);
     }
 
+    @Override
     public boolean isNillable() {
         return (flags & NILLABLE) != 0;
     }
 
+    @Override
     public boolean isConstant() {
         return (flags & CONSTANT) != 0;
     }
 
+    @Override
     public void setDefaultValue(String value) {
         defaultValue = value;
     }
 
+    @Override
     public void setNillable(boolean isNillable) {
         if (isNillable) {
             flags |= NILLABLE;
@@ -103,6 +111,7 @@ public class FieldImpl implements Field {
         }
     }
 
+    @Override
     public void setConstant(boolean isConstant) {
         if (isConstant) {
             flags |= CONSTANT;
@@ -111,18 +120,22 @@ public class FieldImpl implements Field {
         }
     }
 
+    @Override
     public int getMaxOccurs() {
         return maxOccurs;
     }
 
+    @Override
     public int getMinOccurs() {
         return minOccurs;
     }
 
+    @Override
     public void setMaxOccurs(int max) {
         maxOccurs = max;
     }
 
+    @Override
     public void setMinOccurs(int min) {
         minOccurs = min;
     }

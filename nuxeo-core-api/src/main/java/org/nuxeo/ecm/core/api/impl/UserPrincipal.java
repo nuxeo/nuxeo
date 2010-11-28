@@ -84,84 +84,104 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         this.administrator = administrator;
     }
 
+    @Override
     public String getCompany() {
         return company;
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
 
+    @Override
     public void setCompany(String company) {
         this.company = company;
     }
 
+    @Override
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    @Override
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    @Override
     public void setName(String name) {
         userName = name;
     }
 
+    @Override
     public String getName() {
         return userName;
     }
 
+    @Override
     public List<String> getGroups() {
         return groups;
     }
 
     // TODO OG: this is not the true semantics but is it really a problem here?
+    @Override
     public List<String> getAllGroups() {
         return groups;
     }
 
+    @Override
     public List<String> getRoles() {
         return roles;
     }
 
+    @Override
     public void setGroups(List<String> groups) {
         this.groups = groups;
     }
 
+    @Override
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
     }
 
+    @Override
     public String getPrincipalId() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public void setPrincipalId(String principalId) {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public DocumentModel getModel() {
         return model;
     }
 
+    @Override
     public void setModel(DocumentModel model) {
         this.model = model;
     }
 
+    @Override
     public boolean isMemberOf(String group) {
         // TODO Auto-generated method stub
         return false;
@@ -221,18 +241,22 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         return result;
     }
 
+    @Override
     public boolean isAdministrator() {
         return administrator;
     }
 
+    @Override
     public boolean isAnonymous() {
         return anonymous;
     }
 
+    @Override
     public String getOriginatingUser() {
         return null;
     }
 
+    @Override
     public void setOriginatingUser(String originatingUser) {
     }
 

@@ -29,6 +29,7 @@ public class LocalSessionFactory implements CoreSessionFactory {
 
     private static final long serialVersionUID = -5867927841500179645L;
 
+    @Override
     public CoreSession getSession() {
         return new LocalSession();
     }

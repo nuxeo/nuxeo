@@ -77,30 +77,37 @@ public class DefaultOperationEvent implements OperationEvent {
     }
 
 
+    @Override
     public Object getDetails() {
         return details;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public ModificationSet getModifications() {
         return modifications;
     }
 
+    @Override
     public String getUserName() {
         return userName;
     }
 
+    @Override
     public String getRepositoryName() {
         return repository;
     }
 
+    @Override
     public String getSessionId() {
         return sessionId;
     }
 
+    @Override
     public Object getDirtyUpdateTag() {
         return dirtyUpdateTag;
     }

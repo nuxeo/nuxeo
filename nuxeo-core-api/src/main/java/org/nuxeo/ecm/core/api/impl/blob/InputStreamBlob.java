@@ -61,14 +61,17 @@ public class InputStreamBlob extends DefaultStreamBlob {
     }
 
 
+    @Override
     public InputStream getStream() {
         return in;
     }
 
+    @Override
     public boolean isPersistent() {
         return false;
     }
 
+    @Override
     public Blob persist() throws IOException {
         return new FileBlob(in, mimeType, encoding);
     }

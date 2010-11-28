@@ -91,15 +91,18 @@ public class XASession implements XAResource, BlobStorageSession {
 
 
 
+    @Override
     public int getTransactionTimeout() throws XAException {
         return timeout;
     }
 
+    @Override
     public boolean setTransactionTimeout(int arg0) throws XAException {
         timeout = arg0 == 0 ? DEAULT_TIMEOUT: arg0;
         return true;
     }
 
+    @Override
     public boolean isSameRM(XAResource xares) throws XAException {
         return xares instanceof XASession;
     }
@@ -119,6 +122,7 @@ public class XASession implements XAResource, BlobStorageSession {
         return tr;
     }
 
+    @Override
     public void start(Xid xid, int flags) throws XAException {
         if (isAssociated()) {
             log.error("Resource already associated with a transaction.");
@@ -150,6 +154,7 @@ public class XASession implements XAResource, BlobStorageSession {
         associate(tx);
     }
 
+    @Override
     public void end(Xid xid, int flags) throws XAException {
         TransactionContext tx = (TransactionContext) transactions.get(xid);
         if (tx == null) {
@@ -177,6 +182,7 @@ public class XASession implements XAResource, BlobStorageSession {
         }
     }
 
+    @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
         TransactionContext tx = (TransactionContext) transactions.get(xid);
         if (tx == null) {
@@ -196,6 +202,7 @@ public class XASession implements XAResource, BlobStorageSession {
         transactions.remove(xid);
     }
 
+    @Override
     public int prepare(Xid xid) throws XAException {
         TransactionContext tx = (TransactionContext) transactions.get(xid);
         if (tx == null) {
@@ -211,6 +218,7 @@ public class XASession implements XAResource, BlobStorageSession {
         return XA_OK;
     }
 
+    @Override
     public void rollback(Xid xid) throws XAException {
         TransactionContext tx = (TransactionContext) transactions.get(xid);
         if (tx == null) {
@@ -226,10 +234,12 @@ public class XASession implements XAResource, BlobStorageSession {
         transactions.remove(xid);
     }
 
+    @Override
     public void forget(Xid xid) throws XAException {
         // no recovery support
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
         // no recovery support
         return new Xid[0];

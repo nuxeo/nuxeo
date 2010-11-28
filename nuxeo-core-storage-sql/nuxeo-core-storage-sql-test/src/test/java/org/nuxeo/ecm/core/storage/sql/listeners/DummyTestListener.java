@@ -28,6 +28,7 @@ public class DummyTestListener implements EventListener {
 
     public static final List<Event> EVENTS_RECEIVED = Collections.synchronizedList(new LinkedList<Event>());
 
+    @Override
     public void handleEvent(Event event) {
         EVENTS_RECEIVED.add(event);
     }

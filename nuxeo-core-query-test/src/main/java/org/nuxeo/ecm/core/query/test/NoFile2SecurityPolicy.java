@@ -48,6 +48,7 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
         public static final Predicate NO_FILE = new Predicate(new Reference(
                 "ecm:primaryType"), Operator.NOTEQ, new StringLiteral("File"));
 
+        @Override
         public SQLQuery transform(Principal principal, SQLQuery query) {
             WhereClause where = query.where;
             Predicate predicate;

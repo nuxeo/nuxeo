@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.security.SecurityPolicy;
 public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements
         SecurityPolicy {
 
+    @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
@@ -42,14 +43,17 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements
         return Access.UNKNOWN;
     }
 
+    @Override
     public boolean isRestrictingPermission(String permission) {
         return true;
     }
 
+    @Override
     public boolean isExpressibleInQuery() {
         return false;
     }
 
+    @Override
     public Transformer getQueryTransformer() {
         throw new UnsupportedOperationException();
     }

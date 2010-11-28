@@ -68,6 +68,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
     }
 
 
+    @Override
     public void addListener(TransactedListener listener) {
         if (listener instanceof OnSaveListener) {
             saveListeners.add(listener);
@@ -81,6 +82,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
+    @Override
     public void removeListener(TransactedListener listener) {
         if (listener instanceof OnSaveListener) {
             saveListeners.remove(listener);
@@ -94,6 +96,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
+    @Override
     public void record(Object event) {
         if (event instanceof CoreEvent) {
             recordEvent((CoreEvent)event);
@@ -104,6 +107,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
+    @Override
     public void recordEvent(CoreEvent event) {
         EventList list = events.get();
         if (list.operations != null) {
@@ -124,6 +128,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
+    @Override
     public void recordOperation(Operation<?> event) {
         EventList list = events.get();
         list.addOperation(event);
@@ -132,6 +137,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
     //TODO: transaction support is disabled because it is not working as expected in nuxeo
     // since there are tens of tx opened on every user level operation ...
     //TODO XXX fix tx support
+    @Override
     public void transactionStarted() {
         events.set(new EventList(true));
     }
@@ -140,6 +146,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
 //        fireAboutToCommitEvents(events.get());
 //    }
 
+    @Override
     public void transactionCommitted() {
         try {
             fireAboutToCommitEvents(events.get()); // about to commit was merged with commit
@@ -149,6 +156,7 @@ public class TransactedEventServiceImpl implements TransactedEventService, Event
         }
     }
 
+    @Override
     public void transactionRollbacked() {
         events.remove();
     }

@@ -48,22 +48,27 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
                 ? Namespace.DEFAULT_NS : ns, F_UNSTRUCT_DEFAULT);
     }
 
+    @Override
     public boolean isLazy() {
         return isLazy;
     }
 
+    @Override
     public void setLazy(boolean isLazy) {
         this.isLazy = isLazy;
     }
 
+    @Override
     public Type getType(String typeName) {
         return types.get(typeName);
     }
 
+    @Override
     public Type[] getTypes() {
         return types.values().toArray(new Type[types.size()]);
     }
 
+    @Override
     public void registerType(Type type) {
         types.put(type.getName(), type);
     }

@@ -60,14 +60,17 @@ public class EventContextImpl extends AbstractEventContext {
         this.args = args;
     }
 
+    @Override
     public CoreSession getCoreSession() {
         return session;
     }
 
+    @Override
     public Principal getPrincipal() {
         return principal;
     }
 
+    @Override
     public void setCoreSession(CoreSession session) {
         this.session = session;
         updateRepositoryName();
@@ -79,6 +82,7 @@ public class EventContextImpl extends AbstractEventContext {
         }
     }
 
+    @Override
     public void setPrincipal(Principal principal) {
         this.principal = principal;
     }

@@ -44,6 +44,7 @@ public class FullTextConverter implements Converter {
 
     protected ConverterDescriptor descriptor;
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -76,6 +77,7 @@ public class FullTextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;
     }

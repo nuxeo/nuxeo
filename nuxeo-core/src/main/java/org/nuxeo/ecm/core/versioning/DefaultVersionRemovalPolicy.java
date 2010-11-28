@@ -37,6 +37,7 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
 
     private static final Log log = LogFactory.getLog(DefaultVersionRemovalPolicy.class);
 
+    @Override
     public void removeVersions(Session session, Document doc,
             CoreSession coreSession) throws ClientException {
         try {

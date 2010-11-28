@@ -97,10 +97,12 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
 
     /* Service Interface */
 
+    @Override
     public ExternalBlobAdapter getExternalBlobAdapterForPrefix(String prefix) {
         return externalBlobAdapters.get(prefix);
     }
 
+    @Override
     public ExternalBlobAdapter getExternalBlobAdapterForUri(String uri) {
         if (uri != null && uri.contains(ExternalBlobAdapter.PREFIX_SEPARATOR)) {
             String prefix = uri.substring(0,
@@ -110,6 +112,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public Blob getExternalBlobForUri(String uri) throws PropertyException {
         ExternalBlobAdapter adapter = getExternalBlobAdapterForUri(uri);
         if (adapter == null) {
@@ -119,6 +122,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
         return adapter.getBlob(uri);
     }
 
+    @Override
     public BlobHolder getBlobHolderAdapter(DocumentModel doc) {
         if (factories.containsKey(doc.getType())) {
             BlobHolderFactory factory = factories.get(doc.getType());

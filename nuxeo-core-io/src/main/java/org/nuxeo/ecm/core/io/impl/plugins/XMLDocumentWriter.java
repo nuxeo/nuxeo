@@ -93,6 +93,7 @@ public class XMLDocumentWriter extends AbstractDocumentWriter {
         return map;
     }
 
+    @Override
     public void close() {
         if (out != null) {
             try {

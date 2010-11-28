@@ -30,15 +30,18 @@ import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 
 public class NotAvailableConverter implements ExternalConverter {
 
+    @Override
     public ConverterCheckResult isConverterAvailable() {
         return new ConverterCheckResult("Please install someting", "Can not find external converter");
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         return null;
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

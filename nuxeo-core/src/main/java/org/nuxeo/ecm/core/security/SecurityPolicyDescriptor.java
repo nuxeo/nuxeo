@@ -59,6 +59,7 @@ public class SecurityPolicyDescriptor implements
         return order;
     }
 
+    @Override
     public int compareTo(SecurityPolicyDescriptor anotherPolicy) {
         return order - anotherPolicy.order;
     }

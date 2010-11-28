@@ -61,6 +61,7 @@ public class CompoundFilter implements Filter {
         }
     }
 
+    @Override
     public boolean accept(DocumentModel docModel) {
         for (Filter filter : filters) {
             if (!filter.accept(docModel)) {

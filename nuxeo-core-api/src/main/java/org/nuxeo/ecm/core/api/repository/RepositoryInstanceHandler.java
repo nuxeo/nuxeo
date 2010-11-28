@@ -90,10 +90,12 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         }
     }
 
+    @Override
     public Repository getRepository() {
         return repository;
     }
 
+    @Override
     public CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
@@ -124,6 +126,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         CoreInstance.getInstance().registerSession(sid, proxy);
     }
 
+    @Override
     public void close() throws Exception {
         if (session != null) {
             synchronized (this) {
@@ -144,6 +147,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         }
     }
 
+    @Override
     @SuppressWarnings({"ObjectEquality"})
     public synchronized Object invoke(Object proxy, Method method, Object[] args)
     throws Throwable {

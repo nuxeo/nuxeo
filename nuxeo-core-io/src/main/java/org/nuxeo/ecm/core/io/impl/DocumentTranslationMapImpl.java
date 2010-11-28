@@ -47,6 +47,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         this.map = map;
     }
 
+    @Override
     public Map<DocumentRef, DocumentRef> getDocRefMap() {
         if (map == null) {
             return Collections.emptyMap();
@@ -54,14 +55,17 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         return Collections.unmodifiableMap(map);
     }
 
+    @Override
     public String getNewServerName() {
         return newServerName;
     }
 
+    @Override
     public String getOldServerName() {
         return oldServerName;
     }
 
+    @Override
     public void put(DocumentRef oldRef, DocumentRef newRef) {
         if (map == null) {
             map = new HashMap<DocumentRef, DocumentRef>();
@@ -69,6 +73,7 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         map.put(oldRef, newRef);
     }
 
+    @Override
     public void putAll(Map<DocumentRef, DocumentRef> refs) {
         if (refs == null) {
             return;

@@ -63,10 +63,12 @@ public class ScalarProperty extends AbstractProperty {
         this.value = value;
     }
 
+    @Override
     public String getName() {
         return field.getName().getPrefixedName();
     }
 
+    @Override
     public Type getType() {
         return field.getType();
     }
@@ -76,37 +78,45 @@ public class ScalarProperty extends AbstractProperty {
         return value;
     }
 
+    @Override
     public boolean isContainer() {
         return false;
     }
 
+    @Override
     public Collection<Property> getChildren() {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
+    @Override
     public Property get(int index) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
+    @Override
     public Property get(String name) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
+    @Override
     public Property addValue(Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
+    @Override
     public Property addValue(int index, Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
+    @Override
     public Property addEmpty() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }
 
+    @Override
     public Field getField() {
         return field;
     }
@@ -117,10 +127,12 @@ public class ScalarProperty extends AbstractProperty {
         return clone;
     }
 
+    @Override
     public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
         visitor.visit(this, arg);
     }
 
+    @Override
     public boolean isSameAs(Property property) throws PropertyException {
         if (property == null) {
             return false;
@@ -134,6 +146,7 @@ public class ScalarProperty extends AbstractProperty {
         return v1.equals(v2);
     }
 
+    @Override
     public Iterator<Property> getDirtyChildren() {
         throw new UnsupportedOperationException(
                 "Cannot iterate over children of scalar properties");

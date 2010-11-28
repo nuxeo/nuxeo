@@ -29,6 +29,7 @@ public class NameFilter implements Filter {
         this.prefix = prefix;
     }
 
+    @Override
     public boolean accept(DocumentModel docModel) {
         return docModel.getName().equals(prefix); // for now
     }

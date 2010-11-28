@@ -96,14 +96,17 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         return file == null ? 0L : file.length();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return new BufferedInputStream(new FileInputStream(file));
     }
 
+    @Override
     public Blob persist() {
         return this;
     }
 
+    @Override
     public boolean isPersistent() {
         return true;
     }

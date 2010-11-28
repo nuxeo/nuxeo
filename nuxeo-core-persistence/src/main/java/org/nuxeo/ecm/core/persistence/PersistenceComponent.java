@@ -67,6 +67,7 @@ public class PersistenceComponent extends DefaultComponent
         }
     }
 
+    @Override
     public PersistenceProvider newProvider(String name) {
         EntityManagerFactoryProvider emfProvider = registry.get(name);
         if (emfProvider == null) {
@@ -76,6 +77,7 @@ public class PersistenceComponent extends DefaultComponent
         return new PersistenceProvider(emfProvider);
     }
 
+    @Override
     public HibernateConfiguration getHibernateConfiguration(String name) {
         HibernateConfiguration config = registry.get(name);
         if (config == null) {

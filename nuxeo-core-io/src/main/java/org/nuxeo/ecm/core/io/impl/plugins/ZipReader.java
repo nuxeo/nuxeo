@@ -80,6 +80,7 @@ public class ZipReader extends AbstractDocumentReader {
         return delegate.read();
     }
 
+    @Override
     public void close() {
         delegate.close();
     }

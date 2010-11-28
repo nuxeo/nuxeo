@@ -55,6 +55,7 @@ public class JMSCompatibilityPostCommitEventListener implements
 
     private static final Log log = LogFactory.getLog(JMSCompatibilityPostCommitEventListener.class);
 
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
         int inOperation = 0;
         Set<DocumentRef> checkedRefs = new HashSet<DocumentRef>();

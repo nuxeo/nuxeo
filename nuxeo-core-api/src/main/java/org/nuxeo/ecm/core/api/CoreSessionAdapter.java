@@ -34,6 +34,7 @@ public class CoreSessionAdapter implements ServiceAdapter {
 
     private static final long serialVersionUID = 378521206345005762L;
 
+    @Override
     public Object adapt(ServiceDescriptor svc, Object service) throws Exception {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         CoreSession session = (CoreSession) service;

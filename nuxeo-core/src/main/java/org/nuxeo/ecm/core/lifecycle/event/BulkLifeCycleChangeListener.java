@@ -52,6 +52,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
 
     private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
         if (!events.containsEventName(LifeCycleConstants.TRANSITION_EVENT)
                 && !events.containsEventName(LifeCycleConstants.DOCUMENT_UNDELETED)) {

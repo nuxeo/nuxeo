@@ -27,6 +27,7 @@ public class DefaultQueryVisitor implements IVisitor {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public void visitQuery(SQLQuery node) {
         node.select.accept(this);
         node.from.accept(this);
@@ -44,6 +45,7 @@ public class DefaultQueryVisitor implements IVisitor {
         }
     }
 
+    @Override
     public void visitSelectClause(SelectClause node) {
         SelectList elements = node.elements;
         for (int i = 0; i < elements.size(); i++) {
@@ -51,36 +53,44 @@ public class DefaultQueryVisitor implements IVisitor {
         }
     }
 
+    @Override
     public void visitFromClause(FromClause node) {
     }
 
+    @Override
     public void visitWhereClause(WhereClause node) {
         node.predicate.accept(this);
     }
 
+    @Override
     public void visitGroupByClause(GroupByClause node) {
     }
 
+    @Override
     public void visitHavingClause(HavingClause node) {
         if (node.predicate != null) {
             node.predicate.accept(this);
         }
     }
 
+    @Override
     public void visitOrderByClause(OrderByClause node) {
         node.elements.accept(this);
     }
 
+    @Override
     public void visitOrderByList(OrderByList node) {
         for (OrderByExpr aNode : node) {
             aNode.accept(this);
         }
     }
 
+    @Override
     public void visitOrderByExpr(OrderByExpr node) {
         node.reference.accept(this);
     }
 
+    @Override
     public void visitExpression(Expression node) {
         if (node.rvalue == null) {
             // NOT
@@ -93,55 +103,67 @@ public class DefaultQueryVisitor implements IVisitor {
         }
     }
 
+    @Override
     public void visitMultiExpression(MultiExpression node) {
         for (Operand operand : node.values) {
             operand.accept(this);
         }
     }
 
+    @Override
     public void visitOperator(Operator node) {
     }
 
+    @Override
     public void visitReference(Reference node) {
     }
 
+    @Override
     public void visitReferenceList(ReferenceList node) {
         for (Reference reference : node) {
             reference.accept(this);
         }
     }
 
+    @Override
     public void visitLiteral(Literal node) {
     }
 
+    @Override
     public void visitLiteralList(LiteralList node) {
         for (Literal literal : node) {
             literal.accept(this);
         }
     }
 
+    @Override
     public void visitDateLiteral(DateLiteral node) {
         visitLiteral(node);
     }
 
+    @Override
     public void visitStringLiteral(StringLiteral node) {
         visitLiteral(node);
     }
 
+    @Override
     public void visitDoubleLiteral(DoubleLiteral node) {
         visitLiteral(node);
     }
 
+    @Override
     public void visitIntegerLiteral(IntegerLiteral node) {
         visitLiteral(node);
     }
 
+    @Override
     public void visitFunction(Function node) {
         for (Operand operand : node.args) {
             operand.accept(this);
         }
     }
 
+    @Override
     public void visitOperandList(OperandList node) {
         for (Operand operand : node) {
             operand.accept(this);

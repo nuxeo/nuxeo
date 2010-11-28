@@ -99,10 +99,12 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
                 offset, chunkSize);
     }
 
+    @Override
     public boolean hasNext() {
         return dmChunk.getSize() > pos || dmChunk.hasMore;
     }
 
+    @Override
     public DocumentModel next() {
         try {
             return nextDocument();
@@ -129,14 +131,17 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
         return lastDoc;
     }
 
+    @Override
     public void remove() {
         dmChunk.remove(pos);
     }
 
+    @Override
     public Iterator<DocumentModel> iterator() {
         return this;
     }
 
+    @Override
     public long size() {
         return dmChunk.lastIndex < chunkSize ? dmChunk.getSize() : UNKNOWN_SIZE;
     }

@@ -78,18 +78,22 @@ public class DocumentLocationImpl implements DocumentLocation {
         }
     }
 
+    @Override
     public DocumentRef getDocRef() {
         return docRef;
     }
 
+    @Override
     public String getServerName() {
         return serverName;
     }
 
+    @Override
     public IdRef getIdRef() {
         return docIdRef;
     }
 
+    @Override
     public PathRef getPathRef() {
         return docPathRef;
     }

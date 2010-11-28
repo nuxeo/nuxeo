@@ -75,6 +75,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                 new TransactionalCoreSessionWrapper(session));
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Boolean b = threadBound.get();
@@ -120,10 +121,12 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         return true;
     }
 
+    @Override
     public void beforeCompletion() {
         session.beforeCompletion();
     }
 
+    @Override
     public void afterCompletion(int status) {
         threadBound.remove();
         boolean committed;

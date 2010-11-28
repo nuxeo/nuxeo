@@ -36,9 +36,11 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 public abstract class AbstractDocumentWriter implements DocumentWriter {
 
     // this abstract method is needed
+    @Override
     public abstract DocumentTranslationMap write(ExportedDocument doc)
             throws IOException;
 
+    @Override
     public DocumentTranslationMap write(ExportedDocument[] docs)
             throws IOException {
         if (docs == null || docs.length == 0) {
@@ -63,6 +65,7 @@ public abstract class AbstractDocumentWriter implements DocumentWriter {
         return new DocumentTranslationMapImpl(oldRepo, newRepo, newRefs);
     }
 
+    @Override
     public DocumentTranslationMap write(Collection<ExportedDocument> docs)
             throws IOException {
         if (docs == null || docs.isEmpty()) {

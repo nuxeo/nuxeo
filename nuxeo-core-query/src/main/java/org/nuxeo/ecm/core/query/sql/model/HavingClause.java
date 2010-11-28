@@ -39,6 +39,7 @@ public class HavingClause extends Clause {
         this.predicate = predicate;
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitHavingClause(this);
     }

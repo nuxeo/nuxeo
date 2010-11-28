@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 public class DummyPostCommitEventListener implements PostCommitEventListener {
 
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
         // TODO Auto-generated method stub
     }

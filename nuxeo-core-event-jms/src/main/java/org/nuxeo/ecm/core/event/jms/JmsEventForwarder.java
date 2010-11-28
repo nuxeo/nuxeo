@@ -94,6 +94,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
         }
     }
 
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
         if (!canForwardMessage(events)) {
             return;

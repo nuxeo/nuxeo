@@ -119,6 +119,7 @@ public class SQLQuery implements ASTNode {
         return orderBy;
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitQuery(this);
     }
@@ -255,6 +256,7 @@ public class SQLQuery implements ASTNode {
     public static class IdentityTransformer implements Transformer {
         private static final long serialVersionUID = 1L;
 
+        @Override
         public SQLQuery transform(Principal principal, SQLQuery query) {
             return query;
         }

@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class AnnotatedDocumentFactory implements DocumentAdapterFactory {
 
+    @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
         return new AnnotatedDocumentAdapter(doc);
     }

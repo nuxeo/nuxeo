@@ -51,6 +51,7 @@ public class FileSystemExternalBlobAdapter extends AbstractExternalBlobAdapter {
         }
     }
 
+    @Override
     public Blob getBlob(String uri) throws PropertyException {
         String localPath = getLocalName(uri);
         String path = getFileAbsolutePath(localPath);

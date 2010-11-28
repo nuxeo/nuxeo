@@ -87,6 +87,7 @@ public class DateLiteral extends Literal {
         }
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitDateLiteral(this);
     }

@@ -30,12 +30,15 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public abstract class AbstractBlobHolder implements BlobHolder {
 
+    @Override
     public abstract Blob getBlob() throws ClientException;
 
+    @Override
     public void setBlob(Blob blob) throws ClientException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public List<Blob> getBlobs() throws ClientException {
         List<Blob> blobs = null;
 
@@ -50,6 +53,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
 
     protected abstract String getBasePath();
 
+    @Override
     public String getFilePath() throws ClientException {
         String path = getBasePath();
 
@@ -61,6 +65,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         return path;
     }
 
+    @Override
     public String getHash() throws ClientException {
 
         Blob blob = getBlob();
@@ -75,6 +80,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         return "NullBlob";
     }
 
+    @Override
     public abstract Calendar getModificationDate() throws ClientException;
 
 }

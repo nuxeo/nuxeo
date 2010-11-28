@@ -430,16 +430,19 @@ public class XSDLoader {
 
     static class SchemaErrorHandler implements ErrorHandler {
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             log.error("Error: " + exception.getMessage());
             throw exception;
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             log.error("FatalError: " + exception.getMessage());
             throw exception;
         }
 
+        @Override
         public void warning(SAXParseException exception) throws SAXException {
             log.error("Warning: " + exception.getMessage());
         }
@@ -448,6 +451,7 @@ public class XSDLoader {
 
     class CustomEntityResolver implements EntityResolver {
 
+        @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws SAXException, IOException {
             if (systemId != null) {

@@ -123,6 +123,7 @@ public class FacetFilter implements Filter {
         return null;
     }
 
+    @Override
     public boolean accept(DocumentModel docModel) {
         if (shortcut != null) {
             return shortcut;

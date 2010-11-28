@@ -33,6 +33,7 @@ public class EventListenerOrderComparator implements Comparator<EventListener>,
 
     private static final long serialVersionUID = -3563032494964992219L;
 
+    @Override
     public int compare(EventListener el1, EventListener el2) {
         int result;
         if (el1 == null) {

@@ -49,15 +49,18 @@ public class ValueExporter implements PropertyVisitor {
         return result;
     }
 
+    @Override
     public boolean acceptPhantoms() {
         return false;
     }
 
+    @Override
     public Object visit(DocumentPart property, Object arg)
             throws PropertyException {
         return arg;
     }
 
+    @Override
     public Object visit(MapProperty property, Object arg)
             throws PropertyException {
 
@@ -86,6 +89,7 @@ public class ValueExporter implements PropertyVisitor {
         return value;
     }
 
+    @Override
     public Object visit(ListProperty property, Object arg)
             throws PropertyException {
         Serializable value;
@@ -103,6 +107,7 @@ public class ValueExporter implements PropertyVisitor {
         return value;
     }
 
+    @Override
     public Object visit(ScalarProperty property, Object arg)
             throws PropertyException {
 

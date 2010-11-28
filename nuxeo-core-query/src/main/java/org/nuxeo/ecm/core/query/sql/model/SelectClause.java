@@ -118,6 +118,7 @@ public class SelectClause extends Clause {
         return elements.isEmpty();
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitSelectClause(this);
     }

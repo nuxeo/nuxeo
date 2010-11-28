@@ -58,6 +58,7 @@ public final class AnyType extends AbstractType {
         return true;
     }
 
+    @Override
     public Object convert(Object object) {
         return object;
     }

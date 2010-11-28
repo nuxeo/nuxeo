@@ -45,14 +45,17 @@ public class LifeCycleTransitionImpl implements LifeCycleTransition {
         destinationStateName = destinationState;
     }
 
+    @Override
     public String getDestinationStateName() {
         return destinationStateName;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public String getName() {
         return name;
     }

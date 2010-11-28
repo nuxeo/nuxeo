@@ -45,6 +45,7 @@ public class XL2TextConverter implements Converter {
     private static final String CELL_SEP = " ";
     private static final String ROW_SEP = "\n";
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -97,6 +98,7 @@ public class XL2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

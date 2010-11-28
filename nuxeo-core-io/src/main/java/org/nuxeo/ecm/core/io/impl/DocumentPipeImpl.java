@@ -55,34 +55,42 @@ public class DocumentPipeImpl implements DocumentPipe {
     }
 
 
+    @Override
     public void addTransformer(DocumentTransformer transformer) {
         transformers.add(transformer);
     }
 
+    @Override
     public DocumentReader getReader() {
         return reader;
     }
 
+    @Override
     public List<DocumentTransformer> getTransformers() {
         return transformers;
     }
 
+    @Override
     public DocumentWriter getWriter() {
         return writer;
     }
 
+    @Override
     public void removeTransformer(DocumentTransformer transformer) {
         transformers.remove(transformer);
     }
 
+    @Override
     public void setReader(DocumentReader reader) {
         this.reader = reader;
     }
 
+    @Override
     public void setWriter(DocumentWriter writer) {
         this.writer = writer;
     }
 
+    @Override
     public DocumentTranslationMap run() throws Exception {
         if (reader == null) {
             throw new IllegalArgumentException("Pipe reader cannot be null");

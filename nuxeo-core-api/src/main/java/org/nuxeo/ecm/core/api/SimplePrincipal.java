@@ -36,6 +36,7 @@ public class SimplePrincipal implements Principal, Serializable {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return id;
     }

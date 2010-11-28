@@ -61,6 +61,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         mergedPermissionsVisibility = null;
     }
 
+    @Override
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
             String typeName) throws ClientException {
         if (mergedPermissionsVisibility == null) {
@@ -84,6 +85,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return defaultVisibility.getSortedUIPermissionDescriptor();
     }
 
+    @Override
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
             throws ClientException {
         return getUserVisiblePermissionDescriptors("");
@@ -107,11 +109,13 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
+    @Override
     public String[] getSubPermissions(String perm) throws ClientException {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
     }
 
+    @Override
     public String[] getAliasPermissions(String perm) throws ClientException {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
@@ -130,6 +134,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     // OG: this is an awkward method prototype left unchanged for BBB
+    @Override
     public String[] getPermissionGroups(String perm) {
         if (mergedGroups == null) {
             computeMergedGroups();
@@ -197,6 +202,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     // OG: this is an awkward method prototype left unchanged for BBB
+    @Override
     public String[] getPermissions() {
         if (mergedPermissions == null) {
             computeMergedPermissions();
@@ -220,6 +226,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
+    @Override
     public synchronized void registerDescriptor(
             PermissionDescriptor descriptor) throws Exception {
         // check that all included permission have previously been registered
@@ -244,6 +251,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         registeredPermissions.add(descriptor);
     }
 
+    @Override
     public synchronized void unregisterDescriptor(PermissionDescriptor descriptor) {
         int lastOccurence = registeredPermissions.lastIndexOf(descriptor);
         if (lastOccurence != -1) {
@@ -255,12 +263,14 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
+    @Override
     public synchronized void registerDescriptor(PermissionVisibilityDescriptor descriptor) {
         // invalidate cached merged descriptors
         mergedPermissionsVisibility = null;
         registeredPermissionsVisibility.add(descriptor);
     }
 
+    @Override
     public synchronized void unregisterDescriptor(PermissionVisibilityDescriptor descriptor) {
         int lastOccurence = registeredPermissionsVisibility
                 .lastIndexOf(descriptor);

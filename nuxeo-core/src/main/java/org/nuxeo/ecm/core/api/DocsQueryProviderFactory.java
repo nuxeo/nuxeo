@@ -83,6 +83,7 @@ final class DocsQueryProviderFactory {
         }
 
         return new DocsQueryProvider() {
+            @Override
             public DocumentIterator getDocs(int start) throws ClientException {
                 DocumentIterator documents;
                 try {
@@ -94,6 +95,7 @@ final class DocsQueryProviderFactory {
                 return documents;
             }
 
+            @Override
             public boolean accept(Document child) {
                 return true;
             }
@@ -132,6 +134,7 @@ final class DocsQueryProviderFactory {
         }
 
         DocsQueryProvider dqProvider = new DocsQueryProvider() {
+            @Override
             public DocumentIterator getDocs(int start) throws ClientException {
                 DocumentIterator documents;
                 try {
@@ -143,6 +146,7 @@ final class DocsQueryProviderFactory {
                 return documents;
             }
 
+            @Override
             public boolean accept(Document child) {
                 return true;
             }
@@ -156,6 +160,7 @@ final class DocsQueryProviderFactory {
         session.checkPermission(doc, SecurityConstants.READ_CHILDREN);
 
         DocsQueryProvider dqProvider = new DocsQueryProvider() {
+            @Override
             public DocumentIterator getDocs(int start) throws ClientException {
                 DocumentIterator children;
                 try {
@@ -166,6 +171,7 @@ final class DocsQueryProviderFactory {
                 return children;
             }
 
+            @Override
             public boolean accept(Document child) {
                 return true;
             }
@@ -180,6 +186,7 @@ final class DocsQueryProviderFactory {
         session.checkPermission(doc, SecurityConstants.READ_CHILDREN);
 
         DocsQueryProvider dqProvider = new DocsQueryProvider() {
+            @Override
             public DocumentIterator getDocs(int start) throws ClientException {
                 DocumentIterator children;
                 try {
@@ -190,6 +197,7 @@ final class DocsQueryProviderFactory {
                 return children;
             }
 
+            @Override
             public boolean accept(Document child) throws ClientException {
                 try {
                     return !child.isFolder()
@@ -211,6 +219,7 @@ final class DocsQueryProviderFactory {
         session.checkPermission(doc, SecurityConstants.READ_CHILDREN);
 
         DocsQueryProvider dqProvider = new DocsQueryProvider() {
+            @Override
             public DocumentIterator getDocs(int start) throws ClientException {
                 DocumentIterator childrenIt;
                 try {
@@ -221,6 +230,7 @@ final class DocsQueryProviderFactory {
                 return childrenIt;
             }
 
+            @Override
             public boolean accept(Document child) throws ClientException {
                 try {
                     return child.isFolder()

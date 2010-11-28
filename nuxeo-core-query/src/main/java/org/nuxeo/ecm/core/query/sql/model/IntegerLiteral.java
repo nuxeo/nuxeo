@@ -46,6 +46,7 @@ public class IntegerLiteral extends Literal {
         this.value = Long.parseLong(value);
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitIntegerLiteral(this);
     }

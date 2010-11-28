@@ -43,6 +43,7 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
 
     protected List<String> excludedTypes;
 
+    @Override
     public boolean accept(DocumentModel document) {
         String docType = document.getType();
         if (excludedTypes != null && excludedTypes.contains(docType)) {
@@ -75,26 +76,32 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
         return true;
     }
 
+    @Override
     public List<String> getIncludedFacets() {
         return includedFacets;
     }
 
+    @Override
     public void setIncludedFacets(List<String> includedFacets) {
         this.includedFacets = includedFacets;
     }
 
+    @Override
     public List<String> getExcludedFacets() {
         return excludedFacets;
     }
 
+    @Override
     public void setExcludedFacets(List<String> excludedFacets) {
         this.excludedFacets = excludedFacets;
     }
 
+    @Override
     public List<String> getExcludedTypes() {
         return excludedTypes;
     }
 
+    @Override
     public void setExcludedTypes(List<String> excludedTypes) {
         this.excludedTypes = excludedTypes;
     }

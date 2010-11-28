@@ -98,6 +98,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         }
     }
 
+    @Override
     public boolean hasNext() {
         if (sequence == null || !sequence.hasNext()) {
             // no current valid sequence
@@ -110,6 +111,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         return true;
     }
 
+    @Override
     public DocumentModel next() {
         // satisfy iterator contract - throw an exception if no more elements to
         // iterate
@@ -131,6 +133,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         return doc;
     }
 
+    @Override
     public void remove() {
         throw new UnsupportedOperationException("remove is not yet supported");
     }
@@ -149,10 +152,12 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
             this.doc = doc;
         }
 
+        @Override
         public boolean hasNext() {
             return hasNext;
         }
 
+        @Override
         public DocumentModel next() {
             if (doc == null) {
                 throw new NoSuchElementException(
@@ -162,6 +167,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
             return doc;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException(
                     "remove is not yet supported");

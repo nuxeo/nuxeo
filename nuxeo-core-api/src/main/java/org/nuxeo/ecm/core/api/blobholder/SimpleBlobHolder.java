@@ -81,10 +81,12 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
         return creationDate;
     }
 
+    @Override
     public Serializable getProperty(String name) throws ClientException {
         return null;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         return null;
     }

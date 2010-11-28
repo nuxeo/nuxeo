@@ -45,46 +45,55 @@ public class TrashServiceBean implements TrashServiceLocal {
         service = Framework.getLocalService(TrashService.class);
     }
 
+    @Override
     public boolean canDelete(List<DocumentModel> docs, Principal principal,
             boolean checkProxies) throws ClientException {
         return service.canDelete(docs, principal, checkProxies);
     }
 
+    @Override
     public boolean canPurgeOrUndelete(List<DocumentModel> docs,
             Principal principal) throws ClientException {
         return service.canPurgeOrUndelete(docs, principal);
     }
 
+    @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs)
             throws ClientException {
         return service.checkDeletePermOnParents(docs);
     }
 
+    @Override
     public boolean folderAllowsDelete(DocumentModel folder)
             throws ClientException {
         return service.folderAllowsDelete(folder);
     }
 
+    @Override
     public DocumentModel getAboveDocument(DocumentModel currentDocument,
             Set<Path> rootPaths) throws ClientException {
         return service.getAboveDocument(currentDocument, rootPaths);
     }
 
+    @Override
     public TrashInfo getTrashInfo(List<DocumentModel> docs,
             Principal principal, boolean checkProxies, boolean checkDeleted)
             throws ClientException {
         return service.getTrashInfo(docs, principal, checkProxies, checkDeleted);
     }
 
+    @Override
     public void purgeDocuments(CoreSession session, List<DocumentRef> docRefs)
             throws ClientException {
         service.purgeDocuments(session, docRefs);
     }
 
+    @Override
     public void trashDocuments(List<DocumentModel> docs) throws ClientException {
         service.trashDocuments(docs);
     }
 
+    @Override
     public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs)
             throws ClientException {
         return service.undeleteDocuments(docs);

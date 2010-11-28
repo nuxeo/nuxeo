@@ -152,6 +152,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
         return tmp;
     }
 
+    @Override
     public Iterator<Modification> iterator() {
         return new ModifIterator();
     }
@@ -159,10 +160,12 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
     class ModifIterator implements Iterator<Modification> {
         int index = 0;
 
+        @Override
         public boolean hasNext() {
             return index < length;
         }
 
+        @Override
         public Modification next() {
             try {
                 return ar[index++];
@@ -172,6 +175,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
             }
         }
 
+        @Override
         public void remove() {
             ModificationSet.this.remove(index);
         }

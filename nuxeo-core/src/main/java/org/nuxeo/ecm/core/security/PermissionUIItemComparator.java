@@ -29,6 +29,7 @@ public class PermissionUIItemComparator implements
 
     private static final long serialVersionUID = 6468292882222351585L;
 
+    @Override
     public int compare(PermissionUIItemDescriptor pid1,
             PermissionUIItemDescriptor pid2) {
         int diff = pid2.getOrder() - pid1.getOrder();

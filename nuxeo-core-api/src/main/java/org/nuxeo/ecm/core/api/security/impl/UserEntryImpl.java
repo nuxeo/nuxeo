@@ -43,18 +43,22 @@ public class UserEntryImpl implements UserEntry {
         accessEntries = new HashMap<String, UserAccess>();
     }
 
+    @Override
     public void addPrivilege(String permission, boolean granted, boolean readOnly) {
         accessEntries.put(permission, new UserAccess(granted, readOnly));
     }
 
+    @Override
     public String getUserName() {
         return username;
     }
 
+    @Override
     public String[] getPermissions() {
         return accessEntries.keySet().toArray(new String[accessEntries.size()]);
     }
 
+    @Override
     public UserAccess getAccess(String permission) {
         return accessEntries.get(permission);
     }

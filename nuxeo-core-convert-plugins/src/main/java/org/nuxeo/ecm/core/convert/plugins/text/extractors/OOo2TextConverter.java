@@ -41,6 +41,7 @@ import org.xml.sax.XMLReader;
  */
 public class OOo2TextConverter implements Converter {
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -72,6 +73,7 @@ public class OOo2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
     }

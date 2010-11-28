@@ -37,6 +37,7 @@ public interface SimpleType extends Type {
 
     SimpleType getPrimitiveType();
 
+    @Override
     TypeRef<? extends SimpleType> getRef();
 
 }

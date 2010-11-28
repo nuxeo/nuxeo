@@ -34,6 +34,7 @@ public class PathComparator implements Comparator<Document>, Serializable {
     private static final Log log = LogFactory.getLog(PathComparator.class);
     private static final long serialVersionUID = 3598980450344414494L;
 
+    @Override
     public int compare(Document o1, Document o2) {
         try {
             String path1 = o1.getPath();

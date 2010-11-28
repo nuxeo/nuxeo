@@ -46,6 +46,7 @@ public class DocumentModelCacheUpdater implements OperationEventListener {
 
     protected List<DocumentModelCacheListener> listeners;
 
+    @Override
     public void handleEvents(OperationEvent[] events, boolean urgent) {
         HashSet<DocumentModel> updatedDocs = new HashSet<DocumentModel>(
                 events.length);

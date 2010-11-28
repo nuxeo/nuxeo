@@ -44,6 +44,7 @@ public class PPT2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(PPT2TextConverter.class);
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         File f = null;
@@ -77,6 +78,7 @@ public class PPT2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

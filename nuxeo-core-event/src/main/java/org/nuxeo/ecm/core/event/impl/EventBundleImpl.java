@@ -59,6 +59,7 @@ public class EventBundleImpl implements EventBundle {
     }
 
 
+    @Override
     public boolean hasRemoteSource() {
         return !vmid.equals(EventServiceImpl.VMID);
     }
@@ -71,6 +72,7 @@ public class EventBundleImpl implements EventBundle {
         this.isTransacted = isTransacted;
     }
 
+    @Override
     public String getName() {
         if (events.isEmpty()) {
             return null;
@@ -78,14 +80,17 @@ public class EventBundleImpl implements EventBundle {
         return events.get(0).getName();
     }
 
+    @Override
     public boolean isEmpty() {
         return events.isEmpty();
     }
 
+    @Override
     public Event peek() {
         return events.get(0);
     }
 
+    @Override
     public void push(Event event) {
         events.add(event);
         String eventName = event.getName();
@@ -94,18 +99,22 @@ public class EventBundleImpl implements EventBundle {
         }
     }
 
+    @Override
     public int size() {
         return events.size();
     }
 
+    @Override
     public Iterator<Event> iterator() {
         return events.iterator();
     }
 
+    @Override
     public VMID getSourceVMID() {
         return vmid;
     }
 
+    @Override
     public boolean containsEventName(String eventName) {
         if (eventName == null) {
             return false;

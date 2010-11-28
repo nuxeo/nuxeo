@@ -35,6 +35,7 @@ public abstract class Operator implements ASTNode {
         this.id = id;
     }
 
+    @Override
     public void accept(IVisitor visitor) {
         visitor.visitOperator(this);
     }

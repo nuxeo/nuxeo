@@ -109,10 +109,12 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         subtypes = null;
     }
 
+    @Override
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
 
+    @Override
     public PrefetchInfo getPrefetchInfo() {
         return prefetchInfo;
     }
@@ -125,20 +127,24 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return unstructured == F_UNSTRUCT_TRUE;
     }
 
+    @Override
     public boolean isFile() {
         return !getFacets().contains(FacetNames.FOLDERISH);
     }
 
+    @Override
     public boolean isFolder() {
         return getFacets().contains(FacetNames.FOLDERISH);
     }
 
+    @Override
     public boolean isOrdered() {
         Set<String> facets = getFacets();
         return facets.contains(FacetNames.ORDERABLE);
         //return isFolder() && isFlagSet(T_ORDERED | T_FOLDER);
     }
 
+    @Override
     public Set<String> getFacets() {
         if (facets == null) {
             facets = buildFacets();
@@ -146,6 +152,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return facets;
     }
 
+    @Override
     public void addSchemas(String[] schemas) {
         if (schemas != null) {
             for (String schema : schemas) {
@@ -154,6 +161,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         }
     }
 
+    @Override
     public void setDeclaredFacets(String[] facets) {
         declaredFacets = facets == null ? EMPTY_FACETS : facets;
         this.facets = null;
@@ -183,14 +191,17 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return new TypeRef<DocumentType>(schema, name, this);
     }
 
+    @Override
     public String[] getChildrenTypes() {
         return subtypes;
     }
 
+    @Override
     public void setChildrenTypes(String[] subTypes) {
         subtypes = subTypes;
     }
 
+    @Override
     public DocumentType[] getResolvedChildrenTypes() {
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
         if (subtypes != null) {
@@ -203,6 +214,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return null;
     }
 
+    @Override
     public boolean isChildTypeAllowed(String name) {
         if (subtypes != null) {
             for (String subtype : subtypes) {

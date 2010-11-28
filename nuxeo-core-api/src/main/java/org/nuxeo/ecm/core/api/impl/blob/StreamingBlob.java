@@ -139,10 +139,12 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return new StreamingBlob(src, mimeType);
     }
 
+    @Override
     public byte[] getByteArray() throws IOException {
         return src.getBytes();
     }
 
+    @Override
     public long getLength() {
         try {
             return src.getLength();
@@ -151,18 +153,22 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         }
     }
 
+    @Override
     public Reader getReader() throws IOException {
         return new InputStreamReader(getStream());
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return src.getStream();
     }
 
+    @Override
     public String getString() throws IOException {
         return src.getString();
     }
 
+    @Override
     public boolean isPersistent() {
         return src.canReopen();
     }
@@ -178,6 +184,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
      *
      * return the current instance with a re-openable internal source
      */
+    @Override
     public Blob persist() throws IOException {
         if (!isPersistent()) {
             OutputStream out = null;

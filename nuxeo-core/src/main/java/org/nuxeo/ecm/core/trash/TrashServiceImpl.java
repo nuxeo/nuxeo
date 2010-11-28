@@ -49,12 +49,14 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     private static final Log log = LogFactory.getLog(TrashServiceImpl.class);
 
+    @Override
     public boolean folderAllowsDelete(DocumentModel folder)
             throws ClientException {
         return folder.getCoreSession().hasPermission(folder.getRef(),
                 SecurityConstants.REMOVE_CHILDREN);
     }
 
+    @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs)
             throws ClientException {
         if (docs.isEmpty()) {
@@ -74,6 +76,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return false;
     }
 
+    @Override
     public boolean canDelete(List<DocumentModel> docs, Principal principal,
             boolean checkProxies) throws ClientException {
         if (docs.isEmpty()) {
@@ -84,6 +87,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return info.docs.size() > 0;
     }
 
+    @Override
     public boolean canPurgeOrUndelete(List<DocumentModel> docs,
             Principal principal) throws ClientException {
         if (docs.isEmpty()) {
@@ -164,12 +168,14 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
         public static PathComparator INSTANCE = new PathComparator();
 
+        @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
             return doc1.getPathAsString().compareTo(doc2.getPathAsString());
         }
 
     }
 
+    @Override
     public TrashInfo getTrashInfo(List<DocumentModel> docs,
             Principal principal, boolean checkProxies, boolean checkDeleted)
             throws ClientException {
@@ -195,6 +201,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return info;
     }
 
+    @Override
     public DocumentModel getAboveDocument(DocumentModel doc, Set<Path> rootPaths)
             throws ClientException {
         CoreSession session = doc.getCoreSession();
@@ -213,6 +220,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return false;
     }
 
+    @Override
     public void trashDocuments(List<DocumentModel> docs) throws ClientException {
         if (docs.isEmpty()) {
             return;
@@ -238,6 +246,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         session.save();
     }
 
+    @Override
     public void purgeDocuments(CoreSession session, List<DocumentRef> docRefs)
             throws ClientException {
         if (docRefs.isEmpty()) {
@@ -247,6 +256,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         session.save();
     }
 
+    @Override
     public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs)
             throws ClientException {
         Set<DocumentRef> undeleted = new HashSet<DocumentRef>();

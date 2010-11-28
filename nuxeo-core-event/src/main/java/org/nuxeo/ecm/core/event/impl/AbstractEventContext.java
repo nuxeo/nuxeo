@@ -51,10 +51,12 @@ public abstract class AbstractEventContext implements EventContext {
         this.args = args == null || (args.length == 1 && args[0] == null) ? EMPTY : args;
     }
 
+    @Override
     public Object[] getArguments() {
         return args;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
@@ -62,10 +64,12 @@ public abstract class AbstractEventContext implements EventContext {
         return properties;
     }
 
+    @Override
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
     }
 
+    @Override
     public Serializable getProperty(String key) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
@@ -73,6 +77,7 @@ public abstract class AbstractEventContext implements EventContext {
         return properties.get(key);
     }
 
+    @Override
     public boolean hasProperty(String key) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
@@ -80,6 +85,7 @@ public abstract class AbstractEventContext implements EventContext {
         return properties.containsKey(key);
     }
 
+    @Override
     public void setProperty(String key, Serializable value) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
@@ -87,18 +93,22 @@ public abstract class AbstractEventContext implements EventContext {
         properties.put(key, value);
     }
 
+    @Override
     public Event newEvent(String name) {
         return new EventImpl(name, this);
     }
 
+    @Override
     public Event newEvent(String name, int flags) {
         return new EventImpl(name, this, flags);
     }
 
+    @Override
     public String getRepositoryName() {
         return repositoryName;
     }
 
+    @Override
     public void setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
     }

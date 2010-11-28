@@ -99,6 +99,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         policies = null;
     }
 
+    @Override
     public boolean arePoliciesRestrictingPermission(String permission) {
         for (SecurityPolicy policy : getPolicies()) {
             if (policy.isRestrictingPermission(permission)) {
@@ -108,6 +109,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return false;
     }
 
+    @Override
     public boolean arePoliciesExpressibleInQuery(String repositoryName) {
         for (SecurityPolicy policy : getPolicies()) {
             if (!policy.isExpressibleInQuery(repositoryName)) {
@@ -117,6 +119,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return true;
     }
 
+    @Override
     public Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
             String repositoryName) {
         List<SQLQuery.Transformer> transformers = new LinkedList<SQLQuery.Transformer>();
@@ -128,6 +131,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         return transformers;
     }
 
+    @Override
     public void registerDescriptor(SecurityPolicyDescriptor descriptor) {
         String id = descriptor.getName();
         if (policyDescriptors.containsKey(id)) {
@@ -137,6 +141,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         resetPolicies();
     }
 
+    @Override
     public void unregisterDescriptor(SecurityPolicyDescriptor descriptor) {
         String id = descriptor.getName();
         if (policyDescriptors.containsKey(id)) {
@@ -145,6 +150,7 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         }
     }
 
+    @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {

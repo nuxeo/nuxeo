@@ -66,6 +66,7 @@ public class DocumentModelListImpl extends ArrayList<DocumentModel> implements
         this.totalSize = totalSize;
     }
 
+    @Override
     public long totalSize() {
         if (totalSize == -1) {
             return size();

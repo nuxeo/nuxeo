@@ -40,6 +40,7 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
 
     private static final Log log = LogFactory.getLog(LockSecurityPolicy.class);
 
+    @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {

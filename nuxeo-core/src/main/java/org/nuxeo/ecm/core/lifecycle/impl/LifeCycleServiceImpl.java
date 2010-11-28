@@ -70,23 +70,28 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         typesMapping = new HashMap<String, String>();
     }
 
+    @Override
     public LifeCycle getLifeCycleByName(String name) {
         return lifeCycles.get(name);
     }
 
+    @Override
     public LifeCycle getLifeCycleFor(Document doc) {
         String lifeCycleName = getLifeCycleNameFor(doc.getType().getName());
         return getLifeCycleByName(lifeCycleName);
     }
 
+    @Override
     public String getLifeCycleNameFor(String typeName) {
         return typesMapping.get(typeName);
     }
 
+    @Override
     public Collection<LifeCycle> getLifeCycles() {
         return lifeCycles.values();
     }
 
+    @Override
     public Collection<String> getTypesFor(String lifeCycleName) {
         Collection<String> types = new ArrayList<String>();
         for (String typeName : typesMapping.keySet()) {
@@ -97,14 +102,17 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         return types;
     }
 
+    @Override
     public Map<String, String> getTypesMapping() {
         return typesMapping;
     }
 
+    @Override
     public void initialize(Document doc) throws LifeCycleException {
         initialize(doc, null);
     }
 
+    @Override
     public void initialize(Document doc, String initialStateName)
             throws LifeCycleException {
         String lifeCycleName;
@@ -140,6 +148,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         doc.setLifeCyclePolicy(lifeCycleName);
     }
 
+    @Override
     public void followTransition(Document doc, String transitionName)
             throws LifeCycleException {
         String lifeCycleState = doc.getLifeCycleState();
@@ -156,6 +165,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void reinitLifeCycle(Document doc) throws LifeCycleException {
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {

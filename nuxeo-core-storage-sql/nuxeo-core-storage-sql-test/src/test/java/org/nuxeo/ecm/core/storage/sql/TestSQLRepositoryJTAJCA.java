@@ -142,13 +142,16 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     protected static class HelperEventTransactionListener implements EventTransactionListener {
         public boolean committed;
 
+        @Override
         public void transactionStarted() {
         }
 
+        @Override
         public void transactionCommitted() {
             committed = true;
         }
 
+        @Override
         public void transactionRollbacked() {
         }
     }

@@ -39,12 +39,11 @@ import com.google.inject.Binder;
  * The core feature provides deployments needed to have a nuxeo core running.
  * Several annotations can be used:
  * <ul>
- * <li>
- * <li>
+ * <li>FIXME
+ * <li>FIXME
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @Deploy({
     "org.nuxeo.ecm.core.schema",
@@ -56,7 +55,6 @@ import com.google.inject.Binder;
 })
 @Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
-
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
@@ -99,7 +97,6 @@ public class CoreFeature extends SimpleFeature {
         repository.shutdown();
     }
 
-
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
@@ -107,7 +104,6 @@ public class CoreFeature extends SimpleFeature {
             cleanupSession(runner);
         }
     }
-
 
     protected void cleanupSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);

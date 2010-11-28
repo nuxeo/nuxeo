@@ -81,6 +81,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return null; // we don't store property that are not in the cache
     }
 
+    @Override
     public abstract ComplexType getType();
 
     @Override
@@ -98,6 +99,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
                 getPath());
     }
 
+    @Override
     public Property get(int index) {
         throw new UnsupportedOperationException(
                 "accessing children by index is not allowed for complex properties");
@@ -138,6 +140,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return Collections.unmodifiableCollection(children.values());
     }
 
+    @Override
     public Collection<Property> getChildren() {
         ComplexType type = getType();
         if (children.size() < type.getFieldsCount()) { // populate with
@@ -150,6 +153,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return Collections.unmodifiableCollection(children.values());
     }
 
+    @Override
     public Property get(String name) throws PropertyNotFoundException {
         Field field = getType().getField(name);
         if (field == null) {
@@ -224,16 +228,19 @@ public abstract class ComplexProperty extends AbstractProperty implements
         }
     }
 
+    @Override
     public Property addValue(Object value) {
         throw new UnsupportedOperationException(
                 "add(value) operation not supported on map properties");
     }
 
+    @Override
     public Property addValue(int index, Object value) {
         throw new UnsupportedOperationException(
                 "add(value, index) operation not supported on map properties");
     }
 
+    @Override
     public Property addEmpty() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
@@ -264,6 +271,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Should be used by container properties. Non container props must
      * overwrite this.
      */
+    @Override
     public boolean isSameAs(Property property) throws PropertyException {
         if (!(property instanceof ComplexProperty)) {
             return false;
@@ -291,6 +299,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
         return true;
     }
 
+    @Override
     public Iterator<Property> getDirtyChildren() {
         if (!isContainer()) {
             throw new UnsupportedOperationException(
@@ -303,6 +312,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public void clear() {
         throw new UnsupportedOperationException();
     }
@@ -311,6 +321,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public boolean containsKey(Object key) {
         throw new UnsupportedOperationException();
     }
@@ -319,22 +330,27 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public boolean containsValue(Object value) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Set<Entry<String, Property>> entrySet() {
         return children.entrySet();
     }
 
+    @Override
     public Property get(Object key) {
         return children.get(key);
     }
 
+    @Override
     public boolean isEmpty() {
         return children.isEmpty();
     }
 
+    @Override
     public Set<String> keySet() {
         return children.keySet();
     }
@@ -343,6 +359,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public Property put(String key, Property value) {
         throw new UnsupportedOperationException();
     }
@@ -351,6 +368,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public void putAll(Map<? extends String, ? extends Property> t) {
         throw new UnsupportedOperationException();
     }
@@ -359,10 +377,12 @@ public abstract class ComplexProperty extends AbstractProperty implements
      * Throws UnsupportedOperationException, added to implement List<Property>
      * interface
      */
+    @Override
     public Property remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Collection<Property> values() {
         return children.values();
     }

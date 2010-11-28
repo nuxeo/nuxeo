@@ -54,6 +54,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         this.adapter = adapter;
     }
 
+    @Override
     public ObjectAdapter getAdapter() {
         return adapter;
     }

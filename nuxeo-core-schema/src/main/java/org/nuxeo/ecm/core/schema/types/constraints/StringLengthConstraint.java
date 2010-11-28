@@ -43,6 +43,7 @@ public class StringLengthConstraint implements Constraint {
         this.max = max;
     }
 
+    @Override
     public boolean validate(Object object) {
         int len = object.toString().length();
         return len <= max && len >= min;

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 @Deprecated
 public class Word2TextConverter implements Converter {
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -73,6 +74,7 @@ public class Word2TextConverter implements Converter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
     }
 

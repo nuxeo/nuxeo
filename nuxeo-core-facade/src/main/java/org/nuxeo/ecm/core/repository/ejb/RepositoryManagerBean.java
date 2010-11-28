@@ -46,26 +46,32 @@ public class RepositoryManagerBean implements RepositoryManagerLocal {
         mgr = Framework.getLocalService(RepositoryManager.class);
     }
 
+    @Override
     public void addRepository(Repository repository) {
         mgr.addRepository(repository);
     }
 
+    @Override
     public Collection<Repository> getRepositories() {
         return mgr.getRepositories();
     }
 
+    @Override
     public Repository getRepository(String name) {
         return mgr.getRepository(name);
     }
 
+    @Override
     public void removeRepository(String name) {
         mgr.removeRepository(name);
     }
 
+    @Override
     public void clear() {
         mgr.clear();
     }
 
+    @Override
     public Repository getDefaultRepository() {
         return mgr.getDefaultRepository();
     }

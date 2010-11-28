@@ -84,6 +84,7 @@ public interface EventService extends EventProducer {
      *
      * @param event the event to fire
      */
+    @Override
     void fireEvent(Event event) throws ClientException;
 
     /**
@@ -94,6 +95,7 @@ public interface EventService extends EventProducer {
      *
      * @param event the event bundle
      */
+    @Override
     void fireEventBundle(EventBundle event) throws ClientException;
 
     /**

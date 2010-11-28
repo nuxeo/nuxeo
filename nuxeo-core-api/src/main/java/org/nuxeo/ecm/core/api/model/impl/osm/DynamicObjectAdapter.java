@@ -64,6 +64,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         }
     }
 
+    @Override
     public Map<String, Object> getMap(Object object) throws PropertyException {
         if (object == null) { //TODO
             throw new PropertyAccessException("Trying to access a member of a null object");
@@ -85,6 +86,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         return map;
     }
 
+    @Override
     public void setMap(Object object, Map<String, Object> value) throws PropertyException {
         if (object == null) {
             throw new PropertyAccessException("Trying to access a member of a null object");
@@ -108,6 +110,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         }
     }
 
+    @Override
     public Object getValue(Object object, String name) throws PropertyException {
         if (object == null) {
             throw new PropertyAccessException("Trying to access a member of a null object: "+name);
@@ -123,6 +126,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         }
     }
 
+    @Override
     public void setValue(Object object, String name, Object value) throws PropertyException {
         if (object == null) {
             throw new PropertyAccessException("Trying to access a member of a null object: "+name);
@@ -138,6 +142,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         }
     }
 
+    @Override
     public ObjectAdapter getAdapter(String name) throws PropertyNotFoundException {
         MemberAccessor accessor = fields.get(name);
         if (accessor == null) {
@@ -146,6 +151,7 @@ public abstract class DynamicObjectAdapter implements ObjectAdapter {
         return ObjectAdapterManager.getInstance().get(accessor.getType());
     }
 
+    @Override
     public Serializable getDefaultValue() {
         return null;
     }

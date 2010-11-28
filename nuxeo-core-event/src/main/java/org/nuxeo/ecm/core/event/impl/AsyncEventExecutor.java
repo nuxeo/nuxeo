@@ -145,6 +145,7 @@ public class AsyncEventExecutor {
             }
         }
 
+        @Override
         public void run() {
             EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
             try {
@@ -186,6 +187,7 @@ public class AsyncEventExecutor {
             namePrefix = prefix + ' ' + poolNumber.incrementAndGet() + '-';
         }
 
+        @Override
         public Thread newThread(Runnable r) {
             String name = namePrefix + threadNumber.incrementAndGet();
             Thread t = new Thread(group, r, name);

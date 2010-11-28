@@ -60,24 +60,29 @@ public class ACPImpl implements ACP {
 
     // Owners.
 
+    @Override
     public String[] getOwners() {
         return owners.toArray(new String[owners.size()]);
     }
 
+    @Override
     public boolean isOwner(String username) {
         return owners.contains(username);
     }
 
+    @Override
     public void addOwner(String owner) {
         owners.add(owner);
         cache.clear();
     }
 
+    @Override
     public void removeOwner(String owner) {
         owners.remove(owner);
         cache.clear();
     }
 
+    @Override
     public void setOwners(String[] owners) {
         this.owners.clear();
         this.owners.addAll(Arrays.asList(owners));
@@ -90,6 +95,7 @@ public class ACPImpl implements ACP {
      * This method must append the ACL and not insert it since it is used to
      * append the inherited ACL which is the less significant ACL.
      */
+    @Override
     public void addACL(ACL acl) {
         assert acl != null;
         ACL oldACL = getACL(acl.getName());
@@ -108,11 +114,13 @@ public class ACPImpl implements ACP {
         cache.clear();
     }
 
+    @Override
     public void addACL(int pos, ACL acl) {
         acls.add(pos, acl);
         cache.clear();
     }
 
+    @Override
     public void addACL(String afterMe, ACL acl) {
         if (afterMe == null) {
             addACL(0, acl);
@@ -128,6 +136,7 @@ public class ACPImpl implements ACP {
         }
     }
 
+    @Override
     public ACL getACL(String name) {
         if (name == null) {
             name = ACL.LOCAL_ACL;
@@ -142,10 +151,12 @@ public class ACPImpl implements ACP {
         return null;
     }
 
+    @Override
     public ACL[] getACLs() {
         return acls.toArray(new ACL[acls.size()]);
     }
 
+    @Override
     public ACL getMergedACLs(String name) {
         ACL mergedAcl = new ACLImpl(name, true);
         for (ACL acl : acls) {
@@ -158,6 +169,7 @@ public class ACPImpl implements ACP {
         return new ACLImpl(name);
     }
 
+    @Override
     public ACL removeACL(String name) {
         for (int i = 0, len = acls.size(); i < len; i++) {
             ACL acl = acls.get(i);
@@ -169,6 +181,7 @@ public class ACPImpl implements ACP {
         return null;
     }
 
+    @Override
     public Access getAccess(String principal, String permission) {
         // check first the cache
         String key = principal + ':' + permission;
@@ -190,6 +203,7 @@ public class ACPImpl implements ACP {
         return access;
     }
 
+    @Override
     public Access getAccess(String[] principals, String[] permissions) {
         for (ACL acl : acls) {
             for (ACE ace : acl) {
@@ -269,6 +283,7 @@ public class ACPImpl implements ACP {
         acl.add(ace);
     }
 
+    @Override
     public ACL getOrCreateACL(String name) {
         ACL acl = getACL(name);
         if (acl == null) {
@@ -278,16 +293,19 @@ public class ACPImpl implements ACP {
         return acl;
     }
 
+    @Override
     public ACL getOrCreateACL() {
         return getOrCreateACL(ACL.LOCAL_ACL);
     }
 
     // Rules.
 
+    @Override
     public void setRules(String aclName, UserEntry[] userEntries) {
         setRules(aclName, userEntries, true);
     }
 
+    @Override
     public void setRules(String aclName, UserEntry[] userEntries,
             boolean overwrite) {
 
@@ -313,10 +331,12 @@ public class ACPImpl implements ACP {
         cache.clear();
     }
 
+    @Override
     public void setRules(UserEntry[] userEntries) {
         setRules(ACL.LOCAL_ACL, userEntries);
     }
 
+    @Override
     public void setRules(UserEntry[] userEntries, boolean overwrite) {
         setRules(ACL.LOCAL_ACL, userEntries, overwrite);
     }
@@ -331,6 +351,7 @@ public class ACPImpl implements ACP {
         cache = new HashMap<String, Access>();
     }
 
+    @Override
     public String[] listUsernamesForPermission(String perm) {
         List<String> usernames = new ArrayList<String>();
         ACL merged = getMergedACLs("merged");
@@ -350,6 +371,7 @@ public class ACPImpl implements ACP {
      * perform an oration. It gets the list of individual permissions which
      * supposedly all grant.
      */
+    @Override
     public String[] listUsernamesForAnyPermission(Set<String> perms) {
         List<String> usernames = new ArrayList<String>();
         ACL merged = getMergedACLs("merged");

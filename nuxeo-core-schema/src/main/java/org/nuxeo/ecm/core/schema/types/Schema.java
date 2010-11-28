@@ -45,6 +45,7 @@ public interface Schema extends ComplexType {
     // TODO: impl a notification mechanism?
     void setLazy(boolean isLazy);
 
+    @Override
     TypeRef<Schema> getRef();
 
     /**

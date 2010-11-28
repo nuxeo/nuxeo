@@ -64,6 +64,7 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
 
         protected final EventBundleTransactionHandler txh = new EventBundleTransactionHandler();
 
+        @Override
         public void run() {
             long t0 = System.currentTimeMillis();
             log.debug("Start post commit sync execution in Thread "
@@ -85,6 +86,7 @@ public class BulkExecutor extends PostCommitSynchronousRunner {
                     + (System.currentTimeMillis() - t0) + "ms");
         }
 
+        @Override
         public void uncaughtException(Thread t, Throwable e) {
             event.disconnect();
             txh.rollbackTransaction();

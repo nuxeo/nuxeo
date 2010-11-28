@@ -127,35 +127,43 @@ public class ExportedDocumentImpl implements ExportedDocument {
     /**
      * @return the source DocumentLocation
      */
+    @Override
     public DocumentLocation getSourceLocation() {
         return srcLocation;
     }
 
+    @Override
     public Path getPath() {
         return path;
     }
 
+    @Override
     public void setPath(Path path) {
         this.path = path;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getType() {
         return document.getRootElement().element(ExportConstants.SYSTEM_TAG).elementText(
                 "type");
     }
 
+    @Override
     public Document getDocument() {
         return document;
     }
 
+    @Override
     public void setDocument(Document document) {
         this.document = document;
         id = document.getRootElement().attributeValue(ExportConstants.ID_ATTR);
@@ -164,38 +172,47 @@ public class ExportedDocumentImpl implements ExportedDocument {
         srcLocation = new DocumentLocationImpl(repName, new IdRef(id));
     }
 
+    @Override
     public Map<String, Blob> getBlobs() {
         return blobs;
     }
 
+    @Override
     public void putBlob(String id, Blob blob) {
         blobs.put(id, blob);
     }
 
+    @Override
     public Blob removeBlob(String id) {
         return blobs.remove(id);
     }
 
+    @Override
     public Blob getBlob(String id) {
         return blobs.get(id);
     }
 
+    @Override
     public boolean hasExternalBlobs() {
         return !blobs.isEmpty();
     }
 
+    @Override
     public Map<String, Document> getDocuments() {
         return documents;
     }
 
+    @Override
     public Document getDocument(String id) {
         return documents.get(id);
     }
 
+    @Override
     public void putDocument(String id, Document doc) {
         documents.put(id, doc);
     }
 
+    @Override
     public Document removeDocument(String id) {
         return documents.remove(id);
     }
@@ -203,6 +220,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
     /**
      * @return the number of files describing the document.
      */
+    @Override
     public int getFilesCount() {
         return 1 + documents.size() + blobs.size();
     }

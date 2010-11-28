@@ -106,6 +106,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         return map;
     }
 
+    @Override
     public void close() {
         if (out != null) {
             try {

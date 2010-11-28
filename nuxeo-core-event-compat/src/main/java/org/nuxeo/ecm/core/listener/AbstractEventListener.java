@@ -37,22 +37,27 @@ public abstract class AbstractEventListener implements EventListener {
 
     private List<String> eventIds;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public Integer getOrder() {
         return order;
     }
 
+    @Override
     public void setOrder(Integer order) {
         this.order = order;
     }
 
+    @Override
     public void addEventId(String eventId) {
         if (eventId == null || eventId.length() == 0) {
             throw new IllegalArgumentException("eventId can't be null or empty");
@@ -64,12 +69,14 @@ public abstract class AbstractEventListener implements EventListener {
         eventIds.add(eventId);
     }
 
+    @Override
     public void removeEventId(String eventId) {
         if (eventIds != null) {
             eventIds.remove(eventId);
         }
     }
 
+    @Override
     public boolean accepts(String eventId) {
         if (eventIds == null || eventIds.isEmpty()) {
             return true;
@@ -78,10 +85,12 @@ public abstract class AbstractEventListener implements EventListener {
         }
     }
 
+    @Override
     public void operationStarted(Operation<?> cmd) throws Exception {
         // ignore this for now - avoid breaking compatibility by making it abstract
     }
 
+    @Override
     public void operationTerminated(Operation<?> cmd) throws Exception {
         // ignore this for now - avoid breaking compatibility by making it abstract
     }
@@ -103,6 +112,7 @@ public abstract class AbstractEventListener implements EventListener {
      * When notifyEvent will be removed remove this default implementation too
      */
     // TODO: remove in 5.2
+    @Override
     @Deprecated
     public void handleEvent(CoreEvent coreEvent) throws Exception {
         notifyEvent(coreEvent);

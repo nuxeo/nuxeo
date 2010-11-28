@@ -66,54 +66,63 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
     private static DefaultPropertyFactory instance;
 
     public static final PropertyFactory DEFAULT = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return newProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory STRING = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new StringProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory INTEGER = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new LongProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory DOUBLE = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new DoubleProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory DATE = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new DateProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory BOOLEAN = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new BooleanProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory BINARY = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new BinaryProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory BLOB = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new BlobProperty(parent, field, flags);
         }
     };
 
     public static final PropertyFactory EXTERNAL_BLOB = new PropertyFactory() {
+        @Override
         public Property createProperty(Property parent, Field field, int flags) {
             return new ExternalBlobProperty(parent, field, flags);
         }

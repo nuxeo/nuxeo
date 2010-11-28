@@ -48,6 +48,7 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
     }
 
     // FIXME: IType doesn't have an isPrimitive method.
+    @Override
     public boolean isPrimitive() {
         return true;
     }
@@ -57,6 +58,7 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
         return true;
     }
 
+    @Override
     public SimpleType getPrimitiveType() {
         return this;
     }

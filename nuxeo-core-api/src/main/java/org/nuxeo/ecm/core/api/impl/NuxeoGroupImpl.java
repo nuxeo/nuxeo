@@ -49,18 +49,22 @@ public class NuxeoGroupImpl implements NuxeoGroup {
         parentGroups = new ArrayList<String>();
     }
 
+    @Override
     public List<String> getMemberUsers() {
         return users;
     }
 
+    @Override
     public List<String> getMemberGroups() {
         return groups;
     }
 
+    @Override
     public List<String> getParentGroups() {
         return parentGroups;
     }
 
+    @Override
     public void setMemberUsers(List<String> users) {
         if (users == null) {
             throw new IllegalArgumentException("member users list cannot be null");
@@ -69,6 +73,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
         this.users.addAll(users);
     }
 
+    @Override
     public void setMemberGroups(List<String> groups) {
         if (groups == null) {
             throw new IllegalArgumentException("member groups list cannot be null");
@@ -77,6 +82,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
         this.groups.addAll(groups);
     }
 
+    @Override
     public void setParentGroups(List<String> groups) {
         if (groups == null) {
             throw new IllegalArgumentException("parent groups list cannot be null");
@@ -85,10 +91,12 @@ public class NuxeoGroupImpl implements NuxeoGroup {
         parentGroups.addAll(groups);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }

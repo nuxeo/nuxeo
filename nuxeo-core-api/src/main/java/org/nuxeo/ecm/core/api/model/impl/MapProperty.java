@@ -56,10 +56,12 @@ public class MapProperty extends ComplexProperty {
     public void internalSetValue(Serializable value) throws PropertyException {
     }
 
+    @Override
     public boolean isContainer() {
         return true;
     }
 
+    @Override
     public String getName() {
         return field.getName().getPrefixedName();
     }
@@ -69,6 +71,7 @@ public class MapProperty extends ComplexProperty {
         return (ComplexType) field.getType();
     }
 
+    @Override
     public Field getField() {
         return field;
     }
@@ -79,6 +82,7 @@ public class MapProperty extends ComplexProperty {
         return clone;
     }
 
+    @Override
     public void accept(PropertyVisitor visitor, Object arg) throws PropertyException {
         arg = visitor.visit(this, arg);
         if (arg != null) {

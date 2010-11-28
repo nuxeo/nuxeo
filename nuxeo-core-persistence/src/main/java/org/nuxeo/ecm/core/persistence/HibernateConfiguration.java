@@ -116,6 +116,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         return cfg;
     }
 
+    @Override
     public EntityManagerFactory getFactory(String txType) {
         Map<String, String> properties = new HashMap<String, String>();
         if (txType == null) {
@@ -153,6 +154,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             }
         }
 
+        @Override
         public TransactionManager getTransactionManager(Properties props) {
             try {
                 return TransactionHelper.lookupTransactionManager();
@@ -161,15 +163,18 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             }
         }
 
+        @Override
         public String getUserTransactionName() {
             return TransactionHelper.getUserTransactionJNDIName();
         }
 
+        @Override
         public Object getTransactionIdentifier(Transaction transaction) {
             return transaction;
         }
     }
 
+    @Override
     public EntityManagerFactory getFactory() {
         return getFactory(null);
     }

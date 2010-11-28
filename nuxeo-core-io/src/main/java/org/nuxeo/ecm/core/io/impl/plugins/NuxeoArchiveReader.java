@@ -137,6 +137,7 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
         return xdoc;
     }
 
+    @Override
     public void close() {
         if (in != null) {
             try {

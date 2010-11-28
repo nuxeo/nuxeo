@@ -159,6 +159,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
         return client;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
 
         // Get the client.
@@ -207,10 +208,12 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
         return in;
     }
 
+    @Override
     public boolean isPersistent() {
         return false;
     }
 
+    @Override
     public Blob persist() throws IOException {
         // NXP-3190: fetch it first in case it's not initialized
         if (in == null) {

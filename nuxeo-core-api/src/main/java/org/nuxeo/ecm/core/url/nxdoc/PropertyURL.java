@@ -48,6 +48,7 @@ public class PropertyURL implements URLStreamHandlerFactory {
         return createURL(doc.getRepositoryName(), doc.getId(), xpath, doc.getSessionId());
     }
 
+    @Override
     public URLStreamHandler createURLStreamHandler(String protocol) {
         if ("nxdoc".equals(protocol)) {
             return new Handler();

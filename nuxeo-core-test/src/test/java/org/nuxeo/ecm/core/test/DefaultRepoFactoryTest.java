@@ -40,4 +40,5 @@ public class DefaultRepoFactoryTest {
     public void testname() throws Exception {
         assertTrue(session.exists(new PathRef("/default-domain/workspaces")));
     }
+
 }

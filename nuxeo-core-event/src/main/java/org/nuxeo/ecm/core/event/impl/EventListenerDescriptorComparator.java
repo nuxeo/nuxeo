@@ -23,6 +23,7 @@ import java.util.Comparator;
 
 public class EventListenerDescriptorComparator  implements Comparator<EventListenerDescriptor> {
 
+    @Override
     public int compare(EventListenerDescriptor o1, EventListenerDescriptor o2) {
         return o1.getPriority() - o2.getPriority();
     }

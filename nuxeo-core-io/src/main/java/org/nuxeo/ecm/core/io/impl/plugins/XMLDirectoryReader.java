@@ -57,6 +57,7 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
         this.source = source;
         iterator = new FileTreeIterator(source);
         iterator.setFilter(new FileFilter() {
+            @Override
             public boolean accept(File pathname) {
                 return pathname.isDirectory();
             }
@@ -71,6 +72,7 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
         this.source = source;
     }
 
+    @Override
     public void close() {
         source = null;
         iterator = null;

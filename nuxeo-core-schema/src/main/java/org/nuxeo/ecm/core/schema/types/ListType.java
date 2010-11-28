@@ -91,6 +91,7 @@ public interface ListType extends Type {
      */
     void setLimits(int minOccurs, int maxOccurs);
 
+    @Override
     TypeRef<ListType> getRef();
 
     /**

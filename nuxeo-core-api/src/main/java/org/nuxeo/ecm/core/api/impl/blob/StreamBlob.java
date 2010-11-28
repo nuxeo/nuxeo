@@ -165,6 +165,7 @@ public abstract class StreamBlob extends AbstractBlob {
         return sb.toString();
     }
 
+    @Override
     public byte[] getByteArray() throws IOException {
         InputStream in = getStream();
         if (in == null || in.available() == 0) {
@@ -173,6 +174,7 @@ public abstract class StreamBlob extends AbstractBlob {
         return readBytes(in);
     }
 
+    @Override
     public String getString() throws IOException {
         Reader reader = getReader();
         if (reader == null || reader == EMPTY_READER) {
@@ -181,6 +183,7 @@ public abstract class StreamBlob extends AbstractBlob {
         return readString(reader);
     }
 
+    @Override
     public Reader getReader() throws IOException {
         InputStream in = getStream();
         if (in == null || in.available() == 0) {
@@ -191,6 +194,7 @@ public abstract class StreamBlob extends AbstractBlob {
                 : new InputStreamReader(in, enc);
     }
 
+    @Override
     public long getLength() {
         return -1;
     }

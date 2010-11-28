@@ -42,6 +42,7 @@ public final class LongType extends PrimitiveType {
         return object instanceof Number;
     }
 
+    @Override
     public Object convert(Object value) {
         if (value instanceof Long) {
             return value;

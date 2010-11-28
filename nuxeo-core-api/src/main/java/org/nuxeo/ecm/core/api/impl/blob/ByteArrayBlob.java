@@ -59,6 +59,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
     }
 
 
+    @Override
     public long getLength() {
         if (content == null || content.length == 0) {
             return 0;
@@ -67,6 +68,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
     }
 
 
+    @Override
     public InputStream getStream() throws IOException {
         if (content == null || content.length == 0) {
             return EMPTY_INPUT_STREAM;
@@ -74,6 +76,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         return new ByteArrayInputStream(content);
     }
 
+    @Override
     public byte[] getByteArray() throws IOException {
         if (content == null || content.length == 0) {
             return EMPTY_BYTE_ARRAY;
@@ -81,6 +84,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         return content;
     }
 
+    @Override
     public String getString() throws IOException {
         if (content == null || content.length == 0) {
             return EMPTY_STRING;
@@ -88,6 +92,7 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         return new String(content, encoding == null ? "UTF-8" : encoding);
     }
 
+    @Override
     public Reader getReader() throws IOException {
         String str = getString();
         if (str == null || str.length() == 0) {
@@ -96,10 +101,12 @@ public class ByteArrayBlob extends DefaultBlob implements Serializable {
         return new StringReader(str);
     }
 
+    @Override
     public Blob persist() throws IOException {
         return this;
     }
 
+    @Override
     public boolean isPersistent() {
         return true;
     }

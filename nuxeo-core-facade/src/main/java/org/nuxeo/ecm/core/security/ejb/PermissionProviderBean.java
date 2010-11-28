@@ -48,27 +48,33 @@ public class PermissionProviderBean implements PermissionProviderLocal {
         permissionProvider = sservice.getPermissionProvider();
     }
 
+    @Override
     public String[] getAliasPermissions(String perm) throws ClientException {
         return permissionProvider.getAliasPermissions(perm);
     }
 
+    @Override
     public String[] getPermissionGroups(String perm) {
         return permissionProvider.getPermissionGroups(perm);
     }
 
+    @Override
     public String[] getPermissions() {
         return permissionProvider.getPermissions();
     }
 
+    @Override
     public String[] getSubPermissions(String perm) throws ClientException {
         return permissionProvider.getSubPermissions(perm);
     }
 
+    @Override
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors()
             throws ClientException {
         return permissionProvider.getUserVisiblePermissionDescriptors();
     }
 
+    @Override
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
             String typeName) throws ClientException {
         return permissionProvider.getUserVisiblePermissionDescriptors(typeName);

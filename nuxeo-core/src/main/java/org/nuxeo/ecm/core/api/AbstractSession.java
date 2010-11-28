@@ -2982,6 +2982,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public String getSuperParentType(DocumentModel doc) throws ClientException {
         DocumentModel superSpace = getSuperSpace(doc);
         if (superSpace == null) {
@@ -2991,6 +2992,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public DocumentModel getSuperSpace(DocumentModel doc)
             throws ClientException {
         if (doc == null) {
@@ -3035,6 +3037,7 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public List<SecuritySummaryEntry> getSecuritySummary(
             DocumentModel docModel, Boolean includeParents)
             throws ClientException {
@@ -3053,10 +3056,12 @@ public abstract class AbstractSession implements CoreSession,
         return getSecurityService().getSecuritySummary(doc, includeParents);
     }
 
+    @Override
     public String getRepositoryName() {
         return repositoryName;
     }
 
+    @Override
     public <T extends Serializable> T getDocumentSystemProp(DocumentRef ref,
             String systemProperty, Class<T> type) throws ClientException,
             DocumentException {
@@ -3071,6 +3076,7 @@ public abstract class AbstractSession implements CoreSession,
         return doc.getSystemProp(systemProperty, type);
     }
 
+    @Override
     public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref,
             String systemProperty, T value) throws ClientException,
             DocumentException {
@@ -3083,6 +3089,7 @@ public abstract class AbstractSession implements CoreSession,
         doc.setSystemProp(systemProperty, value);
     }
 
+    @Override
     public void orderBefore(DocumentRef parent, String src, String dest)
             throws ClientException {
         try {
@@ -3106,10 +3113,12 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    @Override
     public <T> T run(Operation<T> op) throws ClientException {
         return run(op, null);
     }
 
+    @Override
     public <T> T run(Operation<T> op, ProgressMonitor monitor)
             throws ClientException {
         // double s = System.currentTimeMillis();
@@ -3146,6 +3155,7 @@ public abstract class AbstractSession implements CoreSession,
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
+    @Override
     public void startOperation(Operation<?> operation) {
         EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
                 operation);
@@ -3170,6 +3180,7 @@ public abstract class AbstractSession implements CoreSession,
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
+    @Override
     public void endOperation(Operation<?> operation) {
         EventContextImpl ctx = new EventContextImpl(this, getPrincipal(),
                 operation);
@@ -3185,6 +3196,7 @@ public abstract class AbstractSession implements CoreSession,
         // service.fireOperationTerminated(operation);
     }
 
+    @Override
     public DocumentModelRefresh refreshDocument(DocumentRef ref,
             int refreshFlags, String[] schemas) throws ClientException {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
@@ -3277,6 +3289,7 @@ public abstract class AbstractSession implements CoreSession,
 
     }
 
+    @Override
     public String[] getPermissionsToCheck(String permission) {
         return getSecurityService().getPermissionsToCheck(permission);
     }

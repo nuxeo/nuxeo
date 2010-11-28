@@ -61,6 +61,7 @@ public class DocumentModelTreeNodeComparator implements
         return titlePath;
     }
 
+    @Override
     public int compare(DocumentModelTreeNodeImpl node1,
             DocumentModelTreeNodeImpl node2) {
         String titlePath1 = getTitlePath(node1);

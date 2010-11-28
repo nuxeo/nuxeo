@@ -68,10 +68,12 @@ public class DefaultLoginHandler implements LoginHandler {
         return username;
     }
 
+    @Override
     public synchronized LoginContext getLoginContext() {
         return lc;
     }
 
+    @Override
     public synchronized LoginContext login() throws LoginException {
         if (username == null) {
             lc = Framework.login();
@@ -81,12 +83,14 @@ public class DefaultLoginHandler implements LoginHandler {
         return lc;
     }
 
+    @Override
     public synchronized void logout() throws LoginException {
         if (lc != null) {
             lc.logout();
         }
     }
 
+    @Override
     public synchronized void retryLogin() throws LoginException {
         if (lc != null) {
             lc.logout();
@@ -94,10 +98,12 @@ public class DefaultLoginHandler implements LoginHandler {
         login();
     }
 
+    @Override
     public boolean isLogged() {
         return lc != null;
     }
 
+    @Override
     public LoginContext loginAsSystem(String username) throws LoginException {
         logout();
         return lc = Framework.loginAs(username);

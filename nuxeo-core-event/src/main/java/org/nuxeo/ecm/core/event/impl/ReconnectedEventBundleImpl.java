@@ -178,38 +178,47 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         return reconnectedEvents;
     }
 
+    @Override
     public String getName() {
         return sourceEventBundle.getName();
     }
 
+    @Override
     public VMID getSourceVMID() {
         return sourceEventBundle.getSourceVMID();
     }
 
+    @Override
     public boolean hasRemoteSource() {
         return sourceEventBundle.hasRemoteSource();
     }
 
+    @Override
     public boolean isEmpty() {
         return sourceEventBundle.isEmpty();
     }
 
+    @Override
     public Event peek() {
         return getReconnectedEvents().get(0);
     }
 
+    @Override
     public void push(Event event) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public int size() {
         return sourceEventBundle.size();
     }
 
+    @Override
     public Iterator<Event> iterator() {
         return getReconnectedEvents().iterator();
     }
 
+    @Override
     public void disconnect() {
         if (reconnectedCoreSession != null) {
             CoreInstance.getInstance().close(reconnectedCoreSession);
@@ -223,10 +232,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         }
     }
 
+    @Override
     public boolean comesFromJMS() {
         return false;
     }
 
+    @Override
     public boolean containsEventName(String eventName) {
         return sourceEventBundle.containsEventName(eventName);
     }

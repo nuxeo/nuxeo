@@ -74,6 +74,7 @@ public class LifeCycleFilter implements Filter {
         }
     }
 
+    @Override
     public boolean accept(DocumentModel docModel) {
         try {
             String lifeCycleState = docModel.getCurrentLifeCycleState();

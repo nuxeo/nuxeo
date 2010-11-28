@@ -43,6 +43,7 @@ public class DocumentModelTreeNodeImpl implements Serializable, DocumentModelTre
         levelTree = level;
     }
 
+    @Override
     public DocumentModel getDocument() {
         return document;
     }

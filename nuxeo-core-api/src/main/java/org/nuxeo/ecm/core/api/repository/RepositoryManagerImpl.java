@@ -45,26 +45,32 @@ public class RepositoryManagerImpl extends DefaultComponent implements
 
     private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
 
+    @Override
     public void addRepository(Repository repository) {
         repositories.put(repository.getName(), repository);
     }
 
+    @Override
     public Collection<Repository> getRepositories() {
         return new ArrayList<Repository>(repositories.values());
     }
 
+    @Override
     public Repository getRepository(String name) {
         return repositories.get(name);
     }
 
+    @Override
     public void removeRepository(String name) {
         repositories.remove(name);
     }
 
+    @Override
     public void clear() {
         repositories.clear();
     }
 
+    @Override
     public Repository getDefaultRepository() {
         Iterator<Repository> it = repositories.values().iterator();
 
