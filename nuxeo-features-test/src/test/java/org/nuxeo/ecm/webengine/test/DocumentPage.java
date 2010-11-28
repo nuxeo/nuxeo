@@ -26,7 +26,6 @@ import org.openqa.selenium.By;
  */
 public class DocumentPage extends WebPage {
 
-
     public String getTitle() {
         return findElement(By.id("tab_content")).findElement(By.tagName("h2")).getText().trim();
     }

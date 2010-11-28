@@ -39,9 +39,11 @@ public class AnnotationServiceImplTest extends AbstractAnnotationTest {
 
     public void testAddAnnotation() throws AnnotationException {
         assertNotNull(annotation);
+
         Annotation result = service.addAnnotation(annotation, user,
                 "http://myexemple.com/nuxeo/Annotations/");
         assertNotNull(result);
+
         Resource subject = result.getSubject();
         assertNotNull(subject);
     }

@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 
+import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBCONTAINER_URL;
+
 public class TestSiteActionListener extends SQLRepositoryTestCase {
 
     protected Log log = LogFactory.getLog(TestSiteActionListener.class);
@@ -52,11 +54,11 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         session.save();
 
         String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+                WEBCONTAINER_URL);
         assertEquals("website", website1URL);
 
         String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+                WEBCONTAINER_URL);
         assertFalse(website1URL.equals(website2URL));
     }
 
@@ -83,11 +85,11 @@ public class TestSiteActionListener extends SQLRepositoryTestCase {
         session.save();
 
         String website1URL = (String) session.getDocument(new IdRef(website1.getId())).getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+                WEBCONTAINER_URL);
         assertEquals("website", website1URL);
 
         String website2URL = (String) session.getDocument(new IdRef(website2.getId())).getPropertyValue(
-                SiteConstants.WEBCONTAINER_URL);
+                WEBCONTAINER_URL);
 
         String path1 = (String) session.getDocument(website1.getRef()).getPathAsString();
         String path2 = (String) session.getDocument(website2.getRef()).getPathAsString();

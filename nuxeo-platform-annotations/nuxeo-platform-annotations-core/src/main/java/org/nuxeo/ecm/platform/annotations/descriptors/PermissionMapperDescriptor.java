@@ -28,6 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("permissionMapper")
 public class PermissionMapperDescriptor {
+
     @XNode("readAnnotation")
     private String readAnnotationValue;
 
@@ -71,4 +72,5 @@ public class PermissionMapperDescriptor {
     public void setDeleteAnnotationValue(String deleteAnnotationValue) {
         this.deleteAnnotationValue = deleteAnnotationValue;
     }
+
 }

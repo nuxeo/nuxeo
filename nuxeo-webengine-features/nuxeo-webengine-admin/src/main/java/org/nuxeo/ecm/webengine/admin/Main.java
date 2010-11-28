@@ -44,7 +44,6 @@ public class Main extends RootResource {
         super(info, headers, "Admin");
     }
 
-
     @Path("users")
     public Object getUserManagement() {
         return newObject("UserManager");

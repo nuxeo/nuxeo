@@ -22,15 +22,17 @@ package org.nuxeo.ecm.platform.annotations.api;
 import java.net.URI;
 import java.util.List;
 
-
-
 /**
  * @author Alexandre Russel
- *
  */
 public interface UriResolver {
+
     URI translateToGraphURI(URI uri) throws AnnotationException;
+
     URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException;
+
     String getBaseUrl(URI uri) throws AnnotationException;
+
     List<URI> getSearchURI(URI uri) throws AnnotationException;
+
 }

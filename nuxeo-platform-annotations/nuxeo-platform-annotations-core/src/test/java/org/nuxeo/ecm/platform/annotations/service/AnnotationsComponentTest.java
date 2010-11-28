@@ -48,22 +48,30 @@ public class AnnotationsComponentTest extends NXRuntimeTestCase {
     public void testServices() throws Exception {
         service = Framework.getService(AnnotationsService.class);
         assertNotNull(service);
+
         configuration = Framework.getService(AnnotationConfigurationService.class);
         assertNotNull(configuration);
+
         AnnotationConfigurationServiceImpl configurationImpl = (AnnotationConfigurationServiceImpl) configuration;
         UriResolver resolver = configurationImpl.getUriResolver();
         assertNotNull(resolver);
+
         URLPatternFilter filter = configurationImpl.getUrlPatternFilter();
         assertNotNull(filter);
+
         MetadataMapper mapper = configurationImpl.getMetadataMapper();
         assertNotNull(mapper);
+
         PermissionManager manager = configurationImpl.getPermissionManager();
         assertNotNull(manager);
+
         AnnotabilityManager annManager = configurationImpl.getAnnotabilityManager();
         assertNotNull(annManager);
+
         List<EventListener> l = configurationImpl.getListeners();
         assertNotNull(l);
         assertEquals(1, l.size());
+
         AnnotationIDGenerator generator = configurationImpl.getIDGenerator();
         assertNotNull(generator);
         assertTrue(generator instanceof DefaultIDGenerator);

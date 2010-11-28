@@ -42,7 +42,7 @@ public class PreviewHelper {
             xpath = PREVIEWURL_DEFAULTXPATH;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(PREVIEWURL_PREFIX);
         sb.append(doc.getRepositoryName());

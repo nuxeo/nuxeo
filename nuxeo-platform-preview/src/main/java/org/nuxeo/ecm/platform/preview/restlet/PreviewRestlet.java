@@ -157,7 +157,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         }
     }
 
-    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing) throws ClientException {
+    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing)
+            throws ClientException {
 
         HtmlPreviewAdapter preview = null; //getFromCache(targetDocument, xpath);
 
@@ -194,7 +195,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     }
 
     protected void handleNoPreview(Response res, String xpath, Exception e) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");
         if (e == null) {

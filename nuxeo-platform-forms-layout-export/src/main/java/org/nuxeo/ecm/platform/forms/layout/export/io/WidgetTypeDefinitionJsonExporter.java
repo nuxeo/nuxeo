@@ -47,13 +47,16 @@ public class WidgetTypeDefinitionJsonExporter {
 
     private static final Log log = LogFactory.getLog(WidgetTypeDefinitionJsonExporter.class);
 
-    public static final void export(WidgetTypeDefinition def, OutputStream out)
+    private WidgetTypeDefinitionJsonExporter() {
+    }
+
+    public static void export(WidgetTypeDefinition def, OutputStream out)
             throws IOException {
         JSONObject res = exportToJson(def);
         out.write(res.toString(2).getBytes("UTF-8"));
     }
 
-    public static final void export(List<WidgetTypeDefinition> defs,
+    public static void export(List<WidgetTypeDefinition> defs,
             OutputStream out) throws IOException {
         JSONObject res = new JSONObject();
         if (defs != null) {

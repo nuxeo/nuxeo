@@ -38,21 +38,21 @@ public class ImagePreviewer extends AbstractPreviewer implements
         List<Blob> blobResults = new ArrayList<Blob>();
 
         try {
-        StringBuffer htmlPage = new StringBuffer();
+            StringBuffer htmlPage = new StringBuffer();
 
-        htmlPage.append("<html><head><title>");
-        htmlPage.append(getPreviewTitle(dm));
-        htmlPage.append("</title></head><body>");
-        appendPreviewSettings(htmlPage);
-        htmlPage.append("<img src=\"image\">");
+            htmlPage.append("<html><head><title>");
+            htmlPage.append(getPreviewTitle(dm));
+            htmlPage.append("</title></head><body>");
+            appendPreviewSettings(htmlPage);
+            htmlPage.append("<img src=\"image\">");
 
-        Blob mainBlob = new StringBlob(htmlPage.toString());
-        mainBlob.setFilename("index.html");
-        mainBlob.setMimeType("text/html");
-        blob.setFilename("image");
+            Blob mainBlob = new StringBlob(htmlPage.toString());
+            mainBlob.setFilename("index.html");
+            mainBlob.setMimeType("text/html");
+            blob.setFilename("image");
 
-        blobResults.add(mainBlob);
-        blobResults.add(blob);
+            blobResults.add(mainBlob);
+            blobResults.add(blob);
         } catch (ClientException e) {
             throw new PreviewException("Unable to get document property", e);
         }
@@ -60,7 +60,7 @@ public class ImagePreviewer extends AbstractPreviewer implements
         return blobResults;
     }
 
-    protected void appendPreviewSettings(StringBuffer sb) {
+    private static void appendPreviewSettings(StringBuffer sb) {
         sb.append("<script type=\"text/javascript\">");
         sb.append("var previewSettings = { ");
         sb.append("imageOnly: true");

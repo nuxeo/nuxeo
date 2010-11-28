@@ -43,23 +43,17 @@ public interface IOManager extends Serializable {
 
     /**
      * Returns the adapter with given name.
-     *
-     * @throws ClientException
      */
     IOResourceAdapter getAdapter(String name) throws ClientException;
 
     /**
      * Adds an adapter with given name and definition.
-     *
-     * @throws ClientException
      */
     void addAdapter(String name, IOResourceAdapter adapter)
             throws ClientException;
 
     /**
      * Removes adapter with given name.
-     *
-     * @throws ClientException
      */
     void removeAdapter(String name) throws ClientException;
 
@@ -74,9 +68,6 @@ public interface IOManager extends Serializable {
      * @param repo the repository name.
      * @param root Optional location of document that must be taken as root of
      *            the import (can be null).
-     * @throws IOException
-     * @throws ClientException
-     * @throws ImportDocumentException TODO
      */
     void importDocumentsAndResources(InputStream in, String repo,
             DocumentRef root) throws IOException, ClientException,
@@ -92,10 +83,6 @@ public interface IOManager extends Serializable {
      * @param recurse recurse into sources children
      * @param format export format. XXX see what format is actually accepted.
      * @param ioAdapters list of adapters to use for additional resources.
-     *
-     * @throws IOException
-     * @throws ClientException
-     * @throws ExportDocumentException TODO
      */
     void exportDocumentsAndResources(OutputStream out, String repo,
             Collection<DocumentRef> sources, boolean recurse, String format,
@@ -111,7 +98,6 @@ public interface IOManager extends Serializable {
      *            placed.
      * @param ioAdapters list of adapters to use for additional resources.
      * @return the list of copied documents references.
-     * @throws ClientException
      */
     Collection<DocumentRef> copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, DocumentLocation targetLocation,
@@ -119,8 +105,6 @@ public interface IOManager extends Serializable {
 
     /**
      * Remote copy. Copy documents and resources to another location.
-     *
-     * @throws ClientException
      */
     void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress,
@@ -129,8 +113,6 @@ public interface IOManager extends Serializable {
 
     /**
      * Remote copy. Copy documents and resources to another location.
-     *
-     * @throws ClientException
      */
     void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, IOManager remoteIOManager,
@@ -159,7 +141,6 @@ public interface IOManager extends Serializable {
      * @param docWriterFactoryClassName classname for a DocumentWriterFactory custom implementation
      * @param wFactoryParams params to be given to custom DocumentWriterFactory to create DocumentWriter
      * @param ioAdapters
-     * @throws ClientException
      */
     void copyDocumentsAndResources(String repo,
             Collection<DocumentRef> sources, String serverAddress,
@@ -172,12 +153,6 @@ public interface IOManager extends Serializable {
      * Exports the documents and resources specified by sources and creates an
      * external reachable URI (through stream service) from where a client could
      * download the export.
-     *
-     * @param repo
-     * @param sources
-     * @param ioAdapters
-     * @return
-     * @throws ClientException
      */
     String externalizeExport(String repo, Collection<DocumentRef> sources,
             Collection<String> ioAdapters) throws ClientException;
@@ -187,13 +162,6 @@ public interface IOManager extends Serializable {
      * be created by specified readerFactoryName. Creates an external reachable
      * URI (through stream service) from where a client could download the
      * export.
-     *
-     * @param repo
-     * @param docReaderFactoryName
-     * @param readerFactoryParams
-     * @param ioAdapters
-     * @return
-     * @throws ClientException
      */
     String externalizeExport(String repo, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
@@ -201,13 +169,6 @@ public interface IOManager extends Serializable {
 
     /**
      * Exports documents as an streamable archive - using all options
-     * @param repo
-     * @param sources
-     * @param docReaderFactoryName
-     * @param readerFactoryParams
-     * @param ioAdapters
-     * @return
-     * @throws ClientException
      */
     String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
@@ -217,30 +178,17 @@ public interface IOManager extends Serializable {
     /**
      * Should be called by client code after using the export created by
      * calling the {@link #externalizeExport}.
-     *
-     * @param uri
-     * @throws ClientException
      */
     void disposeExport(String uri) throws ClientException;
 
     /**
      * Will be called after a successful export to import data from the file.
-     *
-     * @param uri
-     * @param targetLocation
-     * @throws ClientException
      */
     void importExportedFile(String uri, DocumentLocation targetLocation)
             throws ClientException;
 
     /**
      * Will be called after a successful export to import data from the file.
-     *
-     * @param uri
-     * @param targetLocation
-     * @param docWriterFactoryClassName
-     * @param wFactoryParams
-     * @throws ClientException
      */
     void importExportedFile(String uri, DocumentLocation targetLocation,
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)

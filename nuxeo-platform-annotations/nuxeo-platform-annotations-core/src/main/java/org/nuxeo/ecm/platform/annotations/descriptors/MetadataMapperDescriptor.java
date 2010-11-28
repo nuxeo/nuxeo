@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.service.MetadataMapper;
  */
 @XObject("metadataMapper")
 public class MetadataMapperDescriptor {
+
     @XNode("@class")
     private Class<? extends MetadataMapper> klass;
 
@@ -39,4 +40,5 @@ public class MetadataMapperDescriptor {
     public void setKlass(Class<? extends MetadataMapper> klass) {
         this.klass = klass;
     }
+
 }

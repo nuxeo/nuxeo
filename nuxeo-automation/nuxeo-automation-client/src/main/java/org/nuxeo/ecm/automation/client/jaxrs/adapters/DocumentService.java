@@ -349,11 +349,6 @@ public class DocumentService {
      * will be used.
      * 
      * See {@link VersionIncrement}
-     * 
-     * @param doc
-     * @param increment
-     * @return
-     * @throws Exception
      */
     public Document createVersion(DocRef doc, String increment)
             throws Exception {

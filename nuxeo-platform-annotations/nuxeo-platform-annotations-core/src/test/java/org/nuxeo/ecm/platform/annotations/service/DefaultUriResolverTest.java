@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.annotations.api.UriResolver;
  *
  */
 public class DefaultUriResolverTest extends TestCase {
+
     private static final String baseUrl = "http://myexemple.com/nuxeo/Annotations/";
 
     private static final String annId = "3ACF6D754";
@@ -42,20 +43,19 @@ public class DefaultUriResolverTest extends TestCase {
 
     private final UriResolver resolver = new DefaultUriResolver();
 
-    public void testTranslateToGraphUri() throws AnnotationException,
-            URISyntaxException {
+    public void testTranslateToGraphUri() throws Exception {
         URI result = resolver.translateToGraphURI(new URI(annotationUrl));
         assertEquals(annotationUrn, result.toString());
     }
 
-    public void testTranslateFromGraphUri() throws AnnotationException,
-            URISyntaxException {
+    public void testTranslateFromGraphUri() throws Exception {
         URI result = resolver.translateFromGraphURI(new URI(annotationUrn),
                 baseUrl);
         assertEquals(annotationUrl, result.toString());
     }
 
-    public void testGetBaseUrl() throws AnnotationException, URISyntaxException {
+    public void testGetBaseUrl() throws Exception {
         assertEquals(baseUrl, resolver.getBaseUrl(new URI(annotationUrl)));
     }
+
 }

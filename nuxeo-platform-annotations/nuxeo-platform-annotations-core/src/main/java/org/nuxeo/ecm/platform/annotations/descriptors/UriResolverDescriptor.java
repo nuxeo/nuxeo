@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.api.UriResolver;
  */
 @XObject("urlResolver")
 public class UriResolverDescriptor {
+
     @XNode("@class")
     private Class<? extends UriResolver> klass;
 
@@ -39,4 +40,5 @@ public class UriResolverDescriptor {
     public void setKlass(Class<? extends UriResolver> klass) {
         this.klass = klass;
     }
+
 }

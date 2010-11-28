@@ -29,5 +29,7 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
  *
  */
 public interface PermissionManager {
-    boolean check(NuxeoPrincipal user, String permission, URI uri)throws AnnotationException;
+
+    boolean check(NuxeoPrincipal user, String permission, URI uri) throws AnnotationException;
+
 }

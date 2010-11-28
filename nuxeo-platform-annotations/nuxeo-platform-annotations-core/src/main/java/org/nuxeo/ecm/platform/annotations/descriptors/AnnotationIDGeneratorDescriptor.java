@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.service.AnnotationIDGenerator;
  */
 @XObject("IDGenerator")
 public class AnnotationIDGeneratorDescriptor {
+
     @XNode("@class")
     private Class<? extends AnnotationIDGenerator> klass;
 
@@ -39,4 +40,5 @@ public class AnnotationIDGeneratorDescriptor {
     public void setKlass(Class<? extends AnnotationIDGenerator> klass) {
         this.klass = klass;
     }
+
 }

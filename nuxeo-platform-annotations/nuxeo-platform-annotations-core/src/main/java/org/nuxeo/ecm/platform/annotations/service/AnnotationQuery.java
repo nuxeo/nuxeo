@@ -48,7 +48,7 @@ public class AnnotationQuery {
     @SuppressWarnings("unchecked")
     public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph)
             throws AnnotationException {
-        return getAnnotationsForURIs(uris, graph, Collections.EMPTY_MAP);
+        return getAnnotationsForURIs(uris, graph, Collections.<String, String>emptyMap());
     }
 
     public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph,

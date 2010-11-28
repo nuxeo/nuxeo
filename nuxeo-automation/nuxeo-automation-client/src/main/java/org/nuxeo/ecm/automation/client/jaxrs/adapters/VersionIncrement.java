@@ -20,10 +20,15 @@ package org.nuxeo.ecm.automation.client.jaxrs.adapters;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public interface VersionIncrement {
+public class VersionIncrement {
+
     public static final String MAJOR = "Major";
 
     public static final String MINOR = "Minor";
 
     public static final String NONE = "None";
+
+    private VersionIncrement() {
+    }
+
 }

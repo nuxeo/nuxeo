@@ -28,5 +28,7 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
  *
  */
 public interface MetadataMapper {
+
     void updateMetadata(Annotation annotation, NuxeoPrincipal user) throws AnnotationException;
+
 }

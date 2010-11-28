@@ -130,7 +130,7 @@ public class RootDocSpaceProvider extends AbstractSpaceProvider {
                 }
             }
         } catch (ClientException e) {
-            throw new SpaceException("Unable to query childrens", e);
+            throw new SpaceException("Unable to query children", e);
         }
         return spaces;
     }

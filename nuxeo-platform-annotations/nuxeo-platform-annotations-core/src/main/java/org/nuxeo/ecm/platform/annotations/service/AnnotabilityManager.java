@@ -28,5 +28,7 @@ import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
  *
  */
 public interface AnnotabilityManager {
+
     boolean isAnnotable(URI uri) throws AnnotationException;
+
 }

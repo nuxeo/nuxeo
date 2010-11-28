@@ -32,6 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("urlPatternFilter")
 public class URLPatternFilterDescriptor {
+
     @XNode("@order")
     private String order;
 

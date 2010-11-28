@@ -48,6 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class AnnotationsServiceImpl implements AnnotationsService {
+
     private static final String GET_ANN_QUERY = "SELECT ?p ?o WHERE { <source> ?p ?o .}";
 
     private final RelationManager relationManager;

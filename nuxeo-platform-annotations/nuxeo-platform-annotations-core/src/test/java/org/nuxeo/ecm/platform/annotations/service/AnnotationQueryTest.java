@@ -61,17 +61,22 @@ public class AnnotationQueryTest extends RepositoryOSGITestCase {
     public void testgetAnnotationsForURIs() throws AnnotationException {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
+
         Annotation annotation = manager.getAnnotation(is);
         assertNotNull(annotation);
+
         annotation.setSubject(new ResourceImpl("http://foo/1"));
         assertEquals("http://www.w3.org/2005/Incubator/",
                 annotation.getAnnotates().toString());
+
         AnnotationImpl ann = (AnnotationImpl) annotation;
         assertNotNull(ann);
+
         List<Annotation> annotations = query.getAnnotationsForURIs(
                 Collections.singletonList(ann.getAnnotates()), ann.getGraph());
         assertNotNull(annotations);
         assertEquals(1, annotations.size());
+
         annotation = annotations.get(0);
         assertEquals("http://www.w3.org/2005/Incubator/",
                 annotation.getAnnotates().toString());

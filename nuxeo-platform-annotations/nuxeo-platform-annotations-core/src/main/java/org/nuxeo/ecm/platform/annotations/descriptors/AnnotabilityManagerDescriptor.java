@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.service.AnnotabilityManager;
  */
 @XObject("annotabilityManager")
 public class AnnotabilityManagerDescriptor {
+
     @XNode("@class")
     private Class<? extends AnnotabilityManager> klass;
 
@@ -39,4 +40,5 @@ public class AnnotabilityManagerDescriptor {
     public void setKlass(Class<? extends AnnotabilityManager> klass) {
         this.klass = klass;
     }
+
 }

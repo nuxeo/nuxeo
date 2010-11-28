@@ -24,5 +24,7 @@ package org.nuxeo.ecm.platform.annotations.service;
  *
  */
 public interface AnnotationIDGenerator {
+
     String getNext();
+
 }

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.service.PermissionManager;
  */
 @XObject("permissionManager")
 public class PermissionManagerDescriptor {
+
     @XNode("@class")
     private Class<? extends PermissionManager> klass;
 
@@ -39,4 +40,5 @@ public class PermissionManagerDescriptor {
     public void setKlass(Class<? extends PermissionManager> klass) {
         this.klass = klass;
     }
+
 }

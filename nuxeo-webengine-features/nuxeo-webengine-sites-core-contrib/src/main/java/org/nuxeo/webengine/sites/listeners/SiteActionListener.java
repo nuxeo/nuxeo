@@ -26,6 +26,10 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.webengine.sites.utils.SiteConstants.*;
+
 /**
  * Site related actions listener. It performs when a mini-site is created.
  *
@@ -40,7 +44,7 @@ public class SiteActionListener implements EventListener {
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
 
-        if (!(DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId) || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventId))) {
+        if (!(ABOUT_TO_CREATE.equals(eventId) || BEFORE_DOC_UPDATE.equals(eventId))) {
             return;
         }
 
@@ -52,37 +56,37 @@ public class SiteActionListener implements EventListener {
         }
         DocumentModel doc = docCtx.getSourceDocument();
         String documentType = doc.getType();
-        if (!(SiteConstants.WORKSPACE.equals(documentType) || SiteConstants.WEBSITE.equals(documentType))) {
+        if (!(WORKSPACE.equals(documentType) || WEBSITE.equals(documentType))) {
             return;
         }
 
-        if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventId)) {
-
+        if (ABOUT_TO_CREATE.equals(eventId)) {
             String url = doc.getName();
-            int sameName = 0;
             String documentWithSameURLQuery = "SELECT * FROM DOCUMENT where "
-                    + SiteConstants.WEBCONTAINER_URL + " STARTSWITH \"" + url
+                    + WEBCONTAINER_URL + " STARTSWITH \"" + url
                     + "\"";
             DocumentModelList documentWithSameURL = docCtx.getCoreSession().query(
                     documentWithSameURLQuery);
-            if (documentWithSameURL.size() > 0) {
+            if (!documentWithSameURL.isEmpty()) {
+                // FIXME: this is not right
+                int sameName = 0;
                 url = url + "_" + (sameName + 1);
             }
 
-            doc.setPropertyValue(SiteConstants.WEBCONTAINER_URL, url);
+            doc.setPropertyValue(WEBCONTAINER_URL, url);
 
-            if (SiteConstants.WEBSITE.equals(documentType)) {
+            if (WEBSITE.equals(documentType)) {
                 // Is WebSite
                 // CB: Because, at least for a while, Workspaces need to work
                 // together with WebSites, "isWebContainer" flag needs to be
                 // kept and set to "true" for all new created WebSites.
-                doc.setPropertyValue(SiteConstants.WEBCONTAINER_ISWEBCONTAINER,
+                doc.setPropertyValue(WEBCONTAINER_ISWEBCONTAINER,
                         Boolean.TRUE);
             }
         }
 
         // Set WebSite title
-        doc.setPropertyValue(SiteConstants.WEBCONTAINER_NAME, doc.getTitle());
+        doc.setPropertyValue(WEBCONTAINER_NAME, doc.getTitle());
     }
 
 }

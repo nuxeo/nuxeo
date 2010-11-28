@@ -26,7 +26,9 @@ import java.net.URI;
  *
  */
 public class DefaultAnnotabilityManager implements AnnotabilityManager {
+
     public boolean isAnnotable(URI uri) {
         return true;
     }
+
 }

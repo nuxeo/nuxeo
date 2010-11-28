@@ -93,7 +93,7 @@ public class AnnotationImpl implements Annotation, Serializable {
         }
         if (node.isResource()) {
             Resource resource = (Resource) node;
-            return resource.getUri().toString();
+            return resource.getUri();
         }
         return null;
     }

@@ -35,7 +35,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
             throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
 
-        StringBuffer htmlPage = new StringBuffer();
+        StringBuilder htmlPage = new StringBuilder();
 
         htmlPage.append("<html>");
         try {

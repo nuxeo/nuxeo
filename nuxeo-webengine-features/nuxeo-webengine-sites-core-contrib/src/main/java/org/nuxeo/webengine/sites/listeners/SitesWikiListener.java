@@ -66,14 +66,13 @@ public class SitesWikiListener implements EventListener {
             return;
         }
 
-        DocumentModel webPage = ((DocumentEventContext) docCtx).getSourceDocument();
+        DocumentModel webPage = docCtx.getSourceDocument();
         if (webPage == null || !WEBPAGE.equals(webPage.getType())) {
             return;
         }
 
         try {
-            Boolean isRichText = Boolean.TRUE;
-            isRichText = (Boolean) webPage.getPropertyValue(WEBPAGE_EDITOR);
+            Boolean isRichText = (Boolean) webPage.getPropertyValue(WEBPAGE_EDITOR);
 
             if (isRichText) {
                 return;
@@ -84,7 +83,7 @@ public class SitesWikiListener implements EventListener {
                     || ABOUT_TO_CREATE.equals(event.getName())) {
                 String wikiContent = (String) webPage.getPropertyValue(WEBPAGE_CONTENT);
                 String basePath = (String) webPage.getContextData("basePath");
-                if (basePath==null) {
+                if (basePath == null) {
                     basePath = "/nuxeo/site/sites";
                 }
                 String targetObjectPath = (String) webPage.getContextData("targetObjectPath");
@@ -168,7 +167,7 @@ public class SitesWikiListener implements EventListener {
             }
         }
 
-        result.wikiContent=wikiContent;
+        result.wikiContent = wikiContent;
         return result;
     }
 
@@ -195,7 +194,7 @@ public class SitesWikiListener implements EventListener {
             returnList.add(content.substring(startPosition, endPosition));
             currentPosition = endPosition + 1;
         }
-        if (returnList.size() > 0) {
+        if (!returnList.isEmpty()) {
             return returnList.toArray(new String[returnList.size()]);
         } else {
             return ArrayUtils.EMPTY_STRING_ARRAY;

@@ -26,6 +26,7 @@ import java.util.List;
  *
  */
 public class URLPatternFilter {
+
     private final boolean allowDeny;
 
     private final List<String> denies;
@@ -62,4 +63,5 @@ public class URLPatternFilter {
     private boolean checkFirstPass(String url) {
         return checkMatch(allowDeny ? allows : denies, url);
     }
+
 }

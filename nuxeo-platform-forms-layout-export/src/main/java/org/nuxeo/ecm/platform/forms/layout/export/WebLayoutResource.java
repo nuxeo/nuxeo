@@ -100,9 +100,8 @@ public class WebLayoutResource {
 
     @GET
     @Path("widgetTypes")
-    public Object getWidgetTypeDefinitions(@Context
-    HttpServletRequest request, @QueryParam("all")
-    Boolean all) {
+    public Object getWidgetTypeDefinitions(@Context HttpServletRequest request,
+            @QueryParam("all") Boolean all) {
         return getWidgetTypeDefinitions(request, null, all);
     }
 
@@ -115,10 +114,8 @@ public class WebLayoutResource {
      */
     @GET
     @Path("widgetTypes/{category}")
-    public Object getWidgetTypeDefinitions(@Context
-    HttpServletRequest request, @PathParam("category")
-    String category, @QueryParam("all")
-    Boolean all) {
+    public Object getWidgetTypeDefinitions(@Context HttpServletRequest request,
+            @PathParam("category") String category, @QueryParam("all") Boolean all) {
         // TODO: refactor so that's cached
         WidgetTypeDefinitions res = new WidgetTypeDefinitions();
         for (WidgetTypeDefinition def : widgetTypes) {
@@ -153,9 +150,8 @@ public class WebLayoutResource {
 
     @GET
     @Path("widgetType/{name}")
-    public Object getWidgetTypeDefinition(@Context
-    HttpServletRequest request, @PathParam("name")
-    String name) {
+    public Object getWidgetTypeDefinition(@Context HttpServletRequest request,
+            @PathParam("name") String name) {
         WidgetTypeDefinition def = service.getWidgetTypeDefinition(name);
         if (def != null) {
             return def;
@@ -180,8 +176,7 @@ public class WebLayoutResource {
     }
 
     @GET
-    public Object doGet(@QueryParam("widgetType")
-    String widgetTypeName) {
+    public Object doGet(@QueryParam("widgetType") String widgetTypeName) {
         if (widgetTypeName == null) {
             return getTemplate();
         } else {

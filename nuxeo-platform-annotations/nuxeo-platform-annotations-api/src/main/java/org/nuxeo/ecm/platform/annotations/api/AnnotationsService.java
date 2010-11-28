@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.relations.api.Graph;
  * @author tiry
  */
 public interface AnnotationsService {
+
     Graph getAnnotationGraph() throws AnnotationException;
 
     /**

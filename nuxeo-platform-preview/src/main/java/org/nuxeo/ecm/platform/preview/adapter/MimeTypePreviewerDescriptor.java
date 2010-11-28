@@ -27,6 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("previewer")
 public class MimeTypePreviewerDescriptor {
+
     @XNode("pattern")
     private String pattern;
 

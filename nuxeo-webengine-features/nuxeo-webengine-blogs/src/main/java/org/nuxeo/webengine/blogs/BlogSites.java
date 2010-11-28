@@ -30,7 +30,7 @@ import org.nuxeo.webengine.sites.Sites;
  * @author rux
  */
 @WebObject(type = "blogs", facets = { "Blogs" })
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class BlogSites extends Sites {
 
     @Override

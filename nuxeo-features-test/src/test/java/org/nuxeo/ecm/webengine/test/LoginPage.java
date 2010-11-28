@@ -45,8 +45,6 @@ public class LoginPage extends WebPage {
     @FindBy(how=How.ID, using="logstate")
     protected WebElement logstate;
 
-
-
     public void login(String username, String password) {
         inputUsername.clear();
         inputUsername.sendKeys(username);

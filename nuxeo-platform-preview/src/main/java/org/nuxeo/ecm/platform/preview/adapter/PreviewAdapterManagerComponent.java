@@ -39,11 +39,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class PreviewAdapterManagerComponent extends DefaultComponent implements
         PreviewAdapterManager {
 
-    public final static String ADAPTER_FACTORY_EP = "AdapterFactory";
+    public static final String ADAPTER_FACTORY_EP = "AdapterFactory";
 
-    public final static String PREVIEWED_MIME_TYPE = "MimeTypePreviewer";
+    public static final String PREVIEWED_MIME_TYPE = "MimeTypePreviewer";
 
-    public final static String BLOB_POST_PROCESSOR_EP = "blobPostProcessor";
+    public static final String BLOB_POST_PROCESSOR_EP = "blobPostProcessor";
 
     private static final Log log = LogFactory.getLog(PreviewAdapterManagerComponent.class);
 

@@ -45,8 +45,8 @@ public class WebEngineTest {
 //
 //    @Inject protected WebEngine we;
 
-    @Inject private WebEngineHomePage home;
-
+    @Inject
+    private WebEngineHomePage home;
 
     @Test
     public void iCanRunWebEngine() throws Exception {

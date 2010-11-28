@@ -32,7 +32,7 @@ import org.nuxeo.webengine.sites.RssAdapter;
  * @author mcedica
  */
 @WebAdapter(name = "rss", type = "RssAdapter", targetType = "Document")
-@Produces("application/rss+xml; charset=UTF-8")
+@Produces("application/rss+xml;charset=UTF-8")
 public class BlogRssAdapter extends RssAdapter {
     @GET
     @Path("rssOnPage")

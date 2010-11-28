@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
  */
 @XObject("listener")
 public class EventListenerDescriptor {
+
     @XNode("@class")
     private Class<? extends EventListener> listener;
 
@@ -39,4 +40,5 @@ public class EventListenerDescriptor {
     public void setListener(Class<? extends EventListener> listener) {
         this.listener = listener;
     }
+
 }

@@ -35,6 +35,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  */
 public class AnnotationManagerTest extends NXRuntimeTestCase {
+
     private final AnnotationManager manager = new AnnotationManager();
 
     @Override
@@ -46,12 +47,15 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
 
     public void testGetPostNewAnnotation() throws AnnotationException {
         assertNotNull(manager);
+
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
+
         Annotation annotation = manager.getAnnotation(is);
         assertNotNull(annotation);
         assertEquals("http://www.w3.org/2005/Incubator/",
                 annotation.getAnnotates().toString());
+
         annotation.setSubject(new ResourceImpl("http://foo/1"));
         assertEquals("http://www.w3.org/2005/Incubator/",
                 annotation.getAnnotates().toString());
@@ -59,9 +63,11 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
 
     public void testReadAnnoteaSpecPost() throws AnnotationException {
         assertNotNull(manager);
+
         InputStream is = getClass().getResourceAsStream(
                 "/annotea-spec-post.xml");
         assertNotNull(is);
+
         Annotation annotation = manager.getAnnotation(is);
         assertNotNull(annotation);
     }
@@ -69,8 +75,10 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
     public void testGetCreatedAnnotation() throws AnnotationException {
         InputStream is = getClass().getResourceAsStream("/repo-rdf.xml");
         assertNotNull(is);
+
         Annotation annotation = manager.getAnnotation(is);
         assertNotNull(annotation);
+
         Resource resource = annotation.getSubject();
         assertNotNull(resource);
     }
@@ -79,15 +87,19 @@ public class AnnotationManagerTest extends NXRuntimeTestCase {
         final String baseUrl = "http://myexemple.com/nuxeo/Annotations/";
         UriResolver resolver = new DefaultUriResolver();
         assertNotNull(resolver);
+
         Annotation annotation = manager.getAnnotation(getClass().getResourceAsStream(
                 "/repo-rdf.xml"));
         assertNotNull(annotation);
+
         Resource resource = annotation.getSubject();
         assertNotNull(resource);
         assertEquals("urn:annotation:3ACF6D754", resource.getUri());
+
         Annotation result = manager.translateAnnotationFromRepo(resolver,
                 baseUrl, annotation);
         assertNotNull(result);
+
         resource = result.getSubject();
         assertNotNull(resource);
         assertEquals(resource.getUri(), baseUrl + "3ACF6D754");

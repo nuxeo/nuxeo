@@ -30,7 +30,7 @@ import org.nuxeo.webengine.sites.PerspectiveAdapter;
  * @author rux
  */
 @WebAdapter(name = "perspective", type = "BlogPerspectiveAdapter", targetType = "Document")
-@Produces("text/html; charset=UTF-8")
+@Produces("text/html;charset=UTF-8")
 public class BlogPerspectiveAdapter extends PerspectiveAdapter {
 
     @POST

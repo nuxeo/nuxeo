@@ -23,7 +23,6 @@ import org.nuxeo.ecm.webengine.app.WebApplication;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class AdminApp extends WebApplication {
 
@@ -33,7 +32,7 @@ public class AdminApp extends WebApplication {
 
     @Override
     public Set<Class<?>> getClasses() {
-        HashSet<Class<?>> classes = new HashSet<Class<?>>();
+        Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(Main.class);
         return classes;
     }
