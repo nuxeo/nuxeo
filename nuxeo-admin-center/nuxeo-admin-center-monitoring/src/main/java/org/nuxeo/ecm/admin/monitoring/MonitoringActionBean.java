@@ -48,13 +48,13 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.PAGE)
 public class MonitoringActionBean implements Serializable {
 
-    protected static final Log log = LogFactory.getLog(MonitoringActionBean.class);
-
-    private static final long serialVersionUID = 1L;
-
     public static final String NUXEO_SERVER_IS_ACTIVE = "nuxeoServiceIsActive";
 
     public static final String NUXEO_SERVER_MESSAGE = "org.nuxeo.ecm.deactivatedServerMessage";
+
+    protected static final Log log = LogFactory.getLog(MonitoringActionBean.class);
+
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected NuxeoPrincipal currentNuxeoPrincipal;

@@ -33,9 +33,7 @@ public class TestServiceBindings extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.connect.client.wrapper");
     }
 
-
     public void testServicesLookup() {
-
         ConnectRegistrationService crs = Framework.getLocalService(ConnectRegistrationService.class);
         assertNotNull(crs);
 
@@ -47,6 +45,6 @@ public class TestServiceBindings extends NXRuntimeTestCase {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         assertNotNull(pm);
-
     }
+
 }

@@ -4,8 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.impl.LocalPackageImpl;
@@ -15,8 +14,12 @@ import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.util.PackageBuilder;
 
-public class TestPackageBuildAndParse extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+public class TestPackageBuildAndParse {
+
+    @Test
     public void testBuildAndParse() throws Exception {
 
         String termsAndConditions="You have to be crazy to use this package";
@@ -61,9 +64,9 @@ public class TestPackageBuildAndParse extends TestCase {
         assertEquals("Nuxeo", packageDef.getVendor());
         assertEquals(NuxeoValidationState.INPROCESS, packageDef.getValidationState());
         assertEquals(ProductionState.PRODUCTION_READY, packageDef.getProductionState());
-        assertEquals(true, packageDef.requireTermsAndConditionsAcceptance());
-        assertEquals(true, packageDef.isSupported());
-        assertEquals(true, packageDef.supportsHotReload());
+        assertTrue(packageDef.requireTermsAndConditionsAcceptance());
+        assertTrue(packageDef.isSupported());
+        assertTrue(packageDef.supportsHotReload());
 
         // test on real unziped package
         File zipFile = builder.build();
@@ -77,9 +80,9 @@ public class TestPackageBuildAndParse extends TestCase {
         assertEquals("Nuxeo", pkg.getVendor());
         assertEquals(NuxeoValidationState.INPROCESS, pkg.getValidationState());
         assertEquals(ProductionState.PRODUCTION_READY, pkg.getProductionState());
-        assertEquals(true, pkg.requireTermsAndConditionsAcceptance());
-        assertEquals(true, pkg.isSupported());
-        assertEquals(true, pkg.supportsHotReload());
-
+        assertTrue(pkg.requireTermsAndConditionsAcceptance());
+        assertTrue(pkg.isSupported());
+        assertTrue(pkg.supportsHotReload());
     }
+
 }

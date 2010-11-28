@@ -23,6 +23,9 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 
 public class RequestHelper {
 
+    private RequestHelper() {
+    }
+
     public static boolean isInternalLink(WebContext ctx) {
 
         HttpServletRequest request = ctx.getRequest();

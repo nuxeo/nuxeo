@@ -60,7 +60,7 @@ public class AppCenterViewsManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Log log = LogFactory.getLog(AppCenterViewsManager.class);
+    protected static final Log log = LogFactory.getLog(AppCenterViewsManager.class);
 
     protected Map<String, String> packageTypeFilters = new HashMap<String, String>();
 
@@ -205,7 +205,7 @@ public class AppCenterViewsManager implements Serializable {
 
         protected DownloadingPackage pkg;
 
-        public StudioAutoInstaller(DownloadingPackage pkg) {
+        protected StudioAutoInstaller(DownloadingPackage pkg) {
             this.pkg = pkg;
         }
 

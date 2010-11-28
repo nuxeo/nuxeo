@@ -38,6 +38,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 public class TestRepoStats {
@@ -65,14 +68,14 @@ public class TestRepoStats {
 
         System.out.println(stat1.toString());
 
-        Assert.assertEquals(5, stat1.getTotalNbDocs());
-        Assert.assertEquals(new Long(1), stat1.getDocTypeCount("Root"));
-        Assert.assertEquals(new Long(1), stat1.getDocTypeCount("WorkspaceRoot"));
-        Assert.assertEquals(new Long(1), stat1.getDocTypeCount("TemplateRoot"));
-        Assert.assertEquals(new Long(1), stat1.getDocTypeCount("SectionRoot"));
-        Assert.assertEquals(new Long(1), stat1.getDocTypeCount("Domain"));
-        Assert.assertEquals(0, stat1.getTotalBlobNumber());
-        Assert.assertEquals(0, stat1.getVersions());
+        assertEquals(5, stat1.getTotalNbDocs());
+        assertEquals(new Long(1), stat1.getDocTypeCount("Root"));
+        assertEquals(new Long(1), stat1.getDocTypeCount("WorkspaceRoot"));
+        assertEquals(new Long(1), stat1.getDocTypeCount("TemplateRoot"));
+        assertEquals(new Long(1), stat1.getDocTypeCount("SectionRoot"));
+        assertEquals(new Long(1), stat1.getDocTypeCount("Domain"));
+        assertEquals(0, stat1.getTotalBlobNumber());
+        assertEquals(0, stat1.getVersions());
 
         DocumentModel blobDoc = session.createDocumentModel("File");
         blobDoc.setPathInfo("/default-domain/workspaces/", "blobDoc");
@@ -88,11 +91,11 @@ public class TestRepoStats {
         RepoStatInfo stat2 = runRepoStatSync();
         System.out.println(stat2.toString());
 
-        Assert.assertEquals(6, stat2.getTotalNbDocs());
-        Assert.assertEquals(1, stat2.getTotalBlobNumber());
-        Assert.assertEquals(5, stat2.getTotalBlobSize());
-        Assert.assertEquals(5, stat2.getMaxBlobSize());
-        Assert.assertEquals(new Long(1), stat2.getDocTypeCount("File"));
+        assertEquals(6, stat2.getTotalNbDocs());
+        assertEquals(1, stat2.getTotalBlobNumber());
+        assertEquals(5, stat2.getTotalBlobSize());
+        assertEquals(5, stat2.getMaxBlobSize());
+        assertEquals(new Long(1), stat2.getDocTypeCount("File"));
 
         // Add a version
 
@@ -104,16 +107,16 @@ public class TestRepoStats {
 
         // check that version has been created
         DocumentModelList docs = session.query("select * from File");
-        Assert.assertEquals(2, docs.size());
+        assertEquals(2, docs.size());
 
         RepoStatInfo stat3 = runRepoStatSync();
         System.out.println(stat3.toString());
-        Assert.assertEquals(1, stat3.getVersions());
-        Assert.assertEquals(7, stat3.getTotalNbDocs());
-        Assert.assertEquals(2, stat3.getTotalBlobNumber());
-        Assert.assertEquals(10, stat3.getTotalBlobSize());
-        Assert.assertEquals(5, stat3.getMaxBlobSize());
-        Assert.assertEquals(new Long(2), stat3.getDocTypeCount("File"));
+        assertEquals(1, stat3.getVersions());
+        assertEquals(7, stat3.getTotalNbDocs());
+        assertEquals(2, stat3.getTotalBlobNumber());
+        assertEquals(10, stat3.getTotalBlobSize());
+        assertEquals(5, stat3.getMaxBlobSize());
+        assertEquals(new Long(2), stat3.getDocTypeCount("File"));
 
         // modify blob
         blob = new StringBlob("123456789");
@@ -123,21 +126,18 @@ public class TestRepoStats {
 
         RepoStatInfo stat4 = runRepoStatSync();
         System.out.println(stat4.toString());
-        Assert.assertEquals(1, stat4.getVersions());
-        Assert.assertEquals(7, stat4.getTotalNbDocs());
-        Assert.assertEquals(2, stat4.getTotalBlobNumber());
-        Assert.assertEquals(14, stat4.getTotalBlobSize());
-        Assert.assertEquals(9, stat4.getMaxBlobSize());
-        Assert.assertEquals(new Long(2), stat4.getDocTypeCount("File"));
-
+        assertEquals(1, stat4.getVersions());
+        assertEquals(7, stat4.getTotalNbDocs());
+        assertEquals(2, stat4.getTotalBlobNumber());
+        assertEquals(14, stat4.getTotalBlobSize());
+        assertEquals(9, stat4.getMaxBlobSize());
+        assertEquals(new Long(2), stat4.getDocTypeCount("File"));
     }
 
     @Test
     public void testIntrospection() throws Exception {
-
         SimplifiedServerInfo info = RuntimeInstrospection.getInfo();
-        Assert.assertNotNull(info);
+        assertNotNull(info);
         System.out.print(info.toString());
-
     }
 }

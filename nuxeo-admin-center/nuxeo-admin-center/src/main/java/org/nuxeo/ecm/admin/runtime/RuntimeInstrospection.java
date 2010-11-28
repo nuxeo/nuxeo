@@ -50,7 +50,6 @@ public class RuntimeInstrospection {
 
     public static synchronized SimplifiedServerInfo getInfo() {
         if (info == null) {
-
             RuntimeService runtime = Framework.getRuntime();
             Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
 
@@ -75,7 +74,6 @@ public class RuntimeInstrospection {
             info.setBundleInfos(bundles);
             info.setRuntimeVersion(runtime.getVersion().toString());
             info.setWarnings(runtime.getWarnings());
-
         }
         return info;
     }

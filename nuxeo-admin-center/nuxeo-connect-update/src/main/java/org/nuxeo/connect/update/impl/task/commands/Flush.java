@@ -72,4 +72,5 @@ public class Flush extends PostInstallCommand {
         writer.start(ID);
         writer.end();
     }
+
 }

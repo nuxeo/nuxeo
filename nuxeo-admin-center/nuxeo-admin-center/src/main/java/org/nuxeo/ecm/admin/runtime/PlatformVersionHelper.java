@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.admin.runtime;
 
-import java.util.Arrays;
-
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {

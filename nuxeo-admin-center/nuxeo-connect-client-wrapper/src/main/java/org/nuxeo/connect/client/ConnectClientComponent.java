@@ -17,7 +17,6 @@
  * $Id$
  */
 
-
 package org.nuxeo.connect.client;
 
 import org.nuxeo.connect.NuxeoConnectClient;
@@ -30,14 +29,12 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
  * Nuxeo Runtime Component used to wrap nuxeo-connect-client services as Nuxeo Services.
- *
  * <p>
- * This is required because nuxeo-connect-client can not depend on Nuxeo Runtime, so this wrapper manages the integration and the callbacks needed.
- * </p>
- * @author tiry
+ * This is required because nuxeo-connect-client can not depend on Nuxeo Runtime,
+ * so this wrapper manages the integration and the callbacks needed.
  *
+ * @author tiry
  */
 public class ConnectClientComponent extends DefaultComponent {
 

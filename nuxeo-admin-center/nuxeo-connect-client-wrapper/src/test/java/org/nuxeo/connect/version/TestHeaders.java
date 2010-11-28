@@ -29,12 +29,11 @@ public class TestHeaders extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.connect.client.wrapper");
     }
 
-
     public void testVersion() {
         String buildVersion = NuxeoConnectClient.getBuildVersion();
         System.out.println("Build version=" + buildVersion);
         String version = NuxeoConnectClient.getVersion();
         System.out.println("Version=" + version);
-
     }
+
 }

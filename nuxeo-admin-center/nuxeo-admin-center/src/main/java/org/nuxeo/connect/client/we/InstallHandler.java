@@ -88,7 +88,8 @@ public class InstallHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "showTermsAndConditions/{pkgId}")
-    public Object showTermsAndConditions(@PathParam("pkgId") String pkgId,@QueryParam("source") String source, @QueryParam("depCheck") Boolean depCheck) {
+    public Object showTermsAndConditions(@PathParam("pkgId") String pkgId,@QueryParam("source") String source,
+            @QueryParam("depCheck") Boolean depCheck) {
         if (depCheck==null) {
             depCheck=true;
         }
@@ -102,14 +103,14 @@ public class InstallHandler extends DefaultObject {
             log.error("Error during terms and conditions phase ", e);
             return getView("installError").arg("e", e).arg("source", source);
         }
-
     }
 
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
     public Object startInstall(@PathParam("pkgId") String pkgId,
-            @QueryParam("source") String source,@QueryParam("tacAccepted") Boolean acceptedTAC,@QueryParam("depCheck") Boolean depCheck) {
+            @QueryParam("source") String source,@QueryParam("tacAccepted") Boolean acceptedTAC,
+            @QueryParam("depCheck") Boolean depCheck) {
 
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
@@ -254,7 +255,9 @@ public class InstallHandler extends DefaultObject {
             @QueryParam("source") String source) {
 
         if (!RequestHelper.isInternalLink(getContext())) {
-            return getView("installError").arg("e", new ClientException("Installation seems to have been started from an external link.")).arg("source", source);
+            return getView("installError")
+                    .arg("e", new ClientException("Installation seems to have been started from an external link."))
+                    .arg("source", source);
         }
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
 

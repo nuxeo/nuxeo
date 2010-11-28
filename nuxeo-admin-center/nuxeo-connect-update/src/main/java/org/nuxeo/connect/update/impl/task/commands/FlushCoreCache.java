@@ -31,11 +31,10 @@ import org.w3c.dom.Element;
 /**
  * Flush any cache held by the core. This should be used when document types are
  * installed or removed.
- *
+ * <p>
  * The inverse of this command is itself.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class FlushCoreCache extends PostInstallCommand {
 

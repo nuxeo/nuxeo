@@ -24,11 +24,9 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Provide access to Nuxeo Framework from Nuxeo Connect Client
  *
  * @author tiry
- *
  */
 public class NuxeoCallbackHolder implements CallbackHolder {
 
@@ -47,4 +45,5 @@ public class NuxeoCallbackHolder implements CallbackHolder {
     public PackageUpdateService getUpdateService() {
         return Framework.getLocalService(PackageUpdateService.class);
     }
+
 }

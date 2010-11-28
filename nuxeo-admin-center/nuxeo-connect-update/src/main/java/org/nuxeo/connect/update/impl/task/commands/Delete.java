@@ -33,11 +33,10 @@ import org.w3c.dom.Element;
  * The delete command. This command takes 2 arguments: the file path to delete
  * and an optional md5. Of md5 is set then the command fails id the target file
  * has not the same md5.
- *
+ * <p>
  * The inverse of the delete command is a copy command.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Delete extends AbstractCommand {
 

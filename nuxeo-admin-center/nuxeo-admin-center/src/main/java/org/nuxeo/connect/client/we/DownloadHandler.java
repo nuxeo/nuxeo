@@ -58,7 +58,8 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "progressPage/{pkgId}")
-    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source, @QueryParam("install") Boolean install,@QueryParam("depCheck") Boolean depCheck) {
+    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
+            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
         // flag to start install after download
@@ -95,7 +96,8 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,@QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
+    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
+            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
         // flag to start install after download

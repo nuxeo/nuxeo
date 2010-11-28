@@ -126,7 +126,8 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "remote")
-    public Object getRemote(@QueryParam("type") String type, @QueryParam("onlyRemote") Boolean onlyRemote, @QueryParam("searchString") String searchString, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
+    public Object getRemote(@QueryParam("type") String type, @QueryParam("onlyRemote") Boolean onlyRemote,
+            @QueryParam("searchString") String searchString, @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 

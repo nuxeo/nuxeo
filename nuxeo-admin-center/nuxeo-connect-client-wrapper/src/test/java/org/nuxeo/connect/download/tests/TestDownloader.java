@@ -41,53 +41,53 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Jetty(port = 8082)
 public class TestDownloader {
 
-     @Test
-     public void testSimpleDownload() throws Exception {
+    @Test
+    public void testSimpleDownload() throws Exception {
 
-         ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
-         Assert.assertNotNull(cdm);
+        ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
+        Assert.assertNotNull(cdm);
 
-         int nbDownloads=5;
-         int maxLoop=40;
+        int nbDownloads = 5;
+        int maxLoop = 40;
 
-         List<PackageDescriptor> pkgToDownload = new ArrayList<PackageDescriptor>();
-         for (int i = 0;i<nbDownloads;i++) {
-             PackageDescriptor pkg = new PackageDescriptor();
-             pkg.setSourceUrl("test"+i);
-             pkg.setName("FakePackage-" + i);
-             pkg.setVersion(new Version(1));
-             pkgToDownload.add(pkg);
-         }
+        List<PackageDescriptor> pkgToDownload = new ArrayList<PackageDescriptor>();
+        for (int i = 0; i < nbDownloads; i++) {
+            PackageDescriptor pkg = new PackageDescriptor();
+            pkg.setSourceUrl("test" + i);
+            pkg.setName("FakePackage-" + i);
+            pkg.setVersion(new Version(1));
+            pkgToDownload.add(pkg);
+        }
 
-         List<DownloadingPackage> downloads = new ArrayList<DownloadingPackage>();
+        List<DownloadingPackage> downloads = new ArrayList<DownloadingPackage>();
 
-         for (PackageDescriptor pkg : pkgToDownload) {
-             DownloadingPackage lpkg = cdm.storeDownloadedBundle(pkg);
-             Assert.assertNotNull(lpkg);
-             downloads.add(lpkg);
-             Thread.sleep(100);
-         }
+        for (PackageDescriptor pkg : pkgToDownload) {
+            DownloadingPackage lpkg = cdm.storeDownloadedBundle(pkg);
+            Assert.assertNotNull(lpkg);
+            downloads.add(lpkg);
+            Thread.sleep(100);
+        }
 
-         boolean downloadInProgress=true;
+        boolean downloadInProgress = true;
 
-         int nbLoop=0;
-         while (downloadInProgress) {
-             downloadInProgress=false;
-             for (DownloadingPackage pkg : downloads) {
-                 if (pkg.isCompleted()) {
-                     System.out.print(pkg.getId() + ":terminated  - ");
-                 } else {
-                     downloadInProgress=true;
-                     System.out.print(pkg.getId() + ":in progress - ");
-                 }
-             }
-             System.out.println();
-             nbLoop++;
-             if (nbLoop>maxLoop) {
-                 throw new RuntimeException("Download is stuck");
-             }
-             Thread.sleep(500);
+        int nbLoop = 0;
+        while (downloadInProgress) {
+            downloadInProgress = false;
+            for (DownloadingPackage pkg : downloads) {
+                if (pkg.isCompleted()) {
+                    System.out.print(pkg.getId() + ":terminated  - ");
+                } else {
+                    downloadInProgress = true;
+                    System.out.print(pkg.getId() + ":in progress - ");
+                }
+            }
+            System.out.println();
+            nbLoop++;
+            if (nbLoop > maxLoop) {
+                throw new RuntimeException("Download is stuck");
+            }
+            Thread.sleep(500);
+        }
+    }
 
-         }
-     }
 }

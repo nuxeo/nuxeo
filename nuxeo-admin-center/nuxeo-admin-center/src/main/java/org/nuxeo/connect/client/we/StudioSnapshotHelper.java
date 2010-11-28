@@ -26,6 +26,9 @@ public class StudioSnapshotHelper {
 
     public static final String SNAPSHOT_SUFFIX = "0.0.0-SNAPSHOT";
 
+    private StudioSnapshotHelper() {
+    }
+
     public static boolean isSnapshot(DownloadablePackage pkg) {
         return pkg.getVersion() != null
                 && pkg.getVersion().toString().endsWith(SNAPSHOT_SUFFIX);

@@ -47,9 +47,6 @@ public class TestSetupWizardActionBean {
 
     private File nuxeoHome, nuxeoConf, expectedNuxeoConf;
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         nuxeoHome = File.createTempFile("nuxeo", null);
@@ -96,7 +93,7 @@ public class TestSetupWizardActionBean {
     }
 
     @Test
-    public void testSaveParameters() throws FileNotFoundException, IOException {
+    public void testSaveParameters() throws IOException {
         parameters = setupWizardActionBean.getParameters();
         advancedParameters = setupWizardActionBean.getAdvancedParameters();
         parameters.put("nuxeo.bind.address", "127.0.0.1");
@@ -118,4 +115,5 @@ public class TestSetupWizardActionBean {
         bfNew.close();
         bfExp.close();
     }
+
 }

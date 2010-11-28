@@ -33,7 +33,8 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Deploy({ "org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml", "org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml" })
+@Deploy({ "org.nuxeo.connect.client.wrapper:OSGI-INF/runtimeserver-contrib.xml",
+        "org.nuxeo.connect.client.wrapper:OSGI-INF/connect-client-framework.xml" })
 @Features({ JettyFeature.class })
 public class DownloadFeature extends SimpleFeature implements
         WorkingDirectoryConfigurator {

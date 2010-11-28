@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam Bean used to build/restore a JSF/Seam contexte from a REST call. This
+ * Seam Bean used to build/restore a JSF/Seam context from a REST call. This
  * bean is called when a user clicks on an installation link from MarketPlace.
  *
  * @author tiry
@@ -69,7 +69,7 @@ public class ExternalLinkManager implements Serializable {
     @In(create = true)
     protected transient RepositoryManager repositoryManager;
 
-    protected NuxeoPrincipal getUser() {
+    protected static NuxeoPrincipal getUser() {
         return (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
     }
 

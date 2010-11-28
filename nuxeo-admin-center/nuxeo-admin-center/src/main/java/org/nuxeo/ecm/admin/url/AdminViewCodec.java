@@ -61,7 +61,6 @@ public class AdminViewCodec extends AbstractDocumentViewCodec implements
 
     @Override
     public String getUrlFromDocumentView(DocumentView docView) {
-
         String viewId = docView.getViewId();
         List<String> items = new ArrayList<String>();
 
