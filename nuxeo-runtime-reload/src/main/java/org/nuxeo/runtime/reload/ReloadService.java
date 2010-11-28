@@ -31,7 +31,7 @@ public interface ReloadService {
 
     void reloadRepository() throws Exception;
 
-    void flushJassCache() throws Exception;
+    void flushJaasCache() throws Exception;
 
     void reloadProperties() throws Exception;
 

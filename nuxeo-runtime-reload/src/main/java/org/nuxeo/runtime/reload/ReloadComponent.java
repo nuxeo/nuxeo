@@ -67,7 +67,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushJassCache() throws Exception {
+    public void flushJaasCache() throws Exception {
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event("usermanager", "user_changed", this,
                 "Deployer")); // the data argument is optional
