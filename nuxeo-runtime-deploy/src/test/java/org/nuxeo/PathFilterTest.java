@@ -53,7 +53,7 @@ public class PathFilterTest extends TestCase {
 
         assertFalse(filters.accept(new Path("/c/d")));
         assertFalse(filters.accept(new Path("c/d")));
-        assertTrue(filters.accept(new Path("z/c/d"))); // abs. pattterns should match entire path
+        assertTrue(filters.accept(new Path("z/c/d"))); // abs. patterns should match entire path
 
         assertFalse(filters.accept(new Path("e/f")));
         assertFalse(filters.accept(new Path("/e/f/")));

@@ -1,14 +1,16 @@
-import java.io.IOException;
+package org.nuxeo.runtime.management.metrics;
 
-import junit.framework.TestCase;
+import java.io.IOException;
 
 import org.javasimon.Sample;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
-import org.nuxeo.runtime.management.metrics.MetricSerializer;
+import org.junit.Test;
 
-public class MetricSerializerTestCase extends TestCase {
+import static org.junit.Assert.assertTrue;
+
+public class MetricSerializerTestCase {
 
     final MetricSerializer srv = new MetricSerializer();
 
@@ -30,6 +32,7 @@ public class MetricSerializerTestCase extends TestCase {
         }
     }
 
+    @Test
     public void testService() throws IOException {
         srv.resetOutput();
         srv.getOutputFile().deleteOnExit();
