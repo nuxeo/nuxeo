@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.mortbay.log.Logger;
 
 /**
- * Dumb logger to see what appends in Jetty.
+ * Dumb logger to see what happens in Jetty.
  *
  * @author Thierry Delprat
  */
