@@ -44,8 +44,8 @@ public class XidImpl implements Xid, Serializable {
      */
     public XidImpl(Xid xid) {
         fid = xid.getFormatId();
-        gtrid = (byte[]) xid.getGlobalTransactionId().clone();
-        bqual = (byte[]) xid.getBranchQualifier().clone();
+        gtrid = xid.getGlobalTransactionId().clone();
+        bqual = xid.getBranchQualifier().clone();
     }
 
     /**
@@ -65,11 +65,11 @@ public class XidImpl implements Xid, Serializable {
     }
 
     public byte[] getGlobalTransactionId() {
-        return (byte[]) gtrid.clone();
+        return gtrid.clone();
     }
 
     public byte[] getBranchQualifier() {
-        return (byte[]) bqual.clone();
+        return bqual.clone();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class XidImpl implements Xid, Serializable {
         return equals((XidImpl) other);
     }
 
-    private final boolean equals(XidImpl other) {
+    private boolean equals(XidImpl other) {
         if (other == this) {
             return true;
         }

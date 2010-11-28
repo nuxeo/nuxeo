@@ -28,6 +28,9 @@ public class XMLBuilder {
 
     private static final Log log = LogFactory.getLog(XMLBuilder.class);
 
+    private XMLBuilder() {
+    }
+
     public static String saveToXML(Object object, Element root,
             XAnnotatedObject xao) {
         try {

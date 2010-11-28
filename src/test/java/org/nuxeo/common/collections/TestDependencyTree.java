@@ -19,21 +19,25 @@
 
 package org.nuxeo.common.collections;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TestDependencyTree extends TestCase {
+public class TestDependencyTree {
 
     private DependencyTree<String, String> dt;
 
-    @Override
-    protected void setUp() {
+    @Before
+    public void setUp() {
         dt = new DependencyTree<String, String>();
     }
 
+    @Test
     public void testRegistration() {
         dt.add("a", "a");
         assertEquals("a", dt.get("a"));
@@ -91,6 +95,7 @@ public class TestDependencyTree extends TestCase {
         assertEquals("c", dt.get("c"));
     }
 
+    @Test
     public void testUnregister() {
         testRegistration();
 

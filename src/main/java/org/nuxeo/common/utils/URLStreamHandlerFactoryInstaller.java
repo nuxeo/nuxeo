@@ -41,6 +41,9 @@ public class URLStreamHandlerFactoryInstaller {
 
     private static final FactoryStack factoryStack = new FactoryStack();
 
+    private URLStreamHandlerFactoryInstaller() {
+    }
+
     public static void installURLStreamHandlerFactory(URLStreamHandlerFactory shf) throws Exception {
         Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
         if (factoryField == null) {

@@ -22,61 +22,71 @@ package org.nuxeo.common.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
-public class TestURIUtils extends TestCase {
+public class TestURIUtils {
 
-    private static final String URI_QUERY = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
+    private static final String URI_QUERY
+            = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
 
-    private static final String PARTIAL_URI = "nuxeo/view_documents.faces?"
-            + URI_QUERY;
+    private static final String PARTIAL_URI
+            = "nuxeo/view_documents.faces?" + URI_QUERY;
 
     private static final String URI = "http://localhost:8080/" + PARTIAL_URI;
 
     private Map<String, String> parameters;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         parameters = new HashMap<String, String>();
         parameters.put("currentTab", "TAB_CONTENT");
         parameters.put("documentId", "4012a2d7-384e-4735-ab98-b06b598072fa");
         parameters.put("repositoryName", "demo");
     }
 
+    @Test
     public void testGetRequestParameters() {
         assertEquals(parameters, URIUtils.getRequestParameters(URI_QUERY));
     }
 
-    // FIXME: this tests makes too string assumptions on how the params will be
-    // ordered (fails under Java 6)
-    public void XXXtestAddParametersToURIQuery() {
-        String newUri = "http://localhost:8080/nuxeo/view_documents.faces"
-                + "?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa"
-                + "&conversationId=0NXMAIN21&repositoryName=demo";
+    @Test
+    public void testAddParametersToURIQuery() {
         Map<String, String> newParams = new HashMap<String, String>();
         newParams.put("conversationId", "0NXMAIN21");
-        assertEquals(newUri, URIUtils.addParametersToURIQuery(URI, newParams));
+
+        Map<String, String> expectedParams = new HashMap<String, String>(parameters);
+        expectedParams.put("conversationId", "0NXMAIN21");
+
+        // Test full URI first
+        String newUri = URIUtils.addParametersToURIQuery(URI, newParams);
+
+        String uriPath = URIUtils.getURIPath(newUri);
+        String newUriQuery = newUri.substring(uriPath.length() + 1);
+        Map<String, String> actualParams = URIUtils.getRequestParameters(newUriQuery);
+
+        assertEquals(expectedParams, actualParams);
+
+        // Then test partial URI
+        String newPartialUri = URIUtils.addParametersToURIQuery(PARTIAL_URI, newParams);
+
+        uriPath = URIUtils.getURIPath(newUri);
+        newUriQuery = newUri.substring(uriPath.length() + 1);
+        actualParams = URIUtils.getRequestParameters(newUriQuery);
+
+        assertEquals(expectedParams, actualParams);
     }
 
-    // FIXME: this tests makes too string assumptions on how the params will be
-    // ordered (fails under Java 6)
-    public void XXXtestAddParametersToPartialURIQuery() {
-        String newUri = "nuxeo/view_documents.faces?currentTab=TAB_CONTENT"
-                + "&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
-        Map<String, String> newParams = new HashMap<String, String>();
-        newParams.put("conversationId", "0NXMAIN21");
-        assertEquals(newUri, URIUtils.addParametersToURIQuery(PARTIAL_URI,
-                newParams));
-    }
-
-    public static String q(String s, boolean b) {
+    private static String q(String s, boolean b) {
         return URIUtils.quoteURIPathComponent(s, b);
     }
 
+    @Test
     public void testQuoteURIPathComponent() {
         assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", q(
                 "test yes:no /caf\u00e9.bin", true));
@@ -86,10 +96,11 @@ public class TestURIUtils extends TestCase {
         assertEquals("%5Bfoo%5D%20bar%3F", q("[foo] bar?", true));
     }
 
-    public static String uq(String s) {
+    private static String uq(String s) {
         return URIUtils.unquoteURIPathComponent(s);
     }
 
+    @Test
     public void testUnquoteURIPathComponent() {
         assertEquals("test yes:no /caf\u00e9.bin",
                 uq("test%20yes%3Ano%20%2Fcaf%C3%A9.bin"));

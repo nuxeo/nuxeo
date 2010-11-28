@@ -19,30 +19,36 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 
-public class TestRegistry extends TestCase {
+public class TestRegistry {
 
     private Object object;
 
     private Registry<Object> registry;
 
-    @Override
+    @Before
     public void setUp() {
         object = new Object();
         registry = new Registry<Object>("My Registry");
     }
 
-    @Override
+    @After
     public void tearDown() {
         registry.clear();
     }
 
+    @Test
     public void testRegistry() {
         assertEquals("My Registry", registry.getName());
     }
 
+    @Test
     public void testRegisterUnregister() {
         assertEquals(0, registry.size());
 
@@ -60,6 +66,7 @@ public class TestRegistry extends TestCase {
         assertEquals(0, registry.size());
     }
 
+    @Test
     public void testRegistrationBehaviors() {
         assertEquals(0, registry.size());
 
@@ -73,7 +80,6 @@ public class TestRegistry extends TestCase {
 
         // register again
         registry.register("foo", object);
-
         assertEquals(1, registry.size());
     }
 

@@ -35,10 +35,14 @@ public class DirtyUpdateInvokeBridge {
 
     protected static final ThreadLocal<ThreadContext> contextHolder = new ThreadLocal<ThreadContext>();
 
+    private DirtyUpdateInvokeBridge() {
+    }
+
     public static class ThreadContext {
         public final Long tag;
 
         public final Long invoked;
+
         ThreadContext(Long tag) {
             this.tag = tag;
             invoked = Calendar.getInstance().getTimeInMillis();
@@ -54,7 +58,7 @@ public class DirtyUpdateInvokeBridge {
     }
 
     public static ThreadContext getThreadContext() {
-            return contextHolder.get();
+        return contextHolder.get();
     }
 
 }
