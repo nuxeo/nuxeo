@@ -41,7 +41,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 
 /**
  * Connector wrapping a {@link HttpClient} instance.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class HttpConnector implements Connector {
@@ -58,7 +58,7 @@ public class HttpConnector implements Connector {
 
     public HttpConnector(HttpClient http, HttpContext ctx) {
         ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
-        this.http = (AbstractHttpClient)http;
+        this.http = (AbstractHttpClient) http;
         this.ctx = ctx;
     }
 
@@ -87,8 +87,10 @@ public class HttpConnector implements Connector {
         }
         try {
             return execute(request, httpRequest);
+        } catch (RemoteException e) {
+            throw e;
         } catch (Exception e) {
-            throw new Error("Cannot execute " + request, e);
+            throw new RuntimeException("Cannot execute " + request, e);
         }
     }
 
