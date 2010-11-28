@@ -121,11 +121,16 @@ public final class Shell {
             addFeature(it.next());
         }
         // activate the default feature
-        String ns = System.getProperty("shell", getDefaultNamespace());
-        CommandRegistry reg = getRegistry(ns);
-        if (reg != null) {
-            setActiveRegistry(reg.getName());
+        String ns = System.getProperty("shell");
+        if (ns != null) {
+            CommandRegistry reg = getRegistry(ns);
+            if (reg != null) {
+                setActiveRegistry(ns);
+                return;
+            }
         }
+        // activate the default built-in namespace
+        setActiveRegistry(getDefaultNamespace());
     }
 
     protected String getDefaultNamespace() {
