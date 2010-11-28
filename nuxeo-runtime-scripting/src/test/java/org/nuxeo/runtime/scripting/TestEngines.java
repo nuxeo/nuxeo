@@ -23,24 +23,26 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import junit.framework.TestCase;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-@SuppressWarnings({"UnnecessaryBoxing"})
-public class TestEngines extends TestCase {
+public class TestEngines {
 
     private final ScriptEngineManager factory = new ScriptEngineManager();
 
+    @Test
     public void testJRuby() throws ScriptException {
         // Create a JRuby engine.
         ScriptEngine engine = factory.getEngineByName("jruby");
 
         // Evaluate JRuby code from string.
         assertEquals("Hello", engine.eval("'Hello'"));
-        assertEquals(Long.valueOf(3), engine.eval("1 + 2"));
+        assertEquals(3L, engine.eval("1 + 2"));
 
         // Doesn't work.
         //engine.eval("x = 1");
@@ -48,28 +50,24 @@ public class TestEngines extends TestCase {
         //assertEquals(Integer.valueOf(1), engine.get("x"));
     }
 
+    @Test
     public void testJS() throws ScriptException {
         // Create a JS engine.
         ScriptEngine engine = factory.getEngineByName("js");
 
         // Evaluate JS code from string.
         assertEquals("Hello", engine.eval("'Hello'"));
+
+        // JavaScript only knows doubles
         Object sumLiteralValue = engine.eval("1 + 2");
-        Object expectedValue = null;
-        if (sumLiteralValue instanceof Integer) {
-            expectedValue = Integer.valueOf(3);
-        } else if (sumLiteralValue instanceof Double) {
-            expectedValue = Double.valueOf(3);
-        } else {
-            throw new RuntimeException("introduce literal of type "
-                    + sumLiteralValue.getClass().getName());
-        }
-        assertEquals(expectedValue, sumLiteralValue);
+        assertEquals(3.0, sumLiteralValue);
+
         engine.eval("var x = 1 + 2;");
-        assertEquals(expectedValue, engine.eval("x"));
-        assertEquals(expectedValue, engine.get("x"));
+        assertEquals(3.0, engine.eval("x"));
+        assertEquals(3.0, engine.get("x"));
     }
 
+    @Test
     public void testJython() throws ScriptException {
         // Create a Python engine.
         ScriptEngine engine = factory.getEngineByName("jython");
@@ -77,36 +75,44 @@ public class TestEngines extends TestCase {
         // Evaluate Jython code from string.
         // This doesn't work for Jython
         //assertEquals("Hello", engine.eval("'Hello'"));
+
         engine.eval("s = 'Hello'");
         assertEquals("Hello", engine.get("s"));
+
         engine.eval("x = 1 + 2");
-        assertEquals(Integer.valueOf(3), engine.get("x"));
+        assertEquals(3, engine.get("x"));
     }
 
+    @Test
     public void testJEXL() throws ScriptException {
         // Create a JEXL engine.
         ScriptEngine engine = factory.getEngineByName("jexl");
 
         // Evaluate JEXL code from string.
         assertEquals("Hello", engine.eval("\"Hello\""));
-        assertEquals(Integer.valueOf(3), engine.eval("3"));
+        assertEquals(3, engine.eval("3"));
     }
 
+    @Test
     public void testGroovy() throws ScriptException {
         // Create a Groovy engine.
         ScriptEngine engine = factory.getEngineByName("groovy");
 
         // Evaluate Groovy code from string.
         assertEquals("Hello", engine.eval("\"Hello\""));
-        assertEquals(Integer.valueOf(3), engine.eval("1 + 2"));
+        assertEquals(3, engine.eval("1 + 2"));
+
         engine.eval("s = \"Hello\"");
         assertEquals("Hello", engine.get("s"));
+
         engine.eval("x = 1 + 2");
-        assertEquals(Integer.valueOf(3), engine.get("x"));
+        assertEquals(3, engine.get("x"));
     }
 
     // BSH broken seemingly
-    public void xxxtestBSH() throws ScriptException {
+    @Test
+    @Ignore
+    public void testBSH() throws ScriptException {
         // Create a BSH engine.
         ScriptEngine engine = factory.getEngineByName("bsh");
 

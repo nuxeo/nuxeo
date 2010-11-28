@@ -120,16 +120,19 @@ public class JBossConfiguratorTest {
                 + JBossConfigurator.DEFAULT_CONFIGURATION
                 + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
+
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
+
         // Check windows path parsing
         generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds_2.xml");
         generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
+
         // ignored extension must not be parsed
         generatedFile = new File(configDir.getParentFile(),
                 "config/extension.ignored");
@@ -159,10 +162,12 @@ public class JBossConfiguratorTest {
                 config.getProperty("test.nuxeo.conf.override.defaults.template"));
         assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
         assertEquals("sa", config.getProperty("nuxeo.db.user"));
+
         File configDir = new File(nuxeoHome, "server/"
                 + JBossConfigurator.DEFAULT_CONFIGURATION
                 + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
+
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(

@@ -19,13 +19,13 @@
 
 package org.nuxeo.runtime;
 
-import junit.framework.Assert;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.Extension;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,8 +37,8 @@ public class MyTestComponent implements Component {
 
     @Override
     public void activate(ComponentContext context) {
-        Assert.assertEquals("value", context.getProperty("myString").getValue());
-        Assert.assertEquals(2, context.getProperty("myInt").getValue());
+        assertEquals("value", context.getProperty("myString").getValue());
+        assertEquals(2, context.getProperty("myInt").getValue());
     }
 
     @Override
@@ -65,6 +65,6 @@ public class MyTestComponent implements Component {
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-
     }
+
 }

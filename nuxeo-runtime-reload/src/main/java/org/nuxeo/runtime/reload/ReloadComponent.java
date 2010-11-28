@@ -108,7 +108,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         try {
             addJar(file);
         } catch (Throwable t) {
-            log.error("Failed to modify classloader. tried to add: " + file, t);
+            log.error("Failed to modify classloader. Tried to add: " + file, t);
         }
         Bundle bundle = Framework.getRuntime().getContext().getBundle().getBundleContext().installBundle(
                 path);

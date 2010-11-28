@@ -81,5 +81,4 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         return Jetty.class.getClassLoader().getResource(resource);
     }
 
-
 }
