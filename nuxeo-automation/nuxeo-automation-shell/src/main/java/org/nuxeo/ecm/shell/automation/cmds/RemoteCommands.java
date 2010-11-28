@@ -16,9 +16,13 @@
  */
 package org.nuxeo.ecm.shell.automation.cmds;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.nuxeo.ecm.shell.CommandRegistry;
 import org.nuxeo.ecm.shell.Shell;
+import org.nuxeo.ecm.shell.ShellException;
+import org.nuxeo.ecm.shell.automation.AutomationFeature;
 import org.nuxeo.ecm.shell.automation.RemoteContext;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.utils.Path;
@@ -33,6 +37,10 @@ public class RemoteCommands extends CommandRegistry {
 
     public RemoteCommands() {
         super(GlobalCommands.INSTANCE, "remote");
+        onDisconnect();
+    }
+
+    public void onConnect() {
         addAnnotatedCommand(Disconnect.class);
         addAnnotatedCommand(Ls.class);
         addAnnotatedCommand(Cd.class);
@@ -67,8 +75,16 @@ public class RemoteCommands extends CommandRegistry {
         addAnnotatedCommand(Audit.class);
     }
 
+    public void onDisconnect() {
+        clear();
+        addAnnotatedCommand(Connect.class);
+    }
+
     public String getPrompt(Shell shell) {
         RemoteContext ctx = shell.getContextObject(RemoteContext.class);
+        if (ctx == null) {
+            return "remote> ";
+        }
         Document doc = ctx.getDocument();
         Path path = new Path(doc.getPath());
         String p = path.isRoot() ? "/" : path.lastSegment();
@@ -83,6 +99,27 @@ public class RemoteCommands extends CommandRegistry {
     @Override
     public String getDescription() {
         return "High level commands exposed by a remote Nuxeo Server";
+    }
+
+    @Override
+    public void autorun(Shell shell) {
+        // check if connection info is already available and connect to remote
+        // if so.
+        Map<String, String> args = (Map<String, String>) shell.getMainArguments();
+        if (args != null) {
+            String url = args.get("#1");
+            String username = args.get("-u");
+            String password = args.get("-p");
+            if (url != null && username != null && password != null) {
+                try {
+                    shell.getConsole().println("Connecting to " + url + " ...");
+                    shell.getFeature(AutomationFeature.class).connect(url,
+                            username, password);
+                } catch (Throwable t) {
+                    throw new ShellException("Failed to connect to " + url, t);
+                }
+            }
+        }
     }
 
 }

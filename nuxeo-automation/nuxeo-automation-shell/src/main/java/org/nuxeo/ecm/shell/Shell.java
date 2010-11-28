@@ -120,6 +120,22 @@ public final class Shell {
         while (it.hasNext()) {
             addFeature(it.next());
         }
+        // activate the default feature
+        String ns = System.getProperty("shell", getDefaultNamespace());
+        CommandRegistry reg = getRegistry(ns);
+        if (reg != null) {
+            setActiveRegistry(reg.getName());
+        }
+    }
+
+    protected String getDefaultNamespace() {
+        if (getRegistry("remote") != null) {
+            return "remote";
+        }
+        if (getRegistry("local") != null) {
+            return "local";
+        }
+        return "global";
     }
 
     public LinkedHashMap<String, String> getMainArguments() {

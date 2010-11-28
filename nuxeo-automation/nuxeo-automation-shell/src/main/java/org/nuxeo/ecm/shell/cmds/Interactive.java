@@ -35,6 +35,8 @@ import org.nuxeo.ecm.shell.cmds.completors.ShellCompletor;
 @Command(name = "interactive", help = "Interactive shell")
 public class Interactive implements Runnable, ShellConsole {
 
+    protected static String currentCmdLine;
+
     @Context
     protected Shell shell;
 
@@ -44,6 +46,10 @@ public class Interactive implements Runnable, ShellConsole {
 
     public Interactive() throws IOException {
         console = new ConsoleReader();
+    }
+
+    public static String getCurrentCmdLine() {
+        return currentCmdLine;
     }
 
     public ConsoleReader getConsole() {
@@ -62,30 +68,43 @@ public class Interactive implements Runnable, ShellConsole {
         console.addCompletor(new ShellCompletor(this));
         shell.setConsole(this);
         try {
+            try {
+                shell.getActiveRegistry().autorun(shell);
+            } catch (Throwable t) {
+                handleError(t);
+            }
             while (true) {
                 try {
                     String cmdline = console.readLine(getPrompt());
+                    currentCmdLine = cmdline;
                     shell.run(cmdline);
-                } catch (ShellException e) {
-                    int r = e.getErrorCode();
-                    if (r != 0) {
-                        shell.bye();
-                        System.exit(r == -1 ? 0 : r);
-                    } else {
-                        shell.setProperty("last.error", e);
-                        console.printString(e.getMessage());
-                        console.printNewline();
-                        // console.printString(sw.toString());
-                    }
                 } catch (Throwable t) {
-                    ANSIBuffer buf = new ANSIBuffer();
-                    buf.red(Trace.getStackTrace(t));
-                    console.printString(buf.toString());
+                    handleError(t);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
+        }
+    }
+
+    protected void handleError(Throwable t) throws IOException {
+        if (t instanceof ShellException) {
+            ShellException e = (ShellException) t;
+            int r = e.getErrorCode();
+            if (r != 0) {
+                shell.bye();
+                System.exit(r == -1 ? 0 : r);
+            } else {
+                shell.setProperty("last.error", e);
+                console.printString(e.getMessage());
+                console.printNewline();
+                // console.printString(sw.toString());
+            }
+        } else {
+            ANSIBuffer buf = new ANSIBuffer();
+            buf.red(Trace.getStackTrace(t));
+            console.printString(buf.toString());
         }
     }
 

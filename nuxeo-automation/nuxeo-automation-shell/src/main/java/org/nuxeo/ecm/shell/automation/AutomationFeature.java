@@ -28,11 +28,9 @@ import org.nuxeo.ecm.shell.CompletorProvider;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellFeature;
 import org.nuxeo.ecm.shell.ValueAdapter;
-import org.nuxeo.ecm.shell.automation.cmds.Connect;
 import org.nuxeo.ecm.shell.automation.cmds.OperationCommandType;
 import org.nuxeo.ecm.shell.automation.cmds.RemoteCommands;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
-import org.nuxeo.ecm.shell.fs.cmds.FileSystemCommands;
 
 /**
  * The automation feature is providing connection with Nuxeo servers through
@@ -52,7 +50,7 @@ public class AutomationFeature implements ShellFeature, ValueAdapter,
         shell.putContextObject(AutomationFeature.class, this);
         shell.addCompletorProvider(this);
         shell.addValueAdapter(this);
-        GlobalCommands.INSTANCE.addAnnotatedCommand(Connect.class);
+        shell.addRegistry(RemoteCommands.INSTANCE);
     }
 
     public HttpAutomationClient connect(String url, String username,
@@ -66,7 +64,7 @@ public class AutomationFeature implements ShellFeature, ValueAdapter,
         ctx = new RemoteContext(this, client, session);
 
         // switch to automation command namespace
-        shell.addRegistry(RemoteCommands.INSTANCE);
+        RemoteCommands.INSTANCE.onConnect();
         CommandRegistry reg = new AutomationRegistry();
         // build automation registry
         buildCommands(reg, session);
@@ -94,8 +92,8 @@ public class AutomationFeature implements ShellFeature, ValueAdapter,
             ctx.getClient().shutdown();
             ctx.dispose();
             Shell shell = Shell.get();
-            shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
-            shell.removeRegistry(RemoteCommands.INSTANCE.getName());
+            // shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
+            RemoteCommands.INSTANCE.onDisconnect();
             shell.removeRegistry(AUTOMATION_NS);
             ctx = null;
         }

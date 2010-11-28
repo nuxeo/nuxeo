@@ -156,8 +156,28 @@ public abstract class CommandRegistry {
         return ar;
     }
 
+    public void clear() {
+        cmds.clear();
+    }
+
+    /**
+     * Override this to provide a custom prompt for your command namespace
+     * 
+     * @param shell
+     * @return
+     */
     public String getPrompt(Shell shell) {
         return "> ";
     }
 
+    /**
+     * Override this to automatically run some commands at startup if needed.
+     * This is invoked by the interactive mode just after it was started on the
+     * current namespace. This way you can do some initialization for your
+     * namespace if needed - like automatically connecting to remote if
+     * connection details were filled to the application command line arguments.
+     */
+    public void autorun(Shell shell) {
+
+    }
 }

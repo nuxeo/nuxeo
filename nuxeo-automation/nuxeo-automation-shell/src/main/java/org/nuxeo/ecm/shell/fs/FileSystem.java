@@ -53,7 +53,6 @@ public class FileSystem implements ShellFeature {
         shell.putContextObject(FileSystem.class, this);
         shell.addValueAdapter(new FileValueAdapter());
         shell.addRegistry(FileSystemCommands.INSTANCE);
-        shell.setActiveRegistry(FileSystemCommands.INSTANCE.getName());
     }
 
     public List<File> getStack() {
