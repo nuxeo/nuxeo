@@ -4,6 +4,7 @@
   <implementation class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
 
   <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+  <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
 
   <service>
     <provide interface="org.nuxeo.ecm.core.management.api.ProbeManager" />
