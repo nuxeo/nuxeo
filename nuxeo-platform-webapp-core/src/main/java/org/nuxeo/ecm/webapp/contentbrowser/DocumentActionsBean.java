@@ -41,11 +41,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
-import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -101,6 +102,8 @@ public class DocumentActionsBean extends InputController implements
     protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     public static String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
+
+    public static String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -344,7 +347,8 @@ public class DocumentActionsBean extends InputController implements
             documentManager.save();
             // not navigationContext.saveCurrentDocument();
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
@@ -362,12 +366,15 @@ public class DocumentActionsBean extends InputController implements
     public String updateDocument() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+            Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
+                    changeableDocument);
             changeableDocument = documentManager.saveDocument(changeableDocument);
             throwUpdateComments(changeableDocument);
             documentManager.save();
             // some changes (versioning) happened server-side, fetch new one
             navigationContext.invalidateCurrentDocument();
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(
                             changeableDocument.getType()));
@@ -471,7 +478,8 @@ public class DocumentActionsBean extends InputController implements
                 }
             }
 
-            newDocument.setPathInfo(parentDocumentPath, pss.generatePathSegment(newDocument));
+            newDocument.setPathInfo(parentDocumentPath,
+                    pss.generatePathSegment(newDocument));
 
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();
@@ -699,6 +707,18 @@ public class DocumentActionsBean extends InputController implements
             return true;
         }
         return false;
+    }
+
+    @Observer(EventNames.BEFORE_DOCUMENT_CHANGED)
+    public void followTransition(DocumentModel changedDocument)
+            throws ClientException {
+        String transitionToFollow = (String) changedDocument.getContextData(
+                ScopeType.REQUEST, LIFE_CYCLE_TRANSITION_KEY);
+        if (transitionToFollow != null) {
+            documentManager.followTransition(changedDocument.getRef(),
+                    transitionToFollow);
+            documentManager.save();
+        }
     }
 
 }
