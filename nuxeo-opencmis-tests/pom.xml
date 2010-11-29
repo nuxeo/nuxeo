@@ -20,7 +20,7 @@
   <properties>
     <nuxeo.version>5.4.1-SNAPSHOT</nuxeo.version>
     <nuxeo.opencmis.version>5.4.1-SNAPSHOT</nuxeo.opencmis.version>
-    <chemistry.opencmis.version>0.2.0-incubating-SNAPSHOT</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.2.0-incubating-r1040083</chemistry.opencmis.version>
   </properties>
 
   <dependencies>
