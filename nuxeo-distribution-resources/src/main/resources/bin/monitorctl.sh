@@ -100,6 +100,12 @@ if [ ! -z $LOGTAIL ]; then
     fi
 fi
 
+# JAR PATH of JMXSH http://code.google.com/p/jmxsh/
+# you need to enable JMX on the server on port 1089
+JMXSH=${JMXSH:-/usr/local/jmxsh/jmxsh-R5.jar}
+if [ ! -r $JMXSH ]; then
+  unset JMXSH
+fi
 
 moncheckalive() {
     if [ ! -r "$SAR_PID" ]; then
@@ -352,6 +358,20 @@ case "$1" in
 	;;
     vacuumdb)
 	vacuum
+	;;
+    heap-histo)
+	NXPID=`cat "$PID"`
+	$JAVA_HOME/bin/jmap -histo $NXPID
+	;;
+    invoke-fgc)
+	[ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
+	cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Memory
+set ATTROP gc
+jmx_invoke
+jmx_close
+EOF
 	;;
     help)
 	help
