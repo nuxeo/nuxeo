@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.core.Manager;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -41,6 +43,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.lifecycle.LifeCycle;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -90,6 +95,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     private static TypeManager typeManagerService;
 
     private static DirectoryService dirService;
+
+    private static LifeCycleService lifeCycleService;
 
     // static cache of default viewId per document type shared all among
     // threads
@@ -144,6 +151,16 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             defaultViewCache.put(docType, defaultView);
             return defaultView;
         }
+    }
+
+    private static LifeCycleService geLifeCycleService() {
+        if (lifeCycleService == null) {
+            lifeCycleService = NXCore.getLifeCycleService();
+            if (lifeCycleService == null) {
+                log.error("No Life Cycle service registered");
+            }
+        }
+        return lifeCycleService;
     }
 
     public static TypeInfo typeInfo(DocumentModel document) {
@@ -505,8 +522,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param patternName
      * @param doc The document model.
-     * @param index index of the element containing the blob.
-     *            <code>index</code> starts at 0.
+     * @param index index of the element containing the blob. <code>index</code>
+     *            starts at 0.
      * @param filename The filename of the blob.
      * @return the REST URL for the blob, or <code>null</code> if an error
      *         occurred.
@@ -753,8 +770,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use
-     * case with "File" doc type and "file" schema
+     * Build the nxedit URL for the "create new document from template" use case
+     * with "File" doc type and "file" schema
      *
      * @param template the document holding the blob to be used as template
      * @return the encoded URL string
@@ -768,8 +785,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     /**
-     * Build the nxedit URL for the "create new document from template" use
-     * case
+     * Build the nxedit URL for the "create new document from template" use case
      *
      * @param template the document holding the blob to be used as template
      * @param templateSchemaName the schema of the blob holding the template
@@ -779,8 +795,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param schemaName the schema of the new blob to be saved as attachment
      * @param blobFieldName the field name of the new blob to be saved as
      *            attachment
-     * @param filenameFieldName the field name of the filename of the
-     *            attachment
+     * @param filenameFieldName the field name of the filename of the attachment
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
@@ -885,4 +900,19 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return String.format("%s/%s/%s", listPropertyName, index,
                 subPropertyName);
     }
+
+    /**
+     * Returns all the available transitions given the current state.
+     *
+     * @param lifeCycleName the Life Cycle name
+     * @param currentState the state from which the transitions should start
+     * @since 5.4.1
+     */
+    public static Collection<String> getAvailableLifeCycleTransitions(
+            String lifeCycleName, String currentState)
+            throws LifeCycleException {
+        LifeCycle lf = geLifeCycleService().getLifeCycleByName(lifeCycleName);
+        return lf.getAllowedStateTransitionsFrom(currentState);
+    }
+
 }

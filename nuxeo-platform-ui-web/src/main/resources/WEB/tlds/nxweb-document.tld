@@ -78,6 +78,8 @@
             field name, target filename field. </li>
       <li> propertyPath(String, int, String): builds the property path given the
            property list name, the index and the sub property name.</li>
+      <li> availableLifeCycleTransitions(String, String): get all the available transition
+           to follow with the parameters: lifeCycleName and currentLifeCycleState</li>
     </ul>
     ]]>
   </description>

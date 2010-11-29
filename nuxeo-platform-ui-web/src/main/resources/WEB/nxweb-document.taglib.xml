@@ -262,6 +262,16 @@
     </function-signature>
   </function>
 
+  <function>
+    <function-name>availableLifeCycleTransitions</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.util.List getAvailableLifeCycleTransitions(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>documentLink</tag-name>
     <component>
