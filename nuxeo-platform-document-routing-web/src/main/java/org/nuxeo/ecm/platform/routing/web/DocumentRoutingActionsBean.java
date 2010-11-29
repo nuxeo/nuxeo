@@ -648,9 +648,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager)) {
             alreadyLockedByCurrentUser = true;
         } else {
-            if (lockRoute(routeModel) == null) {
-                return null;
-            }
+            lockRoute(routeModel);
         }
 
         DocumentModel newDocument = navigationContext.getChangeableDocument();
