@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.automation.jbpm.test;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -23,6 +29,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import junit.framework.Assert;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.jbpm.graph.exe.Comment;
 import org.jbpm.taskmgmt.exe.PooledActor;
@@ -32,8 +41,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jbpm.CreateTask.OperationTaskVariableName;
+import org.nuxeo.ecm.automation.jbpm.GetUserTasks;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -41,17 +54,14 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
-import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
+import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Anahide Tchertchian "org.nuxeo.ecm.platform.jbpm.testing" })
@@ -168,6 +178,28 @@ public class JbpmAutomationTest {
 
         // check document metadata
         Assert.assertNull(document.getPropertyValue("dc:description"));
+    }
+
+    @Test
+    public void testGetUserTasks() throws InvalidChainException, Exception {
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(document);
+       automationService.run(ctx, "createSingleTaskChain");
+       ctx.clear();
+       OperationChain chain = new OperationChain("test");
+       chain.add(GetUserTasks.ID);
+       Blob blob = (Blob)automationService.run(ctx, chain);
+       JSONArray rows = JSONArray.fromObject(blob.getString());
+       assertEquals(1, rows.size());
+       JSONObject obj = rows.getJSONObject(0);
+       assertNotNull(obj.get("id")); // can be 1 or 2 depending
+       assertEquals(obj.get("docref"), document.getRef().toString());
+       assertEquals(obj.get("name"), "single test task");
+       assertEquals(obj.get("directive"), "test directive");
+       assertEquals(obj.get("comment"), "test comment");
+       assertNotNull(obj.get("startDate"));
+       assertNotNull(obj.get("dueDate"));
+       assertTrue((Boolean)obj.get("expired"));
     }
 
     @Test

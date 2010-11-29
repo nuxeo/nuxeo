@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation class="org.nuxeo.ecm.automation.jbpm.CreateTask" />
+    <operation class="org.nuxeo.ecm.automation.jbpm.GetUserTasks" />
   </extension>
 
 
