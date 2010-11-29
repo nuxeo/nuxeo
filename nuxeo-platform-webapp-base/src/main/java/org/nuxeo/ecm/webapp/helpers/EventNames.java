@@ -73,6 +73,13 @@ public final class EventNames {
      */
     public static final String LOCATION_SELECTION_CHANGED = "locationSelectionChanged";
 
+
+    /**
+     * Should be raised before an edited document is saved.
+     * @since 5.4.1
+     */
+    public static final String BEFORE_DOCUMENT_CHANGED = "beforeDocumentChanged";
+
     /**
      * Should be raised when a document is edited.
      */
@@ -143,7 +150,7 @@ public final class EventNames {
      * Event raised when a search is performed
      */
     public static final String SEARCH_PERFORMED = "searchPerformed";
-    
+
     /**
      * Event raised when user go to his personal workspace
      */

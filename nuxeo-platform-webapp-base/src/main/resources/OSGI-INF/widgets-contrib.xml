@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.widgts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="life_cycle_transitions">
+
+      <documentation>
+        This widget type displays a selection of available life cycle transitions
+        given a life cycle state and a life cycle policy.
+        <br />
+        It requires the configuration of the first field to map to a String
+        value storing the chosen life cycle transition.
+        <br />
+        It needs the following properties configuration:
+        <ul>
+          <li>
+            currentLifeCycleState: the current state from where to start finding
+            the available transitions.
+          </li>
+          <li>
+            lifeCycleName: represents the life cycle from which to retrieve the
+            transitions.
+          </li>
+        </ul>
+        <br />
+        A standard definition could be:
+        <code>
+          <widget name="life_cycle_transitions"
+            type="life_cycle_transitions">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <fields>
+              <field>contextData['request/lifeCycleTransition']</field>
+            </fields>
+            <properties widgetMode="edit">
+              <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
+              <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
+            </properties>
+          </widget>
+        </code>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/life_cycle_transitions_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="life_cycle_transitions"
+      type="life_cycle_transitions">
+
+      <documentation>
+        Default widget listing available life cycle transitions from the
+        document's current state and document's life cycle policy.
+        <br />
+        The chosen transition is stored in the contextData of the document.
+      </documentation>
+
+      <labels>
+        <label mode="any">label.life.cycle.changeFor</label>
+      </labels>
+      <fields>
+        <field>contextData['request/lifeCycleTransition']</field>
+      </fields>
+      <widgetModes>
+        <mode value="create">hidden</mode>
+        <mode value="view">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
+        <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>
