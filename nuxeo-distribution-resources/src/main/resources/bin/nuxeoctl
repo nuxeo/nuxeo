@@ -628,6 +628,6 @@ case "$1" in
     pack $NUXEO_EAR $2
     ;;
   *)
-    echo "Usage: nuxeoctl (startbg|start|console|stop|status|configure|pack)"
+    echo "Usage: nuxeoctl (startbg|start|console|stop|status|restart|configure|pack)"
     ;;
 esac
