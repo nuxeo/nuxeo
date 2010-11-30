@@ -22,11 +22,14 @@ package org.nuxeo.runtime.annotations.loader;
 import org.osgi.framework.Bundle;
 
 /**
+ * @deprecated not used
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public interface AnnotationLoader {
 
-    void loadAnnotation(Bundle bundle, String annoType, String className, String[] args) throws Exception;
+    void loadAnnotation(Bundle bundle, String annoType, String className,
+            String[] args) throws Exception;
 
 }

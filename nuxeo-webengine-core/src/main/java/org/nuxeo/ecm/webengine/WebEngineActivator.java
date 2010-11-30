@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ZipUtils;
-import org.nuxeo.runtime.annotations.loader.BundleAnnotationsLoader;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -34,29 +33,37 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.SynchronousBundleListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class WebEngineActivator implements BundleActivator {
+public class WebEngineActivator implements BundleActivator, FrameworkListener {
 
     private static final Log log = LogFactory.getLog(WebEngineActivator.class);
 
     protected final Set<String> deployedBundles = new HashSet<String>();
 
+    protected BundleContext context;
+
     @Override
     public void start(final BundleContext context) throws Exception {
+        this.context = context;
+        // hack to be sure runtime is deployed
+        context.addFrameworkListener(this);
+    }
 
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        context.removeFrameworkListener(this);
+        context = null;
+    }
+
+    protected void deployModules() throws Exception {
         final WebEngine engine = Framework.getLocalService(WebEngine.class);
-
-        // TODO: this should be moved into runtime - loads annotations from
-        // current bundle
-        // TODO: move this into runtime
-        context.addBundleListener(BundleAnnotationsLoader.getInstance());
-        BundleAnnotationsLoader.getInstance().loadAnnotationsFromDeployedBundles(
-                context.getBundle());
 
         // start deploying web bundles
         context.addBundleListener(new SynchronousBundleListener() {
@@ -89,12 +96,6 @@ public class WebEngineActivator implements BundleActivator {
                 }
             }
         }
-    }
-
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        // TODO: move this in runtime
-        context.removeBundleListener(BundleAnnotationsLoader.getInstance());
     }
 
     protected void deployModules(WebEngine engine, Bundle b) throws Exception {
@@ -169,4 +170,14 @@ public class WebEngineActivator implements BundleActivator {
         return !(serviceNames == null || serviceNames.length == 0);
     }
 
+    @Override
+    public void frameworkEvent(FrameworkEvent event) {
+        if (FrameworkEvent.STARTED == event.getType()) {
+            try {
+                deployModules();
+            } catch (Exception e) {
+                log.error("Failed to deploy WebEngine modules", e);
+            }
+        }
+    }
 }
