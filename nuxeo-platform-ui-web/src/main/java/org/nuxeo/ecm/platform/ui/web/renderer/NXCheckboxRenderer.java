@@ -25,6 +25,9 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.CheckboxRenderer;
@@ -37,6 +40,8 @@ import com.sun.faces.util.RequestStateManager;
  */
 public class NXCheckboxRenderer extends CheckboxRenderer {
 
+    private static final Log log = LogFactory.getLog(NXCheckboxRenderer.class);
+
     private static final String[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTBOOLEANCHECKBOX);
 
     public static final String RENDERER_TYPE = "javax.faces.NXCheckbox";
@@ -46,7 +51,15 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
             UIComponent component, Object submittedValue)
             throws ConverterException {
 
-        String newValue = (String) submittedValue;
+        String newValue = null;
+        if (submittedValue instanceof Boolean) {
+            newValue = ((Boolean) submittedValue).toString();
+        } else if (submittedValue instanceof String) {
+            newValue = (String) submittedValue;
+        } else if (submittedValue != null) {
+            log.error("Unsupported submitted value, should be a string or boolean: '"
+                    + submittedValue + "' => using false");
+        }
 
         Converter converter = null;
         // If there is a converter attribute, use it to to ask application
