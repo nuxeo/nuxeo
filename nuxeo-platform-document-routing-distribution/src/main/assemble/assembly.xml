@@ -25,7 +25,7 @@
   <target name="server" depends="init" description="Server packaging">
     <mkdir dir="${stagedir}" />
     <unzip dest="${stagedir}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat:${nuxeo.platform.version}:zip"
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-jboss:${nuxeo.platform.version}:zip"
                             classifier="nuxeo-dm" />
       <patternset>
         <exclude name="**/templates/common-sfsl/**" />
@@ -37,7 +37,7 @@
     <nx:rename from="${stagedir}/nuxeo-*" to="${app.path}" />
     <chmod dir="${app.path}" perm="750" includes="*.sh,bin/*.sh" />
     <!-- Deploy Custom plugins -->
-    <copy todir="${app.path}/nxserver/bundles">
+    <copy todir="${app.path}/server/default/deploy/nuxeo.ear/plugins">
       <artifact:set groupId="org.nuxeo.ecm.platform" artifactId="nuxeo-platform-document-routing-*"/>
     </copy>
     <copy todir="${app.path}/templates/" overwrite="true">
