@@ -27,7 +27,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
+ * @deprecated not used
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
