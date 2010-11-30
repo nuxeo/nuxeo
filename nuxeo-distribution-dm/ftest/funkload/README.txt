@@ -177,3 +177,50 @@ Nuxeo DM running on JAVA 5
 Starting with Nuxeo DM 5.3.0 the default JVM is Sun Java 6.
 
 Scripts must be adapted to use JAVA5.
+
+Memory and PostgreSQL analysis per page
+------------------------------------------
+
+By install JMXSH and having access to the PostgreSQL log file, the Nuxeo
+test case can collect and extract meaningful metrics for each page.
+
+Requirement:
+
+* Install JMXSH from http://code.google.com/p/jmxsh/ and make
+the jar available at /usr/local/jmxsh/jmxsh-R5.jar or set a JMXSH
+environment variable.
+
+* Install pgfouine, gawk
+
+* Enable JMX access by setting the java option in the nuxeo.conf
+
+   JAVA_OPTS=$JAVA_OPTS -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=1089 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
+
+* Edit the FunkLoad Nuxeo.conf file and set the following path:
+
+pglog=/path/to/postgresql/log/postgresql-8.4-main.log
+log_dir=../../target/ftest/funkload/log
+monitorctl_file=/path/to/nuxeo-server/bin/monitorctl.sh
+
+* To extract all the SQL queries you need to use the following
+  PostgreSQL setup:
+
+     lc_messages = 'en_US.UTF-8'
+     log_line_prefix = '%t [%p]: [%l-1] '
+     log_min_duration_statement = 0
+
+Usage:
+
+Run your test, the FunkLoad Nuxeo test case will perform a Full GC and
+a heap history before each request and will save all SQL queries and
+heap history after.
+
+You can generate the pgfouine reports per page like this:
+ 
+for f in `ls pg-test*.log`; do pgfouine -file $f -logtype stderr -top 30 > ${f%log}html; done
+
+You can view the amount of memory needed by page like this:     
+
+for f in `ls hh-test*-before.txt`; do e=${f%-before.txt}-end.txt; after=`grep Total $e | awk '{ print $3 }'`; before=`grep Total $f | awk '{ print $3 }'`; diff=`expr $after - $before`; hrdiff=`echo $diff | awk '{sum=$1;hum[1024**3]="Gb";hum[1024**2]="Mb";hum[1024]="Kb"; for (x=1024**3; x>=1024; x/=1024){ if (sum>=x) { printf "%.2f %s\n",sum/x,hum[x];break }}}'`; echo "${f%-before.txt} $before $after: $hrdiff"; done
+
+Note that you need to use a huge heap to prevent any minor or major GC.
