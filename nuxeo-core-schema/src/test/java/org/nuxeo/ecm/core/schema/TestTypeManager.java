@@ -72,6 +72,11 @@ public class TestTypeManager extends NXRuntimeTestCase {
     }
 
     public void testFacetsCache() {
+        // avoid WARN, register facets
+        typeManager.registerFacet(new FacetDescriptor("parent1", null));
+        typeManager.registerFacet(new FacetDescriptor("parent2", null));
+        typeManager.registerFacet(new FacetDescriptor("child", null));
+
         String[] facets = { "parent1", "parent2" };
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd = new DocumentTypeDescriptor("Document",
@@ -165,6 +170,11 @@ public class TestTypeManager extends NXRuntimeTestCase {
      * Check that registering a child type before the parent works.
      */
     public void testFacetsCacheReversedRegistration() {
+        // avoid WARN, register facets
+        typeManager.registerFacet(new FacetDescriptor("parent1", null));
+        typeManager.registerFacet(new FacetDescriptor("parent2", null));
+        typeManager.registerFacet(new FacetDescriptor("child", null));
+
         DocumentTypeDescriptor dtd;
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         String[] facets = new String[1];

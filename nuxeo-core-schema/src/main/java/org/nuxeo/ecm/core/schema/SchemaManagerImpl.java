@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.schema;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -34,6 +34,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.schema.types.AnyType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -42,8 +45,10 @@ import org.nuxeo.ecm.core.schema.types.TypeHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Schema Manager implementation.
+ * <p>
+ * Holds basic types (String, Integer, etc.), schemas, document types and
+ * facets.
  */
 public class SchemaManagerImpl implements SchemaManager {
 
@@ -61,18 +66,20 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private final Map<String, DocumentType> docTypeReg = new HashMap<String, DocumentType>();
 
+    private final Map<String, CompositeType> facetReg = new HashMap<String, CompositeType>();
+
     private final Map<String, Set<String>> inheritanceCache = new HashMap<String, Set<String>>();
 
     private final Map<String, List<DocumentTypeDescriptor>> pendingDocTypes;
 
     private final Map<String, Field> fields = new HashMap<String, Field>();
 
+    /** Facet -> docTypes having this facet. */
     private Map<String, Set<String>> facetsCache;
 
     private File schemaDir;
 
     private PrefetchInfo prefetchInfo; // global prefetch info
-
 
     public SchemaManagerImpl() throws Exception {
         pendingDocTypes = new HashMap<String, List<DocumentTypeDescriptor>>();
@@ -83,12 +90,18 @@ public class SchemaManagerImpl implements SchemaManager {
         for (Type type : XSDTypes.getTypes()) {
             registerType(type);
         }
-        BuiltinTypes.registerBuiltinTypes(this);
+        registerBuiltinTypes();
         TypeProvider provider = Framework.getService(TypeProvider.class);
         if (provider != this && provider != null) { // should be a remote
                                                     // provider
             importTypes(provider);
         }
+    }
+
+    protected void registerBuiltinTypes() {
+        registerDocumentType(new DocumentTypeImpl(null, TypeConstants.DOCUMENT,
+                null, null, DocumentTypeImpl.T_DOCUMENT));
+        registerType(AnyType.INSTANCE);
     }
 
     /**
@@ -110,6 +123,9 @@ public class SchemaManagerImpl implements SchemaManager {
         for (Type type : types) {
             registerType(type);
         }
+        for (CompositeType facet : provider.getFacets()) {
+            registerFacet(facet);
+        }
     }
 
     @Override
@@ -120,6 +136,8 @@ public class SchemaManagerImpl implements SchemaManager {
             return docTypeReg.get(name);
         } else if (SchemaNames.SCHEMAS.equals(schema)) {
             return schemaReg.get(name);
+        } else if (SchemaNames.FACETS.equals(schema)) {
+            return facetReg.get(name);
         } else {
             Schema ownerSchema = schemaReg.get(schema);
             if (ownerSchema != null) {
@@ -173,6 +191,8 @@ public class SchemaManagerImpl implements SchemaManager {
             schemaReg.put(type.getName(), (Schema) type);
         } else if (SchemaNames.DOCTYPES.equals(schema)) {
             docTypeReg.put(type.getName(), (DocumentType) type);
+        } else if (SchemaNames.FACETS.equals(schema)) {
+            facetReg.put(type.getName(), (CompositeType) type);
         } else {
             Schema ownerSchema = schemaReg.get(schema);
             if (ownerSchema != null) {
@@ -327,9 +347,20 @@ public class SchemaManagerImpl implements SchemaManager {
     private DocumentType registerDocumentType(DocumentType superType, DocumentTypeDescriptor dtd) {
         synchronized (docTypeReg) {
             try {
-                String[] schemaNames = getSchemaNames(dtd.schemas);
+                 Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
+                // add schemas from facets
+                for (String facetName : dtd.facets) {
+                    CompositeType facet = getFacet(facetName);
+                    if (facet != null) {
+                        schemaNames.addAll(Arrays.asList(facet.getSchemaNames()));
+                    } else {
+                        log.warn("Document type " + dtd.name
+                                + " uses undeclared facet: " + facetName);
+                    }
+                }
                 DocumentType docType = new DocumentTypeImpl(superType,
-                        dtd.name, schemaNames, dtd.facets);
+                        dtd.name, schemaNames.toArray(new String[0]),
+                        dtd.facets);
                 docType.setChildrenTypes(dtd.childrenTypes);
                 // use global prefetch info if not a local one was defined
                 docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(dtd.prefetch)
@@ -400,11 +431,9 @@ public class SchemaManagerImpl implements SchemaManager {
         List<DocumentTypeDescriptor> list = pendingDocTypes.get(dtd.superTypeName);
         if (list == null) {
             list = new ArrayList<DocumentTypeDescriptor>();
-            list.add(dtd);
             pendingDocTypes.put(dtd.superTypeName, list);
-        } else {
-            list.add(dtd);
         }
+        list.add(dtd);
     }
 
     @Override
@@ -428,6 +457,43 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
+    @Override
+    public void registerFacet(CompositeType facet) {
+        synchronized (facetReg) {
+            facetReg.put(facet.getName(), facet);
+            log.info("Registered facet: " + facet.getName());
+        }
+    }
+
+    public void registerFacet(FacetDescriptor fd) {
+        Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
+        CompositeType ct = new CompositeTypeImpl((TypeRef<CompositeType>) null,
+                SchemaNames.FACETS, fd.name, schemas.toArray(new String[0]));
+        registerFacet(ct);
+    }
+
+    @Override
+    public CompositeType unregisterFacet(String name) {
+        synchronized (facetReg) {
+            log.info("Unregistered facet: " + name);
+            return facetReg.remove(name);
+        }
+    }
+
+    @Override
+    public CompositeType getFacet(String name) {
+        synchronized (facetReg) {
+            return facetReg.get(name);
+        }
+    }
+
+    @Override
+    public CompositeType[] getFacets() {
+        synchronized (facetReg) {
+            return facetReg.values().toArray(new CompositeType[facetReg.size()]);
+        }
+    }
+
     // Misc
 
     @Override
@@ -442,6 +508,7 @@ public class SchemaManagerImpl implements SchemaManager {
             schemaReg.clear();
         }
         typeReg.clear();
+        facetReg.clear();
     }
 
     public void setSchemaDirectory(File dir) {
@@ -465,14 +532,6 @@ public class SchemaManagerImpl implements SchemaManager {
             }
         }
         return null;
-    }
-
-    private static String[] getSchemaNames(SchemaDescriptor[] schemas) {
-        String[] result = new String[schemas.length];
-        for (int i = 0; i < schemas.length; i++) {
-            result[i] = schemas[i].name;
-        }
-        return result;
     }
 
     /**

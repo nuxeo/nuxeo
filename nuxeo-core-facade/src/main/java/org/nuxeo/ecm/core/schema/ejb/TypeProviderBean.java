@@ -26,6 +26,7 @@ import javax.ejb.Stateless;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
@@ -80,4 +81,15 @@ public class TypeProviderBean implements TypeProviderLocal {
     public DocumentType[] getDocumentTypes() {
         return typeProvider.getDocumentTypes();
     }
+
+    @Override
+    public CompositeType getFacet(String name) {
+        return typeProvider.getFacet(name);
+    }
+
+    @Override
+    public CompositeType[] getFacets() {
+        return typeProvider.getFacets();
+    }
+
 }

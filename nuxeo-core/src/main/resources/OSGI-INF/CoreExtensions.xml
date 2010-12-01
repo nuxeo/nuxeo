@@ -49,6 +49,17 @@
       point="doctype">
     <documentation>The core document types</documentation>
 
+    <!-- standard facets with no schema -->
+    <facet name="Folderish" /> <!-- used by system -->
+    <facet name="Orderable" /> <!-- used by system -->
+    <facet name="Versionable" /> <!-- used by system -->
+    <facet name="Downloadable" />
+    <facet name="Publishable" />
+    <facet name="Commentable" />
+    <facet name="WebView" />
+    <facet name="SuperSpace" />
+    <facet name="HiddenInNavigation" />
+
     <doctype name="Folder" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
@@ -141,7 +152,6 @@
       <facet name="Downloadable"/>
       <facet name="Versionable"/>
       <facet name="Publishable"/>
-      <facet name="Indexable"/>
       <facet name="Commentable"/>
     </doctype>
 

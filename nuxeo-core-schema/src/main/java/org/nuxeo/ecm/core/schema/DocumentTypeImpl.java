@@ -86,10 +86,10 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     }
 
     public DocumentTypeImpl(TypeRef<DocumentType> superType, String name,
-            String[] declaredSchemas, String[] facets, int type) {
+            String[] declaredSchemas, String[] facets, int flags) {
         super(superType, SchemaNames.DOCTYPES, name, declaredSchemas);
-        if (type != 0) {
-            setFlags(type);
+        if (flags != 0) {
+            setFlags(flags);
         } else {
             DocumentType stype = (DocumentType) this.superType.get();
             if (stype != null) {

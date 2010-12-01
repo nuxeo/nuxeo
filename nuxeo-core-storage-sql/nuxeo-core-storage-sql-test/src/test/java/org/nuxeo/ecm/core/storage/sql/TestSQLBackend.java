@@ -1620,4 +1620,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    public void testFacet() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "DocWithAge", false);
+
+        node.setSingleProperty("age:age", Long.valueOf(123));
+        assertEquals(Long.valueOf(123),
+                node.getSimpleProperty("age:age").getValue());
+        session.save();
+
+        // another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        node = session.getNodeById(node.getId());
+        assertEquals(Long.valueOf(123),
+                node.getSimpleProperty("age:age").getValue());
+    }
+
 }

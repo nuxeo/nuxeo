@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.schema;
 
 import java.util.Set;
 
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -68,9 +69,11 @@ public interface SchemaManager extends TypeProvider {
 
     void registerDocumentType(DocumentType docType);
 
-    //void registerDocumentType(DocumentTypeDescriptor docTypeDesc);
-
     DocumentType unregisterDocumentType(String name);
+
+    void registerFacet(CompositeType facet);
+
+    CompositeType unregisterFacet(String name);
 
     /**
      * Returns the names of all document types that have given facet.

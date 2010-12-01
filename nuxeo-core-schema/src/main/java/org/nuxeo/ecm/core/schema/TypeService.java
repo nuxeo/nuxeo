@@ -100,8 +100,11 @@ public class TypeService extends DefaultComponent {
         if ("doctype".equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                typeManager
-                        .registerDocumentType((DocumentTypeDescriptor) contrib);
+                if (contrib instanceof DocumentTypeDescriptor) {
+                    typeManager.registerDocumentType((DocumentTypeDescriptor) contrib);
+                } else if (contrib instanceof FacetDescriptor) {
+                    typeManager.registerFacet((FacetDescriptor) contrib);
+                }
             }
         } else if ("schema".equals(xp)) {
             Object[] contribs = extension.getContributions();
@@ -183,7 +186,11 @@ public class TypeService extends DefaultComponent {
         if ("doctype".equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                typeManager.unregisterDocumentType(((DocumentTypeDescriptor) contrib).name);
+                if (contrib instanceof DocumentTypeDescriptor) {
+                    typeManager.unregisterDocumentType(((DocumentTypeDescriptor) contrib).name);
+                } else if (contrib instanceof FacetDescriptor) {
+                    typeManager.unregisterFacet(((FacetDescriptor) contrib).name);
+                }
             }
         } else if ("schema".equals(xp)) {
             Object[] contribs = extension.getContributions();

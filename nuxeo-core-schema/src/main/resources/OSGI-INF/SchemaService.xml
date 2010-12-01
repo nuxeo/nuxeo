@@ -63,6 +63,8 @@
 
     <object
       class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
   </extension-point>
 
   <extension-point name="schema">

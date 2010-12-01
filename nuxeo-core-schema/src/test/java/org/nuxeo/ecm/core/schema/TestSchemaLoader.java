@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.schema;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -103,7 +105,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("personInfo", field.getType().getName());
     }
 
-    public void testFeature() throws Exception {
+    public void testContribs() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
                 "CoreTestExtensions.xml");
         DocumentType docType = typeMgr.getDocumentType("myDoc");
@@ -120,6 +122,14 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         field = schema.getField("description");
         assertNotNull(field);
+
+        CompositeType facet = typeMgr.getFacet("myfacet");
+        assertNotNull(facet);
+        docType = typeMgr.getDocumentType("myDoc2");
+        assertNotNull(docType);
+        assertEquals(2, docType.getSchemas().size());
+        assertEquals(Arrays.asList("schema1", "schema2"),
+                Arrays.asList(docType.getSchemaNames()));
     }
 
     @SuppressWarnings("unchecked")

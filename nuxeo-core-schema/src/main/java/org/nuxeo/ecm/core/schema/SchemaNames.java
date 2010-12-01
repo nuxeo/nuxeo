@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,24 +12,28 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.schema;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * The available registries of type-like information.
  */
 public final class SchemaNames {
 
+    /** A builtin data type. */
     public static final String BUILTIN = "@builtin";
 
+    /** A registered schema. */
     public static final String SCHEMAS = "@schemas";
 
+    /** A registered document type. */
     public static final String DOCTYPES = "@doctypes";
+
+    /** A registered facet. */
+    public static final String FACETS = "@facets";
 
     // Constant utility class.
     private SchemaNames() {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,43 +12,39 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor for a reference to a schema from a document type or a facet.
+ * Facet Descriptor.
  */
-@XObject("schema")
-public class SchemaDescriptor {
+@XObject("facet")
+public class FacetDescriptor {
 
     @XNode("@name")
     public String name;
 
-    @XNode("@lazy")
-    public boolean isLazy = true;
+    @XNodeList(value = "schema", type = SchemaDescriptor[].class, componentType = SchemaDescriptor.class)
+    public SchemaDescriptor[] schemas;
 
-    public SchemaDescriptor() {
+    /* empty constructor needed by XMap */
+    public FacetDescriptor() {
     }
 
-    public SchemaDescriptor(String name) {
+    public FacetDescriptor(String name, SchemaDescriptor[] schemas) {
         this.name = name;
+        this.schemas = schemas == null ? new SchemaDescriptor[0] : schemas;
     }
 
-    public static Set<String> getSchemaNames(SchemaDescriptor[] sds) {
-        Set<String> set = new LinkedHashSet<String>();
-        for (SchemaDescriptor sd : sds) {
-            set.add(sd.name);
-        }
-        return set;
+    @Override
+    public String toString() {
+        return "Facet(" + name + ',' + SchemaDescriptor.getSchemaNames(schemas)
+                + ')';
     }
 
 }
