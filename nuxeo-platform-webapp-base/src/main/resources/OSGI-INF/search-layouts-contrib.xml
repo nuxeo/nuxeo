@@ -255,7 +255,7 @@
       </properties>
     </widget>
 
-    <widget name="search_path" type="template">
+    <widget name="search_path" type="select_path_tree">
       <labels>
         <label mode="any">label.advanced_search.searchpath</label>
       </labels>
@@ -263,8 +263,8 @@
       <fields>
         <field>search:searchpath</field>
       </fields>
-      <properties mode="any">
-        <property name="template">/widgets/search_path_widget.xhtml</property>
+      <properties>
+        <property name="labelOpenPopUp">label.relation.addPath</property>
       </properties>
     </widget>
 
