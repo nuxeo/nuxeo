@@ -103,8 +103,6 @@ public class PackZip {
     }
 
     protected void runPreprocessor() {
-        // TODO remove this when tomcat distrib will be fixed.
-        System.setProperty("org.nuxeo.runtme.preprocessing.jboss5", "true");
         DeploymentPreprocessor.main(new String[] { nuxeoEar.getAbsolutePath() });
     }
 
