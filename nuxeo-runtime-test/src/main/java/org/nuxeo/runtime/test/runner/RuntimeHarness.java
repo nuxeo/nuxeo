@@ -19,8 +19,12 @@ package org.nuxeo.runtime.test.runner;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Properties;
 
+import org.nuxeo.osgi.BundleFile;
+import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.StreamRef;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**
@@ -140,4 +144,30 @@ public interface RuntimeHarness {
 
     void addWorkingDirectoryConfigurator(WorkingDirectoryConfigurator config);
 
+    /**
+     *
+     * Framework properties for variable injections
+     *
+     * @since 5.4.1
+     * @return
+     */
+    Properties getProperties();
+
+    /**
+     *
+     * Runtime context for deployment
+     *
+     * @since 5.4.1
+     * @return
+     */
+    RuntimeContext getContext();
+
+    /**
+     *
+     * OSGI bridge
+     *
+     * @since 5.4.1
+     * @return
+     */
+    OSGiAdapter getAdapter();
 }

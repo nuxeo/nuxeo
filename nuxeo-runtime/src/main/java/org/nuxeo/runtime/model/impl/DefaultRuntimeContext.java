@@ -19,6 +19,9 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
@@ -27,6 +30,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -183,9 +188,12 @@ public class DefaultRuntimeContext implements RuntimeContext {
         return null;
     }
 
+
     public RegistrationInfoImpl createRegistrationInfo(StreamRef ref)
             throws Exception {
-        InputStream in = ref.getStream();
+        String source = FileUtils.read(ref.getStream());
+        String expanded = Framework.expandVars(source);
+        InputStream in = new ByteArrayInputStream(expanded.getBytes());
         try {
             return createRegistrationInfo(in);
         } finally {
