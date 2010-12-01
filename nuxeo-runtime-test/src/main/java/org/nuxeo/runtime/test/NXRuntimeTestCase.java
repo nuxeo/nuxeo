@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -550,7 +551,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         return sp[0];
     }
 
-    protected BundleFile lookupBundle(String bundleName) throws Exception {
+    public BundleFile lookupBundle(String bundleName) throws Exception {
         BundleFile bundleFile = bundles.get(bundleName);
         if (bundleFile != null) {
             return bundleFile;
@@ -609,6 +610,21 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         DirectoryBundleFile bf = new DirectoryBundleFile(folder);
         BundleImpl bundle = new BundleImpl(osgi, bf, loader);
         osgi.install(bundle);
+    }
+
+    @Override
+    public Properties getProperties() {
+        return runtime.getProperties();
+    }
+
+    @Override
+    public RuntimeContext getContext() {
+        return runtime.getContext();
+    }
+
+    @Override
+    public OSGiAdapter getAdapter() {
+        return osgi;
     }
 
 }
