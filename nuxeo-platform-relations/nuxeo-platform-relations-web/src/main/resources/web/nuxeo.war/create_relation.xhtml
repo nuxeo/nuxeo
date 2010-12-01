@@ -22,7 +22,7 @@
 
     function showPopUpSearch() {
       // hide all trees
-      hideAllPopUps();
+      hideAllRelationPopUps();
 
       var popUp = jQuery("#relationSearchPopUp");
       popUp.css('top', 0.1 * getDocumentHeight() + getScrollTop());
@@ -36,7 +36,7 @@
       popUp.show();
     }
 
-    function hideAllPopUps() {
+    function hideAllRelationPopUps() {
       jQuery('.relationSearchPopUp').each(function () {
         jQuery(this).hide();
       });
@@ -62,7 +62,7 @@
     jQuery(document).keydown(function(event) {
       // escape
       if (event.keyCode == '27') {
-        hideAllPopUps();
+        hideAllRelationPopUps();
         event.preventDefault();
       }
     });
@@ -70,7 +70,7 @@
     jQuery(document).click(function(event) {
       var element = jQuery(event.target);
       if (!(element.is('.relationSearchPopUp') || element.parents().is('.relationSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
-        hideAllPopUps();
+        hideAllRelationPopUps();
       }
     });
   </script>
