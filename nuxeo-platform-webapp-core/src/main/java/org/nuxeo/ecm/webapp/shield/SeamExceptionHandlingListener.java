@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
@@ -51,10 +52,13 @@ public class SeamExceptionHandlingListener extends
     public void beforeSetErrorPageAttribute(Throwable t,
             HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        // check seam context
-
         // cut/paste from seam Exception filter.
         // we recreate the seam context to be able to use the messages.
+
+        // patch following https://jira.jboss.org/browse/JBPAPP-1427
+        // Ensure that the call in which the exception occurred was cleaned up
+        // - it might not be, and there is no harm in trying
+        Lifecycle.endRequest();
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext == null) {
@@ -129,8 +133,7 @@ public class SeamExceptionHandlingListener extends
             HttpServletResponse response) throws IOException, ServletException {
         FacesContext context = FacesContext.getCurrentInstance();
         // XXX: it's not clear what should be done here: current tests
-        // depending
-        // on the faces context just allow to avoid errors after
+        // depending on the faces context just allow to avoid errors after
         if (context instanceof MockFacesContext) {
             // do not end the request if it's a real faces context, otherwise
             // we'll get the following stack trace:
