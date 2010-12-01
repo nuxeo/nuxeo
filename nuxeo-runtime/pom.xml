@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>5.4.0.2-SNAPSHOT</version>
+    <version>5.4.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
@@ -58,8 +58,6 @@
       <artifactId>xml-apis</artifactId>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
   <build>
@@ -96,7 +94,7 @@ Bundle-Version: ${bundle.version}
 Export-Template:
  org.nuxeo.*;version="${bundle.version}"
 Import-Template: 
- javax.tranaction.*;version=1.1,
+ javax.transaction.*;version=1.1,
  javax.resource.*.*;version=2.0,
  org.nuxeo.*;version="${bundle.version}"
 Import-Package: javax.transaction;version=1.1

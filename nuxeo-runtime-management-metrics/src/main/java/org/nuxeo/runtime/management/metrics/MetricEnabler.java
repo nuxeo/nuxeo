@@ -38,6 +38,7 @@ public class MetricEnabler implements MetricEnablerMXBean {;
         this.serializer = serializer;
     }
 
+    @Override
     public void enable() {
         SimonManager.enable();
         SimonManager.callback().addCallback(jmxCB);
@@ -47,6 +48,7 @@ public class MetricEnabler implements MetricEnablerMXBean {;
         }
     }
 
+    @Override
     public void disable() {
         SimonManager.callback().removeCallback(jmxCB);
         for (String name : SimonManager.simonNames()) {
@@ -56,10 +58,12 @@ public class MetricEnabler implements MetricEnablerMXBean {;
         SimonManager.disable();
     }
 
+    @Override
     public boolean isEnabled() {
         return SimonManager.isEnabled();
     }
 
+    @Override
     public void enableLogging() {
         lgCB = new LoggingCallback();
         lgCB.setLogger(Logger.getLogger("org.javasimon"));
@@ -67,29 +71,34 @@ public class MetricEnabler implements MetricEnablerMXBean {;
         SimonManager.callback().addCallback(lgCB);
     }
 
+    @Override
     public void disableLogging() {
         SimonManager.callback().removeCallback(lgCB);
         lgCB = null;
     }
 
+    @Override
     public boolean isLogging() {
         return lgCB != null;
     }
 
     protected MetricSerializingCallback srzCB;
 
+    @Override
     public void enableSerializing() throws IOException {
             serializer.resetOutput();
             srzCB = new MetricSerializingCallback(serializer);
             SimonManager.callback().addCallback(srzCB);
     }
 
+    @Override
     public void disableSerializing() throws IOException {
             serializer.closeOutput();
             SimonManager.callback().removeCallback(srzCB);
             srzCB = null;
     }
 
+    @Override
     public boolean isSerializing() {
         return srzCB != null;
     }

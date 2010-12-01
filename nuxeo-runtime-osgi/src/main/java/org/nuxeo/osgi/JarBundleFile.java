@@ -59,12 +59,14 @@ public class JarBundleFile implements BundleFile {
         this.jarFile = jarFile;
     }
 
+    @Override
     public Enumeration<URL> findEntries(String name, String pattern,
             boolean recurse) {
         throw new UnsupportedOperationException(
                 "The operation BundleFile.findEntries() was not yet implemented");
     }
 
+    @Override
     public URL getEntry(String name) {
         ZipEntry entry = jarFile.getEntry(name);
         if (entry == null) {
@@ -80,15 +82,18 @@ public class JarBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public Enumeration<String> getEntryPaths(String path) {
         throw new UnsupportedOperationException(
                 "The operation BundleFile.geEntryPaths() was not yet implemented");
     }
 
+    @Override
     public File getFile() {
         return new File(jarFile.getName());
     }
 
+    @Override
     public String getFileName() {
         String path = jarFile.getName();
         int punix = path.lastIndexOf('/');
@@ -103,10 +108,12 @@ public class JarBundleFile implements BundleFile {
         return path.substring(p + 1);
     }
 
+    @Override
     public String getLocation() {
         return jarFile.getName();
     }
 
+    @Override
     public Manifest getManifest() {
         try {
             return jarFile.getManifest();
@@ -115,6 +122,7 @@ public class JarBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException {
         Attributes attrs = jarFile.getManifest().getMainAttributes();
         String cp = attrs.getValue(Constants.BUNDLE_CLASSPATH);
@@ -174,6 +182,7 @@ public class JarBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException {
         URL base = new URL("jar:"
                 + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
@@ -194,6 +203,7 @@ public class JarBundleFile implements BundleFile {
         return nested;
     }
 
+    @Override
     public String getSymbolicName() {
         try {
             String value = jarFile.getManifest().getMainAttributes().getValue(
@@ -205,6 +215,7 @@ public class JarBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public URL getURL() {
         try {
             return new File(jarFile.getName()).toURI().toURL();
@@ -222,10 +233,12 @@ public class JarBundleFile implements BundleFile {
         }
     }
 
+    @Override
     public boolean isDirectory() {
         return false;
     }
 
+    @Override
     public boolean isJar() {
         return true;
     }

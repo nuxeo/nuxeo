@@ -65,10 +65,12 @@ public class SimpleRuntime extends AbstractRuntimeService {
         this.workingDir = workingDir;
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public Version getVersion() {
         return VERSION;
     }
@@ -88,6 +90,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
         context.undeploy(url);
     }
 
+    @Override
     public void reloadProperties() throws Exception {
         throw new UnsupportedOperationException("Not yet implemented");
     }

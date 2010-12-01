@@ -85,6 +85,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         runtime.getBundleContext().removeBundleListener(this);
     }
 
+    @Override
     public void bundleChanged(BundleEvent event) {
         String name = event.getBundle().getSymbolicName();
         int type = event.getType();

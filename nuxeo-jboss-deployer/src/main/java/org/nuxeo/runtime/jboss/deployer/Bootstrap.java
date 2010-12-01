@@ -25,21 +25,23 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static org.nuxeo.runtime.jboss.deployer.Constants.*;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Bootstrap implements Constants {
+public class Bootstrap {
 
-    protected Log log = LogFactory.getLog(Boolean.class);
+    protected static final Log log = LogFactory.getLog(Boolean.class);
 
-    protected File homeDir;
+    protected final File homeDir;
 
-    protected ClassLoader cl;
+    protected final ClassLoader cl;
 
-    protected List<File> bundles;
+    protected final List<File> bundles;
 
-    protected Map<String, Object> env;
+    protected final Map<String, Object> env;
 
     protected Class<?> frameworkLoaderClass;
 

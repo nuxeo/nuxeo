@@ -55,6 +55,7 @@ public interface Contribution extends StreamRef {
      * Gets the contribution XML content. The content should be in Nuxeo XML
      * component format.
      */
+    @Override
     InputStream getStream();
 
     /**

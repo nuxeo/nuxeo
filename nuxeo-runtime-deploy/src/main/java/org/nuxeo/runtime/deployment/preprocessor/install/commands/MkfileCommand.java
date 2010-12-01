@@ -46,6 +46,7 @@ public class MkfileCommand implements Command {
         this.content = content;
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
         File file = new File(baseDir, ctx.expandVars(path.toString()));
@@ -68,6 +69,7 @@ public class MkfileCommand implements Command {
         return "mkfile " + path.toString();
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return "mkfile " + ctx.expandVars(path.toString());
     }

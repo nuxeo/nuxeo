@@ -67,6 +67,7 @@ public class MetricInvocationHandler<T> implements InvocationHandler {
         return stopwatch;
     }
 
+    @Override
     public Object invoke(Object proxy, Method m, Object[] parms) throws Throwable {
         Split split = getStopwatch(m, parms).start();
         try {

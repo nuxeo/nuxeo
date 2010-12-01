@@ -42,29 +42,37 @@ import com.google.inject.Binder;
  */
 public class SimpleFeature implements RunnerFeature {
 
+    @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
     }
 
+    @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
     }
 
+    @Override
     public void start(FeaturesRunner runner) throws Exception {
     }
 
+    @Override
     public void stop(FeaturesRunner runner) throws Exception {
     }
 
+    @Override
     public void configure(FeaturesRunner runner, Binder binder) {
     }
 
+    @Override
     public void initialize(FeaturesRunner runner)
             throws Exception {
     }
 
+    @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
     }
 
+    @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
     }

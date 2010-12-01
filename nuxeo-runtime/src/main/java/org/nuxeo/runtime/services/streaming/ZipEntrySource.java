@@ -44,6 +44,7 @@ public class ZipEntrySource extends AbstractStreamSource {
         this.entry = entry;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         ZipFile zf = new ZipFile(file);
         ZipEntry zentry = zf.getEntry(entry);

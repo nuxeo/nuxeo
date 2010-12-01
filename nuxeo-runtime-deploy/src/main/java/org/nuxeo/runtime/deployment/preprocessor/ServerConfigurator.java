@@ -56,6 +56,7 @@ public abstract class ServerConfigurator {
     protected void parseAndCopy(Properties config) throws IOException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
         final FilenameFilter filter = new FilenameFilter() {
+            @Override
             public boolean accept(File dir, String name) {
                 return !"nuxeo.defaults".equals(name);
             }

@@ -39,6 +39,7 @@ public class ScanFilter extends ListDeploymentUnitFilter {
         return appName;
     }
 
+    @Override
     public boolean accepts(VFSDeploymentUnit unit) {
         // String path = unit.getRoot().getPathName();
         try {

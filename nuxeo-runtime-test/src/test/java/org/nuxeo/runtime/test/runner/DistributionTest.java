@@ -33,7 +33,8 @@ import org.nuxeo.runtime.test.runner.distrib.NuxeoDistribution;
 @NuxeoDistribution(profile="core-5.3.1-SNAPSHOT")
 public class DistributionTest {
 
-    @Test public void testAgainstDistribution() {
+    @Test
+    public void testAgainstDistribution() {
         System.out.println(Framework.getProperties());
     }
 

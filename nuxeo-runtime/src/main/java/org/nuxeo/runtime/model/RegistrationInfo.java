@@ -195,4 +195,10 @@ public interface RegistrationInfo extends Serializable {
      */
     URL getXmlFileUrl();
 
+    /**
+     * Notify the component instance that the Nuxeo application started
+     *
+     * @throws Exception
+     */
+    void notifyApplicationStarted() throws Exception;
 }

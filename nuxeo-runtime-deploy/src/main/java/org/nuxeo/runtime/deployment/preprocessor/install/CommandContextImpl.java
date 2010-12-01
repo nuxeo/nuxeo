@@ -37,10 +37,12 @@ public class CommandContextImpl extends HashMap<String, String> implements Comma
         this.baseDir = baseDir;
     }
 
+    @Override
     public File getBaseDir() {
         return baseDir;
     }
 
+    @Override
     public String expandVars(String text) {
         return new TextTemplate(this).process(text);
     }

@@ -1,4 +1,4 @@
-To enable servlet invoker for runtime services (i.e. runing streaming and autoconf on HTTP)
+To enable servlet invoker for runtime services (i.e. running streaming and autoconf on HTTP)
 you have to copy the servlet definition in the web.xml into a war web.xml file
 Then in nuxeo.properties you should define the property
 

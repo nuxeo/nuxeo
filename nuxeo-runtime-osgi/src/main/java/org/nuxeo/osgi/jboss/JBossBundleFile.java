@@ -48,6 +48,7 @@ public class JBossBundleFile implements BundleFile {
         return di;
     }
 
+    @Override
     public Enumeration<URL> findEntries(String path, String pattern,
             boolean recurse) {
         throw new UnsupportedOperationException("The operation Bundle.findEntries() was not yet implemented");
@@ -61,54 +62,66 @@ public class JBossBundleFile implements BundleFile {
         throw new UnsupportedOperationException("Cannot set the class loade rof a JBoss bundle deployment");
     }
 
+    @Override
     public URL getEntry(String name) {
         return di.localCl.findResource(name); //TODO
     }
 
+    @Override
     public Enumeration<String> getEntryPaths(String path) {
         throw new UnsupportedOperationException("The operation Bundle.geEntryPaths() was not yet implemented");
     }
 
+    @Override
     public String getLocation() {
         return di.url.toExternalForm();
     }
 
+    @Override
     public Manifest getManifest() {
         return di.getManifest();
     }
 
+    @Override
     public URL getURL() {
         return di.url;
     }
 
+    @Override
     public File getFile() {
         return FileUtils.getFileFromURL(di.url);
     }
 
+    @Override
     public String getFileName() {
         return new File(di.url.getFile()).getName();
     }
 
+    @Override
     public String getSymbolicName() {
         String value = di.getManifest().getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
         return value != null ? BundleManifestReader.removePropertiesFromHeaderValue(value) : null;
     }
 
+    @Override
     public Collection<BundleFile> getNestedBundles(File tmpDir)
             throws IOException {
         return null;
     }
 
+    @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir)
             throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public boolean isDirectory() {
         return di.isDirectory;
     }
 
+    @Override
     public boolean isJar() {
         return !di.isDirectory && !di.isXML && !di.isScript;
     }

@@ -19,6 +19,7 @@ package org.nuxeo.runtime.deployment.preprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -102,8 +103,6 @@ public class PackZip {
     }
 
     protected void runPreprocessor() {
-        // TODO remove this when tomcat distrib will be fixed.
-        System.setProperty("org.nuxeo.runtme.preprocessing.jboss5", "true");
         DeploymentPreprocessor.main(new String[] { nuxeoEar.getAbsolutePath() });
     }
 
@@ -127,7 +126,7 @@ public class PackZip {
         Document doc = docBuilder.parse(in);
         Element root = doc.getDocumentElement();
         NodeList list = root.getElementsByTagName("module");
-        ArrayList<String> paths = new ArrayList<String>();
+        Collection<String> paths = new ArrayList<String>();
         for (int i = 0; i < list.getLength(); i++) {
             Element el = (Element) list.item(i);
             Node n = el.getFirstChild();
@@ -135,9 +134,8 @@ public class PackZip {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
                     Element mtype = ((Element) n);
                     String type = n.getNodeName().toLowerCase();
-                    String path = null;
                     if (!"web".equals(type)) {
-                        path = mtype.getTextContent().trim();
+                        String path = mtype.getTextContent().trim();
                         paths.add(path);
                     }
                 }

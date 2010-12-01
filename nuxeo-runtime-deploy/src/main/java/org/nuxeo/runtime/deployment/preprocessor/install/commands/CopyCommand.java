@@ -59,6 +59,7 @@ public class CopyCommand implements Command {
         this.filter = filter;
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
         File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
@@ -100,6 +101,7 @@ public class CopyCommand implements Command {
         return "copy " + src.toString() + " > " + dst.toString();
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return "copy " + ctx.expandVars(src.toString()) + " > " +
                 ctx.expandVars(dst.toString());

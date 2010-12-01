@@ -38,12 +38,15 @@ public class ComponentWithXPoint implements Component {
 
     final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
 
+    @Override
     public void activate(ComponentContext context) {
     }
 
+    @Override
     public void deactivate(ComponentContext context) {
     }
 
+    @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
@@ -52,10 +55,12 @@ public class ComponentWithXPoint implements Component {
         }
     }
 
+    @Override
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
+            log.debug("Un-Registering: "
+                    + ((DummyContribution) contrib).message);
             this.contribs.add((DummyContribution) contrib);
         }
     }
@@ -64,4 +69,8 @@ public class ComponentWithXPoint implements Component {
         return contribs.toArray(new DummyContribution[contribs.size()]);
     }
 
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+
+    }
 }

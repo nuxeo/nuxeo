@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.management.MBeanServer;
@@ -141,7 +140,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     @SuppressWarnings("cast")
     protected MBeanServer doFindServer(String domainName) {
-        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
             String domain = server.getDefaultDomain();
             if (domain == null || !domain.equals(domainName)) {
                 continue;
@@ -158,12 +157,13 @@ public class ServerLocatorService extends DefaultComponent implements
         }
     }
 
+    @Override
     @SuppressWarnings("cast")
     public MBeanServer lookupServer(ObjectName qualifiedName) {
         if (defaultServer.isRegistered(qualifiedName)) {
             return defaultServer;
         }
-        for (MBeanServer server : (List<MBeanServer>) MBeanServerFactory.findMBeanServer(null)) {
+        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
             if (server.isRegistered(qualifiedName)) {
                 return server;
             }
@@ -176,6 +176,7 @@ public class ServerLocatorService extends DefaultComponent implements
         return defaultServer;
     }
 
+    @Override
     public MBeanServer lookupServer(String domainName) {
         return doFindServer(domainName);
     }

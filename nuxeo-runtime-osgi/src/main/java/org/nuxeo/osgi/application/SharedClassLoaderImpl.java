@@ -45,6 +45,7 @@ public class SharedClassLoaderImpl extends URLClassLoader implements SharedClass
         super.addURL(url);
     }
 
+    @Override
     public ClassLoader getLoader() {
         return this;
     }

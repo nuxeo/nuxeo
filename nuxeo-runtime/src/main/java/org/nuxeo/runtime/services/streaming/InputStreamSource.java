@@ -37,6 +37,7 @@ public class InputStreamSource extends AbstractStreamSource {
         this.in = in;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return in;
     }

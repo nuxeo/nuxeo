@@ -30,9 +30,11 @@ import com.google.inject.Inject;
 @Jetty(port=9090)
 public class JettyTest {
 
-    @Inject Server server;
+    @Inject
+    Server server;
 
-    @Test public void jettyComponentIsDeployed() {
+    @Test
+    public void jettyComponentIsDeployed() {
         assertNotNull(server);
     }
 

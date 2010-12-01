@@ -42,7 +42,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     private static final Log log = LogFactory.getLog(ReloadComponent.class);
 
-    public static String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
+    public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
 
     protected static Bundle bundle;
 
@@ -67,7 +67,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushJassCache() throws Exception {
+    public void flushJaasCache() throws Exception {
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event("usermanager", "user_changed", this,
                 "Deployer")); // the data argument is optional
@@ -79,6 +79,24 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
     }
 
+    /**
+     * Add a JAR to the application classloader - experimental.
+     */
+    @Override
+    public void addJar(File file) throws Exception {
+        MutableClassLoaderDelegate mcl = new MutableClassLoaderDelegate(
+                ReloadComponent.class.getClassLoader());
+        mcl.addURL(file.toURI().toURL());
+    }
+
+    /**
+     * Remove a JAR from the application classloader - experimental.
+     */
+    @Override
+    public void removeJar(File file) throws Exception {
+        // TODO
+    }
+
     public void deployBundle(File file, boolean reloadResourceClassPath)
             throws Exception {
         // TODO this will remove from classpath other bundles deployed at
@@ -86,6 +104,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         String path = file.getAbsolutePath();
         if (reloadResourceClassPath) {
             reloadResourceClassPath(Collections.singletonList(path));
+        }
+        try {
+            addJar(file);
+        } catch (Throwable t) {
+            log.error("Failed to modify classloader. Tried to add: " + file, t);
         }
         Bundle bundle = Framework.getRuntime().getContext().getBundle().getBundleContext().installBundle(
                 path);
@@ -100,6 +123,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         deployBundle(file, true);
     }
 
+    @Override
     public void reloadProperties() throws Exception {
         Framework.getRuntime().reloadProperties();
     }

@@ -30,7 +30,9 @@ import org.nuxeo.runtime.model.persistence.AbstractContribution;
  */
 public class ContributionFile extends AbstractContribution {
 
-    protected String name;
+    protected final String name;
+
+    protected final File file;
 
     protected String description;
 
@@ -38,13 +40,12 @@ public class ContributionFile extends AbstractContribution {
 
     protected boolean loaded;
 
-    protected File file;
-
     public ContributionFile(String name, File file) {
         this.name = name;
         this.file = file;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -56,24 +57,29 @@ public class ContributionFile extends AbstractContribution {
         }
     }
 
+    @Override
     public String getDescription() {
         load();
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public boolean isDisabled() {
         load();
         return disabled;
     }
 
+    @Override
     public void setDisabled(boolean isDisabled) {
         this.disabled = isDisabled;
     }
 
+    @Override
     public URL asURL() {
         try {
             return file.toURI().toURL();
@@ -82,6 +88,7 @@ public class ContributionFile extends AbstractContribution {
         }
     }
 
+    @Override
     public String getContent() {
         try {
             return FileSystemStorage.safeRead(file);
@@ -91,7 +98,9 @@ public class ContributionFile extends AbstractContribution {
         }
     }
 
+    @Override
     public InputStream getStream() {
         return new ByteArrayInputStream(getContent().getBytes());
     }
+
 }

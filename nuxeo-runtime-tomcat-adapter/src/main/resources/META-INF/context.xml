@@ -27,7 +27,7 @@
       systemBundle="bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar" />
 
   <!--
-      Define JDBC datasaources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
+      Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
       For example java:comp/env/jdbc/nxsqldirectory
       This means you need to update correspondly JNDI bindings in nuxeo data source definitions
       in the config directory

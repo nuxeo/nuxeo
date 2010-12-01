@@ -26,6 +26,7 @@ package org.nuxeo.runtime.service;
  */
 public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<O> getAdaptableType() {
         Adapter anno = getClass().getAnnotation(Adapter.class);
@@ -36,6 +37,7 @@ public abstract class AnnotatedAdapterFactory<O> implements AdapterFactory<O> {
         return (Class<O>)anno.type();
     }
 
+    @Override
     public Class<?>[] getAdapterTypes() {
         Adapter anno = getClass().getAnnotation(Adapter.class);
         if (anno == null) {

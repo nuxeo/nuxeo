@@ -22,7 +22,7 @@ import java.rmi.dgc.VMID;
 /**
  * Provides a way to identify a Nuxeo Runtime instance.
  * <p>
- * Identifier can be :
+ * Identifier can be:
  * <p>
  * <ul>
  * <li>automatically generated (default) based on a {@link VMID}
@@ -38,6 +38,9 @@ public class RuntimeInstanceIdentifier {
     protected static String id;
 
     public static final String INSTANCE_ID_PROPERTY_NAME = "org.nuxeo.runtime.instance.id";
+
+    private RuntimeInstanceIdentifier() {
+    }
 
     public static String getId() {
         if (id == null) {

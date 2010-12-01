@@ -24,6 +24,7 @@ public abstract class AbstractContribution implements Contribution {
 
     protected String id;
 
+    @Override
     public String getId() {
         if (id == null) {
             id = ContributionPersistenceComponent.getComponentName(getName());

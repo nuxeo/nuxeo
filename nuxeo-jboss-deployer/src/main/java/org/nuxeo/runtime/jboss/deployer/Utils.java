@@ -39,7 +39,10 @@ import org.jboss.virtual.VirtualFile;
  */
 public class Utils {
 
-    private static Log log = LogFactory.getLog(Utils.class);
+    private static final Log log = LogFactory.getLog(Utils.class);
+
+    private Utils() {
+    }
 
     public static File tryGetFile(URL url) throws Exception {
         String protocol = url.getProtocol().toLowerCase();
@@ -74,10 +77,6 @@ public class Utils {
      * thrown if the virtual file cannot be converted to a java file. Virtual
      * files that point to a zip entry will return the zip file containing the
      * entry.
-     *
-     * @param vf
-     * @return
-     * @throws Exception
      */
     public static File getFile(VirtualFile vf) throws Exception {
         return tryGetFile(VFSUtils.getRealURL(vf));
@@ -89,13 +88,8 @@ public class Utils {
 
     /**
      * Unzip only if the given lastModified is greater than the already unzipped
-     * home (if any). Must use a vlue of 0 if the lastModified time is not
+     * home (if any). Must use a value of 0 if the lastModified time is not
      * known.
-     *
-     * @param vf
-     * @param lastModified
-     * @return
-     * @throws Exception
      */
     public static File getRealHomeDir(VirtualFile vf, long lastModified)
             throws Exception {

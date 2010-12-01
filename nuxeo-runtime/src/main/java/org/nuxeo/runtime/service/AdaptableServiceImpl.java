@@ -40,6 +40,7 @@ public class AdaptableServiceImpl implements AdaptableService {
         adapters = new ConcurrentHashMap<Class<?>, Object>();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         Object obj = adapters.get(adapter);
@@ -52,10 +53,12 @@ public class AdaptableServiceImpl implements AdaptableService {
         return (T)obj;
     }
 
+    @Override
     public boolean hasAdapter(Class<?> adapter) {
         return getAdapter(adapter) != null;
     }
 
+    @Override
     public Object invokeAdapter(MethodInvocation invocation, Object[] args)
             throws NoSuchAdapterException, InvocationTargetException, IllegalAccessException {
         Method m = invocation.getMethod();

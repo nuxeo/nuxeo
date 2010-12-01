@@ -30,9 +30,11 @@ public final class NullActivator implements BundleActivator {
 
     public static final BundleActivator INSTANCE = new NullActivator();
 
+    @Override
     public void start(BundleContext context) throws Exception {
     }
 
+    @Override
     public void stop(BundleContext context) throws Exception {
     }
 

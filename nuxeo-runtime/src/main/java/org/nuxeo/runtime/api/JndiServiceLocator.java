@@ -40,6 +40,7 @@ public class JndiServiceLocator implements ServiceLocator {
         context = new InitialContext();
     }
 
+    @Override
     public void dispose() {
         context = null;
     }
@@ -48,6 +49,7 @@ public class JndiServiceLocator implements ServiceLocator {
         return context;
     }
 
+    @Override
     public Object lookup(ServiceDescriptor sd) throws Exception {
         String locator = sd.getLocator();
         if (locator == null) {
@@ -57,6 +59,7 @@ public class JndiServiceLocator implements ServiceLocator {
         return lookup(locator);
     }
 
+    @Override
     public Object lookup(String serviceId) throws Exception {
         ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(

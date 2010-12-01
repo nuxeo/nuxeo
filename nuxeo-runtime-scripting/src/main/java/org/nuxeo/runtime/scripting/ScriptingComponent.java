@@ -110,22 +110,27 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         unregisterScript(sd);
     }
 
+    @Override
     public ScriptEngineManager getScriptEngineManager() {
         return scriptMgr;
     }
 
+    @Override
     public void setScriptDir(File scriptDir) {
         this.scriptDir = scriptDir;
     }
 
+    @Override
     public File getScriptDir() {
         return scriptDir;
     }
 
+    @Override
     public File getScriptFile(String path) {
         return new File(scriptDir, path);
     }
 
+    @Override
     public void registerScript(ScriptDescriptor sd) {
         if (sd.name == null) {
             sd.name = sd.src;
@@ -133,6 +138,7 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         scripts.put(sd.name, sd);
     }
 
+    @Override
     public void unregisterScript(ScriptDescriptor sd) {
         if (sd.name == null) {
             sd.name = sd.src;
@@ -140,14 +146,17 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         scripts.remove(sd.name);
     }
 
+    @Override
     public void unregisterScript(String name) {
         scripts.remove(name);
     }
 
+    @Override
     public boolean isScriptRegistered(String name) {
         return scripts.containsKey(name);
     }
 
+    @Override
     public CompiledScript getScript(String name) throws ScriptException, IOException {
         ScriptDescriptor sd = scripts.get(name);
         if (sd != null) {
@@ -178,6 +187,7 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         return null;
     }
 
+    @Override
     public CompiledScript compile(String path) throws ScriptException {
         ScriptEngine engine = getEngineByFileName(path);
         if (engine != null) {
@@ -202,6 +212,7 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         }
     }
 
+    @Override
     public Object eval(String path) throws ScriptException {
         ScriptEngine engine = getEngineByFileName(path);
         if (engine != null) {
@@ -221,6 +232,7 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         }
     }
 
+    @Override
     public Object eval(String path, ScriptContext ctx) throws ScriptException {
         ScriptEngine engine = getEngineByFileName(path);
         if (engine != null) {
@@ -240,6 +252,7 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         }
     }
 
+    @Override
     public ScriptEngine getEngineByFileName(String path) {
         String ext = getFileExtension(path);
         return ext == null ? null : scriptMgr.getEngineByExtension(ext);

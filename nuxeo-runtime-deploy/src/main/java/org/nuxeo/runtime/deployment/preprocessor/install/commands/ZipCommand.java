@@ -59,6 +59,7 @@ public class ZipCommand implements Command {
         this.filter = filter;
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
         File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
@@ -105,6 +106,7 @@ public class ZipCommand implements Command {
         return "zip " + src.toString() + " > " + dst.toString();
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return "zip " + ctx.expandVars(src.toString()) + " > " +
                 ctx.expandVars(dst.toString());

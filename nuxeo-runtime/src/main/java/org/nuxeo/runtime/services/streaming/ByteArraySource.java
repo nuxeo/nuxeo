@@ -46,6 +46,7 @@ public class ByteArraySource extends AbstractStreamSource {
         return true;
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return new ByteArrayInputStream(bytes);
     }

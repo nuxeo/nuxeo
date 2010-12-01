@@ -137,6 +137,7 @@ public abstract class WebPage {
             return findElement(by); // try once first
         } catch (NotFoundException e) {
             return new WebDriverWait(driver, timeOutInSeconds).until(new ExpectedCondition<WebElement>() {
+                @Override
                 public WebElement apply(WebDriver arg0) {
                     return driver.findElement(by);
                 }
@@ -148,6 +149,7 @@ public abstract class WebPage {
         try {
             findElement(by); // try once first
             new WebDriverWait(driver, timeOutInSeconds).until(new ExpectedCondition<Boolean>() {
+                @Override
                 public Boolean apply(WebDriver arg0) {
                     try {
                         driver.findElement(by);

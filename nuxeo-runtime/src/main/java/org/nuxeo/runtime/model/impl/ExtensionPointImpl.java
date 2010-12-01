@@ -59,18 +59,22 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     public transient RegistrationInfo ri;
 
 
+    @Override
     public Class[] getContributions() {
         return contributions;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
 
+    @Override
     public String getSuperComponent() {
         return superComponent;
     }

@@ -35,6 +35,7 @@ public class JexlExpression implements org.nuxeo.runtime.expression.Expression {
         expression = ExpressionFactory.createExpression(expr);
     }
 
+    @Override
     public Object eval(Context context) throws Exception {
         // evaluate expression
         return expression.evaluate(context);

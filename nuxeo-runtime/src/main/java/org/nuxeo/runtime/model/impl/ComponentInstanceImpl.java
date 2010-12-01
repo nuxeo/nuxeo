@@ -60,6 +60,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    @Override
     public Object getInstance() {
         switch (ri.state) {
         case RegistrationInfo.RESOLVED:
@@ -89,21 +90,25 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    @Override
     public void destroy() throws Exception {
         deactivate();
         instance = null;
         ri = null;
     }
 
+    @Override
     public RuntimeContext getContext() {
         return ri.context;
     }
 
+    @Override
     public ComponentName getName() {
         return ri.name;
     }
 
     // TODO: cache info about implementation to avoid computing it each time
+    @Override
     public void activate() throws Exception {
         // activate the implementation instance
         try {
@@ -124,6 +129,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     // TODO: cache info about implementation to avoid computing it each time
+    @Override
     public void deactivate() throws Exception {
         // activate the implementation instance
         try {
@@ -145,6 +151,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     // TODO: cache info about implementation to avoid computing it each time
+    @Override
     public void registerExtension(Extension extension)
             throws Exception {
         // if this the target extension point is extending another extension point from another component
@@ -185,6 +192,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     // TODO: cache info about implementation to avoid computing it each time
+    @Override
     public void unregisterExtension(Extension extension)
             throws Exception {
         // activate the implementation instance
@@ -204,6 +212,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         Object object = getInstance();
         if (object instanceof Adaptable) {
@@ -215,23 +224,28 @@ public class ComponentInstanceImpl implements ComponentInstance {
         return null;
     }
 
+    @Override
     public String[] getPropertyNames() {
         Set<String> set = ri.getProperties().keySet();
         return set.toArray(new String[set.size()]);
     }
 
+    @Override
     public Property getProperty(String property) {
         return ri.getProperties().get(property);
     }
 
+    @Override
     public RuntimeContext getRuntimeContext() {
         return ri.getContext();
     }
 
+    @Override
     public Object getPropertyValue(String property) {
         return getPropertyValue(property, null);
     }
 
+    @Override
     public Object getPropertyValue(String property, Object defValue) {
         Property prop = getProperty(property);
         if (prop != null) {
@@ -241,6 +255,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    @Override
     public String[] getProvidedServiceNames() {
         return ri.getProvidedServiceNames();
     }

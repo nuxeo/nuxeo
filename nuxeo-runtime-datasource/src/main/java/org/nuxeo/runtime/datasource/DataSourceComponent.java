@@ -25,6 +25,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.jndi.NamingContext;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -50,7 +51,7 @@ public class DataSourceComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) throws Exception {
         Context ctx = DataSourceHelper.getDefaultInitCtx();
-        if (ctx != null) {
+        if (ctx != null && !(ctx instanceof NamingContext)) {
             throw new RuntimeException(String.format(
                     "A JNDI server already exists (%s), "
                             + "nuxeo-runtime-datasource cannot be deployed",
@@ -60,7 +61,11 @@ public class DataSourceComponent extends DefaultComponent {
         ctx = new InitialContext();
         Name name = new CompositeName(ENV_CTX_NAME);
         for (int i = 0; i < name.size(); i++) {
-            ctx = ctx.createSubcontext(name.get(i));
+            try {
+                ctx = (Context) ctx.lookup(name.get(i));
+            } catch (NamingException e) {
+                ctx = ctx.createSubcontext(name.get(i));
+            }
         }
         envCtx = ctx;
     }
@@ -103,7 +108,17 @@ public class DataSourceComponent extends DefaultComponent {
     protected void addDataSource(DataSourceDescriptor descr) {
         log.info("Registering datasource: " + descr.name);
         try {
-            envCtx.bind(descr.name, descr.getReference());
+            Name name = new CompositeName(descr.name);
+            Context ctx = envCtx;
+            // bind intermediate names as subcontexts (jdbc/foo)
+            for (int i = 0; i < name.size() - 1; i++) {
+                try {
+                    ctx = (Context) ctx.lookup(name.get(i));
+                } catch (NamingException e) {
+                    ctx = ctx.createSubcontext(name.get(i));
+                }
+            }
+            ctx.bind(name.get(name.size() - 1), descr.getReference());
         } catch (NamingException e) {
             log.error("Cannot bind datasource '" + descr.name + "' in JNDI", e);
         }

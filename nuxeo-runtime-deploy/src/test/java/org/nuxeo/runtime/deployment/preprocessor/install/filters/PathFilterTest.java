@@ -17,21 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo;
+package org.nuxeo.runtime.deployment.preprocessor.install.filters;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilterSet;
-import org.nuxeo.runtime.deployment.preprocessor.install.filters.ExcludeFilter;
-import org.nuxeo.runtime.deployment.preprocessor.install.filters.IncludeFilter;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class PathFilterTest extends TestCase {
+public class PathFilterTest {
 
+    @Test
     public void testExclude() {
         PathFilterSet filters = new PathFilterSet();
         filters.add(new ExcludeFilter("x"));
@@ -53,7 +53,7 @@ public class PathFilterTest extends TestCase {
 
         assertFalse(filters.accept(new Path("/c/d")));
         assertFalse(filters.accept(new Path("c/d")));
-        assertTrue(filters.accept(new Path("z/c/d"))); // abs. pattterns should match entire path
+        assertTrue(filters.accept(new Path("z/c/d"))); // abs. patterns should match entire path
 
         assertFalse(filters.accept(new Path("e/f")));
         assertFalse(filters.accept(new Path("/e/f/")));
@@ -62,6 +62,7 @@ public class PathFilterTest extends TestCase {
         assertTrue(filters.accept(new Path("w/e/f/z")));
     }
 
+    @Test
     public void testWildcard() {
         ExcludeFilter filter = new ExcludeFilter("/META-INF");
 
@@ -130,6 +131,7 @@ public class PathFilterTest extends TestCase {
     }
 
     //TODO: fix include -> multiple include should be evealuated using OR
+    @Test
     public void testInclude() {
         PathFilterSet filters = new PathFilterSet();
         filters.add(new IncludeFilter("x"));
@@ -160,6 +162,7 @@ public class PathFilterTest extends TestCase {
         assertFalse(filters.accept(new Path("w/e/f/z")));
     }
 
+    @Test
     public void testMixIncludeExclude() {
         PathFilterSet filters = new PathFilterSet();
         filters.add(new IncludeFilter("org/nuxeo/**"));

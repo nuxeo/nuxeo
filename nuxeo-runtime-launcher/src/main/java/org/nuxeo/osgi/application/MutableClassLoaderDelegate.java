@@ -47,6 +47,7 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
         addURL.setAccessible(true);
     }
 
+    @Override
     public void addURL(URL url) {
         try {
             addURL.invoke(cl, url);
@@ -55,6 +56,7 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
         }
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return cl;
     }

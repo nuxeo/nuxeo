@@ -93,6 +93,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
+    @Override
     public List<String> getWarnings() {
         return warnings;
     }
@@ -106,6 +107,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                 "org/nuxeo/runtime/nx-feature.xml");
     }
 
+    @Override
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
@@ -125,6 +127,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
+    @Override
     public synchronized void stop() throws Exception {
         if (isStarted) {
             log.info("Stopping Nuxeo Runtime service " + getName()
@@ -143,6 +146,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
+    @Override
     public boolean isStarted() {
         return isStarted;
     }
@@ -153,6 +157,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     protected void doStop() throws Exception {
     }
 
+    @Override
     public File getHome() {
         return workingDir;
     }
@@ -161,6 +166,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         workingDir = home;
     }
 
+    @Override
     public String getDescription() {
         return toString();
     }
@@ -170,14 +176,17 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return null;
     }
 
+    @Override
     public Properties getProperties() {
         return properties;
     }
 
+    @Override
     public String getProperty(String name) {
         return getProperty(name, null);
     }
 
+    @Override
     public String getProperty(String name, String defValue) {
         String value = properties.getProperty(name);
         if (value == null) {
@@ -200,28 +209,34 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                 getVersion().toString()).toString();
     }
 
+    @Override
     public Object getComponent(String name) {
         ComponentInstance co = getComponentInstance(name);
         return co != null ? co.getInstance() : null;
     }
 
+    @Override
     public Object getComponent(ComponentName name) {
         ComponentInstance co = getComponentInstance(name);
         return co != null ? co.getInstance() : null;
     }
 
+    @Override
     public ComponentInstance getComponentInstance(String name) {
         return manager.getComponent(new ComponentName(name));
     }
 
+    @Override
     public ComponentInstance getComponentInstance(ComponentName name) {
         return manager.getComponent(name);
     }
 
+    @Override
     public ComponentManager getComponentManager() {
         return manager;
     }
 
+    @Override
     public RuntimeContext getContext() {
         return context;
     }
@@ -246,10 +261,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
+    @Override
     public <T> T getService(Class<T> serviceClass) {
         return manager.getService(serviceClass);
     }
 
+    @Override
     public String expandVars(String expression) {
         int p = expression.indexOf("${");
         if (p == -1) {
@@ -301,6 +318,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return result.toString();
     }
 
+    @Override
     public File getBundleFile(Bundle bundle) {
         return null;
     }

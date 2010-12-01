@@ -44,7 +44,7 @@ public interface ContributionPersistenceManager {
     /**
      * Removes a persisted contribution given its name. The contribution will not
      * be uninstalled before being removed. You need to explicitly call
-     * {@link #uninstallContribution(String)} to uninstall it.
+     * {@link #uninstallContribution(Contribution)} to uninstall it.
      *
      * @return true if the contribution was removed, false if the contribution
      *         was not found in persistence.

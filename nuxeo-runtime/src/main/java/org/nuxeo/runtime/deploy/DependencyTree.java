@@ -50,6 +50,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         resolved = new Vector<Entry<K, T>>();
     }
 
+    @Override
     public Iterator<Entry<K, T>> iterator() {
         return registry.values().iterator();
     }

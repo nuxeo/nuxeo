@@ -29,6 +29,7 @@ import org.nuxeo.runtime.service.AnnotatedAdapterFactory;
 @Adapter(type=Service1.class, interfaces={Service2.class})
 public class Service2Adapter extends AnnotatedAdapterFactory<Service1> {
 
+    @Override
     public <T> T getAdapter(Service1 instance, Class<T> adapter) {
         return adapter.cast(new Service2Impl(instance));
     }

@@ -41,6 +41,7 @@ public class FileSource extends AbstractStreamSource {
         return file.length();
     }
 
+    @Override
     public InputStream getStream() throws IOException {
         return new FileInputStream(file);
     }

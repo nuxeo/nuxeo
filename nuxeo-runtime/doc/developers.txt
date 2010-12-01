@@ -56,7 +56,7 @@ It is not meant to be extended.
 This listener is installed by the OSGiAdapter.
 It is not meant to be extended.
 
-9. OSGiRuntimeActivator - bundle activator to be used by NXRuntime or other implementations of the runime (like NXJBossRuntime).
+9. OSGiRuntimeActivator - bundle activator to be used by NXRuntime or other implementations of the runtime (like NXJBossRuntime).
 You may want to extend it.
 
 10. OSGiRuntimeContext - a default RuntimeContext context implementation to be used in OSGi frameworks.
@@ -73,7 +73,7 @@ The idea is to use the default implementation provided by the core and plug them
 
 For example the NXJBossRuntime adapter defines these classes:
 
-1. JBossBundle extends AbstractBundle => binds the bundle to the JBoss DeploymentInfo object. This way class loading is working correctly on jboss (even if it is not OSGi compatioble).
+1. JBossBundle extends AbstractBundle => binds the bundle to the JBoss DeploymentInfo object. This way class loading is working correctly on jboss (even if it is not OSGi compatible).
 
 2. JBossOSGiAdapter extends OSGiAdapter => adds methods to install bundles knowing the Jboss DeploymentInfo object.
 

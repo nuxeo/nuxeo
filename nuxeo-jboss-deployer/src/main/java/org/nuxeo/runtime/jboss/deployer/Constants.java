@@ -17,43 +17,45 @@
 package org.nuxeo.runtime.jboss.deployer;
 
 /**
- * Important: Must be kept in synch with other distributions like
+ * Important: Must be kept in sync with other distributions like
  * LoaderConstants on tomcat and to keys in FrameworkLoader (in
  * nuxeo-runtime-osgi)
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface Constants {
+public class Constants {
 
-    static final String HOST_NAME = "org.nuxeo.app.host.name";
+    public static final String HOST_NAME = "org.nuxeo.app.host.name";
 
-    static final String HOST_VERSION = "org.nuxeo.app.host.version";
+    public static final String HOST_VERSION = "org.nuxeo.app.host.version";
 
-    static final String HOME_DIR = "org.nuxeo.app.home";
+    public static final String HOME_DIR = "org.nuxeo.app.home";
 
-    static final String LOG_DIR = "org.nuxeo.app.log";
+    public static final String LOG_DIR = "org.nuxeo.app.log";
 
-    static final String DATA_DIR = "org.nuxeo.app.data";
+    public static final String DATA_DIR = "org.nuxeo.app.data";
 
-    static final String TMP_DIR = "org.nuxeo.app.tmp";
+    public static final String TMP_DIR = "org.nuxeo.app.tmp";
 
-    static final String WEB_DIR = "org.nuxeo.app.web";
+    public static final String WEB_DIR = "org.nuxeo.app.web";
 
-    static final String CONFIG_DIR = "org.nuxeo.app.config";
+    public static final String CONFIG_DIR = "org.nuxeo.app.config";
 
-    static final String LIBS = "org.nuxeo.app.libs"; // class path
+    public static final String LIBS = "org.nuxeo.app.libs"; // class path
 
-    static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
+    public static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
 
-    static final String DEVMODE = "org.nuxeo.app.devmode";
+    public static final String DEVMODE = "org.nuxeo.app.devmode";
 
-    static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
+    public static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
 
-    static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
+    public static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
 
-    static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
+    public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
 
-    static final String ARGS = "org.nuxeo.app.args";
+    public static final String ARGS = "org.nuxeo.app.args";
+
+    private Constants() {
+    }
 
 }

@@ -51,70 +51,85 @@ public class OSGiBundleContext implements BundleContext {
         return bundle.osgi;
     }
 
+    @Override
     public void addBundleListener(BundleListener listener) {
         bundle.osgi.addBundleListener(listener);
     }
 
+    @Override
     public void addFrameworkListener(FrameworkListener listener) {
         bundle.osgi.addFrameworkListener(listener);
     }
 
+    @Override
     public void addServiceListener(ServiceListener listener) {
         bundle.osgi.addServiceListener(listener);
     }
 
+    @Override
     public void addServiceListener(ServiceListener listener, String filter)
             throws InvalidSyntaxException {
         bundle.osgi.addServiceListener(listener, filter);
     }
 
+    @Override
     public Filter createFilter(String filter) throws InvalidSyntaxException {
         throw new UnsupportedOperationException(
                 "BundleContext.createFilter() was not yet implemented");
     }
 
+    @Override
     public ServiceReference[] getAllServiceReferences(String clazz,
             String filter) throws InvalidSyntaxException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public Bundle getBundle() {
         return bundle;
     }
 
+    @Override
     public Bundle getBundle(long id) {
         return bundle.osgi.registry.getBundle(id);
     }
 
+    @Override
     public Bundle[] getBundles() {
         return bundle.osgi.registry.getInstalledBundles();
     }
 
+    @Override
     public File getDataFile(String filename) {
         return new File(bundle.osgi.getWorkingDir(), filename);
     }
 
+    @Override
     public String getProperty(String key) {
         return bundle.osgi.getProperty(key);
     }
 
+    @Override
     public Object getService(ServiceReference reference) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ServiceReference getServiceReference(String clazz) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ServiceReference[] getServiceReferences(String clazz, String filter)
             throws InvalidSyntaxException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public Bundle installBundle(String location) throws BundleException {
         File file = new File(location);
         try {
@@ -129,36 +144,43 @@ public class OSGiBundleContext implements BundleContext {
         }
     }
 
+    @Override
     public Bundle installBundle(String location, InputStream input)
             throws BundleException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ServiceRegistration registerService(String[] clazzes,
             Object service, Dictionary properties) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public ServiceRegistration registerService(String clazz, Object service,
             Dictionary properties) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public void removeBundleListener(BundleListener listener) {
         bundle.osgi.removeBundleListener(listener);
     }
 
+    @Override
     public void removeFrameworkListener(FrameworkListener listener) {
         bundle.osgi.removeFrameworkListener(listener);
     }
 
+    @Override
     public void removeServiceListener(ServiceListener listener) {
         bundle.osgi.removeServiceListener(listener);
     }
 
+    @Override
     public boolean ungetService(ServiceReference reference) {
         // TODO Auto-generated method stub
         return false;

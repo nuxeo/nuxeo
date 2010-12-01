@@ -46,7 +46,7 @@
     to be part of the root group
     <p/>
     Services are defined by a class and an optional name. The service locator used
-    for the server exposing the service will locate the service using these informations.
+    for the server exposing the service will locate the service using these information.
     You can optionally specify a custom locator by using the "locator" sub-element.
     <p/>
     Services bindings may also define an adapter that will be used to adapt the service immediately

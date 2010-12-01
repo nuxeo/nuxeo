@@ -26,15 +26,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ContributionPersistenceComponent extends DefaultComponent
-        implements ContributionPersistenceManager, FrameworkListener {
+        implements ContributionPersistenceManager {
 
     private static final Log log = LogFactory.getLog(ContributionPersistenceComponent.class);
 
@@ -53,7 +51,6 @@ public class ContributionPersistenceComponent extends DefaultComponent
         super.activate(context);
         this.ctx = context.getRuntimeContext();
         storage = new FileSystemStorage();
-        ctx.getBundle().getBundleContext().addFrameworkListener(this);
     }
 
     @Override
@@ -83,26 +80,32 @@ public class ContributionPersistenceComponent extends DefaultComponent
         storage = null;
     }
 
+    @Override
     public List<Contribution> getContributions() throws Exception {
         return storage.getContributions();
     }
 
+    @Override
     public Contribution getContribution(String name) throws Exception {
         return storage.getContribution(name);
     }
 
+    @Override
     public Contribution addContribution(Contribution contrib) throws Exception {
         return storage.addContribution(contrib);
     }
 
+    @Override
     public boolean removeContribution(Contribution contrib) throws Exception {
         return storage.removeContribution(contrib);
     }
 
+    @Override
     public boolean isInstalled(Contribution contrib) throws Exception {
         return ctx.isDeployed(contrib);
     }
 
+    @Override
     public synchronized boolean installContribution(Contribution contrib)
             throws Exception {
         RegistrationInfo ri = ctx.deploy(contrib);
@@ -113,21 +116,25 @@ public class ContributionPersistenceComponent extends DefaultComponent
         return true;
     }
 
+    @Override
     public boolean uninstallContribution(Contribution contrib) throws Exception {
         boolean ret = isInstalled(contrib);
         ctx.undeploy(contrib);
         return ret;
     }
 
+    @Override
     public Contribution updateContribution(Contribution contribution)
             throws Exception {
         return storage.updateContribution(contribution);
     }
 
+    @Override
     public boolean isPersisted(Contribution contrib) throws Exception {
         return storage.getContribution(contrib.getName()) != null;
     }
 
+    @Override
     public void start() throws Exception {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {
@@ -136,6 +143,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
         }
     }
 
+    @Override
     public void stop() throws Exception {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {
@@ -144,17 +152,14 @@ public class ContributionPersistenceComponent extends DefaultComponent
         }
     }
 
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            if (storage == null) {
-                storage = new FileSystemStorage();
-                try {
-                    start();
-                } catch (Exception e) {
-                    log.error(
-                            "Failed to start contribution persistence service",
-                            e);
-                }
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        if (storage == null) {
+            storage = new FileSystemStorage();
+            try {
+                start();
+            } catch (Exception e) {
+                log.error("Failed to start contribution persistence service", e);
             }
         }
     }

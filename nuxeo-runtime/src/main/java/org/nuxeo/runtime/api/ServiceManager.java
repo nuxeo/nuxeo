@@ -106,6 +106,7 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) throws Exception {
         ServiceDescriptor sd = services.get(serviceClass.getName());
@@ -131,6 +132,7 @@ public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
         return Framework.getLocalService(serviceClass);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass, String name)
             throws Exception {

@@ -47,6 +47,7 @@ public class AppendCommand implements Command {
         this(src, dst, true);
     }
 
+    @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
         File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
@@ -69,6 +70,7 @@ public class AppendCommand implements Command {
         return "append " + src.toString() + " > " + dst.toString();
     }
 
+    @Override
     public String toString(CommandContext ctx) {
         return "append " + ctx.expandVars(src.toString()) + " > " +
                 ctx.expandVars(dst.toString());

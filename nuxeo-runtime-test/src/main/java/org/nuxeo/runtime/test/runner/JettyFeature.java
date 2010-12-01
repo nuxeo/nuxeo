@@ -54,6 +54,7 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
     }
 
+    @Override
     public void configure(RuntimeHarness harness, File workingDir) throws IOException {
         File dest = new File(workingDir, "config");
         dest.mkdirs();
@@ -79,6 +80,5 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         //return Thread.currentThread().getContextClassLoader().getResource(resource);
         return Jetty.class.getClassLoader().getResource(resource);
     }
-
 
 }

@@ -18,10 +18,7 @@ package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
 
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Loader;
+import org.apache.catalina.*;
 import org.apache.catalina.core.ContainerBase;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
@@ -54,10 +51,11 @@ public class NuxeoLauncher implements LifecycleListener {
         return home;
     }
 
+    @Override
     public void lifecycleEvent(LifecycleEvent event) {
         Lifecycle lf = event.getLifecycle();
         if (lf instanceof ContainerBase) {
-            Loader loader = ((ContainerBase) lf).getLoader();
+            Loader loader = ((Container) lf).getLoader();
             if (loader instanceof NuxeoWebappLoader) {
                 handleEvent((NuxeoWebappLoader) loader, event);
             }
@@ -70,7 +68,7 @@ public class NuxeoLauncher implements LifecycleListener {
             if (type == Lifecycle.START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 bootstrap = new FrameworkBootstrap(
-                        (MutableClassLoader) (loader.getClassLoader()), homeDir);
+                        (MutableClassLoader) loader.getClassLoader(), homeDir);
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion("6.0.20");
                 bootstrap.initialize();

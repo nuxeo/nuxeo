@@ -36,11 +36,11 @@ import org.nuxeo.runtime.jboss.deployer.Utils;
  */
 public class PathMatcher {
 
-    protected Logger log = Logger.getLogger(getClass());
+    protected final Logger log = Logger.getLogger(getClass());
 
-    protected List<String> exactPaths;
+    protected final List<String> exactPaths;
 
-    protected Map<String, PathPattern> patterns;
+    protected final Map<String, PathPattern> patterns;
 
     public PathMatcher() {
         exactPaths = new ArrayList<String>();
@@ -126,6 +126,7 @@ public class PathMatcher {
             VirtualFile dir = path.length() == 0 ? root : root.getChild(path);
             if (dir != null) {
                 result.addAll(dir.getChildren(new VirtualFileFilter() {
+                    @Override
                     public boolean accepts(VirtualFile file) {
                         return pattern.match(file.getName());
                     }

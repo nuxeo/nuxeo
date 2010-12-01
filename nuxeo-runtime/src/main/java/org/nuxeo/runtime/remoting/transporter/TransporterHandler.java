@@ -53,6 +53,7 @@ public class TransporterHandler implements ServerInvocationHandler {
      * (using reflection). Then returns the Object returned from the method call
      * on the target POJO.
      */
+    @Override
     public Object invoke(InvocationRequest invocation) throws Throwable {
         Object request = invocation.getParameter();
 
@@ -80,6 +81,7 @@ public class TransporterHandler implements ServerInvocationHandler {
     /**
      * Sets the mbean server that the handler can reference.
      */
+    @Override
     public void setMBeanServer(MBeanServer server) {
         // NOOP
     }
@@ -87,6 +89,7 @@ public class TransporterHandler implements ServerInvocationHandler {
     /**
      * Sets the invoker that owns this handler.
      */
+    @Override
     public void setInvoker(ServerInvoker invoker) {
         // NOOP
     }
@@ -95,6 +98,7 @@ public class TransporterHandler implements ServerInvocationHandler {
      * Adds a callback handler that will listen for callbacks from the server
      * invoker handler.
      */
+    @Override
     public void addListener(InvokerCallbackHandler callbackHandler) {
         // NOOP
     }
@@ -103,6 +107,7 @@ public class TransporterHandler implements ServerInvocationHandler {
      * Removes the callback handler that was listening for callbacks from the
      * server invoker handler.
      */
+    @Override
     public void removeListener(InvokerCallbackHandler callbackHandler) {
         //NOOP
     }

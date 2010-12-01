@@ -202,9 +202,11 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
         super.destroyService();
     }
 
+    @Override
     public String listBundles() {
         BundleImpl[] bundles = osgi.getInstalledBundles();
         Arrays.sort(bundles, new Comparator<BundleImpl>() {
+            @Override
             public int compare(BundleImpl o1, BundleImpl o2) {
                 return (int) (o1.getStartupTime() - o2.getStartupTime());
             }
@@ -227,6 +229,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
         return buf.toString();
     }
 
+    @Override
     public String getHomeLocation() {
         return osgi.getWorkingDir().getAbsolutePath();
     }

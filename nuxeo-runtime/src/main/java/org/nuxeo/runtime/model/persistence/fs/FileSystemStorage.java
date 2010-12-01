@@ -42,11 +42,11 @@ import org.w3c.dom.Node;
  */
 public class FileSystemStorage implements ContributionStorage {
 
-    public static Log log = LogFactory.getLog(FileSystemStorage.class);
+    public static final Log log = LogFactory.getLog(FileSystemStorage.class);
 
-    protected File root;
+    protected static final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-    protected static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    protected final File root;
 
     public FileSystemStorage() {
         root = new File(Environment.getDefault().getData(), "contribs");
@@ -108,6 +108,7 @@ public class FileSystemStorage implements ContributionStorage {
         }
     }
 
+    @Override
     public Contribution addContribution(Contribution contribution)
             throws Exception {
         File file = new File(root, contribution.getName() + ".xml");
@@ -118,6 +119,7 @@ public class FileSystemStorage implements ContributionStorage {
         return null;
     }
 
+    @Override
     public Contribution getContribution(String name) {
         File file = new File(root, name + ".xml");
         if (file.isFile()) {
@@ -126,6 +128,7 @@ public class FileSystemStorage implements ContributionStorage {
         return null;
     }
 
+    @Override
     public List<Contribution> getContributions() {
         List<Contribution> result = new ArrayList<Contribution>();
         File[] files = root.listFiles();
@@ -142,10 +145,12 @@ public class FileSystemStorage implements ContributionStorage {
         return result;
     }
 
+    @Override
     public boolean removeContribution(Contribution contrib) throws Exception {
         return safeRemove(new File(root, contrib.getName() + ".xml"));
     }
 
+    @Override
     public Contribution updateContribution(Contribution contribution)
             throws Exception {
         File file = new File(root, contribution.getName() + ".xml");

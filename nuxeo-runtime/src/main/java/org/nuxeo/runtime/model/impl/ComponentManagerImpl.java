@@ -75,10 +75,12 @@ public class ComponentManagerImpl implements ComponentManager {
         blacklist = new HashSet<String>();
     }
 
+    @Override
     public Collection<RegistrationInfo> getRegistrations() {
         return new ArrayList<RegistrationInfo>(registry.values());
     }
 
+    @Override
     public Map<ComponentName, Set<ComponentName>> getPendingRegistrations() {
         Map<ComponentName, Set<ComponentName>> pending = new HashMap<ComponentName, Set<ComponentName>>();
         for (RegistrationInfo ri : registry.values()) {
@@ -108,23 +110,28 @@ public class ComponentManagerImpl implements ComponentManager {
         return pendingExtensions.get(name);
     }
 
+    @Override
     public RegistrationInfo getRegistrationInfo(ComponentName name) {
         return registry.get(name);
     }
 
+    @Override
     public synchronized boolean isRegistered(ComponentName name) {
         return registry.containsKey(name);
     }
 
+    @Override
     public synchronized int size() {
         return registry.size();
     }
 
+    @Override
     public ComponentInstance getComponent(ComponentName name) {
         RegistrationInfoImpl ri = registry.get(name);
         return ri != null ? ri.getComponent() : null;
     }
 
+    @Override
     public synchronized void shutdown() {
         // unregister me -> this will unregister all objects that depends on me
         List<RegistrationInfo> elems = new ArrayList<RegistrationInfo>(
@@ -147,14 +154,17 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    @Override
     public synchronized void register(RegistrationInfo regInfo) {
         _register((RegistrationInfoImpl) regInfo);
     }
 
+    @Override
     public Set<String> getBlacklist() {
         return blacklist;
     }
 
+    @Override
     public void setBlacklist(Set<String> blacklist) {
         this.blacklist = blacklist;
     }
@@ -240,6 +250,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    @Override
     public synchronized void unregister(RegistrationInfo regInfo) {
         _unregister((RegistrationInfoImpl) regInfo);
     }
@@ -293,6 +304,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    @Override
     public synchronized void unregister(ComponentName name) {
         RegistrationInfoImpl ri = registry.get(name);
         if (ri != null) {
@@ -300,14 +312,17 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    @Override
     public void addComponentListener(ComponentListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeComponentListener(ComponentListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         try {
             RegistrationInfoImpl ri = services.get(serviceClass.getName());
@@ -332,11 +347,13 @@ public class ComponentManagerImpl implements ComponentManager {
         return null;
     }
 
+    @Override
     public <T> T getService(Class<T> serviceClass) {
         ComponentInstance comp = getComponentProvidingService(serviceClass);
         return comp != null ? comp.getAdapter(serviceClass) : null;
     }
 
+    @Override
     public Collection<ComponentName> getActivatingRegistrations() {
         Collection<ComponentName> activating = new ArrayList<ComponentName>();
         for (RegistrationInfo ri : registry.values()) {
@@ -491,6 +508,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
+    @Override
     public String[] getServices() {
         return services.keySet().toArray(new String[services.size()]);
     }

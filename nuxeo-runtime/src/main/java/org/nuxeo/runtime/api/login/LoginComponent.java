@@ -129,10 +129,12 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return null;
     }
 
+    @Override
     public SecurityDomain getSecurityDomain(String name) {
         return domains.get(name);
     }
 
+    @Override
     public void addSecurityDomain(SecurityDomain domain) {
         domains.put(domain.getName(), domain);
         if (SYSTEM_LOGIN.equals(domain.getName())) {
@@ -142,6 +144,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         }
     }
 
+    @Override
     public void removeSecurityDomain(String name) {
         domains.remove(name);
         if (SYSTEM_LOGIN.equals(name)) {
@@ -151,10 +154,12 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         }
     }
 
+    @Override
     public SecurityDomain[] getSecurityDomains() {
         return domains.values().toArray(new SecurityDomain[domains.size()]);
     }
 
+    @Override
     public void removeSecurityDomains() {
         domains.clear();
         systemLogin = null;
@@ -174,14 +179,17 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return null;
     }
 
+    @Override
     public LoginContext login() throws LoginException {
         return loginAs(null);
     }
 
+    @Override
     public LoginContext loginAs(final String username) throws LoginException {
         // login as system user is a privileged action
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<LoginContext>() {
+                @Override
                 public LoginContext run() throws LoginException {
                     SecurityManager sm = System.getSecurityManager();
                     if (sm != null) {
@@ -195,6 +203,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         }
     }
 
+    @Override
     public LoginContext login(String username, Object credentials)
             throws LoginException {
         if (clientLogin != null) {
@@ -203,6 +212,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return null;
     }
 
+    @Override
     public LoginContext login(CallbackHandler cbHandler) throws LoginException {
         if (clientLogin != null) {
             return clientLogin.login(cbHandler);
@@ -210,6 +220,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
         return null;
     }
 
+    @Override
     public boolean isSystemId(Principal principal) {
         return isSystemLogin(principal);
     }
@@ -262,6 +273,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
             userName = origUser == null ? SYSTEM_USERNAME : origUser;
         }
 
+        @Override
         public String getName() {
             return userName;
         }

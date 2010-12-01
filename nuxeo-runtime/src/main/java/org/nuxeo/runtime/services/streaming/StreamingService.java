@@ -56,7 +56,12 @@ public class StreamingService extends DefaultComponent {
                 "org.nuxeo.runtime.streaming.isServer", "true");
         isServer = val.equalsIgnoreCase("true");
         serverLocator = Framework.getProperty("org.nuxeo.runtime.streaming.serverLocator");
-        startManager();
+        boolean isServerEnabled = Framework.getProperty(
+                "org.nuxeo.runtime.server.enabled", "true").equalsIgnoreCase(
+                "true");
+        if (isServerEnabled) {
+            startManager();
+        }
     }
 
     @Override

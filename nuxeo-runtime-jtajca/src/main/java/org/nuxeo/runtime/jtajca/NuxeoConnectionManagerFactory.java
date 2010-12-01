@@ -39,6 +39,7 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
 
     private static final Log log = LogFactory.getLog(NuxeoConnectionManagerFactory.class);
 
+    @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
             Hashtable<?, ?> env) throws Exception {
         Reference ref = (Reference) obj;

@@ -70,6 +70,7 @@ public abstract class MethodsWrapper implements InvocationHandler {
         return methods.get(method);
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Method m = methods.get(method);

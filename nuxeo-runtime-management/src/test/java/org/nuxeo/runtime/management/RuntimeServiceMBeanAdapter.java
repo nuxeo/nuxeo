@@ -43,10 +43,12 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         return Framework.getRuntime();
     }
 
+    @Override
     public String getDescription() {
         return doGetRuntime().getDescription();
     }
 
+    @Override
     public String getHomeLocation() {
         try {
             return doGetRuntime().getHome().getCanonicalPath();
@@ -55,10 +57,12 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         }
     }
 
+    @Override
     public String getName() {
         return doGetRuntime().getName();
     }
 
+    @Override
     public String getVersion() {
         return doGetRuntime().getVersion().toString();
     }
@@ -67,6 +71,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
 
         public static final ComponentNameTransformer INSTANCE = new ComponentNameTransformer();
 
+        @Override
         public Object transform(Object input) {
             return ((ComponentName) input).getRawName();
         }
@@ -76,6 +81,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
 
         public static final ComponentNamesTransformer INSTANCE = new ComponentNamesTransformer();
 
+        @Override
         @SuppressWarnings("unchecked")
         public Object transform(Object input) {
             Set<String> output = new HashSet<String>();
@@ -85,6 +91,7 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
         Map<String, Set<String>> returnedMap = new HashMap<String, Set<String>>();
@@ -103,12 +110,14 @@ public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
 
         public static final RegistrationTransformer INSTANCE = new RegistrationTransformer();
 
+        @Override
         public Object transform(Object input) {
             return ((RegistrationInfo) input).getName().getRawName();
         }
 
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<String> getResolvedComponents() {
         Collection<RegistrationInfo> registrations = doGetRuntime().getComponentManager().getRegistrations();

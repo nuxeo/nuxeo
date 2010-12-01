@@ -14,7 +14,7 @@
  * Contributors:
  *     "Stephane Lacoin at Nuxeo (aka matic)"
  */
-package org.nuxeo.runtime.binding;
+package org.nuxeo.runtime.api;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -23,9 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceProvider;
 import org.nuxeo.runtime.transaction.Transacted;
 import org.nuxeo.runtime.transaction.TransactedServiceProvider;
 
@@ -42,7 +39,13 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
 
     boolean installed = false;
 
-    public  void installSelf() {
+    protected final Map<Class<?>, Entry<?>> registry = new HashMap<Class<?>, Entry<?>>();
+
+    protected abstract Class<? extends Annotation> annotationClass();
+    protected abstract <T> T newProxy(T object, Class<T> clazz);
+
+
+    public void installSelf() {
         // next provider can be null, we need a flag
         if (installed) {
             return;
@@ -52,18 +55,15 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
         DefaultServiceProvider.setProvider(this);
     }
 
-    protected abstract Class<? extends Annotation> annotationClass();
-    protected abstract <T> T newProxy(T object, Class<T> clazz);
-
     protected class Entry<T> {
         final Class<T> srvClass;
 
-        final boolean isAnnoted;
+        final boolean isAnnotated;
 
         protected Entry(Class<T> srvClass) {
             this.srvClass = srvClass;
-            this.isAnnoted = srvClass.isInterface() && hasAnnotations(srvClass);
-            if (isAnnoted) {
+            this.isAnnotated = srvClass.isInterface() && hasAnnotations(srvClass);
+            if (isAnnotated) {
                 log.info("handling  " + srvClass.getSimpleName() + " for " + annotationClass().getSimpleName());
             }
         }
@@ -85,15 +85,12 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
             // do not cache srv objects because we don't know if service is
             // adapted or not (CoreSession for instance)
             T srvObject = nextProvider != null ? nextProvider.getService(srvClass) : Framework.getRuntime().getService(srvClass);
-            if (!isAnnoted) {
+            if (!isAnnotated) {
                 return srvObject;
             }
             return newProxy(srvObject, srvClass);
         }
     }
-
-
-   protected Map<Class<?>, Entry<?>> registry = new HashMap<Class<?>, Entry<?>>();
 
    @Override
     public <T> T getService(Class<T> srvClass) {
@@ -102,6 +99,5 @@ public abstract class AnnotatedServiceProvider implements ServiceProvider {
         }
         return srvClass.cast(registry.get(srvClass).getService());
     }
-
 
 }
