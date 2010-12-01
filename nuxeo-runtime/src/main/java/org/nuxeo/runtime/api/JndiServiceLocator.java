@@ -35,7 +35,8 @@ public class JndiServiceLocator implements ServiceLocator {
     /**
      * Initializes and creates the JNDI initial context.
      */
-    public void initialize(String host, int port, Properties properties) throws Exception {
+    public void initialize(String host, int port, Properties properties)
+            throws Exception {
         context = new InitialContext();
     }
 
@@ -57,7 +58,14 @@ public class JndiServiceLocator implements ServiceLocator {
     }
 
     public Object lookup(String serviceId) throws Exception {
-        return context.lookup(serviceId);
+        ClassLoader oldcl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(
+                getClass().getClassLoader());
+        try {
+            return context.lookup(serviceId);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldcl);
+        }
     }
 
     protected String createLocator(ServiceDescriptor sd) {
