@@ -1562,10 +1562,12 @@
         <border-top>1px solid #fff</border-top>
         <padding>3px</padding>
       </selector>
-      <selector path=".facetedSearchBlock .widgetContent h6">
+      <selector path=".facetedSearchBlock .widgetContent .labelOpenPopUp">
         <color>#323232</color>
         <font>normal 10px "Lucida Grande", Helvetica, sans-serif</font>
         <margin>0 0 5px</margin>
+        <display>block</display>
+        <padding>0 0 1px</padding>
         <border-bottom>1px solid #cacaca</border-bottom>
       </selector>
       <selector path="#saveFacetedSearchForm input">
@@ -1603,10 +1605,7 @@
       <selector path=".facetedSearchBlock .dataInput .facetedSearchPopUp td, .facetedSearchBlock .thin td">
         <padding>1px</padding>
       </selector>
-      <selector path=".facetedSearchBlock .widgetContent h6 .subLabel">
-        <float>left</float>
-      </selector>
-      <selector path=".facetedSearchBlock .widgetContent h6 .labelTool">
+      <selector path=".facetedSearchBlock .widgetContent .labelOpenPopUp .labelTool">
         <float>right</float>
         <cursor>pointer</cursor>
       </selector>
