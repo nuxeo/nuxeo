@@ -126,7 +126,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         parameters.put("flag", "1");
         service.registerSchedule(schedule, parameters);
         try {
-            Thread.sleep(2000); // 1s so that job is called at least once
+            Thread.sleep(5000); // so that job is called at least once
         } catch (InterruptedException e) {
             log.error(e);
             fail("Timer failed");
