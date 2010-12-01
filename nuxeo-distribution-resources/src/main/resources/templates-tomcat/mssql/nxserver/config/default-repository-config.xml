@@ -16,7 +16,14 @@
           <field type="largetext">mail:mail</field>
         </schema>
         <indexing>
-          <fulltext analyzer="english"/>
+          <fulltext analyzer="english">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <!-- SQL Server does not support more than one fulltext index per
+            table: to add support for multiple fulltext index would required to
+            change the datamodel of VCS -->
+         </fulltext>
         </indexing>
         <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
         <property name="ServerName">${nuxeo.db.host}</property>

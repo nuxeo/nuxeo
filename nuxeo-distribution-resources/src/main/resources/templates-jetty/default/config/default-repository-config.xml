@@ -29,7 +29,16 @@
             </index>
           </fulltext> 
           <!-- for PostgreSQL (Text Search Configuration):
-          <fulltext analyzer="english"/>
+          <fulltext analyzer="english">
+            <index name="default">
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
           -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>

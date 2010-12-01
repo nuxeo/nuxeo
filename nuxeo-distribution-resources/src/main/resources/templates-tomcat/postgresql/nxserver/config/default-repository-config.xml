@@ -16,7 +16,17 @@
           <field type="largetext">mail:mail</field>
         </schema>
         <indexing>
-          <fulltext analyzer="english"/>
+          <fulltext analyzer="english">
+            <index name="default">
+              <!-- all props implied -->
+            </index>
+            <index name="title">
+              <field>dc:title</field>
+            </index>
+            <index name="description">
+              <field>dc:description</field>
+            </index>
+          </fulltext>
         </indexing>
         <xa-datasource>org.postgresql.xa.PGXADataSource</xa-datasource>
         <property name="ServerName">${nuxeo.db.host}</property>

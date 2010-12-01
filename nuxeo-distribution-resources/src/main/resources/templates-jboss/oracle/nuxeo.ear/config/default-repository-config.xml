@@ -17,7 +17,7 @@
         </schema>
         <indexing>
           <fulltext>
-            <index name="default"> 
+            <index name="default">
               <!-- all props implied -->
             </index>
             <index name="title">
@@ -26,7 +26,7 @@
             <index name="description">
               <field>dc:description</field>
             </index>
-          </fulltext> 
+          </fulltext>
           <!--
             For Oracle (Oracle Text indexing parameters):
             <fulltext analyzer="LEXER MY_LEXER"/>
