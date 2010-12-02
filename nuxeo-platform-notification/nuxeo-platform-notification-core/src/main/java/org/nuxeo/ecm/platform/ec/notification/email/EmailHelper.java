@@ -151,7 +151,7 @@ public class EmailHelper {
         LoginContext lc = Framework.login();
 
         Collection<RenderingResult> results = rs.process(context);
-        String bodyMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
+        String bodyMail = "<HTML><P>No parsing Succedeed !!!</P></HTML>";
 
         for (RenderingResult result : results) {
             bodyMail = (String) result.getOutcome();
