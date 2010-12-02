@@ -206,6 +206,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String saveRouteAsNewInstance() {
         getDocumentRoutingService().saveRouteAsNewModel(getRelatedRoute(),
                 documentManager);
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.route_duplicated"));
         return null;
     }
 
@@ -648,9 +650,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager)) {
             alreadyLockedByCurrentUser = true;
         } else {
-            if (lockRoute(routeModel) == null) {
-                return null;
-            }
+            lockRoute(routeModel);
         }
 
         DocumentModel newDocument = navigationContext.getChangeableDocument();

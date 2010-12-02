@@ -9,30 +9,23 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-  <h:form>
-    <nxu:methodResult name="actions"
-      value="#{webActions.getActionsList('ATTACHED_ROUTE_LIST')}">
-      <f:subview rendered="#{!empty actions}">
-        <nxu:dataList layout="simple" var="action"
-          value="#{actions}">
-          <nxh:commandButton action="#{action.getLink()}" value="#{messages[action.label]}" />
-        </nxu:dataList>
-      </f:subview>
-    </nxu:methodResult>
-  </h:form>
-  <ui:include src="/select_route_elements_type.xhtml" />
+    <ui:decorate template="/incl/actions_fragment.xhtml">
+      <ui:param name="category" value="ATTACHED_ROUTE_LIST" />
+    </ui:decorate>
 
-   <nxu:set var="documents"  value="#{relatedRouteElementsSelectModel}" >
-     <nxu:set var="routeTable" value="#{routeTable}" >
-       <ui:decorate template="/incl/documents_layout_table.xhtml">
-        <ui:param name="routeTable" value="#{routeTable}" />
-        <ui:param name="documents" value="#{documents}" />
-        <ui:param name="showCheckboxes" value="#{true}" />
-        <ui:param name="listName" value="CURRENT_SELECTION" />
-        <ui:param name="layoutName" value="document_routing_route_content" />
-      </ui:decorate>
-    </nxu:set>	
-   </nxu:set>
+    <ui:include src="/select_route_elements_type.xhtml" />
+
+    <nxu:set var="documents"  value="#{relatedRouteElementsSelectModel}" >
+      <nxu:set var="routeTable" value="#{routeTable}" >
+        <ui:decorate template="/incl/documents_layout_table.xhtml">
+          <ui:param name="routeTable" value="#{routeTable}" />
+          <ui:param name="documents" value="#{documents}" />
+          <ui:param name="showCheckboxes" value="#{true}" />
+          <ui:param name="listName" value="CURRENT_SELECTION" />
+          <ui:param name="layoutName" value="document_routing_route_content" />
+        </ui:decorate>
+      </nxu:set>	
+    </nxu:set>
   </c:if>
   
   <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">

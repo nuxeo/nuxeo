@@ -8,8 +8,25 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-   <ui:include src="/select_route_elements_type.xhtml" />
+
+  <ui:include src="/select_route_elements_type.xhtml" />
    <nxu:set var="documents"  value="#{routeElementsSelectModel}" >
+    <ui:decorate template="/incl/actions_fragment.xhtml">
+      <ui:param name="category" value="ROUTE_LIST" />
+    </ui:decorate>
+
+    <c:if test="#{documents.rowCount == 0}">
+      <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+        <nxu:graphicImage value="/icons/add.png" />
+      </a>
+      <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+        #{messages['command.add.routeelement.firstStep']}
+        <f:param
+          name="stepId"
+          value="#{currentDocument.id}" />
+      </a>
+    </c:if>
+
     <ui:decorate template="/incl/documents_layout_table.xhtml">
      <ui:param name="documents" value="#{documents}" />
      <ui:param name="showCheckboxes" value="#{true}" />
