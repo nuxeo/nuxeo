@@ -47,7 +47,6 @@ public class EventBundleImpl implements EventBundle {
      */
     protected boolean isTransacted;
 
-
     public EventBundleImpl(VMID sourceVMID) {
         events = new ArrayList<Event>();
         eventNames = new HashSet<String>();
@@ -77,7 +76,7 @@ public class EventBundleImpl implements EventBundle {
         if (events.isEmpty()) {
             return null;
         }
-        return events.get(0).getName();
+        return events.get(0).getContext().getRepositoryName();
     }
 
     @Override
