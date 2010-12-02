@@ -10,13 +10,14 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>5.4.1-I20101202_1801</version>
+    <version>5.4.0.1</version>
   </parent>
 
   <artifactId>nuxeo-chemistry</artifactId>
   <name>Nuxeo Chemistry</name>
   <description>Nuxeo Core: Chemistry</description>
   <packaging>pom</packaging>
+  <version>5.4.1-I20101202_1801</version>
 
   <modules>
     <module>nuxeo-opencmis-impl</module>

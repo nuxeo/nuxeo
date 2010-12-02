@@ -18,7 +18,7 @@
   <description>Nuxeo Core: Chemistry OpenCMIS Tests</description>
 
   <properties>
-    <nuxeo.version>5.4.1-I20101202_1801</nuxeo.version>
+    <nuxeo.version>5.4.0.1</nuxeo.version>
     <nuxeo.opencmis.version>5.4.1-I20101202_1801</nuxeo.opencmis.version>
     <chemistry.opencmis.version>0.2.0-incubating-r1040083</chemistry.opencmis.version>
   </properties>
