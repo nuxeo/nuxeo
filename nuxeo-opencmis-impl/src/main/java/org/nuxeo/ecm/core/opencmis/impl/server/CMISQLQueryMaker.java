@@ -393,7 +393,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         readAclAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
                                 + model.HIER_READ_ACL_ACL_ID;
                     } else {
-                        String al = "nxr" + njoin;
+                        String al = "nxr" + (njoin + 1);
                         readAclTable = model.HIER_READ_ACL_TABLE_NAME + " "
                                 + al; // TODO dialect
                         readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;
