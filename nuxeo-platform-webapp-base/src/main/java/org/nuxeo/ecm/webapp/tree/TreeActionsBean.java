@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.webapp.tree;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.annotations.Install.FRAMEWORK;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,9 +54,6 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 /**
  * Manages the navigation tree.
@@ -94,7 +94,14 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return getTreeRoots(false);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot)
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
+        return getTreeRoots(showRoot, navigationContext.getCurrentDocument());
+    }
+
+    /**
+     * @since 5.4
+     */
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument)
             throws ClientException {
 
         if (treeInvalidator.needsInvalidation()) {
@@ -104,7 +111,6 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
         if (tree == null) {
             tree = new ArrayList<DocumentTreeNode>();
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
 

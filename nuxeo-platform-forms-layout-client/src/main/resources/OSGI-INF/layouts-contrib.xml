@@ -426,6 +426,9 @@
       <documentation>
         Widget allowing to select one or more values from a Tree constructed
         from the navigation tree.
+
+        Set 'showAllDomains' property to true if you want to be able to select a path
+        from an other domain than the current one.
       </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler

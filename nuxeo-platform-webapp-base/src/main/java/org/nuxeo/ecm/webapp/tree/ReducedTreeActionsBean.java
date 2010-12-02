@@ -50,4 +50,13 @@ public class ReducedTreeActionsBean extends TreeActionsBean {
         return getTreeRoots(true);
     }
 
+    /**
+     * @since 5.4
+     * @return a list containing a DocumentTreeNode for the Root document
+     * @throws ClientException
+     */
+    public List<DocumentTreeNode> getRootNode() throws ClientException {
+        return getTreeRoots(true, documentManager.getRootDocument());
+    }
+
 }
