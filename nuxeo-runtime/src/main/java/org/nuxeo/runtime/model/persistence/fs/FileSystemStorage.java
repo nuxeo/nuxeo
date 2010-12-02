@@ -75,13 +75,13 @@ public class FileSystemStorage implements ContributionStorage {
         return file.delete();
     }
 
-    public static void loadMetadata(ContributionFile contrib) {
+    public static void loadMetadata(Contribution contrib) {
         try {
             DocumentBuilder docBuilder = factory.newDocumentBuilder();
             Document doc = docBuilder.parse(new ByteArrayInputStream(
                     contrib.getContent().getBytes()));
             Element root = doc.getDocumentElement();
-            contrib.disabled = Boolean.parseBoolean(root.getAttribute("disabled"));
+            contrib.setDisabled(Boolean.parseBoolean(root.getAttribute("disabled")));
             Node node = root.getFirstChild();
             while (node != null) {
                 if (node.getNodeType() == Node.ELEMENT_NODE

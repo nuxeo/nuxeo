@@ -169,5 +169,5 @@ public interface RuntimeHarness {
      * @since 5.4.1
      * @return
      */
-    OSGiAdapter getAdapter();
+    OSGiAdapter getOSGiAdapter();
 }

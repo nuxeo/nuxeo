@@ -623,7 +623,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
     }
 
     @Override
-    public OSGiAdapter getAdapter() {
+    public OSGiAdapter getOSGiAdapter() {
         return osgi;
     }
 

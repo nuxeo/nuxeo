@@ -39,24 +39,13 @@ public class ContributionBuilder extends AbstractContribution {
 
     protected final DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 
-    protected final String name;
-
     protected final List<String> extensions;
 
     protected String bundle;
 
-    protected String description;
-
-    protected boolean disabled;
-
     public ContributionBuilder(String name) {
-        this.name = name;
+        super(name);
         this.extensions = new ArrayList<String>();
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -66,11 +55,6 @@ public class ContributionBuilder extends AbstractContribution {
 
     public void setBundle(String bundle) {
         this.bundle = bundle;
-    }
-
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,53 +12,47 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Stephane Lacoin
  */
 package org.nuxeo.runtime.model.persistence.fs;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.model.persistence.AbstractContribution;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
-public class ContributionFile extends AbstractContribution {
+public class ContributionLocation extends AbstractContribution {
 
-    protected final File file;
+    protected final URL location;
 
-    public ContributionFile(String name, File file) {
+    public ContributionLocation(String name, URL location) {
         super(name);
-        this.file = file;
+        this.location = location;
     }
 
-    @Override
-    public URL asURL() {
+     @Override
+    public InputStream getStream() {
         try {
-            return file.toURI().toURL();
-        } catch (Exception e) {
-            return null;
+            return location.openStream();
+        } catch (IOException e) {
+            throw new Error("Cannot get '".concat(name).concat("' content"), e);
         }
     }
 
     @Override
     public String getContent() {
         try {
-            return FileSystemStorage.safeRead(file);
+            return FileUtils.read(location.openStream());
         } catch (IOException e) {
-            throw new RuntimeException("Unable to get contribution content: "
-                    + name);
+            throw new Error("Cannot get '".concat(name).concat("' content"), e);
         }
     }
 
     @Override
-    public InputStream getStream() {
-        return new ByteArrayInputStream(getContent().getBytes());
+    public URL asURL() {
+        return location;
     }
 
 }
