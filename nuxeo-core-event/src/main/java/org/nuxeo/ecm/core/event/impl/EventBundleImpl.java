@@ -40,13 +40,6 @@ public class EventBundleImpl implements EventBundle {
 
     protected final Set<String> eventNames;
 
-    /**
-     * If true the bundle is controlled by a transaction, otherwise it is controlled by the SAVE event.
-     * <p>
-     * This means the bundle will be fired either at transaction commit either at SAVE event
-     */
-    protected boolean isTransacted;
-
     public EventBundleImpl(VMID sourceVMID) {
         events = new ArrayList<Event>();
         eventNames = new HashSet<String>();
@@ -61,14 +54,6 @@ public class EventBundleImpl implements EventBundle {
     @Override
     public boolean hasRemoteSource() {
         return !vmid.equals(EventServiceImpl.VMID);
-    }
-
-    public boolean isTransacted() {
-        return isTransacted;
-    }
-
-    public void setTransacted(boolean isTransacted) {
-        this.isTransacted = isTransacted;
     }
 
     @Override

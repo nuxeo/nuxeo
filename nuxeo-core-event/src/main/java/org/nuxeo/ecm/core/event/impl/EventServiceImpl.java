@@ -62,7 +62,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
         static final long serialVersionUID = 1L;
 
-        int transactedSessionCount;
+        boolean transacted;
 
         final Map<String, EventBundle> byRepository = new HashMap<String, EventBundle>();
 
@@ -74,9 +74,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
             byRepository.get(repositoryName).push(event);
         }
 
-        boolean isTransacted() {
-            return transactedSessionCount > 0;
-        }
     }
 
     protected final ListenerList txListeners;
@@ -179,7 +176,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                 CompositeEventBundle b =  compositeBundle.get();
                 b.push(shallowEvent);
                 // check for commit events to flush the event bundle
-                if (!b.isTransacted() && event.isCommitEvent()) {
+                if (!b.transacted && event.isCommitEvent()) {
                     handleTxCommited();
                 }
             }
@@ -305,7 +302,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     @Override
     public boolean isTransactionStarted() {
-        return compositeBundle.get().isTransacted();
+        return compositeBundle.get().transacted;
     }
 
     public EventListenerList getEventListenerList() {
@@ -407,6 +404,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
     }
 
     protected void handleTxStarted() {
+        compositeBundle.get().transacted = true;
         for (Object listener : txListeners.getListeners()) {
             ((EventTransactionListener)listener).transactionStarted();
         }
