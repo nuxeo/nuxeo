@@ -15,7 +15,7 @@
   <description>Build package distributions of Nuxeo DAM applications</description>
 
   <properties>
-    <nuxeo.distribution.version>5.4.0</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.4.0.1</nuxeo.distribution.version>
   </properties>
 
   <profiles>
@@ -133,10 +133,8 @@
         <artifactId>nuxeo-distribution-tools</artifactId>
         <configuration>
           <buildFiles>
-            <!-- Disable JBoss assembly, keep only Tomcat
             <buildFile>${basedir}/src/main/assemble/assembly-ear.xml</buildFile>
             <buildFile>${basedir}/src/main/assemble/assembly-jboss.xml</buildFile>
-            -->
             <buildFile>${basedir}/src/main/assemble/assembly-tomcat.xml</buildFile>
           </buildFiles>
         </configuration>
