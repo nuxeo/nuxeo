@@ -84,6 +84,13 @@ public class TestHelpers extends NXRuntimeTestCase {
                 fieldDef);
         assertEquals("#{document.contextData['request/comment']}", expression);
 
+        fieldDef = new FieldDescriptor(null,
+                "data.dc.contributors[fn:length(data.dc.contributors)-1]");
+        expression = ValueExpressionHelper.createExpressionString("row",
+                fieldDef);
+        assertEquals(
+                "#{row.data.dc.contributors[fn:length(data.dc.contributors)-1]}",
+                expression);
     }
 
     public static String getTestFile(String filePath) {

@@ -35,7 +35,13 @@ public class ValueExpressionHelper {
     private ValueExpressionHelper() {
     }
 
-    // FIXME follow xpath syntax
+    public static boolean isFormattedAsELExpression(String expression) {
+        if (expression.contains(".") || expression.contains("[")) {
+            return true;
+        }
+        return false;
+    }
+
     public static String createExpressionString(String valueName,
             FieldDefinition field) {
         if (field == null || "".equals(field.getPropertyName())) {
@@ -44,29 +50,33 @@ public class ValueExpressionHelper {
         List<String> expressionElements = new ArrayList<String>();
         expressionElements.add(valueName);
 
-        String schemaName = field.getSchemaName();
-        String fieldName = field.getFieldName();
-        if (schemaName == null) {
-            // try to resolve schema name
-            String propertyName = field.getFieldName();
-            String[] s = propertyName.split(":");
-            if (s.length == 2) {
-                schemaName = s[0];
-                fieldName = s[1];
-            }
-        }
-
-        if (schemaName != null) {
-            expressionElements.add(String.format("['%s']", schemaName));
-        }
-
         String dmResolverValue;
-        if (fieldName.contains(".") || fieldName.contains("[")) {
-            // already formatted as an EL expression => do not use brackets
+
+        String fieldName = field.getFieldName();
+        if (isFormattedAsELExpression(fieldName)) {
+            // already formatted as an EL expression => ignore schema name, do
+            // not resolve field and do not modify expression format
             expressionElements.add(fieldName);
             dmResolverValue = String.format("#{%s}", StringUtils.join(
                     expressionElements, "."));
+
         } else {
+            // try to resolve schema name/prefix
+            String schemaName = field.getSchemaName();
+            if (schemaName == null) {
+                String propertyName = field.getFieldName();
+                String[] s = propertyName.split(":");
+                if (s.length == 2) {
+                    schemaName = s[0];
+                    fieldName = s[1];
+                }
+            }
+
+            if (schemaName != null) {
+                expressionElements.add(String.format("['%s']", schemaName));
+            }
+
+            // handle xpath expressions
             String[] splittedFieldName = fieldName.split("/");
             for (String item : splittedFieldName) {
                 try {
