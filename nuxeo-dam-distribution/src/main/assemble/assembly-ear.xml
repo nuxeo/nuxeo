@@ -41,31 +41,32 @@
     <unzip dest="${nuxeo.ear}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm:${nuxeo.distribution.version}:zip" />
       <patternset>
-        <exclude name="**/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
-        <exclude name="**/nuxeo-platform-webapp-core*" />
+        <exclude name="**/bundles/nuxeo-platform-webapp-${nuxeo.distribution.version}*" />
+        <exclude name="**/bundles/nuxeo-platform-webapp-core*" />
 
-        <exclude name="**/system/nuxeo-platform-comment-web*" />
-        <exclude name="**/system/nuxeo-platform-directory-web*" />
-        <exclude name="**/system/nuxeo-platform-ear*" />
-        <exclude name="**/system/nuxeo-platform-forum*" />
-        <exclude name="**/system/nuxeo-platform-imaging-dm*" />
-        <exclude name="**/system/nuxeo-platform-lang*" />
-        <exclude name="**/system/nuxeo-platform-mail*" />
-        <exclude name="**/system/nuxeo-platform-notification-web*" />
-        <exclude name="**/system/nuxeo-opensocial*" />
-        <exclude name="**/system/nuxeo-platform-publish*" />
-        <exclude name="**/system/nuxeo-platform-spaces*" />
-        <exclude name="**/system/nuxeo-platform-syndication*" />
-        <exclude name="**/system/nuxeo-platform-tag*" />
-        <exclude name="**/system/nuxeo-platform-virtualnavigation*" />
-        <exclude name="**/system/nuxeo-platform-workflow*" />
-        <exclude name="**/system/nuxeo-platform-wss*" />
+        <exclude name="**/bundles/nuxeo-platform-comment-web*" />
+        <exclude name="**/bundles/nuxeo-platform-directory-web*" />
+        <exclude name="**/bundles/nuxeo-platform-ear*" />
+        <exclude name="**/bundles/nuxeo-platform-forum*" />
+        <exclude name="**/bundles/nuxeo-platform-imaging-dm*" />
+        <exclude name="**/bundles/nuxeo-platform-mail*" />
+        <exclude name="**/bundles/nuxeo-platform-notification-web*" />
+        <exclude name="**/bundles/nuxeo-opensocial*" />
+        <exclude name="**/bundles/nuxeo-platform-publish*" />
+        <exclude name="**/bundles/nuxeo-platform-spaces*" />
+        <exclude name="**/bundles/nuxeo-platform-syndication*" />
+        <exclude name="**/bundles/nuxeo-platform-tag*" />
+        <exclude name="**/bundles/nuxeo-platform-virtualnavigation*" />
+        <exclude name="**/bundles/nuxeo-platform-workflow*" />
+        <exclude name="**/bundles/nuxeo-platform-wss*" />
 
-        <exclude name="**/system/nuxeo-webengine-gadgets*" />
-        <exclude name="**/system/nuxeo-webengine-admin*" />
-        <exclude name="**/system/nuxeo-webengine-blogs*" />
-        <exclude name="**/system/nuxeo-webengine-sites*" />
-        <exclude name="**/system/nuxeo-webengine-ui*" />
+        <exclude name="**/bundles/nuxeo-webengine-gadgets*" />
+        <exclude name="**/bundles/nuxeo-webengine-admin*" />
+        <exclude name="**/bundles/nuxeo-webengine-blogs*" />
+        <exclude name="**/bundles/nuxeo-webengine-sites*" />
+        <exclude name="**/bundles/nuxeo-webengine-ui*" />
+
+        <exclude name="**/bundles/nuxeo-platform-faceted-search-dm*" />
 
         <!-- OpenSocial libs -->
         <exclude name="**/lib/shindig*" />
@@ -78,11 +79,7 @@
       </patternset>
     </unzip>
 
-    <copy todir="${nuxeo.ear}" overwrite="true">
-      <artifact:file artifactId="nuxeo-dam-webapp" />
-      <artifact:file artifactId="nuxeo-dam-webapp-core" />
-    </copy>
-    <copy todir="${nuxeo.ear}/system" overwrite="true">
+    <copy todir="${nuxeo.ear}/bundles" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="org.nuxeo.dam*" />
@@ -92,8 +89,6 @@
           <artifact artifactId="nuxeo-platform-importer-core" />
         </includes>
         <excludes>
-          <artifact artifactId="nuxeo-dam-webapp" />
-          <artifact artifactId="nuxeo-dam-webapp-core" />
           <artifact artifactId="nuxeo-dam-importer-jaxrs" />
         </excludes>
       </artifact:set>
@@ -118,6 +113,10 @@
   <target name="third-party-libraries">
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
+      <artifact:resolveFile key="org.apache.derby:derby" />
+      <artifact:resolveFile key="commons-el:commons-el" />
+      <artifact:resolveFile key="org.jboss.el:jboss-el" />
+
     </copy>
   </target>
 

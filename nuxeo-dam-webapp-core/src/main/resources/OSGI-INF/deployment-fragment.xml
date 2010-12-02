@@ -14,23 +14,7 @@
     <module>
       <ejb>${bundle.fileName}</ejb>
     </module>
-
-    <module>
-      <web>
-        <web-uri>nuxeo.war</web-uri>
-        <context-root>/nuxeo</context-root>
-      </web>
-    </module>
   </extension>
-
-  <extension target="web#FILTER-MAPPING">
-    <filter>
-      <display-name>Ajax4jsf Filter</display-name>
-      <filter-name>ajax4jsf</filter-name>
-      <filter-class>org.ajax4jsf.Filter</filter-class>
-    </filter>
-  </extension>
-
 
   <extension target="web#FILTER-MAPPING">
     <!--
@@ -40,18 +24,6 @@
     <filter-mapping>
       <filter-name>Seam Context Filter</filter-name>
       <url-pattern>/DocumentManagerWS</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>ajax4jsf</filter-name>
-      <servlet-name>Faces Servlet</servlet-name>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-      <dispatcher>INCLUDE</dispatcher>
-      <init-param>
-        <param-name>maxRequestSize</param-name>
-        <param-value>1000000</param-value>
-      </init-param>
     </filter-mapping>
   </extension>
 
