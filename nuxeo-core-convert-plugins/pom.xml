@@ -39,6 +39,22 @@
       <artifactId>pdfbox</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.fontbox</groupId>
+      <artifactId>fontbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jempbox</groupId>
+      <artifactId>jempbox</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-scratchpad</artifactId>
     </dependency>
@@ -92,11 +108,6 @@
     <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.fontbox</groupId>
-      <artifactId>fontbox</artifactId>
       <scope>test</scope>
     </dependency>
 
