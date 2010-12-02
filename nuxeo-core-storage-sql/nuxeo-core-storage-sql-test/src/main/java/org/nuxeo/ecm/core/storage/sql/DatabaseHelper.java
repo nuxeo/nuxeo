@@ -49,6 +49,8 @@ public abstract class DatabaseHelper {
         setDatabaseForTests(className);
     }
 
+    public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
+
     public static final String URL_PROPERTY = "nuxeo.test.vcs.url";
 
     public static final String SERVER_PROPERTY = "nuxeo.test.vcs.server";
@@ -70,13 +72,24 @@ public abstract class DatabaseHelper {
         return value;
     }
 
+    protected String databaseName = "nuxeojunittests";
+
+    public void setDatabaseName(String name) {
+        this.databaseName = name;
+    }
+
+    protected String repositoryName = "test";
+
+    public void setRepositoryName(String name) {
+        this.repositoryName = name;
+    }
+
     /**
      * Sets the database backend used for VCS unit tests.
      */
     public static void setDatabaseForTests(String className) {
         try {
-            DATABASE = (DatabaseHelper) Class.forName(className).getField(
-                    "INSTANCE").get(null);
+            DATABASE = (DatabaseHelper) Class.forName(className).newInstance();
         } catch (Exception e) {
             throw new ExceptionInInitializerError("Database class not found: "
                     + className);
@@ -160,6 +173,10 @@ public abstract class DatabaseHelper {
 
     public boolean supportsMultipleFulltextIndexes() {
         return true;
+    }
+
+    public String getPooledDeploymentContrib() {
+        throw new UnsupportedOperationException();
     }
 
 }

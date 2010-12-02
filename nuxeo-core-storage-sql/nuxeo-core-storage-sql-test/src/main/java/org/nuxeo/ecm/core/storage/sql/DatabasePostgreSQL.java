@@ -19,8 +19,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -33,18 +37,18 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     private static final String DEF_PORT = "5432";
 
-    private static final String DEF_DATABASE = "nuxeojunittests";
-
     private static final String DEF_USER = "nuxeo";
 
     private static final String DEF_PASSWORD = "nuxeo";
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-postgresql-contrib.xml";
 
-    private static void setProperties() {
+    protected void setProperties() {
+        Properties properties = Framework.getProperties();
+        properties.setProperty(REPOSITORY_PROPERTY, repositoryName);
+        setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
-        setProperty(DATABASE_PROPERTY, DEF_DATABASE);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
     }
@@ -60,13 +64,25 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         Connection connection = DriverManager.getConnection(url,
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
-        doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
-        connection.close();
+        try {
+            Statement st = connection.createStatement();
+            String sql = "CREATE LANGUAGE plpgsql";
+            st.execute(sql);
+            st.close();
+            doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
+        } finally {
+            connection.close();
+        }
     }
 
     @Override
     public String getDeploymentContrib() {
         return CONTRIB_XML;
+    }
+
+    @Override
+    public String getPooledDeploymentContrib() {
+        return "test-pooling-postgres-contrib.xml";
     }
 
     @Override
@@ -76,7 +92,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
         properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
-        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
+        properties.put("DatabaseName", databaseName);
         properties.put("User", System.getProperty(USER_PROPERTY));
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;

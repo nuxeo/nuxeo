@@ -22,6 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.nuxeo.ecm.core.test.DefaultDatabaseFactory;
+import org.nuxeo.ecm.core.test.NoopRepositoryInit;
+
 /**
  * Defines the session parameters to use.
  */
@@ -30,9 +33,15 @@ import java.lang.annotation.Target;
 @Target( { ElementType.TYPE })
 public @interface RepositoryConfig {
 
+    Class<? extends DatabaseHelperFactory> factory() default DefaultDatabaseFactory.class;
+
     BackendType type() default BackendType.H2;
 
-    Class<? extends RepositoryInit> init() default RepositoryInit.class;
+    String repositoryName() default "test";
+
+    String databaseName() default "nuxeojunittests";
+
+    Class<? extends RepositoryInit> init() default NoopRepositoryInit.class;
 
     Granularity cleanup() default Granularity.CLASS;
 

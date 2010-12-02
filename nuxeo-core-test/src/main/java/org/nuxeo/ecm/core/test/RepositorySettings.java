@@ -16,26 +16,27 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.runner.Description;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.DatabaseHelperFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.runtime.model.persistence.Contribution;
+import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.osgi.framework.Bundle;
 
 import com.google.inject.Provider;
 
@@ -53,10 +54,12 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     protected FeaturesRunner runner;
     protected BackendType type;
+    protected String repositoryName;
+    protected String databaseName;
     protected String username;
-    protected RepositoryInit initializer;
+    protected RepositoryInit repoInitializer;
     protected Granularity granularity;
-
+    protected DatabaseHelperFactory databaseFactory;
     protected TestRepositoryHandler repo;
     protected CoreSession session;
 
@@ -68,6 +71,11 @@ public class RepositorySettings implements Provider<CoreSession> {
     }
 
     protected RepositorySettings(RepositoryConfig config) {
+        importAnnotations(config);
+    }
+
+    protected RepositorySettings(FeaturesRunner runner, RepositoryConfig config) {
+        this.runner = runner;
         importAnnotations(config);
     }
 
@@ -83,15 +91,19 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     public void importAnnotations(RepositoryConfig repo) {
         type = repo.type();
+        repositoryName = repo.repositoryName();
+        databaseName = repo.databaseName();
         username = repo.user();
         granularity = repo.cleanup();
-        Class<? extends RepositoryInit> clazz = repo.init();
-        if (clazz != RepositoryInit.class) {
-            try {
-                initializer = clazz.newInstance();
-            } catch (Exception e) {
-                log.error(e, e);
-            }
+        databaseFactory = newInstance(repo.factory());
+        repoInitializer = newInstance(repo.init());
+    }
+
+    protected <T> T newInstance(Class<? extends T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+            throw new Error("Cannot instanciate " + clazz.getSimpleName(), e);
         }
     }
 
@@ -104,6 +116,8 @@ public class RepositorySettings implements Provider<CoreSession> {
             type = settings.type;
         }
         username = settings.username;
+        repositoryName = settings.repositoryName;
+        databaseName = settings.databaseName;
     }
 
     public BackendType getBackendType() {
@@ -112,6 +126,14 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     public void setBackendType(BackendType type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return repositoryName;
+    }
+
+    public void setName(String name) {
+        this.repositoryName = name;
     }
 
     public String getUsername() {
@@ -123,11 +145,11 @@ public class RepositorySettings implements Provider<CoreSession> {
     }
 
     public RepositoryInit getInitializer() {
-        return initializer;
+        return repoInitializer;
     }
 
     public void setInitializer(RepositoryInit initializer) {
-        this.initializer = initializer;
+        this.repoInitializer = initializer;
     }
 
     public Granularity getGranularity() {
@@ -141,40 +163,14 @@ public class RepositorySettings implements Provider<CoreSession> {
     public void initialize() {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-            BackendType repoType = getBackendType();
-            {
-                log.info("Deploying a VCS repo implementation");
-                harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
-
-                // TODO: should use a factory
-                DatabaseHelper dbHelper;
-                if (repoType == BackendType.H2) {
-                    log.info("VCS relies on H2");
-                    dbHelper = DatabaseH2.DATABASE;
-                } else {
-                    log.info("VCS relies on Postgres");
-                    dbHelper = DatabasePostgreSQL.DATABASE;
-                }
-                harness.deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                        dbHelper.getDeploymentContrib());
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql.test:"
-//                        +dbHelper.getDeploymentContrib());
-                dbHelper.setUp();
-
-                if (dbHelper instanceof DatabasePostgreSQL) {
-                    Class.forName("org.postgresql.Driver");
-                    String url = String.format("jdbc:postgresql://%s:%s/%s",
-                            "localhost", "5432", "nuxeojunittests");
-                    Connection connection = DriverManager.getConnection(url,
-                            "postgres", "");
-                    Statement st = connection.createStatement();
-                    String sql = "CREATE LANGUAGE plpgsql";
-                    st.execute(sql);
-                    st.close();
-                    connection.close();
-                }
-            }
+            log.info("Deploying a VCS repo implementation");
+            DatabaseHelper dbHelper = databaseFactory.getHelper(type, databaseName, repositoryName);
+            dbHelper.setUp();
+            OSGiAdapter osgi = harness.getOSGiAdapter();
+            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
+            URL contribURL = bundle.getEntry(dbHelper.getDeploymentContrib());
+            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
+            harness.getContext().deploy(contrib);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -195,15 +191,12 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
     }
 
-    private String getRepoName() {
-        return "test";
-    }
 
     public TestRepositoryHandler getRepositoryHandler() {
         if (repo == null) {
             try {
                 repo = new TestRepositoryHandler(
-                        getRepoName());
+                        repositoryName);
                 repo.openRepository();
             } catch (Exception e) {
                 log.error(e.toString(), e);

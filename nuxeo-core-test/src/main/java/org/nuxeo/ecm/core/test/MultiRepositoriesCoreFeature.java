@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Stephane Lacoin 
  */
 package org.nuxeo.ecm.core.test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +28,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -34,17 +39,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
+import com.google.inject.Scopes;
+import com.google.inject.name.Names;
 
-/**
- * The core feature provides deployments needed to have a nuxeo core running.
- * Several annotations can be used:
- * <ul>
- * <li>FIXME
- * <li>FIXME
- * </ul>
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 @Deploy({
     "org.nuxeo.ecm.core.schema",
     "org.nuxeo.ecm.core.query",
@@ -56,58 +53,89 @@ import com.google.inject.Binder;
     "org.nuxeo.ecm.core.storage.sql.test"
 })
 @Features(RuntimeFeature.class)
-public class CoreFeature extends SimpleFeature {
+public class MultiRepositoriesCoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
-    private RepositorySettings repository;
+    private final Map<String,RepositorySettings> repositories =
+        new HashMap<String,RepositorySettings>();
 
-    public RepositorySettings getRepository() {
-        return repository;
+    public RepositorySettings getRepository(String name) {
+        return repositories.get(name);
     }
 
-    public BackendType getBackendType() {
-        return repository.getBackendType();
+    public BackendType getBackendType(String name) {
+        return repositories.get(name).getBackendType();
+    }
+
+    protected void setupRepos(FeaturesRunner runner) {
+        RepositoryConfigs configs = runner.getDescription().getAnnotation(RepositoryConfigs.class);
+        if (configs == null) {
+            RepositorySettings repo = new RepositorySettings(runner);
+            repositories.put(repo.repositoryName, repo);
+        } else {
+            for (RepositoryConfig config:configs.value()) {
+                RepositorySettings repository = new RepositorySettings(runner, config);
+                repositories.put(repository.repositoryName, repository);
+            }
+        }
     }
 
     @Override
     public void initialize(FeaturesRunner runner)
             throws Exception {
-        repository = new RepositorySettings(runner);
-        runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repository);
+        setupRepos(runner);
+//        for (RepositorySettings repo:repositories.values()) {
+//            runner.getFeature(RuntimeFeature.class).addServiceProvider(CoreSession.class, repo);
+//        }
     }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        repository.initialize();
+        for (RepositorySettings repository:repositories.values()) {
+            repository.initialize();
+        }
     }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(RepositorySettings.class).toInstance(repository);
+        for (RepositorySettings repository:repositories.values()) {
+            binder.bind(RepositorySettings.class).
+                annotatedWith(Names.named(repository.repositoryName)).
+                toInstance(repository);
+            binder.bind(CoreSession.class).
+                annotatedWith(Names.named(repository.repositoryName)).
+                toProvider(repository).in(Scopes.SINGLETON);
+        }
     }
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        initializeSession(runner);
+        for (RepositorySettings repository:repositories.values()) {
+            initializeSession(runner, repository);
+        }
     }
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         //TODO cleanupSession(runner);
         Framework.getService(EventService.class).waitForAsyncCompletion();
-        repository.shutdown();
+        for (RepositorySettings repository:repositories.values()) {
+            repository.shutdown();
+        }
     }
 
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
-        if (repository.getGranularity() == Granularity.METHOD) {
-            cleanupSession(runner);
+        for (RepositorySettings repository:repositories.values()) {
+            if (repository.getGranularity() == Granularity.METHOD) {
+                cleanupSession(runner, repository);
+            }
         }
     }
 
-    protected void cleanupSession(FeaturesRunner runner) {
+    protected void cleanupSession(FeaturesRunner runner, RepositorySettings repository) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
 
         try {
@@ -116,16 +144,15 @@ public class CoreFeature extends SimpleFeature {
             log.error("Unable to reset repository", e);
         }
 
-        initializeSession(runner);
+        initializeSession(runner, repository);
     }
 
-    protected void initializeSession(FeaturesRunner runner) {
-        CoreSession session = runner.getInjector().getInstance(CoreSession.class);
-
-        RepositoryInit factory = repository.getInitializer();
-        if (factory != null) {
+    protected void initializeSession(FeaturesRunner runner, RepositorySettings repository) {
+        CoreSession session = repository.get();
+        RepositoryInit initializer = repository.getInitializer();
+        if (initializer != null) {
             try {
-                factory.populate(session);
+                initializer.populate(session);
                 session.save();
             } catch (ClientException e) {
                 log.error(e.toString(), e);
@@ -134,7 +161,8 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public void setRepositorySettings(RepositorySettings settings) {
-        repository.importSettings(settings);
+        repositories.clear();
+        repositories.put(settings.repositoryName, settings);
     }
 
 }

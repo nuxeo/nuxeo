@@ -41,18 +41,18 @@ public class CleanupLevelTest {
 
     @Test
     public void firstTestToCreateADoc() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "default-domain",
+        DocumentModel doc = session.createDocumentModel("/", "test",
                 "Domain");
-        doc.setProperty("dublincore", "title", "Default domain");
+        doc.setProperty("dublincore", "title", "test");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
         session.save();
-        assertTrue(session.exists(new PathRef("/default-domain")));
+        assertTrue(session.exists(new PathRef("/test")));
     }
 
     @Test
     public void docDoesNotExistsNoMore() throws Exception {
-        assertFalse(session.exists(new PathRef("/default-domain")));
+        assertFalse(session.exists(new PathRef("/test")));
     }
 
 }
