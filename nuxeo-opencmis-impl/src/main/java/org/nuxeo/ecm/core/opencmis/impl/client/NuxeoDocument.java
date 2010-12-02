@@ -20,16 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.Document;
-import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
-import org.apache.chemistry.opencmis.client.api.Relationship;
+import org.apache.chemistry.opencmis.client.api.TransientDocument;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
@@ -44,6 +42,11 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     public NuxeoDocument(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);
+    }
+
+    @Override
+    public TransientDocument getTransientDocument() {
+        return (TransientDocument) getAdapter(TransientDocument.class);
     }
 
     @Override
@@ -103,7 +106,13 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
-    public ObjectId deleteContentStream() {
+    public NuxeoDocument deleteContentStream() {
+        ObjectId objectId = deleteContentStream(true);
+        return (NuxeoDocument) session.getObject(objectId);
+    }
+
+    @Override
+    public ObjectId deleteContentStream(boolean refresh) {
         Holder<String> objectIdHolder = new Holder<String>(getId());
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
         Holder<String> changeTokenHolder = new Holder<String>(changeToken);
@@ -111,8 +120,8 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
         service.deleteContentStream(getRepositoryId(), objectIdHolder,
                 changeTokenHolder, null);
 
-        String objectId = objectIdHolder.getValue();
-        return objectId == null ? null : session.createObjectId(objectId);
+        String objectId = objectIdHolder.getValue(); // never null
+        return session.createObjectId(objectId);
     }
 
     @Override
@@ -129,8 +138,7 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public String getCheckinComment() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.CHECKIN_COMMENT);
     }
 
     @Override
@@ -150,26 +158,23 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public String getContentStreamFileName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.CONTENT_STREAM_FILE_NAME);
     }
 
     @Override
     public String getContentStreamId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.CONTENT_STREAM_ID);
     }
 
     @Override
     public long getContentStreamLength() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        Long length = getPropertyValue(PropertyIds.CONTENT_STREAM_LENGTH);
+        return length == null ? -1 : length.longValue();
     }
 
     @Override
     public String getContentStreamMimeType() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.CONTENT_STREAM_MIME_TYPE);
     }
 
     @Override
@@ -187,61 +192,59 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public String getVersionLabel() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.VERSION_LABEL);
     }
 
     @Override
     public String getVersionSeriesCheckedOutBy() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY);
     }
 
     @Override
     public String getVersionSeriesCheckedOutId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID);
     }
 
     @Override
     public String getVersionSeriesId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.VERSION_SERIES_ID);
     }
 
     @Override
     public Boolean isImmutable() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.IS_IMMUTABLE);
     }
 
     @Override
     public Boolean isLatestMajorVersion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.IS_LATEST_MAJOR_VERSION);
     }
 
     @Override
     public Boolean isLatestVersion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.IS_LATEST_VERSION);
     }
 
     @Override
     public Boolean isMajorVersion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.IS_MAJOR_VERSION);
     }
 
     @Override
     public Boolean isVersionSeriesCheckedOut() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getPropertyValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT);
+    }
+
+    @Override
+    public Document setContentStream(ContentStream contentStream,
+            boolean overwrite) {
+        ObjectId objectId = setContentStream(contentStream, overwrite, true);
+        return (NuxeoDocument) session.getObject(objectId);
     }
 
     @Override
     public ObjectId setContentStream(ContentStream contentStream,
-            boolean overwrite) {
+            boolean overwrite, boolean refresh) {
         Holder<String> objectIdHolder = new Holder<String>(getId());
         String changeToken = getPropertyValue(PropertyIds.CHANGE_TOKEN);
         Holder<String> changeTokenHolder = new Holder<String>(changeToken);
@@ -250,17 +253,8 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
                 Boolean.valueOf(overwrite), changeTokenHolder, contentStream,
                 null);
 
-        String objectId = objectIdHolder.getValue();
-        return objectId == null ? null : session.createObjectId(objectId);
-    }
-
-    @Override
-    public ItemIterable<Relationship> getRelationships(
-            boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, ObjectType type,
-            OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String objectId = objectIdHolder.getValue(); // never null
+        return session.createObjectId(objectId);
     }
 
 }

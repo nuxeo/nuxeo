@@ -25,7 +25,7 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.2.0-incubating-r1031674</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.2.0-incubating-r1040083</chemistry.opencmis.version>
   </properties>
 
   <repositories>

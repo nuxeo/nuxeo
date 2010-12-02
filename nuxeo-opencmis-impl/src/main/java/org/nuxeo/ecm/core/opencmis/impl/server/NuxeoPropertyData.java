@@ -43,8 +43,11 @@ import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.data.PropertyUri;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.commons.logging.Log;
@@ -347,6 +350,71 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return Long.valueOf(((BigInteger) value).longValue());
         } else {
             return value;
+        }
+    }
+
+    /**
+     * Validates a CMIS value according to a property definition.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> void validateCMISValue(Object value,
+            PropertyDefinition<T> pd) {
+        if (value == null) {
+            return;
+        }
+        List<T> values;
+        if (value instanceof List<?>) {
+            if (pd.getCardinality() != Cardinality.MULTI) {
+                throw new CmisInvalidArgumentException(
+                        "Property is single-valued: " + pd.getId());
+            }
+            values = (List<T>) value;
+            if (values.isEmpty()) {
+                return;
+            }
+        } else {
+            if (pd.getCardinality() != Cardinality.SINGLE) {
+                throw new CmisInvalidArgumentException(
+                        "Property is multi-valued: " + pd.getId());
+            }
+            values = Collections.singletonList((T) value);
+        }
+        PropertyType type = pd.getPropertyType();
+        for (Object v : values) {
+            if (v == null) {
+                throw new CmisInvalidArgumentException(
+                        "Null values not allowed: " + values);
+            }
+            boolean ok;
+            switch (type) {
+            case STRING:
+            case ID:
+            case URI:
+            case HTML:
+                ok = v instanceof String;
+                break;
+            case INTEGER:
+                ok = v instanceof BigInteger || v instanceof Byte
+                        || v instanceof Short || v instanceof Integer
+                        || v instanceof Long;
+                break;
+            case DECIMAL:
+                ok = v instanceof BigDecimal;
+                break;
+            case BOOLEAN:
+                ok = v instanceof Boolean;
+                break;
+            case DATETIME:
+                ok = v instanceof GregorianCalendar;
+                break;
+            default:
+                throw new RuntimeException(type.toString());
+            }
+            if (!ok) {
+                throw new CmisInvalidArgumentException(
+                        "Value does not match property type " + type + ":  "
+                                + v);
+            }
         }
     }
 

@@ -124,7 +124,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoFolder;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -360,15 +359,10 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         if (folder != null) {
             DocumentModel parentDoc;
-            if (folder instanceof NuxeoFolder) {
-                parentDoc = ((NuxeoFolder) folder).data.doc;
-            } else {
-                try {
-                    parentDoc = coreSession.getDocument(new IdRef(
-                            folder.getId()));
-                } catch (ClientException e) {
-                    throw new CmisRuntimeException("Cannot create object", e);
-                }
+            try {
+                parentDoc = coreSession.getDocument(new IdRef(folder.getId()));
+            } catch (ClientException e) {
+                throw new CmisRuntimeException("Cannot create object", e);
             }
             String pathSegment = nuxeoTypeId; // default path segment based on
                                               // id

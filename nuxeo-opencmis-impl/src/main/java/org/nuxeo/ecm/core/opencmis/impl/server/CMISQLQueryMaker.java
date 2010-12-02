@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
@@ -179,17 +180,23 @@ public class CMISQLQueryMaker implements QueryMaker {
         hierTable = database.getTable(Model.HIER_TABLE_NAME);
 
         query = new QueryObject(typeManager);
-        CmisQueryWalker walker;
+        QueryUtil queryUtil = new QueryUtil();
+        CmisQueryWalker walker = null;
         try {
-            walker = QueryUtil.getWalker(statement);
+            walker = queryUtil.getWalker(statement);
             walker.query(query, new AnalyzingWalker());
+        } catch (RecognitionException e) {
+            String msg;
+            if (walker == null) {
+                msg = e.getMessage();
+            } else {
+                msg = "Line " + e.line + ":" + e.charPositionInLine + " "
+                        + walker.getErrorMessage(e, walker.getTokenNames());
+            }
+            throw new QueryMakerException("Cannot parse query: " + msg);
         } catch (Exception e) {
             throw new QueryMakerException("Cannot parse query: "
                     + e.getMessage(), e);
-        }
-        String err = walker.getErrorMessageString();
-        if (err != null) {
-            throw new QueryMakerException("Cannot parse query: " + err);
         }
 
         // now resolve column selectors to actual database columns
@@ -387,7 +394,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         readAclAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
                                 + model.HIER_READ_ACL_ACL_ID;
                     } else {
-                        String al = "nxr" + njoin;
+                        String al = "nxr" + (njoin + 1);
                         readAclTable = model.HIER_READ_ACL_TABLE_NAME + " "
                                 + al; // TODO dialect
                         readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;

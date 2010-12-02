@@ -25,8 +25,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
  */
 public class NuxeoBinding implements CmisBinding {
 
-    private static final long serialVersionUID = 1L;
-
     public final NuxeoCmisService service;
 
     public NuxeoBinding(NuxeoCmisService service) {

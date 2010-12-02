@@ -35,7 +35,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
-import org.apache.chemistry.opencmis.client.api.Relationship;
+import org.apache.chemistry.opencmis.client.api.TransientFolder;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
@@ -58,10 +58,10 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefiniti
 import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
-import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
@@ -78,6 +78,11 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     public NuxeoFolder(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);
+    }
+
+    @Override
+    public TransientFolder getTransientFolder() {
+        return (TransientFolder) getAdapter(TransientFolder.class);
     }
 
     @Override
@@ -263,8 +268,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     public Policy createPolicy(Map<String, ?> properties,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        throw new CmisNotSupportedException();
     }
 
     @Override
@@ -288,8 +292,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public ItemIterable<Document> getCheckedOutDocs() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getCheckedOutDocs(session.getDefaultContext());
     }
 
     @Override
@@ -393,15 +396,6 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     @Override
     public boolean isRootFolder() {
         return data.doc.getPath().isRoot();
-    }
-
-    @Override
-    public ItemIterable<Relationship> getRelationships(
-            boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, ObjectType type,
-            OperationContext context) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
 }

@@ -27,7 +27,6 @@ import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.bindings.CmisBindingFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.chemistry.opencmis.commons.enums.SessionType;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.mortbay.jetty.Connector;
@@ -60,8 +59,6 @@ public abstract class NuxeoSessionClientServerTestCase extends
         SessionFactory sf = SessionFactoryImpl.newInstance();
         Map<String, String> params = new HashMap<String, String>();
 
-        params.put(SessionParameter.SESSION_TYPE,
-                SessionType.PERSISTENT.value());
         params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS,
                 CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
 

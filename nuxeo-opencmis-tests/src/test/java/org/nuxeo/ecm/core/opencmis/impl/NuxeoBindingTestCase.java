@@ -72,7 +72,8 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.core.persistence");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit.api");
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit");
-        nuxeotc.deployTestContrib("org.nuxeo.ecm.platform.audit", "nxaudit-tests.xml");
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/audit-persistence-config.xml");
 
         nuxeotc.openSession();
 
@@ -82,10 +83,14 @@ public class NuxeoBindingTestCase {
         params.put(SessionParameter.LOCAL_FACTORY,
                 NuxeoCmisServiceFactory.class.getName());
 
-        // use manual local bindings to keep the session open
+        init();
+    }
 
+    /** Init fields from session. */
+    public void init() throws Exception {
         repositoryId = nuxeotc.getRepositoryId();
-        rootFolderId = nuxeotc.getSession().getRootDocument().getId();
+        CoreSession coreSession = nuxeotc.getSession();
+        rootFolderId = coreSession.getRootDocument().getId();
 
         boolean objectInfoRequired = true; // for tests
         CallContextImpl context = new CallContextImpl(
@@ -96,8 +101,9 @@ public class NuxeoBindingTestCase {
                 FakeServletContext.getServletContext());
         NuxeoRepository repository = new NuxeoRepository(repositoryId,
                 rootFolderId);
+        // use manual local bindings to keep the session open
         NuxeoCmisService service = new NuxeoCmisService(repository, context,
-                nuxeotc.getSession());
+                coreSession);
         binding = new NuxeoBinding(service);
     }
 

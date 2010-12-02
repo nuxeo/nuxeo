@@ -26,14 +26,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
-import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
+import org.apache.chemistry.opencmis.client.api.TransientCmisObject;
+import org.apache.chemistry.opencmis.client.api.TransientDocument;
+import org.apache.chemistry.opencmis.client.api.TransientFolder;
 import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -43,12 +44,10 @@ import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
-import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.RenditionDataImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -98,6 +97,26 @@ public abstract class NuxeoObject implements CmisObject {
         service = session.getService();
         this.data = data;
         this.type = type;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getAdapter(Class<T> adapterInterface) {
+        if (TransientDocument.class.isAssignableFrom(adapterInterface)
+                && this instanceof NuxeoDocument) {
+            return (T) new NuxeoTransientDocument(this);
+        }
+        if (TransientFolder.class.isAssignableFrom(adapterInterface)
+                && this instanceof NuxeoFolder) {
+            return (T) new NuxeoTransientFolder(this);
+        }
+        throw new CmisRuntimeException("Cannot adapt to "
+                + adapterInterface.getName());
+    }
+
+    @Override
+    public TransientCmisObject getTransientObject() {
+        return (TransientCmisObject) getAdapter(TransientCmisObject.class);
     }
 
     public String getRepositoryId() {
@@ -155,34 +174,30 @@ public abstract class NuxeoObject implements CmisObject {
     }
 
     @Override
-    public void setName(String name) {
-        setProperty(PropertyIds.NAME, name);
-    }
-
-    @Override
     public void delete(boolean allVersions) {
         service.deleteObject(getRepositoryId(), getId(),
                 Boolean.valueOf(allVersions), null);
     }
 
     @Override
-    public ObjectId updateProperties() {
-        CoreSession coreSession = session.getCoreSession();
-        try {
-            data.doc = coreSession.saveDocument(data.doc);
-            coreSession.save();
-            return session.createObjectId(data.doc.getId());
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+    public CmisObject updateProperties(Map<String, ?> properties) {
+        ObjectId objectId = updateProperties(properties, true);
+        return session.getObject(objectId);
     }
 
     @Override
-    public ObjectId updateProperties(Map<String, ?> properties) {
+    public ObjectId updateProperties(Map<String, ?> properties, boolean refresh) {
         for (Entry<String, ?> en : properties.entrySet()) {
             ((NuxeoPropertyDataBase<?>) data.getProperty(en.getKey())).setValue(en.getValue());
         }
-        return updateProperties();
+        try {
+            CoreSession coreSession = session.getCoreSession();
+            data.doc = coreSession.saveDocument(data.doc);
+            coreSession.save();
+            return this;
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -207,13 +222,7 @@ public abstract class NuxeoObject implements CmisObject {
     }
 
     @Override
-    public void setProperty(String id, Object value) {
-        NuxeoPropertyDataBase<?> prop = data.getProperty(id);
-        prop.setValue(value);
-    }
-
-    @Override
-    public void addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
+    public Acl addAcl(List<Ace> addAces, AclPropagation aclPropagation) {
         throw new CmisNotSupportedException();
     }
 
@@ -224,22 +233,12 @@ public abstract class NuxeoObject implements CmisObject {
     }
 
     @Override
-    public void applyPolicy(ObjectId policyId) {
-        throw new CmisNotSupportedException();
-    }
-
-    @Override
     public Acl getAcl() {
         throw new CmisNotSupportedException();
     }
 
     @Override
-    public Acl getAcl(boolean onlyBasicPermissions) {
-        throw new CmisNotSupportedException();
-    }
-
-    @Override
-    public void removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
+    public Acl removeAcl(List<Ace> removeAces, AclPropagation aclPropagation) {
         throw new CmisNotSupportedException();
     }
 
@@ -256,19 +255,17 @@ public abstract class NuxeoObject implements CmisObject {
     }
 
     @Override
-    public void removePolicy(ObjectId policyId) {
+    public void applyPolicy(ObjectId... policyIds) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public void removePolicy(ObjectId... policyIds) {
         throw new CmisNotSupportedException();
     }
 
     @Override
     public List<Relationship> getRelationships() {
-        throw new CmisNotSupportedException();
-    }
-
-    public ItemIterable<Relationship> getRelationships(
-            boolean includeSubRelationshipTypes,
-            RelationshipDirection relationshipDirection, ObjectType type,
-            OperationContext context, int itemsPerPage) {
         throw new CmisNotSupportedException();
     }
 
@@ -292,12 +289,6 @@ public abstract class NuxeoObject implements CmisObject {
             res.add(rendition);
         }
         return res;
-    }
-
-    @Override
-    public boolean isChanged() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
     @Override

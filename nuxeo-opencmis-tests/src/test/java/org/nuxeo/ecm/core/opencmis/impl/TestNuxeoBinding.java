@@ -125,10 +125,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        // nuxeotc.openSession();
         Map<String, String> info = Helper.makeNuxeoRepository(nuxeotc.getSession());
         file5id = info.get("file5id");
-        // nuxeotc.closeSession();
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init();
         repoService = binding.getRepositoryService();
         objService = binding.getObjectService();
         navService = binding.getNavigationService();
@@ -1414,6 +1417,46 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfolder2_Title", getQueryValue(data, "A.dc:title"));
         assertEquals(folder4id, getQueryValue(data, "B.cmis:objectId"));
         assertEquals("testfolder4_Title", getQueryValue(data, "B.dc:title"));
+    }
+
+    @Test
+    public void testQueryJoinWithSecurity() throws Exception {
+        nuxeotc.closeSession();
+        nuxeotc.session = nuxeotc.openSessionAs("bob");
+        init();
+
+        String statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
+            + " FROM cmis:folder A" //
+            + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
+            + " WHERE A.cmis:name = 'testfolder2_Title'" //
+            + " ORDER BY B.dc:title";
+        ObjectList res = query(statement);
+        assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryBad() throws Exception {
+        try {
+            query("SELECT foo bar baz");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "line 1:15 missing FROM at 'baz'"));
+        }
+        try {
+            query("SELECT foo FROM bar");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "bar is neither a type query name nor an alias"));
+        }
+        try {
+            query("SELECT foo FROM cmis:folder");
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains(
+                    "foo is not a property query name in any of the types"));
+        }
     }
 
     @Test
