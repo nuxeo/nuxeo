@@ -11,6 +11,9 @@
 
   <ui:include src="/select_route_elements_type.xhtml" />
    <nxu:set var="documents"  value="#{routeElementsSelectModel}" >
+    <ui:decorate template="/incl/actions_fragment.xhtml">
+      <ui:param name="category" value="ROUTE_LIST" />
+    </ui:decorate>
 
     <c:if test="#{documents.rowCount == 0}">
       <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
