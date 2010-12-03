@@ -27,7 +27,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ServiceLoader;
+
+import jline.ANSIBuffer;
 
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.cmds.Interactive;
@@ -120,6 +123,7 @@ public final class Shell {
         while (it.hasNext()) {
             addFeature(it.next());
         }
+        // TODO move this in loadConfig and use shell.feature from config
         // activate the default feature
         String ns = System.getProperty("shell");
         if (ns != null) {
@@ -155,6 +159,7 @@ public final class Shell {
             System.out.println(Version.getServerVersionMessage());
             return;
         }
+        loadConfig();
         String path = mainArgs.get("-f");
         if (path != null) {
             FileInputStream in = new FileInputStream(new File(path));
@@ -172,7 +177,6 @@ public final class Shell {
             List<String> lines = FileSystem.readAndMergeLines(System.in);
             runBatch(lines);
         } else {
-            hello();
             run(Interactive.class.getAnnotation(Command.class).name());
         }
     }
@@ -373,6 +377,10 @@ public final class Shell {
         ctx.put(key, value);
     }
 
+    public Map<String, Object> getProperties() {
+        return ctx;
+    }
+
     public void runBatch(List<String> lines) throws ShellException {
         for (String line : lines) {
             run(parse(line));
@@ -418,7 +426,7 @@ public final class Shell {
         } else {
             try {
                 String content = FileSystem.readContent(in);
-                System.out.println(content);
+                getConsole().println(content);
             } finally {
                 in.close();
             }
@@ -445,6 +453,29 @@ public final class Shell {
         }
         feature.install(this);
         features.put(feature.getClass(), feature);
+    }
+
+    public ANSIBuffer newANSIBuffer() {
+        boolean ansi = false;
+        if (getConsole() instanceof Interactive) {
+            ansi = ((Interactive) getConsole()).getConsole().getTerminal().isANSISupported();
+        }
+        ANSIBuffer buf = new ANSIBuffer();
+        buf.setAnsiEnabled(ansi);
+        return buf;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void loadConfig() throws IOException {
+        File file = new File(System.getProperty("user.home"),
+                ".nxshell/nxshell.properties");
+        file.getParentFile().mkdirs();
+        if (file.isFile()) {
+            Properties props = new Properties();
+            FileInputStream in = new FileInputStream(file);
+            props.load(in);
+            ctx.putAll((Map) props);
+        }
     }
 
 }

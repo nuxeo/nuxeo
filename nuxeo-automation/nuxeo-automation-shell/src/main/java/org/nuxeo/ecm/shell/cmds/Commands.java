@@ -45,7 +45,7 @@ public class Commands implements Runnable {
         if (console instanceof Interactive) {
             termWidth = ((Interactive) console).getConsole().getTermwidth();
         }
-        ANSIBuffer buf = new ANSIBuffer();
+        ANSIBuffer buf = shell.newANSIBuffer();
         Map<String, Set<CommandType>> cmds = shell.getActiveRegistry().getCommandTypesByNamespace();
         for (Map.Entry<String, Set<CommandType>> entry : cmds.entrySet()) {
             buf.bold(entry.getKey());

@@ -16,10 +16,15 @@
  */
 package org.nuxeo.ecm.shell.cmds;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 
 import jline.ANSIBuffer;
 import jline.ConsoleReader;
+import jline.Terminal;
 
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
@@ -35,6 +40,12 @@ import org.nuxeo.ecm.shell.cmds.completors.ShellCompletor;
 @Command(name = "interactive", help = "Interactive shell")
 public class Interactive implements Runnable, ShellConsole {
 
+    protected static ConsoleReaderFactory factory;
+
+    public static void setConsoleReaderFactory(ConsoleReaderFactory factory) {
+        Interactive.factory = factory;
+    }
+
     protected static String currentCmdLine;
 
     @Context
@@ -45,7 +56,22 @@ public class Interactive implements Runnable, ShellConsole {
     private static boolean isRunning = false;
 
     public Interactive() throws IOException {
-        console = new ConsoleReader();
+        console = factory != null ? factory.getConsoleReader()
+                : new ConsoleReader();
+    }
+
+    /**
+     * Used in GUI mode
+     * 
+     * @param shell
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    public Interactive(Shell shell, InputStream in, Writer out, Terminal term)
+            throws IOException {
+        this.shell = shell;
+        console = new ConsoleReader(in, out, null, term);
     }
 
     public static String getCurrentCmdLine() {
@@ -67,7 +93,10 @@ public class Interactive implements Runnable, ShellConsole {
         isRunning = true;
         console.addCompletor(new ShellCompletor(this));
         shell.setConsole(this);
+        console.setDefaultPrompt(getPrompt());
         try {
+            loadHistory();
+            shell.hello();
             try {
                 shell.getActiveRegistry().autorun(shell);
             } catch (Throwable t) {
@@ -85,6 +114,8 @@ public class Interactive implements Runnable, ShellConsole {
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
+        } finally {
+            closeHistory();
         }
     }
 
@@ -102,7 +133,7 @@ public class Interactive implements Runnable, ShellConsole {
                 // console.printString(sw.toString());
             }
         } else {
-            ANSIBuffer buf = new ANSIBuffer();
+            ANSIBuffer buf = shell.newANSIBuffer();
             buf.red(Trace.getStackTrace(t));
             console.printString(buf.toString());
         }
@@ -143,5 +174,29 @@ public class Interactive implements Runnable, ShellConsole {
         } catch (IOException e) {
             throw new ShellException(e).setErrorCode(1);
         }
+    }
+
+    public void loadHistory() throws IOException {
+        if (!Boolean.parseBoolean((String) shell.getProperty("shell.history",
+                "true"))) {
+            return;
+        }
+        File file = new File(System.getProperty("user.home"),
+                ".nxshell/history");
+        file.getParentFile().mkdirs();
+        console.getHistory().setHistoryFile(file);
+        console.getHistory().moveToEnd();
+    }
+
+    public void closeHistory() {
+        PrintWriter pw = console.getHistory().getOutput();
+        if (pw != null) {
+            pw.close();
+        }
+    }
+
+    public void removeHistory() {
+        closeHistory();
+        new File(System.getProperty("user.home"), ".nxshell/history").delete();
     }
 }

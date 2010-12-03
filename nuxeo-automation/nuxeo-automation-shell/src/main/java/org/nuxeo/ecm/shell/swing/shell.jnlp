@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>Nuxeo Shell</title>
+        <vendor>Nuxeo</vendor>
+    </information>
+    <security> 
+        <all-permissions/> 
+    </security>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.5+"
+              href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="file:///Users/bstefanescu/work/nuxeo/nuxeo-features/nuxeo-automation/nuxeo-automation-shell/target/nuxeo-automation-shell-1.0-SNAPSHOT-all.jar" main="true" />
+
+    </resources>
+    <applet-desc 
+         name="Nuxeo Shell"
+         main-class="org.nuxeo.ecm.shell.swing.ShellApplet"
+         width="800"
+         height="600">
+     </applet-desc>
+     <update check="background"/>
+</jnlp>

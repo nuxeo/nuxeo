@@ -14,16 +14,29 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell;
+package org.nuxeo.ecm.shell.swing;
+
+import jline.UnsupportedTerminal;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Main {
+public class SwingTerminal extends UnsupportedTerminal {
 
-    public static void main(String[] args) throws Exception {
-        Shell.get().main(args);
+    @Override
+    public boolean isSupported() {
+        return false;
+    }
+
+    @Override
+    public boolean getEcho() {
+        return true;
+    }
+
+    @Override
+    public boolean isANSISupported() {
+        return false;
     }
 
 }

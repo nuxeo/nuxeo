@@ -89,7 +89,7 @@ public class Help implements Runnable {
     }
 
     public void showMainPage(ShellConsole console) {
-        ANSIBuffer buf = new ANSIBuffer();
+        ANSIBuffer buf = shell.newANSIBuffer();
         InputStream in = getClass().getClassLoader().getResourceAsStream(
                 "META-INF/help.txt");
         if (in != null) {
@@ -170,7 +170,7 @@ public class Help implements Runnable {
     }
 
     protected ANSIBuffer getCommandHelp(CommandType cmd, boolean wiki) {
-        ANSIBuffer buf = new ANSIBuffer();
+        ANSIBuffer buf = shell.newANSIBuffer();
         header(buf, "NAME", wiki).append(ShellConsole.CRLF).append("\t");
         buf.append(cmd.getName()).append(" -- ").append(cmd.getHelp());
         buf.append(ShellConsole.CRLF).append(ShellConsole.CRLF);

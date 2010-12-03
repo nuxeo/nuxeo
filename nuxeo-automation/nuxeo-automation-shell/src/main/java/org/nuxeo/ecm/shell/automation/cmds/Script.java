@@ -27,6 +27,7 @@ import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
+import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
 import org.nuxeo.ecm.shell.automation.RemoteContext;
@@ -64,7 +65,7 @@ public class Script implements Runnable {
             }
         }
         try {
-            ANSIBuffer buf = new ANSIBuffer();
+            ANSIBuffer buf = Shell.get().newANSIBuffer();
             ANSICodes.appendTemplate(buf, Scripting.runScript(ctx, blob, args),
                     false);
             console.println(buf.toString());

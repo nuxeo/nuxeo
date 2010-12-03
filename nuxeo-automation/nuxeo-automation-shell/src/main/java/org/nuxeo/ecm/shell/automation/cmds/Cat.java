@@ -28,6 +28,7 @@ import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
+import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.automation.DocRefCompletor;
 import org.nuxeo.ecm.shell.automation.RemoteContext;
@@ -62,7 +63,7 @@ public class Cat implements Runnable {
     }
 
     public static void print(ShellConsole console, Document doc) {
-        ANSIBuffer buf = new ANSIBuffer();
+        ANSIBuffer buf = Shell.get().newANSIBuffer();
         buf.append(ShellConsole.CRLF);
         buf.bold(doc.getType()).append(" -- ").append(doc.getTitle());
         buf.append(ShellConsole.CRLF);

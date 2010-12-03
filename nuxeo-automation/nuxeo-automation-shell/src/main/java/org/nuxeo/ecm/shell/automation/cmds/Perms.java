@@ -25,6 +25,7 @@ import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Parameter;
+import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
 import org.nuxeo.ecm.shell.automation.DocRefCompletor;
@@ -104,7 +105,7 @@ public class Perms implements Runnable {
         }
         ctx.put("ref", doc.toString());
         String result = Scripting.run("scripts/printAcl.groovy", ctx);
-        ANSIBuffer buf = new ANSIBuffer();
+        ANSIBuffer buf = Shell.get().newANSIBuffer();
         ANSICodes.appendTemplate(buf, result, false);
         console.println(buf.toString());
     }

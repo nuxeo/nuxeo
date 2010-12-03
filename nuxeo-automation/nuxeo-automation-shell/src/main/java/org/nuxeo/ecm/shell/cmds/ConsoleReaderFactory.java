@@ -14,16 +14,16 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell;
+package org.nuxeo.ecm.shell.cmds;
+
+import jline.ConsoleReader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class Main {
+public interface ConsoleReaderFactory {
 
-    public static void main(String[] args) throws Exception {
-        Shell.get().main(args);
-    }
+    public ConsoleReader getConsoleReader();
 
 }
