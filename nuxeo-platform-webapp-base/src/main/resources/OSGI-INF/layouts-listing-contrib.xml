@@ -363,6 +363,27 @@
 
     </widgetType>
 
+    <widgetType name="listing_last_contributor">
+      <documentation>
+        This widget type displays the last contributor name
+        <br />
+        It requires the following fields configuration:
+        <ul>
+          <li>first field mapping the lastContributor field</li>
+          <li>second field mapping the contributors field, as fallback in case
+            that lastContributor is empty</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/lastContributor_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
     <widgetType name="listing_lifecycle">
       <documentation>
         This widget type displays a life cycle state name.
@@ -730,13 +751,14 @@
       </properties>
     </widget>
 
-    <widget name="listing_last_contributor" type="text">
+    <widget name="listing_last_contributor" type="listing_last_contributor">
       <labels>
         <label mode="any">label.dublincore.lastContributor</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data.dc.contributors[fn:length(layoutValue.data.dc.contributors)-1]</field>
+        <field>data.dc.lastContributor</field>
+        <field>data.dc.contributors</field>
       </fields>
     </widget>
   </extension>
