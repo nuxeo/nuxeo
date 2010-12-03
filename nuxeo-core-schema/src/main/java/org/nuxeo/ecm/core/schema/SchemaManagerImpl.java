@@ -344,10 +344,11 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    private DocumentType registerDocumentType(DocumentType superType, DocumentTypeDescriptor dtd) {
+    private DocumentType registerDocumentType(DocumentType superType,
+            DocumentTypeDescriptor dtd) {
         synchronized (docTypeReg) {
             try {
-                 Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
+                Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
                 // add schemas from facets
                 for (String facetName : dtd.facets) {
                     CompositeType facet = getFacet(facetName);
@@ -356,6 +357,11 @@ public class SchemaManagerImpl implements SchemaManager {
                     } else {
                         log.warn("Document type " + dtd.name
                                 + " uses undeclared facet: " + facetName);
+                        // register it with no schemas
+                        CompositeType ct = new CompositeTypeImpl(
+                                (TypeRef<CompositeType>) null,
+                                SchemaNames.FACETS, facetName, null);
+                        registerFacet(ct);
                     }
                 }
                 DocumentType docType = new DocumentTypeImpl(superType,
@@ -363,8 +369,8 @@ public class SchemaManagerImpl implements SchemaManager {
                         dtd.facets);
                 docType.setChildrenTypes(dtd.childrenTypes);
                 // use global prefetch info if not a local one was defined
-                docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(dtd.prefetch)
-                : prefetchInfo);
+                docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(
+                        dtd.prefetch) : prefetchInfo);
                 docTypeReg.put(dtd.name, docType);
                 facetsCache = null;
                 log.info("Registered document type: " + dtd.name);
@@ -446,7 +452,8 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public DocumentType[] getDocumentTypes() {
         synchronized (docTypeReg) {
-            return docTypeReg.values().toArray(new DocumentType[docTypeReg.size()]);
+            return docTypeReg.values().toArray(
+                    new DocumentType[docTypeReg.size()]);
         }
     }
 
@@ -554,7 +561,7 @@ public class SchemaManagerImpl implements SchemaManager {
         synchronized (this) {
             facetsCache = new HashMap<String, Set<String>>();
             for (DocumentType dt : getDocumentTypes()) {
-                for (String facet: dt.getFacets()) {
+                for (String facet : dt.getFacets()) {
                     Set<String> dts = facetsCache.get(facet);
                     if (dts == null) {
                         dts = new HashSet<String>();
@@ -593,7 +600,7 @@ public class SchemaManagerImpl implements SchemaManager {
             }
             res = new HashSet<String>();
             res.add(docTypeName);
-            for (DocumentType dt: getDocumentTypes()) {
+            for (DocumentType dt : getDocumentTypes()) {
                 Type parent = dt.getSuperType();
                 if (parent == null) {
                     continue; // Must be the root document
@@ -614,8 +621,8 @@ public class SchemaManagerImpl implements SchemaManager {
             try {
                 return FileUtils.readFile(file);
             } catch (IOException e) {
-                log.error(String.format(
-                        "Could not read xsd file for '%s'", name),
+                log.error(
+                        String.format("Could not read xsd file for '%s'", name),
                         e);
                 return null;
             }
