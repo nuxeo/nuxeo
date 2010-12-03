@@ -45,9 +45,9 @@ public class TestRepositoryHandler {
     public CoreSession openSessionAs(String userName) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
-        CoreSession coreSession = new LocalSession();
-        coreSession.connect(repositoryName, ctx);
-        return coreSession;
+        CoreSession session = LocalSession.createInstance();
+        session.connect(repositoryName, ctx);
+        return session;
     }
 
     public CoreSession changeUser(CoreSession session, String newUser)

@@ -16,17 +16,17 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfigs;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 
-@RunWith(MultiNuxeoCoreRunner.class)
-@SuiteClasses( { SimpleSession.class })
-@RepositoryConfigs( {
-    @RepositoryConfig(type=BackendType.H2),
-    @RepositoryConfig(type=BackendType.POSTGRES)
-})
-public class NuxeoSuiteTest {
+/**
+ * Default repository initializer that create the default DM doc hierarchy.
+ */
+public class NoopRepositoryInit implements RepositoryInit {
+
+    @Override
+    public void populate(CoreSession session) throws ClientException {
+    }
+
 }

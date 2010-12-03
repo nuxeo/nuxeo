@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -39,21 +40,26 @@ public class DatabaseH2 extends DatabaseHelper {
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 
     /** This directory will be deleted and recreated. */
-    private static final String DIRECTORY = "target/test/h2";
+    protected static final String DIRECTORY = "target/test/h2";
 
-    private static final String DEF_USER = "sa";
+    protected static final String DEF_USER = "sa";
 
-    private static final String DEF_PASSWORD = "";
+    protected static final String DEF_PASSWORD = "";
 
-    private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
+    protected static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-h2-contrib.xml";
 
-    private static String h2Path;
+    protected String h2Path;
 
-    private static String origUrl;
+    protected String origUrl;
 
-    private static void setProperties() {
-        String url = String.format("jdbc:h2:%s", h2Path);
+    protected String url;
+
+    protected void setProperties() {
+        url = String.format("jdbc:h2:%s/%s", h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
+
+        Framework.getRuntime().getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
+        setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
     }
@@ -64,13 +70,16 @@ public class DatabaseH2 extends DatabaseHelper {
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
         dir.mkdirs();
-        h2Path = new File(dir, "nuxeo").getAbsolutePath();
+        h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
+    }
+
+    protected String getId() {
+        return "nuxeo";
     }
 
     @Override
     public void tearDown() throws SQLException {
-        String url = System.getProperty(URL_PROPERTY);
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);
         } else {
@@ -93,11 +102,16 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
+    public String getPooledDeploymentContrib() {
+        return "test-pooling-h2-contrib.xml";
+    }
+
+    @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", System.getProperty(URL_PROPERTY));
+        properties.put("URL", url);
         properties.put("User", System.getProperty(USER_PROPERTY));
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
@@ -108,5 +122,6 @@ public class DatabaseH2 extends DatabaseHelper {
     public boolean supportsClustering() {
         return true;
     }
+
 
 }

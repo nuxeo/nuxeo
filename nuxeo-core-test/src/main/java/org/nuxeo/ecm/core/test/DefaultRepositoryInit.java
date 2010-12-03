@@ -53,6 +53,12 @@ public class DefaultRepositoryInit implements RepositoryInit {
                 "Root of workspaces templates");
         doc = session.createDocument(doc);
         session.saveDocument(doc);
+
+        doc = session.createDocumentModel("/default-domain/workspaces", "test",
+                "Workspace");
+        doc.setProperty("dublincore", "title", "workspace");
+        doc = session.createDocument(doc);
+        session.saveDocument(doc);
     }
 
 }

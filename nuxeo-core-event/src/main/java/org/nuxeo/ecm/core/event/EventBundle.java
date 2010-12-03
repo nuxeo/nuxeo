@@ -36,7 +36,7 @@ public interface EventBundle extends Iterable<Event>, Serializable {
     /**
      * Gets the bundle name.
      * <p>
-     * This is usually the first event name in the bundle but the implementation
+     * This is usually the first event repository name in the bundle but the implementation
      * may decide to change this behavior.
      *
      * @return the bundle name. Can be null only if the bundle is empty.

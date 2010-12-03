@@ -20,7 +20,9 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.rmi.dgc.VMID;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,12 +51,33 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     private static final Log log = LogFactory.getLog(EventServiceImpl.class);
 
-    protected static final ThreadLocal<EventBundleImpl> bundle = new ThreadLocal<EventBundleImpl>() {
+    protected static final ThreadLocal<CompositeEventBundle> compositeBundle = new ThreadLocal<CompositeEventBundle>() {
         @Override
-        protected EventBundleImpl initialValue() {
-            return new EventBundleImpl();
+        protected CompositeEventBundle initialValue() {
+            return new CompositeEventBundle();
         }
     };
+
+    private static class CompositeEventBundle {
+
+        static final long serialVersionUID = 1L;
+
+        int transactedSessionCount;
+
+        final Map<String, EventBundle> byRepository = new HashMap<String, EventBundle>();
+
+        void push(Event event) {
+            String repositoryName = event.getContext().getRepositoryName();
+            if (!byRepository.containsKey(repositoryName)) {
+                byRepository.put(repositoryName, new EventBundleImpl());
+            }
+            byRepository.get(repositoryName).push(event);
+        }
+
+        boolean isTransacted() {
+            return transactedSessionCount > 0;
+        }
+    }
 
     protected final ListenerList txListeners;
 
@@ -153,11 +176,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
                 fireEventBundle(b);
             }
             else {
-                EventBundleImpl b = bundle.get();
+                CompositeEventBundle b =  compositeBundle.get();
                 b.push(shallowEvent);
                 // check for commit events to flush the event bundle
                 if (!b.isTransacted() && event.isCommitEvent()) {
-                    transactionCommitted();
+                    handleTxCommited();
                 }
             }
         }
@@ -267,29 +290,22 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
 
     @Override
     public void transactionStarted() {
-        bundle.get().setTransacted(true);
-        fireTxStarted();
+        handleTxStarted();
     }
 
     @Override
     public void transactionCommitted() throws ClientException {
-        EventBundleImpl b = bundle.get();
-        bundle.remove();
-        if (b != null && !b.isEmpty()) {
-            fireEventBundle(b);
-        }
-        fireTxCommited();
+        handleTxCommited();
     }
 
     @Override
     public void transactionRolledback() {
-        bundle.remove();
-        fireTxRollbacked();
+        handleTxRollbacked();
     }
 
     @Override
     public boolean isTransactionStarted() {
-        return bundle.get().isTransacted();
+        return compositeBundle.get().isTransacted();
     }
 
     public EventListenerList getEventListenerList() {
@@ -390,21 +406,36 @@ public class EventServiceImpl implements EventService, EventServiceAdmin{
         txListeners.remove(listener);
     }
 
-    protected void fireTxStarted() {
+    protected void handleTxStarted() {
         for (Object listener : txListeners.getListeners()) {
             ((EventTransactionListener)listener).transactionStarted();
         }
     }
 
-    protected void fireTxRollbacked() {
+    protected void handleTxRollbacked() {
+        compositeBundle.remove();
         for (Object listener : txListeners.getListeners()) {
             ((EventTransactionListener)listener).transactionRollbacked();
         }
     }
 
-    protected void fireTxCommited() {
-        for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener)listener).transactionCommitted();
+    protected void handleTxCommited()  {
+        CompositeEventBundle b = compositeBundle.get();
+        try {
+            // notify post commit event listeners
+            for (EventBundle bundle : b.byRepository.values()) {
+                try {
+                    fireEventBundle(bundle);
+                } catch (ClientException e) {
+                    log.error("Error while processing " + bundle, e);
+                }
+            }
+            // notify post commit tx listeners
+            for (Object listener : txListeners.getListeners()) {
+                ((EventTransactionListener) listener).transactionCommitted();
+            }
+        } finally {
+            compositeBundle.remove();
         }
     }
 
