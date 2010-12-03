@@ -53,7 +53,9 @@
 				<nxl:layoutColumn>
 					<c:choose>
 						<c:when test="#{layoutColumnIndex == 0}">
-							<th colspan="#{value.data.getRouteMaxDepth()}"></th>
+              <c:if test="#{value.data.getRouteMaxDepth() > 0}"> 
+							  <th colspan="#{value.data.getRouteMaxDepth()}"></th>
+              </c:if>
 						</c:when>
 						<c:otherwise>
 							<th><c:choose>
