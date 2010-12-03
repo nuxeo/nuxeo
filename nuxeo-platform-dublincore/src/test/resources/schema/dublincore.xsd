@@ -30,6 +30,7 @@
   <xs:element name="language" type="xs:string"/>
   <xs:element name="creator" type="xs:string"/>
   <xs:element name="contributors" type="nxs:contributorList"/>
+  <xs:element name="lastContributor" type="xs:string"/>
 
 </xs:schema>
 

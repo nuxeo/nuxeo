@@ -112,6 +112,12 @@ public class DublinCoreStorageService extends DefaultComponent {
                 throw new ClientRuntimeException(e);
             }
         }
+
+        try {
+            doc.setProperty("dublincore", "lastContributor", principalName);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {

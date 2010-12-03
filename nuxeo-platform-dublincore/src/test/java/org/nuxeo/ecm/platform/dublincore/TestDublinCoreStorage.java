@@ -169,6 +169,83 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         closeSession();
     }
 
+    public void testLastContributor() throws ClientException {
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file-008", "File");
+        DocumentModel childFile2 = session.createDocument(childFile);
+        DataModel dm = childFile2.getDataModel("dublincore");
+
+        String lastContributor = (String) dm.getData("lastContributor");
+        assertEquals("Administrator", lastContributor);
+
+        String[] contributorsArray = (String[]) dm.getData("contributors");
+        List<String> contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Administrator"));
+
+        // modify security to test with tow new user
+        ACP acp = root.getACP();
+        ACL[] acls = acp.getACLs();
+        ACL theAcl = acls[0];
+        ACE ace = new ACE("Jacky", SecurityConstants.EVERYTHING, true);
+        theAcl.add(ace);
+        ace = new ACE("Fredo", SecurityConstants.EVERYTHING, true);
+        theAcl.add(ace);
+        root.setACP(acp, true);
+
+        // create a new session
+        session.save();
+        session.disconnect();
+        session = null;
+        session = openSessionAs("Jacky");
+
+        DocumentModel childFile3 = session.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session.saveDocument(childFile3);
+
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
+        "contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Jacky"));
+        assertEquals(1, contributorsList.indexOf("Jacky"));
+        assertEquals("Jacky", childFile3.getProperty("dublincore",
+        "lastContributor"));
+        session.save();
+        closeSession();
+
+        session = null;
+        // Test if a new contributor will be at the end of the list
+        session = openSessionAs("Fredo");
+
+        childFile3 = session.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session.saveDocument(childFile3);
+
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
+        "contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Fredo"));
+        assertEquals("Fredo", childFile3.getProperty("dublincore",
+        "lastContributor"));
+        session.save();
+        closeSession();
+
+        session = null;
+        // Test if a previously contributor will be move to the end of the list
+        session = openSessionAs("Administrator");
+
+        childFile3 = session.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session.saveDocument(childFile3);
+
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
+        "contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Administrator"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore",
+        "lastContributor"));
+        closeSession();
+    }
+
     public void testIssuedDate() throws ClientException {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
         "Folder");
