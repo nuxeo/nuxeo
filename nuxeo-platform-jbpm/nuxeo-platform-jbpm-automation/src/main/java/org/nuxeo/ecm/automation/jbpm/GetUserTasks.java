@@ -41,10 +41,11 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.jbpm.JbpmListFilter;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.JbpmService.TaskVariableName;
-import org.nuxeo.ecm.platform.jbpm.dashboard.DashBoardItem;
 
-@Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES, label = "Get tasks", since = "5.4", description = "List tasks. "
-        + "...")
+@Operation(id = GetUserTasks.ID, category = Constants.CAT_SERVICES,
+        label = "Get user tasks", since = "5.4",
+        description = "List tasks assigned to this user or one of its group." +
+         "Task properties are serialized using JSON and returned in a Blob.")
 public class GetUserTasks {
 
     public static final String ID = "Workflow.GetTask";
