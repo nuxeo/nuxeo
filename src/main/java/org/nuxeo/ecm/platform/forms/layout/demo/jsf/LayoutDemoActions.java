@@ -89,7 +89,8 @@ public class LayoutDemoActions implements Serializable {
                 try {
                     SchemaManager schemaManager = Framework.getService(SchemaManager.class);
                     DocumentType type = schemaManager.getDocumentType(DEMO_DOCUMENT_TYPE);
-                    bareDemoDocument = DocumentModelFactory.createDocumentModel(type);
+                    bareDemoDocument = DocumentModelFactory.createDocumentModel(
+                            null, type);
                 } catch (Exception e) {
                     throw new ClientException(e);
                 }
