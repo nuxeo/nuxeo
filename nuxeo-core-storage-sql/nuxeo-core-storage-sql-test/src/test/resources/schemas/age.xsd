@@ -6,6 +6,6 @@
   >
 
   <!-- Schema used as a facet -->
-  <xs:element name="age" type="xs:integer"/>
+  <xs:element name="age" type="xs:string"/>
 
 </xs:schema>

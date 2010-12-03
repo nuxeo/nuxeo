@@ -18,9 +18,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -135,6 +140,117 @@ public class Node {
         return getPrimaryType().equals(model.PROXY_TYPE);
     }
 
+    public static final String MIXINS_SEP = ",";
+
+    public static final String[] NO_MIXINS = {};
+
+    public String[] getMixinTypes() {
+        try {
+            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            return getMixins(mixins);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String[] getMixins(String mixins) {
+        if (mixins == null) {
+            return NO_MIXINS;
+        } else {
+            return mixins.split(MIXINS_SEP);
+        }
+    }
+
+    public boolean hasMixinType(String mixin) {
+        try {
+            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            if (mixins == null) {
+                return false;
+            } else {
+                for (String m : mixins.split(MIXINS_SEP)) {
+                    if (m.equals(mixin)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addMixinType(String mixin) throws StorageException {
+        if (model.getMixinPropertyInfos(mixin) == null) {
+            throw new StorageException("No such mixin: " + mixin);
+        }
+        try {
+            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            if (mixins == null) {
+                mixins = mixin;
+            } else {
+                for (String m : mixins.split(MIXINS_SEP)) {
+                    if (m.equals(mixin)) {
+                        return;
+                    }
+                }
+                if (mixins.length() != 0) {
+                    mixins += MIXINS_SEP;
+                }
+                mixins += mixin;
+            }
+            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeMixinType(String mixin) throws StorageException {
+        boolean removed = false;
+        String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+        if (mixins == null) {
+            return;
+        }
+        String[] ar = mixins.split(MIXINS_SEP);
+        List<String> list = new ArrayList<String>(ar.length);
+        for (String m : ar) {
+            if (m.equals(mixin)) {
+                removed = true;
+            } else {
+                list.add(m);
+            }
+        }
+        if (!removed) {
+            return;
+        }
+        if (list.size() == 0) {
+            mixins = null;
+        } else {
+            mixins = StringUtils.join(list, MIXINS_SEP);
+        }
+        hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        clearMixinValues(mixin);
+    }
+
+    protected void clearMixinValues(String mixin) throws StorageException {
+        for (Entry<String, ModelProperty> en : model.getMixinPropertyInfos(
+                mixin).entrySet()) {
+            String name = en.getKey();
+            if (getPropertyInfo(name) != null) {
+                // don't clear if still exists in primary type or other
+                // mixins
+                continue;
+            }
+            ModelProperty propertyInfo = en.getValue();
+            if (propertyInfo.propertyType.isArray()) {
+                makeCollectionProperty(name, propertyInfo).setValue(null);
+            } else {
+                makeSimpleProperty(name, propertyInfo).setValue(null);
+            }
+        }
+        propertyCache.clear(); // some properties have now become invalid
+        // TODO optim: delete rows if all null
+    }
+
     // ----- properties -----
 
     /**
@@ -148,25 +264,29 @@ public class Node {
             throws StorageException {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
-            ModelProperty propertyInfo = model.getPropertyInfo(
-                    getPrimaryType(), name);
+            ModelProperty propertyInfo = getPropertyInfo(name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
-            String fragmentName = propertyInfo.fragmentName;
-            Fragment fragment = fragments.get(fragmentName);
-            if (fragment == null) {
-                // lazy fragment, fetch from session
-                RowId rowId = new RowId(fragmentName, getId());
-                fragment = context.get(rowId, true);
-                fragments.put(fragmentName, fragment);
-            }
-            property = new SimpleProperty(name, propertyInfo.propertyType,
-                    propertyInfo.readonly, (SimpleFragment) fragment,
-                    propertyInfo.fragmentKey);
+            property = makeSimpleProperty(name, propertyInfo);
             propertyCache.put(name, property);
         }
         return property;
+    }
+
+    protected SimpleProperty makeSimpleProperty(String name,
+            ModelProperty propertyInfo) throws StorageException {
+        String fragmentName = propertyInfo.fragmentName;
+        Fragment fragment = fragments.get(fragmentName);
+        if (fragment == null) {
+            // lazy fragment, fetch from session
+            RowId rowId = new RowId(fragmentName, getId());
+            fragment = context.get(rowId, true);
+            fragments.put(fragmentName, fragment);
+        }
+        return new SimpleProperty(name, propertyInfo.propertyType,
+                propertyInfo.readonly, (SimpleFragment) fragment,
+                propertyInfo.fragmentKey);
     }
 
     /**
@@ -180,18 +300,23 @@ public class Node {
             throws StorageException {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
-            ModelProperty propertyInfo = model.getPropertyInfo(
-                    getPrimaryType(), name);
+            ModelProperty propertyInfo = getPropertyInfo(name);
             if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
-            String fragmentName = propertyInfo.fragmentName;
-            RowId rowId = new RowId(fragmentName, getId());
-            Fragment fragment = context.get(rowId, true);
-            property = new CollectionProperty(name, propertyInfo.propertyType,
-                    false, (CollectionFragment) fragment);
+            property = makeCollectionProperty(name, propertyInfo);
             propertyCache.put(name, property);
         }
+        return property;
+    }
+
+    protected CollectionProperty makeCollectionProperty(String name,
+            ModelProperty propertyInfo) throws StorageException {
+        String fragmentName = propertyInfo.fragmentName;
+        RowId rowId = new RowId(fragmentName, getId());
+        Fragment fragment = context.get(rowId, true);
+        CollectionProperty property = new CollectionProperty(name,
+                propertyInfo.propertyType, false, (CollectionFragment) fragment);
         return property;
     }
 
@@ -200,8 +325,7 @@ public class Node {
         if (property != null) {
             return property;
         }
-        ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
-                name);
+        ModelProperty propertyInfo = getPropertyInfo(name);
         if (propertyInfo == null) {
             throw new IllegalArgumentException("Unknown field: " + name);
         }
@@ -212,7 +336,24 @@ public class Node {
         }
     }
 
-    public void setSingleProperty(String name, Serializable value)
+    protected ModelProperty getPropertyInfo(String name) {
+        // check primary type
+        ModelProperty propertyInfo = model.getPropertyInfo(getPrimaryType(),
+                name);
+        if (propertyInfo != null) {
+            return propertyInfo;
+        }
+        // check mixins
+        for (String mixin : getMixinTypes()) {
+            propertyInfo = model.getMixinPropertyInfo(mixin, name);
+            if (propertyInfo != null) {
+                return propertyInfo;
+            }
+        }
+        return null;
+    }
+
+    public void setSimpleProperty(String name, Serializable value)
             throws StorageException {
         SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);

@@ -434,11 +434,11 @@ public class CachingRowMapper implements RowMapper {
      */
 
     @Override
-    public CopyHierarchyResult copyHierarchy(Serializable sourceId,
-            String typeName, Serializable destParentId, String destName,
-            Row overwriteRow) throws StorageException {
-        CopyHierarchyResult result = rowMapper.copyHierarchy(sourceId,
-                typeName, destParentId, destName, overwriteRow);
+    public CopyHierarchyResult copyHierarchy(IdWithTypes source,
+            Serializable destParentId, String destName, Row overwriteRow)
+            throws StorageException {
+        CopyHierarchyResult result = rowMapper.copyHierarchy(source,
+                destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {

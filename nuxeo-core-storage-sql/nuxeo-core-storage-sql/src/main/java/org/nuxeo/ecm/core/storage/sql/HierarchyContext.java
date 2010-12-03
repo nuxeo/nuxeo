@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyHierarchyResult;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment.PositionComparator;
 
 /**
@@ -438,9 +439,9 @@ public class HierarchyContext {
         }
         checkFreeName(parentId, name, complexProp(hierFragment));
         // do the copy
-        String typeName = source.getPrimaryType();
-        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, parentId,
-                name, null);
+
+        CopyHierarchyResult res = mapper.copyHierarchy(new IdWithTypes(source),
+                parentId, name, null);
         Serializable newId = res.copyId;
         context.markInvalidated(res.invalidations);
         // adds it as a new child of its parent:
@@ -562,9 +563,8 @@ public class HierarchyContext {
          * Do the copy without non-complex children, with null parent.
          */
         Serializable id = node.getId();
-        String typeName = node.getPrimaryType();
-        CopyHierarchyResult res = mapper.copyHierarchy(id, typeName, null,
-                null, null);
+        CopyHierarchyResult res = mapper.copyHierarchy(new IdWithTypes(node),
+                null, null, null);
         Serializable newId = res.copyId;
         context.markInvalidated(res.invalidations);
         // add version as a new child of its parent
@@ -642,7 +642,6 @@ public class HierarchyContext {
      * @param version the version to restore on this node
      */
     public void restoreVersion(Node node, Node version) throws StorageException {
-        String typeName = node.getPrimaryType();
         Serializable versionableId = node.getId();
         Serializable versionId = version.getId();
 
@@ -674,8 +673,9 @@ public class HierarchyContext {
         overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(model.MAIN_IS_VERSION_KEY, null);
-        CopyHierarchyResult res = mapper.copyHierarchy(versionId, typeName,
-                node.getParentId(), null, overwriteRow);
+        CopyHierarchyResult res = mapper.copyHierarchy(
+                new IdWithTypes(version), node.getParentId(), null,
+                overwriteRow);
         context.markInvalidated(res.invalidations);
     }
 

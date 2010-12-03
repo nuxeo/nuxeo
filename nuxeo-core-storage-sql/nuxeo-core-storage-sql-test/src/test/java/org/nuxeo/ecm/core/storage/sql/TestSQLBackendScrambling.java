@@ -67,7 +67,7 @@ public class TestSQLBackendScrambling extends SQLBackendTestCase {
         assertEquals("abc", streamSource.getString());
         assertTrue(streamSource.canReopen());
 
-        nodea.setSingleProperty("tst:bin", bin);
+        nodea.setSimpleProperty("tst:bin", bin);
         session.save();
         session.close();
 

@@ -319,13 +319,16 @@ public class SessionImpl implements Session, XAResource {
                 // cannot happen
                 continue;
             }
+            String documentType = document.getPrimaryType();
+            String[] mixinTypes = document.getMixinTypes();
 
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
                     // index all string fields, minus excluded ones
                     // TODO XXX excluded ones...
-                    paths = model.getTypeSimpleTextPropertyPaths(document.getPrimaryType());
+                    paths = model.getSimpleTextPropertyPaths(documentType,
+                            mixinTypes);
                 } else {
                     // index configured fields
                     paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
@@ -335,7 +338,7 @@ public class SessionImpl implements Session, XAResource {
                 // On INSERT/UPDATE a trigger will change the actual fulltext
                 String propName = model.FULLTEXT_SIMPLETEXT_PROP
                         + model.getFulltextIndexSuffix(indexName);
-                document.setSingleProperty(propName, strings);
+                document.setSimpleProperty(propName, strings);
             }
         }
 
@@ -361,10 +364,13 @@ public class SessionImpl implements Session, XAResource {
         }
 
         String documentType = document.getPrimaryType();
+        String[] mixinTypes = document.getMixinTypes();
+
         List<String> strings = new LinkedList<String>();
 
         for (String path : paths) {
-            ModelProperty pi = model.getPathPropertyInfo(documentType, path);
+            ModelProperty pi = model.getPathPropertyInfo(documentType,
+                    mixinTypes, path);
             if (pi == null) {
                 continue; // doc type doesn't have this property
             }
@@ -453,13 +459,15 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /**
-     * Collect modified document IDs into two separate set, one for the docs and the other for parents
+     * Collect modified document IDs into two separate set, one for the docs and
+     * the other for parents
      *
      * @param invalidations
      * @param docs
      * @param parents
      */
-    protected void collectModified(Invalidations invalidations, Set<String> docs, Set<String> parents) {
+    protected void collectModified(Invalidations invalidations,
+            Set<String> docs, Set<String> parents) {
         if (invalidations == null || invalidations.modified == null) {
             return;
         }
@@ -497,7 +505,8 @@ public class SessionImpl implements Session, XAResource {
      *            node (one of this repository's sessions), {@code false} if
      *            they come from a remote cluster node
      */
-    protected void sendInvalidationEvent(Invalidations invalidations, boolean local) {
+    protected void sendInvalidationEvent(Invalidations invalidations,
+            boolean local) {
         sendInvalidationEvent(new InvalidationsPair(invalidations, null));
     }
 
@@ -515,8 +524,10 @@ public class SessionImpl implements Session, XAResource {
         HashSet<String> modifiedParentIds = new HashSet<String>();
 
         // merge cache and events because of clustering (NXP-5808)
-        collectModified(pair.cacheInvalidations, modifiedDocIds, modifiedParentIds);
-        collectModified(pair.eventInvalidations, modifiedDocIds, modifiedParentIds);
+        collectModified(pair.cacheInvalidations, modifiedDocIds,
+                modifiedParentIds);
+        collectModified(pair.eventInvalidations, modifiedDocIds,
+                modifiedParentIds);
 
         // TODO check what we can do about invalidations.deleted
 
@@ -527,7 +538,8 @@ public class SessionImpl implements Session, XAResource {
         EventContext ctx = new EventContextImpl(null, null);
         ctx.setRepositoryName(repository.getName());
         ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);
-        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS, modifiedParentIds);
+        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS,
+                modifiedParentIds);
         Event event = new EventImpl(EventConstants.EVENT_VCS_INVALIDATIONS, ctx);
         try {
             repository.eventService.fireEvent(event);
@@ -752,8 +764,8 @@ public class SessionImpl implements Session, XAResource {
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
-        proxy.setSingleProperty(model.PROXY_TARGET_PROP, targetId);
-        proxy.setSingleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
+        proxy.setSimpleProperty(model.PROXY_TARGET_PROP, targetId);
+        proxy.setSimpleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
         return proxy;
     }
 

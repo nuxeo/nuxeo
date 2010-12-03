@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
@@ -803,14 +804,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public CopyHierarchyResult copyHierarchy(Serializable sourceId,
-            String typeName, Serializable destParentId, String destName,
-            Row overwriteRow) throws StorageException {
+    public CopyHierarchyResult copyHierarchy(IdWithTypes source,
+            Serializable destParentId, String destName, Row overwriteRow)
+            throws StorageException {
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
-            Map<Serializable, String> idToType = new HashMap<Serializable, String>();
+            Map<Serializable, IdWithTypes> idToTypes = new HashMap<Serializable, IdWithTypes>();
             // copy the hierarchy fragments recursively
             Serializable overwriteId = overwriteRow == null ? null
                     : overwriteRow.id;
@@ -818,13 +819,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 // overwrite hier root with explicit values
                 String tableName = model.HIER_TABLE_NAME;
                 updateSimpleRowWithValues(tableName, overwriteRow);
-                idMap.put(sourceId, overwriteId);
+                idMap.put(source.id, overwriteId);
                 // invalidate
                 invalidations.addModified(new RowId(tableName, overwriteId));
             }
             // create the new hierarchy by copy
-            Serializable newRootId = copyHierRecursive(sourceId, typeName,
-                    destParentId, destName, overwriteId, idMap, idToType);
+            Serializable newRootId = copyHierRecursive(source, destParentId,
+                    destName, overwriteId, idMap, idToTypes);
             // invalidate children
             Serializable invalParentId = overwriteId == null ? destParentId
                     : overwriteId;
@@ -834,7 +835,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             // copy all collected fragments
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
-                    idToType).entrySet()) {
+                    idToTypes).entrySet()) {
                 String tableName = entry.getKey();
                 // TODO move ACL skip logic higher
                 if (tableName.equals(model.ACL_TABLE_NAME)) {
@@ -860,14 +861,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     }
                 }
             }
-            CopyHierarchyResult res = new CopyHierarchyResult();
-            res.copyId = newRootId;
-            res.invalidations = invalidations;
-            return res;
+            return new CopyHierarchyResult(newRootId, invalidations);
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException(
-                    "Could not copy: " + sourceId.toString(), e);
+            throw new StorageException("Could not copy: "
+                    + source.id.toString(), e);
         }
     }
 
@@ -924,25 +922,22 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      *            existing node (skipped)
      * @return the new root id
      */
-    protected Serializable copyHierRecursive(Serializable id, String type,
+    protected Serializable copyHierRecursive(IdWithTypes source,
             Serializable parentId, String name, Serializable overwriteId,
             Map<Serializable, Serializable> idMap,
-            Map<Serializable, String> idToType) throws SQLException {
-        idToType.put(id, type);
+            Map<Serializable, IdWithTypes> idToTypes) throws SQLException {
+        idToTypes.put(source.id, source);
         Serializable newId;
         if (overwriteId == null) {
-            newId = copyHier(id, type, parentId, name, idMap);
+            newId = copyHier(source.id, parentId, name, idMap);
         } else {
             newId = overwriteId;
-            idMap.put(id, newId);
+            idMap.put(source.id, newId);
         }
         // recurse in children
         boolean onlyComplex = parentId == null;
-        for (Serializable[] info : getChildrenIds(id, onlyComplex)) {
-            Serializable childId = info[0];
-            String childType = (String) info[1];
-            copyHierRecursive(childId, childType, newId, null, null, idMap,
-                    idToType);
+        for (IdWithTypes child : getChildrenIdsWithTypes(source.id, onlyComplex)) {
+            copyHierRecursive(child, newId, null, null, idMap, idToTypes);
         }
         return newId;
     }
@@ -958,9 +953,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      *
      * @return the new id
      */
-    protected Serializable copyHier(Serializable id, String type,
-            Serializable parentId, String name,
-            Map<Serializable, Serializable> idMap) throws SQLException {
+    protected Serializable copyHier(Serializable id, Serializable parentId,
+            String name, Map<Serializable, Serializable> idMap)
+            throws SQLException {
         boolean createVersion = parentId == null;
         boolean explicitName = name != null;
         Serializable newId = null;
@@ -1024,9 +1019,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Gets the children ids and types of a node.
      */
-    protected List<Serializable[]> getChildrenIds(Serializable id,
+    protected List<IdWithTypes> getChildrenIdsWithTypes(Serializable id,
             boolean onlyComplex) throws SQLException {
-        List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
+        List<IdWithTypes> children = new LinkedList<IdWithTypes>();
         String sql = sqlInfo.getSelectChildrenIdsAndTypesSql(onlyComplex);
         if (logger.isLogEnabled()) {
             logger.logSQL(sql, Collections.singletonList(id));
@@ -1042,7 +1037,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Serializable childId = null;
-                Serializable childType = null;
+                String childPrimaryType = null;
+                String[] childMixinTypes = null;
                 int i = 1;
                 for (Column column : columns) {
                     String key = column.getKey();
@@ -1050,18 +1046,22 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     if (key.equals(model.MAIN_KEY)) {
                         childId = value;
                     } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
-                        childType = value;
+                        childPrimaryType = (String) value;
+                    } else if (key.equals(model.MAIN_MIXIN_TYPES_KEY)) {
+                        childMixinTypes = Node.getMixins((String) value);
                     }
                 }
-                childrenIds.add(new Serializable[] { childId, childType });
+                children.add(new IdWithTypes(childId, childPrimaryType,
+                        childMixinTypes));
                 if (debugValues != null) {
-                    debugValues.add(childId + "/" + childType);
+                    debugValues.add(childId + "/" + childPrimaryType + "/"
+                            + childMixinTypes);
                 }
             }
             if (debugValues != null) {
                 logger.log("  -> " + debugValues);
             }
-            return childrenIds;
+            return children;
         } finally {
             closeStatement(ps);
         }

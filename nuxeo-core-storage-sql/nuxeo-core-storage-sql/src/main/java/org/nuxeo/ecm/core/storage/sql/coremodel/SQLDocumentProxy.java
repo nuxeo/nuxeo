@@ -406,7 +406,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     public void setTargetDocument(Document target) throws DocumentException {
         ((SQLDocument) proxy).checkWritable();
         try {
-            ((SQLDocument) proxy).getNode().setSingleProperty(
+            ((SQLDocument) proxy).getNode().setSimpleProperty(
                     Model.PROXY_TARGET_PROP, target.getUUID());
         } catch (StorageException e) {
             throw new DocumentException(e);

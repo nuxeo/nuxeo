@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -47,9 +47,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
-/**
- * @author Florent Guillaume
- */
 public class TestSQLBackend extends SQLBackendTestCase {
 
     @Override
@@ -252,12 +249,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
-        nodea.setSingleProperty("tst:title", "hello world");
-        nodea.setSingleProperty("tst:rate", Double.valueOf(1.5));
-        nodea.setSingleProperty("tst:count", Long.valueOf(123456789));
+        nodea.setSimpleProperty("tst:title", "hello world");
+        nodea.setSimpleProperty("tst:rate", Double.valueOf(1.5));
+        nodea.setSimpleProperty("tst:count", Long.valueOf(123456789));
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
-        nodea.setSingleProperty("tst:created", cal);
+        nodea.setSimpleProperty("tst:created", cal);
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "1", "2" });
@@ -277,21 +274,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
 
         // now modify a property and re-save
-        nodea.setSingleProperty("tst:title", "another");
-        nodea.setSingleProperty("tst:rate", Double.valueOf(3.14));
-        nodea.setSingleProperty("tst:count", Long.valueOf(1234567891234L));
+        nodea.setSimpleProperty("tst:title", "another");
+        nodea.setSimpleProperty("tst:rate", Double.valueOf(3.14));
+        nodea.setSimpleProperty("tst:count", Long.valueOf(1234567891234L));
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "3" });
         session.save();
 
         // again
-        nodea.setSingleProperty("tst:created", null);
+        nodea.setSimpleProperty("tst:created", null);
         session.save();
 
         // check the logs to see that the following doesn't do anything because
         // the value is unchanged since the last save (UPDATE optimizations)
-        nodea.setSingleProperty("tst:title", "blah");
-        nodea.setSingleProperty("tst:title", "another");
+        nodea.setSimpleProperty("tst:title", "blah");
+        nodea.setSimpleProperty("tst:title", "another");
         session.save();
 
         // now read from another session
@@ -336,7 +333,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         String bigtext = buf.toString();
         assertEquals(5000, bigtext.length());
-        nodea.setSingleProperty("tst:bignote", bigtext);
+        nodea.setSimpleProperty("tst:bignote", bigtext);
         assertEquals(bigtext,
                 nodea.getSimpleProperty("tst:bignote").getString());
         session.save();
@@ -356,12 +353,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
-        nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setSimpleProperty("tst:title", "hello world");
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
 
         try {
-            nodea.setSingleProperty("tst2:title", "aha");
+            nodea.setSimpleProperty("tst2:title", "aha");
             fail("shouldn't allow setting property from foreign schema");
         } catch (Exception e) {
             // ok
@@ -381,7 +378,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
         assertEquals("abc", readAllBytes(bin.getStream()));
         assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
-        nodea.setSingleProperty("tst:bin", bin);
+        nodea.setSimpleProperty("tst:bin", bin);
         session.save();
         session.close();
 
@@ -728,7 +725,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         XAResource xaresource = ((SessionImpl) session).getXAResource();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
-        nodea.setSingleProperty("tst:title", "old");
+        nodea.setSimpleProperty("tst:title", "old");
         assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
         session.save();
 
@@ -738,7 +735,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Xid xid = new XidImpl("1");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
-        nodea.setSingleProperty("tst:title", "new");
+        nodea.setSimpleProperty("tst:title", "new");
         xaresource.end(xid, XAResource.TMSUCCESS);
         xaresource.prepare(xid);
         xaresource.rollback(xid);
@@ -751,7 +748,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         xid = new XidImpl("2");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
-        nodea.setSingleProperty("tst:title", "new");
+        nodea.setSimpleProperty("tst:title", "new");
         session.save();
         xaresource.end(xid, XAResource.TMSUCCESS);
         xaresource.prepare(xid);
@@ -1052,10 +1049,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node nodead = session.addChildNode(nodea, "node_a_duo", null, "duo",
                 true);
         Serializable prevNodeacId = nodeac.getId();
-        nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setSimpleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
-        nodea.setSingleProperty("ecm:lifeCycleState", "foostate"); // misc table
+        nodea.setSimpleProperty("ecm:lifeCycleState", "foostate"); // misc table
         assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
         Node folderb = session.addChildNode(root, "folder_b", null, "TestDoc",
                 false);
@@ -1124,7 +1121,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 false);
         Node nodeac = session.addChildNode(nodea, "node_a_complex", null,
                 "TestDoc", true);
-        nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setSimpleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         // nodea.setSingleProperty("ecm:majorVersion", Long.valueOf(1));
@@ -1174,10 +1171,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
         assertEquals(version.getId(),
                 nodea.getSimpleProperty("ecm:baseVersion").getString());
-        nodea.setSingleProperty("tst:title", "blorp");
+        nodea.setSimpleProperty("tst:title", "blorp");
         nodea.setCollectionProperty("tst:subjects", new String[] { "x", "y" });
         Node nodeac2 = session.getChildNode(nodea, "node_a_complex", true);
-        nodeac2.setSingleProperty("tst:title", "comp");
+        nodeac2.setSimpleProperty("tst:title", "comp");
         session.save();
 
         /*
@@ -1259,16 +1256,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
-        nodea.setSingleProperty("tst:title", "foo");
+        nodea.setSimpleProperty("tst:title", "foo");
         Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
-        nodeb.setSingleProperty("tst:title", "bar");
+        nodeb.setSimpleProperty("tst:title", "bar");
         Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
-        nodec.setSingleProperty("tst:title", "gee");
+        nodec.setSimpleProperty("tst:title", "gee");
         session.save();
         // delete foo after having modified some of the deleted children
-        nodea.setSingleProperty("tst:title", "foo2");
-        nodeb.setSingleProperty("tst:title", "bar2");
-        nodec.setSingleProperty("tst:title", "gee2");
+        nodea.setSimpleProperty("tst:title", "foo2");
+        nodeb.setSimpleProperty("tst:title", "bar2");
+        nodec.setSimpleProperty("tst:title", "gee2");
         session.removeNode(nodea);
         session.save();
     }
@@ -1293,17 +1290,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
 
         Node node1 = session.addChildNode(root, "n1", null, "TestDoc", false);
-        node1.setSingleProperty("tst:title", "one");
+        node1.setSimpleProperty("tst:title", "one");
         node1.setCollectionProperty("tst:subjects", new String[] { "a", "b" });
         node1.setCollectionProperty("tst:tags", new String[] { "foo" });
-        node1.setSingleProperty("tst:count", Long.valueOf(123));
-        node1.setSingleProperty("tst:rate", Double.valueOf(3.14));
+        node1.setSimpleProperty("tst:count", Long.valueOf(123));
+        node1.setSimpleProperty("tst:rate", Double.valueOf(3.14));
         CollectionProperty aclProp = node1.getCollectionProperty(Model.ACL_PROP);
         ACLRow acl = new ACLRow(1, "test", true, "Write", "steve", null);
         aclProp.setValue(new ACLRow[] { acl });
 
         Node node2 = session.addChildNode(root, "n2", null, "TestDoc2", false);
-        node2.setSingleProperty("tst2:title", "two");
+        node2.setSimpleProperty("tst2:title", "two");
         aclProp = node2.getCollectionProperty(Model.ACL_PROP);
         acl = new ACLRow(0, "test", true, "Read", null, "Members");
         aclProp.setValue(new ACLRow[] { acl });
@@ -1346,9 +1343,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSingleProperty("tst:title", "hello world");
+        node.setSimpleProperty("tst:title", "hello world");
         node = session.addChildNode(root, "bar", null, "TestDoc", false);
-        node.setSingleProperty("tst:title", "barbar");
+        node.setSimpleProperty("tst:title", "barbar");
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
@@ -1386,7 +1383,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSingleProperty("tst:title", "hello world");
+        node.setSimpleProperty("tst:title", "hello world");
         session.save();
         try {
             session.query(
@@ -1411,7 +1408,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSingleProperty("tst:title", "hello world");
+        node.setSimpleProperty("tst:title", "hello world");
         session.save();
         repository.close();
 
@@ -1433,7 +1430,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         root = session.getRootNode();
         node = session.getChildNode(root, "foo", false);
         assertNotNull(node);
-        node.setSingleProperty("tst:title", "one two three testing");
+        node.setSimpleProperty("tst:title", "one two three testing");
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
@@ -1459,12 +1456,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         Session session = repository.getConnection();
         Node rel1 = session.addChildNode(null, "rel", null, "Relation", false);
-        rel1.setSingleProperty("relation:source", "123");
-        rel1.setSingleProperty("relation:target", "456");
+        rel1.setSimpleProperty("relation:source", "123");
+        rel1.setSimpleProperty("relation:target", "456");
         Node rel2 = session.addChildNode(null, "rel", null, "Relation2", false);
-        rel2.setSingleProperty("relation:source", "123");
-        rel2.setSingleProperty("relation:target", "789");
-        rel2.setSingleProperty("tst:title", "yo");
+        rel2.setSimpleProperty("relation:source", "123");
+        rel2.setSimpleProperty("relation:target", "789");
+        rel2.setSimpleProperty("tst:title", "yo");
         session.save();
 
         res = session.query(
@@ -1620,14 +1617,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
-    public void testFacet() throws Exception {
+    public void testMixinIncludedInPrimaryType() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "DocWithAge", false);
 
-        node.setSingleProperty("age:age", Long.valueOf(123));
-        assertEquals(Long.valueOf(123),
-                node.getSimpleProperty("age:age").getValue());
+        node.setSimpleProperty("age:age", "123");
+        assertEquals("123", node.getSimpleProperty("age:age").getValue());
         session.save();
 
         // another session
@@ -1635,8 +1631,118 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session = repository.getConnection();
         root = session.getRootNode();
         node = session.getNodeById(node.getId());
-        assertEquals(Long.valueOf(123),
-                node.getSimpleProperty("age:age").getValue());
+        assertEquals("123", node.getSimpleProperty("age:age").getValue());
+    }
+
+    public void testMixinAPI() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+
+        assertFalse(node.hasMixinType("Aged"));
+        assertEquals(0, node.getMixinTypes().length);
+        node.addMixinType("Aged");
+        assertTrue(node.hasMixinType("Aged"));
+        assertEquals(1, node.getMixinTypes().length);
+        node.addMixinType("Orderable");
+        assertTrue(node.hasMixinType("Aged"));
+        assertTrue(node.hasMixinType("Orderable"));
+        assertEquals(2, node.getMixinTypes().length);
+        node.addMixinType("Aged");
+        assertEquals(2, node.getMixinTypes().length);
+        node.removeMixinType("Aged");
+        assertFalse(node.hasMixinType("Aged"));
+        assertTrue(node.hasMixinType("Orderable"));
+        assertEquals(1, node.getMixinTypes().length);
+        node.removeMixinType("nosuchone");
+        assertEquals(1, node.getMixinTypes().length);
+        node.removeMixinType("Orderable");
+        assertFalse(node.hasMixinType("Aged"));
+        assertFalse(node.hasMixinType("Orderable"));
+        assertEquals(0, node.getMixinTypes().length);
+    }
+
+    public void testMixinAddRemove() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.save();
+
+        // mixin not there
+        try {
+            node.getSimpleProperty("age:age");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        // add
+        node.addMixinType("Aged");
+        SimpleProperty p = node.getSimpleProperty("age:age");
+        assertNotNull(p);
+        p.setValue("123");
+        session.save();
+
+        // remove
+        node.removeMixinType("Aged");
+        session.save();
+
+        // mixin not there anymore
+        try {
+            node.getSimpleProperty("age:age");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+    }
+
+    // mixin on doc with same schema in primary type does no harm
+    public void testMixinAddRemove2() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "DocWithAge", false);
+
+        node.setSimpleProperty("age:age", "456");
+        session.save();
+
+        node.addMixinType("Aged");
+        SimpleProperty p = node.getSimpleProperty("age:age");
+        assertEquals("456", p.getValue());
+
+        node.removeMixinType("Aged");
+        p = node.getSimpleProperty("age:age");
+        assertEquals("456", p.getValue());
+        session.save();
+    }
+
+    public void testMixinCopy() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.addMixinType("Aged");
+        node.setSimpleProperty("age:age", "123");
+        session.save();
+
+        // copy the doc
+        Node copy = session.copy(node, root, "foo2");
+        SimpleProperty p = copy.getSimpleProperty("age:age");
+        assertEquals("123", p.getValue());
+    }
+
+    public void testMixinFulltext() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.addMixinType("Aged");
+        node.setSimpleProperty("age:age", "barbar");
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        PartialList<Serializable> res;
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"barbar\"",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
     }
 
 }

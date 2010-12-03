@@ -27,9 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -93,6 +95,10 @@ public class Model {
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
     public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
+
+    public static final String MAIN_MIXIN_TYPES_PROP = "ecm:mixinTypes";
+
+    public static final String MAIN_MIXIN_TYPES_KEY = "mixintypes";
 
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
 
@@ -251,6 +257,12 @@ public class Model {
 
     // private final AtomicLong temporaryIdCounter;
 
+    /** Per-doctype list of schemas. */
+    private final Map<String, Set<String>> documentTypesSchemas;
+
+    /** Per-mixin list of schemas. */
+    private final Map<String, Set<String>> mixinsSchemas;
+
     /** Shared high-level properties that don't come from the schema manager. */
     private final Map<String, Type> specialPropertyTypes;
 
@@ -260,17 +272,20 @@ public class Model {
     /** Per-schema/type info about properties. */
     private final HashMap<String, Map<String, ModelProperty>> schemaPropertyInfos;
 
+    /** Per-mixin info about properties. */
+    private final HashMap<String, Map<String, ModelProperty>> mixinPropertyInfos;
+
     /** Shared properties. */
     private final Map<String, ModelProperty> sharedPropertyInfos;
 
     /** Merged properties (all schemas together + shared). */
     private final Map<String, ModelProperty> mergedPropertyInfos;
 
-    /** Per-doctype map of path to property info. */
-    private final Map<String, Map<String, ModelProperty>> pathPropertyInfos;
+    /** Per-schema map of path to property info. */
+    private final Map<String, Map<String, ModelProperty>> schemaPathPropertyInfos;
 
-    /** Per-doctype set of path to simple fulltext properties. */
-    private final Map<String, Set<String>> typeSimpleTextPaths;
+    /** Per-schema set of path to simple fulltext properties. */
+    private final Map<String, Set<String>> schemaSimpleTextPaths;
 
     /** Map of path (from all doc types) to property info. */
     private final Map<String, ModelProperty> allPathPropertyInfos;
@@ -299,6 +314,9 @@ public class Model {
     /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
+    /** Maps mixin to simple+collection fragments. */
+    protected final Map<String, Set<String>> mixinFragments;
+
     /** Maps document type or schema to prefetched fragments. */
     protected final Map<String, Set<String>> typePrefetchedFragments;
 
@@ -323,12 +341,16 @@ public class Model {
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
         // temporaryIdCounter = new AtomicLong(0);
 
+        documentTypesSchemas = new HashMap<String, Set<String>>();
+        mixinsSchemas = new HashMap<String, Set<String>>();
+
         schemaPropertyKeyInfos = new HashMap<String, Map<String, ModelProperty>>();
         schemaPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        mixinPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         sharedPropertyInfos = new HashMap<String, ModelProperty>();
         mergedPropertyInfos = new HashMap<String, ModelProperty>();
-        pathPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
-        typeSimpleTextPaths = new HashMap<String, Set<String>>();
+        schemaPathPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        schemaSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
         fulltextInfo = new ModelFulltext();
         fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
@@ -338,6 +360,7 @@ public class Model {
 
         schemaFragment = new HashMap<String, String>();
         typeFragments = new HashMap<String, Set<String>>();
+        mixinFragments = new HashMap<String, Set<String>>();
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
         typePrefetchedFragments = new HashMap<String, Set<String>>();
@@ -493,20 +516,51 @@ public class Model {
     }
 
     /**
-     * Infers all possible paths for properties in this document type.
+     * Infers mixin property information from all its schemas.
+     */
+    private void inferMixinPropertyInfos(String mixin, String[] schemaNames) {
+        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(mixin);
+        if (propertyInfos == null) {
+            mixinPropertyInfos.put(mixin,
+                    propertyInfos = new HashMap<String, ModelProperty>());
+        }
+        for (String schemaName : schemaNames) {
+            Map<String, ModelProperty> infos = schemaPropertyInfos.get(schemaName);
+            if (infos == null) {
+                // schema with no properties (complex list)
+                continue;
+            }
+            for (Entry<String, ModelProperty> info : infos.entrySet()) {
+                propertyInfos.put(info.getKey(), info.getValue());
+            }
+        }
+    }
+
+    /**
+     * Infers all possible paths for properties in a document type.
      */
     private void inferTypePropertyPaths(DocumentType documentType) {
-        String typeName = documentType.getName();
-        Map<String, ModelProperty> propertyInfoByPath = new HashMap<String, ModelProperty>();
         for (Schema schema : documentType.getSchemas()) {
             if (schema == null) {
                 // happens when a type refers to a nonexistent schema
                 // TODO log and avoid nulls earlier
                 continue;
             }
-            inferTypePropertyPaths(schema, "", propertyInfoByPath, null);
+            inferSchemaPropertyPaths(schema);
         }
-        pathPropertyInfos.put(typeName, propertyInfoByPath);
+    }
+
+    /**
+     * Infers all possible paths for properties in a schema.
+     */
+    private void inferSchemaPropertyPaths(Schema schema) {
+        String schemaName = schema.getName();
+        if (schemaPathPropertyInfos.containsKey(schemaName)) {
+            return;
+        }
+        Map<String, ModelProperty> propertyInfoByPath = new HashMap<String, ModelProperty>();
+        inferTypePropertyPaths(schema, "", propertyInfoByPath, null);
+        schemaPathPropertyInfos.put(schemaName, propertyInfoByPath);
         allPathPropertyInfos.putAll(propertyInfoByPath);
         // those for simpletext properties
         Set<String> simplePaths = new HashSet<String>();
@@ -518,7 +572,7 @@ public class Model {
             }
             simplePaths.add(entry.getKey());
         }
-        typeSimpleTextPaths.put(typeName, simplePaths);
+        schemaSimpleTextPaths.put(schemaName, simplePaths);
     }
 
     // recurses in a complex type
@@ -661,15 +715,28 @@ public class Model {
         }
     }
 
-    public ModelProperty getPropertyInfo(String schemaName, String propertyName) {
-        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(schemaName);
+    public ModelProperty getPropertyInfo(String typeName, String propertyName) {
+        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(typeName);
         if (propertyInfos == null) {
-            // no such schema
+            // no such type/schema
             return null;
         }
         ModelProperty propertyInfo = propertyInfos.get(propertyName);
         return propertyInfo != null ? propertyInfo
                 : sharedPropertyInfos.get(propertyName);
+    }
+
+    public Map<String, ModelProperty> getMixinPropertyInfos(String mixin) {
+        return mixinPropertyInfos.get(mixin);
+    }
+
+    public ModelProperty getMixinPropertyInfo(String mixin, String propertyName) {
+        Map<String, ModelProperty> propertyInfos = mixinPropertyInfos.get(mixin);
+        if (propertyInfos == null) {
+            // no such mixin
+            return null;
+        }
+        return propertyInfos.get(propertyName);
     }
 
     public ModelProperty getPropertyInfo(String propertyName) {
@@ -680,16 +747,45 @@ public class Model {
         return mergedPropertyInfos.keySet();
     }
 
-    public ModelProperty getPathPropertyInfo(String typeName, String path) {
-        Map<String, ModelProperty> propertyInfoByPath = pathPropertyInfos.get(typeName);
-        if (propertyInfoByPath == null) {
-            return null;
+    public ModelProperty getPathPropertyInfo(String primaryType,
+            String[] mixinTypes, String path) {
+        for (String schema : getAllSchemas(primaryType, mixinTypes)) {
+            Map<String, ModelProperty> propertyInfoByPath = schemaPathPropertyInfos.get(schema);
+            if (propertyInfoByPath != null) {
+                ModelProperty pi = propertyInfoByPath.get(path);
+                if (pi != null) {
+                    return pi;
+                }
+            }
         }
-        return propertyInfoByPath.get(path);
+        return null;
     }
 
-    public Set<String> getTypeSimpleTextPropertyPaths(String typeName) {
-        return typeSimpleTextPaths.get(typeName);
+    public Set<String> getSimpleTextPropertyPaths(String primaryType,
+            String[] mixinTypes) {
+        Set<String> paths = new HashSet<String>();
+        for (String schema : getAllSchemas(primaryType, mixinTypes)) {
+            Set<String> p = schemaSimpleTextPaths.get(schema);
+            if (p != null) {
+                paths.addAll(p);
+            }
+        }
+        return paths;
+    }
+
+    public Set<String> getAllSchemas(String primaryType, String[] mixinTypes) {
+        Set<String> schemas = new LinkedHashSet<String>();
+        Set<String> s = documentTypesSchemas.get(primaryType);
+        if (s != null) {
+            schemas.addAll(s);
+        }
+        for (String mixin : mixinTypes) {
+            s = mixinsSchemas.get(mixin);
+            if (s != null) {
+                schemas.addAll(s);
+            }
+        }
+        return schemas;
     }
 
     public ModelFulltext getFulltextInfo() {
@@ -799,6 +895,14 @@ public class Model {
         }
     }
 
+    protected void addMixinFragment(String mixin, String fragmentName) {
+        Set<String> fragments = mixinFragments.get(mixin);
+        if (fragments == null) {
+            mixinFragments.put(mixin, fragments = new HashSet<String>());
+        }
+        fragments.add(fragmentName);
+    }
+
     protected void addFieldFragment(Field field, String fragmentName) {
         String fieldName = field.getName().toString();
         Set<String> fragments = fieldFragments.get(fieldName);
@@ -824,6 +928,10 @@ public class Model {
 
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
+    }
+
+    public Set<String> getMixinFragments(String mixin) {
+        return mixinFragments.get(mixin);
     }
 
     protected Set<String> getFieldFragments(Field field) {
@@ -859,15 +967,25 @@ public class Model {
      * Given a map of id to types, returns a map of fragment names to ids.
      */
     public Map<String, Set<Serializable>> getPerFragmentIds(
-            Map<Serializable, String> idType) {
+            Map<Serializable, IdWithTypes> idToTypes) {
         Map<String, Set<Serializable>> allFragmentIds = new HashMap<String, Set<Serializable>>();
-        for (Entry<Serializable, String> e : idType.entrySet()) {
+        for (Entry<Serializable, IdWithTypes> e : idToTypes.entrySet()) {
             Serializable id = e.getKey();
-            String type = e.getValue();
-            Set<String> fragmentNames = getTypeFragments(type);
-            if (fragmentNames == null) {
-                // unknown type left in the database, ignore
-                continue;
+            IdWithTypes typeInfo = e.getValue();
+            Set<String> fragmentNames = new HashSet<String>();
+            Set<String> tf = getTypeFragments(typeInfo.primaryType);
+            if (tf != null) {
+                // null if unknown type left in the database
+                fragmentNames.addAll(tf);
+            }
+            String[] mixins = typeInfo.mixinTypes;
+            if (mixins != null) {
+                for (String mixin : mixins) {
+                    Set<String> mf = getMixinFragments(mixin);
+                    if (mf != null) {
+                        fragmentNames.addAll(mf);
+                    }
+                }
             }
             for (String fragmentName : fragmentNames) {
                 Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
@@ -897,12 +1015,14 @@ public class Model {
             String typeName = documentType.getName();
             addTypeSimpleFragment(typeName, null); // create entry
 
+            Set<String> docTypeSchemas = new HashSet<String>();
             for (Schema schema : documentType.getSchemas()) {
                 if (schema == null) {
                     // happens when a type refers to a nonexistent schema
                     // TODO log and avoid nulls earlier
                     continue;
                 }
+                docTypeSchemas.add(schema.getName());
                 String fragmentName = initTypeModel(schema);
                 addTypeSimpleFragment(typeName, fragmentName); // may be null
                 // collection fragments too for this schema
@@ -913,8 +1033,10 @@ public class Model {
                     }
                 }
             }
+            documentTypesSchemas.put(typeName, docTypeSchemas);
             inferTypePropertyInfos(typeName, documentType.getSchemaNames());
             inferTypePropertyPaths(documentType);
+
             for (String fragmentName : getCommonSimpleFragments()) {
                 addTypeSimpleFragment(typeName, fragmentName);
             }
@@ -955,7 +1077,7 @@ public class Model {
                 addTypePrefetchedFragment(typeName, fragmentName);
             }
 
-            log.debug("Fragments for " + typeName + ": "
+            log.debug("Fragments for type " + typeName + ": "
                     + getTypeFragments(typeName) + ", prefetch: "
                     + getTypePrefetchedFragments(typeName));
 
@@ -987,6 +1109,29 @@ public class Model {
             // infer fulltext info
             inferFulltextInfo();
         }
+
+        // mixins
+        for (CompositeType type : schemaManager.getFacets()) {
+            String mixin = type.getName();
+            // some schemas may be referenced only by mixins,
+            // register them here
+            Set<String> mixinSchemas = new HashSet<String>();
+            for (Schema schema : type.getSchemas()) {
+                if (schema == null) {
+                    // happens when a type refers to a nonexistent schema
+                    // TODO log and avoid nulls earlier
+                    continue;
+                }
+                mixinSchemas.add(schema.getName());
+                String fragmentName = initTypeModel(schema);
+                addMixinFragment(mixin, fragmentName);
+                inferSchemaPropertyPaths(schema);
+            }
+            mixinsSchemas.put(mixin, mixinSchemas);
+            inferMixinPropertyInfos(mixin, type.getSchemaNames());
+            log.debug("Fragments for facet " + mixin + ": "
+                    + getMixinFragments(mixin));
+        }
     }
 
     protected List<String> getCommonSimpleFragments() {
@@ -1009,6 +1154,9 @@ public class Model {
     private void initMainModel() {
         addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
                 HIER_TABLE_NAME, MAIN_PRIMARY_TYPE_KEY, true, null,
+                ColumnType.SYSNAME);
+        addPropertyInfo(null, MAIN_MIXIN_TYPES_PROP, PropertyType.STRING,
+                HIER_TABLE_NAME, MAIN_MIXIN_TYPES_KEY, false, null,
                 ColumnType.SYSNAME);
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,

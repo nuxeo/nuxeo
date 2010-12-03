@@ -736,7 +736,7 @@ public class SQLSession implements Session {
             Node node = session.addChildNode(id, parent, name, pos, typeName,
                     false);
             for (Entry<String, Serializable> entry : props.entrySet()) {
-                node.setSingleProperty(entry.getKey(), entry.getValue());
+                node.setSimpleProperty(entry.getKey(), entry.getValue());
             }
             return newDocument(node, false); // not readonly
         } catch (StorageException e) {
