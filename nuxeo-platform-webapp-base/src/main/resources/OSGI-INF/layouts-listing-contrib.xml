@@ -730,6 +730,15 @@
       </properties>
     </widget>
 
+    <widget name="listing_last_contributor" type="text">
+      <labels>
+        <label mode="any">label.dublincore.lastContributor</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.contributors[fn:length(layoutValue.data.dc.contributors)-1]</field>
+      </fields>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -788,6 +797,13 @@
             <property name="sortPropertyName">dc:creator</property>
           </properties>
           <widget>listing_author</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
@@ -870,6 +886,13 @@
             <property name="sortPropertyName">dc:creator</property>
           </properties>
           <widget>listing_author</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
