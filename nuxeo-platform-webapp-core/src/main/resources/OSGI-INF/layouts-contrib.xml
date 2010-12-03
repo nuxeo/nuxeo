@@ -3,8 +3,8 @@
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgets"> 
-    
+    point="widgets">
+
     <widget name="nature" type="selectOneDirectory">
        <labels>
          <label mode="any">label.dublincore.nature</label>
@@ -181,6 +181,27 @@
          <property name="styleClass">dataInputText</property>
        </properties>
      </widget>
+    <widget name="lastContributor" type="template">
+       <labels>
+         <label mode="any">label.dublincore.lastContributor</label>
+       </labels>
+       <helpLabels>
+         <label mode="edit">label.dublincore.lastContributor.info</label>
+       </helpLabels>
+       <translated>true</translated>
+       <fields>
+         <field>dc:lastContributor</field>
+         <field>dc:contributors</field>
+       </fields>
+       <widgetModes>
+         <mode value="any">view</mode>
+       </widgetModes>
+       <properties mode="any">
+         <property name="template">
+          /widgets/lastContributor_widget_template.xhtml
+        </property>
+       </properties>
+     </widget>
      <widget name="title" type="text">
        <labels>
          <label mode="any">title</label>
@@ -284,9 +305,9 @@
          </widget>
        </subWidgets>
      </widget>
-    
-    </extension>  
- 
+
+    </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
@@ -345,8 +366,11 @@
         <row>
           <widget>contributors</widget>
         </row>
+        <row>
+          <widget>lastContributor</widget>
+        </row>
       </rows>
-     
+
     </layout>
 
     <layout name="file">
