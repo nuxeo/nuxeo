@@ -10,7 +10,7 @@ nuxeo.templates=default
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0
 
-nuxeo.url=http://localhost:8080/nuxeo/
+nuxeo.url=http://localhost:8080/nuxeo
 
 # Not customizable with Jetty
 org.nuxeo.ecm.contextPath=/nuxeo
