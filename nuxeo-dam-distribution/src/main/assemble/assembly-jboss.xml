@@ -81,7 +81,7 @@
   </target>
 
   <target name="create-http-importer-distribution" if="importer">
-    <copy todir="${jbossdir}/server/default/deploy/nuxeo.ear/system" overwrite="true">
+    <copy todir="${jbossdir}/server/default/deploy/nuxeo.ear/bundles" overwrite="true">
        <artifact:set>
          <includes>
            <artifact artifactId="nuxeo-platform-importer-jaxrs" />
