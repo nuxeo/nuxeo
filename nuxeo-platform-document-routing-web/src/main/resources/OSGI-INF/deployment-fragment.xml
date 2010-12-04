@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 
-<fragment>
-
+<fragment version="1">
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.platform.lang.ext</require>
   <extension target="faces-config#NAVIGATION">
 
     <navigation-case>
