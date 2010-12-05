@@ -49,15 +49,12 @@ public class ShellApplet extends JApplet implements InteractiveShellHandler {
     }
 
     public void init() {
-        System.out.println(">> INIT");
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
                     try {
                         panel = new ConsolePanel();
                         add(panel);
-                        panel.setVisible(true);
-                        panel.getConsole().requestFocus();
                         Interactive.setConsoleReaderFactory(panel.getConsole());
                         Interactive.setHandler(ShellApplet.this);
                     } catch (Exception e) {
@@ -72,7 +69,6 @@ public class ShellApplet extends JApplet implements InteractiveShellHandler {
 
     @Override
     public void start() {
-        System.out.println(">> START");
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -87,12 +83,12 @@ public class ShellApplet extends JApplet implements InteractiveShellHandler {
 
     @Override
     public void stop() {
-        System.out.println(">> STOP");
         panel.getConsole().exit(1);
     }
 
     public void enterInteractiveMode() {
         Interactive.reset();
+        requestFocus(); // doesn't work :/
     }
 
     public boolean exitInteractiveMode(int code) {
