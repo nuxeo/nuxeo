@@ -16,13 +16,20 @@
  */
 package org.nuxeo.ecm.shell.swing;
 
-import jline.UnsupportedTerminal;
+import jline.ConsoleReader;
+import jline.Terminal;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-public class SwingTerminal extends UnsupportedTerminal {
+public class SwingTerminal extends Terminal {
+
+    protected Console console;
+
+    public SwingTerminal(Console console) {
+        this.console = console;
+    }
 
     @Override
     public boolean isSupported() {
@@ -39,4 +46,45 @@ public class SwingTerminal extends UnsupportedTerminal {
         return false;
     }
 
+    public void initializeTerminal() {
+        // nothing we need to do (or can do) for windows.
+    }
+
+    public boolean isEchoEnabled() {
+        return true;
+    }
+
+    public void enableEcho() {
+    }
+
+    public void disableEcho() {
+    }
+
+    /**
+     * Always returng 80, since we can't access this info on Windows.
+     */
+    public int getTerminalWidth() {
+        return 80;
+    }
+
+    /**
+     * Always returng 24, since we can't access this info on Windows.
+     */
+    public int getTerminalHeight() {
+        return 80;
+    }
+
+    @Override
+    public void beforeReadLine(ConsoleReader reader, String prompt,
+            Character mask) {
+        if (mask != null) {
+            console.setMask(mask);
+        }
+    }
+
+    @Override
+    public void afterReadLine(ConsoleReader reader, String prompt,
+            Character mask) {
+        console.setMask(null);
+    }
 }

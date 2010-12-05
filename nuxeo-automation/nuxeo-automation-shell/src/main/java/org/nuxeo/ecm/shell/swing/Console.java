@@ -60,10 +60,17 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
 
     protected HistoryFinder finder;
 
+    /**
+     * If not null should use a mask when typing
+     */
+    protected Character mask;
+
+    protected StringBuilder pwd;
+
     public Console() throws Exception {
         in = new In();
         out = new Out();
-        reader = new ConsoleReader(in, out, null, new SwingTerminal());
+        reader = new ConsoleReader(in, out, null, new SwingTerminal(this));
         reader.setCompletionHandler(new SwingCompletionHandler(this));
         complete = reader.getClass().getDeclaredMethod("complete");
         complete.setAccessible(true);
@@ -81,6 +88,15 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
 
     public void setFinder(HistoryFinder finder) {
         this.finder = finder;
+    }
+
+    public void setMask(Character mask) {
+        if (mask != null) {
+            pwd = new StringBuilder();
+        } else {
+            pwd = null;
+        }
+        this.mask = mask;
     }
 
     public CmdLine getCmdLine() {
@@ -123,10 +139,15 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
 
     public void execute() {
         try {
-            // setCaretPosition(getDocument().getLength());
             String cmd = getCmdLine().getText().trim();
             append("\n");
             setCaretPosition(getDocument().getLength());
+            if (pwd != null) {
+                cline = null;
+                in.put(pwd.toString() + "\n");
+                pwd = null;
+                return;
+            }
             if (cmd.length() > 0 && reader.getUseHistory()) {
                 reader.getHistory().addToHistory(cmd);
                 reader.getHistory().moveToEnd();
@@ -174,6 +195,17 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
                 e.consume();
                 return;
             }
+            // handle passwords
+            if (mask != null) {
+                char c = e.getKeyChar();
+                if (c >= 32 && c < 127) {
+                    append(mask.toString());
+                    pwd.append(c);
+                }
+                e.consume();
+            }
+        } else if (mask != null) {
+            e.consume(); // do not show password
         }
     }
 
@@ -206,7 +238,6 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
      * @return
      */
     protected boolean handleControlChars(KeyEvent event, int code) {
-        // System.out.println(code);
         switch (code) {
         case KeyEvent.VK_LEFT:
             if (event.isMetaDown()) {
