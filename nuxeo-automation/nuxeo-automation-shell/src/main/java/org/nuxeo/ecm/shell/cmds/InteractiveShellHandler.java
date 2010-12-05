@@ -16,24 +16,32 @@
  */
 package org.nuxeo.ecm.shell.cmds;
 
-import org.nuxeo.ecm.shell.Argument;
-import org.nuxeo.ecm.shell.Command;
-import org.nuxeo.ecm.shell.ShellException;
-
 /**
+ * Give a chance to embedded shells to do some customization before shell is
+ * started and when exit is required.
+ * <p>
+ * This is currently used by shell applet to correctly handle start and stop.
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "exit", aliases = "quit", help = "Exit the interactive shell")
-public class Exit implements Runnable {
+public interface InteractiveShellHandler {
 
-    @Argument(name = "code", index = 0, required = false, help = "The exit code. Must be a positive number otherwise 0 is assumed. Defaults to 0.")
-    protected int code = 0;
+    /**
+     * Interactive shell will be started.
+     */
+    void enterInteractiveMode();
 
-    public void run() {
-        if (code <= 0) {
-            code = -1;
-        }
-        throw new ShellException().setErrorCode(code);
-    }
+    /**
+     * Interactive shell should be disposed. This method should dispose the
+     * current session. If no handler is defined the Java process will exit with
+     * the given code (if <= 0 - normal exit, otherwise an exit with given code
+     * is performed).
+     * 
+     * Return true to exit the shell loop, false otherwise.
+     * 
+     * @param code
+     */
+    boolean exitInteractiveMode(int code);
+
 }

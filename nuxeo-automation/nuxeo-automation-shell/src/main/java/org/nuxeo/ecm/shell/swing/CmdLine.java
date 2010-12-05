@@ -127,7 +127,7 @@ public class CmdLine {
             console.insert(text, cp);
         }
         console.setCaretPosition(cp + len);
-        console.repaint();
+        // console.repaint();
     }
 
     public void sync() {

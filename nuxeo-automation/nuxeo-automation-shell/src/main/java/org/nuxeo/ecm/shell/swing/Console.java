@@ -28,11 +28,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
 
 import jline.ConsoleReader;
+import jline.History;
 
+import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.cmds.ConsoleReaderFactory;
+import org.nuxeo.ecm.shell.swing.widgets.HistoryFinder;
 
 /**
  * The conversation with jline ConsoleReader is limited to execute a command and
@@ -44,8 +46,7 @@ import org.nuxeo.ecm.shell.cmds.ConsoleReaderFactory;
  * 
  */
 @SuppressWarnings("serial")
-public class Console extends JTextArea implements Constants,
-        ConsoleReaderFactory {
+public class Console extends JTextArea implements ConsoleReaderFactory {
 
     protected ConsoleReader reader;
 
@@ -56,6 +57,8 @@ public class Console extends JTextArea implements Constants,
     protected CmdLine cline;
 
     protected Method complete;
+
+    protected HistoryFinder finder;
 
     public Console() throws Exception {
         in = new In();
@@ -72,11 +75,23 @@ public class Console extends JTextArea implements Constants,
         setEditable(true);
     }
 
+    public ConsoleReader getReader() {
+        return reader;
+    }
+
+    public void setFinder(HistoryFinder finder) {
+        this.finder = finder;
+    }
+
     public CmdLine getCmdLine() {
         if (cline == null) {
             cline = new CmdLine(this);
         }
         return cline;
+    }
+
+    public History getHistory() {
+        return reader.getHistory();
     }
 
     public void complete() {
@@ -90,6 +105,20 @@ public class Console extends JTextArea implements Constants,
         } finally {
             cline = null;
         }
+    }
+
+    public void killLine() {
+        getCmdLine().setText("");
+    }
+
+    public void killLineBefore() {
+        int p = getCmdLine().getLocalCaretPosition();
+        getCmdLine().setText(getCmdLine().getText().substring(p));
+    }
+
+    public void killLineAfter() {
+        int p = getCmdLine().getLocalCaretPosition();
+        getCmdLine().setText(getCmdLine().getText().substring(0, p));
     }
 
     public void execute() {
@@ -149,19 +178,22 @@ public class Console extends JTextArea implements Constants,
     }
 
     public void beep() {
-        audibleBeep();
+        if (Boolean.parseBoolean((String) Shell.get().getProperty(
+                "shell.visual_bell", "false"))) {
+            visualBell();
+        }
+        audibleBell();
     }
 
-    public void audibleBeep() {
+    public void audibleBell() {
         Toolkit.getDefaultToolkit().beep();
     }
 
-    public void visualBeep() {
+    public void visualBell() {
         setBackground(Color.GREEN);
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         setBackground(Color.BLACK);
@@ -174,23 +206,42 @@ public class Console extends JTextArea implements Constants,
      * @return
      */
     protected boolean handleControlChars(KeyEvent event, int code) {
+        // System.out.println(code);
         switch (code) {
         case KeyEvent.VK_LEFT:
+            if (event.isMetaDown()) {
+                setCaretPosition(getCmdLine().getCmdStart());
+                return true;
+            }
             if (!getCmdLine().canMoveCaret(-1)) {
                 beep();
                 return true;
             }
             return false;
         case KeyEvent.VK_RIGHT:
+            if (event.isMetaDown()) {
+                setCaretPosition(getCmdLine().getEnd());
+                return true;
+            }
             if (!getCmdLine().canMoveCaret(1)) {
                 beep();
                 return true;
             }
             return false;
         case KeyEvent.VK_UP:
+            if (event.isMetaDown()) {
+                reader.getHistory().moveToFirstEntry();
+                getCmdLine().setText(reader.getHistory().current());
+                return true;
+            }
             moveHistory(false);
             return true;
         case KeyEvent.VK_DOWN:
+            if (event.isMetaDown()) {
+                reader.getHistory().moveToLastEntry();
+                getCmdLine().setText(reader.getHistory().current());
+                return true;
+            }
             moveHistory(true);
             return true;
         case KeyEvent.VK_ENTER:
@@ -205,34 +256,58 @@ public class Console extends JTextArea implements Constants,
         case KeyEvent.VK_TAB:
             complete();
             return true;
+        case KeyEvent.VK_K:
+            if (event.isMetaDown()) {
+                killLineAfter();
+                return true;
+            }
+        case KeyEvent.VK_U:
+            if (event.isMetaDown()) {
+                killLineBefore();
+                return true;
+            }
+        case KeyEvent.VK_L:
+            if (event.isMetaDown()) {
+                killLine();
+                return true;
+            }
+        case KeyEvent.VK_X:
+            if (event.isMetaDown()) {
+                reset();
+                in.put("\n");
+                return true;
+            }
+        case KeyEvent.VK_I:
+            if (event.isMetaDown()) {
+                Font font = new Font(Font.MONOSPACED, Font.PLAIN,
+                        getFont().getSize() + 1);
+                setFont(font);
+                return true;
+            }
+        case KeyEvent.VK_O:
+            if (event.isMetaDown()) {
+                Font font = new Font(Font.MONOSPACED, Font.PLAIN,
+                        getFont().getSize() - 1);
+                setFont(font);
+                return true;
+            }
+        case KeyEvent.VK_EQUALS:
+            if (event.isMetaDown()) {
+                Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+                setFont(font);
+                return true;
+            }
+        case KeyEvent.VK_S:
+            if (event.isMetaDown()) {
+                if (finder != null) {
+                    finder.setVisible(true);
+                    finder.getParent().validate();
+                    finder.requestFocus();
+                    return true;
+                }
+            }
         }
         return false;
-    }
-
-    /**
-     * Move caret to back. This should be invoked when '\b' is sent by JLine.
-     */
-    public void back() {
-        // force a redraw using setVisible
-        setCaretPosition(getCaretPosition() - 1);
-        getCaret().setVisible(false);
-        getCaret().setVisible(true);
-    }
-
-    public void backspace() throws IOException {
-        try {
-            String text = getText();
-            int p = getCaretPosition();
-            if (text.length() == p) {
-                setCaretPosition(p - 1);
-                getDocument().remove(text.length() - 1, 1);
-            } else if (p > 0) {
-                setCaretPosition(p - 1);
-                getDocument().remove(p - 1, 1);
-            }
-        } catch (BadLocationException e) {
-            throw new IOException(e);
-        }
     }
 
     class In extends InputStream {
@@ -366,4 +441,18 @@ public class Console extends JTextArea implements Constants,
         }
         return buf.toString();
     }
+
+    public void reset() {
+        try {
+            setText("");
+            Shell.get().hello();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exit(int code) {
+        in.put("exit " + code);
+    }
+
 }

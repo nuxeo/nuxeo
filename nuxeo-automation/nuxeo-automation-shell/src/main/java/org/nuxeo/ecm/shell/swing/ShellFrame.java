@@ -23,7 +23,6 @@ import java.awt.Toolkit;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 
@@ -43,8 +42,8 @@ public class ShellFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Nuxeo Shell");
         JPanel content = (JPanel) getContentPane();
-        console = new Console();
-        JScrollPane scrollPane = new JScrollPane(console);
+        ConsolePanel panel = new ConsolePanel();
+        console = panel.getConsole();
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         // Set the window's bounds, centering the window
         int width = 800;
@@ -52,7 +51,7 @@ public class ShellFrame extends JFrame {
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
         setBounds(x, y, width, height);
-        content.add(scrollPane, BorderLayout.CENTER);
+        content.add(panel, BorderLayout.CENTER);
         content.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
     }
 
@@ -60,6 +59,7 @@ public class ShellFrame extends JFrame {
         Shell shell = Shell.get();
         ShellFrame term = new ShellFrame();
         term.setVisible(true);
+        term.console.requestFocus();
         Interactive.setConsoleReaderFactory(term.console);
         shell.main(new String[0]);
     }

@@ -49,4 +49,5 @@ public class ShellException extends RuntimeException {
     public int getErrorCode() {
         return this.errorCode;
     }
+
 }

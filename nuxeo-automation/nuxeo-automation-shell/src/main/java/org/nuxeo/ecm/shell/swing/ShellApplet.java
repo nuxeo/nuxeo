@@ -16,49 +16,96 @@
  */
 package org.nuxeo.ecm.shell.swing;
 
+import java.util.ArrayList;
+
 import javax.swing.JApplet;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.cmds.Interactive;
+import org.nuxeo.ecm.shell.cmds.InteractiveShellHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
 @SuppressWarnings("serial")
-public class ShellApplet extends JApplet {
+public class ShellApplet extends JApplet implements InteractiveShellHandler {
+
+    protected ConsolePanel panel;
+
+    protected String[] getShellArgs() {
+        String host = getParameter("host");
+        String user = getParameter("user");
+        ArrayList<String> args = new ArrayList<String>();
+        if (user != null) {
+            args.add("-u");
+            args.add(user);
+        }
+        if (host != null) {
+            args.add(host);
+        }
+        return args.toArray(new String[args.size()]);
+    }
 
     public void init() {
+        System.out.println(">> INIT");
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
                     try {
-                        final Shell shell = Shell.get();
-                        Console console = new Console();
-                        JScrollPane scroll = new JScrollPane(console);
-                        add(scroll);
-                        console.setVisible(true);
-                        Interactive.setConsoleReaderFactory(console);
-                        new Thread(new Runnable() {
-                            public void run() {
-                                try {
-                                    shell.main(new String[0]);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
-
+                        panel = new ConsolePanel();
+                        add(panel);
+                        panel.setVisible(true);
+                        panel.getConsole().requestFocus();
+                        Interactive.setConsoleReaderFactory(panel.getConsole());
+                        Interactive.setHandler(ShellApplet.this);
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to start applet", e);
                     }
                 }
             });
         } catch (Exception e) {
-            System.err.println("createGUI didn't complete successfully");
+            e.printStackTrace();
         }
     }
 
+    @Override
+    public void start() {
+        System.out.println(">> START");
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    final Shell shell = Shell.get();
+                    shell.main(getShellArgs());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void stop() {
+        System.out.println(">> STOP");
+        panel.getConsole().exit(1);
+    }
+
+    public void enterInteractiveMode() {
+        Interactive.reset();
+    }
+
+    public boolean exitInteractiveMode(int code) {
+        if (code == 1) {
+            // applet stop
+            Interactive.reset();
+            Shell.reset();
+            panel.setVisible(false);
+            return true;
+        } else {
+            // reset console
+            panel.getConsole().reset();
+            return false;
+        }
+    }
 }

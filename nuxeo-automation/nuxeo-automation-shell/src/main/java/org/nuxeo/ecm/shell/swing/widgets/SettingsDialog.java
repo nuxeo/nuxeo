@@ -14,26 +14,28 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.cmds;
+package org.nuxeo.ecm.shell.swing.widgets;
 
-import org.nuxeo.ecm.shell.Argument;
-import org.nuxeo.ecm.shell.Command;
-import org.nuxeo.ecm.shell.ShellException;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
+import javax.swing.JList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "exit", aliases = "quit", help = "Exit the interactive shell")
-public class Exit implements Runnable {
+@SuppressWarnings("serial")
+public class SettingsDialog extends JDialog {
 
-    @Argument(name = "code", index = 0, required = false, help = "The exit code. Must be a positive number otherwise 0 is assumed. Defaults to 0.")
-    protected int code = 0;
+    protected JFontChooser fontChooser;
 
-    public void run() {
-        if (code <= 0) {
-            code = -1;
-        }
-        throw new ShellException().setErrorCode(code);
+    protected JColorChooser bgChooser;
+
+    protected JColorChooser fgChooser;
+
+    protected JList themes;
+
+    public SettingsDialog() {
     }
+
 }

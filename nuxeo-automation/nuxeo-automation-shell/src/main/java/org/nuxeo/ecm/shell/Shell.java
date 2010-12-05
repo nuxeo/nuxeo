@@ -75,6 +75,13 @@ public final class Shell {
         return _shell;
     }
 
+    /**
+     * Reset the shell instance. Useful for embedded shells like applets.
+     */
+    public synchronized static void reset() {
+        shell = null;
+    }
+
     protected LinkedHashMap<String, String> mainArgs;
 
     protected CompositeCompletorProvider completorProvider;
@@ -421,8 +428,9 @@ public final class Shell {
         InputStream in = Shell.class.getClassLoader().getResourceAsStream(
                 "META-INF/hello.txt");
         if (in == null) {
-            System.out.println("Welcome to " + getClass().getSimpleName() + "!");
-            System.out.println("Type \"help\" for more information.");
+            getConsole().println(
+                    "Welcome to " + getClass().getSimpleName() + "!");
+            getConsole().println("Type \"help\" for more information.");
         } else {
             try {
                 String content = FileSystem.readContent(in);

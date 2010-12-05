@@ -55,6 +55,16 @@ public class Interactive implements Runnable, ShellConsole {
 
     private static boolean isRunning = false;
 
+    private static InteractiveShellHandler handler;
+
+    public static void setHandler(InteractiveShellHandler exitHandler) {
+        Interactive.handler = exitHandler;
+    }
+
+    public static void reset() {
+        isRunning = false;
+    }
+
     public Interactive() throws IOException {
         console = factory != null ? factory.getConsoleReader()
                 : new ConsoleReader();
@@ -87,6 +97,9 @@ public class Interactive implements Runnable, ShellConsole {
     }
 
     public void run() {
+        if (handler != null) {
+            handler.enterInteractiveMode();
+        }
         if (isRunning) { // avoid entering twice this command
             return;
         }
@@ -108,7 +121,18 @@ public class Interactive implements Runnable, ShellConsole {
                     currentCmdLine = cmdline;
                     shell.run(cmdline);
                 } catch (Throwable t) {
-                    handleError(t);
+                    int r = handleError(t);
+                    if (r != 0) {
+                        isRunning = false;
+                        if (handler != null) {
+                            if (handler.exitInteractiveMode(r)) {
+                                return;
+                            }
+                        } else { // default exit mechanism
+                            shell.bye();
+                            System.exit(r < 0 ? 0 : r);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -119,13 +143,21 @@ public class Interactive implements Runnable, ShellConsole {
         }
     }
 
-    protected void handleError(Throwable t) throws IOException {
+    /**
+     * Return non zero to stop the application. If a negative code is returned
+     * the application will stop normally otherwise it will stop using
+     * System.exit with the exit code as argument.
+     * 
+     * @param t
+     * @return
+     * @throws IOException
+     */
+    protected int handleError(Throwable t) throws IOException {
         if (t instanceof ShellException) {
             ShellException e = (ShellException) t;
             int r = e.getErrorCode();
             if (r != 0) {
-                shell.bye();
-                System.exit(r == -1 ? 0 : r);
+                return r;
             } else {
                 shell.setProperty("last.error", e);
                 console.printString(e.getMessage());
@@ -137,6 +169,7 @@ public class Interactive implements Runnable, ShellConsole {
             buf.red(Trace.getStackTrace(t));
             console.printString(buf.toString());
         }
+        return 0;
     }
 
     public String getPrompt() {
@@ -199,4 +232,5 @@ public class Interactive implements Runnable, ShellConsole {
         closeHistory();
         new File(System.getProperty("user.home"), ".nxshell/history").delete();
     }
+
 }
