@@ -82,8 +82,9 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
         DocumentRef parentRef = new IdRef("01");
         DocumentRef docRef = new IdRef("02");
         String[] schemas = {"file","dublincore"};
-        DocumentModel srcDoc = new DocumentModelImpl(
-                "sid0", "File", "02", new Path("/"), docRef, parentRef, schemas, null);
+        DocumentModel srcDoc = new DocumentModelImpl("sid0", "File", "02",
+                new Path("/"), null, docRef, parentRef, schemas, null, null,
+                null);
         DocumentRef destinationRef = new IdRef("03");
 
         EventContext ctx3 = new DocumentEventContext(

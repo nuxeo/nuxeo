@@ -245,19 +245,10 @@ public interface CoreSession {
     DocumentModel getDocument(DocumentRef docRef) throws ClientException;
 
     /**
-     * Gets a document model given its reference and the initial set of schemas
-     * to use.
-     * <p>
-     * Same as the previous method with the difference that the default schemas
-     * are overwritten by the given schemas.
-     *
-     * @param docRef the document reference
-     * @param schemas the initial schemas to use to populate the document model
-     * @return
-     * @throws ClientException
-     * @throws SecurityException
+     * @deprecated unused
      */
     @NoRollbackOnException
+    @Deprecated
     DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException;
 

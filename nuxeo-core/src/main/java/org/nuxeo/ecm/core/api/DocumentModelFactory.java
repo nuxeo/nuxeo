@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
-import java.security.SecureRandom;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,51 +35,56 @@ import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
-import org.nuxeo.ecm.core.schema.TypeConstants;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * DocumentModel factory for document models initialization.
- *
- * @author bstefanescu
  */
 public class DocumentModelFactory {
 
     private static final Log log = LogFactory.getLog(DocumentModelFactory.class);
 
-    private static final SecureRandom random = new SecureRandom();
-
     // Utility class.
     private DocumentModelFactory() {
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static DocumentModel newDocument(DocumentModel parent, String type) {
-        DocumentType docType = parent.getCoreSession().getDocumentType(type);
-        return newDocument(parent, docType);
+        return newDocument(parent, null, type);
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static DocumentModel newDocument(DocumentModel parent, String name,
             String type) {
         DocumentType docType = parent.getCoreSession().getDocumentType(type);
         return newDocument(parent, name, docType);
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static DocumentModel newDocument(DocumentModel parent,
             DocumentType type) {
-        return newDocument(parent, "Untitled_"
-                + Long.toHexString(random.nextLong()), type);
+        return newDocument(parent, null, type);
     }
 
-    // XXX: parameter 'name' not used. Refactor?
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static DocumentModel newDocument(DocumentModel parent, String name,
             DocumentType type) {
         return new DocumentModelImpl(null, type.getName(), null,
@@ -90,27 +93,16 @@ public class DocumentModelFactory {
                 parent.getRepositoryName());
     }
 
-    public static DocumentModelImpl createDocumentModel(Document doc)
-    throws DocumentException {
-        DocumentType docType = doc.getType();
-        String[] schemas;
-        if (docType == null) {
-            schemas = null;
-        } else {
-            schemas = docType.getSchemaNames();
-        }
-        return createDocumentModel(doc, schemas);
-    }
-
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static Map<String, Serializable> updatePrefetch(
             DocumentModel docModel) {
         Map<String, Serializable> prefetchMap = new HashMap<String, Serializable>();
-
         PrefetchInfo prefetchInfo = docModel.getDocumentType().getPrefetchInfo();
-
         if (prefetchInfo != null) {
             Field[] prefetchFields = prefetchInfo.getFields();
-
             for (Field field : prefetchFields) {
                 String typeName = field.getDeclaringType().getName();
                 String typeLocalName = field.getName().getLocalName();
@@ -124,10 +116,33 @@ public class DocumentModelFactory {
                 prefetchMap.put(fieldName, (Serializable) value);
             }
         }
-
         return prefetchMap;
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public static DocumentModelImpl createDocumentModel(Document doc)
+            throws DocumentException {
+        DocumentType docType = doc.getType();
+        String[] schemas;
+        if (docType == null) {
+            schemas = null;
+        } else {
+            schemas = docType.getSchemaNames();
+        }
+        return createDocumentModel(doc, schemas);
+    }
+
+    /**
+     * Creates a document model for an existing document.
+     *
+     * @param doc the document
+     * @param schemas the schemas to prefetch (deprecated), or {@code null}
+     * @return the new document model
+     * @throws DocumentException
+     */
     public static DocumentModelImpl createDocumentModel(Document doc,
             String[] schemas) throws DocumentException {
 
@@ -136,22 +151,20 @@ public class DocumentModelFactory {
             throw new DocumentException("Type not found for doc " + doc);
         }
 
-        Session session = doc.getSession();
-        String sid = session.getUserSessionId();
+        String sid = doc.getSession().getUserSessionId();
 
         DocumentRef docRef = new IdRef(doc.getUUID());
-        DocumentRef parentRef = null;
         Document parent = doc.getParent();
-        if (null != parent) {
-            parentRef = new IdRef(parent.getUUID());
-        }
+        DocumentRef parentRef = parent == null ? null : new IdRef(
+                parent.getUUID());
 
         // Compute document source id if exists
         Document sourceDoc = doc.getSourceDocument();
         String sourceId = sourceDoc == null ? null : sourceDoc.getUUID();
 
         // Immutable flag
-        boolean immutable = doc.isVersion() || (doc.isProxy() && sourceDoc.isVersion());
+        boolean immutable = doc.isVersion()
+                || (doc.isProxy() && sourceDoc.isVersion());
 
         Set<String> typeFacets = type.getFacets();
         if (immutable) {
@@ -165,15 +178,15 @@ public class DocumentModelFactory {
         }
 
         // Compute repository name.
-        String repositoryName = null;
         Repository repository = doc.getRepository();
-        if (repository != null) {
-            repositoryName = repository.getName();
-        }
-        String p = doc.getPath();
+        String repositoryName = repository == null ? null
+                : repository.getName();
 
         // versions being imported before their live doc don't have a path
+        String p = doc.getPath();
         Path path = p == null ? null : new Path(p);
+
+        // create the document model
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
                 doc.getUUID(), path, doc.getLock(), docRef, parentRef,
                 type.getSchemaNames(), typeFacets, sourceId, repositoryName);
@@ -203,7 +216,7 @@ public class DocumentModelFactory {
                     Object value = doc.getPropertyValue(field.getName().getPrefixedName());
                     docModel.prefetchProperty(
                             field.getDeclaringType().getName() + '.'
-                            + field.getName().getLocalName(), value);
+                                    + field.getName().getLocalName(), value);
                 } catch (NoSuchPropertyException e) {
                     // skip
                 } catch (DocumentException e) {
@@ -219,12 +232,12 @@ public class DocumentModelFactory {
                 if (schema == null) {
                     continue;
                 }
-                DataModel dataModel = exportSchema(sid, docRef, doc, schema);
+                DataModel dataModel = exportSchema(doc, schema);
                 docModel.addDataModel(dataModel);
             }
-        } else if (prefetchSchemas != null && prefetchSchemas.length > 0) {
+        } else if (prefetchSchemas != null) {
             for (Schema schema : prefetchSchemas) {
-                DataModel dataModel = exportSchema(sid, docRef, doc, schema);
+                DataModel dataModel = exportSchema(doc, schema);
                 docModel.addDataModel(dataModel);
             }
         }
@@ -246,25 +259,13 @@ public class DocumentModelFactory {
     }
 
     /**
-     * Creates a new document model using only required information to be used
-     * on client side.
-     *
-     * @param docType The document type
-     * @return the document model initialized thanks to the type definition
-     * @throws DocumentException
-     */
-    public static DocumentModelImpl createDocumentModel(DocumentType docType)
-    throws DocumentException {
-        return createDocumentModel(null, docType);
-    }
-
-    /**
-     * Creates a new document model using only required information to be used
-     * on client side.
+     * Creates a document model for a new document.
+     * <p>
+     * Initializes the proper data models according to the type info.
      *
      * @param sessionId the CoreSession id
-     * @param docType The document type
-     * @return the document model initialized thanks to the type definition
+     * @param docType the document type
+     * @return the document model
      * @throws DocumentException
      */
     public static DocumentModelImpl createDocumentModel(String sessionId,
@@ -272,35 +273,37 @@ public class DocumentModelFactory {
         Set<String> facets = docType.getFacets();
         String[] schemas = docType.getSchemaNames();
         DocumentModelImpl docModel = new DocumentModelImpl(sessionId,
-                docType.getName(), null, null, null, null, schemas, facets);
+                docType.getName(), null, null, null, null, null, schemas,
+                facets, null, null);
         for (Schema schema : docType.getSchemas()) {
-            DataModel dataModel = exportSchema(null, null, null, schema);
+            DataModel dataModel = exportSchema(null, schema);
             docModel.addDataModel(dataModel);
         }
-
         return docModel;
     }
 
     /**
-     * Creates a new document model using only required information to be used
-     * on client side.
-     *
-     * @param parentPath the document parent path
-     * @param id the document id
-     * @param docType the document type
-     * @param schemas schemas to take into account when initializing
-     * @return the document model initialized thanks to the type definition
-     * @throws DocumentException
+     * @deprecated unused
      */
+    @Deprecated
+    public static DocumentModelImpl createDocumentModel(DocumentType docType)
+            throws DocumentException {
+        return createDocumentModel(null, docType);
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static DocumentModelImpl createDocumentModel(String parentPath,
             String id, DocumentType docType, String[] schemas)
-    throws DocumentException {
+            throws DocumentException {
         DocumentModelImpl docModel = new DocumentModelImpl(parentPath, id,
                 docType.getName());
         // populate models
         if (schemas != null) {
             for (String schema : schemas) {
-                DataModel dataModel = exportSchema(null, null, null,
+                DataModel dataModel = exportSchema(null,
                         docType.getSchema(schema));
                 docModel.addDataModel(dataModel);
             }
@@ -308,27 +311,8 @@ public class DocumentModelFactory {
         return docModel;
     }
 
-    public static DataModel exportSchema_OLD(String sid, DocumentRef docRef,
-            Document doc, Schema schema) throws DocumentException {
-        Collection<Field> fields = schema.getFields();
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Field field : fields) {
-            String name = field.getName().getLocalName();
-            if (doc == null) {
-                // init
-                map.put(name, field.getDefaultValue());
-            } else {
-                Type type = field.getType();
-                Property prop = doc.getProperty(name);
-                map.put(name, exportProperty(sid, docRef, type, prop));
-            }
-        }
-        return new DataModelImpl(schema.getName(), map);
-    }
-
-    // XXX: parameter 'sid' not used.
-    public static DataModel exportSchema(String sid, DocumentRef docRef,
-            Document doc, Schema schema) throws DocumentException {
+    public static DataModel exportSchema(Document doc, Schema schema)
+            throws DocumentException {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
             try {
@@ -340,37 +324,6 @@ public class DocumentModelFactory {
             }
         }
         return new DataModelImpl(part);
-    }
-
-    public static Map<String, Object> exportComplexProperty(String sid,
-            DocumentRef docRef, Property property) throws DocumentException {
-        Collection<Field> fields = ((ComplexType) property.getType()).getFields();
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Field field : fields) {
-            Type type = field.getType();
-            String name = field.getName().getLocalName();
-            Property prop = property.getProperty(name);
-            map.put(name, exportProperty(sid, docRef, type, prop));
-        }
-        return map;
-    }
-
-    private static Object exportProperty(String sid, DocumentRef docRef,
-            Type type, Property prop) throws DocumentException {
-        if (type.isSimpleType() || type.isListType()) {
-            return prop.getValue();
-        } else if (TypeConstants.isContentType(type)) {
-            // TODO Do not use at core level the ContentSourceObject ->
-            // use only complex types!
-            // TODO by default all content types are lazy see later how
-            // to define them at type manager level
-            return prop.getValue();
-        } else if (TypeConstants.isExternalContentType(type)) {
-            // don't know what to do => export complex prop as is (?)
-            return exportComplexProperty(sid, docRef, prop);
-        } else {
-            return exportComplexProperty(sid, docRef, prop);
-        }
     }
 
 }

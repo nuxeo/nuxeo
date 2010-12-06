@@ -215,8 +215,9 @@ public class SerializableEventBundle implements Serializable {
                                         1).toString();
                                 doc = new DocumentModelImpl(
                                         session.getSessionId(), part[3],
-                                        part[2], new Path(part[4]), idRef,
-                                        new PathRef(parentPath), null, null);
+                                        part[2], new Path(part[4]), null,
+                                        idRef, new PathRef(parentPath), null,
+                                        null, null, null);
                             }
                         } catch (ClientException e) {
                             // TODO

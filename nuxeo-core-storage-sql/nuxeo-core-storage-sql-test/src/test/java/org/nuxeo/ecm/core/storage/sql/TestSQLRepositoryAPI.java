@@ -929,8 +929,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(childFile);
         session.save();
 
-        DocumentModel returnedDocument = session.getDocument(
-                childFile.getRef(), new String[] { "common" });
+        DocumentModel returnedDocument = session.getDocument(childFile.getRef());
 
         assertNotNull(returnedDocument);
         assertNotNull(returnedDocument.getRef());
@@ -952,8 +951,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 returnedDocument.getProperty("dublincore", "description"));
         assertNull(returnedDocument.getProperty("file", "filename"));
 
-        returnedDocument = session.getDocument(childFile.getRef(),
-                new String[] { "common", "file" });
+        returnedDocument = session.getDocument(childFile.getRef());
 
         assertNotNull(returnedDocument);
         assertNotNull(returnedDocument.getRef());

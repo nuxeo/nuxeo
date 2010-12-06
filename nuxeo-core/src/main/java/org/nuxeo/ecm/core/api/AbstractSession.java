@@ -510,14 +510,22 @@ public abstract class AbstractSession implements CoreSession,
 
     /**
      * Gets the document model for the given core document.
-     * <p>
-     * If no schemas are specified (schemas are null) use the default schemas
-     * as configured in the document type manager.
      *
      * @param doc the document
-     * @param schemas the schemas if any, null otherwise
      * @return the document model
      */
+    protected DocumentModel readModel(Document doc) throws ClientException {
+        try {
+            return DocumentModelFactory.createDocumentModel(doc, null);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to create document model", e);
+        }
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     protected DocumentModel readModel(Document doc, String[] schemas)
             throws ClientException {
         try {
@@ -552,7 +560,7 @@ public abstract class AbstractSession implements CoreSession,
             return docModel;
         }
         // TODO: here we can optimize document part doesn't need to be read
-        DocumentModel newModel = readModel(doc, null);
+        DocumentModel newModel = readModel(doc);
         newModel.copyContextData(docModel);
         return newModel;
     }
@@ -565,7 +573,7 @@ public abstract class AbstractSession implements CoreSession,
             Document dstDoc = resolveReference(dst);
             checkPermission(dstDoc, ADD_CHILDREN);
 
-            DocumentModel srcDocModel = readModel(srcDoc, null);
+            DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null,
                     null, null, true, true);
 
@@ -579,7 +587,7 @@ public abstract class AbstractSession implements CoreSession,
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // notify document created by copy
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
 
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
@@ -625,7 +633,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(dstDoc, WRITE);
 
             // create a new document using the expanded proxy
-            DocumentModel srcDocModel = readModel(srcDoc, null);
+            DocumentModel srcDocModel = readModel(srcDoc);
             String docName = (name != null) ? name : srcDocModel.getName();
             DocumentModel docModel = createDocumentModel(dstDoc.getPath(),
                     docName, srcDocModel.getType());
@@ -677,7 +685,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
             checkPermission(srcDoc, REMOVE);
 
-            DocumentModel srcDocModel = readModel(srcDoc, null);
+            DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
                     null, null, true, true);
 
@@ -691,7 +699,7 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = getSession().move(srcDoc, dstDoc, name);
 
             // notify document moved
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.PARENT_PATH,
                     srcDocModel.getParentRef());
@@ -730,7 +738,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_SECURITY);
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.OLD_ACP,
@@ -741,7 +749,7 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true, true);
             getSession().getSecurityManager().setACP(doc, newAcp, overwrite);
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel,
                     options, null, null, true, false);
         } catch (DocumentException e) {
@@ -872,7 +880,7 @@ public abstract class AbstractSession implements CoreSession,
                 // during remote publishing we want to skip versioning
                 // to avoid overwriting the version number
                 getVersioningService().doPostCreate(doc);
-                docModel = readModel(doc, null);
+                docModel = readModel(doc);
             }
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options,
@@ -932,7 +940,7 @@ public abstract class AbstractSession implements CoreSession,
 
         if (typeName.equals(CoreSession.IMPORT_PROXY_TYPE)) {
             // just reread the final document
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
         } else {
             // init document with data from doc model
             docModel = writeModel(doc, docModel);
@@ -1010,7 +1018,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ_CHILDREN);
             Document child = doc.getChild(name);
             checkPermission(child, READ);
-            return readModel(child, null);
+            return readModel(child);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get child " + name, e);
         }
@@ -1074,7 +1082,7 @@ public abstract class AbstractSession implements CoreSession,
                 if (hasPermission(child, perm)) {
                     if (child.getType() != null
                             && (type == null || type.equals(child.getType().getName()))) {
-                        DocumentModel childModel = readModel(child, null);
+                        DocumentModel childModel = readModel(child);
                         if (filter == null || filter.accept(childModel)) {
                             docs.add(childModel);
                         }
@@ -1151,7 +1159,7 @@ public abstract class AbstractSession implements CoreSession,
                 if (hasPermission(child, perm)) {
                     if (child.getType() != null
                             && (type == null || type.equals(child.getType().getName()))) {
-                        DocumentModel childModel = readModel(child, null);
+                        DocumentModel childModel = readModel(child);
                         if (filter == null || filter.accept(childModel)) {
                             if (count == 0) {
                                 // end of page
@@ -1193,14 +1201,18 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
-            return readModel(doc, null);
+            return readModel(doc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get document "
                     + docRef.toString(), e);
         }
     }
 
+    /**
+     * @deprecated unused
+     */
     @Override
+    @Deprecated
     public DocumentModel getDocument(DocumentRef docRef, String[] schemas)
             throws ClientException {
         try {
@@ -1225,7 +1237,7 @@ public abstract class AbstractSession implements CoreSession,
                 // no permission, or other low-level error
                 continue;
             }
-            docs.add(readModel(doc, null));
+            docs.add(readModel(doc));
         }
         return new DocumentModelListImpl(docs);
     }
@@ -1241,7 +1253,7 @@ public abstract class AbstractSession implements CoreSession,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (!child.isFolder() && hasPermission(child, READ)) {
-                    docs.add(readModel(child, null));
+                    docs.add(readModel(child));
                 }
             }
             return docs;
@@ -1272,9 +1284,9 @@ public abstract class AbstractSession implements CoreSession,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (!child.isFolder() && hasPermission(child, READ)) {
-                    DocumentModel docModel = readModel(doc, null);
+                    DocumentModel docModel = readModel(doc);
                     if (filter == null || filter.accept(docModel)) {
-                        docs.add(readModel(child, null));
+                        docs.add(readModel(child));
                     }
                 }
             }
@@ -1299,7 +1311,7 @@ public abstract class AbstractSession implements CoreSession,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (child.isFolder() && hasPermission(child, READ)) {
-                    docs.add(readModel(child, null));
+                    docs.add(readModel(child));
                 }
             }
             return docs;
@@ -1328,9 +1340,9 @@ public abstract class AbstractSession implements CoreSession,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (child.isFolder() && hasPermission(child, READ)) {
-                    DocumentModel docModel = readModel(doc, null);
+                    DocumentModel docModel = readModel(doc);
                     if (filter == null || filter.accept(docModel)) {
-                        docs.add(readModel(child, null));
+                        docs.add(readModel(child));
                     }
                 }
             }
@@ -1358,7 +1370,7 @@ public abstract class AbstractSession implements CoreSession,
                         "Privilege READ is not granted to "
                                 + getPrincipal().getName());
             }
-            return readModel(parentDoc, null);
+            return readModel(parentDoc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get parent document of "
                     + docRef, e);
@@ -1383,7 +1395,7 @@ public abstract class AbstractSession implements CoreSession,
                 if (!hasPermission(doc, READ)) {
                     break;
                 }
-                docsList.add(readModel(doc, null));
+                docsList.add(readModel(doc));
                 doc = doc.getParent();
             }
         } catch (DocumentException e) {
@@ -1398,7 +1410,7 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public DocumentModel getRootDocument() throws ClientException {
         try {
-            return readModel(getSession().getRootDocument(), null);
+            return readModel(getSession().getRootDocument());
         } catch (DocumentException e) {
             throw new ClientException("Failed to get the root document", e);
         }
@@ -1739,7 +1751,7 @@ public abstract class AbstractSession implements CoreSession,
     protected void removeNotifyOneDoc(Document doc) throws ClientException,
             DocumentException {
         // XXX notify with options if needed
-        DocumentModel docModel = readModel(doc, null);
+        DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
@@ -1876,7 +1888,7 @@ public abstract class AbstractSession implements CoreSession,
             }
 
             // post-save event
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true, false);
 
@@ -1931,7 +1943,7 @@ public abstract class AbstractSession implements CoreSession,
             if (headDocument == null) {
                 throw new DocumentException("Source document has been deleted");
             }
-            return readModel(headDocument, null);
+            return readModel(headDocument);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get head document for "
                     + docRef, e);
@@ -1968,7 +1980,7 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_VERSION);
             Document version = doc.getLastVersion();
-            return version == null ? null : readModel(version, null);
+            return version == null ? null : readModel(version);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -2014,7 +2026,7 @@ public abstract class AbstractSession implements CoreSession,
             List<DocumentModel> versions = new ArrayList<DocumentModel>(
                     docVersions.size());
             for (Document version : docVersions) {
-                versions.add(readModel(version, null));
+                versions.add(readModel(version));
             }
             return versions;
         } catch (DocumentException e) {
@@ -2095,7 +2107,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
 
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
 
             // we're about to overwrite the document, make sure it's archived
             if (!skipSnapshotCreation && doc.isCheckedOut()) {
@@ -2136,7 +2148,7 @@ public abstract class AbstractSession implements CoreSession,
             }
 
             // re-read doc model after restoration
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel,
                     options, null, null, true, false);
             docModel = writeModel(doc, docModel);
@@ -2172,7 +2184,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR,
                     ver == null ? null : ver.getDescription());
-            return readModel(resolveReference(verRef), null);
+            return readModel(resolveReference(verRef));
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
                     e);
@@ -2186,7 +2198,7 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
@@ -2195,12 +2207,12 @@ public abstract class AbstractSession implements CoreSession,
 
             Document version = getVersioningService().doCheckIn(doc, option,
                     checkinComment);
-            DocumentModel versionModel = readModel(version, null);
+            DocumentModel versionModel = readModel(version);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
                     options, null, null, true, false);
 
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
             String label = getVersioningService().getVersionLabel(docModel);
             options.put("versionLabel", label);
             options.put("checkInComment", checkinComment);
@@ -2225,14 +2237,14 @@ public abstract class AbstractSession implements CoreSession,
             // TODO: add a new permission names CHECKOUT and use it instead of
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
                     options, null, null, true, true);
 
             getVersioningService().doCheckOut(doc);
-            docModel = readModel(doc, null);
+            docModel = readModel(doc);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
                     options, null, null, true, false);
@@ -2285,7 +2297,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ_VERSION);
             Document pwc = doc.getWorkingCopy();
             checkPermission(pwc, READ);
-            return pwc == null ? null : readModel(pwc, null);
+            return pwc == null ? null : readModel(pwc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
         }
@@ -2305,7 +2317,7 @@ public abstract class AbstractSession implements CoreSession,
             }
             checkPermission(doc, READ_PROPERTIES);
             checkPermission(doc, READ_VERSION);
-            return readModel(doc, null);
+            return readModel(doc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get version "
                     + versionModel.getLabel() + " for " + versionableId, e);
@@ -2339,7 +2351,7 @@ public abstract class AbstractSession implements CoreSession,
             }
             log.debug("Retrieved the version " + version.getLabel()
                     + " of the document " + docPath);
-            return readModel(doc, null);
+            return readModel(doc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get version for " + docRef, e);
         }
@@ -2365,13 +2377,13 @@ public abstract class AbstractSession implements CoreSession,
         try {
             // create the new proxy
             Document proxy = getSession().createProxy(doc, folder);
-            DocumentModel proxyModel = readModel(proxy, null);
+            DocumentModel proxyModel = readModel(proxy);
 
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
                     options, null, null, true, false);
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true, false);
-            DocumentModel folderModel = readModel(folder, null);
+            DocumentModel folderModel = readModel(folder);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     folderModel, options, null, null, true, false);
             return proxyModel;
@@ -2424,7 +2436,7 @@ public abstract class AbstractSession implements CoreSession,
                 log.debug("Created proxy for version " + vlabel
                         + " of the document " + doc.getPath());
                 // notify for reindexing
-                proxyModel = readModel(proxy, null);
+                proxyModel = readModel(proxy);
 
                 // notify for document creation (proxy)
                 notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel,
@@ -2434,7 +2446,7 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
                     proxyModel, options, null, null, true, false);
 
-            DocumentModel sectionModel = readModel(sec, null);
+            DocumentModel sectionModel = readModel(sec);
             notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
                     sectionModel, options, null, null, true, false);
 
@@ -2478,7 +2490,7 @@ public abstract class AbstractSession implements CoreSession,
                 for (Document proxy : proxies) {
                     if (proxy instanceof DocumentProxy) {
                         ((DocumentProxy) proxy).setTargetDocument(target);
-                        return readModel(proxy, null);
+                        return readModel(proxy);
                     }
                 }
             }
@@ -2502,7 +2514,7 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModelList docs = new DocumentModelListImpl();
             for (Document child : children) {
                 if (hasPermission(child, READ)) {
-                    docs.add(readModel(child, null));
+                    docs.add(readModel(child));
                 }
             }
             return docs;
@@ -2557,8 +2569,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ);
             Schema docSchema = doc.getType().getSchema(schema);
             assert docSchema != null;
-            return DocumentModelFactory.exportSchema(
-                    doc.getSession().getUserSessionId(), docRef, doc, docSchema);
+            return DocumentModelFactory.exportSchema(doc, docSchema);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get data model for " + docRef
                     + ':' + schema, e);
@@ -2711,7 +2722,7 @@ public abstract class AbstractSession implements CoreSession,
                 options.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
-                DocumentModel docModel = readModel(doc, null);
+                DocumentModel docModel = readModel(doc);
                 notifyEvent(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
                         docModel, options,
@@ -2824,7 +2835,7 @@ public abstract class AbstractSession implements CoreSession,
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
             doc.setLock(key);
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
                     null, null, true, false);
@@ -2849,7 +2860,7 @@ public abstract class AbstractSession implements CoreSession,
             if (hasPermission(docRef, UNLOCK)
                     || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
-                DocumentModel docModel = readModel(doc, null);
+                DocumentModel docModel = readModel(doc);
                 Map<String, Serializable> options = new HashMap<String, Serializable>();
                 notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
                         options, null, null, true, false);
@@ -3019,7 +3030,7 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             Document parentDoc = doc.getParent();
             if (parentDoc == null) {
-                return readModel(doc, null);
+                return readModel(doc);
             }
             if (!hasPermission(parentDoc, READ)) {
                 String parentPath = parentDoc.getPath();
@@ -3031,7 +3042,7 @@ public abstract class AbstractSession implements CoreSession,
                             parentDoc.getPath()));
                 }
             }
-            return readModel(parentDoc, null);
+            return readModel(parentDoc);
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
@@ -3101,7 +3112,7 @@ public abstract class AbstractSession implements CoreSession,
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // send event on container passing the reordered child as parameter
-            DocumentModel docModel = readModel(doc, null);
+            DocumentModel docModel = readModel(doc);
             String comment = src;
             options.put(CoreEventConstants.REORDERED_CHILD, src);
             notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,

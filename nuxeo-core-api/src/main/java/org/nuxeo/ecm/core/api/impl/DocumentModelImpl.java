@@ -215,80 +215,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
-     * Constructor to use a document model client side without referencing a
-     * document.
-     * <p>
-     * It must at least contain the type.
-     */
-    public DocumentModelImpl(String sid, String type) {
-        this(type);
-        this.sid = sid;
-    }
-
-    /**
      * Constructor to be used by clients.
      * <p>
      * A client constructed data model must contain at least the path and the
      * type.
      */
     public DocumentModelImpl(String parentPath, String name, String type) {
-        this(parentPath, name, type, null);
-    }
-
-    /**
-     * Constructor for DocumentModelImpl.
-     */
-    public DocumentModelImpl(DocumentModel parent, String name, String type) {
-        this(parent.getPathAsString(), name, type, null);
-    }
-
-    /**
-     * Constructor for DocumentModelImpl.
-     */
-    public DocumentModelImpl(DocumentModel parent, String name, String type,
-            DataModelMap data) {
-        this(parent.getPathAsString(), name, type, data);
-    }
-
-    /**
-     * Constructor for DocumentModelImpl.
-     */
-    public DocumentModelImpl(String parentPath, String name, String type,
-            DataModelMap data) {
-        path = new Path(parentPath == null ? name : parentPath + '/' + name);
-        this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
-        ref = new PathRef(parentPath, name);
-        dataModels = data == null ? new DataModelMapImpl() : data;
-        contextData = new ScopedMap();
-    }
-
-    /**
-     * Constructor to be used on server side to create a document model.
-     */
-    public DocumentModelImpl(String sid, String type, String id, Path path,
-            DocumentRef docRef, DocumentRef parentRef, String[] schemas,
-            Set<String> facets) {
-        this(sid, type, id, path, null, docRef, parentRef, schemas, facets);
-    }
-
-    /**
-     * Constructor for DocumentModelImpl.
-     */
-    @Deprecated
-    public DocumentModelImpl(String sid, String type, String id, Path path,
-            String lock, DocumentRef docRef, DocumentRef parentRef,
-            String[] schemas, Set<String> facets) {
-        this.sid = sid;
-        this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
-        this.id = id;
-        this.path = path;
-        ref = docRef;
-        this.parentRef = parentRef;
-        declaredSchemas = schemas;
-        declaredFacets = facets;
-        dataModels = new DataModelMapImpl();
-        this.lock = lock;
-        contextData = new ScopedMap();
+        this(type);
+        String fullPath = parentPath == null ? name : parentPath
+                + (parentPath.endsWith("/") ? "" : "/") + name;
+        path = new Path(fullPath);
+        ref = new PathRef(fullPath);
     }
 
     /**
@@ -298,19 +235,69 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             String lock, DocumentRef docRef, DocumentRef parentRef,
             String[] schemas, Set<String> facets, String sourceId,
             String repositoryName) {
+        this(type);
         this.sid = sid;
-        this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
         ref = docRef;
         this.parentRef = parentRef;
         declaredSchemas = schemas;
         declaredFacets = facets;
-        dataModels = new DataModelMapImpl();
         this.lock = lock;
-        contextData = new ScopedMap();
         this.repositoryName = repositoryName;
         this.sourceId = sourceId;
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public DocumentModelImpl(String sid, String type) {
+        this(type);
+        this.sid = sid;
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public DocumentModelImpl(DocumentModel parent, String name, String type) {
+        this(parent.getPathAsString(), name, type);
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public DocumentModelImpl(DocumentModel parent, String name, String type,
+            DataModelMap data) {
+        this(parent.getPathAsString(), name, type);
+        if (data != null) {
+            dataModels = data;
+        }
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public DocumentModelImpl(String parentPath, String name, String type,
+            DataModelMap data) {
+        this(parentPath, name, type);
+        if (data != null) {
+            dataModels = data;
+        }
+    }
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
+    public DocumentModelImpl(String sid, String type, String id, Path path,
+            DocumentRef docRef, DocumentRef parentRef, String[] schemas,
+            Set<String> facets) {
+        this(sid, type, id, path, null, docRef, parentRef, schemas, facets,
+                null, null);
     }
 
     @Override
