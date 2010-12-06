@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.shell.cmds;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -210,14 +209,10 @@ public class Interactive implements Runnable, ShellConsole {
     }
 
     public void loadHistory() throws IOException {
-        if (!Boolean.parseBoolean((String) shell.getProperty("shell.history",
-                "true"))) {
+        if (!shell.getBooleanSetting("history", true)) {
             return;
         }
-        File file = new File(System.getProperty("user.home"),
-                ".nxshell/history");
-        file.getParentFile().mkdirs();
-        console.getHistory().setHistoryFile(file);
+        console.getHistory().setHistoryFile(shell.getHistoryFile());
         console.getHistory().moveToEnd();
     }
 
@@ -230,7 +225,7 @@ public class Interactive implements Runnable, ShellConsole {
 
     public void removeHistory() {
         closeHistory();
-        new File(System.getProperty("user.home"), ".nxshell/history").delete();
+        shell.getHistoryFile().delete();
     }
 
 }

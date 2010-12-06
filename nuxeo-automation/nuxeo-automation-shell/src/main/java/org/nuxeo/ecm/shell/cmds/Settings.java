@@ -14,55 +14,53 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.fs.cmds;
+package org.nuxeo.ecm.shell.cmds;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileWriter;
 
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
 import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.ShellConsole;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.fs.FileSystem;
+import org.nuxeo.ecm.shell.fs.cmds.Cat;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "cat", help = "Print the content of a file")
-public class Cat implements Runnable {
+@Command(name = "settings", help = "Print or modify the shell settings.")
+public class Settings implements Runnable {
 
     @Context
     protected Shell shell;
 
-    @Argument(name = "file", index = 0, required = false, help = "The file to print")
-    protected File file;
+    @Argument(name = "name", index = 0, required = false, help = "The variable to print or set.")
+    protected String name;
+
+    @Argument(name = "value", index = 1, required = false, help = "The variable value to set.")
+    protected String value;
 
     public void run() {
-        ShellConsole console = shell.getConsole();
-        if (file == null) {
-            file = shell.getContextObject(FileSystem.class).pwd();
-        }
-        cat(console, file);
-    }
-
-    public static void cat(ShellConsole console, File file) {
-        if (!file.isFile()) {
-            return;
-        }
-        String content = null;
+        File file = shell.getSettingsFile();
         try {
-            FileInputStream in = new FileInputStream(file);
-            try {
-                content = FileSystem.readContent(in);
-            } finally {
-                in.close();
+            if (name == null) {
+                Cat.cat(shell.getConsole(), file);
+            } else if (value == null) {
+                shell.getConsole().println(
+                        (String) shell.getSetting(name, "NULL"));
+            } else {
+                shell.getSettings().put(name, value);
+                FileWriter writer = new FileWriter(file);
+                try {
+                    shell.getSettings().store(writer, "generated settings file");
+                } finally {
+                    writer.close();
+                }
             }
         } catch (Exception e) {
             throw new ShellException(e);
         }
-        console.println(content);
     }
 }

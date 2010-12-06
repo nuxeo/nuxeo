@@ -18,6 +18,7 @@ package org.nuxeo.ecm.shell;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -96,6 +97,8 @@ public final class Shell {
 
     protected Map<String, Object> ctx;
 
+    protected Properties settings;
+
     protected Map<Class<?>, Object> ctxObjects;
 
     protected Map<Class<?>, ShellFeature> features;
@@ -105,7 +108,6 @@ public final class Shell {
             throw new ShellException("Shell already loaded");
         }
         shell = this;
-
         features = new HashMap<Class<?>, ShellFeature>();
         activeRegistry = GlobalCommands.INSTANCE;
         cmds = new HashMap<String, CommandRegistry>();
@@ -123,6 +125,47 @@ public final class Shell {
         loadFeatures();
     }
 
+    protected void loadSettings() throws IOException {
+        settings = new Properties();
+        getConfigDir().mkdirs();
+        FileReader reader = new FileReader(getSettingsFile());
+        try {
+            settings.load(reader);
+        } finally {
+            reader.close();
+        }
+    }
+
+    public Properties getSettings() {
+        return settings;
+    }
+
+    public String getSetting(String key) {
+        return settings.getProperty(key);
+    }
+
+    public String getSetting(String key, String defValue) {
+        String v = settings.getProperty(key);
+        return v == null ? defValue : v;
+    }
+
+    public boolean getBooleanSetting(String key, boolean defValue) {
+        String v = settings.getProperty(key);
+        return v == null ? defValue : Boolean.parseBoolean(v);
+    }
+
+    public File getConfigDir() {
+        return new File(System.getProperty("user.home"), ".nxshell");
+    }
+
+    public File getSettingsFile() {
+        return new File(getConfigDir(), "shell.properties");
+    }
+
+    public File getHistoryFile() {
+        return new File(getConfigDir(), "history");
+    }
+
     protected void loadFeatures() {
         ServiceLoader<ShellFeature> loader = ServiceLoader.load(
                 ShellFeature.class, Shell.class.getClassLoader());
@@ -130,9 +173,11 @@ public final class Shell {
         while (it.hasNext()) {
             addFeature(it.next());
         }
-        // TODO move this in loadConfig and use shell.feature from config
         // activate the default feature
         String ns = System.getProperty("shell");
+        if (ns == null) {
+            ns = getSetting("namespace");
+        }
         if (ns != null) {
             CommandRegistry reg = getRegistry(ns);
             if (reg != null) {

@@ -63,6 +63,7 @@ public class RemoteCommands extends CommandRegistry {
         addAnnotatedCommand(MkRelation.class);
         addAnnotatedCommand(GetRelations.class);
         addAnnotatedCommand(SetProperty.class);
+        addAnnotatedCommand(GetProperty.class);
         addAnnotatedCommand(Lock.class);
         addAnnotatedCommand(Unlock.class);
         addAnnotatedCommand(Cp.class);
