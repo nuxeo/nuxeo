@@ -1,5 +1,6 @@
 <div xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
@@ -9,6 +10,7 @@
       id="#{widget.id}"
       required="#{widget.required}"
       styleClass="#{widgetProperty_styleClass}">
+      <f:selectItem itemValue="" itemLabel="#{messages['label.vocabulary.selectValue']}"/>
       <nxu:selectItems
                     value="#{nxd:availableLifeCycleTransitions(widgetProperty_lifeCycleName, widgetProperty_currentLifeCycleState)}"
                     var="item"
