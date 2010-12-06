@@ -34,13 +34,14 @@ public class AdminApp extends WebApplication {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(Main.class);
+        classes.add(Shell.class);
         return classes;
     }
 
     @Override
     public Class<?>[] getWebTypes() {
         return new Class<?>[] { Main.class, User.class, Group.class,
-                UserService.class, EngineService.class };
+                UserService.class, EngineService.class, Shell.class };
     }
 
 }

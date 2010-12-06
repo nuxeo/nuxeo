@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="" href="">
+<jnlp spec="1.0+">
     <information>
         <title>Nuxeo Shell</title>
         <vendor>Nuxeo</vendor>
     </information>
-    <security> 
-        <all-permissions/> 
+    <security>
+        <all-permissions/>
     </security>
     <resources>
         <!-- Application Resources -->
         <j2se version="1.5+"
               href="http://java.sun.com/products/autodl/j2se" />
-        <jar href="${This.path}/shell.jar" main="true" />
-
+        <jar href="${Root.URL}/shell.jar" main="true" />
     </resources>
-    <applet-desc 
+    <applet-desc
          name="Nuxeo Shell"
          main-class="org.nuxeo.ecm.shell.swing.ShellApplet"
          width="800"

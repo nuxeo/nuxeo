@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webengine.admin;
 
-import java.io.File;
-import java.net.URL;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -31,7 +28,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.rest.DocumentRoot;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -46,39 +42,6 @@ public class Main extends RootResource {
 
     public Main(@Context UriInfo info, @Context HttpHeaders headers) {
         super(info, headers, "Admin");
-    }
-
-    @GET
-    @Path("shell")
-    public Object getShell() {
-        return getView("shell");
-    }
-
-    @GET
-    @Path("shell.jnlp")
-    public Object getShellJnlp() {
-        return getView("shell.jnlp");
-    }
-
-    @GET
-    @Path("shell.jar")
-    public Object getShellJar() {
-        File file = null;
-        try {
-            URL url = Class.forName("org.nuxeo.ecm.shell.Shell").getProtectionDomain().getCodeSource().getLocation();
-            return new File(url.toURI());
-        } catch (Exception e) {
-            file = new File(Environment.getDefault().getHome(), "client");
-            if (file.isDirectory()) {
-                for (File f : file.listFiles()) {
-                    String name = f.getName();
-                    if (name.endsWith(".jar") && name.contains("shell")) {
-                        return f;
-                    }
-                }
-            }
-        }
-        return redirect("http://www.nuxeo.com/shell");
     }
 
     @Path("users")
