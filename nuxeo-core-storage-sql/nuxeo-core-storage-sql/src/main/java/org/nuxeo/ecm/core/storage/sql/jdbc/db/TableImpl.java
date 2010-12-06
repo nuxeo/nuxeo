@@ -119,7 +119,7 @@ public class TableImpl implements Table {
     @Override
     public Column addColumn(String name, ColumnType type, String key,
             Model model) {
-        String physicalName = database.getColumnPhysicalName(name);
+        String physicalName = dialect.getTableName(name);
         if (columns.containsKey(physicalName)) {
             throw new IllegalArgumentException("duplicate column "
                     + physicalName);
@@ -237,8 +237,8 @@ public class TableImpl implements Table {
     protected void postAddColumn(Column column, List<String> sqls, Model model) {
         if (column.isPrimary()) {
             StringBuilder buf = new StringBuilder();
-            String constraintName = dialect.openQuote() + name
-                    + (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk")
+            String constraintName = dialect.openQuote()
+                    + dialect.getPrimaryKeyConstraintName(key)
                     + dialect.closeQuote();
             buf.append("ALTER TABLE ");
             buf.append(getQuotedName());
@@ -252,7 +252,7 @@ public class TableImpl implements Table {
         if (ft != null) {
             Column fc = ft.getColumn(column.getForeignKey());
             String constraintName = dialect.openQuote()
-                    + dialect.getForeignKeyConstraintName(name,
+                    + dialect.getForeignKeyConstraintName(key,
                             column.getPhysicalName(), ft.getPhysicalName())
                     + dialect.closeQuote();
             StringBuilder buf = new StringBuilder();
@@ -307,7 +307,7 @@ public class TableImpl implements Table {
                 pcols.add(col.getPhysicalName());
             }
             String quotedIndexName = dialect.openQuote()
-                    + dialect.getIndexName(name, pcols) + dialect.closeQuote();
+                    + dialect.getIndexName(key, pcols) + dialect.closeQuote();
             String createIndexSql;
             String indexName = fulltextIndexedColumns.get(columnNames);
             if (indexName != null) {

@@ -189,11 +189,40 @@ public abstract class Dialect {
         return 999;
     }
 
+    /*
+     * Needs to be deterministic and not change between Nuxeo EP releases.
+     *
+     * Turns "field_with_too_many_chars_for_oracle" into
+     * "FIELD_WITH_TOO_MANY_C_58557BA3".
+     */
+    protected String makeName(String name, int maxNameSize) {
+        if (name.length() > maxNameSize) {
+            MessageDigest digest;
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e.toString(), e);
+            }
+            byte[] bytes = name.getBytes();
+            digest.update(bytes, 0, bytes.length);
+            name = name.substring(0, maxNameSize - 1 - 8);
+            name += '_' + toHexString(digest.digest()).substring(0, 8);
+        }
+        name = storesUpperCaseIdentifiers() ? name.toUpperCase()
+                : name.toLowerCase();
+        name = name.replace(':', '_');
+        return name;
+    }
+
+    /*
+     * Used for one-time names (IDX, FK, PK), ok if algorithm changes.
+     *
+     * If too long, keeps 4 chars of the prefix and the full suffix.
+     */
     protected String makeName(String prefix, String string, String suffix,
             int maxNameSize) {
-        int length = prefix.length() + string.length() + suffix.length();
-        StringBuilder buf = new StringBuilder(length);
-        if (length > maxNameSize) {
+        String name = prefix + string + suffix;
+        if (name.length() > maxNameSize) {
             MessageDigest digest;
             try {
                 digest = MessageDigest.getInstance("MD5");
@@ -202,14 +231,14 @@ public abstract class Dialect {
             }
             byte[] bytes = (prefix + string).getBytes();
             digest.update(bytes, 0, bytes.length);
-            buf.append(prefix.substring(0, 4));
-            buf.append('_');
-            buf.append(toHexString(digest.digest()).substring(0, 8));
-        } else {
-            buf.append(prefix).append(string);
+            name = prefix.substring(0, 4);
+            name += '_' + toHexString(digest.digest()).substring(0, 8);
+            name += suffix;
         }
-        buf.append(storesUpperCaseIdentifiers() ? suffix : suffix.toLowerCase());
-        return buf.toString();
+        name = storesUpperCaseIdentifiers() ? name.toUpperCase()
+                : name.toLowerCase();
+        name = name.replace(':', '_');
+        return name;
     }
 
     protected static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
@@ -221,6 +250,18 @@ public abstract class Dialect {
             buf.append(HEX_DIGITS[0x0F & b]);
         }
         return buf.toString();
+    }
+
+    public String getTableName(String name) {
+        return makeName(name, getMaxNameSize());
+    }
+
+    public String getColumnName(String name) {
+        return makeName(name, getMaxNameSize());
+    }
+
+    public String getPrimaryKeyConstraintName(String tableName) {
+        return makeName(tableName, "", "_PK", getMaxNameSize());
     }
 
     public String getForeignKeyConstraintName(String tableName,
