@@ -65,6 +65,10 @@
       <groupId>com.sun.facelets</groupId>
       <artifactId>jsf-facelets</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

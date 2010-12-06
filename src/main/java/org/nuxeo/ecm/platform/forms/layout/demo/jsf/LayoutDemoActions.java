@@ -20,8 +20,11 @@ import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -135,7 +138,9 @@ public class LayoutDemoActions implements Serializable {
                 && !currentWidgetType.equals(newWidgetType)) {
             // reset demo doc too
             demoDocument = null;
+            showViewPreview = null;
             viewPreviewLayoutDef = null;
+            showEditPreview = null;
             editPreviewLayoutDef = null;
         }
         currentWidgetType = newWidgetType;
@@ -218,8 +223,28 @@ public class LayoutDemoActions implements Serializable {
                 previewLayoutDef.getHelpLabel(),
                 Boolean.TRUE.equals(previewLayoutDef.getTranslated()), null,
                 previewLayoutDef.getFieldDefinitions(),
-                previewLayoutDef.getProperties(), null);
+                cleanUpProperties(previewLayoutDef.getProperties()), null);
         return new LayoutDefinitionImpl("preview_layout", null, widgetDef);
+    }
+
+    /**
+     * Removes empty properties as the JSF component may not accept empty
+     * values for some properties like "converter" or "validator".
+     */
+    protected Map<String, Serializable> cleanUpProperties(
+            Map<String, Serializable> props) {
+        Map<String, Serializable> res = new HashMap<String, Serializable>();
+        if (props != null) {
+            for (Map.Entry<String, Serializable> prop : props.entrySet()) {
+                Serializable value = prop.getValue();
+                if (value == null
+                        || (value instanceof String && StringUtils.isEmpty((String) value))) {
+                    continue;
+                }
+                res.put(prop.getKey(), value);
+            }
+        }
+        return res;
     }
 
     public Boolean getShowEditPreview() {
