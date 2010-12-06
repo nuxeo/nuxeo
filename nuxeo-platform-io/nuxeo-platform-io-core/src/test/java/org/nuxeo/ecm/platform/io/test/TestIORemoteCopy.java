@@ -71,7 +71,6 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
 
     protected CoreSession coreSession;
 
-    protected DocumentModel root;
     protected DocumentModel parent;
     protected DocumentModel child;
 
@@ -152,24 +151,24 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
     private void createTestDocumentsAndResources(String parentName,
             String childName) throws ClientException {
         // adding a folder and a child doc
-        root = coreSession.getRootDocument();
 
-        parent = new DocumentModelImpl(root, parentName, "Folder");
+        parent = new DocumentModelImpl("/", parentName, "Folder");
         parent = coreSession.createDocument(parent);
 
         // create structure for comments infrastructure
         // -----
-        DocumentModel comments = new DocumentModelImpl(parent, "Comments",
-                "Folder");
+        DocumentModel comments = new DocumentModelImpl(
+                parent.getPathAsString(), "Comments", "Folder");
         comments = coreSession.createDocument(comments);
 
         DateFormat df = new SimpleDateFormat("yyyy-MM");
-        comments = new DocumentModelImpl(comments, df.format(new Date()),
-                "Folder");
+        comments = new DocumentModelImpl(comments.getPathAsString(),
+                df.format(new Date()), "Folder");
         comments = coreSession.createDocument(comments);
         // -----
 
-        child = new DocumentModelImpl(parent, childName, "File");
+        child = new DocumentModelImpl(parent.getPathAsString(), childName,
+                "File");
         child = coreSession.createDocument(child);
         coreSession.save();
 
@@ -194,7 +193,7 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         adapters.add("dummy");
 
         // check docs before copy
-        DocumentModelList children = coreSession.getChildren(root.getRef());
+        DocumentModelList children = coreSession.getChildren(coreSession.getRootDocument().getRef());
         printInfo("children", children);
         assertEquals(1, children.size());
         // check copied docs

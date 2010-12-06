@@ -65,7 +65,6 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
     protected CoreSession coreSession1;
     protected CoreSession coreSession2;
 
-    protected DocumentModel root;
     protected DocumentModel testRoot;
     protected DocumentModel parent;
     protected DocumentModel child;
@@ -137,26 +136,29 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         CoreSession coreSession = coreSession1;
 
         // adding a folder and a child doc
-        root = coreSession.getRootDocument();
 
-        testRoot = new DocumentModelImpl(root, "test" + new Date().getTime(), "Folder");
+        testRoot = new DocumentModelImpl("/", "test" + new Date().getTime(),
+                "Folder");
         testRoot = coreSession.createDocument(testRoot);
         testRoot.setProperty("dublincore", "title", "TestRoot");
         testRoot = coreSession.saveDocument(testRoot);
 
-        parent = new DocumentModelImpl(testRoot, parentName, "Folder");
+        parent = new DocumentModelImpl(testRoot.getPathAsString(), parentName,
+                "Folder");
         parent = coreSession.createDocument(parent);
         parent.setProperty("dublincore", "title", "Parent");
         parent = coreSession.saveDocument(parent);
 
-        child = new DocumentModelImpl(parent, childName, "File");
+        child = new DocumentModelImpl(parent.getPathAsString(), childName,
+                "File");
         child = coreSession.createDocument(child);
         child.setProperty("dublincore", "title", "Child");
         child = coreSession.saveDocument(child);
         child.setProperty("dublincore", "description", "some description");
         child = coreSession.saveDocument(child);
 
-        child2 = new DocumentModelImpl(parent, childName, "File");
+        child2 = new DocumentModelImpl(parent.getPathAsString(), childName,
+                "File");
         child2 = coreSession.createDocument(child2);
         child2.setProperty("dublincore", "title", "Child2");
         child2 = coreSession.saveDocument(child2);

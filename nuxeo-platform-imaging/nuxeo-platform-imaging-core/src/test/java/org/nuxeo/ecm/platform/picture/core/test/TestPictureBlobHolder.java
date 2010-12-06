@@ -38,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestPictureBlobHolder extends RepositoryOSGITestCase {
 
-    DocumentModel root;
-
     BlobHolderAdapterService service;
 
     @Override
@@ -48,8 +46,6 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         openRepository();
-        root = getCoreSession().getRootDocument();
-        assertNotNull(root);
         service = Framework.getLocalService(BlobHolderAdapterService.class);
         assertNotNull(service);
     }
@@ -91,8 +87,8 @@ public class TestPictureBlobHolder extends RepositoryOSGITestCase {
     }
 
     public void testBlobHolder() throws Exception {
-        DocumentModel picturebook = new DocumentModelImpl(
-                root.getPathAsString(), "picturebook", "PictureBook");
+        DocumentModel picturebook = new DocumentModelImpl("/", "picturebook",
+                "PictureBook");
         coreSession.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(
                 picturebook.getPathAsString(), "pic1", "Picture");
