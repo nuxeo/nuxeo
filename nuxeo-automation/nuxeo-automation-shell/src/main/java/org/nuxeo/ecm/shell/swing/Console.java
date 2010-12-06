@@ -78,7 +78,6 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
         setCaretColor(Color.GREEN);
         setBackground(Color.black);
         setForeground(Color.GREEN);
-        setFocusable(true);
         setEditable(true);
     }
 
