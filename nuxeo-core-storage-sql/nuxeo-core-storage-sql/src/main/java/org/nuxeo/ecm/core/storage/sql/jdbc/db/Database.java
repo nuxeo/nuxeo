@@ -58,7 +58,7 @@ public class Database implements Serializable {
     }
 
     public Table addTable(String name) throws IllegalArgumentException {
-        String physicalName = getTablePhysicalName(name);
+        String physicalName = dialect.getTableName(name);
         if (!physicalTables.add(physicalName)) {
             throw new IllegalArgumentException("Duplicate table name: "
                     + physicalName);
@@ -66,20 +66,6 @@ public class Database implements Serializable {
         Table table = new TableImpl(this, physicalName, name);
         tables.put(name, table);
         return table;
-    }
-
-    protected String getPhysicalName(String name) {
-        String physicalName = dialect.storesUpperCaseIdentifiers() ? name.toUpperCase()
-                : name.toLowerCase();
-        return physicalName.replace(':', '_');
-    }
-
-    protected String getTablePhysicalName(String name) {
-        return getPhysicalName(name);
-    }
-
-    protected String getColumnPhysicalName(String name) {
-        return getPhysicalName(name);
     }
 
     public Table getTable(String name) {

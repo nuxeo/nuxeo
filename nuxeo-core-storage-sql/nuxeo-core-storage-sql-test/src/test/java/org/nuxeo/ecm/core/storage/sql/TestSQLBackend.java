@@ -77,6 +77,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
     }
 
+    public void testSchemaWithLongName() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-schema-longname.xml");
+        Session session = repository.getConnection();
+        session.getRootNode();
+    }
+
     protected int getChildrenHardSize(Session session) {
         return ((SessionImpl) session).context.hierContext.childrenRegularHard.size();
     }
