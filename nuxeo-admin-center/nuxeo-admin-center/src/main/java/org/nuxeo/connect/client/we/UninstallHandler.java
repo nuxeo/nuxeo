@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provides REST bindings for {@link Package} install management.
- *
+ * 
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @WebObject(type = "uninstallHandler")
@@ -60,7 +60,7 @@ public class UninstallHandler extends DefaultObject {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
 
-            Task uninstallTask = pkg.getInstallTask();
+            Task uninstallTask = pkg.getUninstallTask();
 
             ValidationStatus status = uninstallTask.validate();
 
