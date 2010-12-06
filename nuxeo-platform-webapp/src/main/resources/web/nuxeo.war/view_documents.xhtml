@@ -22,34 +22,9 @@
   <ui:define name="body">
     <div>
 
-    <h:panelGroup rendered="#{currentDocument.version}">
-      <h1>
-      <h:outputText value="#{nxd:titleOrId(versionedActions.sourceDocument)}"/>
-      (
-      <h:outputText value="#{messages['label.version']}" />
-      <h:outputText value=" #{currentDocument.uid.major_version}"/>.
-      <h:outputText value="#{currentDocument.uid.minor_version}"/>)
-      </h1>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{! currentDocument.version}">
-      <h1>
-        <h:outputText value="#{nxd:titleOrId(currentDocument)}"/>
-        <span title="uid: #{currentDocument.id}">
-          <nxd:restDocumentLink document="#{currentDocument}" pattern="id">
-            <nxu:graphicImage value="/icons/permalink.png"
-              style="vertical-align:middle"
-              alt="#{messages['label.permalink']}"
-              title="#{messages['label.permalink']}"/>
-          </nxd:restDocumentLink>
-       </span>    
-      </h1>
-    </h:panelGroup>
-      <ui:include src="/incl/message_banner.xhtml"/>
+      <nxl:layout name="document_header" mode="view" value="#{currentDocument}" />
 
-      <p class="currentDocumentDescription">
-        <nxl:widgetType name="textarea" mode="view" 
-          value="#{currentDocument.dublincore.description}" />
-      </p>
+      <ui:include src="/incl/message_banner.xhtml"/>
 
       <ui:include src="/incl/document_action_tabs.xhtml"/>
       <div style="clear:both"></div>

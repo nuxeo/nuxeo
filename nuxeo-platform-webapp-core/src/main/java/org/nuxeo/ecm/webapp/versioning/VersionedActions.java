@@ -108,6 +108,8 @@ public interface VersionedActions {
 
     DocumentModel getSourceDocument() throws ClientException;
 
+    DocumentModel getSourceDocument(DocumentModel document) throws ClientException;
+
     /**
      * Check if a version can be removed. It won't be possible if a proxy is
      * pointing to it.

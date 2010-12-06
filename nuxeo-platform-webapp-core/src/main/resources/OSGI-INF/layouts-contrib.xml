@@ -3,6 +3,33 @@
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="title_and_permlink">
+
+      <documentation>
+        This widgets displays the document title with a permlink icon.
+        If the document is a version, the major and minor are displayed in parenthesis.
+
+        Three fields are required :
+        <ul>
+          <li>an empty field to map the document</li>
+          <li>the major version field</li>
+          <li>the minor version field</li>
+        </ul>
+      </documentation>
+
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/title_with_permlink_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="nature" type="selectOneDirectory">
@@ -306,6 +333,28 @@
        </subWidgets>
      </widget>
 
+      <widget name="header_title_and_permlink" type="title_and_permlink">
+        <fields>
+          <field></field>
+          <field>uid:major_version</field>
+          <field>uid:minor_version</field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+      </widget>
+      <widget name="header_description" type="textarea">
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <properties mode="any">
+          <property name="styleClass">currentDocumentDescription</property>
+        </properties>
+      </widget>
+
     </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -416,6 +465,20 @@
       <rows>
         <row>
           <widget>files</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="document_header">
+      <templates>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>header_title_and_permlink</widget>
+        </row>
+        <row>
+          <widget>header_description</widget>
         </row>
       </rows>
     </layout>

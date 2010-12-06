@@ -217,7 +217,15 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Override
     public DocumentModel getSourceDocument() throws ClientException {
-        return documentManager.getSourceDocument(navigationContext.getCurrentDocument().getRef());
+        return getSourceDocument(navigationContext.getCurrentDocument());
+    }
+
+    /**
+     * @since 5.4
+     */
+    @Override
+    public DocumentModel getSourceDocument(DocumentModel document) throws ClientException {
+        return documentManager.getSourceDocument(document.getRef());
     }
 
     @Override
