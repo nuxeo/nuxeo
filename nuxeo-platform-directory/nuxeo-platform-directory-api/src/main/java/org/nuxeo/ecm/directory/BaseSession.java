@@ -55,7 +55,8 @@ public abstract class BaseSession implements Session {
             String schema, String id, Map<String, Object> values)
             throws PropertyException {
         DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id,
-                null, null, null, new String[] { schema }, new HashSet<String>());
+                null, null, null, null, new String[] { schema },
+                new HashSet<String>(), null, null);
         DataModel dataModel;
         if (values == null) {
             dataModel = new DataModelImpl(schema,

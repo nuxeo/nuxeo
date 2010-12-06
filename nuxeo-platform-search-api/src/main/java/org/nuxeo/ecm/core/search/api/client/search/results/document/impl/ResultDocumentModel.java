@@ -50,7 +50,8 @@ public class ResultDocumentModel extends DocumentModelImpl {
             Set<String> facets, String lifeCycleState, String versionLabel,
             String repoName) {
         // no session id (sid) !
-        super(null, type, id, path, docRef, parentRef, schemas, facets);
+        super(null, type, id, path, null, docRef, parentRef, schemas, facets,
+                null, null);
         repositoryName = repoName;
 
         currentLifeCycleState = lifeCycleState;

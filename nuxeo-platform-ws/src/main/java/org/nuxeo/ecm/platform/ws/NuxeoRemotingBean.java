@@ -607,7 +607,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         CoreSession documentManager = rs.getDocumentManager();
         DocumentRef parentRef = new IdRef(parentUUID);
         DocumentModel document = new DocumentModelImpl(
-                documentManager.getDocument(parentRef), name, type);
+                documentManager.getDocument(parentRef).getPathAsString(), name,
+                type);
 
         document = documentManager.createDocument(document);
 
