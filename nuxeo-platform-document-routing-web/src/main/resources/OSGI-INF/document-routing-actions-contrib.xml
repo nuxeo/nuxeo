@@ -49,11 +49,17 @@
       <filter-id>isEditableRoute</filter-id>
     </action>
 
-    <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
+    <action id="SAVE_ATTACHED_ROUTE_AS_NEW_INSTANCE"
       link="#{routingActions.saveRouteAsNewInstance()}"
       order="10" label="label.document.routing.saveAsNew">
       <category>ATTACHED_ROUTE_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
+      link="#{routingActions.saveRouteAsNewInstance()}"
+      order="10" label="label.document.routing.saveAsNew">
+      <category>ROUTE_LIST</category>
     </action>
     
     <action id="ADD_STEP_BEFORE" label="command.add.routeelement.before" link="javascript:document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'before';Richfaces.showModalPanel('selectRouteElementsTypePanel');"

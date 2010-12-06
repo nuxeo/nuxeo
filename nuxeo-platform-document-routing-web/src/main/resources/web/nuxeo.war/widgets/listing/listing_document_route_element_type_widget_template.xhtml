@@ -1,0 +1,16 @@
+<f:subview id="#{widget.id}"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <div class="cell">
+    <nxu:graphicImage
+      value="#{nxd:iconPath(field_0)}" alt="#{field_0.dc.description}"
+      title="#{field_0.dc.description}" rendered="#{!empty nxd:iconPath(field_0)}"
+      styleClass="smallIcon" />
+    <span>
+      <h:outputText value="#{messages[field_1]}" />
+    </span>
+  </div>
+
+</f:subview>

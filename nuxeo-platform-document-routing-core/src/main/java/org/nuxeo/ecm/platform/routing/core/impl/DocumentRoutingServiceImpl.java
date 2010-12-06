@@ -439,9 +439,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     parent.getRef(), newName);
             newmodel.setPropertyValue("dc:title", newName);
             DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
-            newRoute.followTransition(
-                    DocumentRouteElement.ElementLifeCycleTransistion.toDraft,
-                    session, false);
+            if (!newRoute.isDraft()) {
+                newRoute.followTransition(
+                        DocumentRouteElement.ElementLifeCycleTransistion.toDraft,
+                        session, false);
+            }
             newRoute.setAttachedDocuments(new ArrayList<String>());
             newRoute.save(session);
             return newRoute;
