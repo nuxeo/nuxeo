@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.ScheduleImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -103,6 +104,7 @@ public class TestScheduler extends NXRuntimeTestCase {
         assertTrue(unregistered);
     }
 
+    @Ignore
     public void testScheduleManualRegistrationWithParameters() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);
