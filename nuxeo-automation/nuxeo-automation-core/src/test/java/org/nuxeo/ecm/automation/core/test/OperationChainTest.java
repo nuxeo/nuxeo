@@ -20,6 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Calendar;
+
+import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +102,7 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
+     * 
      * <p>
      * This is testing a chain having multiple choices and one choice having a
      * higher priority.
@@ -122,7 +126,7 @@ public class OperationChainTest {
 
     /**
      * Same as before but use a managed chain
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -138,7 +142,7 @@ public class OperationChainTest {
 
     /**
      * Test compiled chain
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -158,11 +162,11 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
+     * 
      * <p>
-     * This test is using the same chain as in the previous test but changes
-     * the input to DocumentRef. This is also testing matching on derived
-     * classes (since the IdRef used is a subclass of DocumentRef)
+     * This test is using the same chain as in the previous test but changes the
+     * input to DocumentRef. This is also testing matching on derived classes
+     * (since the IdRef used is a subclass of DocumentRef)
      */
     @Test
     public void testChain2() throws Exception {
@@ -191,11 +195,11 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;Source,Source,Source&quot;
      * </pre>
-     *
+     * 
      * <p>
      * This is testing a chain having multiple choices. You can see that the
-     * second operation in chain (O3) provides 2 ways of processing a 'doc'.
-     * But the 'O3:doc:doc' way will be selected since the other way (e.g.
+     * second operation in chain (O3) provides 2 ways of processing a 'doc'. But
+     * the 'O3:doc:doc' way will be selected since the other way (e.g.
      * O3:doc:ref) cannot generate a complete chain path.
      */
     @Test
@@ -216,7 +220,7 @@ public class OperationChainTest {
 
     /**
      * Same as before but with a ctrl operation between o3 and o3
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -240,7 +244,7 @@ public class OperationChainTest {
     /**
      * This is testing the parameter expressions. If you set an operation
      * parameter that point to 'var:principal' it will return
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -260,7 +264,7 @@ public class OperationChainTest {
 
     /**
      * Same as previous but test params specified as Mvel templates
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -281,10 +285,10 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing an invalid chain. The last operation in the chain
-     * accepts as input only Principal which is never produced by the previous
+     * This is testing an invalid chain. The last operation in the chain accepts
+     * as input only Principal which is never produced by the previous
      * operations in the chain.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -335,9 +339,9 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!,Hello 3!&quot;
      * title : &quot;,/,/&quot;
      * </pre>
-     *
+     * 
      * Test void input.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -366,9 +370,9 @@ public class OperationChainTest {
      * message : &quot;Hello 1!,Hello 2!&quot;
      * title : &quot;/,/&quot;
      * </pre>
-     *
+     * 
      * Test docref to doc adapter. Test precedence of adapters over void.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -396,9 +400,9 @@ public class OperationChainTest {
      * message : &quot;Hello 1!&quot;
      * title : &quot;/&quot;
      * </pre>
-     *
+     * 
      * Test doc to docref adapter.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -415,10 +419,10 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing optional parameters. Operation2 has an optional
-     * 'message' parameter. If this is not specified in the operation parameter
-     * map the default value will be used which is 'default message'.
-     *
+     * This is testing optional parameters. Operation2 has an optional 'message'
+     * parameter. If this is not specified in the operation parameter map the
+     * default value will be used which is 'default message'.
+     * 
      * @throws Exception
      */
     @Test
@@ -438,7 +442,7 @@ public class OperationChainTest {
      * This is testing required parameters. Operation1 has a required 'message'
      * parameter. If this is not specified in the operation parameter map an
      * exception must be thrown.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -458,10 +462,10 @@ public class OperationChainTest {
     }
 
     /**
-     * This is testing adapters when injecting parameters. Operation 4 is
-     * taking a DocumentModel parameter. We will inject a DocumentRef to test
-     * DocRef to DocModel adapter.
-     *
+     * This is testing adapters when injecting parameters. Operation 4 is taking
+     * a DocumentModel parameter. We will inject a DocumentRef to test DocRef to
+     * DocModel adapter.
+     * 
      * @throws Exception
      */
     @Test
@@ -479,10 +483,10 @@ public class OperationChainTest {
     }
 
     /**
-     * Set a context variable from the title of the input document and use it
-     * in the next operation (by returning it) This is also testing boolean
+     * Set a context variable from the title of the input document and use it in
+     * the next operation (by returning it) This is also testing boolean
      * injection.
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -513,4 +517,28 @@ public class OperationChainTest {
         assertTrue(out.contains("c"));
     }
 
+    @Test
+    public void testCopyDates() throws Exception {
+        DocumentModel doc = session.createDocumentModel(src.getPathAsString(),
+                "testDoc", "Folder");
+        doc.setPropertyValue("dc:title", "TestDoc");
+        doc = session.createDocument(doc);
+        session.save();
+
+        Calendar date = Calendar.getInstance();
+        src.setPropertyValue("dc:issued", date);
+        src = session.saveDocument(src);
+
+        session.save();
+
+        Assert.assertNull(doc.getPropertyValue("dc:issued"));
+        Assert.assertEquals(date, src.getPropertyValue("dc:issued"));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        // this chain copy the dc:issue from the parent to the child
+        DocumentModel out = (DocumentModel) service.run(ctx, "testDateCopy");
+
+        Assert.assertEquals(date, out.getPropertyValue("dc:issued"));
+    }
 }

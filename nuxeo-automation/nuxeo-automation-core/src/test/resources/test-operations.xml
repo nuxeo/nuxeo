@@ -54,6 +54,15 @@
       </operation>
     </chain>
 
+    <chain id="testDateCopy">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.SetProperty">
+        <param type="serializable" name="value">expr:Document.parent.getProperty("dc:issued")</param>
+        <param type="string" name="xpath">dc:issued</param>
+        <param type="boolean" name="save">true</param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>
