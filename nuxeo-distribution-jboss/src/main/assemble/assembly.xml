@@ -78,7 +78,7 @@
     </unzip>
     <chmod dir="${jboss}/bin" perm="ug+x" includes="*.sh,*ctl,*.command" />
 
-    <!-- Remove non-nuxeo information files from root 
+    <!-- Remove non-nuxeo information files from root
     <mkdir dir="${jboss}/doc-jboss" />
     <move todir="${jboss}/doc-jboss">
       <fileset dir="${jboss}">
@@ -271,6 +271,7 @@
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
         <include name="nuxeo-runtime-jetty-*" />
         <include name="nuxeo-runtime-jtajca*" />
+        <include name="nuxeo-platform-login-default*" />
       </fileset>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
         <include name="jboss-cache*" />
