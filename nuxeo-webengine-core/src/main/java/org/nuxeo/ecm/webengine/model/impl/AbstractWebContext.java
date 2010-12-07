@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.model.impl;
 
+import static org.nuxeo.ecm.webengine.WebEngine.SKIN_PATH_PREFIX_KEY;
+
 import java.io.File;
 import java.io.Writer;
 import java.security.Principal;
@@ -58,11 +60,9 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.webengine.WebEngine.SKIN_PATH_PREFIX_KEY;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class AbstractWebContext implements WebContext {
 
@@ -676,7 +676,7 @@ public abstract class AbstractWebContext implements WebContext {
                 bindings.put("Adapter", adapter);
             }
         }
-        if (!isRepositoryDisabled) {
+        if (!isRepositoryDisabled && getPrincipal() != null) {
             try {
                 bindings.put("Session", getCoreSession());
             } catch (Exception e) {
@@ -706,7 +706,7 @@ public abstract class AbstractWebContext implements WebContext {
      * in scripting context. If the application is not deploying a repository
      * injecting a repository session will throw exceptions each time rendering
      * is used.
-     *
+     * 
      * @param isRepositoryDisabled true to disable repository session injection,
      *            false otherwise
      */
