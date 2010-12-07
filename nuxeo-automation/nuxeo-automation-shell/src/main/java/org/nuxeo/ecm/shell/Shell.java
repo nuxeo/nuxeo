@@ -108,6 +108,11 @@ public final class Shell {
             throw new ShellException("Shell already loaded");
         }
         shell = this;
+        try {
+            loadSettings();
+        } catch (IOException e) {
+            throw new ShellException("Failed to initialize shell", e);
+        }
         features = new HashMap<Class<?>, ShellFeature>();
         activeRegistry = GlobalCommands.INSTANCE;
         cmds = new HashMap<String, CommandRegistry>();
@@ -128,11 +133,14 @@ public final class Shell {
     protected void loadSettings() throws IOException {
         settings = new Properties();
         getConfigDir().mkdirs();
-        FileReader reader = new FileReader(getSettingsFile());
-        try {
-            settings.load(reader);
-        } finally {
-            reader.close();
+        File file = getSettingsFile();
+        if (file.isFile()) {
+            FileReader reader = new FileReader(getSettingsFile());
+            try {
+                settings.load(reader);
+            } finally {
+                reader.close();
+            }
         }
     }
 
