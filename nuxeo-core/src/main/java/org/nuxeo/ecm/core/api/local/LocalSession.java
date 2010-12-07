@@ -87,9 +87,15 @@ public class LocalSession extends AbstractSession {
                     }
                 }
             }
-            if (principal == null && isTestingContext()) {
-                principal = new UserPrincipal(
-                        SecurityConstants.SYSTEM_USERNAME, null, false, true);
+            if (principal == null) {
+                if (isTestingContext()) {
+                    principal = new UserPrincipal(
+                            SecurityConstants.SYSTEM_USERNAME, null, false,
+                            true);
+                } else {
+                    throw new ClientException(
+                            "Cannot create a core session outside a security context. You must login first.");
+                }
             }
             // store the principal in the core session context so that other
             // core tools may retrieve it
