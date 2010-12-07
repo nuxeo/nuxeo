@@ -655,6 +655,7 @@
       <selector path=".currentItemDescription">
         <color preset="default.text (Galaxy colors)" />
         <font-size>13px</font-size>
+        <display>block</display>
       </selector>
       <selector path=".dataInput">
         <margin-top>5px</margin-top>
