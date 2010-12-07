@@ -897,7 +897,9 @@ public class ClipboardActionsBean extends InputController implements
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (exportAllBlobs) {
-            blobs = bh.getBlobs();
+            if (bh.getBlobs() != null) {
+                blobs = bh.getBlobs();
+            }
         } else {
             Blob mainBlob = bh.getBlob();
             if (mainBlob != null) {
