@@ -34,28 +34,30 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
 @Deploy({
-    "org.nuxeo.ecm.platform.login",
-    "org.nuxeo.ecm.platform.web.common",
-    "org.nuxeo.ecm.webengine.admin",
-    "org.nuxeo.ecm.webengine.base",
-    "org.nuxeo.ecm.webengine.core",
-    "org.nuxeo.ecm.webengine.ui",
-    "org.nuxeo.ecm.webengine.gwt",
-    "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
-    "org.nuxeo.ecm.webengine.test:authentication-config.xml",
-    "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
-    "org.nuxeo.ecm.webengine.test:login-config.xml",
-    "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml"
-})
+        "org.nuxeo.ecm.platform.login",
+        "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.login.default",
+        "org.nuxeo.ecm.webengine.admin",
+        "org.nuxeo.ecm.webengine.base",
+        "org.nuxeo.ecm.webengine.core",
+        "org.nuxeo.ecm.webengine.ui",
+        "org.nuxeo.ecm.webengine.gwt",
+        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+        "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml",
+        "org.nuxeo.ecm.webengine.test:login-config.xml",
+        "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml" })
 @Features({ JettyFeature.class, PlatformFeature.class, WebDriverFeature.class })
-public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class WebEngineFeature extends SimpleFeature implements
+        WorkingDirectoryConfigurator {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
+                this);
     }
 
-    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
+    public void configure(RuntimeHarness harness, File workingDir)
+            throws IOException {
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
@@ -73,10 +75,12 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
                 resource);
     }
 
-//    public void deployTestModule() {
-//        URL currentDir = Thread.currentThread().getContextClassLoader().getResource(
-//                ".");
-//        ModuleManager moduleManager = Framework.getLocalService(WebEngine.class).getModuleManager();
-//        moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
-//    }
+    // public void deployTestModule() {
+    // URL currentDir =
+    // Thread.currentThread().getContextClassLoader().getResource(
+    // ".");
+    // ModuleManager moduleManager =
+    // Framework.getLocalService(WebEngine.class).getModuleManager();
+    // moduleManager.loadModuleFromDir(new File(currentDir.getFile()));
+    // }
 }
