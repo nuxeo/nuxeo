@@ -19,6 +19,7 @@ package org.nuxeo.ecm.shell;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.ServiceLoader;
 
 import jline.ANSIBuffer;
 
+import org.nuxeo.ecm.shell.cmds.ConfigurationCommands;
 import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 import org.nuxeo.ecm.shell.cmds.Interactive;
 import org.nuxeo.ecm.shell.cmds.Version;
@@ -83,6 +85,8 @@ public final class Shell {
         shell = null;
     }
 
+    protected List<ShellConfigurationListener> listeners;
+
     protected LinkedHashMap<String, String> mainArgs;
 
     protected CompositeCompletorProvider completorProvider;
@@ -113,6 +117,7 @@ public final class Shell {
         } catch (IOException e) {
             throw new ShellException("Failed to initialize shell", e);
         }
+        listeners = new ArrayList<ShellConfigurationListener>();
         features = new HashMap<Class<?>, ShellFeature>();
         activeRegistry = GlobalCommands.INSTANCE;
         cmds = new HashMap<String, CommandRegistry>();
@@ -126,8 +131,17 @@ public final class Shell {
         addCompletorProvider(new DefaultCompletorProvider());
         addValueAdapter(new DefaultValueAdapter());
         addRegistry(GlobalCommands.INSTANCE);
-
+        addRegistry(ConfigurationCommands.INSTANCE);
         loadFeatures();
+    }
+
+    public void addConfigurationListener(ShellConfigurationListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeConfigurationChangeListener(
+            ShellConfigurationListener listener) {
+        listeners.remove(listener);
     }
 
     protected void loadSettings() throws IOException {
@@ -146,6 +160,20 @@ public final class Shell {
 
     public Properties getSettings() {
         return settings;
+    }
+
+    public void setSetting(String name, String value) throws IOException {
+        File file = shell.getSettingsFile();
+        shell.getSettings().put(name, value);
+        FileWriter writer = new FileWriter(file);
+        try {
+            shell.getSettings().store(writer, "generated settings file");
+            for (ShellConfigurationListener listener : listeners) {
+                listener.onConfigurationChange(name, value);
+            }
+        } finally {
+            writer.close();
+        }
     }
 
     public String getSetting(String key) {

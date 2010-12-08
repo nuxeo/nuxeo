@@ -18,6 +18,7 @@ package org.nuxeo.ecm.shell.swing;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import jline.ConsoleReader;
 import jline.History;
 
 import org.nuxeo.ecm.shell.Shell;
+import org.nuxeo.ecm.shell.ShellConfigurationListener;
 import org.nuxeo.ecm.shell.cmds.ConsoleReaderFactory;
 import org.nuxeo.ecm.shell.swing.widgets.HistoryFinder;
 
@@ -46,7 +48,10 @@ import org.nuxeo.ecm.shell.swing.widgets.HistoryFinder;
  * 
  */
 @SuppressWarnings("serial")
-public class Console extends JTextArea implements ConsoleReaderFactory {
+public class Console extends JTextArea implements ConsoleReaderFactory,
+        ShellConfigurationListener {
+
+    protected Theme theme;
 
     protected ConsoleReader reader;
 
@@ -68,17 +73,30 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
     protected StringBuilder pwd;
 
     public Console() throws Exception {
+        setTheme(Theme.getDefault());
+        setMargin(new Insets(6, 6, 6, 6));
+        setEditable(true);
         in = new In();
         out = new Out();
         reader = new ConsoleReader(in, out, null, new SwingTerminal(this));
         reader.setCompletionHandler(new SwingCompletionHandler(this));
         complete = reader.getClass().getDeclaredMethod("complete");
         complete.setAccessible(true);
-        setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        setCaretColor(Color.GREEN);
-        setBackground(Color.black);
-        setForeground(Color.GREEN);
-        setEditable(true);
+        Shell.get().addConfigurationListener(this);
+        Shell.get().getRegistry("config").addAnnotatedCommand(
+                org.nuxeo.ecm.shell.swing.cmds.Font.class);
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+        setFont(theme.font());
+        setCaretColor(theme.fg());
+        setBackground(theme.bg());
+        setForeground(theme.fg());
     }
 
     public ConsoleReader getReader() {
@@ -483,6 +501,13 @@ public class Console extends JTextArea implements ConsoleReaderFactory {
 
     public void exit(int code) {
         in.put("exit " + code);
+    }
+
+    public void onConfigurationChange(String name, String value) {
+        if ("theme".equals(name) || "color".equals(name)
+                || "background".equals(name) || "font".equals(name)) {
+            setTheme(Theme.getDefault());
+        }
     }
 
 }

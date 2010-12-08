@@ -14,44 +14,37 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.cmds;
+package org.nuxeo.ecm.shell.swing.cmds;
 
-import java.io.File;
-
-import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
+import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.fs.cmds.Cat;
+import org.nuxeo.ecm.shell.swing.FontFamilyCompletor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "settings", help = "Print or modify the shell settings.")
-public class Settings implements Runnable {
+@Command(name = "font", help = "Print or modify the font used by the shell. This command is available only in UI mode.")
+public class Font implements Runnable {
 
     @Context
     protected Shell shell;
 
-    @Argument(name = "name", index = 0, required = false, help = "The variable to print or set.")
+    @Parameter(name = "-name", hasValue = true, completor = FontFamilyCompletor.class, help = "The font name. Default is 'Monospace'.")
     protected String name;
 
-    @Argument(name = "value", index = 1, required = false, help = "The variable value to set.")
-    protected String value;
+    @Parameter(name = "-size", hasValue = true, help = "The font size. Default is 14.")
+    protected String size;
+
+    @Parameter(name = "-weight", hasValue = true, help = "The font weight. Default is 'plain'.")
+    protected String weight;
 
     public void run() {
-        File file = shell.getSettingsFile();
         try {
-            if (name == null) {
-                Cat.cat(shell.getConsole(), file);
-            } else if (value == null) {
-                shell.getConsole().println(
-                        (String) shell.getSetting(name, "NULL"));
-            } else {
-                shell.setSetting(name, value);
-            }
+            // shell.setSetting(name, value);
         } catch (Exception e) {
             throw new ShellException(e);
         }

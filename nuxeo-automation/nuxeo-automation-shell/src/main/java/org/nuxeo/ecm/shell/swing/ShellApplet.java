@@ -50,6 +50,7 @@ public class ShellApplet extends JApplet implements InteractiveShellHandler {
 
     public void init() {
         try {
+            Shell.get(); // initialize the shell to get default settings
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
                     try {
