@@ -62,7 +62,7 @@
                 <#assign visible=selected_css_categories?seq_contains(category) />
                 <tr>
                   <td colspan="2" class="nxthemesCategoryHeader">
-                    <a href="javascript:void(0)" onclick="NXThemesStyleEditor.toggleCssCategory(this, '${category}')">
+                    <a href="javascript:void(0)" onclick="NXThemesStyleEditor.toggleCssCategory(this, '${category?js_string}')">
                     <#if visible>
                       <span class="nxthemesStyleCategoryClose">&nbsp;</span> 
                     <#else>

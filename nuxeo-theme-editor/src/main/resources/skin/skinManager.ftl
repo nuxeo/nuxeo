@@ -40,7 +40,7 @@
     <div>Select a base skin for the <strong>${current_theme.name}</strong> theme:
      <#if current_skin_name>
       <button style="float: right" class="nxthemesActionButton" 
-      onclick="javascript:NXThemesSkinManager.deactivateSkin('${current_theme.name}')">Remove skin</button>
+      onclick="javascript:NXThemesSkinManager.deactivateSkin('${current_theme.name?js_string}')">Remove skin</button>
     </#if>
     </div>
     <#list base_skins as skin>
@@ -82,7 +82,7 @@
       <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
       <span>Before you can select a skin you need to customize the <strong>${current_theme.name}</strong> theme.</span>
       <button class="nxthemesActionButton"
-       onclick="NXThemesEditor.customizeTheme('${current_theme.src}', 'skin manager')">Customize theme</button>
+       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'skin manager')">Customize theme</button>
     </div>
   </div>   
 </#if>

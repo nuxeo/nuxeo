@@ -39,14 +39,14 @@
     <#if current_bank && current_bank.name = selected_bank.name>
       <strong style="color: #090;">Connected</strong>&nbsp;
      <a class="nxthemesActionButton" href="javascript:void(0)" 
-        onclick="NXThemesEditor.useResourceBank('${current_theme.src}', '', 'bank manager')">
+        onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '', 'bank manager')">
       Disconnect
       </a>      
     <#else>
      <strong style="color: #c00">Not connected</strong>&nbsp;
      <button <#if !saveable>disabled="disabled"</#if>
         class="nxthemesActionButton" href="javascript:void(0)" 
-        onclick="NXThemesEditor.useResourceBank('${current_theme.src}', '${selected_bank.name}', 'bank manager')">
+        onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '${selected_bank.name}', 'bank manager')">
       Connect
       </button>
     </#if>
@@ -119,7 +119,7 @@
       <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
       <span>Before connecting to a bank you need to customize the <strong>${current_theme.name}</strong> theme.</span>
       <button class="nxthemesActionButton"
-       onclick="NXThemesEditor.customizeTheme('${current_theme.src}', 'bank manager')">Customize theme</button>
+       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'bank manager')">Customize theme</button>
     </div>
   </div>   
 </#if>
