@@ -30,7 +30,7 @@
         value="${preset_info.value}" />
     <#if category = 'background' | category = 'image'>
       <a class="nxthemesActionButton"
-         href="javascript:void(0)" onclick="NXThemesEditor.selectEditField('nxthemes_preset_${preset_info.name}', 'image manager')">Browse</a>
+         href="javascript:void(0)" onclick="NXThemesEditor.selectEditField('nxthemes_preset_${preset_info.name?js_string}', 'image manager')">Browse</a>
     </#if>
     <span class="description">${preset_info.description}</span>
   </p>
@@ -59,7 +59,7 @@
       <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
       <span>Before you can modify theme options you need to customize the <strong>${current_theme.name}</strong> theme.</span>
       <button class="nxthemesActionButton"
-       onclick="NXThemesEditor.customizeTheme('${current_theme.src}', 'theme options')">Customize theme</button>
+       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'theme options')">Customize theme</button>
     </div>
   </div>       
 </#if>

@@ -57,7 +57,7 @@
 
 <p class="nxthemesEditor" style="float: right; margin-top: -20px">
    <button class="nxthemesActionButton"
-    onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name}', '${selected_named_style.name}')">Delete style</button>  
+    onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>  
 </p>
 
 </#if>
