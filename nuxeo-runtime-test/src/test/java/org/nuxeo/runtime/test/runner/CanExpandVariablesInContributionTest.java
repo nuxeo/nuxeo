@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.protocols.inline.InlineURLsFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, InlineURLsFeature.class })
-public class TestCanExpandVariablesInContribution {
+public class CanExpandVariablesInContributionTest {
 
     RuntimeService runtime = Framework.getRuntime();
 
