@@ -16,37 +16,49 @@
  */
 package org.nuxeo.ecm.shell.swing.cmds;
 
+import java.awt.Color;
+
+import javax.swing.JColorChooser;
+import javax.swing.colorchooser.DefaultColorSelectionModel;
+
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
-import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.swing.FontFamilyCompletor;
+import org.nuxeo.ecm.shell.swing.Console;
+import org.nuxeo.ecm.shell.swing.Theme;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "font", help = "Print or modify the font used by the shell. This command is available only in UI mode.")
-public class Font implements Runnable {
+@Command(name = "background", help = "Modify the background color used by the shell. This command is available only in UI mode.")
+public class BgColorCommand implements Runnable {
 
     @Context
     protected Shell shell;
 
-    @Parameter(name = "-name", hasValue = true, completor = FontFamilyCompletor.class, help = "The font name. Default is 'Monospace'.")
-    protected String name;
-
-    @Parameter(name = "-size", hasValue = true, help = "The font size. Default is 14.")
-    protected String size;
-
-    @Parameter(name = "-weight", hasValue = true, help = "The font weight. Default is 'plain'.")
-    protected String weight;
+    @Context
+    protected Console console;
 
     public void run() {
         try {
-            // shell.setSetting(name, value);
+            DefaultColorSelectionModel model = new DefaultColorSelectionModel(
+                    console.getBackground());
+            JColorChooser cc = new JColorChooser();
+            cc.setSelectionModel(model);
+            Color color = JColorChooser.showDialog(console,
+                    "Select the background color", console.getBackground());
+            if (color != null) {
+                Theme theme = console.getTheme();
+                theme.setName("Custom");
+                theme.setBgColor(color);
+                shell.setSetting("theme.Custom", theme.toString());
+                console.setTheme(theme);
+            }
         } catch (Exception e) {
             throw new ShellException(e);
         }
     }
+
 }

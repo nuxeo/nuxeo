@@ -14,54 +14,49 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.shell.cmds;
+package org.nuxeo.ecm.shell.swing.cmds;
 
-import java.io.File;
+import jline.SimpleCompletor;
 
 import org.nuxeo.ecm.shell.Argument;
 import org.nuxeo.ecm.shell.Command;
 import org.nuxeo.ecm.shell.Context;
-import org.nuxeo.ecm.shell.Parameter;
 import org.nuxeo.ecm.shell.Shell;
 import org.nuxeo.ecm.shell.ShellException;
-import org.nuxeo.ecm.shell.fs.cmds.Cat;
+import org.nuxeo.ecm.shell.swing.Console;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
-@Command(name = "settings", help = "Print or modify the shell settings.")
-public class Settings implements Runnable {
+@Command(name = "theme", help = "Modify the theme used by the shell. This command is available only in UI mode.")
+public class ThemeCommand implements Runnable {
 
     @Context
     protected Shell shell;
 
-    @Argument(name = "name", index = 0, required = false, help = "The variable to print or set.")
+    @Context
+    protected Console console;
+
+    @Argument(name = "name", index = 0, required = false, completor = ThemeCompletor.class, help = "The theme name to set. If not specified the current theme is printed.")
     protected String name;
 
-    @Argument(name = "value", index = 1, required = false, help = "The variable value to set.")
-    protected String value;
-
-    @Parameter(name = "-reset", hasValue = false, help = "Reset settings to their defaults. Need to restart shell.")
-    protected boolean reset;
-
     public void run() {
-        File file = shell.getSettingsFile();
-        if (reset) {
-            file.delete();
-            return;
-        }
         try {
-            if (name == null) {
-                Cat.cat(shell.getConsole(), file);
-            } else if (value == null) {
-                shell.getConsole().println(
-                        (String) shell.getSetting(name, "NULL"));
+            if (name != null) {
+                shell.setSetting("theme", name);
+                console.loadDefaultTheme(shell);
             } else {
-                shell.setSetting(name, value);
+                shell.getConsole().println(shell.getSetting("theme", "Default"));
             }
         } catch (Exception e) {
             throw new ShellException(e);
+        }
+    }
+
+    public static class ThemeCompletor extends SimpleCompletor {
+        public ThemeCompletor() {
+            super(new String[] { "Default", "Linux", "White", "Custom" });
         }
     }
 }

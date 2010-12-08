@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JTextArea;
 
@@ -34,7 +35,6 @@ import jline.ConsoleReader;
 import jline.History;
 
 import org.nuxeo.ecm.shell.Shell;
-import org.nuxeo.ecm.shell.ShellConfigurationListener;
 import org.nuxeo.ecm.shell.cmds.ConsoleReaderFactory;
 import org.nuxeo.ecm.shell.swing.widgets.HistoryFinder;
 
@@ -48,8 +48,7 @@ import org.nuxeo.ecm.shell.swing.widgets.HistoryFinder;
  * 
  */
 @SuppressWarnings("serial")
-public class Console extends JTextArea implements ConsoleReaderFactory,
-        ShellConfigurationListener {
+public class Console extends JTextArea implements ConsoleReaderFactory {
 
     protected Theme theme;
 
@@ -73,7 +72,6 @@ public class Console extends JTextArea implements ConsoleReaderFactory,
     protected StringBuilder pwd;
 
     public Console() throws Exception {
-        setTheme(Theme.getDefault());
         setMargin(new Insets(6, 6, 6, 6));
         setEditable(true);
         in = new In();
@@ -82,9 +80,42 @@ public class Console extends JTextArea implements ConsoleReaderFactory,
         reader.setCompletionHandler(new SwingCompletionHandler(this));
         complete = reader.getClass().getDeclaredMethod("complete");
         complete.setAccessible(true);
-        Shell.get().addConfigurationListener(this);
-        Shell.get().getRegistry("config").addAnnotatedCommand(
-                org.nuxeo.ecm.shell.swing.cmds.Font.class);
+        Shell shell = Shell.get();
+        shell.putContextObject(Console.class, this);
+        registerThemes(shell);
+        registerCommands(shell);
+    }
+
+    protected void registerCommands(Shell shell) {
+        shell.getRegistry("config").addAnnotatedCommand(
+                org.nuxeo.ecm.shell.swing.cmds.FontCommand.class);
+        shell.getRegistry("config").addAnnotatedCommand(
+                org.nuxeo.ecm.shell.swing.cmds.ThemeCommand.class);
+        shell.getRegistry("config").addAnnotatedCommand(
+                org.nuxeo.ecm.shell.swing.cmds.ColorCommand.class);
+        shell.getRegistry("config").addAnnotatedCommand(
+                org.nuxeo.ecm.shell.swing.cmds.BgColorCommand.class);
+    }
+
+    protected void registerThemes(Shell shell) {
+        int len = "theme.".length();
+        for (Map.Entry<Object, Object> entry : shell.getSettings().entrySet()) {
+            String key = entry.getKey().toString();
+            if (key.startsWith("theme.")) {
+                String t = key.substring(len);
+                Theme.addTheme(Theme.fromString(t, entry.getValue().toString()));
+            }
+        }
+        loadDefaultTheme(shell);
+    }
+
+    public void loadDefaultTheme(Shell shell) {
+        String tname = shell.getSetting("theme", "Default");
+        Theme theme = Theme.getTheme(tname);
+        if (theme == null) {
+            theme = Theme.getTheme("Default");
+        }
+        setTheme(theme);
     }
 
     public Theme getTheme() {
@@ -93,10 +124,11 @@ public class Console extends JTextArea implements ConsoleReaderFactory,
 
     public void setTheme(Theme theme) {
         this.theme = theme;
-        setFont(theme.font());
-        setCaretColor(theme.fg());
-        setBackground(theme.bg());
-        setForeground(theme.fg());
+        setFont(theme.getFont());
+        setCaretColor(theme.getFgColor());
+        setBackground(theme.getBgColor());
+        setForeground(theme.getFgColor());
+        Shell.get().setSetting("theme", theme.getName());
     }
 
     public ConsoleReader getReader() {
@@ -501,13 +533,6 @@ public class Console extends JTextArea implements ConsoleReaderFactory,
 
     public void exit(int code) {
         in.put("exit " + code);
-    }
-
-    public void onConfigurationChange(String name, String value) {
-        if ("theme".equals(name) || "color".equals(name)
-                || "background".equals(name) || "font".equals(name)) {
-            setTheme(Theme.getDefault());
-        }
     }
 
 }

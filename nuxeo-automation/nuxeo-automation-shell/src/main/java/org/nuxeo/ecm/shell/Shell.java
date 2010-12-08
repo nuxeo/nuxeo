@@ -162,17 +162,21 @@ public final class Shell {
         return settings;
     }
 
-    public void setSetting(String name, String value) throws IOException {
-        File file = shell.getSettingsFile();
-        shell.getSettings().put(name, value);
-        FileWriter writer = new FileWriter(file);
+    public void setSetting(String name, String value) {
         try {
-            shell.getSettings().store(writer, "generated settings file");
-            for (ShellConfigurationListener listener : listeners) {
-                listener.onConfigurationChange(name, value);
+            File file = shell.getSettingsFile();
+            shell.getSettings().put(name, value);
+            FileWriter writer = new FileWriter(file);
+            try {
+                shell.getSettings().store(writer, "generated settings file");
+                for (ShellConfigurationListener listener : listeners) {
+                    listener.onConfigurationChange(name, value);
+                }
+            } finally {
+                writer.close();
             }
-        } finally {
-            writer.close();
+        } catch (IOException e) {
+            throw new ShellException(e);
         }
     }
 
