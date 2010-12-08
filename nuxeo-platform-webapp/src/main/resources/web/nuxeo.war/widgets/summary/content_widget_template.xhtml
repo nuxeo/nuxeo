@@ -1,11 +1,9 @@
 <div class="content_block"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
 
   <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
   <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
@@ -16,59 +14,67 @@
     </h3>
   </c:if>
 
-    <c:if test="#{hasMainBlob}">
-      <table>
-        <tbody>
-          <tr>
-            <td class="labelColumn">
-              <h:outputText value="#{messages['label.summary.download.file']}" />
-            </td>
-            <td class="fieldColumn">
-              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
-                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-              <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
-              <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
-            </td>
-            <td class="actionsColumn">
-              <nxu:methodResult name="editable"
-                value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
-                <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
-                  rendered="#{editable}">
-                  <h:graphicImage value="/icons/application_form_edit.png"
-                    alt="#{messages['label.document.directEdit']}"
-                    title="#{messages['label.document.directEdit']}"/>
-                </h:outputLink>
+  <c:if test="#{hasMainBlob}">
+    <table>
+      <tbody>
+        <tr>
+          <td class="labelColumn">
+            <h:outputText value="#{messages['label.summary.download.file']}" />
+          </td>
+          <td class="fieldColumn">
+            <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+              rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+            <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
+            <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+          </td>
+          <td class="actionsColumn">
+            <nxu:methodResult name="editable"
+              value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
+              <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
+                rendered="#{editable}">
+                <h:graphicImage value="/icons/application_form_edit.png"
+                  alt="#{messages['label.document.directEdit']}"
+                  title="#{messages['label.document.directEdit']}"/>
+              </h:outputLink>
+            </nxu:methodResult>
+            <c:if test="#{conversionActions.pdfConverterAvailability.available}">
+              <nxu:methodResult name="hasPDFCapabilities"
+                value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
+                <h:panelGroup rendered="#{hasPDFCapabilities}">
+                  <nxh:commandLink
+                    action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
+                  <nxh:graphicImage
+                    value="/icons/pdf.png"
+                    title="#{messages['label.document.generatePdf']}"
+                    alt="#{messages['label.document.generatePdf']}"/>
+                </nxh:commandLink>
+                </h:panelGroup>
               </nxu:methodResult>
-              <c:if test="#{conversionActions.pdfConverterAvailability.available}">
-                <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
-                  <h:panelGroup rendered="#{hasPDFCapabilities}">
-                  <nxh:commandLink action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
-                    <nxh:graphicImage value="/icons/pdf.png" title="#{messages['label.document.generatePdf']}" alt="#{messages['label.document.generatePdf']}"/>
-                  </nxh:commandLink>
-                  </h:panelGroup>
-                </nxu:methodResult>
-              </c:if>
-              <nxh:outputLink
-                value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
-                <nxh:graphicImage value="/icons/download.png"
-                  title="#{messages['label.document.download']}" alt="#{messages['label.document.download']}"/>
-              </nxh:outputLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </c:if>
+            </c:if>
+            <nxh:outputLink
+              value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+              <nxh:graphicImage value="/icons/download.png"
+                title="#{messages['label.document.download']}"
+                alt="#{messages['label.document.download']}"/>
+            </nxh:outputLink>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </c:if>
 
-    <c:if test="#{hasOtherBlobs}">
-      <table>
-        <tbody>
+  <c:if test="#{hasOtherBlobs}">
+    <table>
+      <tbody>
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
           <tr>
             <td class="labelColumn">
-                <h:outputText value=" #{messages['label.summary.download.attachments']}" rendered="#{model.rowIndex == 0}"/>
+              <h:outputText value=" #{messages['label.summary.download.attachments']}"
+                rendered="#{model.rowIndex == 0}" />
             </td>
             <td class="fieldColumn">
-              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+              <nxh:graphicImage
+                value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
               <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
               <h:outputText value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
@@ -93,11 +99,8 @@
             </td>
           </tr>
         </nxu:inputList>
-
-
-
-        </tbody>
-      </table>
-    </c:if>
+      </tbody>
+    </table>
+  </c:if>
 
 </div>

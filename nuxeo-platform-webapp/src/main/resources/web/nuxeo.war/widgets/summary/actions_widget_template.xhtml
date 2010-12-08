@@ -32,12 +32,13 @@
   </c:if>
 </div>
 
- <div class="restoreFile_block">
-   <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
-          <h:outputText value="#{messages['label.summary.restoreDeletedDocument']}" />
-          <h:outputText value=" | " />
-        <h:commandLink value="#{messages['command.undeleteDocs']}"
-           action="#{deleteActions.restoreCurrentDocument}" />
-      </c:if>
- </div>
+<div class="restoreFile_block">
+  <c:if test="#{deleteActions.trashManagementEnabled and deleteActions.canRestoreCurrentDoc}">
+    <h:outputText value="#{messages['label.summary.restoreDeletedDocument']}" />
+    <h:outputText value=" | " />
+    <h:commandLink value="#{messages['command.undeleteDocs']}"
+      action="#{deleteActions.restoreCurrentDocument}" />
+  </c:if>
+</div>
+
 </div>
