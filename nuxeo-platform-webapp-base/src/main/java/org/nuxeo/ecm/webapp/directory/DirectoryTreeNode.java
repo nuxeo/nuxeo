@@ -450,7 +450,7 @@ public class DirectoryTreeNode {
                 DocumentModel docMod = session.getEntry(bitsOfPath[b]);
                 try {
                     // take first schema: directory entries only have one
-                    final String schemaName = docMod.getDeclaredSchemas()[0];
+                    final String schemaName = docMod.getSchemas()[0];
                     property = (String) docMod.getProperty(schemaName,
                             LABEL_FIELD_ID);
                 } catch (ClientException e) {

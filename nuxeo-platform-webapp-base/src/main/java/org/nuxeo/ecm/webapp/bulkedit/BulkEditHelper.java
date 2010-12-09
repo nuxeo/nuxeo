@@ -78,7 +78,7 @@ public class BulkEditHelper {
     public static List<String> getCommonSchemas(List<DocumentModel> docs) {
         List<String> schemas = null;
         for (DocumentModel doc : docs) {
-            List<String> docSchemas = Arrays.asList(doc.getDeclaredSchemas());
+            List<String> docSchemas = Arrays.asList(doc.getSchemas());
             if (schemas == null) {
                 // first document
                 schemas = new ArrayList<String>();

@@ -72,7 +72,7 @@ public class SuggestBoxBean implements Serializable {
                     fulltext);
             for (DocumentModel documentModel : directoryEntries) {
                 // XXX hack, directory entries have only one datamodel
-                String schemaName = documentModel.getDeclaredSchemas()[0];
+                String schemaName = documentModel.getSchemas()[0];
                 DataModel dm = documentModel.getDataModel(schemaName);
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("label", (String) dm.getData("label"));
