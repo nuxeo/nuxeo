@@ -189,8 +189,8 @@ public class GWTHelper {
             obj.put("isVersion", doc.isVersion());
             obj.put("isProxy", doc.isProxy());
             obj.put("sourceId", doc.getSourceId());
-            obj.put("facets", doc.getDeclaredFacets());
-            obj.put("schemas", doc.getDeclaredSchemas());
+            obj.put("facets", doc.getFacets());
+            obj.put("schemas", doc.getSchemas());
             JSonDocumentExporter jde = new JSonDocumentExporter();
             if (schemas != null) {
                 for (String schema : schemas) {
