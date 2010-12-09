@@ -101,11 +101,11 @@ public final class IndexableResourcesFactory {
             // In this case merge them with the one specified.
             if (docTypeConf.areAllSchemasIndexable()) {
                 log.debug("All schemas will be scheduled to be indexed by configuration");
-                String[] declaredSchemas = dm.getDeclaredSchemas();
+                String[] declaredSchemas = dm.getSchemas();
                 if (declaredSchemas == null) {
                     declaredSchemas = new String[0];
                 }
-                autoSchemas = Arrays.asList(dm.getDeclaredSchemas());
+                autoSchemas = Arrays.asList(dm.getSchemas());
             }
         }
 
@@ -138,7 +138,7 @@ public final class IndexableResourcesFactory {
 
                         // Check if the schema is an actual declared schema for
                         // this document model.
-                        String[] schemas = dm.getDeclaredSchemas();
+                        String[] schemas = dm.getSchemas();
                         Collection<String> lschemas = Arrays.asList(schemas);
                         if (lschemas.contains(schemaName)) {
                             resources.add(new DocumentIndexableResourceImpl(dm,

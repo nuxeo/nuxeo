@@ -157,7 +157,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             assertEquals("user_0", dm.getId());
 
-            String[] schemaNames = dm.getDeclaredSchemas();
+            String[] schemaNames = dm.getSchemas();
             assertEquals(1, schemaNames.length);
 
             assertEquals(SCHEMA, schemaNames[0]);
@@ -189,7 +189,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
             assertEquals("user_0", dm.getId());
 
-            String[] schemaNames = dm.getDeclaredSchemas();
+            String[] schemaNames = dm.getSchemas();
             assertEquals(1, schemaNames.length);
 
             assertEquals(SCHEMA, schemaNames[0]);

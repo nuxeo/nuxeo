@@ -187,7 +187,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             WSRemotingSession rs, boolean useDownloadUrl)
             throws ClientException {
         List<DocumentBlob> blobs = new ArrayList<DocumentBlob>();
-        String[] schemas = doc.getDeclaredSchemas();
+        String[] schemas = doc.getSchemas();
         for (String schema : schemas) {
             DataModel dm = doc.getDataModel(schema);
             Map<String, Object> map = dm.getMap();
@@ -226,7 +226,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
         if (doc != null) {
-            String[] schemas = doc.getDeclaredSchemas();
+            String[] schemas = doc.getSchemas();
             for (String schema : schemas) {
                 DataModel dm = doc.getDataModel(schema);
                 Map<String, Object> map = dm.getMap();
@@ -253,7 +253,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
         if (doc != null) {
-            String[] schemas = doc.getDeclaredSchemas();
+            String[] schemas = doc.getSchemas();
             for (String schema : schemas) {
                 DataModel dm = doc.getDataModel(schema);
                 Map<String, Object> map = dm.getMap();

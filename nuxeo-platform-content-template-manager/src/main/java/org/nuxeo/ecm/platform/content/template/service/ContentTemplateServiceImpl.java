@@ -146,7 +146,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         if (factory != null) {
             factory.createContentStructure(createdDocument);
         }
-        Set<String> facets = createdDocument.getDeclaredFacets();
+        Set<String> facets = createdDocument.getFacets();
         for (String facet : facets) {
             factory = getFactoryForFacet(facet);
             if (factory != null) {

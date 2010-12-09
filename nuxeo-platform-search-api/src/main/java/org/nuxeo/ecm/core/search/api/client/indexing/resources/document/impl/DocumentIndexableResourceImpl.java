@@ -38,10 +38,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.DocumentIndexableResource;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Document indexable resource implementation.
@@ -140,14 +143,14 @@ public class DocumentIndexableResourceImpl extends
 
         // FACETS
 
-        if (dm.getDeclaredFacets() != null) {
-            docFacets = new ArrayList<String>(dm.getDeclaredFacets());
+        if (dm.getFacets() != null) {
+            docFacets = new ArrayList<String>(dm.getFacets());
         } else {
             docFacets = Collections.emptyList();
         }
 
         // SCHEMAS (this could be more lazy: needed by getValueFor only
-        String[] schemas = dm.getDeclaredSchemas();
+        String[] schemas = dm.getSchemas();
         if (schemas != null) {
             docSchemas = new HashSet<String>();
             docSchemas.addAll(Arrays.asList(schemas));
@@ -238,8 +241,9 @@ public class DocumentIndexableResourceImpl extends
                         res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
                     } else {
                         DocumentModel doc = getCoreSession().getDocument(docRef);
-                        Schema docSchema = doc.getDocumentType().getSchema(
-                                schemaPrefix);
+                        TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
+                        Schema docSchema = doc.hasSchema(schemaPrefix) ? typeProvider.getSchema(schemaPrefix)
+                                : null;
                         if (docSchema != null) {
                             String prefix = docSchema.getNamespace().prefix;
                             if (prefix != null && prefix.length() > 0) {

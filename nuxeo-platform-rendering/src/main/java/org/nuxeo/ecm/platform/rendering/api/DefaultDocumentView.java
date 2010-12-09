@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
  * Base class to build views for Document oriented contexts (contexts that are
@@ -142,7 +143,7 @@ public class DefaultDocumentView implements DocumentView {
 
     public Collection<String> keys(DocumentModel doc) {
         Collection<String> keys = new ArrayList<String>(fields.keySet());
-        keys.addAll(Arrays.asList(doc.getDeclaredSchemas()));
+        keys.addAll(Arrays.asList(doc.getSchemas()));
         return keys;
     }
 
@@ -155,7 +156,7 @@ public class DefaultDocumentView implements DocumentView {
     }
 
     public int size(DocumentModel doc) {
-        return fields.size() + doc.getDeclaredSchemas().length;
+        return fields.size() + doc.getSchemas().length;
     }
 
     protected static final Field SESSION = new Field() {
@@ -214,7 +215,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return doc.getDeclaredSchemas();
+            return doc.getSchemas();
         }
     };
 
@@ -224,7 +225,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return doc.getDeclaredFacets();
+            return doc.getFacets();
         }
     };
 
@@ -284,7 +285,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return doc.getDeclaredFacets().contains("Folderish");
+            return doc.getFacets().contains(FacetNames.FOLDERISH);
         }
     };
 
