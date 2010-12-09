@@ -14,20 +14,19 @@
  */
 package org.nuxeo.ecm.platform.preview.tests.helper;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Tests url generation/resolution via the static helper
  *
  * @author tiry
  */
-public class TestHelper extends TestCase {
+public class TestHelper extends NXRuntimeTestCase {
 
     private static final String uuid = "f53fc32e-21b3-4640-9917-05e873aa1e53";
     private static final String targetURL1 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/default/";

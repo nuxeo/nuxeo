@@ -22,9 +22,11 @@ package org.nuxeo.ecm.platform.relations.io.test;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -450,6 +452,31 @@ public class FakeDocument implements Document {
     @Override
     public String getCheckinComment() throws DocumentException {
         return null;
+    }
+
+    @Override
+    public Set<String> getAllFacets() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public String[] getFacets() {
+        return new String[0];
+    }
+
+    @Override
+    public boolean hasFacet(String facet) {
+        return false;
+    }
+
+    @Override
+    public boolean addFacet(String facet) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeFacet(String facet) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
 }
