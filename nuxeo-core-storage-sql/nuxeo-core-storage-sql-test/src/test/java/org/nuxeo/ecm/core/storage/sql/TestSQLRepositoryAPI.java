@@ -1975,7 +1975,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
-        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = \"barbar\"");
+        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'barbar'");
+        assertEquals(1, list.size());
+    }
+
+    public void testFacetQueryContent() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc.addFacet("Aged");
+        doc.setPropertyValue("age:age", "barbar");
+        doc = session.createDocument(doc);
+        session.save();
+
+        DocumentModelList list = session.query("SELECT * FROM File WHERE age:age = 'barbar'");
         assertEquals(1, list.size());
     }
 
