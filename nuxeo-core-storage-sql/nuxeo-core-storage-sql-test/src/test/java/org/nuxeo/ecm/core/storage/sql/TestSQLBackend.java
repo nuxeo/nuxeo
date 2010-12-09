@@ -1624,6 +1624,52 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    public void testMixinAPI() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+
+        assertFalse(node.hasMixinType("Aged"));
+        assertFalse(node.hasMixinType("Orderable"));
+        assertEquals(0, node.getMixinTypes().length);
+
+        assertTrue(node.addMixinType("Aged"));
+        assertTrue(node.hasMixinType("Aged"));
+        assertEquals(1, node.getMixinTypes().length);
+
+        assertFalse(node.addMixinType("Aged"));
+        assertEquals(1, node.getMixinTypes().length);
+
+        assertTrue(node.addMixinType("Orderable"));
+        assertTrue(node.hasMixinType("Aged"));
+        assertTrue(node.hasMixinType("Orderable"));
+        assertEquals(2, node.getMixinTypes().length);
+
+        try {
+            node.addMixinType("nosuchmixin");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+        assertEquals(2, node.getMixinTypes().length);
+
+        assertTrue(node.removeMixinType("Aged"));
+        assertFalse(node.hasMixinType("Aged"));
+        assertTrue(node.hasMixinType("Orderable"));
+        assertEquals(1, node.getMixinTypes().length);
+
+        assertFalse(node.removeMixinType("Aged"));
+        assertEquals(1, node.getMixinTypes().length);
+
+        assertFalse(node.removeMixinType("nosuchmixin"));
+        assertEquals(1, node.getMixinTypes().length);
+
+        assertTrue(node.removeMixinType("Orderable"));
+        assertFalse(node.hasMixinType("Aged"));
+        assertFalse(node.hasMixinType("Orderable"));
+        assertEquals(0, node.getMixinTypes().length);
+    }
+
     public void testMixinIncludedInPrimaryType() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -1639,34 +1685,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         root = session.getRootNode();
         node = session.getNodeById(node.getId());
         assertEquals("123", node.getSimpleProperty("age:age").getValue());
-    }
 
-    public void testMixinAPI() throws Exception {
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        // API on doc whose type has a mixin (facet)
+        assertEquals(0, node.getMixinTypes().length); // instance mixins
+        assertEquals(Collections.singleton("Aged"), node.getAllMixinTypes());
+        assertTrue(node.hasMixinType("Aged"));
+        assertFalse(node.addMixinType("Aged"));
+        assertFalse(node.removeMixinType("Aged"));
 
-        assertFalse(node.hasMixinType("Aged"));
-        assertEquals(0, node.getMixinTypes().length);
-        node.addMixinType("Aged");
-        assertTrue(node.hasMixinType("Aged"));
-        assertEquals(1, node.getMixinTypes().length);
-        node.addMixinType("Orderable");
-        assertTrue(node.hasMixinType("Aged"));
-        assertTrue(node.hasMixinType("Orderable"));
-        assertEquals(2, node.getMixinTypes().length);
-        node.addMixinType("Aged");
-        assertEquals(2, node.getMixinTypes().length);
-        node.removeMixinType("Aged");
-        assertFalse(node.hasMixinType("Aged"));
-        assertTrue(node.hasMixinType("Orderable"));
-        assertEquals(1, node.getMixinTypes().length);
-        node.removeMixinType("nosuchone");
-        assertEquals(1, node.getMixinTypes().length);
-        node.removeMixinType("Orderable");
-        assertFalse(node.hasMixinType("Aged"));
-        assertFalse(node.hasMixinType("Orderable"));
-        assertEquals(0, node.getMixinTypes().length);
     }
 
     public void testMixinAddRemove() throws Exception {
@@ -1745,8 +1771,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
-        PartialList<Serializable> res;
-        res = session.query(
+        PartialList<Serializable> res = session.query(
                 "SELECT * FROM TestDoc WHERE ecm:fulltext = \"barbar\"",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());

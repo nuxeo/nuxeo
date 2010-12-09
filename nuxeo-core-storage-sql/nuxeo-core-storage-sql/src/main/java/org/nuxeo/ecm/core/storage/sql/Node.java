@@ -19,10 +19,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.common.utils.StringUtils;
@@ -144,44 +146,70 @@ public class Node {
 
     public static final String[] NO_MIXINS = {};
 
+    /**
+     * Gets the instance mixins. Mixins from the type are not returned.
+     */
     public String[] getMixinTypes() {
         try {
-            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            return getMixins(mixins);
+            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            return getMixins(value);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String[] getMixins(String mixins) {
-        if (mixins == null) {
+    /** Gets mixins array from a database value. Never returns null. */
+    public static String[] getMixins(String value) {
+        if (value == null) {
             return NO_MIXINS;
         } else {
-            return mixins.split(MIXINS_SEP);
+            return value.split(MIXINS_SEP);
         }
     }
 
+    /**
+     * Gets the mixins. Includes mixins from the type. Returns a fresh set.
+     */
+    public Set<String> getAllMixinTypes() {
+        // linked for deterministic result
+        Set<String> mixins = new LinkedHashSet<String>(
+                model.getDocumentTypeFacets(getPrimaryType()));
+        mixins.addAll(Arrays.asList(getMixinTypes()));
+        return mixins;
+    }
+
+    /**
+     * Checks the mixins. Includes mixins from the type.
+     */
     public boolean hasMixinType(String mixin) {
+        if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
+            return true; // present in type
+        }
+        String mixins;
         try {
-            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            if (mixins == null) {
-                return false;
-            } else {
-                for (String m : mixins.split(MIXINS_SEP)) {
-                    if (m.equals(mixin)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+            mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
+        if (mixins != null) {
+            for (String m : mixins.split(MIXINS_SEP)) {
+                if (m.equals(mixin)) {
+                    return true; // present in node
+                }
+            }
+        }
+        return false;
     }
 
-    public void addMixinType(String mixin) throws StorageException {
+    /**
+     * Adds a mixin.
+     */
+    public boolean addMixinType(String mixin) {
         if (model.getMixinPropertyInfos(mixin) == null) {
-            throw new StorageException("No such mixin: " + mixin);
+            throw new IllegalArgumentException("No such mixin: " + mixin);
+        }
+        if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
+            return false; // already present in type
         }
         try {
             String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
@@ -190,7 +218,7 @@ public class Node {
             } else {
                 for (String m : mixins.split(MIXINS_SEP)) {
                     if (m.equals(mixin)) {
-                        return;
+                        return false; // already present in node
                     }
                 }
                 if (mixins.length() != 0) {
@@ -199,36 +227,45 @@ public class Node {
                 mixins += mixin;
             }
             hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+            return true;
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeMixinType(String mixin) throws StorageException {
-        boolean removed = false;
-        String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-        if (mixins == null) {
-            return;
-        }
-        String[] ar = mixins.split(MIXINS_SEP);
-        List<String> list = new ArrayList<String>(ar.length);
-        for (String m : ar) {
-            if (m.equals(mixin)) {
-                removed = true;
-            } else {
-                list.add(m);
+    /**
+     * Removes a mixin.
+     */
+    public boolean removeMixinType(String mixin) {
+        try {
+            boolean removed = false;
+            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            if (mixins == null) {
+                return false;
             }
+            String[] ar = mixins.split(MIXINS_SEP);
+            List<String> list = new ArrayList<String>(ar.length);
+            for (String m : ar) {
+                if (m.equals(mixin)) {
+                    removed = true;
+                } else {
+                    list.add(m);
+                }
+            }
+            if (!removed) {
+                return false;
+            }
+            if (list.size() == 0) {
+                mixins = null;
+            } else {
+                mixins = StringUtils.join(list, MIXINS_SEP);
+            }
+            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+            clearMixinValues(mixin);
+            return true;
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
         }
-        if (!removed) {
-            return;
-        }
-        if (list.size() == 0) {
-            mixins = null;
-        } else {
-            mixins = StringUtils.join(list, MIXINS_SEP);
-        }
-        hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
-        clearMixinValues(mixin);
     }
 
     protected void clearMixinValues(String mixin) throws StorageException {
