@@ -941,10 +941,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNotNull(returnedDocument.getName());
         assertNotNull(returnedDocument.getPathAsString());
         assertNotNull(returnedDocument.getType());
-        assertNotNull(returnedDocument.getDeclaredSchemas());
+        assertNotNull(returnedDocument.getSchemas());
 
         // TODO: should it contain 3 or 1 schemas? not sure about that.
-        List<String> schemas = Arrays.asList(returnedDocument.getDeclaredSchemas());
+        List<String> schemas = Arrays.asList(returnedDocument.getSchemas());
         assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("file"));
@@ -963,9 +963,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNotNull(returnedDocument.getName());
         assertNotNull(returnedDocument.getPathAsString());
         assertNotNull(returnedDocument.getType());
-        assertNotNull(returnedDocument.getDeclaredSchemas());
+        assertNotNull(returnedDocument.getSchemas());
 
-        schemas = Arrays.asList(returnedDocument.getDeclaredSchemas());
+        schemas = Arrays.asList(returnedDocument.getSchemas());
         assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("file"));
@@ -1247,7 +1247,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModelList list = session.query("SELECT name FROM File");
         assertEquals(1, list.size());
         DocumentModel docModel = list.get(0);
-        List<String> schemas = Arrays.asList(docModel.getDeclaredSchemas());
+        List<String> schemas = Arrays.asList(docModel.getSchemas());
         // TODO: is it 3 or 4? (should "uid" be in the list or not?)
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
@@ -1259,7 +1259,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         list = session.query("SELECT filename FROM File");
         assertEquals(1, list.size());
         docModel = list.get(0);
-        schemas = Arrays.asList(docModel.getDeclaredSchemas());
+        schemas = Arrays.asList(docModel.getSchemas());
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("file"));
@@ -1271,7 +1271,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         list = session.query("SELECT * FROM File");
         assertEquals(1, list.size());
         docModel = list.get(0);
-        schemas = Arrays.asList(docModel.getDeclaredSchemas());
+        schemas = Arrays.asList(docModel.getSchemas());
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("file"));
@@ -1282,7 +1282,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         list = session.query("SELECT * FROM HiddenFile", facetFilter);
         assertEquals(1, list.size());
         docModel = list.get(0);
-        schemas = Arrays.asList(docModel.getDeclaredSchemas());
+        schemas = Arrays.asList(docModel.getSchemas());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("dublincore"));
 
@@ -1290,7 +1290,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         list = session.query("SELECT * FROM Document");
         assertEquals(3, list.size());
         docModel = list.get(0);
-        schemas = Arrays.asList(docModel.getDeclaredSchemas());
+        schemas = Arrays.asList(docModel.getSchemas());
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("dublincore"));

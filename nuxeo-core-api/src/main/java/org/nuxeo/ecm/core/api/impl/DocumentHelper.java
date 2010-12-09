@@ -31,8 +31,11 @@ import org.nuxeo.ecm.core.schema.types.TypeException;
 /**
  * Static helper methods for document models.
  *
+ * @deprecated unused
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated
 public final class DocumentHelper {
 
     private DocumentHelper() {
@@ -40,7 +43,10 @@ public final class DocumentHelper {
 
     /**
      * Fills a DocumentModel with data from a given data map.
+     *
+     * @deprecated unused
      */
+    @Deprecated
     public static void loadData(DocumentModel doc, String schemaName,
             Map<String, Object> dataMap) throws TypeException {
         DocumentType docType = doc.getDocumentType();
@@ -63,6 +69,10 @@ public final class DocumentHelper {
         }
     }
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     public static void loadData(DocumentModel doc, Map<String, Object> dataMap)
             throws TypeException {
         for (Map.Entry<String, Object> entry : dataMap.entrySet()) {

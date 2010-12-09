@@ -264,7 +264,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
         // write schemas
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        String[] schemaNames = doc.getDeclaredSchemas();
+        String[] schemaNames = doc.getSchemas();
         for (String schemaName : schemaNames) {
             Element schemaElement = rootElement.addElement(
                     ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);

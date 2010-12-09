@@ -61,7 +61,7 @@ public class TestExportedDocument extends NXRuntimeTestCase {
                 .will(returnValue(null));
         documentModelMock.expects(atLeastOnce()).method("getACP")
                 .will(returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getDeclaredSchemas")
+        documentModelMock.expects(atLeastOnce()).method("getSchemas")
                 .will(returnValue(new String[0]));
         documentModelMock.expects(atLeastOnce()).method("getRepositoryName").will(
                 returnValue(null));

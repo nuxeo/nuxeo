@@ -18,6 +18,24 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
@@ -37,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.common.utils.Null;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
@@ -52,7 +69,6 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.OperationHandler;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
@@ -85,21 +101,13 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
-import org.nuxeo.ecm.core.schema.PrefetchInfo;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 /**
  * Abstract implementation of the client interface.

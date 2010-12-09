@@ -166,7 +166,7 @@ public final class DocumentModelUtils {
      * @return map with property names as keys
      */
     public static Map<String, Object> getProperties(DocumentModel docModel) {
-        final String[] schemas = docModel.getDeclaredSchemas();
+        final String[] schemas = docModel.getSchemas();
         if (schemas == null) {
             throw new IllegalStateException(
                     "schemas are not declared for docModel " + docModel);
