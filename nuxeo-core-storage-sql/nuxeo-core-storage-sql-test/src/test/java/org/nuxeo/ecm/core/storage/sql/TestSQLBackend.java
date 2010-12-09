@@ -1359,20 +1359,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // Note that MySQL is buggy and doesn't return answers on "hello", doh!
         PartialList<Serializable> res;
         res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
         res = session.query(
-                "SELECT * FROM TestDoc WHERE NOT (ecm:fulltext = \"world\")",
+                "SELECT * FROM TestDoc WHERE NOT (ecm:fulltext = 'world')",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
         // Test multiple fulltext
         res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\" OR  ecm:fulltext = \"barbar\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' OR  ecm:fulltext = 'barbar'",
                 QueryFilter.EMPTY, false);
         assertEquals(2, res.list.size());
         res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\" AND  ecm:fulltext = \"barbar\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND  ecm:fulltext = 'barbar'",
                 QueryFilter.EMPTY, false);
         assertEquals(0, res.list.size());
     }
@@ -1394,7 +1394,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
         try {
             session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = \"world\"",
+                    "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
                     QueryFilter.EMPTY, false);
             fail("Expected fulltext to be disabled and throw an exception");
         } catch (StorageException e) {
@@ -1443,7 +1443,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check fulltext search works
         PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"testing\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'testing'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
 
@@ -1453,7 +1453,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             return;
         }
         res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = \"testing\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = 'testing'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
     }
@@ -1772,7 +1772,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = \"barbar\"",
+                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'barbar'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
     }
