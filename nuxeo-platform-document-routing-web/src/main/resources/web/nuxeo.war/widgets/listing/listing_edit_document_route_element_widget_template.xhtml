@@ -7,7 +7,7 @@
 
  <c:if test="#{isEditableStep and !isEmptyFork}">
    <nxu:set var="actions"
-      value="#{getEditStepActions}"
+      value="#{routingWebActions.getEditStepActions(field_0)}"
       cache="true">
       <c:if test="#{!empty actions}">
         <div class="action_bar">

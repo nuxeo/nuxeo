@@ -373,6 +373,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     }
 
     public boolean isModifiable() {
-        return (isDraft() || isReady());
+        return (isDraft() || isReady() || isRunning());
     }
 }
