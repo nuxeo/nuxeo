@@ -1777,4 +1777,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    public void testMixinQueryContent() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        node.addMixinType("Aged");
+        node.setSimpleProperty("age:age", "barbar");
+        session.save();
+
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE age:age = 'barbar'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
 }
