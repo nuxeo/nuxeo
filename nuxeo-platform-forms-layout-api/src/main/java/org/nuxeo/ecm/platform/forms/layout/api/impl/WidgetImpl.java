@@ -38,23 +38,23 @@ public class WidgetImpl implements Widget {
 
     protected String id;
 
-    protected final String layoutName;
+    protected String layoutName;
 
-    protected final String name;
+    protected String name;
 
-    protected final String mode;
+    protected String mode;
 
-    protected final String type;
+    protected String type;
 
-    protected final FieldDefinition[] fields;
+    protected FieldDefinition[] fields;
 
-    protected final String helpLabel;
+    protected String helpLabel;
 
-    protected final Widget[] subWidgets;
+    protected Widget[] subWidgets;
 
     protected Map<String, Serializable> properties;
 
-    protected final boolean required;
+    protected boolean required = false;
 
     protected String valueName;
 
@@ -62,12 +62,11 @@ public class WidgetImpl implements Widget {
 
     protected boolean translated = false;
 
-    protected int level;
+    protected int level = 0;
 
     // needed by GWT serialization
     public WidgetImpl() {
-        this(null, null, null, null, null, null, null, null, false, null,
-                false, null, 0);
+        super();
     }
 
     public WidgetImpl(String layoutName, String name, String mode, String type,

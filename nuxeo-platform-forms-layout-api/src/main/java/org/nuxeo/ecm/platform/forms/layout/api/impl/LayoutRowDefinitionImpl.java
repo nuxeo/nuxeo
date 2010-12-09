@@ -34,19 +34,19 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String name;
+    protected String name;
 
-    protected final Map<String, Map<String, Serializable>> properties;
+    protected Map<String, Map<String, Serializable>> properties;
 
-    protected final String[] widgets;
+    protected String[] widgets;
 
-    protected final boolean alwaysSelected;
+    protected boolean alwaysSelected = false;
 
-    protected final boolean selectedByDefault;
+    protected boolean selectedByDefault = false;
 
     // needed by GWT serialization
     public LayoutRowDefinitionImpl() {
-        this(null, null);
+        super();
     }
 
     public LayoutRowDefinitionImpl(String name, String widget) {

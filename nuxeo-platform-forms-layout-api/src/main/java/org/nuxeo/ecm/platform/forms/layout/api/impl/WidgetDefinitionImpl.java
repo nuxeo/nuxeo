@@ -37,29 +37,29 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String name;
+    protected String name;
 
-    protected final String type;
+    protected String type;
 
-    protected final Map<String, String> labels;
+    protected Map<String, String> labels;
 
-    protected final Map<String, String> helpLabels;
+    protected Map<String, String> helpLabels;
 
-    protected boolean translated;
+    protected boolean translated = false;
 
-    protected final Map<String, String> modes;
+    protected Map<String, String> modes;
 
-    protected final FieldDefinition[] fieldDefinitions;
+    protected FieldDefinition[] fieldDefinitions;
 
-    protected final Map<String, Map<String, Serializable>> properties;
+    protected Map<String, Map<String, Serializable>> properties;
 
-    protected final Map<String, Map<String, Serializable>> widgetModeProperties;
+    protected Map<String, Map<String, Serializable>> widgetModeProperties;
 
-    protected final WidgetDefinition[] subWidgets;
+    protected WidgetDefinition[] subWidgets;
 
     // needed by GWT serialization
     public WidgetDefinitionImpl() {
-        this(null, null, null, null, false, null, null, null, null);
+        super();
     }
 
     public WidgetDefinitionImpl(String name, String type, String label,

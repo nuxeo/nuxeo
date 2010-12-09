@@ -38,21 +38,21 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String name;
+    protected String name;
 
-    protected final Map<String, Map<String, Serializable>> properties;
+    protected Map<String, Map<String, Serializable>> properties;
 
-    protected final Map<String, String> templates;
+    protected Map<String, String> templates;
 
-    protected final LayoutRowDefinition[] rows;
+    protected LayoutRowDefinition[] rows;
 
-    protected final Map<String, WidgetDefinition> widgets;
+    protected Map<String, WidgetDefinition> widgets;
 
     protected Integer columns;
 
     // needed by GWT serialization
     public LayoutDefinitionImpl() {
-        this(null, null, null);
+        super();
     }
 
     public LayoutDefinitionImpl(String name, String template,

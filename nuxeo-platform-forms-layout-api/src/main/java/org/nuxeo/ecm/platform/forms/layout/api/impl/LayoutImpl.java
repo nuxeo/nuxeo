@@ -38,25 +38,25 @@ public class LayoutImpl implements Layout {
 
     private static final long serialVersionUID = -8975637002024432963L;
 
-    String id;
+    protected String id;
 
-    final String name;
+    protected String name;
 
-    final String mode;
+    protected String mode;
 
-    final String template;
+    protected String template;
 
-    LayoutRow[] rows;
+    protected LayoutRow[] rows;
 
-    final Map<String, Widget> widgetMap;
+    protected Map<String, Widget> widgetMap;
 
-    final int columns;
+    protected int columns = 0;
 
-    Map<String, Serializable> properties;
+    protected Map<String, Serializable> properties;
 
     // needed by GWT serialization
     public LayoutImpl() {
-        this(null, null, null, 0);
+        super();
     }
 
     private LayoutImpl(String name, String mode, String template, int columns) {

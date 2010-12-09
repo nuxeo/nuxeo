@@ -24,10 +24,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     private static final long serialVersionUID = 1L;
 
-    String schema;
+    protected String schema;
 
-    String field;
+    protected String field;
 
+    // needed by GWT serialization
     public FieldDefinitionImpl() {
     }
 

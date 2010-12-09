@@ -32,15 +32,15 @@ public class WidgetTypeImpl implements WidgetType {
 
     private static final long serialVersionUID = -6449946287266106594L;
 
-    final String name;
+    protected String name;
 
-    final Class<?> typeClass;
+    protected Class<?> typeClass;
 
-    final Map<String, String> properties;
+    protected Map<String, String> properties;
 
     // needed by GWT serialization
     public WidgetTypeImpl() {
-        this(null, null, null);
+        super();
     }
 
     public WidgetTypeImpl(String name, Class<?> typeClass,
