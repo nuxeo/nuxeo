@@ -37,6 +37,8 @@ public final class FacetNames {
 
     public static final String PUBLISHABLE = "Publishable";
 
+    public static final String COMMENTABLE = "Commentable";
+
     public static final String HIDDEN_IN_NAVIGATION = "HiddenInNavigation";
 
     public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.model;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -227,5 +228,63 @@ public interface Document extends DocumentContainer, PropertyContainer,
      * @throws Exception
      */
     void writeDocumentPart(DocumentPart dp) throws Exception;
+
+    /**
+     * Gets the facets available on this document (from the type and the
+     * instance facets).
+     *
+     * @return the facets
+     *
+     * @since 5.4.1
+     */
+    Set<String> getAllFacets();
+
+    /**
+     * Gets the facets defined on this document instance. The type facets are
+     * not returned.
+     *
+     * @return the facets
+     *
+     * @since 5.4.1
+     */
+    String[] getFacets();
+
+    /**
+     * Checks if the document has a facet, either from its type or added on the
+     * instance.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the document has the facet
+     *
+     * @since 5.4.1
+     */
+    boolean hasFacet(String facet);
+
+    /**
+     * Adds a facet to the document instance.
+     * <p>
+     * Does nothing if the facet was already present on the document.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the facet was added, or {@code false} if it is
+     *         already present
+     * @throws DocumentException if the facet does not exist
+     *
+     * @since 5.4.1
+     */
+    boolean addFacet(String facet) throws DocumentException;
+
+    /**
+     * Removes a facet from the document instance.
+     * <p>
+     * It's not possible to remove a facet coming from the document type.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the facet was removed, or {@code false} if it
+     *         isn't present or is present on the type or does not exit
+     *
+     * @since 5.4.1
+     */
+    boolean removeFacet(String facet) throws DocumentException;
 
 }

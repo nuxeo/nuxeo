@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
  * A session to the Nuxeo Core.
@@ -848,41 +849,33 @@ public interface CoreSession {
      */
 
     /**
-     * Retrieves the data model given its schema and the reference of the owner
-     * document.
-     *
-     * @param docRef the document owner reference
-     * @param schema the schema
-     * @return the data model
-     * @throws ClientException
+     * @deprecated not used by client code
      */
+    @Deprecated
     DataModel getDataModel(DocumentRef docRef, String schema)
             throws ClientException;
 
     /**
-     * Retrieves the given field value from the given schema for the given
-     * document.
+     * Retrieves a data model given a document reference and a schema.
+     * <p>
+     * For INTERNAL use by the core.
      *
-     * @param docRef the document reference
-     * @param schema the schema
-     * @param field the field name
-     * @return the field value
-     * @throws ClientException
+     * @since 5.4.1
      */
+    DataModel getDataModel(DocumentRef docRef, Schema schema)
+            throws ClientException;
+
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     Object getDataModelField(DocumentRef docRef, String schema, String field)
             throws ClientException;
 
     /**
-     * The bulk version of the above method.
-     * <p>
-     * Retrieves the fields values from the given schema in the given document.
-     *
-     * @param docRef the document reference
-     * @param schema the schema
-     * @param fields the field names
-     * @return the field values
-     * @throws ClientException
+     * @deprecated unused
      */
+    @Deprecated
     Object[] getDataModelFields(DocumentRef docRef, String schema,
             String[] fields) throws ClientException;
 

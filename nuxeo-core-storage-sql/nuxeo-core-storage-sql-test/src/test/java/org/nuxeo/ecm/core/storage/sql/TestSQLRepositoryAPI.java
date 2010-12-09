@@ -39,6 +39,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -61,9 +62,12 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
 /**
@@ -1771,32 +1775,208 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 retrievedChild.getParentRef()));
     }
 
-    public void testFacets() throws Exception {
-        DocumentModel root = session.getRootDocument();
-
-        assertTrue(root.isFolder());
-
-        String name = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name, "File");
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile2 = new DocumentModelImpl(
-                root.getPathAsString(), name2, "Folder");
-
-        String name3 = "file#" + generateUnique();
-        DocumentModel childFile3 = new DocumentModelImpl(
-                root.getPathAsString(), name3, "Workspace");
-
-        List<DocumentModel> childFiles = new ArrayList<DocumentModel>();
-        childFiles.add(childFile);
-        childFiles.add(childFile2);
-        childFiles.add(childFile3);
-
-        List<DocumentModel> returnedChildFiles = createChildDocuments(childFiles);
-
+    public void testFolderFacet() throws Exception {
+        DocumentModel child1 = new DocumentModelImpl("/", "file1", "File");
+        DocumentModel child2 = new DocumentModelImpl("/", "fold1", "Folder");
+        DocumentModel child3 = new DocumentModelImpl("/", "ws1", "Workspace");
+        List<DocumentModel> returnedChildFiles = createChildDocuments(Arrays.asList(
+                child1, child2, child3));
         assertFalse(returnedChildFiles.get(0).isFolder());
         assertTrue(returnedChildFiles.get(1).isFolder());
         assertTrue(returnedChildFiles.get(2).isFolder());
+    }
+
+    public void testFacetAPI() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // facet not yet present
+        assertFalse(doc.hasFacet("Aged"));
+        assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        Set<String> baseFacets = new HashSet<String>(Arrays.asList(
+                FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
+                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE));
+        assertEquals(baseFacets, doc.getFacets());
+        try {
+            doc.setPropertyValue("age:age", "123");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+
+        // cannot add nonexistent facet
+        try {
+            doc.addFacet("nosuchfacet");
+            fail();
+        } catch (ClientRuntimeException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("No such facet"));
+        }
+        assertEquals(baseFacets, doc.getFacets());
+        assertFalse(doc.removeFacet("nosuchfacet"));
+        assertEquals(baseFacets, doc.getFacets());
+
+        // add facet
+        assertTrue(doc.addFacet("Aged"));
+        assertTrue(doc.hasFacet("Aged"));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        doc.setPropertyValue("age:age", "123");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.hasFacet("Aged"));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        assertEquals("123", doc.getPropertyValue("age:age"));
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(doc.getRef());
+        assertTrue(doc.hasFacet("Aged"));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        assertEquals("123", doc.getPropertyValue("age:age"));
+
+        // add twice
+        assertFalse(doc.addFacet("Aged"));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+
+        // add other facet with no schema
+        assertTrue(doc.addFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertTrue(doc.hasFacet("Aged"));
+        assertTrue(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertEquals(baseFacets.size() + 2, doc.getFacets().size());
+
+        // remove first facet
+        assertTrue(doc.removeFacet("Aged"));
+        assertFalse(doc.hasFacet("Aged"));
+        assertTrue(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        try {
+            doc.getPropertyValue("age:age");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+        doc = session.saveDocument(doc);
+        assertFalse(doc.hasFacet("Aged"));
+        assertTrue(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        try {
+            doc.getPropertyValue("age:age");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(doc.getRef());
+        assertFalse(doc.hasFacet("Aged"));
+        assertTrue(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+        try {
+            doc.getPropertyValue("age:age");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+
+        // remove twice
+        assertFalse(doc.removeFacet("Aged"));
+        assertEquals(baseFacets.size() + 1, doc.getFacets().size());
+
+        // remove other facet
+        assertTrue(doc.removeFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertFalse(doc.hasFacet("Aged"));
+        assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
+        assertEquals(baseFacets, doc.getFacets());
+    }
+
+    public void testFacetIncludedInPrimaryType() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
+        doc.setPropertyValue("age:age", "123");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // new session
+        closeSession();
+        openSession();
+        doc = session.getDocument(doc.getRef());
+        assertEquals("123", doc.getPropertyValue("age:age"));
+
+        // API on doc whose type has a facet
+        assertEquals(Collections.singleton("Aged"), doc.getFacets());
+        assertTrue(doc.hasFacet("Aged"));
+        assertFalse(doc.addFacet("Aged"));
+        assertFalse(doc.removeFacet("Aged"));
+    }
+
+    public void testFacetAddRemove() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // mixin not there
+        try {
+            doc.getPropertyValue("age:age");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+
+        // add
+        assertTrue(doc.addFacet("Aged"));
+        doc.setPropertyValue("age:age", "123");
+        session.save();
+
+        // remove
+        assertTrue(doc.removeFacet("Aged"));
+        session.save();
+
+        // mixin not there anymore
+        try {
+            doc.getPropertyValue("age:age");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+    }
+
+    // mixin on doc with same schema in primary type does no harm
+    public void testFacetAddRemove2() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "DocWithAge");
+        doc.setPropertyValue("age:age", "123");
+        doc = session.createDocument(doc);
+        session.save();
+
+        assertFalse(doc.addFacet("Aged"));
+        assertEquals("123", doc.getPropertyValue("age:age"));
+
+        assertFalse(doc.removeFacet("Aged"));
+        assertEquals("123", doc.getPropertyValue("age:age"));
+    }
+
+    public void testFacetCopy() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc.addFacet("Aged");
+        doc.setPropertyValue("age:age", "123");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // copy the doc
+        DocumentModel copy = session.copy(doc.getRef(),
+                session.getRootDocument().getRef(), "bar");
+        assertTrue(copy.hasFacet("Aged"));
+        assertEquals("123", copy.getPropertyValue("age:age"));
+    }
+
+    public void testFacetFulltext() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc.addFacet("Aged");
+        doc.setPropertyValue("age:age", "barbar");
+        doc = session.createDocument(doc);
+        session.save();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = \"barbar\"");
+        assertEquals(1, list.size());
     }
 
     public void testLifeCycleAPI() throws ClientException {
@@ -3133,10 +3313,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save(); // should send invalidations
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
-// NXP-5808 cannot distinguish cluster invalidations
-//        local = (Boolean) event.getContext().getProperty(
-//                EventConstants.INVAL_LOCAL);
-//        assertEquals(Boolean.TRUE, local);
+        // NXP-5808 cannot distinguish cluster invalidations
+        // local = (Boolean) event.getContext().getProperty(
+        // EventConstants.INVAL_LOCAL);
+        // assertEquals(Boolean.TRUE, local);
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(1, set.size()); // doc created seen as modified
@@ -3155,10 +3335,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save(); // should send invalidations
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
-// NXP-5808 cannot distinguish cluster invalidations
-//        local = (Boolean) event.getContext().getProperty(
-//                EventConstants.INVAL_LOCAL);
-//        assertEquals(Boolean.TRUE, local);
+        // NXP-5808 cannot distinguish cluster invalidations
+        // local = (Boolean) event.getContext().getProperty(
+        // EventConstants.INVAL_LOCAL);
+        // assertEquals(Boolean.TRUE, local);
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(1, set.size());

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -164,6 +165,31 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
         return target.getSystemProp(name, type);
+    }
+
+    @Override
+    public Set<String> getAllFacets() {
+        return target.getAllFacets(); // TODO proxy facets
+    }
+
+    @Override
+    public String[] getFacets() {
+        return target.getFacets(); // TODO proxy facets
+    }
+
+    @Override
+    public boolean hasFacet(String facet) {
+        return target.hasFacet(facet); // TODO proxy facets
+    }
+
+    @Override
+    public boolean addFacet(String facet) throws DocumentException {
+        return target.addFacet(facet); // TODO proxy facets
+    }
+
+    @Override
+    public boolean removeFacet(String facet) throws DocumentException {
+        return target.removeFacet(facet); // TODO proxy facets
     }
 
     /*

@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -455,6 +456,31 @@ public class MockDocument implements Document {
     @Override
     public String getCheckinComment() throws DocumentException {
         return null;
+    }
+
+    @Override
+    public Set<String> getAllFacets() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String[] getFacets() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean hasFacet(String facet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addFacet(String facet) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeFacet(String facet) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -54,7 +54,9 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
+import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -118,7 +120,7 @@ public class SQLSession implements Session {
 
     @Override
     public Document getNullDocument() {
-        return new SQLDocumentLive(null, null, this, true);
+        return new SQLDocumentLive(null, null, null, this, true);
     }
 
     // not called
@@ -587,21 +589,32 @@ public class SQLSession implements Session {
                 throw new DocumentException(e);
             }
         }
-
-        DocumentType type = getTypeManager().getDocumentType(typeName);
+        TypeProvider typeProvider = getTypeManager();
+        DocumentType type = typeProvider.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentException("Unknown document type: " + typeName);
+        }
+        String[] mixins = node.getMixinTypes();
+        List<CompositeType> mixinTypes = new ArrayList<CompositeType>(
+                mixins.length);
+        for (String mixin : mixins) {
+            CompositeType mixinType = typeProvider.getFacet(mixin);
+            if (mixinType != null) {
+                mixinTypes.add(mixinType);
+            }
         }
 
         if (node.isProxy()) {
             // proxy seen as a normal document
-            Document proxy = new SQLDocumentLive(node, type, this, false);
+            Document proxy = new SQLDocumentLive(node, type, mixinTypes, this,
+                    false);
             Document target = newDocument(targetNode, readonly);
             return new SQLDocumentProxy(proxy, target);
         } else if (node.isVersion()) {
-            return new SQLDocumentVersion(node, type, this, readonly);
+            return new SQLDocumentVersion(node, type, mixinTypes, this,
+                    readonly);
         } else {
-            return new SQLDocumentLive(node, type, this, false);
+            return new SQLDocumentLive(node, type, mixinTypes, this, false);
         }
     }
 
@@ -851,8 +864,10 @@ public class SQLSession implements Session {
 
     /** Make a property. */
     protected Property makeProperty(Node node, String name,
-            ComplexType parentType, boolean readonly) throws DocumentException {
-        return makeProperties(node, name, parentType, readonly, 0).get(0);
+            ComplexType parentType, List<CompositeType> mixinTypes,
+            boolean readonly) throws DocumentException {
+        return makeProperties(node, name, parentType, mixinTypes, readonly, 0).get(
+                0);
     }
 
     /**
@@ -860,8 +875,8 @@ public class SQLSession implements Session {
      * elements.
      */
     protected List<Property> makeProperties(Node node, String name,
-            Type parentType, boolean readonly, int complexListSize)
-            throws DocumentException {
+            Type parentType, List<CompositeType> mixinTypes, boolean readonly,
+            int complexListSize) throws DocumentException {
         boolean complexList = parentType instanceof ListType;
         Model model;
         try {
@@ -876,6 +891,15 @@ public class SQLSession implements Session {
                 field = ((ListType) parentType).getField();
             } else {
                 field = ((ComplexType) parentType).getField(name);
+                if (field == null) {
+                    // check mixin types
+                    for (CompositeType mixinType : mixinTypes) {
+                        field = mixinType.getField(name);
+                        if (field != null) {
+                            break;
+                        }
+                    }
+                }
                 if (field == null) {
                     throw new NoSuchPropertyException(name);
                 }

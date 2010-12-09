@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -55,8 +56,9 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     protected SQLDocumentVersion(Node node, ComplexType type,
-            SQLSession session, boolean readonly) throws DocumentException {
-        super(node, type, session, readonly);
+            List<CompositeType> mixinTypes, SQLSession session, boolean readonly)
+            throws DocumentException {
+        super(node, type, mixinTypes, session, readonly);
         versionableNode = session.getNodeById((Serializable) getProperty(
                 Model.VERSION_VERSIONABLE_PROP).getValue());
     }

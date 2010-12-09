@@ -195,18 +195,93 @@ public interface DocumentModel extends Serializable {
     String getType();
 
     /**
-     * Gets the schemas defined by this document type.
+     * Gets the schemas available on this document (from the type and the
+     * facets).
      *
-     * @return the defined schemas
+     * @return the schemas
+     *
+     * @since 5.4.1
      */
+    String[] getSchemas();
+
+    /**
+     * Gets the schemas available on this document (from the type and the
+     * facets).
+     *
+     * @deprecated use {@link #getSchemas} instead, or call
+     *             {@link #getDocumentType} and look up the type schemas
+     *
+     * @return the schemas
+     */
+    @Deprecated
     String[] getDeclaredSchemas();
 
     /**
-     * Gets the facets defined by this document type.
+     * Checks if the document has the given schema, either from its type or
+     * added on the instance through a facet.
      *
-     * @return the defined facets
+     * @param schema the schema name
+     * @return {@code true} if the document has the schema
      */
+    boolean hasSchema(String schema);
+
+    /**
+     * Gets the facets available on this document (from the type and the
+     * instance facets).
+     *
+     * @return the facets
+     *
+     * @since 5.4.1
+     */
+    Set<String> getFacets();
+
+    /**
+     * Gets the facets available on this document (from the type and the
+     * instance facets).
+     *
+     * @deprecated use {@link #getFacets} instead, or call
+     *             {@link #getDocumentType} and look up the type facets
+     *
+     * @return the facets
+     */
+    @Deprecated
     Set<String> getDeclaredFacets();
+
+    /**
+     * Checks if the document has a facet, either from its type or added on the
+     * instance.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the document has the facet
+     */
+    boolean hasFacet(String facet);
+
+    /**
+     * Adds a facet to the document instance.
+     * <p>
+     * Does nothing if the facet was already present on the document.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the facet was added, or {@code false} if it is
+     *         already present
+     * @throws DocumentException if the facet does not exist
+     *
+     * @since 5.4.1
+     */
+    boolean addFacet(String facet);
+
+    /**
+     * Removes a facet from the document instance.
+     * <p>
+     * It's not possible to remove a facet coming from the document type.
+     *
+     * @param facet the facet name
+     * @return {@code true} if the facet was removed, or {@code false} if it
+     *         isn't present or is present on the type or does not exit
+     *
+     * @since 5.4.1
+     */
+    boolean removeFacet(String facet);
 
     /**
      * Gets a list with the currently fetched data models.
@@ -466,21 +541,6 @@ public interface DocumentModel extends Serializable {
     void setProperties(String schemaName, Map<String, Object> data)
             throws ClientException;
 
-    /**
-     * Checks whether this document model has the given schema.
-     *
-     * @param schema the schema name to check
-     * @return true if the document has this schema, false otherwise
-     */
-    boolean hasSchema(String schema);
-
-    /**
-     * Checks if this document has the given facet.
-     *
-     * @param facet the facet to check
-     * @return true if the document has this facet, false otherwise
-     */
-    boolean hasFacet(String facet);
 
     /**
      * Checks if this document is a folder.

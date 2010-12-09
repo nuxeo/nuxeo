@@ -86,8 +86,12 @@ import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -537,32 +541,7 @@ public abstract class AbstractSession implements CoreSession,
 
     protected DocumentModel writeModel(Document doc, DocumentModel docModel)
             throws DocumentException, ClientException {
-        // get loaded data models
-        boolean changed = false;
-        DocumentPart[] parts = docModel.getParts();
-        for (DocumentPart part : parts) {
-            if (part.isDirty()) {
-                try {
-                    doc.writeDocumentPart(part);
-                } catch (ClientException e) {
-                    throw e;
-                } catch (DocumentException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new ClientException("failed to write document part",
-                            e);
-                }
-                changed = true;
-            }
-        }
-
-        if (!changed) {
-            return docModel;
-        }
-        // TODO: here we can optimize document part doesn't need to be read
-        DocumentModel newModel = readModel(doc);
-        newModel.copyContextData(docModel);
-        return newModel;
+        return DocumentModelFactory.writeDocumentModel(docModel, doc);
     }
 
     @Override
@@ -2562,14 +2541,14 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
+    @Deprecated
     public DataModel getDataModel(DocumentRef docRef, String schema)
             throws ClientException {
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
             Schema docSchema = doc.getType().getSchema(schema);
-            assert docSchema != null;
-            return DocumentModelFactory.exportSchema(doc, docSchema);
+            return DocumentModelFactory.createDataModel(doc, docSchema);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get data model for " + docRef
                     + ':' + schema, e);
@@ -2577,6 +2556,20 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
+    public DataModel getDataModel(DocumentRef docRef, Schema schema)
+            throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, READ);
+            return DocumentModelFactory.createDataModel(doc, schema);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get data model for " + docRef
+                    + ':' + schema, e);
+        }
+    }
+
+    @Override
+    @Deprecated
     public Object getDataModelField(DocumentRef docRef, String schema,
             String field) throws ClientException {
         try {
@@ -2604,6 +2597,7 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     @Override
+    @Deprecated
     public Object[] getDataModelFields(DocumentRef docRef, String schema,
             String[] fields) throws ClientException {
         try {
@@ -3210,94 +3204,36 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public DocumentModelRefresh refreshDocument(DocumentRef ref,
             int refreshFlags, String[] schemas) throws ClientException {
-        DocumentModelRefresh refresh = new DocumentModelRefresh();
-
         try {
-
             Document doc = resolveReference(ref);
             if (doc == null) {
                 throw new ClientException("No Such Document: " + ref);
             }
 
-            boolean readPermChecked = false;
-            if ((refreshFlags & DocumentModel.REFRESH_PREFETCH) != 0) {
-                if (!readPermChecked) {
-                    checkPermission(doc, READ);
-                    readPermChecked = true;
-                }
-                PrefetchInfo info = doc.getType().getPrefetchInfo();
-                if (info != null) {
-                    Schema[] pschemas = info.getSchemas();
-                    if (pschemas != null) {
-                        // TODO: this should be returned as document parts of
-                        // the document
-                    }
-                    Field[] fields = info.getFields();
-                    if (fields != null) {
-                        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
-                        // TODO : should use documentpartreader
-                        for (Field field : fields) {
-                            Object value = doc.getPropertyValue(field.getName().getPrefixedName());
-                            prefetch.put(field.getDeclaringType().getName()
-                                    + '.' + field.getName().getLocalName(),
-                                    value == null ? Null.VALUE
-                                            : (Serializable) value);
-                        }
-                        refresh.prefetch = prefetch;
-                    }
-                }
+            // permission checks
+            if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH
+                    | DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT)) != 0) {
+                checkPermission(doc, READ);
             }
-
-            if ((refreshFlags & DocumentModel.REFRESH_STATE) != 0) {
-                if (!readPermChecked) {
-                    checkPermission(doc, READ);
-                    // checkPermission(doc, READ_LIFE_CYCLE);
-                    readPermChecked = true;
-                }
-                refresh.lock = doc.getLock();
-                refresh.lifeCycleState = doc.getLifeCycleState();
-                refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
-                refresh.isCheckedOut = doc.isCheckedOut();
-                refresh.isLatestVersion = doc.isLatestVersion();
-                refresh.isMajorVersion = doc.isMajorVersion();
-                refresh.isLatestMajorVersion = doc.isLatestMajorVersion();
-                refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
-                refresh.versionSeriesId = doc.getVersionSeriesId();
-                refresh.checkinComment = doc.getCheckinComment();
-            }
-
             if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
                 checkPermission(doc, READ_SECURITY);
+            }
+
+            DocumentModelRefresh refresh = DocumentModelFactory.refreshDocumentModel(
+                    doc, refreshFlags, schemas);
+
+            // ACPs need the session, so aren't done in the factory method
+            if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
                 refresh.acp = getSession().getSecurityManager().getMergedACP(
                         doc);
             }
 
-            if ((refreshFlags & DocumentModel.REFRESH_CONTENT) != 0) {
-                if (!readPermChecked) {
-                    checkPermission(doc, READ);
-                    readPermChecked = true;
-                }
-                if (schemas == null) {
-                    schemas = doc.getType().getSchemaNames();
-                }
-                DocumentType type = doc.getType();
-                DocumentPart[] parts = new DocumentPart[schemas.length];
-                for (int i = 0; i < schemas.length; i++) {
-                    DocumentPart part = new DocumentPartImpl(
-                            type.getSchema(schemas[i]));
-                    doc.readDocumentPart(part);
-                    parts[i] = part;
-                }
-                refresh.documentParts = parts;
-            }
-
+            return refresh;
         } catch (ClientException e) {
             throw e;
         } catch (Exception e) {
             throw new ClientException("Failed to get refresh data", e);
         }
-        return refresh;
-
     }
 
     @Override

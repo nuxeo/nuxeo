@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +46,8 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
@@ -59,9 +62,13 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     // cache of the lock state, for efficiency
     protected String lock;
 
-    protected SQLDocumentLive(Node node, ComplexType type, SQLSession session,
-            boolean readonly) {
+    /** Mixin types, updated when facets change. */
+    protected final List<CompositeType> mixinTypes;
+
+    protected SQLDocumentLive(Node node, ComplexType type,
+            List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
         super(node, type, session, readonly);
+        this.mixinTypes = mixinTypes;
     }
 
     /*
@@ -149,6 +156,13 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         for (Property property : dp) {
             property.init((Serializable) getPropertyValue(property.getName()));
         }
+    }
+
+    @Override
+    public org.nuxeo.ecm.core.model.Property getProperty(String name)
+            throws DocumentException {
+        return session.makeProperty(getNode(), name, (ComplexType) type,
+                mixinTypes, readonly);
     }
 
     /**
@@ -604,6 +618,48 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         }
         Document doc = getChild(name);
         doc.remove();
+    }
+
+    @Override
+    public Set<String> getAllFacets() {
+        return getNode().getAllMixinTypes();
+    }
+
+    @Override
+    public String[] getFacets() {
+        return getNode().getMixinTypes();
+    }
+
+    @Override
+    public boolean hasFacet(String facet) {
+        return getNode().hasMixinType(facet);
+    }
+
+    @Override
+    public boolean addFacet(String facet) throws DocumentException {
+        try {
+            boolean added = getNode().addMixinType(facet);
+            if (added) {
+                mixinTypes.add(session.getTypeManager().getFacet(facet));
+            }
+            return added;
+        } catch (IllegalArgumentException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    @Override
+    public boolean removeFacet(String facet) throws DocumentException {
+        boolean removed = getNode().removeMixinType(facet);
+        if (removed) {
+            for (Iterator<CompositeType> it = mixinTypes.iterator(); it.hasNext(); ) {
+                if (it.next().getName().equals(facet)) {
+                    it.remove();
+                    break;
+                }
+            }
+        }
+        return removed;
     }
 
     /*

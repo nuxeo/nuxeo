@@ -25,12 +25,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestFacetFilter extends TestCase {
+public class TestFacetFilter extends NXRuntimeTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
+    }
 
     public void test() {
         Set<String> facets = new HashSet<String>();

@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,7 +27,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Null;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -36,7 +39,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
@@ -44,7 +46,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
- * DocumentModel factory for document models initialization.
+ * Bridge between a {@link DocumentModel} and a {@link Document} for creation /
+ * update.
  */
 public class DocumentModelFactory {
 
@@ -88,9 +91,8 @@ public class DocumentModelFactory {
     public static DocumentModel newDocument(DocumentModel parent, String name,
             DocumentType type) {
         return new DocumentModelImpl(null, type.getName(), null,
-                parent.getPath(), null, null, parent.getRef(),
-                type.getSchemaNames(), type.getFacets(), null,
-                parent.getRepositoryName());
+                parent.getPath(), null, null, parent.getRef(), null, null,
+                null, parent.getRepositoryName());
     }
 
     /**
@@ -166,15 +168,10 @@ public class DocumentModelFactory {
         boolean immutable = doc.isVersion()
                 || (doc.isProxy() && sourceDoc.isVersion());
 
-        Set<String> typeFacets = type.getFacets();
+        // Instance facets
+        Set<String> facets = new HashSet<String>(Arrays.asList(doc.getFacets()));
         if (immutable) {
-            // clone facets to avoid modifying doc type facets
-            if (typeFacets != null) {
-                typeFacets = new HashSet<String>(typeFacets);
-            } else {
-                typeFacets = new HashSet<String>();
-            }
-            typeFacets.add(FacetNames.IMMUTABLE);
+            facets.add(FacetNames.IMMUTABLE);
         }
 
         // Compute repository name.
@@ -188,8 +185,8 @@ public class DocumentModelFactory {
 
         // create the document model
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
-                doc.getUUID(), path, doc.getLock(), docRef, parentRef,
-                type.getSchemaNames(), typeFacets, sourceId, repositoryName);
+                doc.getUUID(), path, doc.getLock(), docRef, parentRef, null,
+                facets, sourceId, repositoryName);
 
         if (doc.isVersion()) {
             docModel.setIsVersion(true);
@@ -232,13 +229,11 @@ public class DocumentModelFactory {
                 if (schema == null) {
                     continue;
                 }
-                DataModel dataModel = exportSchema(doc, schema);
-                docModel.addDataModel(dataModel);
+                docModel.addDataModel(createDataModel(doc, schema));
             }
         } else if (prefetchSchemas != null) {
             for (Schema schema : prefetchSchemas) {
-                DataModel dataModel = exportSchema(doc, schema);
-                docModel.addDataModel(dataModel);
+                docModel.addDataModel(createDataModel(doc, schema));
             }
         }
 
@@ -270,14 +265,11 @@ public class DocumentModelFactory {
      */
     public static DocumentModelImpl createDocumentModel(String sessionId,
             DocumentType docType) throws DocumentException {
-        Set<String> facets = docType.getFacets();
-        String[] schemas = docType.getSchemaNames();
         DocumentModelImpl docModel = new DocumentModelImpl(sessionId,
-                docType.getName(), null, null, null, null, null, schemas,
-                facets, null, null);
+                docType.getName(), null, null, null, null, null, null, null,
+                null, null);
         for (Schema schema : docType.getSchemas()) {
-            DataModel dataModel = exportSchema(null, schema);
-            docModel.addDataModel(dataModel);
+            docModel.addDataModel(createDataModel(null, schema));
         }
         return docModel;
     }
@@ -302,16 +294,19 @@ public class DocumentModelFactory {
                 docType.getName());
         // populate models
         if (schemas != null) {
-            for (String schema : schemas) {
-                DataModel dataModel = exportSchema(null,
-                        docType.getSchema(schema));
-                docModel.addDataModel(dataModel);
+            for (String schemaName : schemas) {
+                Schema schema = docType.getSchema(schemaName);
+                docModel.addDataModel(createDataModel(null, schema));
             }
         }
         return docModel;
     }
 
-    public static DataModel exportSchema(Document doc, Schema schema)
+    /**
+     * Creates a data model from a document and a schema. If the document is
+     * null, just creates empty data models.
+     */
+    public static DataModel createDataModel(Document doc, Schema schema)
             throws DocumentException {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
@@ -324,6 +319,125 @@ public class DocumentModelFactory {
             }
         }
         return new DataModelImpl(part);
+    }
+
+    /**
+     * Writes a document model to a document. Returns the re-read document
+     * model.
+     */
+    public static DocumentModel writeDocumentModel(DocumentModel docModel,
+            Document doc) throws DocumentException, ClientException {
+        if (!(docModel instanceof DocumentModelImpl)) {
+            throw new ClientRuntimeException("Must be a DocumentModelImpl: "
+                    + docModel);
+        }
+
+        boolean changed = false;
+
+        // facets added/removed
+        Set<String> instanceFacets = ((DocumentModelImpl) docModel).instanceFacets;
+        Set<String> instanceFacetsOrig = ((DocumentModelImpl) docModel).instanceFacetsOrig;
+        Set<String> addedFacets = new HashSet<String>(instanceFacets);
+        addedFacets.removeAll(instanceFacetsOrig);
+        for (String facet : addedFacets) {
+            changed = doc.addFacet(facet) || changed;
+        }
+        Set<String> removedFacets = new HashSet<String>(instanceFacetsOrig);
+        removedFacets.removeAll(instanceFacets);
+        for (String facet : removedFacets) {
+            changed = doc.removeFacet(facet) || changed;
+        }
+
+        // write data models
+        DocumentPart[] parts = docModel.getParts(); // TODO only loaded ones
+        for (DocumentPart part : parts) {
+            if (part.isDirty()) {
+                try {
+                    doc.writeDocumentPart(part);
+                } catch (ClientException e) {
+                    throw e;
+                } catch (DocumentException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ClientException("failed to write document part",
+                            e);
+                }
+                changed = true;
+            }
+        }
+
+        if (!changed) {
+            return docModel;
+        }
+
+        // TODO: here we can optimize document part doesn't need to be read
+        DocumentModel newModel = createDocumentModel(doc, null);
+        newModel.copyContextData(docModel);
+        return newModel;
+    }
+
+    /**
+     * Gets what's to refresh in a model (except for the ACPs, which need the
+     * session).
+     */
+    public static DocumentModelRefresh refreshDocumentModel(Document doc,
+            int flags, String[] schemas) throws DocumentException,
+            LifeCycleException, Exception {
+        DocumentModelRefresh refresh = new DocumentModelRefresh();
+
+        if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
+            PrefetchInfo info = doc.getType().getPrefetchInfo();
+            if (info != null) {
+                Schema[] pschemas = info.getSchemas();
+                if (pschemas != null) {
+                    // TODO: this should be returned as document parts of
+                    // the document
+                }
+                Field[] fields = info.getFields();
+                if (fields != null) {
+                    Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
+                    // TODO : should use documentpartreader
+                    for (Field field : fields) {
+                        Object value = doc.getPropertyValue(field.getName().getPrefixedName());
+                        prefetch.put(field.getDeclaringType().getName() + '.'
+                                + field.getName().getLocalName(),
+                                value == null ? Null.VALUE
+                                        : (Serializable) value);
+                    }
+                    refresh.prefetch = prefetch;
+                }
+            }
+        }
+
+        if ((flags & DocumentModel.REFRESH_STATE) != 0) {
+            refresh.lock = doc.getLock();
+            refresh.lifeCycleState = doc.getLifeCycleState();
+            refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
+            refresh.isCheckedOut = doc.isCheckedOut();
+            refresh.isLatestVersion = doc.isLatestVersion();
+            refresh.isMajorVersion = doc.isMajorVersion();
+            refresh.isLatestMajorVersion = doc.isLatestMajorVersion();
+            refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
+            refresh.versionSeriesId = doc.getVersionSeriesId();
+            refresh.checkinComment = doc.getCheckinComment();
+        }
+
+        if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {
+            if (schemas == null) {
+                schemas = doc.getType().getSchemaNames();
+            }
+            DocumentType type = doc.getType();
+            DocumentPart[] parts = new DocumentPart[schemas.length];
+            for (int i = 0; i < schemas.length; i++) {
+                DocumentPart part = new DocumentPartImpl(
+                        type.getSchema(schemas[i]));
+                doc.readDocumentPart(part);
+                parts[i] = part;
+            }
+            refresh.documentParts = parts;
+        }
+
+        return refresh;
     }
 
 }

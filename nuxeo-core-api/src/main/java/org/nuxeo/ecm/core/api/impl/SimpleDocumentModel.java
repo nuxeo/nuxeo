@@ -165,9 +165,14 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String[] getDeclaredSchemas() {
+    public String[] getSchemas() {
         Set<String> keys = dataModels.keySet();
         return keys.toArray(new String[keys.size()]);
+    }
+
+    @Override
+    public String[] getDeclaredSchemas() {
+        return getSchemas();
     }
 
     @Override
@@ -351,8 +356,13 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Set<String> getDeclaredFacets() {
+    public Set<String> getFacets() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<String> getDeclaredFacets() {
+        return getFacets();
     }
 
     @Override
@@ -412,6 +422,16 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasFacet(String facet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addFacet(String facet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeFacet(String facet) {
         throw new UnsupportedOperationException();
     }
 

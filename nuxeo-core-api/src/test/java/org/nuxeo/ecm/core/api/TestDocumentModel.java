@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.util.Collections;
+
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -43,8 +46,10 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertTrue(model.getDataModels().isEmpty());
         assertTrue(model.getDataModelsCollection().isEmpty());
 
-        assertNull(model.getDeclaredFacets());
-        assertNull(model.getDeclaredSchemas());
+        assertEquals(Collections.emptySet(), model.getDeclaredFacets());
+        assertEquals(0, model.getDeclaredSchemas().length);
+        assertEquals(Collections.emptySet(), model.getFacets());
+        assertEquals(0, model.getSchemas().length);
         assertNull(model.getId());
         assertNull(model.getLock());
         assertNull(model.getName());
@@ -69,8 +74,6 @@ public class TestDocumentModel extends NXRuntimeTestCase {
 
         assertTrue(model.equals(model));
         assertFalse(model.equals(null));
-        // DocumentModel model2 = new DocumentModelImpl("my type");
-        // assertTrue(model.equals(model2));
 
         assertNotNull(model.toString());
     }

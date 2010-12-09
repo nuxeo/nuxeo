@@ -213,7 +213,17 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public Set<String> getFacets() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Set<String> getDeclaredFacets() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String[] getSchemas() {
         throw new UnsupportedOperationException();
     }
 
@@ -319,6 +329,16 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasSchema(String schema) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addFacet(String facet) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeFacet(String facet) {
         throw new UnsupportedOperationException();
     }
 

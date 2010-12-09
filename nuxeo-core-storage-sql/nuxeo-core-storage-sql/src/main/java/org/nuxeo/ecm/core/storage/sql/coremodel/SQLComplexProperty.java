@@ -119,7 +119,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     @Override
     public Property getProperty(String name) throws DocumentException {
-        return session.makeProperty(node, name, (ComplexType) type, readonly);
+        return session.makeProperty(node, name, (ComplexType) type, null, readonly);
     }
 
     @Override

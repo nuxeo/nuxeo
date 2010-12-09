@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * A provider of types (property types, schemas, document types).
+ * A provider of types (property types, schemas, document types, facets).
  */
 public interface TypeProvider {
 

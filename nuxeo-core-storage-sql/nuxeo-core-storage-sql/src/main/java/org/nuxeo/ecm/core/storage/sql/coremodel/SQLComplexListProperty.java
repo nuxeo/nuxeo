@@ -67,7 +67,8 @@ public class SQLComplexListProperty extends SQLBaseProperty {
 
     @Override
     public List<Object> getValue() throws DocumentException {
-        List<Property> properties = session.makeProperties(node, name, type, readonly, -1);
+        List<Property> properties = session.makeProperties(node, name, type,
+                null, readonly, -1);
         List<Object> list = new ArrayList<Object>(properties.size());
         for (Property property : properties) {
             list.add(property.getValue());
@@ -84,8 +85,8 @@ public class SQLComplexListProperty extends SQLBaseProperty {
             setList((List<?>) value);
         } else {
             throw new IllegalArgumentException(
-                    "Unsupported value object for a complex list: " +
-                            value.getClass().getName());
+                    "Unsupported value object for a complex list: "
+                            + value.getClass().getName());
         }
     }
 
@@ -105,7 +106,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
         }
         // add new nodes
         List<Property> properties = session.makeProperties(node, name, type,
-                readonly, list.size());
+                null, readonly, list.size());
         // set values
         int i = 0;
         for (Object value : list) {
