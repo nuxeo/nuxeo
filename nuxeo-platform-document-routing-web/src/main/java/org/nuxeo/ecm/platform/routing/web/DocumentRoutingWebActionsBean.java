@@ -29,8 +29,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 
@@ -52,6 +55,9 @@ public class DocumentRoutingWebActionsBean implements Serializable {
     @In(create = true, required = false)
     protected transient WebActions webActions;
 
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
+
     protected List<Action> addStepActions;
 
     protected List<Action> addStepInForkActions;
@@ -60,35 +66,31 @@ public class DocumentRoutingWebActionsBean implements Serializable {
 
     protected List<Action> editStepActions;
 
-    @Factory(value = "getAddStepActions", scope = ScopeType.EVENT)
-    public List<Action> getAddStepActions() {
-        if (addStepActions == null) {
-            addStepActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST);
-        }
+    public List<Action> getAddStepActions(DocumentModel step) {
+        ActionContext context = actionContextProvider.createActionContext();
+        context.setCurrentDocument(step);
+        addStepActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST, context);
         return addStepActions;
     }
 
-    @Factory(value = "getAddStepInForkActions", scope = ScopeType.EVENT)
-    public List<Action> getAddStepInActions() {
-        if (addStepInForkActions == null) {
-            addStepInForkActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST);
-        }
+    public List<Action> getAddStepInActions(DocumentModel step) {
+        ActionContext context = actionContextProvider.createActionContext();
+        context.setCurrentDocument(step);
+        addStepInForkActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST, context);
         return addStepInForkActions;
     }
 
-    @Factory(value = "getRemoveStepActions", scope = ScopeType.EVENT)
-    public List<Action> getRemoveStepActions() {
-        if (removeStepActions == null) {
-            removeStepActions = webActions.getActionsList(DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST);
-        }
+    public List<Action> getRemoveStepActions(DocumentModel step) {
+        ActionContext context = actionContextProvider.createActionContext();
+        context.setCurrentDocument(step);
+        removeStepActions = webActions.getActionsList(DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST, context);
         return removeStepActions;
     }
 
-    @Factory(value = "getEditStepActions", scope = ScopeType.EVENT)
-    public List<Action> getEditStepActions() {
-        if (editStepActions == null) {
-            editStepActions = webActions.getActionsList(DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST);
-        }
+    public List<Action> getEditStepActions(DocumentModel step) {
+        ActionContext context = actionContextProvider.createActionContext();
+        context.setCurrentDocument(step);
+        editStepActions = webActions.getActionsList(DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST, context);
         return editStepActions;
     }
 

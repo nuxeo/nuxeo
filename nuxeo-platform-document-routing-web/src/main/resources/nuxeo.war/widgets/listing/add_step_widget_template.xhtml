@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core">
 
   <c:if test="#{isEmptyFork}">
-   <nxu:set var="actions" value="#{getAddStepInForkActions}" cache="true">
+   <nxu:set var="actions" value="#{routingWebActions.getAddStepInActions(field_0)}" cache="true">
       <c:if test="#{!empty actions}">
         <div class="action_bar">
           <nxu:dataList styleClass="ctxMenuStyle" layout="unorderedList" var="action" value="#{actions}" id ="addStepInForkActionList" rowIndexVar="rowIndex" rowCountVar="rowCount">
@@ -23,7 +23,7 @@
     </nxu:set>
   </c:if>
   <c:if test="#{isEditableRouteElement}">
-   <nxu:set var="actions" value="#{getAddStepActions}" cache="true">
+   <nxu:set var="actions" value="#{routingWebActions.getAddStepActions(field_0)}" cache="true">
       <c:if test="#{!empty actions}">
         <div class="action_bar">
           <nxu:dataList styleClass="ctxMenuStyle" layout="unorderedList" var="action" value="#{actions}" id ="addStepInForActionList" rowIndexVar="rowIndex">
