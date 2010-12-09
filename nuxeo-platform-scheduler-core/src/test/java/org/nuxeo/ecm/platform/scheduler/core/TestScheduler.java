@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.nuxeo.ecm.platform.scheduler.core.interfaces.SchedulerRegistry;
 import org.nuxeo.ecm.platform.scheduler.core.service.ScheduleImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -104,7 +103,6 @@ public class TestScheduler extends NXRuntimeTestCase {
         assertTrue(unregistered);
     }
 
-    @Ignore
     public void testScheduleManualRegistrationWithParameters() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);
@@ -122,7 +120,22 @@ public class TestScheduler extends NXRuntimeTestCase {
         int dayOfMonth= now.get(Calendar.DAY_OF_MONTH);
         int month = now.get(Calendar.MONTH) + 1;
         int year = now.get(Calendar.YEAR);
-        String cronExpression = String.format("%s %s %s %s %s ? %s", second+1, minute, hour, dayOfMonth, month, year);
+        second += 2;
+        if (second >= 60) {
+            second -= 60;
+            minute += 1;
+            if (minute >= 60) {
+                minute -= 60;
+                hour += 1;
+                if (hour >= 24) {
+                    hour -= 24;
+                    dayOfMonth += 1;
+                    // and if we go beyond the end of the month we're really too
+                    // unlucky
+                }
+            }
+        }
+        String cronExpression = String.format("%s %s %s %s %s ? %s", second, minute, hour, dayOfMonth, month, year);
         schedule.cronExpression = cronExpression;
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("flag", "1");
