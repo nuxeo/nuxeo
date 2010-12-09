@@ -38,6 +38,11 @@ public class WidgetTypeImpl implements WidgetType {
 
     final Map<String, String> properties;
 
+    // needed by GWT serialization
+    public WidgetTypeImpl() {
+        this(null, null, null);
+    }
+
     public WidgetTypeImpl(String name, Class<?> typeClass,
             Map<String, String> properties) {
         this.name = name;

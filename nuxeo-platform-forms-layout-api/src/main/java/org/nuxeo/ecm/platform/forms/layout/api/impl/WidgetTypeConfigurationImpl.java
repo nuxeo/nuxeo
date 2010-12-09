@@ -19,21 +19,26 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     private static final long serialVersionUID = 1L;
 
-    String title;
+    protected String title;
 
-    String description;
+    protected String description;
 
-    boolean list = false;
+    protected boolean list = false;
 
-    boolean complex = false;
+    protected boolean complex = false;
 
-    List<String> supportedFieldTypes;
+    protected List<String> supportedFieldTypes;
 
-    List<String> defaultFieldTypes;
+    protected List<String> defaultFieldTypes;
 
-    List<String> categories;
+    protected List<String> categories;
 
-    Map<String, List<LayoutDefinition>> propertyLayouts;
+    protected Map<String, List<LayoutDefinition>> propertyLayouts;
+
+    // needed by GWT serialization
+    public WidgetTypeConfigurationImpl() {
+        super();
+    }
 
     public WidgetTypeConfigurationImpl(String title, String description,
             boolean list, boolean complex, List<String> supportedFieldTypes,

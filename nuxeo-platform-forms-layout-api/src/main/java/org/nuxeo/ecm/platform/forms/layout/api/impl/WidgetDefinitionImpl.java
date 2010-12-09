@@ -57,6 +57,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected final WidgetDefinition[] subWidgets;
 
+    // needed by GWT serialization
+    public WidgetDefinitionImpl() {
+        this(null, null, null, null, false, null, null, null, null);
+    }
+
     public WidgetDefinitionImpl(String name, String type, String label,
             String helpLabel, boolean translated, Map<String, String> modes,
             List<FieldDefinition> fieldDefinitions,

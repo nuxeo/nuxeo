@@ -44,6 +44,11 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
 
     protected final boolean selectedByDefault;
 
+    // needed by GWT serialization
+    public LayoutRowDefinitionImpl() {
+        this(null, null);
+    }
+
     public LayoutRowDefinitionImpl(String name, String widget) {
         this.name = name;
         this.properties = null;

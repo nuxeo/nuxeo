@@ -64,6 +64,12 @@ public class WidgetImpl implements Widget {
 
     protected int level;
 
+    // needed by GWT serialization
+    public WidgetImpl() {
+        this(null, null, null, null, null, null, null, null, false, null,
+                false, null, 0);
+    }
+
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
             String helpLabel, boolean translated,

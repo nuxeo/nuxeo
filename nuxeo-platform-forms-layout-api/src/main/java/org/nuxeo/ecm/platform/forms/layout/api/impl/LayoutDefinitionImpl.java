@@ -50,6 +50,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
 
     protected Integer columns;
 
+    // needed by GWT serialization
+    public LayoutDefinitionImpl() {
+        this(null, null, null);
+    }
+
     public LayoutDefinitionImpl(String name, String template,
             WidgetDefinition widgetDefinition) {
         super();

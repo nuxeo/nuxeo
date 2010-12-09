@@ -54,6 +54,11 @@ public class LayoutImpl implements Layout {
 
     Map<String, Serializable> properties;
 
+    // needed by GWT serialization
+    public LayoutImpl() {
+        this(null, null, null, 0);
+    }
+
     private LayoutImpl(String name, String mode, String template, int columns) {
         this.name = name;
         this.mode = mode;

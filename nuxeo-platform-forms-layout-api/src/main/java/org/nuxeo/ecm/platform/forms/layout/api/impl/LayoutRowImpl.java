@@ -46,6 +46,11 @@ public class LayoutRowImpl implements LayoutRow {
 
     final Map<String, Serializable> properties;
 
+    // needed by GWT serialization
+    public LayoutRowImpl() {
+        this(null, null);
+    }
+
     public LayoutRowImpl(List<Widget> widgets,
             Map<String, Serializable> properties) {
         this.widgets = widgets.toArray(new Widget[] {});

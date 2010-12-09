@@ -23,13 +23,18 @@ public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
 
     private static final long serialVersionUID = 1L;
 
-    String name;
+    protected String name;
 
-    String handlerClassName;
+    protected String handlerClassName;
 
-    Map<String, String> properties;
+    protected Map<String, String> properties;
 
-    WidgetTypeConfiguration configuration;
+    protected WidgetTypeConfiguration configuration;
+
+    // needed by GWT serialization
+    public WidgetTypeDefinitionImpl() {
+        super();
+    }
 
     public WidgetTypeDefinitionImpl(String name, String handlerClassName,
             Map<String, String> properties,
