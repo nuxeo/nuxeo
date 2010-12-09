@@ -63,36 +63,12 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         assertNotNull(service);
     }
 
-    public void testCreationDate() throws ClientException {
+    public void testCreationDateAndCreator() throws ClientException {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
-
-        DataModel dm = childFile2.getDataModel("dublincore");
-        assertNotNull(dm.getData("created"));
-
-        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
-        assertNotNull(dm2.getData("created"));
-
-        assertEquals("Administrator", (String) dm.getData("creator"));
-    }
-
-    public void testCreator() throws ClientException {
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                "file-007", "File");
-        DocumentModel childFile2 = session.createDocument(childFile);
-
-        DataModel dm = childFile2.getDataModel("dublincore");
-        assertEquals("Administrator", (String) dm.getData("creator"));
-
-        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
-        assertEquals("Administrator", (String) dm2.getData("creator"));
-
-        childFile2.setProperty("dublincore", "creator", "toto");
-        assertEquals("toto", (String) dm.getData("creator"));
-
-        dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
-        assertEquals("Administrator", (String) dm2.getData("creator"));
+        assertNotNull(childFile2.getPropertyValue("dc:created"));
+        assertEquals("Administrator", childFile2.getPropertyValue("dc:creator"));
     }
 
     public void testModificationDate() throws ClientException {
@@ -113,8 +89,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         Calendar created = (Calendar) dm.getData("created");
         assertNotNull(created);
 
-        DataModel dm2 = session.getDataModel(childFile2.getRef(), "dublincore");
-        Calendar modified = (Calendar) dm2.getData("modified");
+        Calendar modified = (Calendar) childFile2.getPropertyValue("dc:modified");
         assertNotNull(modified);
 
         assertTrue(modified.getTime() + " !> " + created.getTime(),

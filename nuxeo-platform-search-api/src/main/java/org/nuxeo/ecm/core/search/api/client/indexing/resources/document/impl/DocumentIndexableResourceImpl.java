@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.DocumentIndexableResource;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
@@ -236,8 +237,19 @@ public class DocumentIndexableResourceImpl extends
                     if (targetDoc != null) {
                         res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
                     } else {
-                        res = (Serializable) getCoreSession().getDataModelField(
-                                docRef, schemaPrefix, fieldName);
+                        DocumentModel doc = getCoreSession().getDocument(docRef);
+                        Schema docSchema = doc.getDocumentType().getSchema(
+                                schemaPrefix);
+                        if (docSchema != null) {
+                            String prefix = docSchema.getNamespace().prefix;
+                            if (prefix != null && prefix.length() > 0) {
+                                fieldName = prefix + ':' + fieldName;
+                            }
+                            res = doc.getPropertyValue(fieldName);
+                        } else {
+                            log.warn("Cannot find schema with name="
+                                    + schemaPrefix);
+                        }
                     }
                     if (split.length > 2) {
                         res = extractComplexProperty(res, split[2]);
