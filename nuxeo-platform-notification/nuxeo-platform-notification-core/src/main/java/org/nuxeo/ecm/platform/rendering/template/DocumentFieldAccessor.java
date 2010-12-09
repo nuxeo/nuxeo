@@ -99,14 +99,14 @@ public abstract class DocumentFieldAccessor {
     public static DocumentFieldAccessor FACETS = new DocumentFieldAccessor("facets") {
         @Override
         public Object getValue(DocumentModel doc) {
-            return doc.getDeclaredFacets();
+            return doc.getFacets();
         }
     };
 
     public static DocumentFieldAccessor SCHEMAS = new DocumentFieldAccessor("schemas") {
         @Override
         public Object getValue(DocumentModel doc) {
-            return doc.getDeclaredSchemas();
+            return doc.getSchemas();
         }
     };
 

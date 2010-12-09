@@ -182,7 +182,7 @@ public abstract class AbstractDocumentModelSerializer implements
             }
         } else {
             String result = null;
-            for (String schemaName : doc.getDeclaredSchemas()) {
+            for (String schemaName : doc.getSchemas()) {
                 result = (String) doc.getProperty(schemaName, colDef);
                 if (result != null) {
                     continue;

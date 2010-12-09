@@ -111,7 +111,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         JSONObject props = new JSONObject();
         if (schemas.length == 1 && "*".equals(schemas[0])) { // full
             // document
-            for (String schema : doc.getDeclaredSchemas()) {
+            for (String schema : doc.getSchemas()) {
                 addSchema(props, doc, schema);
             }
         } else {

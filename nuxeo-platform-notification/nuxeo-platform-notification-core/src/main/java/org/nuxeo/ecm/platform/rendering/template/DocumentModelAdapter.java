@@ -102,7 +102,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         if (keys == null) {
             List<String> keysCol = new ArrayList<String>();
             keysCol.addAll(DocumentFieldAccessor.getFieldNames());
-            String[] schemas = doc.getDeclaredSchemas();
+            String[] schemas = doc.getSchemas();
             keysCol.addAll(Arrays.asList(schemas));
             size = keysCol.size();
             keys = (TemplateCollectionModel)wrapper.wrap(keysCol);
@@ -129,7 +129,7 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
 
     public int size() throws TemplateModelException {
         if (size == -1) {
-            size = DocumentFieldAccessor.getAcessorsCount() + doc.getDeclaredSchemas().length;
+            size = DocumentFieldAccessor.getAcessorsCount() + doc.getSchemas().length;
         }
         return size;
     }

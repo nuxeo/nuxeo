@@ -107,6 +107,14 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.hasSchema(schema);
     }
 
+    public boolean addFacet(String facet) {
+        return doc.addFacet(facet);
+    }
+
+    public boolean removeFacet(String facet) {
+        return doc.removeFacet(facet);
+    }
+
     public String getType() {
         return doc.getType();
     }
@@ -156,11 +164,11 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     public String[] getSchemas() {
-        return doc.getDeclaredSchemas();
+        return doc.getSchemas();
     }
 
     public Set<String> getFacets() {
-        return doc.getDeclaredFacets();
+        return doc.getFacets();
     }
 
     public Serializable getProperty(String key) throws Exception {

@@ -147,7 +147,7 @@ public class FilterDocuments {
                 }
             }
             if (facet != null) {
-                if (!doc.getDeclaredFacets().contains(facet)) {
+                if (!doc.getFacets().contains(facet)) {
                     return false;
                 }
             }

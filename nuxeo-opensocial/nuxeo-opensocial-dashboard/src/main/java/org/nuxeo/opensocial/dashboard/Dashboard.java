@@ -157,14 +157,15 @@ public class Dashboard implements Serializable {
         return "http://" + host + ":" + port + "/";
     }
 
+    /** used for debug */
     public void dumpDocumentInfo(String docId) {
         try {
             DocumentRef ref = new IdRef(docId);
             DocumentModel model = documentManager.getDocument(ref);
             log.info("------------- doc id " + docId + " ---------------------");
-            log.info("document type:" + model.getDocumentType().getName());
+            log.info("document type:" + model.getType());
             log.info("document path:" + model.getPathAsString());
-            String[] schemaNames = model.getDocumentType().getSchemaNames();
+            String[] schemaNames = model.getSchemas();
             for (String schemaName : schemaNames) {
                 log.info("dumping schema:" + schemaName + " ++++++++++++++");
                 Map<String, Object> propMap = model.getProperties(schemaName);
@@ -183,7 +184,7 @@ public class Dashboard implements Serializable {
                     }
                 }
             }
-            if (model.getDocumentType().getName().equals("Space")) {
+            if (model.getType().equals("Space")) {
                 DocumentModelList list = documentManager.query("SELECT * FROM Document WHERE ecm:path "
                         + "STARTSWITH '" + model.getPathAsString() + "'");
                 for (Iterator<DocumentModel> iterator = list.iterator(); iterator.hasNext();) {
