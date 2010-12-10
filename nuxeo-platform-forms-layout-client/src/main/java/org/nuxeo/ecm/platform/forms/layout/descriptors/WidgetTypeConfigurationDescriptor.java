@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 
@@ -58,11 +60,16 @@ public class WidgetTypeConfigurationDescriptor implements
     @XNodeList(value = "fields/defaultTypes", type = ArrayList.class, componentType = String.class)
     List<String> defaultFieldTypes;
 
+    @XNodeList(value = "fields/defaultConfiguration/field", type = ArrayList.class, componentType = FieldDescriptor.class)
+    List<FieldDefinition> defaultFieldDefinitions;
+
     @XNodeList(value = "categories/category", type = ArrayList.class, componentType = String.class)
     List<String> categories;
 
     @XNodeMap(value = "properties/layouts", key = "@mode", type = HashMap.class, componentType = LayoutDescriptors.class)
     Map<String, LayoutDescriptors> propertyLayouts;
+
+    Map<String, Serializable> properties;
 
     public List<String> getCategories() {
         return categories;
@@ -96,6 +103,29 @@ public class WidgetTypeConfigurationDescriptor implements
     @Override
     public List<String> getSupportedFieldTypes() {
         return supportedFieldTypes;
+    }
+
+    @Override
+    public List<FieldDefinition> getDefaultFieldDefinitions() {
+        return defaultFieldDefinitions;
+    }
+
+    @Override
+    public Map<String, Serializable> getConfProperties() {
+        return properties;
+    }
+
+    @Override
+    public Serializable getConfProperty(String propName) {
+        if (properties == null) {
+            return null;
+        }
+        return properties.get(propName);
+    }
+
+    @XNode("confProperties")
+    public void setConfProperties(PropertiesDescriptor propsDesc) {
+        properties = propsDesc.getProperties();
     }
 
     @Override

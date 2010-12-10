@@ -76,6 +76,11 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(conf);
         assertEquals("Test widget type", conf.getTitle());
         assertEquals("This is a test widget type", conf.getDescription());
+        Map<String, Serializable> confProps = conf.getConfProperties();
+        assertNotNull(confProps);
+        assertEquals(2, confProps.size());
+        assertEquals("foo", confProps.get("confProp"));
+        assertEquals("dc:title", confProps.get("sortProperty"));
         assertFalse(conf.isComplex());
         assertFalse(conf.isList());
         List<String> supportedTypes = conf.getSupportedFieldTypes();
@@ -86,6 +91,11 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(defaultTypes);
         assertEquals(1, defaultTypes.size());
         assertEquals("string", defaultTypes.get(0));
+        List<FieldDefinition> defaultFieldDefs = conf.getDefaultFieldDefinitions();
+        assertNotNull(defaultFieldDefs);
+        assertEquals(2, defaultFieldDefs.size());
+        assertEquals("dc:title", defaultFieldDefs.get(0).getPropertyName());
+        assertEquals("data.ref", defaultFieldDefs.get(1).getPropertyName());
         List<String> categories = conf.getCategories();
         assertNotNull(categories);
         assertEquals(2, categories.size());
