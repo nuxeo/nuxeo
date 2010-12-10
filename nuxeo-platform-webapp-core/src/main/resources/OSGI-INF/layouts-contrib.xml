@@ -218,7 +218,6 @@
        <translated>true</translated>
        <fields>
          <field>dc:lastContributor</field>
-         <field>dc:contributors</field>
        </fields>
        <widgetModes>
          <mode value="any">view</mode>

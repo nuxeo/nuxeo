@@ -16,7 +16,7 @@
 
   <div>
    <c:set var="username"
-          value="#{nxu:test(!empty field_0, field_0, field_1[fn:length(field_1) - 1])}" />
+          value="#{field_0}" />
    <h:outputText value="#{nxu:userFullName(username)}"
                  title="#{username}"
                  onmouseover="tooltip.show(username, 500);"
