@@ -105,7 +105,6 @@ public class WidgetTypeDefinitionJsonExporter {
             defaultTypes.addAll(confDefaultTypes);
         }
         fields.element("defaultTypes", defaultTypes);
-        json.element("fields", fields);
 
         JSONArray defaultfieldDefs = new JSONArray();
         List<FieldDefinition> fieldDefs = conf.getDefaultFieldDefinitions();
@@ -114,7 +113,9 @@ public class WidgetTypeDefinitionJsonExporter {
                 defaultfieldDefs.add(exportToJson(fieldDef));
             }
         }
-        json.element("defaultConfiguration", defaultfieldDefs);
+        fields.element("defaultConfiguration", defaultfieldDefs);
+
+        json.element("fields", fields);
 
         JSONArray cats = new JSONArray();
         List<String> confCats = conf.getCategories();

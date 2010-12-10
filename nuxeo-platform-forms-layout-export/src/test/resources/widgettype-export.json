@@ -16,18 +16,18 @@
       "list": false,
       "complex": false,
       "supportedTypes": ["string"],
-      "defaultTypes": ["string"]
+      "defaultTypes": ["string"],
+      "defaultConfiguration":       [
+                {
+          "fieldName": "dc:title",
+          "propertyName": "dc:title"
+        },
+                {
+          "fieldName": "data.ref",
+          "propertyName": "data.ref"
+        }
+      ]
     },
-    "defaultConfiguration":     [
-            {
-        "fieldName": "dc:title",
-        "propertyName": "dc:title"
-      },
-            {
-        "fieldName": "data.ref",
-        "propertyName": "data.ref"
-      }
-    ],
     "categories":     [
       "foo",
       "bar"
