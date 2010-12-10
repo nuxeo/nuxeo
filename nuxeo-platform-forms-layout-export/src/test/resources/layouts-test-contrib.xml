@@ -15,6 +15,10 @@
       <configuration>
         <title>Test widget type</title>
         <description>This is a test widget type</description>
+        <confProperties>
+          <property name="confProp">foo</property>
+          <property name="sortProperty">dc:title</property>
+        </confProperties>
         <fields>
           <list>false</list>
           <complex>false</complex>
@@ -24,6 +28,10 @@
           <defaultTypes>
             <type>string</type>
           </defaultTypes>
+          <defaultConfiguration>
+            <field>dc:title</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
         </fields>
         <categories>
           <category>foo</category>

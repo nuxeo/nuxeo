@@ -56,8 +56,8 @@ public class WidgetTypeDefinitionJsonExporter {
         out.write(res.toString(2).getBytes("UTF-8"));
     }
 
-    public static void export(List<WidgetTypeDefinition> defs,
-            OutputStream out) throws IOException {
+    public static void export(List<WidgetTypeDefinition> defs, OutputStream out)
+            throws IOException {
         JSONObject res = new JSONObject();
         if (defs != null) {
             // sort so that order is deterministic
@@ -85,15 +85,20 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject json = new JSONObject();
         json.element("title", conf.getTitle());
         json.element("description", conf.getDescription());
+        json.element("confProperties",
+                exportPropsToJson(conf.getConfProperties()));
+
         JSONObject fields = new JSONObject();
         fields.element("list", conf.isList());
         fields.element("complex", conf.isComplex());
+
         JSONArray supportedTypes = new JSONArray();
         List<String> confSupportedTypes = conf.getSupportedFieldTypes();
         if (confSupportedTypes != null) {
             supportedTypes.addAll(confSupportedTypes);
         }
         fields.element("supportedTypes", supportedTypes);
+
         JSONArray defaultTypes = new JSONArray();
         List<String> confDefaultTypes = conf.getDefaultFieldTypes();
         if (confDefaultTypes != null) {
@@ -101,6 +106,15 @@ public class WidgetTypeDefinitionJsonExporter {
         }
         fields.element("defaultTypes", defaultTypes);
         json.element("fields", fields);
+
+        JSONArray defaultfieldDefs = new JSONArray();
+        List<FieldDefinition> fieldDefs = conf.getDefaultFieldDefinitions();
+        if (fieldDefs != null) {
+            for (FieldDefinition fieldDef : fieldDefs) {
+                defaultfieldDefs.add(exportToJson(fieldDef));
+            }
+        }
+        json.element("defaultConfiguration", defaultfieldDefs);
 
         JSONArray cats = new JSONArray();
         List<String> confCats = conf.getCategories();

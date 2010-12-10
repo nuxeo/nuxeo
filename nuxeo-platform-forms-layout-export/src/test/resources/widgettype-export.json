@@ -8,12 +8,26 @@
   "configuration":   {
     "title": "Test widget type",
     "description": "This is a test widget type",
+    "confProperties":     {
+      "confProp": "foo",
+      "sortProperty": "dc:title"
+    },
     "fields":     {
       "list": false,
       "complex": false,
       "supportedTypes": ["string"],
       "defaultTypes": ["string"]
     },
+    "defaultConfiguration":     [
+            {
+        "fieldName": "dc:title",
+        "propertyName": "dc:title"
+      },
+            {
+        "fieldName": "data.ref",
+        "propertyName": "data.ref"
+      }
+    ],
     "categories":     [
       "foo",
       "bar"
