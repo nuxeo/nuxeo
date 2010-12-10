@@ -80,31 +80,45 @@
     </documentation>
 
     <widgetType name="listing_selection_box_with_current_document">
-
-      <documentation>
-        This widget type displays a selection checkbox, that will perform remote
-        selection of given item. The current document information is also
-        provided to restore current context when clicking on the link.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>first field maps a boolean representing the selection state</li>
-          <li>
-            second field maps the string identifier used to perform selection
-          </li>
-        </ul>
-        It also requires the following variables to be present in the EL
-        context:
-        <ul>
-          <li>
-            provider: result provider used to get the list of items, its name
-            will be used.
-          </li>
-          <li>listName: the name of the list that will hold selected items</li>
-          <li>currentDocument: the current document</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Selection checkbox with current document</title>
+        <description>
+          This widget type displays a selection checkbox, that will perform
+          remote selection of given item. The current document information is
+          also provided to restore current context when clicking on the link.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field maps a boolean representing the selection state</li>
+            <li>
+              second field maps the string identifier used to perform selection
+            </li>
+          </ul>
+          It also requires the following variables to be present in the EL
+          context:
+          <ul>
+            <li>
+              provider: result provider used to get the list of items, its name
+              will be used.
+            </li>
+            <li>
+              listName: the name of the list that will hold selected items
+            </li>
+            <li>currentDocument: the current document</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>old_listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -115,6 +129,45 @@
     </widgetType>
 
     <widgetType name="listing_ajax_selection_box_with_current_document">
+      <configuration>
+        <title>Ajax selection checkbox with current document</title>
+        <description>
+          This widget type displays a selection checkbox, that will perform ajax
+          selection of given item. The current document information is also
+          provided to restore current context when clicking on the link.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field maps a boolean representing the selection state</li>
+            <li>
+              second field maps the string identifier used to perform selection
+            </li>
+          </ul>
+          It also requires the following variables to be present in the EL
+          context:
+          <ul>
+            <li>
+              provider: result provider used to get the list of items, its name
+              will be used.
+            </li>
+            <li>
+              listName: the name of the list that will hold selected items
+            </li>
+            <li>currentDocument: the current document</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -125,29 +178,43 @@
     </widgetType>
 
     <widgetType name="listing_selection_box">
-
-      <documentation>
-        This widget type displays a selection checkbox, that will perform remote
-        selection of given item.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>first field maps a boolean representing the selection state</li>
-          <li>
-            second field maps the string identifier used to perform selection
-          </li>
-        </ul>
-        It also requires the following variables to be present in the EL
-        context:
-        <ul>
-          <li>
-            provider: result provider used to get the list of items, its name
-            will be used.
-          </li>
-          <li>listName: the name of the list that will hold selected items</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Selection checkbox</title>
+        <description>
+          This widget type displays a selection checkbox, that will perform
+          remote selection of given item.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field maps a boolean representing the selection state</li>
+            <li>
+              second field maps the string identifier used to perform selection
+            </li>
+          </ul>
+          It also requires the following variables to be present in the EL
+          context:
+          <ul>
+            <li>
+              provider: result provider used to get the list of items, its name
+              will be used.
+            </li>
+            <li>
+              listName: the name of the list that will hold selected items
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>old_listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -158,6 +225,43 @@
     </widgetType>
 
     <widgetType name="listing_ajax_selection_box">
+      <configuration>
+        <title>Ajax selection checkbox</title>
+        <description>
+          This widget type displays a selection checkbox, that will perform ajax
+          selection of given item.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field maps a boolean representing the selection state</li>
+            <li>
+              second field maps the string identifier used to perform selection
+            </li>
+          </ul>
+          It also requires the following variables to be present in the EL
+          context:
+          <ul>
+            <li>
+              provider: result provider used to get the list of items, its name
+              will be used.
+            </li>
+            <li>
+              listName: the name of the list that will hold selected items
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -167,30 +271,45 @@
     </widgetType>
 
     <widgetType name="listing_icon_type">
-
-      <documentation>
-        This widget type displays a draggable icon corresponding to a document.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field maps the document model, the jsf method nxd:iconPath
-            will be used to provide its icon
-          </li>
-          <li>
-            second field maps the unique id to be used as drag/drop identified
-            (e.g. the document model id)
-          </li>
-          <li>
-            third field maps the icon title (can be the document model type)
-          </li>
-          <li>
-            fourth field maps a boolean stating whether the widget displays a
-            droppable zone (e.g. if document is folderish)
-          </li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Icon and document type</title>
+        <description>
+          This widget type displays a draggable icon corresponding to a
+          document.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps the document model, the jsf method nxd:iconPath
+              will be used to provide its icon
+            </li>
+            <li>
+              second field maps the unique id to be used as drag/drop identified
+              (e.g. the document model id)
+            </li>
+            <li>
+              third field maps the icon title (can be the document model type)
+            </li>
+            <li>
+              fourth field maps a boolean stating whether the widget displays a
+              droppable zone (e.g. if document is folderish)
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -201,32 +320,46 @@
     </widgetType>
 
     <widgetType name="listing_big_icon_type">
-
-      <documentation>
-        This widget type displays a big draggable icon corresponding to a
-        document.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field maps the document model, the jsf method nxd:bigIconPath
-            will be used to provide its icon
-          </li>
-          <li>
-            second field maps the unique id to be used as drag/drop identified
-            (e.g. the document model id)
-          </li>
-          <li>
-            third field maps the displayed icon title (can be the document model
-            type)
-          </li>
-          <li>
-            fourth field maps a boolean stating whether the widget displays a
-            droppable zone (e.g. if document is folderish)
-          </li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Big icon and document type</title>
+        <description>
+          This widget type displays a big draggable icon corresponding to a
+          document.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps the document model, the jsf method
+              nxd:bigIconPath will be used to provide its icon
+            </li>
+            <li>
+              second field maps the unique id to be used as drag/drop identified
+              (e.g. the document model id)
+            </li>
+            <li>
+              third field maps the displayed icon title (can be the document
+              model type)
+            </li>
+            <li>
+              fourth field maps a boolean stating whether the widget displays a
+              droppable zone (e.g. if document is folderish)
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -237,32 +370,47 @@
     </widgetType>
 
     <widgetType name="listing_big_icon_type_link">
-
-      <documentation>
-        This widget type displays a big draggable icon corresponding to a
-        document with a link to the document.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field maps the document model, the jsf method nxd:bigIconPath
-            will be used to provide its icon and to display the document link
-          </li>
-          <li>
-            second field maps the unique id to be used as drag/drop identified
-            (e.g. the document model id)
-          </li>
-          <li>
-            third field maps the displayed icon title (can be the document model
-            type)
-          </li>
-          <li>
-            fourth field maps a boolean stating whether the widget displays a
-            droppable zone (e.g. if document is folderish)
-          </li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Big icon and document type with link</title>
+        <description>
+          This widget type displays a big draggable icon corresponding to a
+          document with a link to the document.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps the document model, the jsf method
+              nxd:bigIconPath will be used to provide its icon and to display
+              the document link
+            </li>
+            <li>
+              second field maps the unique id to be used as drag/drop identified
+              (e.g. the document model id)
+            </li>
+            <li>
+              third field maps the displayed icon title (can be the document
+              model type)
+            </li>
+            <li>
+              fourth field maps a boolean stating whether the widget displays a
+              droppable zone (e.g. if document is folderish)
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.type</field>
+            <field>data.folder</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -272,46 +420,62 @@
 
     </widgetType>
 
-
     <widgetType name="listing_title_link">
-
-      <documentation>
-        This widget type displays a link to navigate to a document, as well as a
-        download link for the document binary content.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field maps the document model, it will be used to display the
-            document link and its title
-          </li>
-          <li>
-            second field maps the unique id to be used for contextual menu (e.g.
-            the document model id)
-          </li>
-          <li>
-            third field maps the displayed link title (can be the document model
-            description)
-          </li>
-          <li>
-            fourth field maps the document model file to be used for download
-            link
-          </li>
-          <li>
-            fifth field maps the file name to be used for download link (can be
-            the document model file name property value)
-          </li>
-        </ul>
-        It also requires the following properties configuration:
-        <ul>
-          <li>
-            file_schema: the file schema name, used to check whether download
-            link should be displayed (e.g: file)
-          </li>
-          <li>file_property_name: the file property name (e.g file:content)</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Title with link</title>
+        <description>
+          This widget type displays a link to navigate to a document, as well as
+          a download link for the document binary content.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps the document model, it will be used to display
+              the document link and its title
+            </li>
+            <li>
+              second field maps the unique id to be used for contextual menu
+              (e.g. the document model id)
+            </li>
+            <li>
+              third field maps the displayed link title (can be the document
+              model description)
+            </li>
+            <li>
+              fourth field maps the document model file to be used for download
+              link
+            </li>
+            <li>
+              fifth field maps the file name to be used for download link (can
+              be the document model file name property value)
+            </li>
+          </ul>
+          It also requires the following properties configuration:
+          <ul>
+            <li>
+              file_schema: the file schema name, used to check whether download
+              link should be displayed (e.g: file)
+            </li>
+            <li>
+              file_property_name: the file property name (e.g file:content)
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.ref</field>
+            <field>data.dc.description</field>
+            <field>data.file.content</field>
+            <field>data.file.filename</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -322,44 +486,64 @@
     </widgetType>
 
     <widgetType name="listing_lock_icon">
-
-      <documentation>
-        This widget type displays a lock icon.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field maps a property stating that lock icon should be
-            displayed if not empty (e.g. the document model lock state)
-          </li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Lock icon</title>
+        <description>
+          This widget type displays a lock icon.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps a property stating that lock icon should be
+              displayed if not empty (e.g. the document model lock state)
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.lock</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /widgets/listing/listing_lock_icon_widget_template.xhtml
       </property>
-
     </widgetType>
 
     <widgetType name="listing_author">
-      <documentation>
-        This widget type displays a user name.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>first field mapping the user identifier</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Author</title>
+        <description>
+          This widget type displays a user name.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field mapping the user identifier</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.dc.creator</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      <property name="template">
-        /widgets/author_widget_template.xhtml
-      </property>
+      <property name="template">/widgets/author_widget_template.xhtml</property>
 
     </widgetType>
 
@@ -370,8 +554,10 @@
         It requires the following fields configuration:
         <ul>
           <li>first field mapping the lastContributor field</li>
-          <li>second field mapping the contributors field, as fallback in case
-            that lastContributor is empty</li>
+          <li>
+            second field mapping the contributors field, as fallback in case
+            that lastContributor is empty
+          </li>
         </ul>
       </documentation>
 
@@ -385,42 +571,66 @@
     </widgetType>
 
     <widgetType name="listing_lifecycle">
-      <documentation>
-        This widget type displays a life cycle state name.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>first field mapping the life cycle state name</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Lifecycle state</title>
+        <description>
+          This widget type displays a life cycle state name.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>first field mapping the life cycle state name</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.currentLifeCycleState</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /widgets/listing/listing_lifecycle_widget_template.xhtml
       </property>
-
     </widgetType>
 
     <widgetType name="listing_livedit_link">
-      <documentation>
-        This widget type displays a user name.
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field mapping the document model to be used for live edit link
-          </li>
-        </ul>
-        It also requires the following properties configuration:
-        <ul>
-          <li>file_schema: the file schema name</li>
-          <li>file_field_name: the file field name</li>
-          <li>filename_field_name: the file name field name</li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Live edit link</title>
+        <description>
+          This widget type displays a live edit link.
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field mapping the document model to be used for live edit
+              link
+            </li>
+          </ul>
+          It also requires the following properties configuration:
+          <ul>
+            <li>file_schema: the file schema name</li>
+            <li>file_field_name: the file field name</li>
+            <li>filename_field_name: the file name field name</li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
@@ -431,26 +641,36 @@
     </widgetType>
 
     <widgetType name="listing_version">
-
-      <documentation>
-        This widget type displays a document model version label
-        <br />
-        It requires the following fields configuration:
-        <ul>
-          <li>
-            first field mapping the document model, its version label will be
-            retrieved querying the versioning service
-          </li>
-        </ul>
-      </documentation>
-
+      <configuration>
+        <title>Version</title>
+        <description>
+          This widget type displays a document model version label
+          <br />
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field mapping the document model, its version label will be
+              retrieved querying the versioning service
+            </li>
+          </ul>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /widgets/listing/listing_version_widget_template.xhtml
       </property>
-
     </widgetType>
 
   </extension>

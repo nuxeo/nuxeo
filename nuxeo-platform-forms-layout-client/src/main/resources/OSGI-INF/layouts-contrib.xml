@@ -28,6 +28,7 @@
           <complex>false</complex>
           <supportedTypes>
             <type>string</type>
+            <type>int</type>
           </supportedTypes>
           <defaultTypes>
             <type>string</type>
