@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
@@ -26,7 +28,7 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
 
     private static final long serialVersionUID = 1L;
 
-    protected Object value;
+    protected Serializable value;
 
     protected String var;
 
@@ -34,21 +36,21 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
 
     protected String itemValue;
 
-    protected Object itemDisabled;
+    protected Serializable itemDisabled;
 
-    protected Object itemRendered;
+    protected Serializable itemRendered;
 
     public WidgetSelectOptionImpl(String itemLabel, String itemValue) {
         this(null, null, itemLabel, itemValue);
     }
 
-    public WidgetSelectOptionImpl(Object value, String var, String itemLabel,
+    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel,
             String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);
     }
 
-    public WidgetSelectOptionImpl(Object value, String var, String itemLabel,
-            String itemValue, Object itemDisabled, Object itemRendered) {
+    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel,
+            String itemValue, Serializable itemDisabled, Serializable itemRendered) {
         super();
         this.value = value;
         this.var = var;
@@ -58,7 +60,7 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         this.itemRendered = itemRendered;
     }
 
-    public Object getValue() {
+    public Serializable getValue() {
         return value;
     }
 
@@ -74,11 +76,11 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
         return itemValue;
     }
 
-    public Object getItemDisabled() {
+    public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
-    public Object getItemRendered() {
+    public Serializable getItemRendered() {
         return itemRendered;
     }
 

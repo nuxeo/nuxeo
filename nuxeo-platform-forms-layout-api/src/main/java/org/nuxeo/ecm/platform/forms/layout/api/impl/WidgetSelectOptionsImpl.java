@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 
 /**
@@ -26,7 +28,7 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
 
     private static final long serialVersionUID = 1L;
 
-    protected Object value;
+    protected Serializable value;
 
     protected String var;
 
@@ -34,28 +36,29 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
 
     protected String itemValue;
 
-    protected Object itemDisabled;
+    protected Serializable itemDisabled;
 
-    protected Object itemRendered;
+    protected Serializable itemRendered;
 
     protected String ordering;
 
     protected Boolean caseSensitive;
 
-    public WidgetSelectOptionsImpl(Object value, String var, String itemLabel,
-            String itemValue) {
+    public WidgetSelectOptionsImpl(Serializable value, String var,
+            String itemLabel, String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);
     }
 
-    public WidgetSelectOptionsImpl(Object value, String var, String itemLabel,
-            String itemValue, Boolean itemDisabled, Boolean itemRendered) {
+    public WidgetSelectOptionsImpl(Serializable value, String var,
+            String itemLabel, String itemValue, Boolean itemDisabled,
+            Boolean itemRendered) {
         this(value, var, itemLabel, itemValue, itemDisabled, itemRendered,
                 null, null);
     }
 
-    public WidgetSelectOptionsImpl(Object value, String var, String itemLabel,
-            String itemValue, Object itemDisabled, Object itemRendered,
-            String ordering, Boolean caseSensitive) {
+    public WidgetSelectOptionsImpl(Serializable value, String var,
+            String itemLabel, String itemValue, Serializable itemDisabled,
+            Serializable itemRendered, String ordering, Boolean caseSensitive) {
         super();
         this.value = value;
         this.var = var;
@@ -67,7 +70,7 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         this.caseSensitive = caseSensitive;
     }
 
-    public Object getValue() {
+    public Serializable getValue() {
         return value;
     }
 
@@ -83,11 +86,11 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
         return itemValue;
     }
 
-    public Object getItemDisabled() {
+    public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
-    public Object getItemRendered() {
+    public Serializable getItemRendered() {
         return itemRendered;
     }
 

@@ -35,7 +35,7 @@ public interface WidgetSelectOption extends Serializable {
      * useful to use it in conjunction with the {@link #getVar()} method to
      * retrieve the id and label from the object.
      */
-    public Object getValue();
+    public Serializable getValue();
 
     /**
      * Returns the var representing the value returned by {@link #getValue()}
@@ -69,7 +69,7 @@ public interface WidgetSelectOption extends Serializable {
      * boolean value, either a string representing a boolean ("true" or
      * "false") either a Boolean value.
      */
-    public Object getItemDisabled();
+    public Serializable getItemDisabled();
 
     /**
      * Returns the rendered behaviour for the select option.
@@ -78,6 +78,6 @@ public interface WidgetSelectOption extends Serializable {
      * boolean value, either a string representing a boolean ("true" or
      * "false") either a Boolean value.
      */
-    public Object getItemRendered();
+    public Serializable getItemRendered();
 
 }
