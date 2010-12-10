@@ -38,7 +38,7 @@ public class LayoutRowImpl implements LayoutRow {
 
     protected String name;
 
-    protected boolean selectedByDefault = false;
+    protected boolean selectedByDefault = true;
 
     protected boolean alwaysSelected = false;
 

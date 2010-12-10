@@ -42,9 +42,9 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     List<String> getDefaultFieldTypes();
 
+    // TODO: add more information for fields initialization
+
     List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode);
 
     Map<String, List<LayoutDefinition>> getPropertyLayouts();
-
-    // TODO: provide layout definitions for fields?
 }

@@ -14,7 +14,9 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.forms.layout.api;
+package org.nuxeo.ecm.platform.forms.layout.api.impl;
+
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 
 /**
  * @author Anahide Tchertchian
