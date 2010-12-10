@@ -8,10 +8,12 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 
@@ -23,6 +25,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected String description;
 
+    protected Map<String, Serializable> properties;
+
     protected boolean list = false;
 
     protected boolean complex = false;
@@ -30,6 +34,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     protected List<String> supportedFieldTypes;
 
     protected List<String> defaultFieldTypes;
+
+    protected List<FieldDefinition> defaultFieldDefinitions;
 
     protected List<String> categories;
 
@@ -41,16 +47,21 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     }
 
     public WidgetTypeConfigurationImpl(String title, String description,
-            boolean list, boolean complex, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes, List<String> categories,
+            Map<String, Serializable> properties, boolean list,
+            boolean complex, List<String> supportedFieldTypes,
+            List<String> defaultFieldTypes,
+            List<FieldDefinition> defaultFieldDefinitions,
+            List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
         this.title = title;
         this.description = description;
+        this.properties = properties;
         this.list = list;
         this.complex = complex;
         this.supportedFieldTypes = supportedFieldTypes;
         this.defaultFieldTypes = defaultFieldTypes;
+        this.defaultFieldDefinitions = defaultFieldDefinitions;
         this.categories = categories;
         this.propertyLayouts = propertyLayouts;
     }
@@ -61,6 +72,19 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public Map<String, Serializable> getConfProperties() {
+        return properties;
+    }
+
+    @Override
+    public Serializable getConfProperty(String propName) {
+        if (properties == null) {
+            return null;
+        }
+        return properties.get(propName);
     }
 
     public boolean isList() {
@@ -77,6 +101,10 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     public List<String> getDefaultFieldTypes() {
         return defaultFieldTypes;
+    }
+
+    public List<FieldDefinition> getDefaultFieldDefinitions() {
+        return defaultFieldDefinitions;
     }
 
     public List<String> getCategories() {

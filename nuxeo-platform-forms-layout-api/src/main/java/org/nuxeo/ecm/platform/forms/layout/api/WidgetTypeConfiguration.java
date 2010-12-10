@@ -42,7 +42,16 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     List<String> getDefaultFieldTypes();
 
-    // TODO: add more information for fields initialization
+    List<FieldDefinition> getDefaultFieldDefinitions();
+
+    /**
+     * Returns configuration properties.
+     *
+     * @since 5.4.1
+     */
+    Map<String, Serializable> getConfProperties();
+
+    Serializable getConfProperty(String propName);
 
     List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode);
 
