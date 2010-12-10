@@ -48,7 +48,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  *
  */
-// copied and adapted from TestPropertyModel in nuxeo-core-jcr-connector-test
 @SuppressWarnings("unchecked")
 public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
@@ -104,8 +103,6 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     }
 
     public void testStringArray() throws Exception {
-        // this used to be the behavior on JCR
-        // assertNull(doc.getPropertyValue("tp:stringArray"));
         assertNotNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
@@ -116,8 +113,6 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     // NXP-2454
     public void testDateArray() throws Exception {
-        // this used to be the behavior on JCR
-        // assertNull(doc.getPropertyValue("tp:dateArray"));
         assertNotNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
@@ -131,8 +126,6 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     // NXP-2454
     public void testIntArray() throws Exception {
-        // this used to be the behavior on JCR
-        // assertNull(doc.getPropertyValue("tp:intArray"));
         assertNotNull(doc.getPropertyValue("tp:intArray"));
         Long[] values = { 1L, 2L, 3L };
         doc.setPropertyValue("tp:intArray", values);
@@ -237,8 +230,6 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     public void testComplexPropertyChain() throws Exception {
         Property p = doc.getProperty("tp:complexChain");
         assertTrue(p.getValue() instanceof Map);
-        // this used to be the behavior on JCR
-        // assertEquals(0, ((Map) p.getValue()).size());
         assertEquals(2, ((Map) p.getValue()).size());
         p.setValue("string", "test");
         Map<String, Serializable> map = new HashMap<String, Serializable>();

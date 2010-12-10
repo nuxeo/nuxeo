@@ -15,7 +15,7 @@
 
   <properties>
     <server.shutdown.port>4432</server.shutdown.port>
-    <!-- You can run just the integration tests by passing -DskipUnitTests=true on 
+    <!-- You can run just the integration tests by passing -DskipUnitTests=true on
       the command line -->
     <skipUnitTests>false</skipUnitTests>
   </properties>
@@ -147,12 +147,6 @@
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-query-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
       <scope>test</scope>
     </dependency>
@@ -191,7 +185,7 @@
       <version>1.2.2</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId> 
+    <!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc14</artifactId>
       <version>10.2.0.3.0</version> <scope>runtime</scope> </dependency> -->
   </dependencies>
 
@@ -205,7 +199,7 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <skipExec>${skipUnitTests}</skipExec>
-              <!-- use the legacy parameter skipExec so that -DskipTests will still 
+              <!-- use the legacy parameter skipExec so that -DskipTests will still
                 skip all tests -->
               <excludes>
                 <exclude>**/IT*.java</exclude>

@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.query.test;
+package org.nuxeo.ecm.core.storage.sql.security;
 
 import java.security.Principal;
 

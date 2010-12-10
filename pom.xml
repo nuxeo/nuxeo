@@ -44,14 +44,13 @@
     <module>nuxeo-core-management-test</module>
     <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-core-facade</module>
-    <module>nuxeo-core-query-test</module>
     <module>nuxeo-core-test</module>
   </modules>
 
   <profiles>
     <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
       <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-core-facade</module> 
-      <module>nuxeo-core-query-test</module> <module>nuxeo-core-test</module> 
+      <module>nuxeo-core-test</module> 
       </modules> </profile> -->
   </profiles>
 
@@ -173,12 +172,6 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-query</artifactId>
         <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-query-test</artifactId>
-        <version>${nuxeo.core.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
