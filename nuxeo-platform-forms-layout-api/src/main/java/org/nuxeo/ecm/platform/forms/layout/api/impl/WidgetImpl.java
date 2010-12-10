@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
  * Implementation for widgets.
@@ -64,6 +65,8 @@ public class WidgetImpl implements Widget {
 
     protected int level = 0;
 
+    protected WidgetSelectOption[] selectOptions;
+
     // needed by GWT serialization
     public WidgetImpl() {
         super();
@@ -87,6 +90,19 @@ public class WidgetImpl implements Widget {
         this.required = required;
         this.subWidgets = subWidgets;
         this.level = level;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public WidgetImpl(String layoutName, String name, String mode, String type,
+            String valueName, FieldDefinition[] fields, String label,
+            String helpLabel, boolean translated,
+            Map<String, Serializable> properties, boolean required,
+            Widget[] subWidgets, int level, WidgetSelectOption[] selectOptions) {
+        this(layoutName, name, mode, type, valueName, fields, label, helpLabel,
+                translated, properties, required, subWidgets, level);
+        this.selectOptions = selectOptions;
     }
 
     public String getId() {
@@ -172,6 +188,10 @@ public class WidgetImpl implements Widget {
 
     public int getLevel() {
         return level;
+    }
+
+    public WidgetSelectOption[] getSelectOptions() {
+        return selectOptions;
     }
 
     @Override

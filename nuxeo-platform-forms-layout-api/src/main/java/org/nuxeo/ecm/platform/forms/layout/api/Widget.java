@@ -140,4 +140,11 @@ public interface Widget extends Serializable {
      */
     int getLevel();
 
+    /**
+     * Returns the select options for this widget.
+     *
+     * @since 5.4.1
+     */
+    WidgetSelectOption[] getSelectOptions();
+
 }

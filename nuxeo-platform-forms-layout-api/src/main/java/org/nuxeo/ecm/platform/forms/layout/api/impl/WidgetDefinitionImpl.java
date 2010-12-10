@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
  * Default implementation for a widget definition.
@@ -56,6 +57,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     protected Map<String, Map<String, Serializable>> widgetModeProperties;
 
     protected WidgetDefinition[] subWidgets;
+
+    protected WidgetSelectOption[] selectOptions;
 
     // needed by GWT serialization
     public WidgetDefinitionImpl() {
@@ -143,6 +146,21 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         this.properties = properties;
         this.widgetModeProperties = widgetModeProperties;
         this.subWidgets = subWidgets;
+    }
+
+    /**
+     * @since 5.4.1
+     */
+    public WidgetDefinitionImpl(String name, String type,
+            Map<String, String> labels, Map<String, String> helpLabels,
+            boolean translated, Map<String, String> modes,
+            FieldDefinition[] fieldDefinitions,
+            Map<String, Map<String, Serializable>> properties,
+            Map<String, Map<String, Serializable>> widgetModeProperties,
+            WidgetDefinition[] subWidgets, WidgetSelectOption[] selectOptions) {
+        this(name, type, labels, helpLabels, translated, modes,
+                fieldDefinitions, properties, widgetModeProperties, subWidgets);
+        this.selectOptions = selectOptions;
     }
 
     @Override
@@ -276,6 +294,11 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
             }
         }
         return res;
+    }
+
+    @Override
+    public WidgetSelectOption[] getSelectOptions() {
+        return selectOptions;
     }
 
 }

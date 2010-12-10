@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Widget interface.
+ * Widget definition interface.
  * <p>
  * A widget knows how to render itself in a given mode.
  *
@@ -122,5 +122,12 @@ public interface WidgetDefinition extends Serializable {
      * Returns sub widget definitions.
      */
     WidgetDefinition[] getSubWidgetDefinitions();
+
+    /**
+     * Returns the select options for this widget.
+     *
+     * @since 5.4.1
+     */
+    WidgetSelectOption[] getSelectOptions();
 
 }
