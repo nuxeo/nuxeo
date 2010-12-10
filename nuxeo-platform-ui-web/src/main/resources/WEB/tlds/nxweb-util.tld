@@ -281,6 +281,80 @@
   </tag>
 
   <tag>
+    <name>selectItem</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Tag adapted from the EasySI package
+      (<a href="http://jsf-comp.sourceforge.net/components/easysi/index.html" target="_blank">
+      http://jsf-comp.sourceforge.net/components/easysi/index.html</a>).
+      </p>
+      <p>
+      This tag allows to iterate on any kind of data and have control on the
+      resulting selection value and label.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Value binding representing the object to generate the select option
+        from.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Name of the request scope attribute that will be used to set an item
+        value and label with flexibility.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemValue</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item value.</description>
+    </attribute>
+    <attribute>
+      <name>itemLabel</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Value binding resolved to build the item label.</description>
+    </attribute>
+    <attribute>
+      <name>itemDisabled</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to build the item disabled attribute. Available
+        since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemRendered</name>
+      <required>true</required>
+      <description>
+        Value binding resolved to exclude the item from selections. Available
+        since 5.4.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:selectItem value="#{myBean.myElement}" var="item"
+  itemValue="#{item.id}" itemLabel="#{item.title}" />
+
+<nxu:selectItem value="#{document}" var="document"
+  itemValue="#{document.ref}" itemLabel="#{document.dublincore.title}" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
     <name>selectItems</name>
     <tag-class>None</tag-class>
     <body-content>None</body-content>
@@ -340,10 +414,27 @@
     </attribute>
     <attribute>
       <name>itemRendered</name>
-      <required>true</required>
+      <required>false</required>
       <description>
         Value binding resolved to exclude the item from the list of selections.
         Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>ordering</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to sort options. Possible values are "id" and
+        "label". If not set, no ordering is done. Available since 5.4.
+      </description>
+    </attribute>
+    <attribute>
+      <name>caseSensitive</name>
+      <required>false</required>
+      <description>
+        Value binding resolved to a boolean value, to sort options
+        case-insensitively. Does not have any effect if ordering is not set.
+        Defaults to false. Available since 5.4.
       </description>
     </attribute>
     <example>
@@ -351,7 +442,7 @@
 <nxu:selectItems value="#{myBean.myList}" var="item"
   itemValue="#{item.id}" itemLabel="#{item.title}" />
 
-<nxu:selectItems value="documentList" var="document"
+<nxu:selectItems value="#{documentList}" var="document"
   itemValue="#{document.ref}" itemLabel="#{document.dublincore.title}" />
       ]]>
     </example>

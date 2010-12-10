@@ -79,6 +79,23 @@
       </fields>
     </widget>
 
+    <widget name="widgetWithSelectOptions" type="test">
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="foo" itemValue="bar" />
+        <option value="#{currentDocument}" var="doc" itemLabel="#{doc.dc.title}"
+          itemValue="#{doc.id}" itemDisabled="false" itemRendered="true" />
+        <options value="#{myBean.myList}" var="item" itemValue="#{item.id}"
+          itemLabel="#{item.title}" />
+        <options value="#{documentList}" var="doc" itemValue="#{doc.id}"
+          itemLabel="#{doc.dc.title}" itemDisabled="false" itemRendered="true"
+          ordering="label" caseSensitive="true" />
+        <option itemLabel="foo2" itemValue="bar2" />
+      </selectOptions>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -94,6 +111,9 @@
         </row>
         <row>
           <widget>globalTestWidget</widget>
+        </row>
+        <row>
+          <widget>widgetWithSelectOptions</widget>
         </row>
       </rows>
       <widget name="testWidget" type="test">

@@ -30,6 +30,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
@@ -111,7 +113,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         // test rows
         assertEquals(1, layout.getColumns());
         LayoutRow[] rows = layout.getRows();
-        assertEquals(3, rows.length);
+        assertEquals(4, rows.length);
         LayoutRow row = rows[0];
 
         // test widgets
@@ -144,6 +146,53 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("globalTestWidget", widget.getName());
         assertEquals("test", widget.getType());
+
+        // test widget with selection options
+        widget = rows[3].getWidgets()[0];
+        assertNotNull(widget);
+        assertEquals("widgetWithSelectOptions", widget.getName());
+        assertEquals("test", widget.getType());
+        WidgetSelectOption[] options = widget.getSelectOptions();
+        assertNotNull(options);
+        assertEquals(5, options.length);
+        assertFalse(options[0] instanceof WidgetSelectOptions);
+        checkCommonSelectOption(options[0], null, null, "bar", "foo", null,
+                null);
+        assertFalse(options[1] instanceof WidgetSelectOptions);
+        checkCommonSelectOption(options[1], "#{currentDocument}", "doc",
+                "#{doc.id}", "#{doc.dc.title}", "false", "true");
+        assertTrue(options[2] instanceof WidgetSelectOptions);
+        checkMultipleSelectOption((WidgetSelectOptions) options[2],
+                "#{myBean.myList}", "item", "#{item.id}", "#{item.title}",
+                null, null, null, null);
+        assertTrue(options[3] instanceof WidgetSelectOptions);
+        checkMultipleSelectOption((WidgetSelectOptions) options[3],
+                "#{documentList}", "doc", "#{doc.id}", "#{doc.dc.title}",
+                "false", "true", "label", Boolean.TRUE);
+        assertFalse(options[4] instanceof WidgetSelectOptions);
+        checkCommonSelectOption(options[4], null, null, "bar2", "foo2", null,
+                null);
+    }
+
+    protected void checkCommonSelectOption(WidgetSelectOption option,
+            Object value, String var, String itemValue, String itemLabel,
+            Object itemDisabled, Object itemRendered) {
+        assertEquals(value, option.getValue());
+        assertEquals(var, option.getVar());
+        assertEquals(itemValue, option.getItemValue());
+        assertEquals(itemLabel, option.getItemLabel());
+        assertEquals(itemDisabled, option.getItemDisabled());
+        assertEquals(itemRendered, option.getItemRendered());
+    }
+
+    protected void checkMultipleSelectOption(WidgetSelectOptions option,
+            Object value, String var, String itemValue, String itemLabel,
+            Object itemDisabled, Object itemRendered, String ordering,
+            Boolean caseSensitive) {
+        checkCommonSelectOption(option, value, var, itemValue, itemLabel,
+                itemDisabled, itemRendered);
+        assertEquals(ordering, option.getOrdering());
+        assertEquals(caseSensitive, option.getCaseSensitive());
     }
 
     public void testLayoutRowSelection() throws Exception {

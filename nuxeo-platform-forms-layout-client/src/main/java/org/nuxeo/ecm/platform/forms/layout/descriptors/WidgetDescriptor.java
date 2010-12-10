@@ -20,11 +20,15 @@
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -32,6 +36,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Widget definition descriptor.
@@ -74,6 +82,9 @@ public class WidgetDescriptor implements WidgetDefinition {
 
     @XNodeList(value = "subWidgets/widget", type = WidgetDescriptor[].class, componentType = WidgetDescriptor.class)
     WidgetDefinition[] subWidgets = new WidgetDefinition[0];
+
+    // set in method to mix single and multiple options
+    WidgetSelectOption[] selectOptions = new WidgetSelectOption[0];
 
     public String getName() {
         return name;
@@ -218,4 +229,27 @@ public class WidgetDescriptor implements WidgetDefinition {
         return res;
     }
 
+    public WidgetSelectOption[] getSelectOptions() {
+        return selectOptions;
+    }
+
+    @XContent("selectOptions")
+    public void setSelectOptions(DocumentFragment selectOptionsDOM) {
+        XMap xmap = new XMap();
+        xmap.register(WidgetSelectOptionDescriptor.class);
+        xmap.register(WidgetSelectOptionsDescriptor.class);
+        Node p = selectOptionsDOM.getFirstChild();
+        List<WidgetSelectOption> options = new ArrayList<WidgetSelectOption>();
+        while (p != null) {
+            if (p.getNodeType() == Node.ELEMENT_NODE) {
+                try {
+                    options.add((WidgetSelectOption) xmap.load((Element) p));
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
+            }
+            p = p.getNextSibling();
+        }
+        selectOptions = options.toArray(new WidgetSelectOption[] {});
+    }
 }

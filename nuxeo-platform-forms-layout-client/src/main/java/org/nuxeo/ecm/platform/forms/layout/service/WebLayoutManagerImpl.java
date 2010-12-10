@@ -399,7 +399,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.getProperties(layoutMode, wMode),
-                required, subWidgets.toArray(new Widget[] {}), level);
+                required, subWidgets.toArray(new Widget[] {}), level,
+                wDef.getSelectOptions());
         return widget;
     }
 
