@@ -758,7 +758,6 @@
       <translated>true</translated>
       <fields>
         <field>data.dc.lastContributor</field>
-        <field>data.dc.contributors</field>
       </fields>
     </widget>
   </extension>
@@ -823,7 +822,7 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="isSortable">false</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
           </properties>
           <widget>listing_last_contributor</widget>
         </column>
