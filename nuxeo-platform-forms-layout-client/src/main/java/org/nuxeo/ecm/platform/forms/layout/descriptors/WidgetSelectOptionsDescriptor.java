@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.Serializable;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
@@ -53,7 +55,7 @@ public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {
     @XNode("@caseSensitive")
     protected Boolean caseSensitive;
 
-    public Object getValue() {
+    public Serializable getValue() {
         return value;
     }
 
@@ -69,11 +71,11 @@ public class WidgetSelectOptionsDescriptor implements WidgetSelectOptions {
         return itemValue;
     }
 
-    public Object getItemDisabled() {
+    public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
-    public Object getItemRendered() {
+    public Serializable getItemRendered() {
         return itemRendered;
     }
 

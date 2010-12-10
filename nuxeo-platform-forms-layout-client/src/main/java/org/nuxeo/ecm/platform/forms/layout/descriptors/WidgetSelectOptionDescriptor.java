@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.Serializable;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -47,7 +49,7 @@ public class WidgetSelectOptionDescriptor implements WidgetSelectOption {
     @XNode("@itemRendered")
     protected String itemRendered;
 
-    public Object getValue() {
+    public Serializable getValue() {
         return value;
     }
 
@@ -63,11 +65,11 @@ public class WidgetSelectOptionDescriptor implements WidgetSelectOption {
         return itemValue;
     }
 
-    public Object getItemDisabled() {
+    public Serializable getItemDisabled() {
         return itemDisabled;
     }
 
-    public Object getItemRendered() {
+    public Serializable getItemRendered() {
         return itemRendered;
     }
 
