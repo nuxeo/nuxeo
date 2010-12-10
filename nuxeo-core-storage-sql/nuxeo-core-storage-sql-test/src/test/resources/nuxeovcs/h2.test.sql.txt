@@ -44,7 +44,24 @@ CREATE TABLE nxp_tagging (
   is_private INTEGER
 );
 
+# create old table dublincore schema
 
+CREATE TABLE dublincore
+(
+  id VARCHAR(255) NOT NULL,
+  creator VARCHAR(255),
+  nature VARCHAR(255),
+  source VARCHAR(255),
+  created TIMESTAMP,
+  description VARCHAR(255),
+  rights VARCHAR(255),
+  format VARCHAR(255),
+  issued TIMESTAMP,
+  modified TIMESTAMP,
+  coverage VARCHAR(255),
+  expired TIMESTAMP,
+  title VARCHAR(255)
+);
 ############################################################
 
 
@@ -130,3 +147,30 @@ INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion
 #IF: testUpgradeVersions
 INSERT INTO versions (id, versionableid, created)
   VALUES ('11111111-0000-0000-3333-000000000001', '11111111-0000-0000-3333-000000000000', DATE '2010-01-03');
+
+# fake doc 2
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000000', null, 'mynddoc', 0, 'Tag');
+
+# fake doc 2 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000000', 'Administrator', 'othertag');
+
+# fake doc 2 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000000', 0, 'Administrator');
+
+# fake doc 3
+#IF: testUpgradeLastContributor
+INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
+  VALUES ('12121212-dddd-dddd-dddd-000000000001', null, 'myrddoc', 0, 'Tag');
+
+# fake doc 3 dublincore
+#IF: testUpgradeLastContributor
+INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000000000001', 'Administrator', 'othertag');
+
+# fake doc 3 contributors
+#IF: testUpgradeLastContributor
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 0, 'Administrator');
+INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 1, 'FakeOne');

@@ -1624,6 +1624,34 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    public void testLastContributorUpgrade() throws StorageException {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR, Boolean.TRUE);
+
+        try {
+            Node ver;
+            Session session = repository.getConnection();
+
+            ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000000");
+            assertNotNull(ver);
+            assertEquals("mynddoc", ver.getName());
+            assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
+            assertEquals("Administrator", ver.getSimpleProperty("dc:lastContributor").getString());
+
+            ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000001");
+            assertNotNull(ver);
+            assertEquals("myrddoc", ver.getName());
+            assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
+            assertEquals("FakeOne", ver.getSimpleProperty("dc:lastContributor").getString());
+        } finally {
+            JDBCMapper.testProps.clear();
+        }
+    }
+
     public void testMixinAPI() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

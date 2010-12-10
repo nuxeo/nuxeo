@@ -638,4 +638,38 @@ public class H2Functions extends EmbeddedFunctions {
 
         return new SimpleResultSet();
     }
+
+    public static ResultSet upgradeLastContributor(Connection conn) throws SQLException {
+        PreparedStatement ps1 = null;
+        PreparedStatement ps2 = null;
+        try {
+            String sql = "SELECT dc_c.id, dc_c.item"
+                    + "  FROM dublincore dc"
+                    + "    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)"
+                    + "    JOIN dc_contributors dc_c ON (tmp.id = dc_c.id AND tmp.pos = dc_c.pos)"
+                    + "  WHERE dc.lastContributor IS NULL;";
+            ps1 = conn.prepareStatement(sql);
+            ResultSet rs = ps1.executeQuery();
+            String series = null;
+            while (rs.next()) {
+                String id = rs.getString("id");
+                String lastContributor = rs.getString("item");
+
+                ps2 = conn.prepareStatement("UPDATE dublincore SET lastContributor = ? WHERE id = ?");
+                ps2.setString(1, lastContributor);
+                ps2.setString(2, id);
+
+                ps2.executeUpdate();
+            }
+        } finally {
+            if (ps1 != null) {
+                ps1.close();
+            }
+            if (ps2 != null) {
+                ps2.close();
+            }
+        }
+
+        return new SimpleResultSet();
+    }
 }

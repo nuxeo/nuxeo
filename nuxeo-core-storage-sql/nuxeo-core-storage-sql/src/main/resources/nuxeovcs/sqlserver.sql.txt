@@ -269,3 +269,12 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
 
 DELETE FROM cluster_nodes WHERE nodeid = @@SPID;
 
+############################################################
+
+#CATEGORY: upgradeLastContributor
+
+UPDATE dublincore SET lastContributor = dc_c.item
+  FROM dublincore dc
+    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
+    JOIN dc_contributors dc_c ON (tmp.id = dc_c.id AND tmp.pos = dc_c.pos)
+  WHERE dc.lastContributor IS NULL;

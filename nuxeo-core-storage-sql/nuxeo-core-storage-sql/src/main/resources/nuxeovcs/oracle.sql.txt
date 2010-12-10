@@ -580,3 +580,20 @@ INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (SYS_CONTEXT('USERENV', 'SI
 #CATEGORY: removeClusterNode
 
 DELETE FROM "CLUSTER_NODES" WHERE NODEID = SYS_CONTEXT('USERENV', 'SID')
+
+############################################################
+
+#CATEGORY: upgradeLastContributor
+
+CREATE OR REPLACE PROCEDURE NX_UPGRADE_LASTCONTRIBUTOR
+IS
+  lastC NVARCHAR2(2000);
+BEGIN
+  FOR r in (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id)
+  LOOP
+    SELECT item into lastC from dc_contributors  WHERE r.pos = pos AND r.id = id;
+    UPDATE dublincore SET lastContributor = lastC WHERE id = r.id;
+  END LOOP;
+END;
+
+{CALL nx_upgrade_lastContributor}

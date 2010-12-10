@@ -235,3 +235,21 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_
 #CATEGORY: removeClusterNode
 
 DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
+
+############################################################
+
+
+#CATEGORY: upgradeLastContributor
+
+CREATE TEMPORARY TABLE tmp AS SELECT dc.id, tmp.pos FROM dublincore dc
+    JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
+    JOIN dc_contributors ON (tmp.id = dc_contributors.id AND tmp.pos = dc_contributors.pos)
+  WHERE dc.lastContributor IS NULL;
+
+UPDATE dublincore, tmp, dc_contributors SET lastContributor = dc_contributors.item
+WHERE tmp.id = dublincore.id AND tmp.id = dc_contributors.id and dc_contributors.pos = tmp.pos;
+
+DROP TABLE tmp;
+
+
+

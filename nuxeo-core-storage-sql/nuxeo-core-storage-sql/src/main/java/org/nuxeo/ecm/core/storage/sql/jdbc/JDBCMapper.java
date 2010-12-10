@@ -84,6 +84,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     // property in sql.txt file
     public static final String TEST_UPGRADE_VERSIONS = "testUpgradeVersions";
 
+    public static final String TEST_UPGRADE_LAST_CONTRIBUTOR = "testUpgradeLastContributor";
+
+    protected TableUpgrader tableUpgrader;
+
     private final QueryMakerService queryMakerService;
 
     private final PathResolver pathResolver;
@@ -108,6 +112,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (Exception e) {
             throw new StorageException(e);
         }
+
+        tableUpgrader = new TableUpgrader(this);
+        tableUpgrader.add(model.VERSION_TABLE_NAME, model.VERSION_IS_LATEST_KEY,
+                "upgradeVersions", TEST_UPGRADE_VERSIONS);
+        tableUpgrader.add("dublincore", "lastContributor",
+                "upgradeLastContributor", TEST_UPGRADE_LAST_CONTRIBUTOR);
     }
 
     @Override
@@ -302,26 +312,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected void upgradeTable(String tableKey, List<Column> addedColumns)
             throws SQLException {
-        if (model.VERSION_TABLE_NAME.equals(tableKey)) {
-            boolean upgradeVersions;
-            if (addedColumns == null) {
-                // table created
-                upgradeVersions = testProps.containsKey(TEST_UPGRADE_VERSIONS);
-            } else {
-                // columns added
-                upgradeVersions = false;
-                for (Column col : addedColumns) {
-                    if (col.getKey().equals(model.VERSION_IS_LATEST_KEY)) {
-                        upgradeVersions = true;
-                        break;
-                    }
-                }
-            }
-            if (upgradeVersions) {
-                log.info("Upgrading versions");
-                sqlInfo.executeSQLStatements("upgradeVersions", this);
-            }
-        }
+        tableUpgrader.upgrade(tableKey, addedColumns);
     }
 
     /** Finds uppercase table names. */
