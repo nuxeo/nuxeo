@@ -28,11 +28,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.signature.api.pki.CAService;
+import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Cert service provider
+ * CertService provider
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
@@ -45,29 +45,34 @@ public class CertServiceBusinessDelegate implements Serializable {
 
     private static final Log log = LogFactory.getLog(CertServiceBusinessDelegate.class);
 
-    protected CAService cAService;
+    protected CertService certService;
 
+    /**
+     *
+     * @return CertService
+     * @throws ClientException
+     */
     @Unwrap
-    public CAService getService() throws ClientException {
-        if (cAService == null) {
+    public CertService getService() throws ClientException {
+        if (certService == null) {
             try {
-                cAService = Framework.getService(CAService.class);
+                certService = Framework.getService(CertService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to SignatureService. "
+                final String errMsg = "Error connecting to CertService. "
                         + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
-            if (cAService == null) {
-                throw new ClientException("SignatureService service not bound");
+            if (certService == null) {
+                throw new ClientException("CertService service not bound");
             }
         }
-        return cAService;
+        return certService;
     }
 
     @Destroy
     public void destroy() {
-        if (cAService != null) {
-            cAService = null;
+        if (certService != null) {
+            certService = null;
         }
         log.debug("Destroyed the seam component");
     }

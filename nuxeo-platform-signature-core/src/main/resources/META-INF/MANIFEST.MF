@@ -6,9 +6,17 @@ Bundle-Version: 1.0.0
 Require-Bundle:  org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.signature.api
+Nuxeo-Require: org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.schema,
+ org.nuxeo.ecm.directory,
+ org.nuxeo.ecm.directory.sql
 Nuxeo-Component: 
+ OSGI-INF/schema-contrib.xml,
+ OSGI-INF/directory-contrib.xml,
  OSGI-INF/core-types-contrib.xml,
- OSGI-INF/ca-contrib.xml,
- OSGI-INF/ca-service-contrib.xml,
+ OSGI-INF/cert-contrib.xml,
+ OSGI-INF/cert-service-contrib.xml,
+ OSGI-INF/core-types-contrib.xml,
  OSGI-INF/signature-contrib.xml,
- OSGI-INF/signature-service-contrib.xml
+ OSGI-INF/signature-service-contrib.xml,
+ OSGI-INF/certuser-service-contrib.xml

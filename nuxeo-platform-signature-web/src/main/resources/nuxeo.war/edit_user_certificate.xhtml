@@ -1,27 +1,45 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"><ui:composition
   template="/view_user_template.xhtml">
   <ui:param name="currentUserSubTab" value="editCertificate" />
 
   <ui:define name="mainContent">
 
-    <h:form id="editUser"
-      rendered="#{userManagerActions.allowEditUser and notReadOnly}">
+    <h:outputText styleClass="label"
+      value="#{messages['label.cert.missing']}"
+      rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser) and !certActions.hasCertificate()}" />
 
-      <table class="dataInput">
-        <tbody>
-          <tr>
-            <td></td>
-            <td><h:commandButton type="submit"
-              value="#{messages['command.save']}"
-              action="#{certActions.createCert(userManagerActions.selectedUser)}"
-              styleClass="button" /></td>
-          </tr>
-        </tbody>
-      </table>
-    </h:form>
+      <h:form id="certificateForm">
+        <nxl:layout name="cert" mode="edit"
+          value="#{certActions.getCertificate(userManagerActions.selectedUser)}" />
 
+    <c:if test="#{!certActions.hasCertificate()}">
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td><h:outputText
+                value="#{messages['label.cert.password.first']}" /> <h:inputSecret
+                id="firstPassword" value="#{firstPassword}"
+                required="true"
+                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
+              <h:outputText
+                value="#{messages['label.cert.password.second']}" />
+                <h:inputSecret id="secondPassword" value="#{secondPassword}"
+                required="true"
+                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
+              </td>
+              <td><h:commandButton type="submit"
+                value="#{messages['command.certificate.generate']}"
+                action="#{certActions.createCertificate(userManagerActions.selectedUser,firstPassword,secondPassword)}"
+                styleClass="button"
+                rendered="#{certActions.canGenerateCertificate(userManagerActions.selectedUser)}" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </c:if>
+      </h:form>
   </ui:define>
-
 </ui:composition></div>

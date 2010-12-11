@@ -12,26 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Wojciech Sulejman
+ *     Wojciech Sulejman
  */
+
 package org.nuxeo.ecm.platform.signature.core.pki;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.security.PrivateKey;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,11 +38,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.signature.api.pki.CAService;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
-import org.nuxeo.ecm.platform.signature.api.pki.KeyService;
+import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
+import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
+import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,19 +59,13 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.platform.signature.core" })
+        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
+        "org.nuxeo.ecm.platform.signature.core.test" })
 public class CertServiceTest {
-
-    private final static Log log = LogFactory.getLog(CertServiceTest.class);
 
     @Inject
     protected CertService certService;
-
-    @Inject
-    protected KeyService keyService;
-
-    @Inject
-    protected CAService cAService;
 
     @Inject
     protected CoreSession session;
@@ -80,67 +74,115 @@ public class CertServiceTest {
 
     protected X509Certificate rootCertificate;
 
-    @Before
-    public void setUp() throws Exception {
-        String outputPath = FileUtils.getResourcePathFromContext("test-files");
-        String userFilePath = outputPath + "/user.crt";
-        userCertFile = new File(userFilePath);
-        if (userCertFile.exists()) {
-            FileUtils.deleteTree(userCertFile);
-        }
+    private static final int EXPECTED_MIN_ENCODED_CERT_LENGTH = 100;
 
-        // set root certificate
-        String rootCertFilePath = "test-files/root.crt";
-        File rootFile = FileUtils.getResourceFileFromContext(rootCertFilePath);
-        rootCertificate = cAService.getCertificate(rootFile);
-        cAService.setRootCertificate(rootCertificate);
-    }
+    private static final String ROOT_KEY_PASSWORD = "abc";
+    private static final String ROOT_KEYSTORE_PASSWORD = "abc";
+    private static final String ROOT_USER_ID= "PDFCA";
+    private static final String USER_KEY_PASSWORD = "abc";
+    private static final String USER_KEYSTORE_PASSWORD = "abc";
 
     /**
-     * Test method for .
-     * {@link org.nuxeo.ecm.platform.signature.api.pki.CertService#createCertificate(java.security.KeyPair, org.nuxeo.ecm.platform.signature.api.pki.CertInfo)}
+     * A test keystore file a user pdfca with pdfcacert and pdfkey entries
      */
-    @Test
-    public void testCreateCertificate() throws Exception {
-        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) certService.generateCSR(getUserInfo());
+    protected String keystorePath = "test-files/keystore.jks";
 
-        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        OutputStream outputStream = new FileOutputStream(userCertFile);
-
-        // read the saved certificate from file and verify it
-        X509Certificate userCertificate = cAService.createCertificateFromCSR(
-                csr, getUserInfo());
-        bOut.write(userCertificate.getEncoded());
-        outputStream = new FileOutputStream(userCertFile);
-        bOut.writeTo(outputStream);
-        bOut.close();
-
-        X509Certificate userCertificateFromFile = certService.getCertificate(userCertFile);
-
-        assertTrue(userCertificateFromFile.getSubjectDN().getName().equals(
-                userCertificate.getSubjectDN().getName()));
-        assertFalse(userCertificateFromFile.getSubjectDN().getName().equals(
-                rootCertificate.getSubjectDN().getName()));
-
-
-        boolean deleteGeneratedCertificateFiles = true;
-        if (deleteGeneratedCertificateFiles) {
-            userCertFile.deleteOnExit();
-        }
+    /**
+     * Replace root keystore from the config file with a custom one
+     * loaded from a test resource file
+     * @throws Exception
+     */
+    @Before
+    public void setup() throws Exception {
+        KeyStore rootKeystore=certService.getKeyStore(getKeystoreIS(keystorePath), ROOT_KEYSTORE_PASSWORD);
+        RootService rootService=new RootService();
+        AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
+        rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
+        rootService.setRootCertificateAlias(alias.getId(AliasType.CERT));
+        rootService.setRootKeyPassword(ROOT_KEY_PASSWORD);
+        rootService.setRootKeyStore(rootKeystore);
+        rootService.setRootKeystorePassword(ROOT_KEYSTORE_PASSWORD);
+        certService.setRootService(rootService);
     }
 
-    public UserInfo getUserInfo() throws Exception{
+    InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
+        File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
+        return new FileInputStream(keystoreFile);
+    }
+
+    KeyStore getKeystore(String password) throws Exception {
+        KeyStore keystore = certService.getKeyStore(getKeystoreIS(keystorePath),
+                password);
+        return keystore;
+    }
+
+    @Test
+    public void testGetKeys() throws Exception {
+        String userID = getPDFCAInfo().getUserFields().get(CNField.UserID);
+        AliasWrapper alias = new AliasWrapper(userID);
+        String keyAliasName = alias.getId(AliasType.KEY);
+        String certificateAliasName = alias.getId(AliasType.CERT);
+        KeyPair keyPair = certService.getKeyPair(getKeystore(USER_KEYSTORE_PASSWORD), keyAliasName,
+                certificateAliasName, USER_KEY_PASSWORD);
+        assertNotNull(keyPair.getPrivate());
+    }
+
+    @Test
+    public void testGetCertificate() throws Exception {
+        KeyStore keystore = generateUserKeystore();
+        Certificate cert = certService.getCertificate(keystore, getAliasId(
+                getUserInfo(), AliasType.CERT));
+        assertNotNull(cert.getPublicKey());
+        assertTrue(cert.getPublicKey().getEncoded().length > EXPECTED_MIN_ENCODED_CERT_LENGTH);
+    }
+
+    @Test
+    public void testInitializeUser() throws Exception {
+        KeyStore keystore = generateUserKeystore();
+        assertNotNull(keystore.containsAlias(getUserInfo().getUserFields().get(
+                CNField.UserID)));
+    }
+
+    public KeyStore generateUserKeystore() throws Exception {
+        KeyStore keystore = certService.initializeUser(getUserInfo(), USER_KEYSTORE_PASSWORD);
+        return keystore;
+    }
+
+    public CertService getCertService() throws Exception {
+        if (certService == null) {
+            certService = Framework.getService(CertService.class);
+        }
+        return certService;
+    }
+
+    private String getAliasId(UserInfo userInfo, AliasType aliasType) {
+        AliasWrapper alias = new AliasWrapper(userInfo.getUserFields().get(CNField.UserID));
+        return alias.getId(aliasType);
+    }
+
+    public UserInfo getPDFCAInfo() throws Exception {
         Map<CNField, String> userFields;
         userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.CN, "PDFCA");
         userFields.put(CNField.C, "US");
+        userFields.put(CNField.OU, "CA");
         userFields.put(CNField.O, "Nuxeo");
-        userFields.put(CNField.OU, "IT");
-        userFields.put(CNField.CN, "Wojciech Sulejman");
-        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
-        userFields.put(CNField.UserID, "wsulejman");
+        userFields.put(CNField.UserID, "PDFCA");
+        userFields.put(CNField.Email, "pdfca@nuxeo.com");
         UserInfo userInfo = new UserInfo(userFields);
         return userInfo;
     }
 
-
+    public UserInfo getUserInfo() throws Exception {
+        Map<CNField, String> userFields;
+        userFields = new HashMap<CNField, String>();
+        userFields.put(CNField.CN, "Wojciech Sulejman");
+        userFields.put(CNField.C, "US");
+        userFields.put(CNField.OU, "IT");
+        userFields.put(CNField.O, "Nuxeo");
+        userFields.put(CNField.UserID, "wsulejman");
+        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
+        UserInfo userInfo = new UserInfo(userFields);
+        return userInfo;
+    }
 }

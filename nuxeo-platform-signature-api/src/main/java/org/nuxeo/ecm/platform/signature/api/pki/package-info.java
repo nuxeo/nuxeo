@@ -1,6 +1,10 @@
 /**
-  Public Key Infrastructure services related to the following entities:
-  Private & Public Key, Certificate Generation as well as Certificate Authority related actions: Certificate Signing, Certificate Revocation.
+  Public Key Infrastructure services.
+  <p>
+  These services are related to the following PKI operations:
+  private & public key generation and retrieval; certificate generation; and CA (certificate authority)
+  related actions like: certificate signing, certificate revocation.
+
   @author Wojciech Sulejman
   @version 1.0
  */

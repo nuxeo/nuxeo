@@ -1,5 +1,5 @@
 /**
-  PDF signing services implementation
+  PDF signing services implementation.
 
   @author Wojciech Sulejman
   @version 1.0

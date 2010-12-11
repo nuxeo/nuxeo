@@ -19,17 +19,16 @@ package org.nuxeo.ecm.platform.signature.api.sign;
 
 import java.io.File;
 import java.io.InputStream;
-import java.security.KeyStore;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
-import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 
 /**
  * Provides digital signature services. A PDF document can be signed using a
- * user certificate
+ * user certificate.
  *
- * This requires a pre-existing user certificate set up in the system, which is
- * a one-time operation.
+ * This requires an existing user certificate present in the system.
+ * A certificate password must be provided to use this service.
  *
  * @author <a href="mailto:ws@nuxeo.com">WS</a>
  *
@@ -37,15 +36,15 @@ import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
 public interface SignatureService {
     /**
      *
-     * Signs a provided PDF document
+     * Signs a PDF document with user certificate and provided reason.
+     * Requires a password to retrieve the certificate from the keystore.
      *
      * @param certInfo
      * @param origPdfStream
      * @return
      * @throws Exception
      */
-    public File signPDF(KeyStore keystore, UserInfo userInfo,
-            String password, String reason, InputStream origPdfStream)
-            throws SignException;
+    public File signPDF(DocumentModel user, String userKeyPassword,
+            String reason, InputStream origPdfStream) throws SignException;
 
 }

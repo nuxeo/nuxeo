@@ -16,19 +16,12 @@
  */
 package org.nuxeo.ecm.platform.signature.web.sign;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.security.KeyStore;
 import java.security.Principal;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,23 +30,21 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
-import org.nuxeo.ecm.platform.signature.api.pki.CAService;
-import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Certificate management actions Used for generating and storing user key and
- * certificate information
+ * Certificate management actions exposed as a Seam component. Used for launching certificate generation,
+ * storage and retrieving operations from low level services. Allows verifying
+ * if a user certificate is already present.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
@@ -64,10 +55,15 @@ public class CertActions implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private static final Log log = LogFactory.getLog(CertActions.class);
+    private static final Log LOG = LogFactory.getLog(CertActions.class);
+
+    private static final int MINIMUM_PASSWORD_LENGTH = 8;
 
     @In(create = true)
-    protected transient CAService cAService;
+    protected transient CertService certService;
+
+    @In(create = true)
+    protected transient CertUserService certUserService;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -75,7 +71,7 @@ public class CertActions implements Serializable {
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -84,58 +80,142 @@ public class CertActions implements Serializable {
     @In(create = true)
     protected transient UserManager userManager;
 
-    private final String PASSWORD = "abc";
+    protected DocumentModel certificate;
 
-    String keystorePath = "test-files/keystore.jks";
 
-    File keystoreFile = FileUtils.getResourceFileFromContext(keystorePath);
+    /**
+     * Retrieves a user certificate and returns a certificate's document model object
+     * @param user
+     * @return
+     * @throws ClientException
+     */
+    public DocumentModel getCertificate(DocumentModel user)
+            throws ClientException {
+        String userID = (String) user.getPropertyValue("user:username");
 
-    InputStream getKeystoreIS() throws Exception {
-        return new FileInputStream(keystoreFile);
+        return certUserService.getCertificate(userID);
     }
 
-    public DocumentModel createCert(DocumentModel selectedUser)
-            throws Exception {
-        DocumentModel newCertificate = documentManager.createDocumentModel("Certificate");
+    /**
+     * Checks if a specified user has a certificate
+     *
+     * @param user
+     * @return
+     * @throws ClientException
+     */
+    public boolean hasCertificate(DocumentModel user) throws ClientException {
+        String userID = (String) user.getPropertyValue("user:username");
+        return certUserService.hasCertificateEntry(userID);
+    }
+
+    /**
+     * Indicates whether a certificate is present for the current user
+     *
+     * @return
+     * @throws ClientException
+     */
+    public boolean hasCertificate() throws ClientException {
+        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        DocumentModel user = userManager.getUserModel(currentUser.getName());
+        return hasCertificate(user);
+    }
+
+    /**
+     * Indicates whether a user has the right to generate a certificate.
+     *
+     * @param user
+     * @return
+     * @throws ClientException
+     */
+    public boolean canGenerateCertificate(DocumentModel user)
+            throws ClientException {
+        boolean canGenerateCertificate = false;
+        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        canGenerateCertificate = currentUser.getName().equals(
+                (String) user.getPropertyValue("user:username"));
+        return canGenerateCertificate;
+    }
+
+    /**
+     * Launches certificate generation. Requires valid passwords for certificate
+     * encryption.
+     *
+     * @param user
+     * @param firstPassword
+     * @param secondPassword
+     */
+    public void createCertificate(DocumentModel user, String firstPassword,
+            String secondPassword) {
+        boolean isPasswordValid = false;
+
         try {
-            KeyStore keystore = cAService.getKeyStore(getKeystoreIS(),
-                    getUserInfo(), PASSWORD);
-            X509Certificate x509Certificate = (X509Certificate) cAService.getCertificate(
-                    keystore, getUserInfo());
-            BlobHolder certificateBlobHolder = newCertificate.getAdapter(BlobHolder.class);
-            Blob blob = new ByteArrayBlob(x509Certificate.getEncoded());
-            certificateBlobHolder.setBlob(blob);
-            newCertificate.setProperty("cert", "certificate",
-                    certificateBlobHolder);
-        } catch (CertificateEncodingException e) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Certificate generation failed. Check the logs.", new Object[0]);
-            log.error("Certificate generation failed:" + e);
-        } catch (CertException ce) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Certificate generation failed. Check the logs.", new Object[0]);
-            log.error("Certificate generation failed:" + ce);
+            validatePasswords(firstPassword, secondPassword);
+            // passed through validation
+            isPasswordValid = true;
+        } catch (ValidatorException v) {
+            facesMessages.add(v.getFacesMessage());
         }
 
-        newCertificate.setProperty("cert", "username",
-                selectedUser.getProperty("user", "username"));
-        DocumentModel certificate = documentManager.createDocument(newCertificate);
-        return certificate;
+        if (isPasswordValid) {
+            try {
+                certUserService.createCert(user, firstPassword);
+            } catch (CertException e) {
+                LOG.error(e);
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "Problem generating certificate. Check logs.");
+            } catch (ClientException e) {
+                LOG.error(e);
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "Problem generating certificate. Check logs.");
+            }
+        }
     }
 
-    // TODO replace with user info from Nuxeo
-    UserInfo getUserInfo() throws CertException {
-        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
-        userFields.put(CNField.C, "US");
-        userFields.put(CNField.O, "Nuxeo");
-        userFields.put(CNField.OU, "IT");
-        userFields.put(CNField.CN, "Wojciech Sulejman");
-        userFields.put(CNField.Email, "wsulejman@nuxeo.com");
-        userFields.put(CNField.UserID, currentUser.getName());
-        UserInfo userInfo = new UserInfo(userFields);
-        return userInfo;
+    /**
+     * Validates that the password follows business rules.
+     * <p>
+     * The password must be typed in twice correctly, follow minimum length,
+     * and be different than the application login password.
+     * <p>
+     * The validations are performed in the following sequence cheapest
+     * validations first, then the ones requiring more system resources.
+     *
+     * @param firstPassword
+     * @param secondPassword
+     */
+    public void validatePasswords(String firstPassword, String secondPassword) {
+
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+
+        if (firstPassword == null || secondPassword == null) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.password.missing"), null);
+            LOG.error(message.getDetail());
+            throw new ValidatorException(message);
+        }
+
+        if (!firstPassword.equals(secondPassword)) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.password.mismatch"), null);
+            LOG.error(message.getDetail());
+            throw new ValidatorException(message);
+        }
+
+        // at least 8 characters
+        if (firstPassword.length() < MINIMUM_PASSWORD_LENGTH) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            facesContext, "label.cert.password.too.short"),
+                    null);
+            LOG.error(message.getDetail());
+            throw new ValidatorException(message);
+        }
+
+        // TODO
+        // make sure it's different from the login password
+
     }
 
 }

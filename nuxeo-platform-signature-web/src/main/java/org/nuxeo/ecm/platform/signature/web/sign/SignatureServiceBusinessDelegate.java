@@ -45,7 +45,7 @@ public class SignatureServiceBusinessDelegate implements Serializable {
 
     private static final Log log = LogFactory.getLog(SignatureServiceBusinessDelegate.class);
 
-    protected SignatureService signatureService;
+    protected transient SignatureService signatureService;
 
     @Unwrap
     public SignatureService getService() throws ClientException {

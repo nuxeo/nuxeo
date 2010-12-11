@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="digital.signature.directory">
+	<require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="certificate">
+      <schema>cert</schema>
+
+      <dbDriver>org.postgresql.Driver</dbDriver>
+      <dbUrl>jdbc:postgresql://localhost:5432/nuxeo</dbUrl>
+      <dbUser>nuxeo</dbUser>
+      <dbPassword>password</dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+
+      <table>cert</table>
+      <idField>userid</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+  </extension>
+</component>

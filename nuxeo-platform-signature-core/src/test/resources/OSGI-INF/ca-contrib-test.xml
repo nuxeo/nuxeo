@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.signature.api.pki.CAService.config.test">
-  <extension target="org.nuxeo.ecm.platform.signature.api.pki.CAService"  point="ca">
-	 <configuration>
-      <rootCertificateFilePath>test-files/root.crt</rootCertificateFilePath>
-    </configuration>
-  </extension>
-</component>

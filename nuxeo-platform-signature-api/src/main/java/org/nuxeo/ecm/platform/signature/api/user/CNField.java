@@ -17,9 +17,38 @@
 package org.nuxeo.ecm.platform.signature.api.user;
 
 /**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a> List of required
- *         fields Note the Email and UserID fields
+ * List of required X500 Principal fields required for certificate generation
+ *
+ * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public enum CNField {
-    C, O, OU, CN, Email, UserID
+    /**
+     * Country name
+     */
+    C,
+    /**
+     * Organization name
+     */
+    O,
+    /**
+     * Organizational Unit name
+     */
+    OU,
+    //TODO to be added
+    /**
+     * Localization
+     */
+    //L,
+    /**
+     * Common Name
+     */
+    CN,
+    /**
+     * Email
+     */
+    Email,
+    /**
+     * UserID
+     */
+    UserID
 }
