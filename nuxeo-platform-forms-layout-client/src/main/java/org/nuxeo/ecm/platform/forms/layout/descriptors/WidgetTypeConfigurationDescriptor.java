@@ -54,6 +54,9 @@ public class WidgetTypeConfigurationDescriptor implements
     @XNodeList(value = "supportedModes/mode", type = ArrayList.class, componentType = String.class)
     List<String> supportedModes;
 
+    @XNode("acceptingSubWidgets")
+    boolean acceptingSubWidgets = false;
+
     @XNode("fields/list")
     boolean list = false;
 
@@ -89,6 +92,11 @@ public class WidgetTypeConfigurationDescriptor implements
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isAcceptingSubWidgets() {
+        return acceptingSubWidgets;
     }
 
     @Override
