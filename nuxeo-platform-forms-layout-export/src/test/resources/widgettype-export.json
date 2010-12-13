@@ -8,10 +8,15 @@
   "configuration":   {
     "title": "Test widget type",
     "description": "This is a test widget type",
+    "sinceVersion": "5.4.0",
     "confProperties":     {
       "confProp": "foo",
       "sortProperty": "dc:title"
     },
+    "supportedModes":     [
+      "edit",
+      "view"
+    ],
     "fields":     {
       "list": false,
       "complex": false,

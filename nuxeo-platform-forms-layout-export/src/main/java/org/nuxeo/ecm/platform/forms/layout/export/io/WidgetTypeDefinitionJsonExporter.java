@@ -85,8 +85,16 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject json = new JSONObject();
         json.element("title", conf.getTitle());
         json.element("description", conf.getDescription());
+        json.element("sinceVersion", conf.getSinceVersion());
         json.element("confProperties",
                 exportPropsToJson(conf.getConfProperties()));
+
+        JSONArray supportedModes = new JSONArray();
+        List<String> confSupportedModes = conf.getSupportedModes();
+        if (confSupportedModes != null) {
+            supportedModes.addAll(confSupportedModes);
+        }
+        json.element("supportedModes", supportedModes);
 
         JSONObject fields = new JSONObject();
         fields.element("list", conf.isList());
