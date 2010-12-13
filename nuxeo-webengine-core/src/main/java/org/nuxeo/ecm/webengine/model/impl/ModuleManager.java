@@ -55,7 +55,7 @@ public class ModuleManager {
 
     /**
      * Gets a module given its name.
-     * 
+     *
      * @return the module or null if none
      */
     public ModuleConfiguration getModule(String key) {

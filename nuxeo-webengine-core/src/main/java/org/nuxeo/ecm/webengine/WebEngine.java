@@ -413,7 +413,7 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * Manage jax-rs root resource bindings
-     * 
+     *
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */

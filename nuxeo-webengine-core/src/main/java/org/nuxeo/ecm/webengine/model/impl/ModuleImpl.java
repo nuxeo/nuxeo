@@ -55,7 +55,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * The default implementation for a web configuration.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ModuleImpl implements Module {
@@ -118,7 +118,7 @@ public class ModuleImpl implements Module {
     /**
      * Whether or not this module has a GUI and should be listed in available
      * GUI module list. For example, REST modules usually don't have a GUI.
-     * 
+     *
      * @return true if headless (no GUI is provided), false otherwise
      */
     public boolean isHeadless() {

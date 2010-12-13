@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used by JAX-RS resources that expose core documents.
- *  
+ *
  * @author bstefanescu
  *
  */
@@ -15,10 +15,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface WebDocument {
 
-	/**
-	 * The type of the document to expose
-	 * @return
-	 */
-	public String value();
-	
+    /**
+     * The type of the document to expose
+     * @return
+     */
+    String value();
+
 }

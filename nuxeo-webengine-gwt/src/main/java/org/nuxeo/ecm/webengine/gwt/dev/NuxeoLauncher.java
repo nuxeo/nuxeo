@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.gwt.GwtBundleActivator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class NuxeoLauncher extends NuxeoAuthenticationFilter {
 
@@ -73,7 +73,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
      * Gets a custom configuration for the Nuxeo to build. By default no custom
      * configuration is used - but bult-in configuration selected through
      * profiles.
-     * 
+     *
      * @return null if no custom configuration is wanted.
      */
     protected URL getConfiguration() {

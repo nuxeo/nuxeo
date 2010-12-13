@@ -33,9 +33,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  * A type loader which is loading types from META-INF/web-types file. This
  * loader is also checking the web module nature. If the project has for example
  * a Groovy nature it will call at end the {@link GroovyTypeLoader}
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DefaultTypeLoader {
 
@@ -94,7 +94,7 @@ public class DefaultTypeLoader {
 
     /**
      * New method to load types from the {@link WebApplication} declared types.
-     * 
+     *
      * @param types
      */
     protected void loadTypes(Class<?>[] types) {
@@ -108,7 +108,7 @@ public class DefaultTypeLoader {
 
     /**
      * Old method to load types from a web-types file generated at build time
-     * 
+     *
      * @param file
      * @throws Exception
      */

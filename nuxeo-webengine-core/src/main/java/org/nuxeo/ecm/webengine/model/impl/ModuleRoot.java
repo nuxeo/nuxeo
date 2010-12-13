@@ -38,7 +38,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ModuleRoot extends DefaultObject implements ModuleResource {
 
@@ -71,7 +71,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
      * You should override this method to resolve objects to links. This method
      * is usually called by a search view to generate links for object that are
      * listed
-     * 
+     *
      * @param doc the document
      * @return the link corresponding to that object
      */

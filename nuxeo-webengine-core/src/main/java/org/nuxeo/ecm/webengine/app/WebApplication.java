@@ -28,9 +28,9 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
  * A WebEngine module definition. It is replacing old style type declarations
  * (though apt plugin at build time). Also it is making the module.xml file
  * optional
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class WebApplication extends Application {
 
@@ -38,7 +38,7 @@ public abstract class WebApplication extends Application {
 
     /**
      * Create a web module which doesn't extend another module
-     * 
+     *
      * @param name the module name
      */
     protected WebApplication(String name) {
@@ -47,7 +47,7 @@ public abstract class WebApplication extends Application {
 
     /**
      * Create a web module which extends a base module
-     * 
+     *
      * @param name the module name
      * @param baseModule the baseModule name
      */

@@ -23,9 +23,9 @@ import org.osgi.framework.Bundle;
 
 /**
  * @deprecated not used
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public interface AnnotationLoader {
 

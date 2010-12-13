@@ -37,9 +37,9 @@ import org.osgi.framework.BundleListener;
 
 /**
  * @deprecated not used
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BundleAnnotationsLoader implements BundleListener {
 

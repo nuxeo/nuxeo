@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.app.WebEngineModule;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WebFragment {
-    
+
     Class<? extends WebEngineModule> value();
-    
+
 }

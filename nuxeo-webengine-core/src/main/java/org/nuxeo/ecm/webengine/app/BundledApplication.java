@@ -31,7 +31,7 @@ import org.osgi.framework.Bundle;
  * the bundle MANIFEST. A bundle may deploy at most one application. A bundled
  * application is uniquely identified by the type name of the wrapped
  * application class.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class BundledApplication extends Application {

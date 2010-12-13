@@ -33,7 +33,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
  * <p>
  * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
  * use {@link ServletContainer}.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ReloadingJerseyServlet extends ServletContainer implements

@@ -28,11 +28,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Defines a JAX-RS root resource binding. This is an extension to JAX-RS to be
  * able to declare root resource binding dynamically without using {@link Path}
  * annotations on classes.
- * 
+ *
  * @deprecated resources are deprecated - you should use a jax-rs application to
  *             declare more resources.
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  * @see Path
  */
 @XObject(value = "resource", order = { "@path", "@class" })

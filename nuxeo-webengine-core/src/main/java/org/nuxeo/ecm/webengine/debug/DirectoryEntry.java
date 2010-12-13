@@ -24,7 +24,7 @@ import java.util.List;
  * A file entry that will check all sub directories in the tree rooted in that
  * directory. This will not check the regular files in that tree. For this we
  * may want to use {@link TreeEntry}.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DirectoryEntry extends FileEntry {

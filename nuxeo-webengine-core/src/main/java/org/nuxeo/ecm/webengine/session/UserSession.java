@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Used to store user session. This object is cached in a the HTTP session
  * Principal, subject and credentials are immutable per user session
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // TODO: should be synchronized? concurrent access may happen for the same
@@ -137,7 +137,7 @@ public abstract class UserSession extends HashMap<String, Object> {
     /**
      * Return the name of the default repository in the context of this request.
      * Return null if the default registered repository should be used
-     * 
+     *
      * @return
      */
     public String getDefaultRepository() {
@@ -149,7 +149,7 @@ public abstract class UserSession extends HashMap<String, Object> {
      * <p>
      * If it does not already exist, it will be opened against the given
      * repository.
-     * 
+     *
      * @param repoName
      * @return the core session
      */

@@ -28,15 +28,15 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleImpl;
  * If a change is detected it is invalidating WebEngine. (see setDirty). In dev.
  * mode the servlet is checking at each request if WebEngine is dirty and reload
  * all JAX-RS applications.
- * 
+ *
  * You should override the {@link #doRun()} method of this class and implement a
  * fine grained check if you want to check only some modifications. Also you
  * need to update {@link ModuleImpl#getTracker()} to instantiate your tracker
  * (you can use the value of nuxeo.dev.mode to test if your tracker is needed)
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ModuleTracker implements Runnable {
 
@@ -70,7 +70,7 @@ public class ModuleTracker implements Runnable {
     /**
      * Flush the type cache of a module. This will flush all modules type cache
      * since some modules may be dependent on this one. TODO: optimize this
-     * 
+     *
      * @param module
      */
     public static void flushTypeCache(ModuleImpl module) {
@@ -87,7 +87,7 @@ public class ModuleTracker implements Runnable {
      * Flush the skin cache for the given module. Note that all modules skin
      * cache will be flushed since they may depend on this module skins. TODO:
      * optimize this
-     * 
+     *
      * @param module
      */
     public static void flushSkinCache(ModuleImpl module) {

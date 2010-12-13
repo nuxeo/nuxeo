@@ -62,7 +62,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public abstract class AbstractWebContext implements WebContext {
 
@@ -706,7 +706,7 @@ public abstract class AbstractWebContext implements WebContext {
      * in scripting context. If the application is not deploying a repository
      * injecting a repository session will throw exceptions each time rendering
      * is used.
-     * 
+     *
      * @param isRepositoryDisabled true to disable repository session injection,
      *            false otherwise
      */

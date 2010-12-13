@@ -22,9 +22,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Can be used to register links to your module entry points in the main web
  * engine page
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @XObject("shortcut")
 public class ModuleShortcut {
