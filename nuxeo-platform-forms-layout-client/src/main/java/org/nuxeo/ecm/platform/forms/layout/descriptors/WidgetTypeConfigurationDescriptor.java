@@ -42,11 +42,17 @@ public class WidgetTypeConfigurationDescriptor implements
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("sinceVersion")
+    String sinceVersion;
+
     @XNode("title")
     String title;
 
     @XNode("description")
     String description;
+
+    @XNodeList(value = "supportedModes/mode", type = ArrayList.class, componentType = String.class)
+    List<String> supportedModes;
 
     @XNode("fields/list")
     boolean list = false;
@@ -163,6 +169,16 @@ public class WidgetTypeConfigurationDescriptor implements
             return res;
         }
         return null;
+    }
+
+    @Override
+    public String getSinceVersion() {
+        return sinceVersion;
+    }
+
+    @Override
+    public List<String> getSupportedModes() {
+        return supportedModes;
     }
 
 }
