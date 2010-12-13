@@ -55,7 +55,7 @@ public class LayoutImpl implements Layout {
     protected Map<String, Serializable> properties;
 
     // needed by GWT serialization
-    public LayoutImpl() {
+    protected LayoutImpl() {
         super();
     }
 

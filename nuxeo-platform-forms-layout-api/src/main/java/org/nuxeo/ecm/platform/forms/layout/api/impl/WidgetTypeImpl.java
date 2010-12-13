@@ -39,7 +39,7 @@ public class WidgetTypeImpl implements WidgetType {
     protected Map<String, String> properties;
 
     // needed by GWT serialization
-    public WidgetTypeImpl() {
+    protected WidgetTypeImpl() {
         super();
     }
 

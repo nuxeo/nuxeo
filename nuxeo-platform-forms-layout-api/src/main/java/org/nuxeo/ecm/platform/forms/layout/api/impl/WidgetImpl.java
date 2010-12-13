@@ -68,7 +68,7 @@ public class WidgetImpl implements Widget {
     protected WidgetSelectOption[] selectOptions;
 
     // needed by GWT serialization
-    public WidgetImpl() {
+    protected WidgetImpl() {
         super();
     }
 

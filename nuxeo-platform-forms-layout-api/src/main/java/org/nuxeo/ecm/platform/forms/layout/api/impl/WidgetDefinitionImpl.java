@@ -61,7 +61,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     protected WidgetSelectOption[] selectOptions;
 
     // needed by GWT serialization
-    public WidgetDefinitionImpl() {
+    protected WidgetDefinitionImpl() {
         super();
     }
 

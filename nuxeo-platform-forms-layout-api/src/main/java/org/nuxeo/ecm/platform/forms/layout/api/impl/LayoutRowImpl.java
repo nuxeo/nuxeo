@@ -47,7 +47,7 @@ public class LayoutRowImpl implements LayoutRow {
     protected Map<String, Serializable> properties;
 
     // needed by GWT serialization
-    public LayoutRowImpl() {
+    protected LayoutRowImpl() {
         super();
     }
 

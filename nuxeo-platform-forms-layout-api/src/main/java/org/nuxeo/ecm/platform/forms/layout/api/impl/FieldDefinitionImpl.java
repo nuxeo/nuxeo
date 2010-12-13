@@ -31,7 +31,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     protected String field;
 
     // needed by GWT serialization
-    public FieldDefinitionImpl() {
+    protected FieldDefinitionImpl() {
     }
 
     public FieldDefinitionImpl(String schema, String field) {

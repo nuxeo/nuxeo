@@ -44,6 +44,11 @@ public class WidgetSelectOptionsImpl implements WidgetSelectOptions {
 
     protected Boolean caseSensitive;
 
+    // needed by GWT serialization
+    protected WidgetSelectOptionsImpl() {
+        super();
+    }
+
     public WidgetSelectOptionsImpl(Serializable value, String var,
             String itemLabel, String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);

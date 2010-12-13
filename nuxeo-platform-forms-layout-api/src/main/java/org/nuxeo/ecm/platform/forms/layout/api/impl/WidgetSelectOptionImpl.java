@@ -40,17 +40,23 @@ public class WidgetSelectOptionImpl implements WidgetSelectOption {
 
     protected Serializable itemRendered;
 
+    // needed by GWT serialization
+    protected WidgetSelectOptionImpl() {
+        super();
+    }
+
     public WidgetSelectOptionImpl(String itemLabel, String itemValue) {
         this(null, null, itemLabel, itemValue);
     }
 
-    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel,
-            String itemValue) {
+    public WidgetSelectOptionImpl(Serializable value, String var,
+            String itemLabel, String itemValue) {
         this(value, var, itemLabel, itemValue, null, null);
     }
 
-    public WidgetSelectOptionImpl(Serializable value, String var, String itemLabel,
-            String itemValue, Serializable itemDisabled, Serializable itemRendered) {
+    public WidgetSelectOptionImpl(Serializable value, String var,
+            String itemLabel, String itemValue, Serializable itemDisabled,
+            Serializable itemRendered) {
         super();
         this.value = value;
         this.var = var;
