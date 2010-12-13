@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.forms.layout.api;
 
+import java.util.List;
+
 /**
  * List of built in widget modes.
  *
@@ -33,6 +35,17 @@ public class BuiltinWidgetModes {
     public static final String HIDDEN = "hidden";
 
     private BuiltinWidgetModes() {
+    }
+
+    public static final boolean isModeSupported(String widgetMode,
+            List<String> supportedModes) {
+        if (BuiltinWidgetModes.HIDDEN.equals(widgetMode)) {
+            // always supported
+            return true;
+        } else if (supportedModes != null) {
+            return supportedModes.contains(widgetMode);
+        }
+        return false;
     }
 
 }

@@ -28,11 +28,15 @@ import java.util.Map;
  */
 public interface WidgetTypeConfiguration extends Serializable {
 
+    String getSinceVersion();
+
     String getTitle();
 
     String getDescription();
 
     List<String> getCategories();
+
+    List<String> getSupportedModes();
 
     boolean isList();
 

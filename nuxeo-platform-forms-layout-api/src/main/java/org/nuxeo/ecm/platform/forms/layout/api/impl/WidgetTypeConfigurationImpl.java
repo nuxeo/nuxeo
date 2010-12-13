@@ -21,11 +21,15 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     private static final long serialVersionUID = 1L;
 
+    protected String sinceVersion;
+
     protected String title;
 
     protected String description;
 
     protected Map<String, Serializable> properties;
+
+    protected List<String> supportedModes;
 
     protected boolean list = false;
 
@@ -46,17 +50,19 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         super();
     }
 
-    public WidgetTypeConfigurationImpl(String title, String description,
-            Map<String, Serializable> properties, boolean list,
-            boolean complex, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes,
+    public WidgetTypeConfigurationImpl(String sinceVersion, String title,
+            String description, Map<String, Serializable> properties,
+            List<String> supportedModes, boolean list, boolean complex,
+            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
+        this.sinceVersion = sinceVersion;
         this.title = title;
         this.description = description;
         this.properties = properties;
+        this.supportedModes = supportedModes;
         this.list = list;
         this.complex = complex;
         this.supportedFieldTypes = supportedFieldTypes;
@@ -64,6 +70,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         this.defaultFieldDefinitions = defaultFieldDefinitions;
         this.categories = categories;
         this.propertyLayouts = propertyLayouts;
+    }
+
+    @Override
+    public String getSinceVersion() {
+        return sinceVersion;
     }
 
     public String getTitle() {
@@ -85,6 +96,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             return null;
         }
         return properties.get(propName);
+    }
+
+    @Override
+    public List<String> getSupportedModes() {
+        return supportedModes;
     }
 
     public boolean isList() {
