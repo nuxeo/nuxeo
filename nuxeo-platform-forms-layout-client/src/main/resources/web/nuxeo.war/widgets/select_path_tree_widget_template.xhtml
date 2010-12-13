@@ -84,6 +84,7 @@
   <div class="popUpContent">
     <rich:tree
       id="#{widget.id}_treeId"
+      adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
       changeExpandListener="#{reducedTreeActions.changeExpandListener}"
       icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
       iconLeaf="#{nxd:iconPath(node.document)}"
