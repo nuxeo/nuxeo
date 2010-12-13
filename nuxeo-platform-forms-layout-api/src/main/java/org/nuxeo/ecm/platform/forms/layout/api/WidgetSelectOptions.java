@@ -31,12 +31,12 @@ public interface WidgetSelectOptions extends WidgetSelectOption {
      * <p>
      * Sample possible values are
      */
-    public String getOrdering();
+    String getOrdering();
 
     /**
      *
      * @return
      */
-    public Boolean getCaseSensitive();
+    Boolean getCaseSensitive();
 
 }

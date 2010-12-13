@@ -26,9 +26,9 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagat
 /**
  * Propagate the login information from the web authentication filter to the
  * client login module stack.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class LoginStackPropagator implements NuxeoAuthenticationPropagator {
 

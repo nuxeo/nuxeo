@@ -29,11 +29,11 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 
 /**
  * Cleanup the login stack used by the default Nuxeo client login module.
- * 
+ *
  * @see {@link ClientLoginModule}
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class LoginStackCleaner implements Filter {
 
