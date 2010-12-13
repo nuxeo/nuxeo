@@ -96,6 +96,8 @@ public class WidgetTypeDefinitionJsonExporter {
         }
         json.element("supportedModes", supportedModes);
 
+        json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
+
         JSONObject fields = new JSONObject();
         fields.element("list", conf.isList());
         fields.element("complex", conf.isComplex());

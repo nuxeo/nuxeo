@@ -17,6 +17,7 @@
       "edit",
       "view"
     ],
+    "acceptingSubWidgets": true,
     "fields":     {
       "list": false,
       "complex": false,

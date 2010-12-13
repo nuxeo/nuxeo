@@ -24,6 +24,7 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
         <fields>
           <list>false</list>
           <complex>false</complex>
