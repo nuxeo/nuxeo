@@ -210,7 +210,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 if (currentDocPath != null && nodePath != null
                         && currentDocPath.startsWith(nodePath)) {
                     // additional slower check for strict path prefix
-                    if ((currentDocPath + '/').startsWith(nodePath + '/')) {
+                    if ((currentDocPath + '/').startsWith(nodePath + '/') || "/".equals(nodePath)) {
                         return true;
                     }
                 }
