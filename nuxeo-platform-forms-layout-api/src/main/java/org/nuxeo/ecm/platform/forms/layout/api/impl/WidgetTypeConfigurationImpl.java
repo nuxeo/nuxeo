@@ -31,6 +31,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected List<String> supportedModes;
 
+    protected boolean acceptingSubWidgets = false;
+
     protected boolean list = false;
 
     protected boolean complex = false;
@@ -52,8 +54,9 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
             String description, Map<String, Serializable> properties,
-            List<String> supportedModes, boolean list, boolean complex,
-            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
+            List<String> supportedModes, boolean acceptingSubWidgets,
+            boolean list, boolean complex, List<String> supportedFieldTypes,
+            List<String> defaultFieldTypes,
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
@@ -63,6 +66,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         this.description = description;
         this.properties = properties;
         this.supportedModes = supportedModes;
+        this.acceptingSubWidgets = acceptingSubWidgets;
         this.list = list;
         this.complex = complex;
         this.supportedFieldTypes = supportedFieldTypes;
@@ -101,6 +105,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     @Override
     public List<String> getSupportedModes() {
         return supportedModes;
+    }
+
+    @Override
+    public boolean isAcceptingSubWidgets() {
+        return acceptingSubWidgets;
     }
 
     public boolean isList() {

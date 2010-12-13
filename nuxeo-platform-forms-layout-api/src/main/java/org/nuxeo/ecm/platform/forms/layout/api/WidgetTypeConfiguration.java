@@ -38,6 +38,8 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     List<String> getSupportedModes();
 
+    boolean isAcceptingSubWidgets();
+
     boolean isList();
 
     boolean isComplex();
