@@ -166,7 +166,20 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected Model model;
 
-    protected String from;
+    /**
+     * Primary types to match based on the FROM type, the ecm:primaryType and
+     * ecm:mixinType clauses, and the passed FacetFilter.
+     */
+    protected Set<String> primaryTypes = new HashSet<String>();
+
+    /** Do we match only relations (and therefore no proxies). */
+    public boolean onlyRelations;
+
+    protected Boolean immutableClause;
+
+    public boolean needsVersionsTable;
+
+    protected Boolean proxyClause;
 
     protected List<Join> joins;
 
@@ -218,72 +231,42 @@ public class NXQLQueryMaker implements QueryMaker {
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
         }
-
-        /*
-         * Find all the types to take into account (all concrete types being a
-         * subtype of the passed types) based on the FROM list.
-         */
-
-        Set<String> types = new HashSet<String>();
-        boolean onlyRelations = true;
-        for (String typeName : info.fromTypes) {
-            if (TYPE_DOCUMENT.equalsIgnoreCase(typeName)) {
-                typeName = TYPE_DOCUMENT;
-            }
-            Set<String> subTypes = model.getDocumentSubTypes(typeName);
-            if (subTypes == null) {
-                throw new StorageException("Unknown type: " + typeName);
-            }
-            types.addAll(subTypes);
-            boolean isRelation = false;
-            do {
-                if (TYPE_RELATION.equals(typeName)) {
-                    isRelation = true;
-                    break;
-                }
-                typeName = model.getDocumentSuperType(typeName);
-            } while (typeName != null);
-            onlyRelations = onlyRelations && isRelation;
-        }
-        types.remove(model.ROOT_TYPE);
-
-        /*
-         * Restrict types based on toplevel ecm:primaryType and ecm:mixinType
-         * predicates.
-         */
-
-        types.removeAll(info.typesExcluded);
-        if (!info.typesAnyRequired.isEmpty()) {
-            types.retainAll(info.typesAnyRequired);
-        }
-        if (types.isEmpty()) {
+        if (primaryTypes.isEmpty()) {
             // conflicting types requirement, query cannot match
             return null;
         }
 
         /*
-         * Merge facet filter into mixin clauses and immutable flag.
+         * Apply facet filter to available types and immutable flag.
+         *
+         * XXX TODO and placeful expressions
          */
 
         FacetFilter facetFilter = queryFilter.getFacetFilter();
         if (facetFilter == null) {
             facetFilter = FacetFilter.ALLOW;
         }
-        info.mixinsExcluded.addAll(facetFilter.excluded);
-        if (info.mixinsExcluded.remove(FacetNames.IMMUTABLE)) {
-            if (info.immutableClause == Boolean.TRUE) {
-                // conflict on immutable condition, query cannot match
-                return null;
+        for (String facet : facetFilter.required) {
+            if (FacetNames.IMMUTABLE.equals(facet)) {
+                if (immutableClause == Boolean.FALSE) {
+                    // conflict on immutable condition, query cannot match
+                    return null;
+                }
+                immutableClause = Boolean.TRUE;
+                continue;
             }
-            info.immutableClause = Boolean.FALSE;
+            includeOrExcludeTypeWithMixins(Collections.singleton(facet), true);
         }
-        info.mixinsAllRequired.addAll(facetFilter.required);
-        if (info.mixinsAllRequired.remove(FacetNames.IMMUTABLE)) {
-            if (info.immutableClause == Boolean.FALSE) {
-                // conflict on immutable condition, query cannot match
-                return null;
+        for (String facet : facetFilter.excluded) {
+            if (FacetNames.IMMUTABLE.equals(facet)) {
+                if (immutableClause == Boolean.TRUE) {
+                    // conflict on immutable condition, query cannot match
+                    return null;
+                }
+                immutableClause = Boolean.FALSE;
+
             }
-            info.immutableClause = Boolean.TRUE;
+            includeOrExcludeTypeWithMixins(Collections.singleton(facet), false);
         }
 
         /*
@@ -301,7 +284,7 @@ public class NXQLQueryMaker implements QueryMaker {
         fragmentNames.remove(model.HIER_TABLE_NAME);
 
         // Do we need to add the versions table too?
-        if (info.needsVersionsTable || info.immutableClause != null) {
+        if (needsVersionsTable || immutableClause != null) {
             fragmentNames.add(model.VERSION_TABLE_NAME);
         }
 
@@ -310,21 +293,21 @@ public class NXQLQueryMaker implements QueryMaker {
          */
 
         if (onlyRelations) {
-            if (info.proxyClause == Boolean.TRUE) {
+            if (proxyClause == Boolean.TRUE) {
                 // no proxies to relations, query cannot match
                 return null;
             }
-            info.proxyClause = Boolean.FALSE;
+            proxyClause = Boolean.FALSE;
         }
         DocKind[] docKinds;
-        if (info.proxyClause == Boolean.TRUE) {
-            if (info.immutableClause == Boolean.FALSE) {
+        if (proxyClause == Boolean.TRUE) {
+            if (immutableClause == Boolean.FALSE) {
                 // proxy but not immutable: query cannot match
                 return null;
             }
             docKinds = new DocKind[] { DocKind.PROXY };
-        } else if (info.proxyClause == Boolean.FALSE
-                || info.immutableClause == Boolean.FALSE) {
+        } else if (proxyClause == Boolean.FALSE
+                || immutableClause == Boolean.FALSE) {
             docKinds = new DocKind[] { DocKind.DIRECT };
         } else {
             docKinds = new DocKind[] { DocKind.DIRECT, DocKind.PROXY };
@@ -332,6 +315,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         Table hier = database.getTable(model.HIER_TABLE_NAME);
 
+        String from;
         List<Column> whatColumns = null;
         List<String> whatKeys = null;
         boolean doUnion = docKinds.length > 1;
@@ -343,6 +327,7 @@ public class NXQLQueryMaker implements QueryMaker {
         List<Select> withSelects = new LinkedList<Select>();
         List<String> withSelectsStatements = new LinkedList<String>();
         List<Serializable> withParams = new LinkedList<Serializable>();
+
         for (DocKind docKind : docKinds) {
 
             // The hierarchy table, which may be an alias table.
@@ -404,32 +389,12 @@ public class NXQLQueryMaker implements QueryMaker {
             fixJoins();
 
             /*
-             * Filter on facets and mixin types, and create the structural WHERE
-             * clauses for the type.
+             * Create the structural WHERE clauses for the type.
              */
 
-            List<String> typeStrings = new ArrayList<String>(types.size());
-            NEXT_TYPE: for (String type : types) {
-                Set<String> facets = model.getDocumentTypeFacets(type);
-                for (String facet : info.mixinsExcluded) {
-                    if (facets.contains(facet)) {
-                        continue NEXT_TYPE;
-                    }
-                }
-                for (String facet : info.mixinsAllRequired) {
-                    if (!facets.contains(facet)) {
-                        continue NEXT_TYPE;
-                    }
-                }
-                if (!info.mixinsAnyRequired.isEmpty()) {
-                    Set<String> intersection = new HashSet<String>(
-                            info.mixinsAnyRequired);
-                    intersection.retainAll(facets);
-                    if (intersection.isEmpty()) {
-                        continue NEXT_TYPE;
-                    }
-                }
-                // this type is good
+            List<String> typeStrings = new ArrayList<String>(
+                    primaryTypes.size());
+            for (String type : primaryTypes) {
                 typeStrings.add("?");
                 whereParams.add(type);
             }
@@ -445,13 +410,12 @@ public class NXQLQueryMaker implements QueryMaker {
              * Add clause for immutable match.
              */
 
-            if (docKind == DocKind.DIRECT && info.immutableClause != null) {
+            if (docKind == DocKind.DIRECT && immutableClause != null) {
                 String where = String.format(
                         "%s IS %s",
                         database.getTable(model.VERSION_TABLE_NAME).getColumn(
                                 model.MAIN_KEY).getFullQuotedName(),
-                        info.immutableClause.booleanValue() ? "NOT NULL"
-                                : "NULL");
+                        immutableClause.booleanValue() ? "NOT NULL" : "NULL");
                 whereClauses.add(where);
             }
 
@@ -674,12 +638,12 @@ public class NXQLQueryMaker implements QueryMaker {
                         + StringUtils.join(withSelectsStatements, " UNION ALL ");
                 selectParams.addAll(withParams);
             }
-            String from = '(' + subselect + ')';
+            String selectFrom = '(' + subselect + ')';
             if (dialect.needsAliasForDerivedTable()) {
-                from += " AS " + dialect.openQuote() + UNION_ALIAS
+                selectFrom += " AS " + dialect.openQuote() + UNION_ALIAS
                         + dialect.closeQuote();
             }
-            select.setFrom(from);
+            select.setFrom(selectFrom);
         } else {
             // use last (and only) Select in above big loop
             if (!withSelects.isEmpty()) {
@@ -704,6 +668,24 @@ public class NXQLQueryMaker implements QueryMaker {
                 mapMaker, null, null);
         q.selectParams = selectParams;
         return q;
+    }
+
+    /**
+     * If "required", keep only types with one of these mixins. If
+     * "not required", don't keep types with any of these mixins.
+     */
+    protected void includeOrExcludeTypeWithMixins(Set<String> mixins,
+            boolean required) {
+        for (Iterator<String> it = primaryTypes.iterator(); it.hasNext();) {
+            String type = it.next();
+            Set<String> typeMixins = model.getDocumentTypeFacets(type);
+            Set<String> inter = new HashSet<String>(mixins);
+            inter.retainAll(typeMixins);
+            // remove if mixin intersection is empty / not empty
+            if (inter.isEmpty() == required) {
+                it.remove();
+            }
+        }
     }
 
     // overridden by specialized query makers that need to tweak some joins
@@ -779,41 +761,16 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
-        public final Set<String> fromTypes = new HashSet<String>();
-
         /** Single valued properties for which a join is needed. */
         public final Set<String> props = new LinkedHashSet<String>();
 
         public final List<String> orderKeys = new LinkedList<String>();
-
-        public boolean needsVersionsTable;
 
         protected boolean inSelect;
 
         protected boolean inOrderBy;
 
         protected final List<Operand> toplevelOperands = new LinkedList<Operand>();
-
-        /** One of these types is required (if not empty). */
-        protected final Set<String> typesAnyRequired = new HashSet<String>();
-
-        /** All these types are excluded. */
-        protected final Set<String> typesExcluded = new HashSet<String>();
-
-        /** One of these mixins is required (if not empty). */
-        protected final Set<String> mixinsAnyRequired = new HashSet<String>();
-
-        /** All these mixins are required. */
-        protected final Set<String> mixinsAllRequired = new HashSet<String>();
-
-        /** All these mixins are excluded. */
-        protected final Set<String> mixinsExcluded = new HashSet<String>();
-
-        protected Boolean immutableClause;
-
-        protected Boolean proxyClause;
-
-        // TODO protected Boolean versionClause;
 
         protected MultiExpression wherePredicate;
 
@@ -824,13 +781,35 @@ public class NXQLQueryMaker implements QueryMaker {
             inSelect = false;
         }
 
+        /*
+         * Finds all the types to take into account (all concrete types being a
+         * subtype of the passed types) based on the FROM list.
+         */
         @Override
         public void visitFromClause(FromClause node) {
+            onlyRelations = true;
             FromList elements = node.elements;
             for (int i = 0; i < elements.size(); i++) {
-                String type = elements.get(i);
-                fromTypes.add(type);
+                String typeName = elements.get(i);
+                if (TYPE_DOCUMENT.equalsIgnoreCase(typeName)) {
+                    typeName = TYPE_DOCUMENT;
+                }
+                Set<String> subTypes = model.getDocumentSubTypes(typeName);
+                if (subTypes == null) {
+                    throw new QueryMakerException("Unknown type: " + typeName);
+                }
+                primaryTypes.addAll(subTypes);
+                boolean isRelation = false;
+                do {
+                    if (TYPE_RELATION.equals(typeName)) {
+                        isRelation = true;
+                        break;
+                    }
+                    typeName = model.getDocumentSuperType(typeName);
+                } while (typeName != null);
+                onlyRelations = onlyRelations && isRelation;
             }
+            primaryTypes.remove(model.ROOT_TYPE);
         }
 
         @Override
@@ -849,8 +828,8 @@ public class NXQLQueryMaker implements QueryMaker {
          * </ul>
          * where OP is {@code =} or {@code <>}.
          * <p>
-         * Immutable is left in the clause as it is a per-document facet, not a
-         * per-type one.
+         * Immutable is left in the clause as it is a virtual per-document
+         * facet, not a per-type one.
          */
         protected void analyzeToplevelOperands(Operand node) {
             if (node instanceof Expression) {
@@ -872,7 +851,11 @@ public class NXQLQueryMaker implements QueryMaker {
                         String name = ((Reference) expr.lvalue).name;
                         String value = ((StringLiteral) expr.rvalue).value;
                         if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
-                            (isEq ? typesAnyRequired : typesExcluded).add(value);
+                            if (isEq) {
+                                primaryTypes.retainAll(Collections.singleton(value));
+                            } else {
+                                primaryTypes.removeAll(Collections.singleton(value));
+                            }
                             return;
                         }
                         if (NXQL.ECM_MIXINTYPE.equals(name)) {
@@ -883,10 +866,12 @@ public class NXQLQueryMaker implements QueryMaker {
                                     throw new QueryCannotMatchException();
                                 }
                                 immutableClause = im;
-                                needsVersionsTable = true;
                             } else {
-                                (isEq ? mixinsAllRequired : mixinsExcluded).add(value);
+                                includeOrExcludeTypeWithMixins(
+                                        Collections.singleton(value), isEq);
                             }
+                            // XXX don't return, keep expression for placeful
+                            // mixins
                             return;
                         }
                     }
@@ -929,23 +914,14 @@ public class NXQLQueryMaker implements QueryMaker {
                                 set.add(((StringLiteral) literal).value);
                             }
                             if (isIn) {
-                                if (typesAnyRequired.isEmpty()) {
-                                    // use as new set
-                                    typesAnyRequired.addAll(set);
-                                } else {
-                                    // intersect
-                                    typesAnyRequired.retainAll(set);
-                                    if (typesAnyRequired.isEmpty()) {
-                                        throw new QueryCannotMatchException();
-                                    }
-                                }
+                                primaryTypes.retainAll(set);
                             } else {
-                                typesExcluded.addAll(set);
+                                primaryTypes.removeAll(set);
                             }
                             return;
                         }
                         if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                            Set<String> set = new HashSet<String>();
+                            Set<String> mixins = new HashSet<String>();
                             for (Literal literal : (LiteralList) expr.rvalue) {
                                 if (!(literal instanceof StringLiteral)) {
                                     throw new QueryMakerException(
@@ -960,22 +936,14 @@ public class NXQLQueryMaker implements QueryMaker {
                                         throw new QueryCannotMatchException();
                                     }
                                     immutableClause = im;
-                                    needsVersionsTable = true;
                                 } else {
-                                    set.add(value);
+                                    mixins.add(value);
                                 }
                             }
-                            if (isIn) {
-                                if (mixinsAnyRequired.isEmpty()) {
-                                    mixinsAnyRequired.addAll(set);
-                                } else {
-                                    throw new QueryMakerException(
-                                            NXQL.ECM_MIXINTYPE
-                                                    + " cannot have more than one IN clause");
-                                }
-                            } else {
-                                mixinsExcluded.addAll(set);
-                            }
+
+                            includeOrExcludeTypeWithMixins(mixins, isIn);
+                            // XXX don't return, keep expression for placeful
+                            // mixins
                             return;
                         }
                     }
@@ -987,30 +955,24 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitReference(Reference node) {
             String name = node.name;
-            if (NXQL.ECM_PATH.equals(name)) {
-                if (inSelect || inOrderBy) {
-                    throw new QueryMakerException("Cannot select / order by: "
+            if (NXQL.ECM_PATH.equals(name) || //
+                    NXQL.ECM_ISPROXY.equals(name) || //
+                    NXQL.ECM_MIXINTYPE.equals(name) || //
+                    NXQL.ECM_ISVERSION.equals(name)) { // TODO now in model
+                if (inSelect) {
+                    throw new QueryMakerException("Cannot select on column: "
                             + name);
                 }
-                return;
-            }
-            if (NXQL.ECM_ISPROXY.equals(name)) {
-                if (inSelect || inOrderBy) {
-                    throw new QueryMakerException("Cannot select / order by: "
+                if (inOrderBy) {
+                    throw new QueryMakerException("Cannot order by column: "
                             + name);
                 }
-                return;
-            }
-            if (NXQL.ECM_ISVERSION.equals(name)) {
-                if (inSelect || inOrderBy) {
-                    throw new QueryMakerException("Cannot select / order by: "
-                            + name);
+                if (NXQL.ECM_ISVERSION.equals(name)) { // TODO now in model
+                    needsVersionsTable = true;
                 }
-                needsVersionsTable = true;
                 return;
             }
             if (NXQL.ECM_PRIMARYTYPE.equals(name) || //
-                    NXQL.ECM_MIXINTYPE.equals(name) || //
                     NXQL.ECM_UUID.equals(name) || //
                     NXQL.ECM_NAME.equals(name) || //
                     NXQL.ECM_POS.equals(name) || //
