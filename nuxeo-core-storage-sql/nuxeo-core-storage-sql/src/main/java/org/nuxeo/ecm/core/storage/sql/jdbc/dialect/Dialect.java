@@ -599,6 +599,16 @@ public abstract class Dialect {
             Column mainColumn, Model model, Database database);
 
     /**
+     * Gets the SQL fragment to match a mixin type.
+     */
+    public String getMatchMixinType(Column mixinsColumn, String mixin,
+            boolean positive, String[] returnParam) {
+        returnParam[0] = "%" + mixin + "%";
+        return String.format("%s %s ?", mixinsColumn.getFullQuotedName(),
+                positive ? "LIKE" : "NOT LIKE");
+    }
+
+    /**
      * Indicates if dialect supports paging
      *
      * @return true if the dialect supports paging

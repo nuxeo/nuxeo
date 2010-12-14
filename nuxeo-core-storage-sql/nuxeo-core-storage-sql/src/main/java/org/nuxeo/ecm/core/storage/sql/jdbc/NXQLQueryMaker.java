@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -154,6 +155,13 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String WITH_ALIAS_PREFIX = "_W";
 
+    /**
+     * These mixins never match an instance mixin when used in a clause
+     * ecm:mixinType = 'foo'
+     */
+    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
+            Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+
     /*
      * Fields used by the search service.
      */
@@ -165,12 +173,6 @@ public class NXQLQueryMaker implements QueryMaker {
     protected Dialect dialect;
 
     protected Model model;
-
-    /**
-     * Primary types to match based on the FROM type, the ecm:primaryType and
-     * ecm:mixinType clauses, and the passed FacetFilter.
-     */
-    protected Set<String> primaryTypes = new HashSet<String>();
 
     /** Do we match only relations (and therefore no proxies). */
     public boolean onlyRelations;
@@ -220,7 +222,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find all relevant types and keys for the criteria.
          */
 
-        QueryAnalyzer info = new QueryAnalyzer();
+        QueryAnalyzer info = new QueryAnalyzer(queryFilter.getFacetFilter());
         try {
             info.visitQuery(sqlQuery);
         } catch (QueryCannotMatchException e) {
@@ -228,27 +230,6 @@ public class NXQLQueryMaker implements QueryMaker {
             return null;
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
-        }
-        if (primaryTypes.isEmpty()) {
-            // conflicting types requirement, query cannot match
-            return null;
-        }
-
-        /*
-         * Apply facet filter to available types.
-         *
-         * XXX TODO and placeful expressions
-         */
-
-        FacetFilter facetFilter = queryFilter.getFacetFilter();
-        if (facetFilter == null) {
-            facetFilter = FacetFilter.ALLOW;
-        }
-        for (String facet : facetFilter.required) {
-            includeOrExcludeTypeWithMixins(Collections.singleton(facet), true);
-        }
-        for (String facet : facetFilter.excluded) {
-            includeOrExcludeTypeWithMixins(Collections.singleton(facet), false);
         }
 
         /*
@@ -364,24 +345,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 addDataJoin(table, joinId);
             }
             fixJoins();
-
-            /*
-             * Create the structural WHERE clauses for the type.
-             */
-
-            List<String> typeStrings = new ArrayList<String>(
-                    primaryTypes.size());
-            for (String type : primaryTypes) {
-                typeStrings.add("?");
-                whereParams.add(type);
-            }
-            if (typeStrings.isEmpty()) {
-                return null; // mixins excluded all types, no match possible
-            }
-            whereClauses.add(String.format(
-                    "%s IN (%s)",
-                    dataHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                    StringUtils.join(typeStrings, ", ")));
 
             /*
              * Parse the WHERE clause from the original query, and deduce from
@@ -634,24 +597,6 @@ public class NXQLQueryMaker implements QueryMaker {
         return q;
     }
 
-    /**
-     * If "required", keep only types with one of these mixins. If
-     * "not required", don't keep types with any of these mixins.
-     */
-    protected void includeOrExcludeTypeWithMixins(Set<String> mixins,
-            boolean required) {
-        for (Iterator<String> it = primaryTypes.iterator(); it.hasNext();) {
-            String type = it.next();
-            Set<String> typeMixins = model.getDocumentTypeFacets(type);
-            Set<String> inter = new HashSet<String>(mixins);
-            inter.retainAll(typeMixins);
-            // remove if mixin intersection is empty / not empty
-            if (inter.isEmpty() == required) {
-                it.remove();
-            }
-        }
-    }
-
     // overridden by specialized query makers that need to tweak some joins
     protected void addDataJoin(Table table, String joinId) {
         joins.add(formatJoin(table, joinId));
@@ -738,6 +683,45 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected MultiExpression wherePredicate;
 
+        public QueryAnalyzer(FacetFilter facetFilter) {
+            if (facetFilter != null) {
+                addFacetFilterClauses(facetFilter);
+            }
+        }
+
+        public void addFacetFilterClauses(FacetFilter facetFilter) {
+            Expression expr;
+            for (String mixin : facetFilter.required) {
+                // every facet is required, not just any of them,
+                // so do them one by one
+                // expr = getMixinsMatchExpression(Collections.singleton(facet),
+                // true);
+                expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
+                        Operator.EQ, new StringLiteral(mixin));
+                toplevelOperands.add(expr);
+            }
+            if (!facetFilter.excluded.isEmpty()) {
+                // expr = getMixinsMatchExpression(facetFilter.excluded, false);
+                LiteralList list = new LiteralList();
+                for (String mixin : facetFilter.excluded) {
+                    list.add(new StringLiteral(mixin));
+                }
+                expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
+                        Operator.NOTIN, list);
+                toplevelOperands.add(expr);
+            }
+        }
+
+        @Override
+        public void visitQuery(SQLQuery node) {
+            visitSelectClause(node.select);
+            visitFromClause(node.from);
+            visitWhereClause(node.where); // may be null
+            if (node.orderBy != null) {
+                visitOrderByClause(node.orderBy);
+            }
+        }
+
         @Override
         public void visitSelectClause(SelectClause node) {
             inSelect = true;
@@ -745,13 +729,16 @@ public class NXQLQueryMaker implements QueryMaker {
             inSelect = false;
         }
 
-        /*
+        /**
          * Finds all the types to take into account (all concrete types being a
          * subtype of the passed types) based on the FROM list.
+         * <p>
+         * Adds them as a ecm:primaryType match in the toplevel operands.
          */
         @Override
         public void visitFromClause(FromClause node) {
             onlyRelations = true;
+            Set<String> fromTypes = new HashSet<String>();
             FromList elements = node.elements;
             for (int i = 0; i < elements.size(); i++) {
                 String typeName = elements.get(i);
@@ -762,7 +749,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (subTypes == null) {
                     throw new QueryMakerException("Unknown type: " + typeName);
                 }
-                primaryTypes.addAll(subTypes);
+                fromTypes.addAll(subTypes);
                 boolean isRelation = false;
                 do {
                     if (TYPE_RELATION.equals(typeName)) {
@@ -773,24 +760,26 @@ public class NXQLQueryMaker implements QueryMaker {
                 } while (typeName != null);
                 onlyRelations = onlyRelations && isRelation;
             }
-            primaryTypes.remove(model.ROOT_TYPE);
+            fromTypes.remove(model.ROOT_TYPE);
+            LiteralList list = new LiteralList();
+            for (String type : fromTypes) {
+                list.add(new StringLiteral(type));
+            }
+            toplevelOperands.add(new Expression(new Reference(
+                    NXQL.ECM_PRIMARYTYPE), Operator.IN, list));
         }
 
         @Override
         public void visitWhereClause(WhereClause node) {
-            analyzeToplevelOperands(node.predicate);
+            if (node != null) {
+                analyzeToplevelOperands(node.predicate);
+            }
             wherePredicate = new MultiExpression(Operator.AND, toplevelOperands);
             super.visitMultiExpression(wherePredicate);
         }
 
         /**
-         * Checks toplevel ANDed operands, and extracts those that directly
-         * impact the types restictions:
-         * <ul>
-         * <li>ecm:primaryType OP literal</li>
-         * <li>ecm:mixinType OP literal</li>
-         * </ul>
-         * where OP is {@code =} or {@code <>}.
+         * Process special toplevel ANDed operands: ecm:isProxy
          */
         protected void analyzeToplevelOperands(Operand node) {
             if (node instanceof Expression) {
@@ -802,97 +791,38 @@ public class NXQLQueryMaker implements QueryMaker {
                     return;
                 }
                 if (op == Operator.EQ || op == Operator.NOTEQ) {
-                    boolean isEq = op == Operator.EQ;
                     // put reference on the left side
                     if (expr.rvalue instanceof Reference) {
                         expr = new Expression(expr.rvalue, op, expr.lvalue);
                     }
-                    if (expr.lvalue instanceof Reference
-                            && expr.rvalue instanceof StringLiteral) {
+                    if (expr.lvalue instanceof Reference) {
                         String name = ((Reference) expr.lvalue).name;
-                        String value = ((StringLiteral) expr.rvalue).value;
-                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
-                            if (isEq) {
-                                primaryTypes.retainAll(Collections.singleton(value));
-                            } else {
-                                primaryTypes.removeAll(Collections.singleton(value));
-                            }
-                            return;
-                        }
-                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                            includeOrExcludeTypeWithMixins(
-                                    Collections.singleton(value), isEq);
-                            // XXX don't return, keep expression for placeful
-                            // mixins
-                            return;
-                        }
-                    }
-                    if (expr.lvalue instanceof Reference
-                            && expr.rvalue instanceof IntegerLiteral) {
-                        String name = ((Reference) expr.lvalue).name;
-                        long v = ((IntegerLiteral) expr.rvalue).value;
                         if (NXQL.ECM_ISPROXY.equals(name)) {
-                            if (v != 0 && v != 1) {
-                                throw new QueryMakerException(
-                                        NXQL.ECM_ISPROXY
-                                                + " requires literal 0 or 1 as right argument");
-                            }
-                            Boolean pr = Boolean.valueOf(v == 1);
-                            if (proxyClause != null && proxyClause != pr) {
-                                throw new QueryCannotMatchException();
-                            }
-                            proxyClause = pr;
-                            return;
-                        }
-                    }
-                }
-                if (op == Operator.IN || op == Operator.NOTIN) {
-                    boolean isIn = op == Operator.IN;
-                    // put reference on the left side
-                    if (expr.rvalue instanceof Reference) {
-                        expr = new Expression(expr.rvalue, op, expr.lvalue);
-                    }
-                    if (expr.lvalue instanceof Reference
-                            && expr.rvalue instanceof LiteralList) {
-                        String name = ((Reference) expr.lvalue).name;
-                        if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
-                            Set<String> set = new HashSet<String>();
-                            for (Literal literal : (LiteralList) expr.rvalue) {
-                                if (!(literal instanceof StringLiteral)) {
-                                    throw new QueryMakerException(
-                                            NXQL.ECM_PRIMARYTYPE
-                                                    + " IN requires string literals");
-                                }
-                                set.add(((StringLiteral) literal).value);
-                            }
-                            if (isIn) {
-                                primaryTypes.retainAll(set);
-                            } else {
-                                primaryTypes.removeAll(set);
-                            }
-                            return;
-                        }
-                        if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                            Set<String> mixins = new HashSet<String>();
-                            for (Literal literal : (LiteralList) expr.rvalue) {
-                                if (!(literal instanceof StringLiteral)) {
-                                    throw new QueryMakerException(
-                                            NXQL.ECM_MIXINTYPE
-                                                    + " IN requires string literals");
-                                }
-                                String value = ((StringLiteral) literal).value;
-                                mixins.add(value);
-                            }
-
-                            includeOrExcludeTypeWithMixins(mixins, isIn);
-                            // XXX don't return, keep expression for placeful
-                            // mixins
+                            analyzeToplevelIsProxy(expr);
                             return;
                         }
                     }
                 }
             }
             toplevelOperands.add(node);
+        }
+
+        protected void analyzeToplevelIsProxy(Expression expr) {
+            if (!(expr.rvalue instanceof IntegerLiteral)) {
+                throw new QueryMakerException(NXQL.ECM_ISPROXY
+                        + " requires literal 0 or 1 as right argument");
+            }
+            long v = ((IntegerLiteral) expr.rvalue).value;
+            if (v != 0 && v != 1) {
+                throw new QueryMakerException(NXQL.ECM_ISPROXY
+                        + " requires literal 0 or 1 as right argument");
+            }
+            boolean isEq = expr.operator == Operator.EQ;
+            Boolean pr = Boolean.valueOf((v == 1) == isEq);
+            if (proxyClause != null && proxyClause != pr) {
+                throw new QueryCannotMatchException();
+            }
+            proxyClause = pr;
         }
 
         @Override
@@ -1173,6 +1103,18 @@ public class NXQLQueryMaker implements QueryMaker {
             throw new QueryMakerException("Unknown field: " + name);
         }
 
+        protected static Set<String> getStringLiterals(LiteralList list)
+                throws QueryMakerException {
+            Set<String> set = new HashSet<String>();
+            for (Literal literal : list) {
+                if (!(literal instanceof StringLiteral)) {
+                    throw new QueryMakerException("requires string literals");
+                }
+                set.add(((StringLiteral) literal).value);
+            }
+            return set;
+        }
+
         @Override
         public void visitQuery(SQLQuery node) {
             super.visitQuery(node);
@@ -1188,15 +1130,14 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitMultiExpression(MultiExpression node) {
-            // Don't add parentheses as for now this is always toplevel.
-            // This expression is implicitely ANDed with other toplevel clauses
-            // for types and security.
+            buf.append('(');
             for (Iterator<Operand> it = node.values.iterator(); it.hasNext();) {
                 it.next().accept(this);
                 if (it.hasNext()) {
                     node.operator.accept(this);
                 }
             }
+            buf.append(')');
         }
 
         @Override
@@ -1213,6 +1154,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION.equals(name)) {
                 visitExpressionIsVersion(node);
+            } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
+                visitExpressionMixinType(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
                 visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
@@ -1431,6 +1374,121 @@ public class NXQLQueryMaker implements QueryMaker {
             buf.append(database.getTable(model.VERSION_TABLE_NAME).getColumn(
                     model.MAIN_KEY).getFullQuotedName());
             buf.append(bool ? " IS NOT NULL" : " IS NULL");
+        }
+
+        /**
+         * Include or exclude mixins.
+         * <p>
+         * include: primarytype IN (... types with Foo or Bar ...) OR mixintypes
+         * LIKE '%Foo%' OR mixintypes LIKE '%Bar%'
+         * <p>
+         * exclude: primarytype IN (... types without Foo or Bar ...) AND
+         * (mixintypes NOT LIKE '%Foo%' AND mixintypes NOT LIKE '%Bar%' OR
+         * mixintypes IS NULL)
+         */
+        protected void visitExpressionMixinType(Expression node) {
+            boolean include;
+            Set<String> mixins;
+
+            Expression expr = (Expression) node;
+            Operator op = expr.operator;
+            if (op == Operator.EQ || op == Operator.NOTEQ) {
+                include = op == Operator.EQ;
+                if (!(expr.rvalue instanceof StringLiteral)) {
+                    throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                            + " = requires literal string as right argument");
+                }
+                String value = ((StringLiteral) expr.rvalue).value;
+                mixins = Collections.singleton(value);
+            } else if (op == Operator.IN || op == Operator.NOTIN) {
+                include = op == Operator.IN;
+                if (!(expr.rvalue instanceof LiteralList)) {
+                    throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                            + " = requires string list as right argument");
+                }
+                mixins = getStringLiterals((LiteralList) expr.rvalue);
+            } else {
+                throw new QueryMakerException(NXQL.ECM_MIXINTYPE
+                        + " unknown operator: " + op);
+            }
+
+            /*
+             * Primary types
+             */
+
+            Set<String> types;
+            if (include) {
+                types = new HashSet<String>();
+                for (String mixin : mixins) {
+                    types.addAll(model.getMixinDocumentTypes(mixin));
+                }
+            } else {
+                types = new HashSet<String>(model.getDocumentTypes());
+                for (String mixin : mixins) {
+                    types.removeAll(model.getMixinDocumentTypes(mixin));
+                }
+            }
+
+            /*
+             * Instance mixins
+             */
+
+            Set<String> instanceMixins = new HashSet<String>();
+            for (String mixin : mixins) {
+                if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
+                    instanceMixins.add(mixin);
+                }
+            }
+
+            /*
+             * SQL generation
+             */
+
+            if (!types.isEmpty()) {
+                Column col = dataHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+                buf.append(col.getFullQuotedName());
+                buf.append(" IN ");
+                buf.append('(');
+                for (Iterator<String> it = types.iterator(); it.hasNext();) {
+                    visitStringLiteral(it.next());
+                    if (it.hasNext()) {
+                        buf.append(", ");
+                    }
+                }
+                buf.append(')');
+
+                if (!instanceMixins.isEmpty()) {
+                    buf.append(include ? " OR " : " AND ");
+                }
+            }
+
+            if (!instanceMixins.isEmpty()) {
+                buf.append('(');
+                Column mixinsColumn = dataHierTable.getColumn(model.MAIN_MIXIN_TYPES_KEY);
+                String[] returnParam = new String[1];
+                for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
+                    String mixin = it.next();
+                    String sql = dialect.getMatchMixinType(mixinsColumn, mixin,
+                            include, returnParam);
+                    buf.append(sql);
+                    if (returnParam[0] != null) {
+                        whereParams.add(returnParam[0]);
+                    }
+                    if (it.hasNext()) {
+                        buf.append(include ? " OR " : " AND ");
+                    }
+                }
+                if (!include) {
+                    buf.append(" OR ");
+                    buf.append(mixinsColumn.getFullQuotedName());
+                    buf.append(" IS NULL");
+                }
+                buf.append(')');
+            }
+
+            if (types.isEmpty() && instanceMixins.isEmpty()) {
+                buf.append(include ? "0=1" : "0=0");
+            }
         }
 
         protected void visitExpressionFulltext(Expression node, String name) {

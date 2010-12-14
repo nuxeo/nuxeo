@@ -971,9 +971,13 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 1");
         assertIdSet(dml, proxyId);
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy <> 0");
+        assertIdSet(dml, proxyId);
 
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0");
         assertEquals(8, dml.size()); // 7 folder/docs, 1 version
+        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy <> 1");
+        assertEquals(8, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
@@ -1110,6 +1114,26 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(8, dml.size()); // 3 folders, 3 files, 1 proxy, 1 version
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType NOT IN ('Folderish', 'Downloadable')");
         assertEquals(1, dml.size()); // 1 note
+        // same with facet
+        FacetFilter filter;
+        filter = new FacetFilter(FacetNames.FOLDERISH, true);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(3, dml.size());
+        filter = new FacetFilter(FacetNames.FOLDERISH, false);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(6, dml.size());
+        filter = new FacetFilter(FacetNames.DOWNLOADABLE, true);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(5, dml.size()); // 3 files, 1 proxy, 1 version
+        filter = new FacetFilter(FacetNames.DOWNLOADABLE, false);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(4, dml.size());
+        filter = new FacetFilter(FacetNames.VERSIONABLE, true);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(6, dml.size()); // 1 note, 3 files, 1 proxy, 1 version
+        filter = new FacetFilter(FacetNames.VERSIONABLE, false);
+        dml = session.query("SELECT * FROM Document ", filter);
+        assertEquals(3, dml.size());
 
         /*
          * ecm:currentLifeCycleState
