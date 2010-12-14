@@ -82,7 +82,7 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
         }
     }
 
-    private String getComments() {
+    protected String getComments() {
         List<Comment> comments = executionContext.getTaskInstance().getComments();
         return comments == null ? null : comments.get(comments.size() - 1).getMessage();
     }
