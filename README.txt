@@ -4,50 +4,54 @@ Nuxeo Digital Asset Management application
 Nuxeo DAM is a Seam / JSF web application that leverages the Nuxeo Enterprise
 Platform to build a multimedia document collection management application.
 
-Building and deploying on an existing JBoss
--------------------------------------------
 
-To build and deploy you first need to set up a JBoss 4.2.3.GA instance.
+Building a full distribution
+----------------------------
 
-Then, you configure the build.properties files (starting from the
-build.properties.sample file to be found in the current folder), to point you
-JBoss instance::
+You can build a complete Tomcat or JBoss distribution with the Nuxeo DAM
+application included, using the following commands::
 
-  $ cp build.properties.sample build.properties
-  $ vi build.properties
-
-You can then build Nuxeo DAM with::
-
-  $ ant deploy
-
-TODO: add here instructions for Seam and nuxeo.war hot redeployment.
-
-Building a full archive
------------------------
-
-You can also build a complete JBoss or Tomcat distribution with the DAM
-application included, using the following maven commands::
-
-  $ mvn install -Dmaven.test.skip=true
-  $ cd nuxeo-dam-distribution
-  $ mvn install -Dmaven.test.skip=true -Ptomcat
+  $ ant assemble-tomcat
+  or
+  $ ant assemble-jboss
 
 The generated zip should be available in::
 
   nuxeo-dam-distribution/target/nuxeo-dam-distribution-X.X-SNAPSHOT-tomcat.zip
+  or
+  nuxeo-dam-distribution/target/nuxeo-dam-distribution-X.X-SNAPSHOT-jboss.zip
 
 After unzipping, make the nuxeoctl script runnable and launch Nuxeo DAM:
 
   $ cd nuxeo-dam-X.X-SNAPSHOT-tomcat
+  or
+  $ cd nuxeo-dam-X.X-SNAPSHOT-jboss
   $ chmod a+x bin/nuxeoctl
   $ ./bin/nuxeoctl start
+
+
+Building and deploying on an existing JBoss
+-------------------------------------------
+
+You can also deploy Nuxeo DAM on an existing JBoss 5 instance.
+
+Configure the build.properties files (starting from the
+build.properties.sample file to be found in the current folder), to point your
+JBoss or Tomcat instance::
+
+  $ cp build.properties.sample build.properties
+  $ vi build.properties
+
+You can then build and deploy Nuxeo DAM with:
+
+  $ ant deploy-ear-jboss
 
 
 Technical Overview
 ------------------
 
-The doc/ folder holds a technical overview of the design goals and technical
-architecture of the nuxeo-dam application.
+A technical overview can be found here::
+  http://doc.nuxeo.com/display/DAMDOC/Nuxeo+DAM+Developer+documentation
 
 
 Running the functionnal test suite
@@ -67,4 +71,3 @@ website: http://www.lucnix.be/main.php
 
 Picture colors has been edited by Michael Yucha.
 flickR: http://www.flickr.com/photos/greenwenvy/
-
