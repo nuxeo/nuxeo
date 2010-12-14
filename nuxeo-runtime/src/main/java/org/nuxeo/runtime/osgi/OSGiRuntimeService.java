@@ -58,7 +58,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- *
+ * 
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -420,11 +420,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected void fireApplicationStarted() {
         try {
-            notifyComponentsOnStarted();
-        } catch (Exception e) {
-            log.error("Failed to notify components on application started", e);
-        }
-        try {
             persistence.loadPersistedComponents();
         } catch (Exception e) {
             log.error("Failed to load persisted components", e);
@@ -434,6 +429,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         // requirement
         // on this marker component
         deployFrameworkStartedComponent();
+        try {
+            notifyComponentsOnStarted();
+        } catch (Exception e) {
+            log.error("Failed to notify components on application started", e);
+        }
         // print the startup message
         printStatusMessage();
     }
