@@ -65,10 +65,6 @@ public class DatabasePostgreSQL extends DatabaseHelper {
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
         try {
-            Statement st = connection.createStatement();
-            String sql = "CREATE LANGUAGE plpgsql";
-            st.execute(sql);
-            st.close();
             doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
         } finally {
             connection.close();
