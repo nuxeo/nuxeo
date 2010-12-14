@@ -1790,6 +1790,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc = session.createDocument(doc);
         session.save();
+        DocumentModelList dml;
 
         // facet not yet present
         assertFalse(doc.hasFacet("Aged"));
@@ -1804,6 +1805,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         } catch (PropertyNotFoundException e) {
             // ok
         }
+        dml = session.query("SELECT * FROM File WHERE ecm:mixinType = 'Aged'");
+        assertEquals(0, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'");
+        assertEquals(1, dml.size());
 
         // cannot add nonexistent facet
         try {
@@ -1832,6 +1837,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(doc.hasFacet("Aged"));
         assertEquals(baseFacets.size() + 1, doc.getFacets().size());
         assertEquals("123", doc.getPropertyValue("age:age"));
+        dml = session.query("SELECT * FROM File WHERE ecm:mixinType = 'Aged'");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'");
+        assertEquals(0, dml.size());
 
         // add twice
         assertFalse(doc.addFacet("Aged"));
@@ -1877,6 +1886,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         } catch (PropertyNotFoundException e) {
             // ok
         }
+        dml = session.query("SELECT * FROM File WHERE ecm:mixinType = 'Aged'");
+        assertEquals(0, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'");
+        assertEquals(1, dml.size());
 
         // remove twice
         assertFalse(doc.removeFacet("Aged"));

@@ -260,6 +260,9 @@ public class Model {
     /** Per-doctype list of schemas. */
     private final Map<String, Set<String>> documentTypesSchemas;
 
+    /** Per-mixin list of document types. */
+    private final Map<String, Set<String>> mixinsDocumentTypes;
+
     /** Per-mixin list of schemas. */
     private final Map<String, Set<String>> mixinsSchemas;
 
@@ -342,6 +345,7 @@ public class Model {
         // temporaryIdCounter = new AtomicLong(0);
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
+        mixinsDocumentTypes = new HashMap<String, Set<String>>();
         mixinsSchemas = new HashMap<String, Set<String>>();
 
         schemaPropertyKeyInfos = new HashMap<String, Map<String, ModelProperty>>();
@@ -958,9 +962,18 @@ public class Model {
         return documentSubTypes.get(typeName);
     }
 
+    public Set<String> getDocumentTypes() {
+        return documentTypesFacets.keySet();
+    }
+
     public Set<String> getDocumentTypeFacets(String typeName) {
         Set<String> facets = documentTypesFacets.get(typeName);
         return facets == null ? Collections.<String> emptySet() : facets;
+    }
+
+    public Set<String> getMixinDocumentTypes(String mixin) {
+        Set<String> types = mixinsDocumentTypes.get(mixin);
+        return types == null ? Collections.<String> emptySet() : types;
     }
 
     /**
@@ -1082,8 +1095,16 @@ public class Model {
                     + getTypePrefetchedFragments(typeName));
 
             // record doc type and facets, super type, sub types
+            Set<String> mixins = documentType.getFacets();
             documentTypesFacets.put(typeName,
-                    new HashSet<String>(documentType.getFacets()));
+                    new HashSet<String>(mixins));
+            for (String mixin : mixins) {
+                Set<String> mixinTypes = mixinsDocumentTypes.get(mixin);
+                if (mixinTypes == null) {
+                    mixinsDocumentTypes.put(mixin, mixinTypes = new HashSet<String>());
+                }
+                mixinTypes.add(typeName);
+            }
             Type superType = documentType.getSuperType();
             if (superType != null) {
                 String superTypeName = superType.getName();
@@ -1092,7 +1113,7 @@ public class Model {
         }
 
         // compute subtypes for all types
-        for (String type : documentTypesFacets.keySet()) {
+        for (String type : getDocumentTypes()) {
             String superType = type;
             do {
                 Set<String> subTypes = documentSubTypes.get(superType);
