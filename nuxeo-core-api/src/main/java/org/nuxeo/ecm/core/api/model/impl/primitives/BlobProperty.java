@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class BlobProperty extends ObjectProperty {
 
@@ -49,8 +49,8 @@ public class BlobProperty extends ObjectProperty {
                 adapter.addField("length", "length", true);
                 adapter.addField("mime-type", "mimeType", true);
                 adapter.addField("encoding", "encoding", true);
-//                adapter.addField("name", "filename", true);
-//                adapter.addField("digest", "digest", true);
+                adapter.addField("name", "filename", true);
+                adapter.addField("digest", "digest", true);
                 adapter.addField("data", "stream", true);
                 ObjectAdapterManager.getInstance().put(Blob.class, adapter);
             } catch (Exception e) {
@@ -66,24 +66,25 @@ public class BlobProperty extends ObjectProperty {
 
     @Override
     public boolean isNormalized(Object value) {
-        return value == null || ((value instanceof Blob) && (value instanceof Serializable));
+        return value == null
+                || ((value instanceof Blob) && (value instanceof Serializable));
     }
 
     @Override
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            //TODO specific blob support?
-            return (Serializable)value;
+            // TODO specific blob support?
+            return (Serializable) value;
         }
         throw new PropertyConversionException(value.getClass(), Blob.class);
-        //TODO byte array is not serializable
-//        if (value.getClass() == String.class) {
-//            return new ByteArrayInputStream(((String)value).getBytes());
-//        }
-//        if (value.getClass() == byte[].class) {
-//            return new ByteArrayInputStream((byte[])value.);
-//        }
+        // TODO byte array is not serializable
+        // if (value.getClass() == String.class) {
+        // return new ByteArrayInputStream(((String)value).getBytes());
+        // }
+        // if (value.getClass() == byte[].class) {
+        // return new ByteArrayInputStream((byte[])value.);
+        // }
     }
 
     @SuppressWarnings("unchecked")
