@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.jbpm.core.helper;
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.jbpm.graph.exe.Comment;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -23,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.jbpm.AbstractJbpmHandlerHelper;
 import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
@@ -35,6 +40,11 @@ import org.nuxeo.runtime.api.Framework;
 public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
 
     private static final long serialVersionUID = 1L;
+
+    private static final String DUE_DATE_KEY = "dueDate";
+
+    private static final String DIRECTIVE_KEY = "directive";
+
 
     @Override
     public void execute(ExecutionContext executionContext) throws Exception {
@@ -58,12 +68,23 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
                 }
                 DocumentEventContext ctx = new DocumentEventContext(
                         coreSession, principal, documentModel);
-                ctx.setProperty("recipients", getRecipients());
+                ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, getRecipients());
+                ctx.setProperty(DocumentEventContext.COMMENT_PROPERTY_KEY, getComments());
+                ctx.setProperty(DUE_DATE_KEY,
+                        executionContext.getTaskInstance().getDueDate());
+                ctx.setProperty(DIRECTIVE_KEY,
+                        (Serializable) executionContext.getTaskInstance().getVariable(
+                                "directive"));
                 eventProducer.fireEvent(ctx.newEvent(JbpmEventNames.WORKFLOW_TASK_ASSIGNED));
             } finally {
                 closeCoreSession(coreSession);
             }
         }
+    }
+
+    private String getComments() {
+        List<Comment> comments = executionContext.getTaskInstance().getComments();
+        return comments == null ? null : comments.get(comments.size() - 1).getMessage();
     }
 
     protected String[] getRecipients() {
@@ -76,5 +97,4 @@ public class TaskNotificationHandler extends AbstractJbpmHandlerHelper {
         return participant.getActors().toArray(
                 new String[] {});
     }
-
 }
