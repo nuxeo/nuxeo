@@ -1,29 +1,17 @@
 <?xml version="1.0"?>
-<project name="ft" default="usage" basedir=".">
+<project name="ft" default="usage" basedir="..">
 
-  <property name="pom.file" value="${basedir}/nuxeo-dam-distribution/pom.xml" />
+  <property name="pom.file" value="${basedir}/pom.xml" />
   <property name="mvn.profiles" value="NXP" />
 
   <target name="usage">
     <echo message="usage: ant" />
-    <echo message="run-ft                        => run all" />
     <echo message="make-distribution             => make Nuxeo DAM JBoss distribution" />
     <echo message="make-tomcat-distribution      => make Nuxeo DAM Tomcat distribution" />
     <echo message="start-jboss                   => start JBoss server" />
     <echo message="start-tomcat                  => start Tomcat server" />
-    <echo message="run-selenium                  => run the selenium test" />
     <echo message="stop-jboss                    => stop the JBoss server" />
     <echo message="stop-tomcat                   => stop the Tomcat server" />
-  </target>
-
-  <target name="run-ft"
-    depends="start-jboss,run-selenium,stop-jboss"
-    description="start JBoss, run functional tests, stop JBoss.">
-  </target>
-
-  <target name="run-ft-tomcat"
-    depends="start-jboss,run-selenium,stop-jboss"
-    description="start JBoss, run functional tests, stop JBoss.">
   </target>
 
   <target name="make-distribution">
@@ -56,9 +44,9 @@
 
   <target name="start-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl" />
+      file="${basedir}/target/jboss/bin/nuxeoctl" />
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl">
+      executable="${basedir}/target/jboss/bin/nuxeoctl">
       <arg value="start" />
     </exec>
     <waitfor>
@@ -68,18 +56,18 @@
 
   <target name="stop-jboss">
     <chmod perm="+x"
-      file="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl" />
+      file="${basedir}/target/jboss/bin/nuxeoctl" />
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/jboss/bin/nuxeoctl">
+      executable="${basedir}/target/jboss/bin/nuxeoctl">
       <arg value="stop" />
     </exec>
   </target>
 
   <target name="start-tomcat">
     <chmod perm="+x"
-      dir="${basedir}/nuxeo-dam-distribution/target/tomcat/bin" includes="**/*.sh, **/*ctl"/>
+      dir="${basedir}/target/tomcat/bin" includes="**/*.sh, **/*ctl"/>
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/nuxeoctl">
+      executable="${basedir}/target/tomcat/bin/nuxeoctl">
       <arg value="start" />
     </exec>
     <waitfor>
@@ -89,13 +77,8 @@
 
   <target name="stop-tomcat">
     <exec
-      executable="${basedir}/nuxeo-dam-distribution/target/tomcat/bin/nuxeoctl">
+      executable="${basedir}/target/tomcat/bin/nuxeoctl">
       <arg value="stop" />
     </exec>
   </target>
-
-  <target name="run-selenium">
-    <exec executable=".${basedir}/nuxeo-dam-distribution/ftest/selenium/run.sh" />
-  </target>
-
 </project>

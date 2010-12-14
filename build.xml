@@ -6,47 +6,37 @@
   <!-- Create a build.properties file from build.properties.sample
        if you wish to override the JBoss paths -->
   <property file="build.properties" />
-  <property name="jboss.dir" value="/opt/jboss" />
-  <property name="jboss.config" value="default" />
   <property name="mvn.opts" value="" />
 
+  <property name="jboss.dir" value="/opt/jboss" />
+  <property name="jboss.config" value="default" />
+  <property name="jboss.server" value="${jboss.dir}/server/${jboss.config}" />
+  <property name="jboss.deploy" value="${jboss.server}/deploy" />
+  <property name="jboss.lib" value="${jboss.server}/lib" />
+  <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
+  <property name="jboss.bundles.dir" value="${jboss.nuxeo.ear}/bundles" />
+  <property name="jboss.nuxeo.war.dir" value="${jboss.nuxeo.ear}/nuxeo.war" />
+  <property name="jboss.seam.hotdeploy.dir" value="${jboss.nuxeo.war.dir}/WEB-INF/dev" />
+
   <property name="tomcat.dir" value="/opt/tomcat" />
-  <property name="tomcat.deploy.dir" value="${tomcat.dir}/nxserver/bundles" />
-
-  <property name="javac.debug" value="true" />
-  <property name="javac.deprecation" value="false" />
-
-  <!-- Boilerplate configuration -->
-
-  <property name="build.dir" value="${basedir}/target" />
-  <property name="deploy.dir" value="${jboss.dir}/server/${jboss.config}/deploy" />
-  <property name="nuxeo.war.dir" value="${deploy.dir}/nuxeo.ear/nuxeo.war" />
-  <property name="seam.hotdeploy.dir" value="${nuxeo.war.dir}/WEB-INF/dev" />
+  <property name="tomcat.bundles.dir" value="${tomcat.dir}/nxserver/bundles" />
+  <property name="tomcat.nuxeo.war.dir" value="${tomcat.dir}/nxserver/nuxeo.war" />
+  <property name="tomcat.seam.hotdeploy.dir" value="${tomcat.nuxeo.war.dir}/WEB-INF/dev" />
 
   <property name="dam.distribution.root" value="nuxeo-dam-distribution" />
-  <property name="dam.build.dir" value="${dam.distribution.root}/target" />
-  <property name="nuxeo.ear" value="nuxeo.ear" />
-  <property name="deploy.lib.dir" value="${jboss.dir}/server/${jboss.config}/lib" />
-
-  <!-- these properties will need to be overridden at execution time -->
-  <target name="set.jboss.home" unless="jboss.home">
-    <property name="jboss.home" value="${jboss.dir}" />
-  </target>
-  <target name="setproperties" unless="jboss.server" depends="set.jboss.home">
-    <property name="jboss.server" value="${jboss.home}/server/${jboss.config}" />
-    <property name="jboss.deploy" value="${jboss.server}/deploy" />
-    <property name="jboss.lib" value="${jboss.server}/lib" />
-    <property name="jboss.nuxeo.ear" value="${jboss.deploy}/nuxeo.ear" />
-    <property name="dam.ear.build" value="${dam.distribution.root}/target/nuxeo.ear" />
-  </target>
 
   <target name="usage">
-    <echo message="usage: ant [install|package|deploy|web]" />
-    <echo message="ant install         => Build Nuxeo DAM components" />
-    <echo message="ant package         => Package Nuxeo DAM to ${dam.build.dir}/${nuxeo.ear}" />
-    <echo message="ant deploy          => Package Nuxeo DAM and copy to ${deploy.dir}" />
-    <echo message="ant web             => Copy web files to a live JBoss (${deploy.dir})" />
-    <echo message="ant seam            => Copy local Seam Components describes in seam.properties to the live JBoss (${deploy.dir}) and call restApi to reload these components" />
+    <echo message="usage: ant [build|build-with-tests|assemble-tomcat|assemble-jboss|deploy-tomcat|deploy-jboss|web-tomcat|web-jboss]" />
+    <echo message="ant build              => Build Nuxeo DAM components" />
+    <echo message="ant build-with-tests   => Build and test Nuxeo DAM components" />
+    <echo message="ant assemble-tomcat    => Package a Nuxeo DAM Tomcat distribution" />
+    <echo message="ant assemble-ear       => Package a Nuxeo DAM EAR" />
+    <echo message="ant assemble-jboss     => Package a Nuxeo DAM JBoss distribution" />
+    <echo message="ant deploy-tomcat      => Build Nuxeo DAM components and deploy them on a Tomcat instance" />
+    <echo message="ant deploy-jboss       => Build Nuxeo DAM components and deploy them on a JBoss instance" />
+    <echo message="ant deploy-ear-jboss   => Build Nuxeo DAM EAR and deploy it on a JBoss instance" />
+    <echo message="ant web-tomcat         => Copy web files to a live Tomcat" />
+    <echo message="ant web-jboss          => Copy web files to a live JBoss" />
   </target>
 
   <condition property="osfamily-unix">
@@ -56,51 +46,8 @@
     <os family="windows" />
   </condition>
 
-  <target name="deploy" depends="install-ear,package,copy" description="Build and copy to JBoss">
-    <echo message="Deployed ${ant.project.name} to ${deploy.dir}" />
-  </target>
-
-  <target name="deploy-tomcat" depends="install-ear,copy-jars-tomcat" description="Build and copy to Tomcat">
-    <echo message="Deployed ${ant.project.name} to ${tomcat.deploy.dir}" />
-  </target>
-
-  <target name="package" depends="setproperties,package-unix,package-windows" description="Package Nuxeo DAM" />
-  <target name="package-unix" if="osfamily-unix">
-    <exec executable="mvn" failonerror="true">
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${dam.distribution.root}/pom.xml" />
-      <arg value="-P" />
-      <arg value="ear" />
-      <arg value="-P" />
-      <arg value="${mvn.profiles}" />
-      <arg value="${mvn.opts}" />
-    </exec>
-    <echo message="Packaged ${ant.project.name} into ${dam.ear.build}" />
-  </target>
-  <target name="package-windows" if="osfamily-windows">
-    <exec executable="cmd" failonerror="true">
-      <arg value="/c" />
-      <arg value="mvn.bat" />
-      <arg value="clean" />
-      <arg value="package" />
-      <arg value="-Dmaven.test.skip=true" />
-      <arg value="-f" />
-      <arg value="${dam.distribution.root}/pom.xml" />
-      <arg value="-P" />
-      <arg value="ear" />
-      <arg value="-P" />
-      <arg value="${mvn.profiles}" />
-      <arg value="${mvn.opts}" />
-    </exec>
-    <echo message="Packaged ${ant.project.name} into ${dam.ear.build}" />
-  </target>
-
-  <target name="install-ear" depends="install-ear-unix,install-ear-windows" description="Run mvn install for Nuxeo DAM ear">
-  </target>
-  <target name="install-ear-unix" if="osfamily-unix">
+  <target name="build" depends="build-unix,build-windows" />
+  <target name="build-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="clean" />
       <arg value="install" />
@@ -110,7 +57,7 @@
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="install-ear-windows" if="osfamily-windows">
+  <target name="build-windows" if="osfamily-windows">
     <exec executable="cmd" failonerror="true">
       <arg value="/c" />
       <arg value="mvn.bat" />
@@ -123,89 +70,206 @@
     </exec>
   </target>
 
-  <target name="install" description="Run mvn install">
-    <antcall target="maven">
-      <param name="mvn.lifecycle" value="install"/>
-    </antcall>
-  </target>
-
-  <target name="maven" depends="maven-unix,maven-windows" description="Run mvn ${mvn.lifecycle}" />
-  <target name="maven-unix" if="osfamily-unix">
+  <target name="build-with-tests" depends="build-with-tests-unix,build-with-tests-windows" />
+  <target name="build-with-tests-unix" if="osfamily-unix">
     <exec executable="mvn" failonerror="true">
       <arg value="clean" />
-      <arg value="${mvn.lifecycle}" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="install" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
-  <target name="maven-windows" if="osfamily-windows">
+  <target name="build-with-tests-windows" if="osfamily-windows">
     <exec executable="cmd" failonerror="true">
       <arg value="/c" />
       <arg value="mvn.bat" />
       <arg value="clean" />
-      <arg value="${mvn.lifecycle}" />
-      <arg value="-Dmaven.test.skip=true" />
+      <arg value="install" />
       <arg value="-P" />
       <arg value="${mvn.profiles}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
 
-  <target name="web" description="Copy web files to a live JBoss">
-    <copy todir="${nuxeo.war.dir}">
-      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
-      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/nuxeo.war/" />
+  <target name="assemble-tomcat" depends="build,assemble-tomcat-unix,assemble-tomcat-windows" />
+  <target name="assemble-tomcat-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="tomcat" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="assemble-tomcat-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="tomcat" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="assemble-ear" depends="build,assemble-ear-unix,assemble-ear-windows" />
+  <target name="assemble-ear-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="ear" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="assemble-ear-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="ear" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="assemble-jboss" depends="assemble-ear,assemble-jboss-unix,assemble-jboss-windows" />
+  <target name="assemble-jboss-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="jboss" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+  <target name="assemble-jboss-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="install" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-f" />
+      <arg value="${dam.distribution.root}/pom.xml" />
+      <arg value="-P" />
+      <arg value="jboss" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+  </target>
+
+  <target name="deploy-tomcat" depends="build">
+    <copy todir="${tomcat.bundles.dir}" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+      </fileset>
     </copy>
   </target>
 
-  <target name="web-tomcat" description="Copy web files to a live Tomcat">
-    <copy todir="${tomcat.dir}/nxserver/nuxeo.war">
-      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/nuxeo.war/" />
-      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/nuxeo.war/" />
+  <target name="deploy-jboss" depends="build">
+    <copy todir="${jboss.bundles.dir}" overwrite="true" flatten="true">
+      <fileset dir="${basedir}">
+        <include name="*/target/*.jar" />
+        <exclude name="*/target/*-sources.jar" />
+      </fileset>
     </copy>
   </target>
 
-  <target name="copy" depends="delete-ear,copy-ear" description="Replace ear and copy libs to jboss" />
-  <target name="delete-ear" depends="setproperties">
+  <target name="deploy-ear-jboss" depends="assemble-ear,delete-ear-jboss,copy-ear-jboss">
+
+  </target>
+
+  <target name="delete-ear-jboss">
     <delete dir="${jboss.nuxeo.ear}" failonerror="false" />
   </target>
-  <target name="copy-ear" depends="setproperties">
+  <target name="copy-ear-jboss">
     <mkdir dir="${jboss.nuxeo.ear}" />
     <copy todir="${jboss.nuxeo.ear}">
-      <fileset dir="${dam.ear.build}" />
+      <fileset dir="${dam.distribution.root}/target/nuxeo.ear" />
     </copy>
   </target>
 
-  <target name="copy-jars">
-    <copy todir="${deploy.dir}/${nuxeo.ear}/plugins" overwrite="true" flatten="true">
-      <fileset dir="${basedir}">
-        <include name="*/target/*.jar" />
-        <exclude name="*/target/*-sources.jar" />
+  <target name="web-tomcat">
+    <copy todir="${tomcat.nuxeo.war.dir}">
+      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/web/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/web/nuxeo.war/" />
+    </copy>
+  </target>
+
+  <target name="web-jboss">
+    <copy todir="${jboss.nuxeo.war.dir}">
+      <fileset dir="${basedir}/nuxeo-dam-webapp/src/main/resources/web/nuxeo.war/" />
+      <fileset dir="${basedir}/nuxeo-dam-webapp-common/src/main/resources/web/nuxeo.war/" />
+    </copy>
+  </target>
+
+
+  <target name="seam-tomcat" depends="clean-seam-hotdeploy-dir-tomcat,seam-tomcat-unix,seam-tomcat-windows" />
+  <target name="seam-tomcat-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="compile" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+    <echo message="Deploy Seam components in ${tomcat.seam.hotdeploy.dir}"/>
+    <copy todir="${tomcat.seam.hotdeploy.dir}" flatten="true">
+      <fileset dir="./">
+        <include name="**/target/**/*.class"/>
       </fileset>
     </copy>
+    <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
+  </target>
+  <target name="seam-tomcat-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="compile" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+    <antcall target="copy-seam-tomcat" />
   </target>
 
-  <target name="copy-jars-tomcat">
-    <copy todir="${tomcat.deploy.dir}" overwrite="true" flatten="true">
-      <fileset dir="${basedir}">
-        <include name="*/target/*.jar" />
-        <exclude name="*/target/*-sources.jar" />
-        <exclude name="*/target/*test*.jar" />
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="seam" depends="clean-seam-hotdeploy-dir">
-    <antcall target="maven">
-      <param name="mvn.lifecycle" value="clean"/>
-    </antcall>
-    <antcall target="maven">
-      <param name="mvn.lifecycle" value="compile"/>
-    </antcall>
-    <echo message="Deploy Seam components in ${seam.hotdeploy.dir}"/>
-    <copy todir="${seam.hotdeploy.dir}" flatten="true">
+  <target name="copy-seam-tomcat">
+    <echo message="Deploy Seam components in ${tomcat.seam.hotdeploy.dir}"/>
+    <copy todir="${tomcat.seam.hotdeploy.dir}" flatten="true">
       <fileset dir="./">
         <include name="**/target/**/*.class"/>
       </fileset>
@@ -213,9 +277,53 @@
     <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
   </target>
 
-  <target name="clean-seam-hotdeploy-dir">
+  <target name="seam-jboss" depends="clean-seam-hotdeploy-dir-jboss,seam-jboss-unix,seam-jboss-windows" />
+  <target name="seam-jboss-unix" if="osfamily-unix">
+    <exec executable="mvn" failonerror="true">
+      <arg value="clean" />
+      <arg value="compile" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+    <antcall target="copy-seam-jboss" />
+  </target>
+  <target name="seam-jboss-windows" if="osfamily-windows">
+    <exec executable="cmd" failonerror="true">
+      <arg value="/c" />
+      <arg value="mvn.bat" />
+      <arg value="clean" />
+      <arg value="compile" />
+      <arg value="-Dmaven.test.skip=true" />
+      <arg value="-P" />
+      <arg value="${mvn.profiles}" />
+      <arg value="${mvn.opts}" />
+    </exec>
+    <antcall target="copy-seam-jboss" />
+  </target>
+
+  <target name="copy-seam-jboss">
+    <echo message="Deploy Seam components in ${jboss.seam.hotdeploy.dir}"/>
+    <copy todir="${jboss.seam.hotdeploy.dir}" flatten="true">
+      <fileset dir="./">
+        <include name="**/target/**/*.class"/>
+      </fileset>
+    </copy>
+    <get dest="./seam_hotdeploy_result.html" src="http://127.0.0.1:8080/nuxeo/restAPI/seamReload" username="Administrator" password="Administrator"/>
+  </target>
+
+  <target name="clean-seam-hotdeploy-dir-tomcat">
     <delete>
-      <fileset dir="${seam.hotdeploy.dir}">
+      <fileset dir="${tomcat.seam.hotdeploy.dir}">
+        <include name="*"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clean-seam-hotdeploy-dir-jboss">
+    <delete>
+      <fileset dir="${jboss.seam.hotdeploy.dir}">
         <include name="*"/>
       </fileset>
     </delete>

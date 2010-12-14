@@ -30,7 +30,7 @@
   </modules>
 
   <properties>
-    <nuxeo.dam.version>${pom.version}</nuxeo.dam.version>
+    <nuxeo.dam.version>${project.version}</nuxeo.dam.version>
   </properties>
 
   <dependencyManagement>
