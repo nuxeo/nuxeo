@@ -175,8 +175,6 @@ public class NXQLQueryMaker implements QueryMaker {
     /** Do we match only relations (and therefore no proxies). */
     public boolean onlyRelations;
 
-    protected Boolean immutableClause;
-
     public boolean needsVersionsTable;
 
     protected Boolean proxyClause;
@@ -237,7 +235,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         /*
-         * Apply facet filter to available types and immutable flag.
+         * Apply facet filter to available types.
          *
          * XXX TODO and placeful expressions
          */
@@ -247,25 +245,9 @@ public class NXQLQueryMaker implements QueryMaker {
             facetFilter = FacetFilter.ALLOW;
         }
         for (String facet : facetFilter.required) {
-            if (FacetNames.IMMUTABLE.equals(facet)) {
-                if (immutableClause == Boolean.FALSE) {
-                    // conflict on immutable condition, query cannot match
-                    return null;
-                }
-                immutableClause = Boolean.TRUE;
-                continue;
-            }
             includeOrExcludeTypeWithMixins(Collections.singleton(facet), true);
         }
         for (String facet : facetFilter.excluded) {
-            if (FacetNames.IMMUTABLE.equals(facet)) {
-                if (immutableClause == Boolean.TRUE) {
-                    // conflict on immutable condition, query cannot match
-                    return null;
-                }
-                immutableClause = Boolean.FALSE;
-
-            }
             includeOrExcludeTypeWithMixins(Collections.singleton(facet), false);
         }
 
@@ -284,7 +266,7 @@ public class NXQLQueryMaker implements QueryMaker {
         fragmentNames.remove(model.HIER_TABLE_NAME);
 
         // Do we need to add the versions table too?
-        if (needsVersionsTable || immutableClause != null) {
+        if (needsVersionsTable) {
             fragmentNames.add(model.VERSION_TABLE_NAME);
         }
 
@@ -301,13 +283,8 @@ public class NXQLQueryMaker implements QueryMaker {
         }
         DocKind[] docKinds;
         if (proxyClause == Boolean.TRUE) {
-            if (immutableClause == Boolean.FALSE) {
-                // proxy but not immutable: query cannot match
-                return null;
-            }
             docKinds = new DocKind[] { DocKind.PROXY };
-        } else if (proxyClause == Boolean.FALSE
-                || immutableClause == Boolean.FALSE) {
+        } else if (proxyClause == Boolean.FALSE) {
             docKinds = new DocKind[] { DocKind.DIRECT };
         } else {
             docKinds = new DocKind[] { DocKind.DIRECT, DocKind.PROXY };
@@ -405,19 +382,6 @@ public class NXQLQueryMaker implements QueryMaker {
                     "%s IN (%s)",
                     dataHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
                     StringUtils.join(typeStrings, ", ")));
-
-            /*
-             * Add clause for immutable match.
-             */
-
-            if (docKind == DocKind.DIRECT && immutableClause != null) {
-                String where = String.format(
-                        "%s IS %s",
-                        database.getTable(model.VERSION_TABLE_NAME).getColumn(
-                                model.MAIN_KEY).getFullQuotedName(),
-                        immutableClause.booleanValue() ? "NOT NULL" : "NULL");
-                whereClauses.add(where);
-            }
 
             /*
              * Parse the WHERE clause from the original query, and deduce from
@@ -824,12 +788,9 @@ public class NXQLQueryMaker implements QueryMaker {
          * impact the types restictions:
          * <ul>
          * <li>ecm:primaryType OP literal</li>
-         * <li>ecm:mixinType OP literal (except for Immutable)</li>
+         * <li>ecm:mixinType OP literal</li>
          * </ul>
          * where OP is {@code =} or {@code <>}.
-         * <p>
-         * Immutable is left in the clause as it is a virtual per-document
-         * facet, not a per-type one.
          */
         protected void analyzeToplevelOperands(Operand node) {
             if (node instanceof Expression) {
@@ -859,17 +820,8 @@ public class NXQLQueryMaker implements QueryMaker {
                             return;
                         }
                         if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                            if (FacetNames.IMMUTABLE.equals(value)) {
-                                Boolean im = Boolean.valueOf(isEq);
-                                if (immutableClause != null
-                                        && immutableClause != im) {
-                                    throw new QueryCannotMatchException();
-                                }
-                                immutableClause = im;
-                            } else {
-                                includeOrExcludeTypeWithMixins(
-                                        Collections.singleton(value), isEq);
-                            }
+                            includeOrExcludeTypeWithMixins(
+                                    Collections.singleton(value), isEq);
                             // XXX don't return, keep expression for placeful
                             // mixins
                             return;
@@ -929,16 +881,7 @@ public class NXQLQueryMaker implements QueryMaker {
                                                     + " IN requires string literals");
                                 }
                                 String value = ((StringLiteral) literal).value;
-                                if (FacetNames.IMMUTABLE.equals(value)) {
-                                    Boolean im = Boolean.valueOf(isIn);
-                                    if (immutableClause != null
-                                            && immutableClause != im) {
-                                        throw new QueryCannotMatchException();
-                                    }
-                                    immutableClause = im;
-                                } else {
-                                    mixins.add(value);
-                                }
+                                mixins.add(value);
                             }
 
                             includeOrExcludeTypeWithMixins(mixins, isIn);

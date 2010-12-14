@@ -969,20 +969,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title'");
         assertIdSet(dml, docId, proxyId, versionId);
 
-        // facet filter: immutable
-        filter = new FacetFilter(FacetNames.IMMUTABLE, true);
-        dml = session.query(
-                "SELECT * FROM Document WHERE dc:title = 'testfile4Title'",
-                filter, 99);
-        assertIdSet(dml, proxyId, versionId);
-
-        // facet filter: not immutable
-        filter = new FacetFilter(FacetNames.IMMUTABLE, false);
-        dml = session.query(
-                "SELECT * FROM Document WHERE dc:title = 'testfile4Title'",
-                filter, 99);
-        assertIdSet(dml, docId);
-
         dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 1");
         assertIdSet(dml, proxyId);
 
@@ -1010,28 +996,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:title = 'testfile4Title' AND ecm:isCheckedInVersion = 1");
         assertIdSet(dml, versionId);
 
-        // only keep immutable (proxy + version)
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'");
-        assertIdSet(dml, proxyId, versionId);
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isProxy = 0");
-        assertIdSet(dml, versionId);
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isProxy = 1");
-        assertIdSet(dml, proxyId);
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isCheckedInVersion = 0");
-        assertIdSet(dml, proxyId);
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Immutable' AND ecm:isCheckedInVersion = 1");
-        assertIdSet(dml, versionId);
-
-        // conflict between where and filter
-        filter = new FacetFilter(FacetNames.IMMUTABLE, false);
-        dml = session.query(
-                "SELECT * FROM Document WHERE ecm:mixinType = 'Immutable'",
-                filter, 99);
-        assertEquals(0, dml.size()); // contradictory clauses
 
         // "deep" isProxy
         dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
@@ -1044,32 +1008,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, docId, proxyId, versionId);
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile4Title' ORDER BY dc:description");
         assertIdSet(dml, docId, proxyId, versionId);
-    }
-
-    public void testQueryWithProxiesNegativeMultiple() throws Exception {
-        createDocs();
-        publishDoc();
-        DocumentModelList dml;
-        Filter filter;
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 0");
-        assertEquals(7, dml.size()); // 7 folder/docs
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isProxy = 1");
-        assertEquals(0, dml.size()); // contradictory clauses
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isCheckedInVersion = 0");
-        assertEquals(7, dml.size()); // 7 folder/docs
-
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable' AND ecm:isCheckedInVersion = 1");
-        assertEquals(0, dml.size()); // contradictory clauses
-
-        // conflict between where and filter
-        filter = new FacetFilter(FacetNames.IMMUTABLE, true);
-        dml = session.query(
-                "SELECT * FROM Document WHERE ecm:mixinType <> 'Immutable'",
-                filter, 99);
-        assertEquals(0, dml.size()); // contradictory clauses
     }
 
     public void testQueryPaging() throws Exception {
