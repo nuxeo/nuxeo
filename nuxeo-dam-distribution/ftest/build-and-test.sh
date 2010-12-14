@@ -19,8 +19,7 @@ HIDE_FF=true .//selenium/run.sh
 ret1=$?
 
 # Stop JBoss
-nuxeo-dam-distribution/target/jboss/bin/nuxeoctl stop || exit 1
-ant -f ft-build.xml stop-jboss || exit 
+ant -f ft-build.xml stop-jboss || exit
 
 # Exit if some tests failed
 [ $ret1 -eq 0 ] || exit 9

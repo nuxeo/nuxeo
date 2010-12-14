@@ -8,8 +8,8 @@ ant -f ft-build.xml make-tomcat-distribution -Dmvn.profiles=$MAVEN_PROFILES,http
 ant -f ft-build.xml start-tomcat || exit 1
 
 # Unzip assets to import
-if [ -d "nuxeo-dam-distribution/ftest/selenium/data/toImport" ]; then
-    rm -r nuxeo-dam-distribution/ftest/selenium/data/toImport
+if [ -d "selenium/data/toImport" ]; then
+    rm -r selenium/data/toImport
 fi
 (cd selenium/data && unzip toImport.zip) || exit 1
 cp selenium/data/metadata.properties selenium/data/toImport/
