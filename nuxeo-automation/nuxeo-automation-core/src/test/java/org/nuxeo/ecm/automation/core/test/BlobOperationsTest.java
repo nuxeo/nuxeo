@@ -242,7 +242,7 @@ public class BlobOperationsTest {
 
         file.delete();
 
-        // test again but withpout prefix
+        // test again but without prefix
         chain = new OperationChain("testChain");
         chain.add(BlobToFile.ID).set("directory", dir.getAbsolutePath());
         out = (Blob) service.run(ctx, chain);
