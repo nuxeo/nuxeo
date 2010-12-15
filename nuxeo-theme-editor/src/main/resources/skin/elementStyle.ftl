@@ -26,6 +26,7 @@
 	    <option value=""></option>
 	    <#list named_styles as style>
 	      <#if inherited_style_name_of_selected_element == style.name>
+	        <#assign current_style = style />
 	        <option value="${style.name}" selected="selected">${style.name}</option>
 	      <#else>
 	        <option value="${style.name}">${style.name}</option>
@@ -34,7 +35,7 @@
 	  </select>
 
           <button onclick="NXThemesStyleEditor.createNamedStyle('#{selected_element.uid}', '${current_theme_name?js_string}', 'element style')">New style</button>
-          <#if inherited_style_name_of_selected_element>
+          <#if current_style && !current_style.remote>
             <button onclick="NXThemesStyleEditor.deleteNamedStyle('#{selected_element.uid}', '${current_theme_name?js_string}', '${inherited_style_name_of_selected_element?js_string}')">Delete '${inherited_style_name_of_selected_element}'</button>
           </#if>
         </div>

@@ -182,6 +182,40 @@ public class Main extends ModuleRoot {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("{bank}/json/styles")
+    @SuppressWarnings("rawtypes")
+    public String listBankStyles(@PathParam("bank") String bankName) {
+        JSONArray styles = new JSONArray();
+        try {
+            for (String collection : BankManager.getCollections(bankName)) {
+                Map<String, Object> info = BankManager.getInfo(bankName,
+                        collection, "style");
+                for (String resource : getItemsInCollection(bankName,
+                        collection, "style")) {
+                    if (info != null && info.containsKey(resource)) {
+                        Map value = (Map) info.get(resource);
+                        if (value.containsKey("skin")
+                                && (Boolean) value.get("skin")) {
+                            continue;
+                        }
+                    }
+                    JSONObject styleMap = new JSONObject();
+                    styleMap.put("bank", bankName);
+                    styleMap.put("collection", collection);
+                    styleMap.put("resource", resource);
+                    styleMap.put("name", String.format("%s (%s)",
+                            resource.replace(".css", ""), collection));
+                    styles.add(styleMap);
+                }
+            }
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
+        return styles.toString();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{bank}/json/skins")
     @SuppressWarnings("rawtypes")
     public String listBankSkins(@PathParam("bank") String bankName) {
@@ -196,11 +230,8 @@ public class Main extends ModuleRoot {
                 for (Map.Entry<String, Object> entry : info.entrySet()) {
                     String resource = entry.getKey();
                     Map value = (Map) entry.getValue();
-                    Boolean isSkin = false;
-                    if (value.containsKey("skin")) {
-                        isSkin = (Boolean) value.get("skin");
-                    }
-                    if (isSkin) {
+                    if (value.containsKey("skin")
+                            && (Boolean) value.get("skin")) {
                         Boolean isBase = false;
                         if (value.containsKey("base")) {
                             isBase = (Boolean) value.get("base");

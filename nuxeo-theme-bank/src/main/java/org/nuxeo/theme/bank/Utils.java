@@ -21,6 +21,7 @@ package org.nuxeo.theme.bank;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -166,11 +167,10 @@ public class Utils {
 
         JSONObject collectionAttributes = new JSONObject();
         collectionAttributes.put("rel", "collection");
-        collectionAttributes.put("path",
-                String.format("/%s/%s", bankName, collection));
-        collectionAttributes.put(
-                "id",
-                BankUtils.getDomId(String.format("%s-%s", bankName, collection)));
+        collectionAttributes.put("path", String.format("/%s/%s", bankName,
+                collection));
+        collectionAttributes.put("id", BankUtils.getDomId(String.format(
+                "%s-%s", bankName, collection)));
 
         collectionNode.put("data", collectionMap);
         collectionNode.put("attributes", collectionAttributes);
@@ -184,8 +184,8 @@ public class Utils {
 
             JSONObject folderTypeAttributes = new JSONObject();
             folderTypeAttributes.put("rel", "folder");
-            folderTypeAttributes.put("path",
-                    String.format("/%s/%s/%s", bankName, collection, typeName));
+            folderTypeAttributes.put("path", String.format("/%s/%s/%s",
+                    bankName, collection, typeName));
             folderTypeAttributes.put("id", BankUtils.getDomId(String.format(
                     "%s-%s-%s", bankName, collection, typeName)));
 
@@ -242,6 +242,9 @@ public class Utils {
                 try {
                     in = new FileInputStream(file);
                     IOUtils.copy(in, out);
+                } catch (FileNotFoundException e) {
+                    throw new WebApplicationException(e,
+                            Response.Status.NOT_FOUND);
                 } catch (Exception e) {
                     throw new WebApplicationException(e,
                             Response.Status.INTERNAL_SERVER_ERROR);

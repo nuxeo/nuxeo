@@ -2384,22 +2384,8 @@ NXThemesStyleManager.removeStyleInheritance = function(info) {
       });
 };
 
-//actions
-NXThemes.addActions({
-  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView,
-  'set style inheritance': NXThemesStyleManager.setStyleInheritance,
-  'remove style inheritance': NXThemesStyleManager.removeStyleInheritance
-});
 
-
-//CSS EDITOR
-
-if (typeof NXThemesCssEditor== "undefined") {
-    NXThemesCssEditor = {
-    }
-}
-
-NXThemesCssEditor.updateNamedStyleCSS = function(form) {
+NXThemesStyleManager.updateNamedStyleCSS = function(form, screen) {
     var style_uid = '';
     var css_source = '';
     $A(Form.getElements(form)).each(function(i) {
@@ -2428,7 +2414,7 @@ NXThemesCssEditor.updateNamedStyleCSS = function(form) {
              'theme_name': theme_name
          },
          onSuccess: function(r) {
-             NXThemes.getViewById('css editor').refresh();
+             NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshUndoActions();
          },
          onFailure: function(r) {
@@ -2436,10 +2422,10 @@ NXThemesCssEditor.updateNamedStyleCSS = function(form) {
              window.alert(text);
          }
     });
-}
+};
 
 
-NXThemesCssEditor.restoreNamedStyle = function(form) {
+NXThemesStyleManager.restoreNamedStyle = function(form, screen) {
     var style_uid = '';
     $A(Form.getElements(form)).each(function(i) {
         var name = i.name;
@@ -2450,6 +2436,10 @@ NXThemesCssEditor.restoreNamedStyle = function(form) {
           theme_name = value;
         }
     });
+    var ok = confirm("CSS changes will be lost, are you sure?");
+    if (!ok) {
+       return;
+    }
     var url = nxthemesBasePath + "/nxthemes-editor/restore_named_style";
     new Ajax.Request(url, {
          method: 'post',
@@ -2458,7 +2448,7 @@ NXThemesCssEditor.restoreNamedStyle = function(form) {
              'theme_name': theme_name
          },
          onSuccess: function(r) {
-             NXThemes.getViewById("css editor").refresh();
+             NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshUndoActions();
          },
          onFailure: function(r) {
@@ -2466,7 +2456,14 @@ NXThemesCssEditor.restoreNamedStyle = function(form) {
              window.alert(text);
          }
     });
-}
+};
+
+//actions
+NXThemes.addActions({
+  'delete unused style view': NXThemesStyleManager.deleteUnusedStyleView,
+  'set style inheritance': NXThemesStyleManager.setStyleInheritance,
+  'remove style inheritance': NXThemesStyleManager.removeStyleInheritance
+});
 
 // Fragment factory
 if (typeof NXThemesFragmentFactory == "undefined") {

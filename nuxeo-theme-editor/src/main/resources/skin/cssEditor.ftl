@@ -1,3 +1,4 @@
+<#assign screen="css editor">
 
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
@@ -15,7 +16,7 @@
 
 <#if theme_skin.remote && theme_skin.customized && saveable>
   <form class="nxthemesForm" style="padding: 4px 0; float: right"
-      onsubmit="NXThemesCssEditor.restoreNamedStyle(this); return false">
+      onsubmit="NXThemesStyleManager.restoreNamedStyle(this, '${screen}'); return false">
     <input type="hidden" name="style_uid" value="#{theme_skin.uid}" />
     <input type="hidden" name="theme_name" value="${current_theme_name}" />
     <div>
@@ -25,7 +26,7 @@
 </#if>
 
   <form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
-      onsubmit="NXThemesCssEditor.updateNamedStyleCSS(this); return false">
+      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this, '${screen}'); return false">
     <input type="hidden" name="style_uid" value="#{theme_skin.uid}" />
     <input type="hidden" name="theme_name" value="${current_theme_name}" />
 

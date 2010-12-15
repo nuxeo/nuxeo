@@ -1,3 +1,4 @@
+<#assign screen="style manager">
 
 <!-- style menu -->
 <@nxthemes_view resource="style-menu.json" />   
@@ -17,21 +18,28 @@
   <table class="nxthemesManageScreen">
   <tr>
     <th style="width: 25%;">Style</th>
-    <th style="width: 75%;">CSS properties</th>
+    <th style="width: 75%;">CSS editor</th>
   </tr>
   <tr>
   <td>
 
 <ul class="nxthemesSelector">
 <#list named_styles as style>
-  <#if !style.remote>
   <li <#if style.name = selected_named_style_name>class="selected"</#if>>
-    <a href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')">
-    <img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
-  </#if>
+    <a title=""
+       href="javascript:NXThemesStyleManager.selectNamedStyle('#{style.uid}')"
+       <#if style.remote>
+         <#if style.customized>
+           style="color: #000;"
+         <#else>
+           style="color: #999;"
+         </#if>
+       <#else> 
+         style="color: #000;"
+       </#if>
+    ><img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
 </#list>
 </ul>
-
 
 <p class="nxthemesEditor">
   <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
@@ -42,24 +50,59 @@
 <td>
 
 <#if selected_named_style>
-<form id="nxthemesNamedStyleCSSEditor" class="nxthemesForm" style="padding: 0"
-      onsubmit="NXThemesCssEditor.updateNamedStyleCSS(this); return false">
-<div>
-  <textarea id="namedStyleCssEditor" name="css_source" rows="15" cols="72"
- style="border: 1px solid #999; width: 100%; height: 250px; font-size: 11px;">${selected_named_style_css}</textarea>
-  <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
-  <input type="hidden" name="theme_name" value="${current_theme_name}" />
-</div>
-<div style="margin-top: 5px">
-  <button type="submit">Save</button>
-</div>
-</form>
+<#if selected_named_style.remote>
 
-<p class="nxthemesEditor" style="float: right; margin-top: -20px">
-   <button class="nxthemesActionButton"
+  <form class="nxthemesForm" style="padding: 0"
+      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this, '${screen}'); return false">
+    <div>
+      <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
+      <input type="hidden" name="theme_name" value="${current_theme_name}" />
+      <textarea <#if !selected_named_style.customized>disabled="disabled"</#if> id="namedStyleCssEditor"
+      name="css_source" rows="15" cols="72"
+      style="border: 1px solid #ccc; font-family: monospace; width: 100%; height: 270px; font-size: 11px;">
+${selected_named_style_css}
+      </textarea>
+    </div>
+  
+    <div style="margin-top: 5px">
+     <button type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
+    </div>
+
+  </form>
+
+  <#if selected_named_style.customized>
+    <form class="nxthemesForm" style="padding: 0; margin-top: -19px; float: right"
+      onsubmit="NXThemesStyleManager.restoreNamedStyle(this, '${screen}'); return false">
+      <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
+      <input type="hidden" name="theme_name" value="${current_theme_name}" />
+      <div>
+        <button type="submit">Restore CSS</button>
+      </div>
+    </form>
+  </#if>
+
+<#else>
+
+  <form class="nxthemesForm" style="padding: 0"
+      onsubmit="NXThemesStyleManager.updateNamedStyleCSS(this, '${screen}'); return false">
+    <div>
+      <input type="hidden" name="style_uid" value="#{selected_named_style.uid}" />
+      <input type="hidden" name="theme_name" value="${current_theme_name}" />
+      <textarea id="namedStyleCssEditor" name="css_source" rows="15" cols="72"
+      style="border: 1px solid #ccc; font-family: monospace; width: 100%; height: 270px; font-size: 11px;">${selected_named_style_css}</textarea>
+    </div>
+  
+    <div style="margin-top: 5px">
+      <button type="submit">Save</button>
+    </div>
+  </form>
+  
+  <p class="nxthemesEditor" style="float: right; margin-top: -19px">
+    <button class="nxthemesActionButton"
     onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>  
-</p>
+  </p>
 
+</#if>
 </#if>
  
 </td>

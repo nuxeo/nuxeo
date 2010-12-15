@@ -133,7 +133,9 @@ public class Main extends ModuleRoot {
             @QueryParam("org.nuxeo.theme.application.name") String name) {
 
         String currentThemeName = getCurrentThemeName(path, name);
-        List<Style> styles = Editor.getNamedStyles(currentThemeName);
+        ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
+        List<Style> styles = Editor.getNamedStyles(currentThemeName,
+                resourceBank);
 
         Style selectedStyle = getSelectedNamedStyle();
         if (!styles.contains(selectedStyle) && !styles.isEmpty()) {
@@ -201,12 +203,13 @@ public class Main extends ModuleRoot {
             @QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
         String currentThemeName = getCurrentThemeName(path, name);
-        List<Style> styles = Editor.getNamedStyles(currentThemeName);
+        ResourceBank currentThemeBank = getCurrentThemeBank(currentThemeName);
+        List<Style> styles = Editor.getNamedStyles(currentThemeName,
+                currentThemeBank);
         Style themeSkin = Editor.getThemeSkin(currentThemeName);
         String templateEngine = getTemplateEngine(path);
         ThemeDescriptor currentThemeDef = ThemeManager.getThemeDescriptorByThemeName(
                 templateEngine, currentThemeName);
-        ResourceBank currentThemeBank = getCurrentThemeBank(currentThemeName);
 
         return getTemplate("cssEditor.ftl").arg("theme", currentThemeDef).arg(
                 "named_styles", styles).arg("style_manager_mode",
@@ -274,13 +277,14 @@ public class Main extends ModuleRoot {
         String fragmentView = getSelectedFragmentView();
         String fragmentStyle = getSelectedFragmentStyle();
         String templateEngine = getTemplateEngine(path);
+        ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
         return getTemplate("fragmentFactory.ftl").arg("current_theme_name",
                 getCurrentThemeName(path, name)).arg("selected_fragment_type",
                 fragmentType).arg("selected_fragment_view", fragmentView).arg(
                 "selected_fragment_style", fragmentStyle).arg("fragments",
                 Editor.getFragments(templateEngine)).arg("styles",
-                Editor.getNamedStyles(currentThemeName)).arg("views",
-                Editor.getViews(fragmentType, templateEngine)).arg(
+                Editor.getNamedStyles(currentThemeName, resourceBank)).arg(
+                "views", Editor.getViews(fragmentType, templateEngine)).arg(
                 "selected_element_id", getSelectedElementId());
     }
 
@@ -328,6 +332,7 @@ public class Main extends ModuleRoot {
             @QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
         String currentThemeName = getCurrentThemeName(path, name);
+        ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
         return getTemplate("elementStyle.ftl").arg("selected_element",
                 getSelectedElement()).arg("style_of_selected_element",
                 getStyleOfSelectedElement()).arg("current_theme_name",
@@ -336,7 +341,7 @@ public class Main extends ModuleRoot {
                 getStyleLayersOfSelectedElement()).arg(
                 "inherited_style_name_of_selected_element",
                 getInheritedStyleNameOfSelectedElement()).arg("named_styles",
-                Editor.getNamedStyles(currentThemeName));
+                Editor.getNamedStyles(currentThemeName, resourceBank));
     }
 
     @GET
@@ -1644,7 +1649,11 @@ public class Main extends ModuleRoot {
         if (selectedStyleLayerId == null) {
             return null;
         }
-        return (Style) ThemeManager.getFormatById(selectedStyleLayerId);
+        Format format = ThemeManager.getFormatById(selectedStyleLayerId);
+        if (!(format instanceof Style)) {
+            return null;
+        }
+        return (Style) format;
     }
 
     public static String getSelectedStyleLayerId() {
@@ -1664,7 +1673,11 @@ public class Main extends ModuleRoot {
         if (selectedNamedStyleId == null) {
             return null;
         }
-        return (Style) ThemeManager.getFormatById(selectedNamedStyleId);
+        Format format = ThemeManager.getFormatById(selectedNamedStyleId);
+        if (!(format instanceof Style)) {
+            return null;
+        }
+        return (Style) format;
     }
 
     public static Style getStyleOfSelectedElement() {
