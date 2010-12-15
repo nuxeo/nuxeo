@@ -1754,7 +1754,7 @@ NXThemesStyleEditor.refreshCssPreview = function() {
 };
 
 NXThemesStyleEditor.closeStylePicker = function() {
-    NXThemes.getControllerById('element editor perspectives').switchTo('style properties');
+    NXThemes.getControllerById('style editor perspectives').switchTo('style properties');
 };
 
 NXThemesStyleEditor.renderElement = function(id, area) {
