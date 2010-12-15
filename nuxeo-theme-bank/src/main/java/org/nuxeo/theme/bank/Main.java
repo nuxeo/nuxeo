@@ -22,10 +22,8 @@ package org.nuxeo.theme.bank;
 import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.GET;
@@ -36,9 +34,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -185,33 +180,11 @@ public class Main extends ModuleRoot {
     @Path("{bank}/json/styles")
     @SuppressWarnings("rawtypes")
     public String listBankStyles(@PathParam("bank") String bankName) {
-        JSONArray styles = new JSONArray();
         try {
-            for (String collection : BankManager.getCollections(bankName)) {
-                Map<String, Object> info = BankManager.getInfo(bankName,
-                        collection, "style");
-                for (String resource : getItemsInCollection(bankName,
-                        collection, "style")) {
-                    if (info != null && info.containsKey(resource)) {
-                        Map value = (Map) info.get(resource);
-                        if (value.containsKey("skin")
-                                && (Boolean) value.get("skin")) {
-                            continue;
-                        }
-                    }
-                    JSONObject styleMap = new JSONObject();
-                    styleMap.put("bank", bankName);
-                    styleMap.put("collection", collection);
-                    styleMap.put("resource", resource);
-                    styleMap.put("name", String.format("%s (%s)",
-                            resource.replace(".css", ""), collection));
-                    styles.add(styleMap);
-                }
-            }
+            return Utils.listBankStyles(bankName);
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }
-        return styles.toString();
     }
 
     @GET
@@ -219,62 +192,11 @@ public class Main extends ModuleRoot {
     @Path("{bank}/json/skins")
     @SuppressWarnings("rawtypes")
     public String listBankSkins(@PathParam("bank") String bankName) {
-        JSONArray skins = new JSONArray();
         try {
-            for (String collection : BankManager.getCollections(bankName)) {
-                Map<String, Object> info = BankManager.getInfo(bankName,
-                        collection, "style");
-                if (info == null) {
-                    continue;
-                }
-                for (Map.Entry<String, Object> entry : info.entrySet()) {
-                    String resource = entry.getKey();
-                    Map value = (Map) entry.getValue();
-                    if (value.containsKey("skin")
-                            && (Boolean) value.get("skin")) {
-                        Boolean isBase = false;
-                        if (value.containsKey("base")) {
-                            isBase = (Boolean) value.get("base");
-                        }
-                        JSONObject skinMap = new JSONObject();
-                        skinMap.put("bank", bankName);
-                        skinMap.put("collection", collection);
-                        skinMap.put("resource", resource);
-                        skinMap.put("name", String.format("%s (%s)",
-                                resource.replace(".css", ""), collection));
-                        skinMap.put("base", isBase);
-                        skins.add(skinMap);
-                    }
-                }
-            }
+            return Utils.listBankSkins(bankName);
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }
-        return skins.toString();
-    }
-
-    public List<String> listSkinsInCollection(String bankName, String collection) {
-        Map<String, Object> info;
-        try {
-            info = BankManager.getInfo(bankName, collection, "style");
-        } catch (IOException e) {
-            throw new ThemeBankException(e.getMessage(), e);
-        }
-        List<String> skins = new ArrayList<String>();
-        if (info != null) {
-            for (Map.Entry<String, Object> entry : info.entrySet()) {
-                String resource = entry.getKey();
-                Map value = (Map) entry.getValue();
-                Boolean isSkin = false;
-                if (value.containsKey("skin")) {
-                    isSkin = (Boolean) value.get("skin");
-                }
-                if (isSkin) {
-                    skins.add(resource);
-                }
-            }
-        }
-        return skins;
     }
 
     @GET
@@ -567,18 +489,26 @@ public class Main extends ModuleRoot {
         return BankManager.getBankNames();
     }
 
-    public static List<String> getCollections(String bank) {
+    public static List<String> getCollections(String bankName) {
         try {
-            return BankManager.getCollections(bank);
+            return Utils.getCollections(bankName);
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }
     }
 
-    public static List<String> getItemsInCollection(String bank,
+    public List<String> listSkinsInCollection(String bankName, String collection) {
+        try {
+            return Utils.listSkinsInCollection(bankName, collection);
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
+    }
+
+    public static List<String> getItemsInCollection(String bankName,
             String collection, String typeName) {
         try {
-            return BankManager.getItemsInCollection(bank, collection, typeName);
+            return Utils.getItemsInCollection(bankName, collection, typeName);
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }

@@ -45,14 +45,20 @@ import org.nuxeo.theme.resources.BankUtils;
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
 
+    public static List<String> getCollections(String bankName)
+            throws IOException {
+        return BankManager.getCollections(bankName);
+    }
+
+    public static List<String> getItemsInCollection(String bankName,
+            String collection, String typeName) throws IOException {
+        return BankManager.getItemsInCollection(bankName, collection, typeName);
+    }
+
     public static List<String> listSkinsInCollection(String bankName,
-            String collection) {
+            String collection) throws IOException {
         Map<String, Object> info;
-        try {
-            info = BankManager.getInfo(bankName, collection, "style");
-        } catch (IOException e) {
-            throw new ThemeBankException(e.getMessage(), e);
-        }
+        info = BankManager.getInfo(bankName, collection, "style");
         List<String> skins = new ArrayList<String>();
         if (info != null) {
             for (Map.Entry<String, Object> entry : info.entrySet()) {
@@ -73,37 +79,60 @@ public class Utils {
     /*
      * JSON calls
      */
-    public static String listBankSkins(String bankName) {
+    public static String listBankSkins(String bankName) throws IOException {
         JSONArray skins = new JSONArray();
-        try {
-            for (String collection : BankManager.getCollections(bankName)) {
-                Map<String, Object> info = BankManager.getInfo(bankName,
-                        collection, "style");
-                if (info == null) {
-                    continue;
-                }
-                for (Map.Entry<String, Object> entry : info.entrySet()) {
-                    String resource = entry.getKey();
-                    Map value = (Map) entry.getValue();
-                    Boolean isSkin = false;
-                    if (value.containsKey("skin")) {
-                        isSkin = (Boolean) value.get("skin");
+        for (String collection : BankManager.getCollections(bankName)) {
+            Map<String, Object> info = BankManager.getInfo(bankName,
+                    collection, "style");
+            if (info == null) {
+                continue;
+            }
+            for (Map.Entry<String, Object> entry : info.entrySet()) {
+                String resource = entry.getKey();
+                Map value = (Map) entry.getValue();
+                if (value.containsKey("skin") && (Boolean) value.get("skin")) {
+                    Boolean isBase = false;
+                    if (value.containsKey("base")) {
+                        isBase = (Boolean) value.get("base");
                     }
-                    if (isSkin) {
-                        JSONObject skinMap = new JSONObject();
-                        skinMap.put("bank", bankName);
-                        skinMap.put("collection", collection);
-                        skinMap.put("resource", resource);
-                        skinMap.put("name", String.format("%s (%s)",
-                                resource.replace(".css", ""), collection));
-                        skins.add(skinMap);
-                    }
+                    JSONObject skinMap = new JSONObject();
+                    skinMap.put("bank", bankName);
+                    skinMap.put("collection", collection);
+                    skinMap.put("resource", resource);
+                    skinMap.put("name", String.format("%s (%s)",
+                            resource.replace(".css", ""), collection));
+                    skinMap.put("base", isBase);
+                    skins.add(skinMap);
                 }
             }
-        } catch (IOException e) {
-            throw new ThemeBankException(e.getMessage(), e);
         }
         return skins.toString();
+    }
+
+    public static String listBankStyles(String bankName) throws IOException {
+        JSONArray styles = new JSONArray();
+        for (String collection : BankManager.getCollections(bankName)) {
+            Map<String, Object> info = BankManager.getInfo(bankName,
+                    collection, "style");
+            for (String resource : getItemsInCollection(bankName, collection,
+                    "style")) {
+                if (info != null && info.containsKey(resource)) {
+                    Map value = (Map) info.get(resource);
+                    if (value.containsKey("skin")
+                            && (Boolean) value.get("skin")) {
+                        continue;
+                    }
+                }
+                JSONObject styleMap = new JSONObject();
+                styleMap.put("bank", bankName);
+                styleMap.put("collection", collection);
+                styleMap.put("resource", resource);
+                styleMap.put("name", String.format("%s (%s)", resource.replace(
+                        ".css", ""), collection));
+                styles.add(styleMap);
+            }
+        }
+        return styles.toString();
     }
 
     public static String listImages(String bank) throws IOException {
