@@ -516,9 +516,15 @@ public class ThemeParser {
 
                 // Try to retrieve the style from the resource bank
                 if (style.isRemote() && resourceBankName != null) {
-                    ThemeManager.loadRemoteStyle(resourceBankName, style);
-                    if (!selectorNodes.isEmpty()) {
-                        style.setCustomized(true);
+                    try {
+                        ThemeManager.loadRemoteStyle(resourceBankName, style);
+                        if (!selectorNodes.isEmpty()) {
+                            style.setCustomized(true);
+                        }
+                    } catch (ThemeException e) {
+                        log.warn("Could not load remote style: "
+                                + style.getName() + " from resource bank: "
+                                + resourceBankName);
                     }
                 }
 

@@ -144,10 +144,15 @@ public class ThemeSerializer {
             for (Identifiable object : themeManager.getNamedObjects(themeName,
                     formatTypeName)) {
                 Format format = (Format) object;
+                if (!format.isCustomized()
+                        && ThemeManager.listFormatsDirectlyInheritingFrom(
+                                format).isEmpty()) {
+                    continue;
+                }
                 serializeFormat(format, formatNode);
             }
             for (Format format : themeManager.getFormatsByTypeName(formatTypeName)) {
-                if (format.isRemote() && !format.isCustomized()) {
+                if (format.isNamed()) {
                     continue;
                 }
                 // make sure that the format is used by this theme

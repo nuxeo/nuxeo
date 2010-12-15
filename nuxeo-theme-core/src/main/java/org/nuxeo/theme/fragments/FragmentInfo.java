@@ -17,7 +17,6 @@ package org.nuxeo.theme.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.views.ViewType;
 
 public class FragmentInfo {

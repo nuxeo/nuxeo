@@ -14,69 +14,14 @@
 
 package org.nuxeo.theme.resources;
 
-public class SkinInfo {
-
-    private String name;
-
-    private String bank;
-
-    private String collection;
-
-    private String resource;
-
-    private String preview;
+public class SkinInfo extends StyleInfo {
 
     private boolean base;
 
     public SkinInfo(String name, String bank, String collection,
             String resource, String preview, boolean base) {
-        super();
-        this.name = name;
-        this.bank = bank;
-        this.collection = collection;
-        this.resource = resource;
-        this.preview = preview;
+        super(name, bank, collection, resource, preview);
         this.base = base;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
-
-    public String getCollection() {
-        return collection;
-    }
-
-    public void setCollection(String collection) {
-        this.collection = collection;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    public void setResource(String resource) {
-        this.resource = resource;
-    }
-
-    public String getPreview() {
-        return preview;
-    }
-
-    public void setPreview(String preview) {
-        this.preview = preview;
     }
 
     public boolean isBase() {
