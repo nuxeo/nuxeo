@@ -147,6 +147,29 @@ public class ResourceBank implements Type {
         return skins;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<StyleInfo> getStyles() {
+        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        String src = String.format("%s/json/styles", connectionUrl);
+        String list = "";
+        try {
+            list = new String(Utils.fetchUrl(new URL(src)));
+        } catch (Exception e) {
+            log.error("Could not retrieve the style list: " + src
+                    + " from THEME BANK: " + name);
+            return styles;
+        }
+        for (Object object : JSONArray.fromObject(list)) {
+            Map<String, Object> style = JSONObject.fromObject(object);
+            styles.add(new StyleInfo((String) style.get("name"),
+                    (String) style.get("bank"),
+                    (String) style.get("collection"),
+                    (String) style.get("resource"),
+                    (String) style.get("preview")));
+        }
+        return styles;
+    }
+
     public String getName() {
         return name;
     }

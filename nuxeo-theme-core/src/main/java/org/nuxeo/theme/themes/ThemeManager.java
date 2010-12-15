@@ -763,9 +763,11 @@ public final class ThemeManager implements Registrable {
         themeManager.makeFormatInherit(style, ancestorStyle);
     }
 
-    public static void loadRemoteStyle(String resourceBankName, Style style) {
+    public static void loadRemoteStyle(String resourceBankName, Style style)
+            throws ThemeException {
         if (!style.isNamed()) {
-            return;
+            throw new ThemeException(
+                    "Only named styles can be loaded from resource banks.");
         }
         String styleName = style.getName();
         String cssSource = null;
@@ -773,15 +775,11 @@ public final class ThemeManager implements Registrable {
         if (resourceNameMatcher.find()) {
             String collectionName = resourceNameMatcher.group(2);
             String resourceId = resourceNameMatcher.group(1) + ".css";
-            try {
-                cssSource = ResourceManager.getBankResource(resourceBankName,
-                        collectionName, "style", resourceId);
-            } catch (ThemeException e) {
-                log.error(e, e);
-            }
+            cssSource = ResourceManager.getBankResource(resourceBankName,
+                    collectionName, "style", resourceId);
         }
         if (cssSource == null) {
-            log.error("Unknown style: " + styleName);
+            throw new ThemeException("Unknown style: " + styleName);
         } else {
             Utils.loadCss(style, cssSource, "*");
             style.setRemote(true);
@@ -1628,7 +1626,11 @@ public final class ThemeManager implements Registrable {
     }
 
     public static Element getElementById(final Integer id) {
-        return (Element) Manager.getUidManager().getObjectByUid(id);
+        Object object = Manager.getUidManager().getObjectByUid(id);
+        if (!(object instanceof Element)) {
+            return null;
+        }
+        return (Element) object;
     }
 
     public static Element getElementById(final String id) {
@@ -1636,7 +1638,11 @@ public final class ThemeManager implements Registrable {
     }
 
     public static Format getFormatById(final Integer id) {
-        return (Format) Manager.getUidManager().getObjectByUid(id);
+        Object object = Manager.getUidManager().getObjectByUid(id);
+        if (!(object instanceof Format)) {
+            return null;
+        }
+        return (Format) object;
     }
 
     public static Format getFormatById(final String id) {

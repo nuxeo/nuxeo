@@ -17,7 +17,6 @@ package org.nuxeo.theme.presets;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Preview;
 import org.nuxeo.theme.PreviewType;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
