@@ -13,8 +13,8 @@
 <div class="title">Theme</div>
 <div class="body">
   <ul class="nxthemesSelector">
-    <li><a href="javascript:NXThemesEditor.showThemePreview()">Preview theme</a></li>
     <li><a href="javascript:NXThemesEditor.controlPanel()">Overview</a></li>
+    <li><a href="javascript:NXThemesEditor.showThemePreview()">Preview theme</a></li>
   </ul>
 </div>
 </div>

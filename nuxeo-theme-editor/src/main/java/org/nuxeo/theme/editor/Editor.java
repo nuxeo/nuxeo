@@ -50,6 +50,7 @@ import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.resources.ImageInfo;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.resources.SkinInfo;
+import org.nuxeo.theme.resources.StyleInfo;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeIOException;
@@ -1209,6 +1210,20 @@ public class Editor {
         return info;
     }
 
+    public static List<StyleInfo> getBankStyles(String bankName) {
+        List<StyleInfo> info = new ArrayList<StyleInfo>();
+        if (bankName != null) {
+            ResourceBank resourceBank;
+            try {
+                resourceBank = ThemeManager.getResourceBank(bankName);
+                info = resourceBank.getStyles();
+            } catch (ThemeException e) {
+                e.printStackTrace();
+            }
+        }
+        return info;
+    }
+
     public static SkinInfo getSkinInfo(String bankName, String skinName) {
         ResourceBank resourceBank;
         try {
@@ -1263,11 +1278,41 @@ public class Editor {
         return images;
     }
 
-    public static List<Style> getNamedStyles(String themeName) {
+    public static List<Style> getNamedStyles(String themeName,
+            ResourceBank resourceBank) {
         List<Style> styles = new ArrayList<Style>();
-        for (Identifiable s : Manager.getThemeManager().getNamedObjects(
-                themeName, "style")) {
-            styles.add((Style) s);
+        ThemeManager themeManager = Manager.getThemeManager();
+        for (Identifiable s : themeManager.getNamedObjects(themeName, "style")) {
+            Style style = (Style) s;
+            if (ThemeManager.listFormatsDirectlyInheritingFrom(style).isEmpty()) {
+                continue;
+            }
+            styles.add(style);
+        }
+
+        // Remote styles
+        if (resourceBank != null) {
+            String resourceBankName = resourceBank.getName();
+            for (StyleInfo styleInfo : resourceBank.getStyles()) {
+                String styleName = styleInfo.getName();
+                Style style = (Style) themeManager.getNamedObject(themeName,
+                        "style", styleName);
+                if (style == null) {
+                    style = themeManager.createStyle();
+                    style.setName(styleName);
+                    try {
+                        themeManager.setNamedObject(themeName, "style", style);
+                        ThemeManager.loadRemoteStyle(resourceBankName, style);
+                    } catch (ThemeException e) {
+                        log.error("Could not register remote style: "
+                                + styleName + " from resource bank: "
+                                + resourceBankName, e);
+                    }
+                }
+                if (!styles.contains(style)) {
+                    styles.add(style);
+                }
+            }
         }
         return styles;
     }
