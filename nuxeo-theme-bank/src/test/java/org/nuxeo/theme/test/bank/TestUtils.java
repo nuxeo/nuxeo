@@ -63,20 +63,22 @@ public class TestUtils extends NXRuntimeTestCase {
     public void testGetStyleItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "style");
-        assertEquals("base-skin.css", items.get(0));
-        assertEquals("style.css", items.get(1));
-        assertEquals("main.css", items.get(2));
-        assertEquals("test.css", items.get(3));
-        assertEquals("style-with-preview.css", items.get(4));
+        assertEquals(5, items.size());
+        assertTrue(items.contains("base-skin.css"));
+        assertTrue(items.contains("style.css"));
+        assertTrue(items.contains("main.css"));
+        assertTrue(items.contains("test.css"));
+        assertTrue(items.contains("style-with-preview.css"));
     }
 
     public void testGetPresetItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "preset");
-        assertEquals("font", items.get(0));
-        assertEquals("color", items.get(1));
-        assertEquals("background", items.get(2));
-        assertEquals("border", items.get(3));
+        assertEquals(4, items.size());
+        assertTrue(items.contains("font"));
+        assertTrue(items.contains("color"));
+        assertTrue(items.contains("background"));
+        assertTrue(items.contains("border"));
     }
 
     public void testGetImageItemsInCollections() throws IOException {
