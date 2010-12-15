@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -603,7 +604,7 @@ public abstract class Dialect {
      */
     public String getMatchMixinType(Column mixinsColumn, String mixin,
             boolean positive, String[] returnParam) {
-        returnParam[0] = "%" + mixin + "%";
+        returnParam[0] = "%" + Node.MIXINS_SEP + mixin + Node.MIXINS_SEP + "%";
         return String.format("%s %s ?", mixinsColumn.getFullQuotedName(),
                 positive ? "LIKE" : "NOT LIKE");
     }

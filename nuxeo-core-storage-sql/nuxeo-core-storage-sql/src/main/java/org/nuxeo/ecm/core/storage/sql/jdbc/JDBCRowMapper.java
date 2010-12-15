@@ -1048,7 +1048,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
                         childPrimaryType = (String) value;
                     } else if (key.equals(model.MAIN_MIXIN_TYPES_KEY)) {
-                        childMixinTypes = Node.getMixins((String) value);
+                        childMixinTypes = Node.getMixinsFromDatabase((String) value);
                     }
                 }
                 children.add(new IdWithTypes(childId, childPrimaryType,

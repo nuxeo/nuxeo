@@ -18,16 +18,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -147,23 +145,50 @@ public class Node {
     public static final String[] NO_MIXINS = {};
 
     /**
+     * Gets a database value from a set of mixins.
+     * <p>
+     * The value format includes the separator as initial and final terminator,
+     * to allow proper LIKE matching.
+     */
+    public static String makeMixinsForDatabase(Collection<String> mixins) {
+        if (mixins.isEmpty()) {
+            return null;
+        } else {
+            StringBuilder buf = new StringBuilder(MIXINS_SEP);
+            for (String mixin : mixins) {
+                buf.append(mixin);
+                buf.append(MIXINS_SEP);
+            }
+            return buf.toString();
+        }
+    }
+
+    /**
+     * Gets a mixins array from a database value. Never returns null.
+     */
+    public static String[] getMixinsFromDatabase(String value) {
+        if (value == null) {
+            return NO_MIXINS;
+        } else {
+            // an initial separator is expected
+            if (value.startsWith(MIXINS_SEP)) {
+                value = value.substring(MIXINS_SEP.length());
+            }
+            // the final separator is dropped as split does not return final
+            // empty strings
+            return value.split(MIXINS_SEP);
+        }
+    }
+
+    /**
      * Gets the instance mixins. Mixins from the type are not returned.
      */
     public String[] getMixinTypes() {
         try {
             String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            return getMixins(value);
+            return getMixinsFromDatabase(value);
         } catch (StorageException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /** Gets mixins array from a database value. Never returns null. */
-    public static String[] getMixins(String value) {
-        if (value == null) {
-            return NO_MIXINS;
-        } else {
-            return value.split(MIXINS_SEP);
         }
     }
 
@@ -185,17 +210,15 @@ public class Node {
         if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
             return true; // present in type
         }
-        String mixins;
+        String value;
         try {
-            mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
-        if (mixins != null) {
-            for (String m : mixins.split(MIXINS_SEP)) {
-                if (m.equals(mixin)) {
-                    return true; // present in node
-                }
+        for (String m : getMixinsFromDatabase(value)) {
+            if (m.equals(mixin)) {
+                return true; // present in node
             }
         }
         return false;
@@ -212,22 +235,15 @@ public class Node {
             return false; // already present in type
         }
         try {
-            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            if (mixins == null) {
-                mixins = mixin;
-            } else {
-                for (String m : mixins.split(MIXINS_SEP)) {
-                    if (m.equals(mixin)) {
-                        return false; // already present in node
-                    }
-                }
-                if (mixins.length() != 0) {
-                    mixins += MIXINS_SEP;
-                }
-                mixins += mixin;
+            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            Set<String> mixins = new LinkedHashSet<String>(
+                    Arrays.asList(getMixinsFromDatabase(value)));
+            boolean added = mixins.add(mixin);
+            if (added) {
+                value = makeMixinsForDatabase(mixins);
+                hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, value);
             }
-            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
-            return true;
+            return added;
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
@@ -238,31 +254,16 @@ public class Node {
      */
     public boolean removeMixinType(String mixin) {
         try {
-            boolean removed = false;
-            String mixins = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            if (mixins == null) {
-                return false;
+            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
+            Set<String> mixins = new LinkedHashSet<String>(
+                    Arrays.asList(getMixinsFromDatabase(value)));
+            boolean removed = mixins.remove(mixin);
+            if (removed) {
+                value = makeMixinsForDatabase(mixins);
+                hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, value);
+                clearMixinValues(mixin);
             }
-            String[] ar = mixins.split(MIXINS_SEP);
-            List<String> list = new ArrayList<String>(ar.length);
-            for (String m : ar) {
-                if (m.equals(mixin)) {
-                    removed = true;
-                } else {
-                    list.add(m);
-                }
-            }
-            if (!removed) {
-                return false;
-            }
-            if (list.size() == 0) {
-                mixins = null;
-            } else {
-                mixins = StringUtils.join(list, MIXINS_SEP);
-            }
-            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
-            clearMixinValues(mixin);
-            return true;
+            return removed;
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
