@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -55,7 +56,11 @@ public class EventHandler {
     protected String facet;
 
     @XNode("filters/lifeCycle")
-    protected String lifeCycle;
+    protected void setLifeCycleExpr(String lifeCycles) {
+        lifeCycle = StringUtils.split(lifeCycles, ',', true);
+    }
+
+    protected String[] lifeCycle;
 
     @XNode("filters/pathStartsWith")
     protected String pathStartsWith;
@@ -140,7 +145,7 @@ public class EventHandler {
         this.facet = facet;
     }
 
-    public void setLifeCycle(String lifeCycle) {
+    public void setLifeCycle(String[] lifeCycle) {
         this.lifeCycle = lifeCycle;
     }
 
@@ -160,7 +165,7 @@ public class EventHandler {
         return attribute;
     }
 
-    public String getLifeCycle() {
+    public String[] getLifeCycle() {
         return lifeCycle;
     }
 
@@ -202,9 +207,19 @@ public class EventHandler {
                 return false;
             }
         }
-        if (lifeCycle != null) {
-            if (doc == null
-                    || !lifeCycle.equals(doc.getCurrentLifeCycleState())) {
+        if (lifeCycle != null && lifeCycle.length > 0) {
+            if (doc == null) {
+                return false;
+            }
+            boolean match = false;
+            String currentLc = doc.getCurrentLifeCycleState();
+            for (String lc : lifeCycle) {
+                if (lc.equals(currentLc)) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match) {
                 return false;
             }
         }
@@ -247,5 +262,4 @@ public class EventHandler {
         }
         return true;
     }
-
 }
