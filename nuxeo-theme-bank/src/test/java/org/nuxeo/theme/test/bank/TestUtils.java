@@ -55,7 +55,38 @@ public class TestUtils extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testListSkinsInCollection() {
+    public void testGetCollections() throws IOException {
+        final List<String> collections = Utils.getCollections(BANK_NAME);
+        assertEquals("Test", collections.get(0));
+    }
+
+    public void testGetStyleItemsInCollections() throws IOException {
+        final List<String> items = Utils.getItemsInCollection(BANK_NAME,
+                COLLECTION_NAME, "style");
+        assertEquals("base-skin.css", items.get(0));
+        assertEquals("style.css", items.get(1));
+        assertEquals("main.css", items.get(2));
+        assertEquals("test.css", items.get(3));
+        assertEquals("style-with-preview.css", items.get(4));
+    }
+
+    public void testGetPresetItemsInCollections() throws IOException {
+        final List<String> items = Utils.getItemsInCollection(BANK_NAME,
+                COLLECTION_NAME, "preset");
+        assertEquals("font", items.get(0));
+        assertEquals("color", items.get(1));
+        assertEquals("background", items.get(2));
+        assertEquals("border", items.get(3));
+    }
+
+    public void testGetImageItemsInCollections() throws IOException {
+        final List<String> items = Utils.getItemsInCollection(BANK_NAME,
+                COLLECTION_NAME, "image");
+        assertEquals("emoticon_smile.png", items.get(0));
+        assertEquals("photo.png", items.get(1));
+    }
+
+    public void testListSkinsInCollection() throws IOException {
         final List<String> skins = Utils.listSkinsInCollection(BANK_NAME,
                 COLLECTION_NAME);
         assertEquals("test.css", skins.get(0));
@@ -63,6 +94,10 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     // JSON
+    public void testListCollections() throws IOException {
+        assertEquals("[\"Test\"]", Utils.listCollections(BANK_NAME));
+    }
+
     public void testListBankSkins() throws IOException {
         final String expected = org.nuxeo.theme.Utils.readResourceAsString("skins.json");
         assertEquals(expected, Utils.listBankSkins(BANK_NAME));
@@ -71,6 +106,11 @@ public class TestUtils extends NXRuntimeTestCase {
     public void testListImages() throws IOException {
         assertEquals("[\"Test/emoticon_smile.png\",\"Test/photo.png\"]",
                 Utils.listImages(BANK_NAME));
+    }
+
+    public void testListStyles() throws IOException {
+        assertEquals(org.nuxeo.theme.Utils.readResourceAsString("styles.json"),
+                Utils.listBankStyles(BANK_NAME));
     }
 
     public void disabledTestGetNavTree() throws IOException {
