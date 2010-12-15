@@ -31,10 +31,10 @@ import javax.faces.component.UIComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
@@ -66,10 +66,20 @@ public class DocumentLayoutTagHandler extends TagHandler {
 
     protected final TagAttribute template;
 
+    /**
+     * @since 5.4.1
+     */
+    protected final TagAttribute defaultLayout;
+
+    /**
+     * @since 5.4.1
+     */
+    protected final TagAttribute includeAnyMode;
+
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name",
-            "mode", "value", "template" };
+    protected final String[] reservedVarsArray = { "id", "name", "mode",
+            "value", "template", "defaultLayout", "includeAnyMode" };
 
     public DocumentLayoutTagHandler(TagConfig config) {
         super(config);
@@ -77,6 +87,8 @@ public class DocumentLayoutTagHandler extends TagHandler {
         mode = getRequiredAttribute("mode");
         value = getRequiredAttribute("value");
         template = getAttribute("template");
+        defaultLayout = getAttribute("defaultLayout");
+        includeAnyMode = getAttribute("includeAnyMode");
         vars = tag.getAttributes().getAll();
     }
 
@@ -95,9 +107,20 @@ public class DocumentLayoutTagHandler extends TagHandler {
             return;
         }
         String modeValue = mode.getValue(ctx);
-        String[] layoutNames = typeInfo.getLayouts(modeValue);
+        boolean useAnyMode = true;
+        if (includeAnyMode != null) {
+            useAnyMode = includeAnyMode.getBoolean(ctx);
+        }
+        String[] layoutNames = typeInfo.getLayouts(modeValue,
+                useAnyMode ? BuiltinModes.ANY : null);
         if (layoutNames == null || layoutNames.length == 0) {
-            return;
+            // fallback on default layout
+            if (defaultLayout != null) {
+                layoutNames = new String[] { defaultLayout.getValue() };
+            } else {
+                // no layout => do nothing
+                return;
+            }
         }
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);

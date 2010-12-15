@@ -481,7 +481,10 @@
       <name>mode</name>
       <required>true</required>
       <type>java.lang.String</type>
-      <description>Mode in which layouts must be rendered.</description>
+      <description>
+        Mode in which layouts must be taken on the document definition, as well
+        as rendered.
+      </description>
     </attribute>
     <attribute>
       <name>value</name>
@@ -498,6 +501,25 @@
       <description>
         The template to use for layouts, overriding each of the templates
         declared in the layouts definitions.
+      </description>
+    </attribute>
+    <attribute>
+      <name>defaultLayout</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The default layout to be rendered if no layout is found on the document
+        definition. Available since 5.4.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeAnyMode</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating if layouts declared in the 'any' mode on the document
+        definition should be used if no layout is found for the wanted mode.
+        Defaults to true. Available since 5.4.1.
       </description>
     </attribute>
     <example>
