@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -134,7 +135,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     public List<PublicationNode> getChildrenNodes() throws ClientException {
         DocumentModelList children;
         if (folder.hasFacet(FacetNames.ORDERABLE)) {
-            children = getCoreSession().getChildren(folder.getRef());
+            children = getOrderedChildren();
         } else {
             children = getChildrenSortedByTitle();
         }
@@ -147,17 +148,26 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         return childrenNodes;
     }
 
-    protected DocumentModelList getChildrenSortedByTitle()
-            throws ClientException {
-        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
-        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
+    protected DocumentModelList getOrderedChildren() throws ClientException {
+        return getCoreSession().getChildren(folder.getRef(), null, null,
+                computeGetChildrenFilter(), null);
+    }
+
+    protected Filter computeGetChildrenFilter() {
         FacetFilter facetFilter = new FacetFilter(
                 Arrays.asList(FacetNames.FOLDERISH),
                 Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
         LifeCycleFilter lfFilter = new LifeCycleFilter(
                 LifeCycleConstants.DELETED_STATE, false);
+        return new CompoundFilter(facetFilter, lfFilter);
+    }
+
+    protected DocumentModelList getChildrenSortedByTitle()
+            throws ClientException {
+        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
+        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
         return getCoreSession().getChildren(folder.getRef(), null, null,
-                new CompoundFilter(facetFilter, lfFilter), sorter);
+                computeGetChildrenFilter(), sorter);
     }
 
     public String getTitle() throws ClientException {
