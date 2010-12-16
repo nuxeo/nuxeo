@@ -127,8 +127,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     (PropertyDefinition<GregorianCalendar>) pd, doc,
                     NuxeoTypeHelper.NX_DC_CREATED, true);
         } else if (PropertyIds.LAST_MODIFIED_BY.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyDataLastModifiedBy(
-                    (PropertyDefinition<String>) pd, doc);
+            return (PropertyData<U>) new NuxeoPropertyStringData(
+                    (PropertyDefinition<String>) pd, doc,
+                    NuxeoTypeHelper.NX_DC_LAST_CONTRIBUTOR, true);
         } else if (PropertyIds.LAST_MODIFICATION_DATE.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDateTimeData(
                     (PropertyDefinition<GregorianCalendar>) pd, doc,
@@ -633,32 +634,6 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         public String getFirstValue() {
             Blob blob = getBlob(doc);
             return blob == null ? null : blob.getMimeType();
-        }
-    }
-
-    /**
-     * Property for cmis:lastModifiedBy.
-     */
-    public static class NuxeoPropertyDataLastModifiedBy extends
-            NuxeoPropertyDataBase<String> implements PropertyString {
-
-        protected NuxeoPropertyDataLastModifiedBy(
-                PropertyDefinition<String> propertyDefinition, DocumentModel doc) {
-            super(propertyDefinition, doc);
-        }
-
-        @Override
-        public String getFirstValue() {
-            try {
-                String[] value = (String[]) doc.getPropertyValue("dc:contributors");
-                if (value == null || value.length == 0) {
-                    return null;
-                } else {
-                    return value[0];
-                }
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
         }
     }
 

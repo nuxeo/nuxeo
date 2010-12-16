@@ -112,6 +112,7 @@ public class Helper {
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:modified", cal1);
         file1.setPropertyValue("dc:creator", "michael");
+        file1.setPropertyValue("dc:lastContributor", "john");
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1 = session.createDocument(file1);
@@ -124,7 +125,8 @@ public class Helper {
         file2.setPropertyValue("dc:created", cal2);
         file1.setPropertyValue("dc:creator", "pete");
         file2.setPropertyValue("dc:contributors",
-                new String[] { "bob", "pete" });
+                new String[] { "pete", "bob" });
+        file2.setPropertyValue("dc:lastContributor", "bob");
         file2.setPropertyValue("dc:coverage", "football");
         file2 = session.createDocument(file2);
 
@@ -136,6 +138,7 @@ public class Helper {
                 "testfile3_desc1 testfile3_desc2,  testfile3_desc3");
         file3.setPropertyValue("dc:contributors",
                 new String[] { "bob", "john" });
+        file3.setPropertyValue("dc:lastContributor", "john");
         file3 = session.createDocument(file3);
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",

@@ -93,6 +93,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     public static final String DC_MODIFIED_KEY = "modified";
 
+    public static final String DC_LAST_CONTRIBUTOR_KEY = "lastContributor";
+
     protected Database database;
 
     protected Dialect dialect;
@@ -745,6 +747,10 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (id.equals(PropertyIds.LAST_MODIFICATION_DATE)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(
                     DC_MODIFIED_KEY);
+        }
+        if (id.equals(PropertyIds.LAST_MODIFIED_BY)) {
+            return database.getTable(DC_FRAGMENT_NAME).getColumn(
+                    DC_LAST_CONTRIBUTOR_KEY);
         }
         return null;
     }
