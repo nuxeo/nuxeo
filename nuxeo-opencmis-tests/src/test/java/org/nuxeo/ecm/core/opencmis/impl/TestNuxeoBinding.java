@@ -1089,7 +1089,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         // "'cmis:document'");
         checkWhereTerm("File", PropertyIds.CREATED_BY, "'michael'");
         checkWhereTerm("File", PropertyIds.CREATION_DATE, NOT_NULL);
-        // checkWhereTerm("File", PropertyIds.LAST_MODIFIED_BY, "'bob'");
+        checkWhereTerm("File", PropertyIds.LAST_MODIFIED_BY, "'bob'");
         checkWhereTerm("File", PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         // checkWhereTerm("File", PropertyIds.CHANGE_TOKEN, null);
 
@@ -1149,9 +1149,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testQueryReturnedProperties() throws Exception {
         checkReturnedValue("dc:title", "testfile1_Title");
         checkReturnedValue("dc:modified", NOT_NULL);
+        checkReturnedValue("dc:lastContributor", "john");
         // multi-valued
         checkReturnedValue("dc:subjects", Arrays.asList("foo", "gee/moo"));
-        checkReturnedValue("dc:contributors", Arrays.asList("bob", "pete"),
+        checkReturnedValue("dc:contributors", Arrays.asList("pete", "bob"),
                 "File", "testfile2_Title");
     }
 
@@ -1166,8 +1167,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(PropertyIds.BASE_TYPE_ID, "cmis:document");
         checkReturnedValue(PropertyIds.CREATED_BY, "michael");
         checkReturnedValue(PropertyIds.CREATION_DATE, NOT_NULL);
-        checkReturnedValue(PropertyIds.LAST_MODIFIED_BY, "bob", "File",
-                "testfile2_Title");
+        checkReturnedValue(PropertyIds.LAST_MODIFIED_BY, "john");
         checkReturnedValue(PropertyIds.LAST_MODIFICATION_DATE, NOT_NULL);
         checkReturnedValue(PropertyIds.CHANGE_TOKEN, null);
 

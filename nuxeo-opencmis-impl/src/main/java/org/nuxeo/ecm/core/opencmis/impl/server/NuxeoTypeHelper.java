@@ -95,6 +95,8 @@ public class NuxeoTypeHelper {
 
     public static final String NX_DC_MODIFIED = "dc:modified";
 
+    public static final String NX_DC_LAST_CONTRIBUTOR = "dc:lastContributor";
+
     public static final String NX_ICON = "common:icon";
 
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
