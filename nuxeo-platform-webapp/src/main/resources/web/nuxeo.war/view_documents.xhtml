@@ -22,7 +22,8 @@
   <ui:define name="body">
     <div>
 
-      <nxl:layout name="document_header" mode="view" value="#{currentDocument}" />
+      <nxl:documentLayout mode="header" value="#{currentDocument}"
+        defaultLayout="document_header" includeAnyMode="false" />
 
       <ui:include src="/incl/message_banner.xhtml"/>
 
