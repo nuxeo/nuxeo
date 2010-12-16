@@ -17,12 +17,6 @@
   <name>Nuxeo Chemistry OpenCMIS Bindings</name>
   <description>Nuxeo Core: Chemistry OpenCMIS Bindings</description>
 
-  <properties>
-    <nuxeo.version>5.4.1-SNAPSHOT</nuxeo.version>
-    <nuxeo.opencmis.version>5.4.1-SNAPSHOT</nuxeo.opencmis.version>
-    <chemistry.opencmis.version>0.2.0-incubating-r1040083</chemistry.opencmis.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -39,28 +33,23 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-api</artifactId>
-      <version>${nuxeo.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
-      <version>${nuxeo.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-impl</artifactId>
-      <version>${nuxeo.opencmis.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-server-bindings</artifactId>
-      <version>${chemistry.opencmis.version}</version>
       <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-server-support</artifactId>
-      <version>${chemistry.opencmis.version}</version>
     </dependency>
   </dependencies>
 
