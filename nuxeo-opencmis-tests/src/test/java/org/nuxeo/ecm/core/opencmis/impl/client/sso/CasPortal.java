@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.HttpURLInstaller;
  * @author Stephane Lacoin (aka matic)
  *
  */
-public class CasEnabledPortal {
+public class CasPortal {
 
     protected static final String CMIS_LOCATION = "http://127.0.0.1:8080/nuxeo/atom/cmis";
 
@@ -114,7 +114,9 @@ public class CasEnabledPortal {
 
     protected String validateServiceTicket(String serviceTicket) throws IOException {
         HttpURLConnection connection = connect(casServiceValidateLocation(serviceTicket));
-        assert connection.getResponseCode() == HttpServletResponse.SC_OK;
+        if (connection.getResponseCode() != HttpServletResponse.SC_OK) {
+            throw new Error("Cannot validate ticket");
+        }
         String content = FileUtils.read(connection.getInputStream());
         String iou = extractProxyGrantingTicket(content);
         String id = proxyGrantingTickets.remove(iou);
@@ -134,7 +136,9 @@ public class CasEnabledPortal {
 
     protected String requestProxyTicket(String proxyGrantingTicket, String targetServiceLocation) throws IOException {
         HttpURLConnection proxyConnection = connect(casProxyLocation(proxyGrantingTicket, targetServiceLocation));
-        assert proxyConnection.getResponseCode() == HttpServletResponse.SC_OK;
+        if (proxyConnection.getResponseCode() != HttpServletResponse.SC_OK) {
+            throw new Error("Cannot get service ticket for proxy");
+        }
         String proxyContent = FileUtils.read(proxyConnection.getInputStream());
         return extractProxyTicket(proxyContent);
     }
@@ -147,8 +151,9 @@ public class CasEnabledPortal {
             String serviceTicket = req.getParameter("ticket");
             String proxyGrantingTicket = validateServiceTicket(serviceTicket);
             String serviceTargetTicket = requestProxyTicket(proxyGrantingTicket, CMIS_LOCATION);
-            CasEnabledCmisClient cmis = new CasEnabledCmisClient(CMIS_LOCATION);
+            CasClient cmis = new CasClient(CMIS_LOCATION);
             cmis.newGreeter().proxyLogon(serviceTargetTicket, TICKET_ACCEPT_LOCATION, CMIS_LOCATION);
+            cmis.saveClientContext();
             try {
                 req.getSession().setAttribute("CMIS", cmis);
             } catch (Exception e) {
@@ -190,13 +195,13 @@ public class CasEnabledPortal {
             }
 
             // restore thread context
-            CasEnabledCmisClient cmis = (CasEnabledCmisClient) http.getAttribute("CMIS");
-            cmis.restoreThreadContext();
+            CasClient cmis = (CasClient) http.getAttribute("CMIS");
+            cmis.restoreClientContext();
 
             // fetch remote documents
             Session repository;
             try {
-                repository = cmis.newSession();
+                repository = cmis.connect();
             } catch (Exception e) {
                 throw new ServletException("cannot connect to repo", e);
             }
@@ -246,7 +251,7 @@ public class CasEnabledPortal {
     }
 
     public static void main(String args[]) {
-        CasEnabledPortal app = new CasEnabledPortal();
+        CasPortal app = new CasPortal();
         app.start();
     }
 }

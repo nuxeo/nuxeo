@@ -16,23 +16,21 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client.protocol.http;
 
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 
-public class HttpURLStreamHandlerFactory implements URLStreamHandlerFactory{
+public class HttpURLMultiThreadedClientProvider implements HttpURLClientProvider {
 
-    HttpURLClientProvider provider = new HttpURLMultiThreadedClientProvider();
+    HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-    protected HttpURLStreamHandlerFactory(HttpURLClientProvider provider) {
-        this.provider = provider;
+    @Override
+    public HttpClient getClient() {
+        return client;
     }
 
     @Override
-    public URLStreamHandler createURLStreamHandler(String protocol) {
-        if ("http".equals(protocol)) {
-            return new HttpURLStreamHandler(provider);
-        }
-        return null;
+    public void setClient(HttpClient client) {
+        this.client = client;
     }
 
 }

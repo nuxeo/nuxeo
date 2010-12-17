@@ -30,7 +30,7 @@ public class HttpURLInstaller {
 
     public static final HttpURLInstaller INSTANCE = new HttpURLInstaller();
 
-    protected final HttpURLClientProvider clientProvider = new HttpURLClientProvider();
+    protected final HttpURLClientProvider clientProvider = new HttpURLMultiThreadedClientProvider();
 
     public HttpClient getClient() {
         return clientProvider.getClient();
