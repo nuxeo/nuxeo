@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -44,6 +42,8 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Restlet to help LiveEdit clients update the blob content of a document
@@ -115,7 +115,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
                 String filenameFieldName = getQueryParamValue(req,
                         FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
                 blobPropertyName = schemaName + ":" + blobFieldName;
-                filenameFieldName = schemaName + ":" + filenameFieldName;
+                filenamePropertyName = schemaName + ":" + filenameFieldName;
             }
 
             InputStream is = req.getEntity().getStream();
