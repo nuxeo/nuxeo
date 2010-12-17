@@ -48,6 +48,7 @@ public enum ColumnType {
     NODEVAL, // same type as node id, not a fk (versionable, cluster...)
     NODEARRAY, // array of node if supported
     SYSNAME, // system names (type names etc)
+    SYSNAMEARRAY, // system names array (mixins), string if not suppported
     TINYINT, // cluster inval kind
     INTEGER, // complex prop order, ordered doc
     FTINDEXED, // summary ft column being indexed

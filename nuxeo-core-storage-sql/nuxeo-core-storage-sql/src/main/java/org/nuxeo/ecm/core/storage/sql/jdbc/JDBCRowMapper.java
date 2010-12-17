@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
@@ -1048,7 +1047,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
                         childPrimaryType = (String) value;
                     } else if (key.equals(model.MAIN_MIXIN_TYPES_KEY)) {
-                        childMixinTypes = Node.getMixinsFromDatabase((String) value);
+                        childMixinTypes = (String[]) value;
                     }
                 }
                 children.add(new IdWithTypes(childId, childPrimaryType,

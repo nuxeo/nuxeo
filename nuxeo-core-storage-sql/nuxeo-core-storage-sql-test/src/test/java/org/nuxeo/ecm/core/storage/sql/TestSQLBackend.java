@@ -1393,8 +1393,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         node.setSimpleProperty("tst:title", "hello world");
         session.save();
         try {
-            session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
+            session.query("SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
                     QueryFilter.EMPTY, false);
             fail("Expected fulltext to be disabled and throw an exception");
         } catch (StorageException e) {
@@ -1630,7 +1629,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
             return;
         }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
-        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
+                Boolean.TRUE);
 
         try {
             Node ver;
@@ -1639,20 +1639,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
             ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000000");
             assertNotNull(ver);
             assertEquals("mynddoc", ver.getName());
-            assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
-            assertEquals("Administrator", ver.getSimpleProperty("dc:lastContributor").getString());
+            assertEquals("Administrator",
+                    ver.getSimpleProperty("dc:creator").getString());
+            assertEquals("Administrator",
+                    ver.getSimpleProperty("dc:lastContributor").getString());
 
             ver = session.getNodeById("12121212-dddd-dddd-dddd-000000000001");
             assertNotNull(ver);
             assertEquals("myrddoc", ver.getName());
-            assertEquals("Administrator", ver.getSimpleProperty("dc:creator").getString());
-            assertEquals("FakeOne", ver.getSimpleProperty("dc:lastContributor").getString());
+            assertEquals("Administrator",
+                    ver.getSimpleProperty("dc:creator").getString());
+            assertEquals("FakeOne",
+                    ver.getSimpleProperty("dc:lastContributor").getString());
         } finally {
             JDBCMapper.testProps.clear();
         }
     }
 
     public void testMixinAPI() throws Exception {
+        PartialList<Serializable> res;
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -1660,10 +1665,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertFalse(node.hasMixinType("Aged"));
         assertFalse(node.hasMixinType("Orderable"));
         assertEquals(0, node.getMixinTypes().length);
+        session.save();
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+        res = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
 
         assertTrue(node.addMixinType("Aged"));
+        session.save();
         assertTrue(node.hasMixinType("Aged"));
         assertEquals(1, node.getMixinTypes().length);
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
 
         assertFalse(node.addMixinType("Aged"));
         assertEquals(1, node.getMixinTypes().length);
@@ -1682,9 +1701,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(2, node.getMixinTypes().length);
 
         assertTrue(node.removeMixinType("Aged"));
+        session.save();
         assertFalse(node.hasMixinType("Aged"));
         assertTrue(node.hasMixinType("Orderable"));
         assertEquals(1, node.getMixinTypes().length);
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
 
         assertFalse(node.removeMixinType("Aged"));
         assertEquals(1, node.getMixinTypes().length);

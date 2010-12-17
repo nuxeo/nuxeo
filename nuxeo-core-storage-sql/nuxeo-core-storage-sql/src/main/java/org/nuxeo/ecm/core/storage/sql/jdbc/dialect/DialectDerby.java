@@ -22,16 +22,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -78,6 +74,7 @@ public class DialectDerby extends Dialect {
         case NODEVAL:
             return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
         case SYSNAME:
+        case SYSNAMEARRAY:
             return jdbcInfo("VARCHAR(250)", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("SMALLINT", Types.TINYINT);
@@ -121,14 +118,8 @@ public class DialectDerby extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            String v;
-            if (column.getType() == ColumnType.BLOBID) {
-                v = ((Binary) value).getDigest();
-            } else {
-                v = (String) value;
-            }
-            ps.setString(index, v);
-            break;
+            setToPreparedStatementString(ps, index, value, column);
+            return;
         case Types.SMALLINT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
@@ -140,9 +131,7 @@ public class DialectDerby extends Dialect {
             ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.TIMESTAMP:
-            Calendar cal = (Calendar) value;
-            Timestamp ts = new Timestamp(cal.getTimeInMillis());
-            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         default:
             throw new SQLException("Unhandled JDBC type: "
@@ -157,12 +146,7 @@ public class DialectDerby extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            String string = rs.getString(index);
-            if (column.getType() == ColumnType.BLOBID && string != null) {
-                return getBinaryManager().getBinary(string);
-            } else {
-                return string;
-            }
+            return getFromResultSetString(rs, index, column);
         case Types.SMALLINT:
             return rs.getBoolean(index);
         case Types.INTEGER:
@@ -171,14 +155,7 @@ public class DialectDerby extends Dialect {
         case Types.DOUBLE:
             return rs.getDouble(index);
         case Types.TIMESTAMP:
-            Timestamp ts = rs.getTimestamp(index);
-            if (ts == null) {
-                return null;
-            } else {
-                Serializable cal = new GregorianCalendar(); // XXX timezone
-                ((Calendar) cal).setTimeInMillis(ts.getTime());
-                return cal;
-            }
+            return getFromResultSetTimestamp(rs, index, column);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }

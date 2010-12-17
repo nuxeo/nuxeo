@@ -27,12 +27,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -47,7 +44,6 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -145,6 +141,8 @@ public class DialectPostgreSQL extends Dialect {
             return jdbcInfo("varchar(36)[]", Types.ARRAY);
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
+        case SYSNAMEARRAY:
+            return jdbcInfo("varchar(250)[]", Types.ARRAY);
         case TINYINT:
             return jdbcInfo("int2", Types.SMALLINT);
         case INTEGER:
@@ -187,14 +185,8 @@ public class DialectPostgreSQL extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            String v;
-            if (column.getType() == ColumnType.BLOBID) {
-                v = ((Binary) value).getDigest();
-            } else {
-                v = (String) value;
-            }
-            ps.setString(index, v);
-            break;
+            setToPreparedStatementString(ps, index, value, column);
+            return;
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
@@ -209,9 +201,7 @@ public class DialectPostgreSQL extends Dialect {
             ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.TIMESTAMP:
-            Calendar cal = (Calendar) value;
-            Timestamp ts = new Timestamp(cal.getTimeInMillis());
-            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            setToPreparedStatementTimestamp(ps, index, value, column);
             return;
         case Types.ARRAY:
             Array array = createArrayOf(Types.VARCHAR, (Object[]) value,
@@ -237,12 +227,7 @@ public class DialectPostgreSQL extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            String string = rs.getString(index);
-            if (column.getType() == ColumnType.BLOBID && string != null) {
-                return getBinaryManager().getBinary(string);
-            } else {
-                return string;
-            }
+            return getFromResultSetString(rs, index, column);
         case Types.BIT:
             return rs.getBoolean(index);
         case Types.SMALLINT:
@@ -252,16 +237,10 @@ public class DialectPostgreSQL extends Dialect {
         case Types.DOUBLE:
             return rs.getDouble(index);
         case Types.TIMESTAMP:
-            Timestamp ts = rs.getTimestamp(index);
-            if (ts == null) {
-                return null;
-            } else {
-                Serializable cal = new GregorianCalendar(); // XXX timezone
-                ((Calendar) cal).setTimeInMillis(ts.getTime());
-                return cal;
-            }
+            return getFromResultSetTimestamp(rs, index, column);
         case Types.ARRAY:
-            return (Serializable) rs.getArray(index).getArray();
+            Array array = rs.getArray(index);
+            return array == null ? null : (Serializable) array.getArray();
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -407,6 +386,19 @@ public class DialectPostgreSQL extends Dialect {
         } else {
             return String.format("NX_IN_TREE(%s, ?)", idColumnName);
         }
+    }
+
+    @Override
+    public String getMatchMixinType(Column mixinsColumn, String mixin,
+            boolean positive, String[] returnParam) {
+        returnParam[0] = mixin;
+        String sql = "ARRAY[?] <@ " + mixinsColumn.getFullQuotedName();
+        return positive ? sql : "NOT(" + sql + ")";
+    }
+
+    @Override
+    public boolean supportsSysNameArray() {
+        return true;
     }
 
     @Override

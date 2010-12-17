@@ -1178,7 +1178,7 @@ public class Model {
                 ColumnType.SYSNAME);
         addPropertyInfo(null, MAIN_MIXIN_TYPES_PROP, PropertyType.STRING,
                 HIER_TABLE_NAME, MAIN_MIXIN_TYPES_KEY, false, null,
-                ColumnType.SYSNAME);
+                ColumnType.SYSNAMEARRAY);
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);

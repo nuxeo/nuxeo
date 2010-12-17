@@ -30,12 +30,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +44,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -57,7 +53,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
 
 /**
  * Oracle-specific dialect.
@@ -128,6 +123,7 @@ public class DialectOracle extends Dialect {
         case NODEVAL:
             return jdbcInfo("VARCHAR2(36)", Types.VARCHAR);
         case SYSNAME:
+        case SYSNAMEARRAY:
             return jdbcInfo("VARCHAR2(250)", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("NUMBER(3,0)", Types.TINYINT);
@@ -194,14 +190,8 @@ public class DialectOracle extends Dialect {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
         case Types.CLOB:
-            String v;
-            if (column.getType() == ColumnType.BLOBID) {
-                v = ((Binary) value).getDigest();
-            } else {
-                v = (String) value;
-            }
-            ps.setString(index, v);
-            break;
+            setToPreparedStatementString(ps, index, value, column);
+            return;
         case Types.BIT:
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
@@ -217,16 +207,8 @@ public class DialectOracle extends Dialect {
             ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.TIMESTAMP:
-            Calendar cal = (Calendar) value;
-            Timestamp ts = new Timestamp(cal.getTimeInMillis());
-            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            setToPreparedStatementTimestamp(ps, index, value, column);
             return;
-            // case Types.OTHER:
-            // if (column.getType() == Type.FTSTORED) {
-            // ps.setString(index, (String) value);
-            // return;
-            // }
-            // throw new SQLException("Unhandled type: " + column.getType());
         default:
             throw new SQLException("Unhandled JDBC type: "
                     + column.getJdbcType());
@@ -239,12 +221,7 @@ public class DialectOracle extends Dialect {
             throws SQLException {
         switch (column.getJdbcType()) {
         case Types.VARCHAR:
-            String string = rs.getString(index);
-            if (column.getType() == ColumnType.BLOBID && string != null) {
-                return getBinaryManager().getBinary(string);
-            } else {
-                return string;
-            }
+            return getFromResultSetString(rs, index, column);
         case Types.CLOB:
             // Oracle cannot read CLOBs using rs.getString when the ResultSet is
             // a ScrollableResultSet (the standard OracleResultSetImpl works
@@ -274,14 +251,7 @@ public class DialectOracle extends Dialect {
         case Types.DOUBLE:
             return rs.getDouble(index);
         case Types.TIMESTAMP:
-            Timestamp ts = rs.getTimestamp(index);
-            if (ts == null) {
-                return null;
-            } else {
-                Serializable cal = new GregorianCalendar(); // XXX timezone
-                ((Calendar) cal).setTimeInMillis(ts.getTime());
-                return cal;
-            }
+            return getFromResultSetTimestamp(rs, index, column);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }

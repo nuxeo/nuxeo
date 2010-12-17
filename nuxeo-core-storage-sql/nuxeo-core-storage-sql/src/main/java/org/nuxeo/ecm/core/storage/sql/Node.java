@@ -18,9 +18,10 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -140,53 +141,17 @@ public class Node {
         return getPrimaryType().equals(model.PROXY_TYPE);
     }
 
-    public static final String MIXINS_SEP = ",";
-
-    public static final String[] NO_MIXINS = {};
-
-    /**
-     * Gets a database value from a set of mixins.
-     * <p>
-     * The value format includes the separator as initial and final terminator,
-     * to allow proper LIKE matching.
-     */
-    public static String makeMixinsForDatabase(Collection<String> mixins) {
-        if (mixins.isEmpty()) {
-            return null;
-        } else {
-            StringBuilder buf = new StringBuilder(MIXINS_SEP);
-            for (String mixin : mixins) {
-                buf.append(mixin);
-                buf.append(MIXINS_SEP);
-            }
-            return buf.toString();
-        }
-    }
-
-    /**
-     * Gets a mixins array from a database value. Never returns null.
-     */
-    public static String[] getMixinsFromDatabase(String value) {
-        if (value == null) {
-            return NO_MIXINS;
-        } else {
-            // an initial separator is expected
-            if (value.startsWith(MIXINS_SEP)) {
-                value = value.substring(MIXINS_SEP.length());
-            }
-            // the final separator is dropped as split does not return final
-            // empty strings
-            return value.split(MIXINS_SEP);
-        }
-    }
+    private static final String[] NO_MIXINS = {};
 
     /**
      * Gets the instance mixins. Mixins from the type are not returned.
+     * <p>
+     * Never returns {@code null}.
      */
     public String[] getMixinTypes() {
         try {
-            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            return getMixinsFromDatabase(value);
+            String[] value = (String[]) hierFragment.get(model.MAIN_MIXIN_TYPES_KEY);
+            return value == null ? NO_MIXINS : value.clone();
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
@@ -210,13 +175,7 @@ public class Node {
         if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
             return true; // present in type
         }
-        String value;
-        try {
-            value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
-        for (String m : getMixinsFromDatabase(value)) {
+        for (String m : getMixinTypes()) {
             if (m.equals(mixin)) {
                 return true; // present in node
             }
@@ -234,39 +193,39 @@ public class Node {
         if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
             return false; // already present in type
         }
+        List<String> list = new ArrayList<String>(Arrays.asList(getMixinTypes()));
+        if (list.contains(mixin)) {
+            return false; // already present in node
+        }
+        list.add(mixin);
         try {
-            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            Set<String> mixins = new LinkedHashSet<String>(
-                    Arrays.asList(getMixinsFromDatabase(value)));
-            boolean added = mixins.add(mixin);
-            if (added) {
-                value = makeMixinsForDatabase(mixins);
-                hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, value);
-            }
-            return added;
+            String[] mixins = list.toArray(new String[list.size()]);
+            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
+        return true;
     }
 
     /**
      * Removes a mixin.
      */
     public boolean removeMixinType(String mixin) {
+        List<String> list = new ArrayList<String>(Arrays.asList(getMixinTypes()));
+        if (!list.remove(mixin)) {
+            return false; // not present in node
+        }
         try {
-            String value = hierFragment.getString(model.MAIN_MIXIN_TYPES_KEY);
-            Set<String> mixins = new LinkedHashSet<String>(
-                    Arrays.asList(getMixinsFromDatabase(value)));
-            boolean removed = mixins.remove(mixin);
-            if (removed) {
-                value = makeMixinsForDatabase(mixins);
-                hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, value);
-                clearMixinValues(mixin);
+            String[] mixins = list.toArray(new String[list.size()]);
+            if (mixins.length == 0) {
+                mixins = null;
             }
-            return removed;
+            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+            clearMixinValues(mixin);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
+        return true;
     }
 
     protected void clearMixinValues(String mixin) throws StorageException {

@@ -27,16 +27,22 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -163,8 +169,78 @@ public abstract class Dialect {
     public abstract void setToPreparedStatement(PreparedStatement ps,
             int index, Serializable value, Column column) throws SQLException;
 
+    public static final String ARRAY_SEP = "|";
+
+    protected void setToPreparedStatementString(PreparedStatement ps,
+            int index, Serializable value, Column column) throws SQLException {
+        String v;
+        ColumnType type = column.getType();
+        if (type == ColumnType.BLOBID) {
+            v = ((Binary) value).getDigest();
+        } else if (type == ColumnType.SYSNAMEARRAY) {
+            // implementation when arrays aren't supported
+            String[] strings = (String[]) value;
+            if (strings == null) {
+                v = null;
+            } else {
+                // use initial and final separator as terminator
+                StringBuilder buf = new StringBuilder(ARRAY_SEP);
+                for (String string : strings) {
+                    buf.append(string);
+                    buf.append(ARRAY_SEP);
+                }
+                v = buf.toString();
+            }
+        } else {
+            v = (String) value;
+        }
+        ps.setString(index, v);
+    }
+
+    protected void setToPreparedStatementTimestamp(PreparedStatement ps,
+            int index, Serializable value, Column column) throws SQLException {
+        Calendar cal = (Calendar) value;
+        Timestamp ts = new Timestamp(cal.getTimeInMillis());
+        ps.setTimestamp(index, ts, cal); // cal passed for timezone
+    }
+
     public abstract Serializable getFromResultSet(ResultSet rs, int index,
             Column column) throws SQLException;
+
+    protected Serializable getFromResultSetString(ResultSet rs, int index,
+            Column column) throws SQLException {
+        String string = rs.getString(index);
+        if (string == null) {
+            return null;
+        }
+        ColumnType type = column.getType();
+        if (type == ColumnType.BLOBID) {
+            return getBinaryManager().getBinary(string);
+        } else if (type == ColumnType.SYSNAMEARRAY) {
+            // implementation when arrays aren't supported
+            // an initial separator is expected
+            if (string.startsWith(ARRAY_SEP)) {
+                string = string.substring(ARRAY_SEP.length());
+            }
+            // the final separator is dropped as split does not return final
+            // empty strings
+            return string.split(Pattern.quote(ARRAY_SEP));
+        } else {
+            return string;
+        }
+    }
+
+    protected Serializable getFromResultSetTimestamp(ResultSet rs, int index,
+            Column column) throws SQLException {
+        Timestamp ts = rs.getTimestamp(index);
+        if (ts == null) {
+            return null;
+        } else {
+            Serializable cal = new GregorianCalendar(); // XXX timezone
+            ((Calendar) cal).setTimeInMillis(ts.getTime());
+            return cal;
+        }
+    }
 
     public boolean storesUpperCaseIdentifiers() {
         return storesUpperCaseIdentifiers;
@@ -604,7 +680,7 @@ public abstract class Dialect {
      */
     public String getMatchMixinType(Column mixinsColumn, String mixin,
             boolean positive, String[] returnParam) {
-        returnParam[0] = "%" + Node.MIXINS_SEP + mixin + Node.MIXINS_SEP + "%";
+        returnParam[0] = "%" + ARRAY_SEP + mixin + ARRAY_SEP + "%";
         return String.format("%s %s ?", mixinsColumn.getFullQuotedName(),
                 positive ? "LIKE" : "NOT LIKE");
     }
@@ -793,6 +869,14 @@ public abstract class Dialect {
      * @return true if ARRAY values are supported
      */
     public boolean supportsArrays() {
+        return false;
+    }
+
+    /**
+     * Checks if the dialect supports storing arrays of system names (for mixins
+     * for instance).
+     */
+    public boolean supportsSysNameArray() {
         return false;
     }
 
