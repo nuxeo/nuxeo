@@ -152,13 +152,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         // we cannot use DeploymentPreprocessor since the initial preprocessing
         // will be overridden
         if (file.isDirectory()) {
-            File war = new File(file, "nuxeo.war");
+            File war = new File(file, "web");
+            war = new File(war, "nuxeo.war");
             if (war.isDirectory()) {
                 FileUtils.copyTree(war, getAppDir());
             }
         } else if (file.isFile()) { // a jar
             File war = getWarDir();
-            ZipUtils.unzip("nuxeo.war", file, war);
+            ZipUtils.unzip("web/nuxeo.war", file, war);
         }
     }
 
