@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -56,7 +57,7 @@ public class SetDocumentProperty {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         Property p = doc.getProperty(xpath);
         Type type = p.getField().getType();
@@ -77,24 +78,24 @@ public class SetDocumentProperty {
         return doc;
     }
 
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
+//    @OperationMethod
+//    public DocumentModelList run(DocumentModelList docs) throws Exception {
+//        DocumentModelListImpl result = new DocumentModelListImpl(
+//                (int) docs.totalSize());
+//        for (DocumentModel doc : docs) {
+//            result.add(run(doc));
+//        }
+//        return result;
+//    }
 
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(run(session.getDocument(doc)));
-        }
-        return result;
-    }
+//    @OperationMethod
+//    public DocumentModelList run(DocumentRefList docs) throws Exception {
+//        DocumentModelListImpl result = new DocumentModelListImpl(
+//                (int) docs.totalSize());
+//        for (DocumentRef doc : docs) {
+//            result.add(run(session.getDocument(doc)));
+//        }
+//        return result;
+//    }
 
 }

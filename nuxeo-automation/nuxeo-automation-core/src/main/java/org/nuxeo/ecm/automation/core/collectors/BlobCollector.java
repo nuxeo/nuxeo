@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,19 +14,22 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation;
+package org.nuxeo.ecm.automation.core.collectors;
+
+import org.nuxeo.ecm.automation.OutputCollector;
+import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * A compiled operation chain. The chain is immutable (cannot be modified after
- * it was compiled). This is a self contained object - once built it can be
- * used at any time to invoke the operations in the chain. Not that the chain
- * must be executed on a context compatible with the one used for compiling
- * (which provides the same input type)
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
-public interface CompiledChain {
+public class BlobCollector extends BlobList implements OutputCollector<Blob, BlobList> {
 
-    Object invoke(OperationContext ctx) throws OperationException;
+    private static final long serialVersionUID = 5167860889224514027L;
 
+    @Override
+    public BlobList getOutput() {
+        return this;
+    }
 }

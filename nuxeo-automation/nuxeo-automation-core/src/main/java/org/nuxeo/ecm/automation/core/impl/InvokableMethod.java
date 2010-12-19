@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -37,9 +38,8 @@ public class InvokableMethod {
 
     public static final int EXACT_MATCH_PRIORITY = 4;
 
-    public static final int USER_PRIORITY = 9; // priorities from 1 to 10 are
-
-    // reserved for internal use.
+    // priorities from 1 to 16 are reserved for internal use.
+    public static final int USER_PRIORITY = 16;
 
     protected OperationType op;
 
@@ -51,7 +51,8 @@ public class InvokableMethod {
 
     protected int priority;
 
-    public InvokableMethod(OperationType op, Method method) {
+
+    public InvokableMethod(OperationType op, Method method, OperationMethod anno) {
         produce = method.getReturnType();
         Class<?>[] p = method.getParameterTypes();
         if (p.length > 1) {
@@ -66,11 +67,15 @@ public class InvokableMethod {
         // }
         this.op = op;
         this.method = method;
-        this.priority = method.getAnnotation(OperationMethod.class).priority();
+        this.priority = anno.priority();
         if (priority > 0) {
             priority += USER_PRIORITY;
         }
         consume = p.length == 0 ? Void.TYPE : p[0];
+    }
+
+    public boolean isIterable() {
+        return false;
     }
 
     public int getPriority() {
@@ -108,43 +113,41 @@ public class InvokableMethod {
         return 0;
     }
 
-    /**
-     * Returns 0 for no match.
-     */
-    public int outputMatch(Class<?> out) {
-        if (produce == out) {
-            return priority > 0 ? priority : EXACT_MATCH_PRIORITY;
+
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args, Object input)
+            throws Exception {
+        Object target = op.newInstance(ctx, args);
+        if (consume == Void.TYPE) {
+            // preserve last output for void methods
+            Object out = method.invoke(target);
+            return produce == Void.TYPE ? input : out;
+        } else {
+            if (input != null
+                    && !consume.isAssignableFrom(input.getClass())) {
+                // try to adapt
+                input = op.getService().getAdaptedValue(ctx, input, consume);
+            }
+            return method.invoke(target, input);
         }
-        if (out.isAssignableFrom(produce)) {
-            return priority > 0 ? priority : ISTANCE_OF_PRIORITY;
-        }
-        if (op.getService().isTypeAdaptable(produce, out)) {
-            return priority > 0 ? priority : ADAPTABLE_PRIORITY;
-        }
-        return 0;
     }
 
     public Object invoke(OperationContext ctx, Map<String, Object> args)
-            throws Exception {
+            throws OperationException {
         try {
-            Object input = ctx.getInput();
-            Object target = op.newInstance(ctx, args);
-            if (consume == Void.TYPE) {
-                // preserve last output for void methods
-                Object out = method.invoke(target);
-                return produce == Void.TYPE ? input : out;
+            return doInvoke(ctx, args, ctx.getInput());
+        } catch (OperationException e) {
+            throw e;
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof OperationException) {
+                throw (OperationException)t;
             } else {
-                if (input != null
-                        && !consume.isAssignableFrom(input.getClass())) {
-                    // try to adapt
-                    input = op.getService().getAdaptedValue(ctx, input, consume);
-                }
-                return method.invoke(target, input);
+                throw new OperationException("Failed to invoke operation "
+                    + op.getId(), t);
             }
-        } catch (Exception e) {
-            // be more explicit about the operation that failed
+        } catch (Throwable t) {
             throw new OperationException("Failed to invoke operation "
-                    + op.getId(), e);
+                    + op.getId(), t);
         }
     }
 

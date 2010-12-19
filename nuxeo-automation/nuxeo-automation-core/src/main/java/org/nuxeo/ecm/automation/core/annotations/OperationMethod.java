@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.nuxeo.ecm.automation.OutputCollector;
+
 /**
  * To be used to mark methods provided by an operation. A method must have at
  * most one argument which is the operation input and a return type which is
@@ -69,6 +71,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface OperationMethod {
+
+    /**
+     * If defined the method is iterable.
+     * <p>
+     * It means that when such a method is called with an input type of <code>Iterable<INPUT></code>
+     * (where INPUT is the declared method input type) the method will be iteratively called
+     * to generate all the outputs and collect them using the given OutputCollector.
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+    Class<? extends OutputCollector> collector() default OutputCollector.class;
 
     int priority() default 0;
 
