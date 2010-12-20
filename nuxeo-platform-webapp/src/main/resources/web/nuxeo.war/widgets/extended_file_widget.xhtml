@@ -33,7 +33,7 @@
     <nxu:methodResult name="isLiveEditable"
       value="#{liveEditHelper.isLiveEditable(field_0)}">
       <h:panelGroup
-        rendered="#{isLiveEditable}">
+        rendered="#{isLiveEditable and !document.isProxy()}">
         <h:outputText value=" | " />
         <h:outputLink
           value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
