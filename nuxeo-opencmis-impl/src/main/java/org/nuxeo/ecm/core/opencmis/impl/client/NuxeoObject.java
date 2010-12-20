@@ -35,20 +35,21 @@ import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.TransientCmisObject;
 import org.apache.chemistry.opencmis.client.api.TransientDocument;
 import org.apache.chemistry.opencmis.client.api.TransientFolder;
+import org.apache.chemistry.opencmis.client.api.TransientRelationship;
 import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
-import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
@@ -72,8 +73,6 @@ public abstract class NuxeoObject implements CmisObject {
 
     protected final ObjectType type;
 
-    protected static final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
-
     public static NuxeoObject construct(NuxeoSession session,
             NuxeoObjectData data, ObjectType type) {
         BaseTypeId baseTypeId = type.getBaseTypeId();
@@ -85,7 +84,7 @@ public abstract class NuxeoObject implements CmisObject {
         case CMIS_POLICY:
             throw new UnsupportedOperationException(baseTypeId.toString());
         case CMIS_RELATIONSHIP:
-            throw new UnsupportedOperationException(baseTypeId.toString());
+            return new NuxeoRelationship(session, data, type);
         default:
             throw new RuntimeException(baseTypeId.toString());
         }
@@ -109,6 +108,10 @@ public abstract class NuxeoObject implements CmisObject {
         if (TransientFolder.class.isAssignableFrom(adapterInterface)
                 && this instanceof NuxeoFolder) {
             return (T) new NuxeoTransientFolder(this);
+        }
+        if (TransientRelationship.class.isAssignableFrom(adapterInterface)
+                && this instanceof NuxeoRelationship) {
+            return (T) new NuxeoTransientRelationship(this);
         }
         throw new CmisRuntimeException("Cannot adapt to "
                 + adapterInterface.getName());
@@ -308,6 +311,12 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public long getRefreshTimestamp() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<CmisExtensionElement> getExtensions(ExtensionLevel level) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

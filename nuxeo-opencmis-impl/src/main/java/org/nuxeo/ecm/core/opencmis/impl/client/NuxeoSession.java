@@ -37,10 +37,12 @@ import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.EmptyItemIterable;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
@@ -72,7 +74,7 @@ public class NuxeoSession implements Session {
 
     private final String repositoryId;
 
-    private final NuxeoObjectFactory objectFactory;
+    protected final NuxeoObjectFactory objectFactory;
 
     private final NuxeoCmisService service;
 
@@ -147,13 +149,35 @@ public class NuxeoSession implements Session {
                 versioningState, null, null, null);
     }
 
+    /** Converts from an untyped map to a {@link Properties} object. */
+    protected Properties convertProperties(Map<String, ?> properties) {
+        if (properties == null) {
+            return null;
+        }
+        // find type
+        String typeId = (String) properties.get(PropertyIds.OBJECT_TYPE_ID);
+        if (typeId == null) {
+            throw new IllegalArgumentException("Missing type");
+        }
+        ObjectType type = getTypeDefinition(typeId);
+        if (type == null) {
+            throw new IllegalArgumentException("Unknown type: " + typeId);
+        }
+        return objectFactory.convertProperties(properties, type, null);
+    }
+
     @Override
     public ObjectId createDocument(Map<String, ?> properties,
             ObjectId folderId, ContentStream contentStream,
             VersioningState versioningState, List<Policy> policies,
             List<Ace> addAces, List<Ace> removeAces) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String id = service.createDocument(repositoryId,
+                convertProperties(properties), folderId == null ? null
+                        : folderId.getId(), contentStream, versioningState,
+                objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces),
+                objectFactory.convertAces(removeAces), null);
+        return createObjectId(id);
     }
 
     @Override
@@ -164,8 +188,13 @@ public class NuxeoSession implements Session {
     @Override
     public ObjectId createFolder(Map<String, ?> properties, ObjectId folderId,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String id = service.createFolder(repositoryId,
+                convertProperties(properties), folderId == null ? null
+                        : folderId.getId(),
+                objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces),
+                objectFactory.convertAces(removeAces), null);
+        return createObjectId(id);
     }
 
     @Override
@@ -204,8 +233,12 @@ public class NuxeoSession implements Session {
     @Override
     public ObjectId createRelationship(Map<String, ?> properties,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String id = service.createRelationship(repositoryId,
+                convertProperties(properties),
+                objectFactory.convertPolicies(policies),
+                objectFactory.convertAces(addAces),
+                objectFactory.convertAces(removeAces), null);
+        return createObjectId(id);
     }
 
     @Override
@@ -277,7 +310,7 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        NuxeoObjectData data = service.getObject(getRepositoryId(),
+        NuxeoObjectData data = service.getObject(repositoryId,
                 objectId.getId(), context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
@@ -300,7 +333,7 @@ public class NuxeoSession implements Session {
         if (context == null) {
             throw new CmisInvalidArgumentException("Missing operation context");
         }
-        ObjectData data = service.getObjectByPath(getRepositoryId(), path,
+        ObjectData data = service.getObjectByPath(repositoryId, path,
                 context.getFilterString(),
                 Boolean.valueOf(context.isIncludeAllowableActions()),
                 context.getIncludeRelationships(),
@@ -340,8 +373,8 @@ public class NuxeoSession implements Session {
 
     @Override
     public ObjectType getTypeDefinition(String typeId) {
-        TypeDefinition typeDefinition = service.getTypeDefinition(
-                getRepositoryId(), typeId, null);
+        TypeDefinition typeDefinition = service.getTypeDefinition(repositoryId,
+                typeId, null);
         return objectFactory.convertTypeDefinition(typeDefinition);
     }
 

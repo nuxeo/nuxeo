@@ -17,10 +17,15 @@
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.chemistry.opencmis.client.api.ChangeEvent;
 import org.apache.chemistry.opencmis.client.api.ChangeEvents;
@@ -50,12 +55,25 @@ import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.definitions.DocumentTypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.FolderTypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PolicyTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDecimalDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyHtmlDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIdDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.RelationshipTypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
 /**
@@ -64,6 +82,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 public class NuxeoObjectFactory implements ObjectFactory {
 
     private final NuxeoSession session;
+
+    private static final BindingsObjectFactory of = new BindingsObjectFactoryImpl();
 
     public NuxeoObjectFactory(NuxeoSession session) {
         this.session = session;
@@ -126,8 +146,7 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public Acl convertAces(List<Ace> aces) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return aces == null ? null : new AccessControlListImpl(aces);
     }
 
     @Override
@@ -137,7 +156,14 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public List<String> convertPolicies(List<Policy> policies) {
-        throw new UnsupportedOperationException();
+        if (policies == null) {
+            return null;
+        }
+        List<String> policyIds = new ArrayList<String>(policies.size());
+        for (Policy p : policies) {
+            policyIds.add(p.getId());
+        }
+        return policyIds;
     }
 
     @Override
@@ -149,7 +175,82 @@ public class NuxeoObjectFactory implements ObjectFactory {
     @Override
     public Properties convertProperties(Map<String, ?> properties,
             ObjectType type, Set<Updatability> updatabilityFilter) {
-        throw new UnsupportedOperationException();
+        // TODO updatabilityFilter
+        PropertiesImpl props = new PropertiesImpl();
+        for (Entry<String, ?> es : properties.entrySet()) {
+            PropertyData<?> prop = convertProperty(es.getKey(), es.getValue(),
+                    type);
+            props.addProperty(prop);
+        }
+        return props;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static PropertyData<?> convertProperty(String key, Object value,
+            ObjectType type) {
+        PropertyDefinition<?> pd = type.getPropertyDefinitions().get(key);
+        if (pd == null) {
+            throw new IllegalArgumentException("Unknown property '" + key
+                    + "' for type: " + type.getId());
+        }
+        boolean single = pd.getCardinality() == Cardinality.SINGLE;
+
+        List<?> values;
+        if (value == null) {
+            values = null;
+        } else if (value instanceof List<?>) {
+            if (single) {
+                throw new IllegalArgumentException("Property '" + key
+                        + "' is not a multi value property!");
+            }
+            values = (List<?>) value;
+        } else {
+            if (!single) {
+                throw new IllegalArgumentException("Property '" + key
+                        + "' is not a single value property!");
+            }
+            values = Collections.singletonList(value);
+        }
+        Object firstValue = values == null ? null : values.get(0);
+
+        if (pd instanceof PropertyStringDefinition) {
+            return of.createPropertyStringData(key, (List<String>) values);
+        } else if (pd instanceof PropertyIdDefinition) {
+            return of.createPropertyIdData(key, (List<String>) values);
+        } else if (pd instanceof PropertyHtmlDefinition) {
+            return of.createPropertyHtmlData(key, (List<String>) values);
+        } else if (pd instanceof PropertyUriDefinition) {
+            return of.createPropertyUriData(key, (List<String>) values);
+        } else if (pd instanceof PropertyIntegerDefinition) {
+            if (firstValue == null) {
+                return of.createPropertyIntegerData(key,
+                        (List<BigInteger>) null);
+            } else if (firstValue instanceof BigInteger) {
+                return of.createPropertyIntegerData(key,
+                        (List<BigInteger>) values);
+            } else if ((firstValue instanceof Byte)
+                    || (firstValue instanceof Short)
+                    || (firstValue instanceof Integer)
+                    || (firstValue instanceof Long)) {
+                List<BigInteger> list = new ArrayList<BigInteger>(values.size());
+                for (Object v : values) {
+                    list.add(BigInteger.valueOf(((Number) v).longValue()));
+                }
+                return of.createPropertyIntegerData(key, list);
+            } else {
+                throw new IllegalArgumentException("Property '" + key
+                        + "' is an Integer property");
+            }
+        } else if (pd instanceof PropertyBooleanDefinition) {
+            return of.createPropertyBooleanData(key, (List<Boolean>) values);
+        } else if (pd instanceof PropertyDecimalDefinition) {
+            return of.createPropertyDecimalData(key, (List<BigDecimal>) values);
+        } else if (pd instanceof PropertyDateTimeDefinition) {
+            return of.createPropertyDateTimeData(key,
+                    (List<GregorianCalendar>) values);
+        }
+        throw new CmisRuntimeException("Unknown class: "
+                + pd.getClass().getName());
     }
 
     @Override

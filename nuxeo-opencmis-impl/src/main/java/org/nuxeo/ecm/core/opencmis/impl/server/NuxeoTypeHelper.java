@@ -38,6 +38,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdDefiniti
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIntegerDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriDefinitionImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.RelationshipTypeDefinitionImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
@@ -81,6 +82,8 @@ public class NuxeoTypeHelper {
 
     public static final String NUXEO_FOLDER = "Folder";
 
+    public static final String NUXEO_RELATION = "Relation";
+
     public static final String NUXEO_FILE = "File";
 
     public static final String NUXEO_ORDERED_FOLDER = "OrderedFolder";
@@ -99,6 +102,10 @@ public class NuxeoTypeHelper {
 
     public static final String NX_ICON = "common:icon";
 
+    public static final String NX_REL_SOURCE = "relation:source";
+
+    public static final String NX_REL_TARGET = "relation:target";
+
     private static final String NAMESPACE = "http://ns.nuxeo.org/cmis/type/";
 
     /**
@@ -107,27 +114,33 @@ public class NuxeoTypeHelper {
      */
 
     public static String getParentTypeId(DocumentType documentType) {
-        String nuxeoTypeId = documentType.getName();
-        if (NuxeoTypeHelper.NUXEO_DOCUMENT.equals(nuxeoTypeId)
-                || documentType.getFacets().contains(
-                        FacetNames.HIDDEN_IN_NAVIGATION)
-                || !documentType.hasSchema(NuxeoTypeHelper.NX_DUBLINCORE)) {
+        if (documentType.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)
+                || !documentType.hasSchema(NX_DUBLINCORE)) {
             // ignore type
             return null;
         }
+        String nuxeoTypeId = documentType.getName();
+        // NUXEO_DOCUMENT already excluded be previous checks
         if (NUXEO_FOLDER.equals(nuxeoTypeId)) {
             // Folder has artificial parent cmis:folder
             return BaseTypeId.CMIS_FOLDER.value();
         }
+        if (NUXEO_RELATION.equals(nuxeoTypeId)) {
+            // Relation has artificial parent cmis:relationship
+            return BaseTypeId.CMIS_RELATIONSHIP.value();
+        }
         DocumentType superType = (DocumentType) documentType.getSuperType();
         if (superType == null) {
-            // TODO relations
             return null;
         }
         String parentId = mappedId(superType.getName());
         if (NUXEO_FOLDER.equals(parentId)) {
             // reparent Folder child under cmis:folder
             parentId = BaseTypeId.CMIS_FOLDER.value();
+        }
+        if (NUXEO_RELATION.equals(parentId)) {
+            // reparent Relation child under cmis:relationship
+            parentId = BaseTypeId.CMIS_RELATIONSHIP.value();
         }
         if (NUXEO_DOCUMENT.equals(parentId)) {
             // reparent Document child under cmis:document
@@ -140,9 +153,8 @@ public class NuxeoTypeHelper {
             String parentId) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
-        // base
         AbstractTypeDefinition type = constructBase(id, parentId,
-                documentType.isFolder(), documentType, nuxeoTypeId, true);
+                getBaseTypeId(documentType), documentType, nuxeoTypeId, true);
         // Nuxeo Property Definitions
         for (Schema schema : documentType.getSchemas()) {
             addSchemaPropertyDefinitions(type, schema);
@@ -154,10 +166,10 @@ public class NuxeoTypeHelper {
      * Constructs a base type, not mapped to a Nuxeo type. It has the dublincore
      * schema though. When created, it actually constructs a File or a Folder.
      */
-    public static TypeDefinition constructCmisBase(BaseTypeId base,
+    public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId,
             SchemaManager schemaManager) {
-        AbstractTypeDefinition type = constructBase(base.value(), null,
-                base == BaseTypeId.CMIS_FOLDER, null, null, true);
+        AbstractTypeDefinition type = constructBase(baseTypeId.value(), null,
+                baseTypeId, null, null, true);
         DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
         addSchemaPropertyDefinitions(type, dt.getSchema(NX_DUBLINCORE));
         return type;
@@ -208,16 +220,17 @@ public class NuxeoTypeHelper {
     }
 
     protected static AbstractTypeDefinition constructBase(String id,
-            String parentId, boolean isFolder, DocumentType documentType,
+            String parentId, BaseTypeId baseTypeId, DocumentType documentType,
             String nuxeoTypeId, boolean creatable) {
         AbstractTypeDefinition t;
-        if (isFolder) {
+        if (baseTypeId == BaseTypeId.CMIS_FOLDER) {
             t = new FolderTypeDefinitionImpl();
-            t.setBaseTypeId(BaseTypeId.CMIS_FOLDER);
+        } else if (baseTypeId == BaseTypeId.CMIS_RELATIONSHIP) {
+            t = new RelationshipTypeDefinitionImpl();
         } else {
             t = new DocumentTypeDefinitionImpl();
-            t.setBaseTypeId(BaseTypeId.CMIS_DOCUMENT);
         }
+        t.setBaseTypeId(baseTypeId);
         t.setId(id);
         t.setParentTypeId(parentId);
         t.setDescription(id);
@@ -238,6 +251,11 @@ public class NuxeoTypeHelper {
         if (t instanceof FolderTypeDefinitionImpl) {
             FolderTypeDefinitionImpl ft = (FolderTypeDefinitionImpl) t;
             addFolderPropertyDefinitions(ft);
+        } else if (t instanceof RelationshipTypeDefinitionImpl) {
+            RelationshipTypeDefinitionImpl rt = (RelationshipTypeDefinitionImpl) t;
+            rt.setAllowedSourceTypes(null);
+            rt.setAllowedTargetTypes(null);
+            addRelationshipPropertyDefinitions(rt);
         } else {
             DocumentTypeDefinitionImpl dt = (DocumentTypeDefinitionImpl) t;
             dt.setIsVersionable(Boolean.FALSE);
@@ -294,6 +312,16 @@ public class NuxeoTypeHelper {
                 PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
                 "Allowed Child Object Type IDs", PropertyType.ID,
                 Cardinality.MULTI, Updatability.READONLY, false, false, false));
+    }
+
+    protected static void addRelationshipPropertyDefinitions(
+            RelationshipTypeDefinitionImpl t) {
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SOURCE_ID,
+                "Source ID", PropertyType.ID, Cardinality.SINGLE,
+                Updatability.READWRITE, false, false, true));
+        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.TARGET_ID,
+                "Target ID", PropertyType.ID, Cardinality.SINGLE,
+                Updatability.READWRITE, false, false, true));
     }
 
     protected static void addDocumentPropertyDefinitions(
@@ -437,6 +465,24 @@ public class NuxeoTypeHelper {
         } else {
             return PropertyType.STRING;
         }
+    }
+
+    public static BaseTypeId getBaseTypeId(DocumentType type) {
+        if (type.isFolder()) {
+            return BaseTypeId.CMIS_FOLDER;
+        }
+        DocumentType t = type;
+        do {
+            if (NUXEO_RELATION.equals(t.getName())) {
+                return BaseTypeId.CMIS_RELATIONSHIP;
+            }
+            t = (DocumentType) t.getSuperType();
+        } while (t != null);
+        return BaseTypeId.CMIS_DOCUMENT;
+    }
+
+    public static BaseTypeId getBaseTypeId(DocumentModel doc) {
+        return getBaseTypeId(doc.getDocumentType());
     }
 
 }

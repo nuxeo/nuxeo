@@ -42,7 +42,6 @@ import org.apache.chemistry.opencmis.commons.data.PropertyInteger;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.data.PropertyUri;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
@@ -116,8 +115,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.BASE_TYPE_ID.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
                     (PropertyDefinition<String>) pd,
-                    doc.isFolder() ? BaseTypeId.CMIS_FOLDER.value()
-                            : BaseTypeId.CMIS_DOCUMENT.value());
+                    NuxeoTypeHelper.getBaseTypeId(doc).value());
         } else if (PropertyIds.CREATED_BY.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringData(
                     (PropertyDefinition<String>) pd, doc,
@@ -201,11 +199,13 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     (PropertyDefinition<String>) pd,
                     Collections.<String> emptyList());
         } else if (PropertyIds.SOURCE_ID.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdData(
+                    (PropertyDefinition<String>) pd, doc,
+                    NuxeoTypeHelper.NX_REL_SOURCE, false);
         } else if (PropertyIds.TARGET_ID.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyIdDataFixed(
-                    (PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyIdData(
+                    (PropertyDefinition<String>) pd, doc,
+                    NuxeoTypeHelper.NX_REL_TARGET, false);
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed(
                     (PropertyDefinition<String>) pd, null);

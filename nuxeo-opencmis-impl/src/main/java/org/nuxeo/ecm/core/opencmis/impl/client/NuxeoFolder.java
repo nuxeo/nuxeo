@@ -16,14 +16,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -41,30 +36,14 @@ import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
 import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
-import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
-import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
-import org.apache.chemistry.opencmis.commons.data.Properties;
-import org.apache.chemistry.opencmis.commons.data.PropertyData;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyBooleanDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDateTimeDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDecimalDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyHtmlDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyIdDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
-import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -97,126 +76,14 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
             ContentStream contentStream, VersioningState versioningState,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
-        Properties props;
-        if (properties == null) {
-            props = null;
-        } else {
-            // find type
-            String typeId = (String) properties.get(PropertyIds.OBJECT_TYPE_ID);
-            if (typeId == null) {
-                throw new IllegalArgumentException("Missing type");
-            }
-            ObjectType type = session.getTypeDefinition(typeId);
-            if (type == null) {
-                throw new IllegalArgumentException("Unknown type: " + typeId);
-            }
-            props = convertProperties(properties, type);
-        }
-        List<String> policyIds;
-        if (policies == null) {
-            policyIds = null;
-        } else {
-            policyIds = new ArrayList<String>(policies.size());
-            for (Policy p : policies) {
-                policyIds.add(p.getId());
-            }
-        }
-        Acl addAcl = addAces == null ? null
-                : new AccessControlListImpl(addAces);
-        Acl removeAcl = removeAces == null ? null : new AccessControlListImpl(
-                removeAces);
-        String id = service.createDocument(getRepositoryId(), props, getId(),
-                contentStream, versioningState, policyIds, addAcl, removeAcl,
-                null);
+        String id = service.createDocument(getRepositoryId(),
+                session.convertProperties(properties), getId(), contentStream,
+                versioningState,
+                session.objectFactory.convertPolicies(policies),
+                session.objectFactory.convertAces(addAces),
+                session.objectFactory.convertAces(removeAces), null);
         // must now refetch doc
         return (Document) session.getObject(new ObjectIdImpl(id), context);
-    }
-
-    /** Converts from an untyped map to a {@link Properties} object. */
-    @SuppressWarnings("unchecked")
-    protected Properties convertProperties(Map<String, ?> properties,
-            ObjectType type) {
-        Map<String, PropertyDefinition<?>> propDefs = type.getPropertyDefinitions();
-        PropertiesImpl props = new PropertiesImpl();
-        for (Entry<String, ?> es : properties.entrySet()) {
-            String key = es.getKey();
-            Object value = es.getValue();
-            PropertyDefinition<?> pd = propDefs.get(key);
-            if (pd == null) {
-                throw new IllegalArgumentException("Unknown property '" + key
-                        + "' for type: " + type.getId());
-            }
-            boolean single = pd.getCardinality() == Cardinality.SINGLE;
-
-            List<?> values;
-            if (value == null) {
-                values = null;
-            } else if (value instanceof List<?>) {
-                if (single) {
-                    throw new IllegalArgumentException("Property '" + key
-                            + "' is not a multi value property!");
-                }
-                values = (List<?>) value;
-            } else {
-                if (!single) {
-                    throw new IllegalArgumentException("Property '" + key
-                            + "' is not a single value property!");
-                }
-                values = Collections.singletonList(value);
-            }
-            Object firstValue = values == null ? null : values.get(0);
-
-            PropertyData<?> prop;
-            if (pd instanceof PropertyStringDefinition) {
-                prop = objectFactory.createPropertyStringData(key,
-                        (List<String>) values);
-            } else if (pd instanceof PropertyIdDefinition) {
-                prop = objectFactory.createPropertyIdData(key,
-                        (List<String>) values);
-            } else if (pd instanceof PropertyHtmlDefinition) {
-                prop = objectFactory.createPropertyHtmlData(key,
-                        (List<String>) values);
-            } else if (pd instanceof PropertyUriDefinition) {
-                prop = objectFactory.createPropertyUriData(key,
-                        (List<String>) values);
-            } else if (pd instanceof PropertyIntegerDefinition) {
-                if (firstValue == null) {
-                    prop = objectFactory.createPropertyIntegerData(key,
-                            (List<BigInteger>) null);
-                } else if (firstValue instanceof BigInteger) {
-                    prop = objectFactory.createPropertyIntegerData(key,
-                            (List<BigInteger>) values);
-                } else if ((firstValue instanceof Byte)
-                        || (firstValue instanceof Short)
-                        || (firstValue instanceof Integer)
-                        || (firstValue instanceof Long)) {
-                    List<BigInteger> list = new ArrayList<BigInteger>(
-                            values.size());
-                    for (Object v : values) {
-                        list.add(BigInteger.valueOf(((Number) v).longValue()));
-                    }
-                    prop = objectFactory.createPropertyIntegerData(key, list);
-                } else {
-                    throw new IllegalArgumentException("Property '" + key
-                            + "' is an Integer property");
-                }
-            } else if (pd instanceof PropertyBooleanDefinition) {
-                prop = objectFactory.createPropertyBooleanData(key,
-                        (List<Boolean>) values);
-            } else if (pd instanceof PropertyDecimalDefinition) {
-                prop = objectFactory.createPropertyDecimalData(key,
-                        (List<BigDecimal>) values);
-            } else if (pd instanceof PropertyDateTimeDefinition) {
-                prop = objectFactory.createPropertyDateTimeData(key,
-                        (List<GregorianCalendar>) values);
-            } else {
-                throw new CmisRuntimeException("Unknown class: "
-                        + pd.getClass().getName());
-            }
-
-            props.addProperty(prop);
-        }
-        return props;
     }
 
     @Override

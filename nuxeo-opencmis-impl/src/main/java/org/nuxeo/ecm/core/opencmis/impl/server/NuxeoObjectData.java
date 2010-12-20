@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
@@ -150,8 +149,7 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public BaseTypeId getBaseTypeId() {
-        return doc.isFolder() ? BaseTypeId.CMIS_FOLDER
-                : BaseTypeId.CMIS_DOCUMENT;
+        return NuxeoTypeHelper.getBaseTypeId(doc);
     }
 
     public TypeDefinition getTypeDefinition() {
@@ -213,9 +211,9 @@ public class NuxeoObjectData implements ObjectData {
 
     public static AllowableActions getAllowableActions(DocumentModel doc,
             boolean creation) {
-        boolean isFolder = doc.isFolder();
-        Type[] th = doc.getDocumentType().getTypeHierarchy();
-        boolean isDocument = th[th.length - 1].getName().equals("Document");
+        BaseTypeId baseType = NuxeoTypeHelper.getBaseTypeId(doc);
+        boolean isDocument = baseType == BaseTypeId.CMIS_DOCUMENT;
+        boolean isFolder = baseType == BaseTypeId.CMIS_FOLDER;
         boolean canWrite;
         try {
             canWrite = creation
@@ -264,7 +262,7 @@ public class NuxeoObjectData implements ObjectData {
             }
             set.add(Action.CAN_UPDATE_PROPERTIES);
             if (isFolder || isDocument) {
-                // Relations are not fileable
+                // Relationships are not fileable
                 set.add(Action.CAN_MOVE_OBJECT);
             }
             set.add(Action.CAN_DELETE_OBJECT);

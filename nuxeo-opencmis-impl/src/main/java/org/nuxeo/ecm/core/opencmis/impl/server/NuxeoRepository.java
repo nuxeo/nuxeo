@@ -113,9 +113,13 @@ public class NuxeoRepository {
                 BaseTypeId.CMIS_DOCUMENT, schemaManager));
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
                 BaseTypeId.CMIS_FOLDER, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(
+                BaseTypeId.CMIS_RELATIONSHIP, schemaManager));
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT,
                 typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER,
+                typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION,
                 typesChildren, done, schemaManager);
         return typeManager;
     }

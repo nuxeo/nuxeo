@@ -23,8 +23,6 @@ import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
-import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
-import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
@@ -90,12 +88,6 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements
         service.moveObject(getRepositoryId(), objectIdHolder,
                 targetFolder.getId(), sourceFolder.getId(), null);
         return this;
-    }
-
-    @Override
-    public List<CmisExtensionElement> getExtensions(ExtensionLevel level) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
 }

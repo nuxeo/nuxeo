@@ -35,6 +35,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
@@ -50,6 +51,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -241,6 +243,29 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull("Missing child", note);
         assertEquals("Note", note.getType().getId());
         assertEquals("bla bla", note.getPropertyValue("note"));
+    }
+
+    public void testCreateRelationship() throws Exception {
+        String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
+        String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
+
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "Relation");
+        properties.put(PropertyIds.NAME, "rel");
+        properties.put(PropertyIds.SOURCE_ID, id1);
+        properties.put(PropertyIds.TARGET_ID, id2);
+        ObjectId relid = session.createRelationship(properties);
+
+        // has to be superuser to get relations
+        closeSession();
+        super.session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
+        tearDownCmisSession();
+        setUpCmisSession();
+
+        Relationship rel = (Relationship) session.getObject(relid);
+        assertNotNull(rel);
+        assertEquals(id1, rel.getSourceId().getId());
+        assertEquals(id2, rel.getTargetId().getId());
     }
 
     public void testUpdate() throws Exception {
