@@ -35,9 +35,9 @@ import org.nuxeo.ecm.shell.cmds.GlobalCommands;
 /**
  * The automation feature is providing connection with Nuxeo servers through
  * automation service and remote commands based on operations.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class AutomationFeature implements ShellFeature, ValueAdapter,
         CompletorProvider {
@@ -67,6 +67,7 @@ public class AutomationFeature implements ShellFeature, ValueAdapter,
         RemoteCommands.INSTANCE.onConnect();
         CommandRegistry reg = new AutomationRegistry();
         // build automation registry
+        reg.addAnnotatedCommand(PrintOperation.class);
         buildCommands(reg, session);
         shell.addRegistry(reg);
 

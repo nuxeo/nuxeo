@@ -75,6 +75,19 @@ public class IOUtils {
         }
     }
 
+    public static void writeToFile(String content, File file) throws IOException {
+        FileOutputStream out = new FileOutputStream(file);
+        try {
+            write(content, out);
+        } finally {
+            out.close();
+        }
+    }
+
+    public static void write(String content, OutputStream out) throws IOException {
+        out.write(content.getBytes());
+    }
+
     public static String read(InputStream in) throws IOException {
         InputStreamReader reader = new InputStreamReader(in, "UTF-8");
         return read(reader);

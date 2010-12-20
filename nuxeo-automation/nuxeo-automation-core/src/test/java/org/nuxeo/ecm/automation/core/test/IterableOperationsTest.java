@@ -17,60 +17,28 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import org.concordion.internal.command.AssertEqualsCommand;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
-import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
-import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
-import org.nuxeo.ecm.automation.core.operations.RunScript;
-import org.nuxeo.ecm.automation.core.operations.RunScriptFile;
-import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
-import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
-import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
-import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
-import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.document.CreateVersion;
-import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
-import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
-import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
-import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
-import org.nuxeo.ecm.automation.core.operations.document.Query;
-import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
-import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
-import org.nuxeo.ecm.automation.core.operations.document.SetDocumentLifeCycle;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
-import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
-import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
-import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
-import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
-import org.nuxeo.ecm.automation.core.scripting.Expression;
-import org.nuxeo.ecm.automation.core.scripting.MvelExpression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
-import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -117,8 +85,31 @@ public class IterableOperationsTest {
         dst = session.getDocument(dst.getRef());
     }
 
-    // ------ Tests comes here --------
+    protected DocumentModel createFolder(String name, String title)
+            throws Exception {
+        DocumentModel doc = session.createDocumentModel("/src", name, "Folder");
+        doc.setPropertyValue("dc:title", title);
+        doc = session.createDocument(doc);
+        session.save();
+        return session.getDocument(doc.getRef());
+    }
 
+    protected DocumentModel createFile(DocumentModel parent, String name,
+            String title) throws Exception {
+        DocumentModel doc = session.createDocumentModel(
+                parent.getPathAsString(), name, "File");
+        doc.setPropertyValue("dc:title", title);
+        doc = session.createDocument(doc);
+        session.save();
+        return session.getDocument(doc.getRef());
+    }
+
+    protected void remove(DocumentModel doc) throws Exception {
+        session.removeDocument(doc.getRef());
+        session.save();
+    }
+
+    // ------ Tests comes here --------
 
     /**
      * Test if iterable operation methods work
@@ -142,16 +133,16 @@ public class IterableOperationsTest {
     }
 
     /**
-     * Test Document expression in iterable operation methods
+     * The same as before but use doc ref as input
      *
      * @throws Exception
      */
     @Test
     public void testChain2() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        DocumentModelListImpl docs = new DocumentModelListImpl();
-        docs.add(src);
-        docs.add(dst);
+        DocumentRefList docs = new DocumentRefListImpl();
+        docs.add(src.getRef());
+        docs.add(dst.getRef());
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
@@ -162,6 +153,105 @@ public class IterableOperationsTest {
         assertEquals(2, out.size());
         assertEquals("mydesc", out.get(0).getPropertyValue("dc:description"));
         assertEquals("mydesc", out.get(1).getPropertyValue("dc:description"));
+    }
+
+    /**
+     * lock documents passed as a list of docrefs
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testChain3() throws Exception {
+        DocumentModel root = createFolder("test3", "test 3");
+        DocumentModel f1 = createFile(root, "file1", "File 1");
+        DocumentModel f2 = createFile(root, "file2", "File 2");
+        OperationContext ctx = new OperationContext(session);
+        DocumentRefList docs = new DocumentRefListImpl();
+        docs.add(f1.getRef());
+        docs.add(f2.getRef());
+        ctx.setInput(docs);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(LockDocument.ID).set("owner", "test");
+
+        DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(2, out.size());
+        assertTrue(out.get(0).getLock().contains("test"));
+        assertTrue(out.get(1).getLock().contains("test"));
+
+        remove(root);
+    }
+
+    /**
+     * test that input context variable is pointing to the current iterated
+     * object and not to the list object.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testChain4() throws Exception {
+        DocumentModel root = createFolder("test4", "Parent Folder");
+        DocumentModel f1 = createFile(root, "file1", "File 1");
+        DocumentModel f2 = createFile(root, "file2", "File 2");
+        OperationContext ctx = new OperationContext(session);
+        DocumentModelList docs = new DocumentModelListImpl();
+        docs.add(f1);
+        docs.add(f2);
+        ctx.setInput(docs);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
+                "value",
+                Scripting.newExpression("Document.getParent()['dc:title']"));
+
+        DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
+
+        assertEquals(2, out.size());
+        assertEquals("Parent Folder",
+                out.get(0).getPropertyValue("dc:description"));
+        assertEquals("Parent Folder",
+                out.get(0).getPropertyValue("dc:description"));
+
+        remove(root);
+    }
+
+
+    @Test
+    public void testChain5() throws Exception {
+        DocumentModel f = createFile(src, "file5", "the file5");
+        BlobList blobs = new BlobList();
+        StringBlob b1 = new StringBlob("the content 1");
+        StringBlob b2 = new StringBlob("the content 2");
+        blobs.add(b1);
+        blobs.add(b2);
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(blobs);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(AttachBlob.ID).set("document", f.getRef());
+        BlobList out = (BlobList) service.run(ctx, chain);
+
+        assertEquals(2, out.size());
+        // only the last blob is set since it overwrite the previous blob
+        assertEquals("the content 2",
+                ((Blob)f.getPropertyValue("file:content")).getString());
+
+        // same but use the xpath for the files schemas to append both blobs.
+        chain = new OperationChain("testChain");
+        chain.add(AttachBlob.ID).set("document", f.getRef()).set("xpath", "files:files");
+        out = (BlobList) service.run(ctx, chain);
+
+        assertEquals(2, out.size());
+        // both blobs are set in files:files
+        Object o  = f.getPropertyValue("files:files/file[0]/file");
+        System.out.println(o);
+        Blob r1 = (Blob)f.getPropertyValue("files:files/file[0]/file");
+        Blob r2 = (Blob)f.getPropertyValue("files:files/file[1]/file");
+        assertEquals("the content 1", r1.getString());
+        assertEquals("the content 2", r2.getString());
+
+        remove(f);
     }
 
 

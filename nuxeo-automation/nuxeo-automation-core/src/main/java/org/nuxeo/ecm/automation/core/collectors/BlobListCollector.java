@@ -32,14 +32,14 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobCollector extends BlobList implements OutputCollector<Blob, BlobList> {
+public class BlobListCollector extends BlobList implements OutputCollector<BlobList, BlobList> {
 
     private static final long serialVersionUID = 5167860889224514027L;
 
     @Override
-    public void collect(OperationContext ctx, Blob obj)
+    public void collect(OperationContext ctx, BlobList obj)
             throws OperationException {
-        add(obj);
+        addAll(obj);
     }
 
     @Override

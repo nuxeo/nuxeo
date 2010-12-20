@@ -23,10 +23,10 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -56,7 +56,7 @@ public class CreateRelation {
     // TODO use a combo box?
     protected String predicate;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         QNameResource subject = getDocumentResource(doc);
         QNameResource obj = getDocumentResource(object);
@@ -65,14 +65,6 @@ public class CreateRelation {
         stmts.add(new StatementImpl(subject, predicate, obj));
         relations.add(RelationConstants.GRAPH_NAME, stmts);
         return doc;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        for (DocumentModel doc : docs) {
-            run(doc);
-        }
-        return docs;
     }
 
     protected QNameResource getDocumentResource(DocumentModel document)

@@ -14,27 +14,25 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.collectors;
+package org.nuxeo.ecm.shell.automation;
 
-import org.nuxeo.ecm.automation.OutputCollector;
-import org.nuxeo.ecm.core.api.Blob;
+import jline.SimpleCompletor;
+
+import org.nuxeo.ecm.shell.Shell;
 
 /**
- * Collects blobs into a zip blob.
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ZipCollector implements OutputCollector<Blob, Blob> {
+public class OperationNameCompletor extends SimpleCompletor {
 
-    @Override
-    public boolean add(Blob obj) {
-        return false;
+    protected RemoteContext ctx;
+
+    public OperationNameCompletor() {
+        this(Shell.get().getContextObject(RemoteContext.class));
     }
 
-    @Override
-    public Blob getOutput() {
-        return null; //TODO
+    public OperationNameCompletor(RemoteContext ctx) {
+        super (ctx.getSession().getOperations().keySet().toArray(new String[0]));
     }
-
 }

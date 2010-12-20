@@ -20,12 +20,13 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelListCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -37,7 +38,12 @@ public class GetDocumentChildren {
     @Context
     protected CoreSession session;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelListCollector.class)
+    public DocumentModelList run(DocumentModel doc) throws Exception {
+        return session.getChildren(doc.getRef());
+    }
+
+    @OperationMethod(collector=DocumentModelListCollector.class)
     public DocumentModelList run(DocumentRef doc) throws Exception {
         return session.getChildren(doc);
     }

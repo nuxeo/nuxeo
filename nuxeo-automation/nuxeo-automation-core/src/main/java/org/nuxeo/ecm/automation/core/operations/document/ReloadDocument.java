@@ -21,12 +21,10 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -38,19 +36,9 @@ public class ReloadDocument {
     @Context
     protected OperationContext ctx;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         return ctx.getCoreSession().getDocument(doc.getRef());
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
     }
 
 }

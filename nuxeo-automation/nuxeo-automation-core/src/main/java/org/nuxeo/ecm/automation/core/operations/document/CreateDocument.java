@@ -21,14 +21,12 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * Create a document into the input document
@@ -52,7 +50,7 @@ public class CreateDocument {
     @Param(name = "properties", required = false)
     protected Properties content;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (name == null) {
             name = "Untitled";
@@ -65,23 +63,9 @@ public class CreateDocument {
         return session.createDocument(newDoc);
     }
 
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
+    @OperationMethod(collector=DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef doc) throws Exception {
+        return run(session.getDocument(doc));
     }
 
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(run(session.getDocument(doc)));
-        }
-        return result;
-    }
 }

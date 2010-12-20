@@ -20,16 +20,12 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Save the input document
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = UnlockDocument.ID, category = Constants.CAT_DOCUMENT, label = "Unlock", description = "Unlock the input document. The unlock will be executed in the name of the current user. An user can unlock a document only if has the UNLOCK permission granted on the document or if it the same user as the one that locked the document. Return the unlocked document")
@@ -40,36 +36,16 @@ public class UnlockDocument {
     @Context
     protected CoreSession session;
 
-    @OperationMethod
-    public DocumentRef run(DocumentRef doc) throws Exception {
+    @OperationMethod(collector=DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef doc) throws Exception {
         session.unlock(doc);
-        return doc;
+        return session.getDocument(doc);
     }
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        doc.unlock();
-        return doc;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(session.getDocument(run(doc)));
-        }
-        return result;
+        session.unlock(doc.getRef());
+        return session.getDocument(doc.getRef());
     }
 
 }

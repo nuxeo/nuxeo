@@ -23,12 +23,11 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * Save the input document
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = BlobToFile.ID, category = Constants.CAT_BLOB, label = "Export to File", description = "Save the input blob(s) as a file(s) into the given target directory. The blob(s) filename is used as the file name. You can specify an optional <b>prefix</b> string to prepend to the file name. Return back the blob(s).")
@@ -61,28 +60,18 @@ public class BlobToFile {
         // get the output file
         File file = getFile(name);
         // use a .tmp extension while writing the blob and rename it when write
-        // is done
-        // this is allowing external tools to track when the file becomes
+        // is done this is allowing external tools to track when the file becomes
         // available.
         File tmp = new File(file.getParentFile(), file.getName() + ".tmp");
         blob.transferTo(tmp);
         tmp.renameTo(file);
     }
 
-    @OperationMethod
+    @OperationMethod(collector=BlobCollector.class)
     public Blob run(Blob blob) throws Exception {
         init();
         writeFile(blob);
         return blob;
-    }
-
-    @OperationMethod
-    public BlobList run(BlobList blobs) throws Exception {
-        init();
-        for (Blob blob : blobs) {
-            writeFile(blob);
-        }
-        return blobs;
     }
 
 }

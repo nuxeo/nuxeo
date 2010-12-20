@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
@@ -32,12 +33,28 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  */
 public class IterableInputHelper {
 
-    //protected static ConcurrentMap<String,String> cache;
+    // protected static ConcurrentMap<String,String> cache;
 
     public static Class<?> getIterableType(Class<?> cl) {
-        //TODO first look into a cache
-        //Class<?> cl = cache.get(cl.getName());
+        // TODO first look into a cache
+        // Class<?> cl = cache.get(cl.getName());
         return findIterableType(cl);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static Type[] findCollectorTypes(Class<? extends OutputCollector> cl) {
+        for (Type itf : cl.getGenericInterfaces()) {
+            if (itf instanceof ParameterizedType) {
+                ParameterizedType ptype = (ParameterizedType) itf;
+                if (ptype.getRawType() == OutputCollector.class) {
+                    return ptype.getActualTypeArguments();
+                }
+            }
+        }
+        throw new IllegalArgumentException(
+                "Invalid output collector class: "
+                        + cl
+                        + ". The class must explicitely impelement the OutputCollector interface.");
     }
 
     public static Class<?> findIterableType(Class<?> cl) {
@@ -87,7 +104,6 @@ public class IterableInputHelper {
         System.out.println(getIterableType(o5.getClass()));
     }
 
-
     static class MyIt implements Iterable<String> {
         @Override
         public Iterator<String> iterator() {
@@ -97,7 +113,9 @@ public class IterableInputHelper {
 
     static class MyList implements List<String> {
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#size()
          */
         @Override
@@ -106,7 +124,9 @@ public class IterableInputHelper {
             return 0;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#isEmpty()
          */
         @Override
@@ -115,7 +135,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#contains(java.lang.Object)
          */
         @Override
@@ -124,7 +146,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#iterator()
          */
         @Override
@@ -133,7 +157,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#toArray()
          */
         @Override
@@ -142,7 +168,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#toArray(T[])
          */
         @Override
@@ -151,7 +179,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#add(java.lang.Object)
          */
         @Override
@@ -160,7 +190,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#remove(java.lang.Object)
          */
         @Override
@@ -169,7 +201,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#containsAll(java.util.Collection)
          */
         @Override
@@ -178,7 +212,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#addAll(java.util.Collection)
          */
         @Override
@@ -187,7 +223,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#addAll(int, java.util.Collection)
          */
         @Override
@@ -196,7 +234,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#removeAll(java.util.Collection)
          */
         @Override
@@ -205,7 +245,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#retainAll(java.util.Collection)
          */
         @Override
@@ -214,7 +256,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#clear()
          */
         @Override
@@ -223,7 +267,9 @@ public class IterableInputHelper {
 
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#get(int)
          */
         @Override
@@ -232,7 +278,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#set(int, java.lang.Object)
          */
         @Override
@@ -241,7 +289,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#add(int, java.lang.Object)
          */
         @Override
@@ -250,7 +300,9 @@ public class IterableInputHelper {
 
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#remove(int)
          */
         @Override
@@ -259,7 +311,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#indexOf(java.lang.Object)
          */
         @Override
@@ -268,7 +322,9 @@ public class IterableInputHelper {
             return 0;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#lastIndexOf(java.lang.Object)
          */
         @Override
@@ -277,7 +333,9 @@ public class IterableInputHelper {
             return 0;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#listIterator()
          */
         @Override
@@ -286,7 +344,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#listIterator(int)
          */
         @Override
@@ -295,7 +355,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.List#subList(int, int)
          */
         @Override
@@ -308,7 +370,9 @@ public class IterableInputHelper {
 
     static class MyCol implements Collection<String> {
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#size()
          */
         @Override
@@ -317,7 +381,9 @@ public class IterableInputHelper {
             return 0;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#isEmpty()
          */
         @Override
@@ -326,7 +392,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#contains(java.lang.Object)
          */
         @Override
@@ -335,7 +403,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#iterator()
          */
         @Override
@@ -344,7 +414,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#toArray()
          */
         @Override
@@ -353,7 +425,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#toArray(T[])
          */
         @Override
@@ -362,7 +436,9 @@ public class IterableInputHelper {
             return null;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#add(java.lang.Object)
          */
         @Override
@@ -371,7 +447,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#remove(java.lang.Object)
          */
         @Override
@@ -380,7 +458,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#containsAll(java.util.Collection)
          */
         @Override
@@ -389,7 +469,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#addAll(java.util.Collection)
          */
         @Override
@@ -398,7 +480,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#removeAll(java.util.Collection)
          */
         @Override
@@ -407,7 +491,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#retainAll(java.util.Collection)
          */
         @Override
@@ -416,7 +502,9 @@ public class IterableInputHelper {
             return false;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         *
          * @see java.util.Collection#clear()
          */
         @Override

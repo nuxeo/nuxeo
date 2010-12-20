@@ -27,17 +27,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * Save the input document.
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Operation(id = SetDocumentProperty.ID, category = Constants.CAT_DOCUMENT, label = "Update Property", description = "Set a single property value on the input document. The property is specified using its xpath. The document is automatically saved if 'save' parameter is true. If you unset the 'save' you need to save it later using Save Document operation. Return the modified document.")
@@ -77,25 +71,5 @@ public class SetDocumentProperty {
 
         return doc;
     }
-
-//    @OperationMethod
-//    public DocumentModelList run(DocumentModelList docs) throws Exception {
-//        DocumentModelListImpl result = new DocumentModelListImpl(
-//                (int) docs.totalSize());
-//        for (DocumentModel doc : docs) {
-//            result.add(run(doc));
-//        }
-//        return result;
-//    }
-
-//    @OperationMethod
-//    public DocumentModelList run(DocumentRefList docs) throws Exception {
-//        DocumentModelListImpl result = new DocumentModelListImpl(
-//                (int) docs.totalSize());
-//        for (DocumentRef doc : docs) {
-//            result.add(run(session.getDocument(doc)));
-//        }
-//        return result;
-//    }
 
 }

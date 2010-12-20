@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

@@ -21,20 +21,17 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
 /**
- * Save the input document
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -61,36 +58,16 @@ public class SetDocumentACE {
     @Param(name = "overwrite", required = false, values = "true")
     boolean overwrite = true;
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         setACE(doc.getRef());
         return session.getDocument(doc.getRef());
     }
 
-    @OperationMethod
-    public DocumentRef run(DocumentRef doc) throws Exception {
+    @OperationMethod(collector=DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef doc) throws Exception {
         setACE(doc);
-        return doc;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentRefList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentRef doc : docs) {
-            result.add(session.getDocument(run(doc)));
-        }
-        return result;
+        return session.getDocument(doc);
     }
 
     protected void setACE(DocumentRef ref) throws ClientException {
