@@ -35,12 +35,11 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 
 /**
@@ -104,17 +103,8 @@ public class CreateTask {
     @Param(name = "create one task per actor", required = false, values = "true", order = 8)
     protected boolean createOneTaskPerActor = true;
 
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
-        DocumentModelListImpl result = new DocumentModelListImpl(
-                (int) docs.totalSize());
-        for (DocumentModel doc : docs) {
-            result.add(run(doc));
-        }
-        return result;
-    }
 
-    @OperationMethod
+    @OperationMethod(collector=DocumentModelCollector.class)
     @SuppressWarnings("unchecked")
     public DocumentModel run(DocumentModel document) throws Exception {
         Principal pal = coreSession.getPrincipal();
@@ -129,7 +119,7 @@ public class CreateTask {
             boolean throwError = false;
             try {
                 if (actors instanceof List) {
-                    prefixedActorIds.addAll((List) actors);
+                    prefixedActorIds.addAll((List<String>) actors);
                 } else if (actors instanceof String[]) {
                     for (String actor : (String[]) actors) {
                         prefixedActorIds.add(actor);
