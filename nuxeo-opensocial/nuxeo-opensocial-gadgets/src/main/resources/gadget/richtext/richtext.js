@@ -17,14 +17,6 @@ jQuery(document).ready(function(){
   setLegend(gadgets.util.unescapeString(prefs.getString("legend")));
   setPlace(gadgets.util.unescapeString(prefs.getString("templates")));
 
-  jQuery.ajax({
-    type : "GET",
-    url : [formUrl,"/hasFile"].join(""),
-    success:function(data){
-      if (data == "false") jQuery('#deletePhoto').hide();
-    }
-  });
-
   jQuery('#show').click(function(){
     jQuery("#mainContainer").hide();
     jQuery('#show').hide();
@@ -73,7 +65,7 @@ jQuery(document).ready(function(){
       success:function(data){
         jQuery('#deletePhoto').hide();
         jQuery("#imgPreview").hide();
-        jQuery("#upContainer").remove();
+        jQuery("#pictureContainer").hide();
       }
     });
     return false;
@@ -172,42 +164,39 @@ function setHtml(content) {
 };
 
 function loadImage(id){
-  jQuery.ajax({
-    type : "GET",
-    url :[formUrl,"/hasFile"].join(""),
-    success: function(data) {
-      if (data == "true"){
-        jQuery("#imgPreview").show();
-        jQuery('#deletePhoto').show();
-        var imgContainer = "";
-        var photoUrl = gadgets.nuxeo.getFileActionUrl(id);
-        jQuery.ajax({
-          type : "GET",
-          url : photoUrl,
-          success : function(data, textStatus) {
-            var imgContainer = jQuery("#upContainer");
-            imgContainer.remove();
-            imgContainer = jQuery("<div></div>").attr("id","upContainer");
-            var img = jQuery("<img onload=\"gadgets.window.adjustHeight();\"></img>").attr("id","picture").attr("style","border:0").attr("src",photoUrl);
-            if (_isSet(prefs.getString("link"))) {
-              var aLink = jQuery("<a></a>").attr("id","link").attr("href",prefs.getString("link")).attr("target","_tab");
-              aLink.append(img);
-              imgContainer.append(aLink);
-            } else {
-               imgContainer.append(img);
-            }
-            imgContainer.append(jQuery("<span></span>").attr("id","legend").text(gadgets.util.unescapeString(prefs.getString("legend"))));
-            jQuery("#imgPreview").attr("src", photoUrl);
-            jQuery("#pictureContainer").prepend(imgContainer);
-            gadgets.window.adjustHeight();
-            }
-          });
-      } else {
-        jQuery("#imgPreview").hide();
-        jQuery("#upContainer").remove();
-      }
-    }
+  var photoUrl = gadgets.nuxeo.getFileActionUrl(id);
+
+  jQuery("#imgPreview").error(function() { 
+    jQuery(this).hide();
+    jQuery("#deletePhoto").hide();
   });
+
+  jQuery("#picture").error(function() {
+    jQuery("#pictureContainer").hide();
+    jQuery("#imgPreview").hide();
+    gadgets.window.adjustHeight();
+  });
+
+  jQuery("#picture").load(function() {
+
+    jQuery("#imgPreview").show();
+    jQuery("#deletePhoto").show();
+
+    if (_isSet(prefs.getString("link"))){
+      jQuery("#pictureLink").attr("href",prefs.getString("link")).attr("target","_tab");
+    }
+
+    if (_isSet(prefs.getString("legend"))){
+      jQuery("#pictureLegend").text(gadgets.util.unescapeString(prefs.getString("legend")));
+    }
+
+    gadgets.window.adjustHeight();
+  });
+
+  jQuery("#picture").removeAttr("src").attr("src",photoUrl);
+  jQuery("#imgPreview").removeAttr("src").attr("src",photoUrl);
+
+  
 };
 
 function _isSet(val) {
