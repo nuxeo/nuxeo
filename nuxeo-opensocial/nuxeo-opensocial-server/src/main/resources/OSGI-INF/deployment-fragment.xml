@@ -112,7 +112,7 @@
     <servlet>
       <servlet-name>proxy</servlet-name>
       <servlet-class>
-        org.apache.shindig.gadgets.servlet.ProxyServlet
+        org.apache.shindig.gadgets.servlet.NXProxyServlet
       </servlet-class>
     </servlet>
 
@@ -128,7 +128,7 @@
     <servlet>
       <servlet-name>concat</servlet-name>
       <servlet-class>
-        org.apache.shindig.gadgets.servlet.ConcatProxyServlet
+        org.apache.shindig.gadgets.servlet.NXConcatProxyServlet
     </servlet-class>
     </servlet>
 
