@@ -157,7 +157,7 @@ function displayDocumentList(jsonObject) {
 
   if(perm){
     jQuery(".deleteaction").click(function() {
-      deleteDoc(jQuery(this));
+      deleteDoc(this);
       return false;
     });
 
@@ -262,9 +262,10 @@ function readCookie(name) {
   return null;
 }
 
-function deleteDoc(obj) {
+function deleteDoc(elem) {
   if(confirm(prefs.getMsg("confirmDelete")))
-    makeRequest(obj.attr('href'), function() {  gadgets.nuxeo.refreshGadget();}, gadgets.io.MethodType.DELETE);
+    jQuery(elem).parents("tr.dataRowEven").remove();
+    makeRequest(jQuery(elem).attr('href'), function() {  gadgets.nuxeo.refreshGadget();}, gadgets.io.MethodType.DELETE);    
   return false;
 }
 
