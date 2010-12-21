@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.PathRef;
 
@@ -127,21 +126,7 @@ public final class FileManagerUtils {
     public static DocumentModel getExistingDocByFileName(
             CoreSession documentManager, String path, String filename)
             throws ClientException {
-        DocumentModel existing = null;
-        DocumentRef pathRef = new PathRef(path);
-        DocumentModelList docList = documentManager.getChildren(pathRef);
-        for (DocumentModel doc : docList) {
-            String currentLifeCycleState = doc.getCurrentLifeCycleState();
-            // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
-            if (!LifeCycleConstants.DELETED_STATE.equals(currentLifeCycleState)) {
-                String existFileName = (String) doc.getProperty("file", "filename");
-                if (existFileName != null && existFileName.equals(filename)) {
-                    existing = doc;
-                    break;
-                }
-            }
-        }
-        return existing;
+        return getExistingDocByPropertyName(documentManager, path, filename, "file:filename");
     }
 
     /**
@@ -150,19 +135,24 @@ public final class FileManagerUtils {
     public static DocumentModel getExistingDocByTitle(
             CoreSession documentManager, String path, String title)
             throws ClientException {
+        return getExistingDocByPropertyName(documentManager, path, title, "dc:title");
+    }
+    
+    /**
+     * Looks if an existing Document has the same value for a given property.
+     */
+    public static DocumentModel getExistingDocByPropertyName(
+            CoreSession documentManager, String path, String value,
+            String propertyName) throws ClientException {
         DocumentModel existing = null;
-        DocumentRef pathRef = new PathRef(path);
-        DocumentModelList docList = documentManager.getChildren(pathRef);
-        for (DocumentModel doc : docList) {
-            String currentLifeCycleState = doc.getCurrentLifeCycleState();
-            // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
-            if (!LifeCycleConstants.DELETED_STATE.equals(currentLifeCycleState)) {
-                String existTitle = (String) doc.getProperty("dublincore", "title");
-                if (existTitle != null && existTitle.equals(title)) {
-                    existing = doc;
-                    break;
-                }
-            }
+        String parentId = documentManager.getDocument(new PathRef(path)).getId();
+        String query = "SELECT * FROM Document WHERE ecm:parentId = '"
+                + parentId + "' AND " + propertyName + " = '" + value
+                + "' AND ecm:currentLifeCycleState != '"
+                + LifeCycleConstants.DELETED_STATE + "'";
+        DocumentModelList docs = documentManager.query(query);
+        if (docs.size() > 0) {
+            existing = docs.get(0);
         }
         return existing;
     }
