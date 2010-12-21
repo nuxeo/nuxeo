@@ -97,7 +97,7 @@ public class InputFactory {
         } else if (TYPES.isBool(b.getDataType())) {
             return new NXFieldCheckbox(b);
         }
-        return null;
+        return new NXField(gp,b);
     }
 
     /****************************************************/
