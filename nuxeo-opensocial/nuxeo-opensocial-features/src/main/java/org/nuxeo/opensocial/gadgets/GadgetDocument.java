@@ -240,7 +240,7 @@ public class GadgetDocument extends DocumentObject {
             EntityTag tag = getEntityTagForDocument(doc);
             Response.ResponseBuilder rb = request.evaluatePreconditions(modified.getTime(), tag);
             if (rb != null) {
-                throw new WebApplicationException(rb.build());
+                return rb.build();
             }
 
             Blob blob = getBlobFromDoc(doc);
@@ -265,7 +265,7 @@ public class GadgetDocument extends DocumentObject {
                     .expires(modified.getTime())
                     .tag(tag)
                     .build();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
     }
@@ -324,7 +324,7 @@ public class GadgetDocument extends DocumentObject {
         EntityTag tag = getEntityTagForDocument(doc);
         Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
         if (rb != null) {
-            throw new WebApplicationException(rb.build());
+            return rb.build();
         }
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
         return Response.ok(htmlContent, MediaType.TEXT_HTML)
