@@ -86,6 +86,7 @@ public class GadgetPortlet extends Portlet {
         this.setId(getIdWithRefAndView(gadget.getRef(), view));
         this.tools = new GadgetTools(this);
         this.setTools(tools.getButtons());
+        this.setIconCls(this.gadget.getIcon());        
         GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
         GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
     }
