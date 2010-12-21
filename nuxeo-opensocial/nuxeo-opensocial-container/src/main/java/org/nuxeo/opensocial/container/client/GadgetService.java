@@ -121,7 +121,7 @@ public class GadgetService {
     /*-{
       for ( var i = 1, j = arguments.length; i < j; i += 2) {
         if(arguments[i]!="refresh")
-          @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
+          @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1].toString());
       }
       @org.nuxeo.opensocial.container.client.GadgetService::saveUserPref(Ljava/lang/String;)(this.f);
     }-*/;
