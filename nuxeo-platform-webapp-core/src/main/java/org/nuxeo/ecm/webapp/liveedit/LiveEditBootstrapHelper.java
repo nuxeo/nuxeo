@@ -520,7 +520,43 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     // Methods to check whether or not to display live edit links
     //
 
+    /**
+     * 
+     * @deprecated use {@link #isLiveEditable(DocumentModel doc, String blobXpath)}
+     */
+    @Deprecated
     public boolean isLiveEditable(Blob blob) throws ClientException {
+        if (blob == null) {
+            return false;
+        }
+        String mimetype = blob.getMimeType();
+        return isMimeTypeLiveEditable(mimetype);
+    }
+
+    /**
+     * 
+     * @param document the document to edit.
+     * @param blobXPath XPath to the blob property
+     * @return true if the document is immutable and the blob's mime type is
+     *         supported, false otherwise.
+     * 
+     * @throws ClientException
+     * 
+     * @since 5.4
+     */
+    public boolean isLiveEditable(DocumentModel document, String blobXpath) throws ClientException {
+        if (document.isImmutable()) {
+            return false;
+        }
+        Blob blob = (Blob) document.getPropertyValue(blobXpath);
+        if (blob == null) {
+            return false;
+        }
+        String mimetype = blob.getMimeType();
+        return isMimeTypeLiveEditable(mimetype);
+    }
+
+    public boolean isMimeTypeLiveEditable(Blob blob) throws ClientException {
         if (blob == null) {
             return false;
         }
