@@ -162,6 +162,7 @@ public class GadgetTools {
         canvas.show();
         canvas.updateGadgetPortlet();
         canvas.doLayout();
+        canvas.addClass("canvas");
         maximizedCol.doLayout();
         updateLayoutSizeForMax(canvas.getId());
         if (gadget.isCollapsed()) {

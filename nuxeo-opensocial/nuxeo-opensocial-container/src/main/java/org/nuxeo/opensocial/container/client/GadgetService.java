@@ -67,20 +67,18 @@ public class GadgetService {
     private static Timer saveAllGadgets;
 
     public static void setHeight(String frameId, int height) {
-        if (saveAllGadgets != null)
-            saveAllGadgets.cancel();
         if (height < 10)
             return;
-
+        if (saveAllGadgets != null)
+            saveAllGadgets.cancel();
+            
         ContainerPortal portal = ContainerEntryPoint.getContainerPortal();
         final GadgetPortlet p = portal.getGadgetPortletByFrameId(frameId);
         GadgetBean bean = p.getGadgetBean();
-        height += 30;
-        int test = bean.getHeight() - height;
-        if (test != 0) {
+        if(bean.getHeight() - height != 0) {
             if (beans.containsKey(p.getId()))
                 beans.remove(p.getId());
-            p.setHeight(height);
+            p.setFrameHeight(height);
             bean.setHeight(height);
             beans.put(p.getId(), bean);
 
@@ -107,7 +105,8 @@ public class GadgetService {
             portal.incrementLoading();
         }
     };
-
+    
+    
     /**
      * Set new preference
      *
