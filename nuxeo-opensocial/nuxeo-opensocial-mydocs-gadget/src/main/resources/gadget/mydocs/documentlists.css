@@ -16,6 +16,10 @@ padding:2px;
 text-align:center;
 }
 
+form input {
+  margin-top:3px;
+}
+
 .pageNavigationControls input {
 margin-left:5px;
 }

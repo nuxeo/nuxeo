@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Nuxeo - initial API and implementation
- */
-
 package org.nuxeo.ecm.opensocial.mydocs.rest;
 
 import java.io.IOException;
@@ -26,20 +9,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -125,7 +113,7 @@ public class JSONDocument extends DocumentObject {
 
             return makeJSON(all);
         } catch (ClientException e) {
-            log.error(e, e);
+            e.printStackTrace();
         }
 
         return Response.serverError()
@@ -134,15 +122,53 @@ public class JSONDocument extends DocumentObject {
     }
 
     @POST
+    @Path("@create")
+    public Response createDoc(
+            @QueryParam("docTitle") String title, 
+            @DefaultValue("File") @QueryParam("docType") String docType
+            ) {
+        log.debug("POST create " + docType + " '" + title + "' in " + doc.getPathAsString());
+        if (StringUtils.isEmpty(title)) {
+            return Response.status(Status.NOT_ACCEPTABLE).build();
+        }
+        try {
+            String name = IdUtils.generateId(title);
+            CoreSession session = ctx.getCoreSession();
+
+            for (DocumentModel child : session.getChildren(doc.getRef())) {
+                if (child.getName().equals(name)) {
+                    return Response.serverError().build();
+                }
+            }
+            // TODO 5.3.2
+//            String name = session.generateDocumentName(doc, title);
+
+            DocumentModel newDoc = session.createDocumentModel(
+                    doc.getPathAsString(), name, docType);
+            newDoc = session.createDocument(newDoc);
+            newDoc.setPropertyValue("dc:title", title);
+            newDoc = session.saveDocument(newDoc);
+            session.save();
+
+        } catch (ClientException e) {
+            log.error(e, e);
+            return Response.serverError().build();
+        }
+
+        return Response.ok("Create Folder ok!", MediaType.TEXT_PLAIN).build();
+    }
+
+    @POST
     @Override
     public Response doPost() {
+        log.debug("POST");
         CoreSession session = ctx.getCoreSession();
 
         FileManager fm;
         try {
             fm = Framework.getService(FileManager.class);
         } catch (Exception e1) {
-            log.error(e1, e1);
+            e1.printStackTrace();
             return Response.serverError()
                     .build();
         }
@@ -159,9 +185,10 @@ public class JSONDocument extends DocumentObject {
             fm.createDocumentFromBlob(session, blob, doc.getPathAsString(),
                     true, blob.getFilename());
         } catch (IOException e) {
-            log.error(e, e);
+            log.info("************** IOException ****************");
+            e.printStackTrace();
         } catch (Exception e) {
-            log.error(e, e);
+            log.error("************** Exception ****************");
             // TODO : Resolve this exception...
             // org.nuxeo.ecm.core.storage.sql.Fragment.setPristine(Fragment.java:394)
             // at org.nuxeo.ecm.core.storage.sql.Context.save(Context.java:523)
@@ -174,6 +201,7 @@ public class JSONDocument extends DocumentObject {
             // org.nuxeo.ecm.platform.filemanager.service.FileManagerService.createDocumentFromBlob(FileManagerService.java:248)
             // org.nuxeo.ecm.opensocial.mydocs.rest.JSONDocument.doPost(JSONDocument.java:156)
             // Fixed in method fixedSQLExceptionWhenUpload
+            e.printStackTrace();
         }
 
         return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)

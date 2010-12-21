@@ -2,10 +2,10 @@
 <Module>
   <ModulePrefs title="__MSG_myDocuments__" height="95" scrolling="true"
     scaling="true" directory_title="__MSG_myDocuments__"
-    description="__MSG_description__" author="Damien METZLER"
+    description="__MSG_description__" author="Damien METZLER, Guillaume Cusnieux"
     author_email="damien.metzler@leroymerlin.fr" author_affiliation="Leroy Merlin"
     author_location="Lezennes, France">
-
+ 	
     <Locale messages="ALL_ALL.xml"/>
     <Locale lang="fr" messages="fr_ALL.xml"/>
 
@@ -15,20 +15,31 @@
     <Require feature="nuxeo" />
     <Require feature="jquery" />
     <Require feature="form" />
+     <Require feature="setprefs" />
   </ModulePrefs>
+    <UserPref name="defaultFolder" display_name="defaultFolder"
+    default_value="" datatype="hidden" />
 
   <Content type="html" view="default">
 <![CDATA[
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <script type="text/javascript">
       var prefs = new _IG_Prefs(__MODULE_ID__);
+      var defaultFolder = prefs.getString("defaultFolder");
+      var path = new Array();
       gadgets.util.registerOnLoadHandler(function() {
+        if(defaultFolder != "") {
+          path = prefs.getString("defaultFolder").split("/");
+        }
         gadgetId = gadgets.nuxeo.getGadgetId();
         getDocumentLists();
         if(perm){
-          jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
+           jQuery("#uploadBtn").attr("value",prefs.getMsg("add"));
+           jQuery("#createFolder").attr("value",prefs.getMsg("createFolder"));
+           jQuery("#dfolder").text(prefs.getMsg("defaultFolder"));
+           
         } else {
-        	jQuery(".perm").remove();
+          jQuery(".perm").remove();
         }
       });
 
@@ -47,14 +58,18 @@
             <img src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
          </div>
          <div id="addfile" class="perm">
-         <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="">
-            <input type="file" name="file" id="uploadFile" size="20" />
-            <input  id="uploadBtn" type="submit" value="" />
-        </form>
-
-
+         <form style="text-align:center;height:50px;" method="post" id="formUpload" enctype="multipart/form-data" action="">
+            <div><input type="file" name="file" id="uploadFile" size="10" />
+            <input  id="uploadBtn" type="submit" value="" /></div>
+          </form>
+         <form style="text-align:center;height:50px;" method="post" id="formCreateFolder" action="">
+            <div><input type="text" id="folderName" size="12" />
+		    <input  id="createFolder" type="submit" value="" /></div>
+		    <input type="checkbox" name="defaultFolder" id="defaultFolder" checked="checked"><span id="dfolder"></span>
+          </form>
          </div>
     </div>
+    <div style="display:block;">&nbsp;</div>
 
   ]]>
   </Content>
