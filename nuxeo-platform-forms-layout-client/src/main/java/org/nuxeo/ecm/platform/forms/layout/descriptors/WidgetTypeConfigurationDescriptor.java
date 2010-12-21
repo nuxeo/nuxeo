@@ -63,10 +63,10 @@ public class WidgetTypeConfigurationDescriptor implements
     @XNode("fields/complex")
     boolean complex = false;
 
-    @XNodeList(value = "fields/supportedTypes", type = ArrayList.class, componentType = String.class)
+    @XNodeList(value = "fields/supportedTypes/type", type = ArrayList.class, componentType = String.class)
     List<String> supportedFieldTypes;
 
-    @XNodeList(value = "fields/defaultTypes", type = ArrayList.class, componentType = String.class)
+    @XNodeList(value = "fields/defaultTypes/type", type = ArrayList.class, componentType = String.class)
     List<String> defaultFieldTypes;
 
     @XNodeList(value = "fields/defaultConfiguration/field", type = ArrayList.class, componentType = FieldDescriptor.class)

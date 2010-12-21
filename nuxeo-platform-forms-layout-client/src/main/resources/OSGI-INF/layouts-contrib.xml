@@ -23,12 +23,16 @@
           &lt;h:inputText /&gt; tag in create or edit mode, and properties
           accepted on a &lt;h:outputText /&gt; tag in other modes.
         </description>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
         <fields>
           <list>false</list>
           <complex>false</complex>
           <supportedTypes>
             <type>string</type>
-            <type>int</type>
+            <type>path</type>
           </supportedTypes>
           <defaultTypes>
             <type>string</type>
@@ -119,6 +123,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>integer</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>integer</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.IntWidgetTypeHandler
@@ -160,6 +178,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextareaWidgetTypeHandler
@@ -182,6 +214,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>date</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>date</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DateTimeWidgetTypeHandler
@@ -230,6 +276,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>blob</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.FileWidgetTypeHandler
@@ -251,6 +311,17 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HtmlTextWidgetTypeHandler
@@ -273,6 +344,17 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
@@ -294,6 +376,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyWidgetTypeHandler
@@ -317,6 +413,33 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+            <type>date</type>
+            <type>blob</type>
+            <type>integer</type>
+            <type>double</type>
+            <type>boolean</type>
+          </supportedTypes>
+          <defaultTypes>
+            <!-- let selectManyDirectory handle list of strings by default -->
+            <!--<type>string</type>-->
+            <type>path</type>
+            <type>date</type>
+            <type>blob</type>
+            <type>integer</type>
+            <type>double</type>
+            <type>boolean</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -338,6 +461,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>boolean</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>boolean</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.CheckboxWidgetTypeHandler
@@ -357,6 +494,20 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HiddenWidgetTypeHandler
@@ -428,13 +579,15 @@
         Widget allowing to select one or more values from a Tree constructed
         from the navigation tree.
 
-        Set 'showAllDomains' property to true if you want to be able to select a path
-        from an other domain than the current one.
+        Set 'showAllDomains' property to true if you want to be able to select a
+        path from an other domain than the current one.
       </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      <property name="template">/widgets/select_path_tree_widget_template.xhtml</property>
+      <property name="template">
+        /widgets/select_path_tree_widget_template.xhtml
+      </property>
     </widgetType>
 
   </extension>
