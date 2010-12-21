@@ -9,8 +9,8 @@ function launchVideoWidget() {
 
   loadVideo(idGadget);
 
-  if(!perm)
-    jQuery("#perm").remove();
+  if(perm)
+    jQuery("#perm").show();
 
   gadgets.window.adjustHeight();
 

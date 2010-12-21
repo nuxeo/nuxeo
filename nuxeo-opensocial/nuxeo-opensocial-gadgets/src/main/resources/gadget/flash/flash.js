@@ -13,7 +13,7 @@ jQuery(document).ready(function(){
 
   setTitle(prefs.getString("title-flash"));
 
-  if(!perm) jQuery("#perm").remove();
+  if(perm) jQuery("#perm").show();
 
     var options = {
       beforeSubmit: control,

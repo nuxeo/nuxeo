@@ -118,7 +118,7 @@
       <div id="title"></div>
       <div id="video"></div>
 
-      <div id="perm">
+      <div id="perm" style="display:none;">
       <div id="show">
         <a href="#">Modifier</a>
       </div>
