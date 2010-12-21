@@ -15,6 +15,7 @@
    <UserPref name="tmp" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
+      <link rel="stylesheet" href="/nuxeo/css/boutons.css" type="text/css" media="screen" />
       <style type='text/css'>
         *{
          font-family:Trebuchet, Arial,Verdana;
@@ -94,7 +95,6 @@
 
         #valid{
           padding-left:14px;
-          background:url(/nuxeo/img/accept.png) no-repeat 0 0;
           color:#FFFFFF;
           display:block;
           float:right;
@@ -102,6 +102,11 @@
           padding-left:18px;
           text-decoration:none;
         }
+
+               .line td {
+        border-top:1px solid #999;
+        border-bottom:1px solid #363636;
+    }
 
       </style>
 
@@ -119,15 +124,17 @@
       <div id="video"></div>
 
       <div id="perm" style="display:none;">
-      <div id="show">
-        <a href="#">Modifier</a>
+      <div id="show" class="button-container">
+        <button id="edit" class="green" style="width:70px;margin-right:3px">MODIFIER</button>
       </div>
 
       <div id="form" style="display:none;margin:auto">
         <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
-        <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
-        <table style="width:100%" id="formVideo">
-          <tr>
+        <div id="hideContainer" class="line button-container">
+          <button id="hide" style="width:70px;margin-right:3px" title="FERMER" class="black">FERMER</black>
+        </div>
+        <table cellspacing="0" cellpadding="5px" style="width:100%" id="formVideo">
+          <tr class="line">
             <td style="width:30%">
               <label>Titre</label>
             </td>
@@ -135,7 +142,7 @@
               <input type="text" name="title" id="title-field" value="">
             </td>
           </tr>
-          <tr>
+          <tr class="line">
             <td style="width:30%">
               <label>Balise Video</label>
             </td>
@@ -143,10 +150,12 @@
                <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
             </td>
           </tr>
-          <tr>
-          <td style="width:30%"></td>
+          <tr class="line">
+          <td style="width:30%">&nbsp;</td>
           <td style="width:70%">
-              <a href="#" id="valid" >Valider</a>
+              <div class="button-container" >
+               <button id="valid" title="Valider" style="width:100px;" class="green" >VALIDER</button>
+             </div>
           </td>
         </tr>
         </table>

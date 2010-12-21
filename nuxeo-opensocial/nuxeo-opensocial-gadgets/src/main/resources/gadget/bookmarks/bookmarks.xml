@@ -21,6 +21,7 @@
   <UserPref name="bookmarks" default_value="" datatype="hidden"/>
   <Content type="html">
     <![CDATA[
+    <link rel="stylesheet" href="/nuxeo/css/boutons.css" type="text/css" media="screen" />
     <script type="text/javascript" language="javascript" src="bookmarks.js"></script>
       <script>
 
@@ -45,6 +46,10 @@
     })
       </script>
       <style type="text/css">
+     .line td {
+        border-top:1px solid #999;
+        border-bottom:1px solid #363636;
+    }
 
       *{
           font-size:11px;
@@ -205,21 +210,10 @@
         }
 
         #addButton{
-          background:url("accept.png") no-repeat scroll 0 0 transparent;
-          border:medium none;
-          color:#FFFFFF;
-          display:block;
-          font-weight:bold;
-          height:21px;
-          padding:0 0 7px 14px;
-          text-decoration:none;
-          width:61px;
+          width:100px;
+          float:right;
         }
 
-        #addButton:hover{
-          text-decoration:underline;
-          cursor:pointer;
-        }
 
         #hide img {
         border:0 none;
@@ -228,20 +222,18 @@
       </style>
 
       <div id="bookmarksDiv"></div>
-      <div id="addBookmarkIcon" style="display:block;">
+      <div id="addBookmarkIcon" style="display:block;" class="button-container">
 
       </div>
       <div id="addBookmarkForm" style="display: none">
-        <div id="hideContainer">
-          <a href="javascript: toogleForms();" id="hide" title="fermer">
-            <img src="x.png">
-          </a>
+        <div id="hideContainer" class="button-container">
+          <button id="hide" style="width:70px;margin-right:3px" title="FERMER" class="black" onclick="toogleForms();return false;">FERMER</black>
         </div>
         <form name = "newBookmarkForm" onsubmit="return addBookmark(document.newBookmarkForm.newNameInput.value,document.newBookmarkForm.newUrlInput.value, false)" style="margin:0px;">
             <input type="hidden" id="action" value="">
              <input type="hidden" id="indexTab" value="">
-            <table cellspacing="5" style="width:100%">
-              <tr>
+            <table cellspacing="0" cellpadding="5px" style="width:100%">
+              <tr class="line">
                   <td id="new_bookmark_td">
                     <nobr>Intitulé:</nobr>
                   </td>
@@ -249,7 +241,7 @@
                     <input id="newNameInput" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
-               <tr>
+               <tr class="line">
                 <td id="new_bookmark_td">
                     <nobr>URL:</nobr>
                 </td>
@@ -257,9 +249,11 @@
                     <input id="newUrlInput" type="text" style="width:100%; font-size: 11px;">
                   </td>
                </tr>
-               <tr>
+               <tr class="line">
                  <td colspan="2" align="right">
-                    <input type="button" id="addButton" onclick="return addBookmark(document.newBookmarkForm.newNameInput.value, document.newBookmarkForm.newUrlInput.value, false)" value="Valider">
+                    <div class="button-container" >
+                       <button id="addButton" title="Valider" style="width:100px;" class="green" onclick="return addBookmark(document.newBookmarkForm.newNameInput.value, document.newBookmarkForm.newUrlInput.value, false)">VALIDER</button>
+                    </div>
                 </td>
                </tr>
             </table>
