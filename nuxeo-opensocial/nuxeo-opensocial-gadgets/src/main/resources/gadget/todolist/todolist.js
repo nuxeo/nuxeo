@@ -123,7 +123,7 @@ function rowClass(number) {
 }
 
 function createAddItemButton(){
-  var html ="<button id=\"addBtn\" style=\"margin-right:3px;width:70px\" class=\"green\" onclick=\"toogleForms('create');return false;\" class=\"black\">AJOUTER</a>";
+  var html ="<a class=\"addItem\" href=\"javascript: toogleForms('create')\" style=\"text-decoration:none;color: black;\">Ajouter</a>";
   _gel("addItemIcon").innerHTML = html;
   gadgets.window.adjustHeight();
 

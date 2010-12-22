@@ -29,24 +29,22 @@
   <![CDATA[
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="template.css" title="template" media="screen" />
-<link rel="stylesheet" href="/nuxeo/css/boutons.css" type="text/css" media="screen" />
+
   <style type='text/css'>
 
     * {
       font-family: Arial,Verdana;
-  }
-
-
-
-  .nicEdit-main{
-    font-size:11px;
-  }
-
-  #show{
-    text-align:right;
-    font-size:11px;
-  }
-
+	}
+	
+	.nicEdit-main{
+	  font-size:11px;
+	}
+	
+	#show{
+	  text-align:right;
+	  font-size:11px;
+	}
+	
     img{
       border:0;
     }
@@ -79,7 +77,16 @@
       text-align:right;
     }
 
-
+    #upload,#fileuploadBtn{
+      padding-left:14px;
+      background:url(/nuxeo/img/accept.png) no-repeat 0 0;
+      color:#FFFFFF;
+      display:block;
+      float:right;
+      font-weight:bold;
+      padding-left:18px;
+      text-decoration:none;
+    }
 
     .form{
        background:#666666;
@@ -96,18 +103,8 @@
        color:#ffffff;
     }
 
-    .line td {
-        border-top:1px solid #999;
-        border-bottom:1px solid #363636;
-    }
-
-    .form tr{
-      border-top:1px solid white;
-      border-bottom:1px solid #363636;
-    }
-
     #formUpload{
-      margin-bottom:0;
+     margin-bottom:0;
     }
 
     #upload:hover,#fileuploadBtn:hover{
@@ -126,65 +123,70 @@
 
     <div id="mainContainer">
       <div id="title"></div>
-      <div id="pictureContainer"></div>
+      <div id="pictureContainer">
+          <a id="pictureLink" href="#">
+            <img id="picture">
+          </a>
+          <span id="pictureLegend"></span>
+      </div>
       <div style="clear:both"></div>
     </div>
-    <div id="perm" style="display:none;" class="button-container">
-        <button id="show" style="width:70px;margin-right:3px;" title="MODIFIER" class="green">MODIFIER</button>
+    <div id="perm" style="display:none;">
+        <div id="show"><a href="#">Modifier</a></div>
     </div>
 
    <div style="margin:auto;display:none;" id="form">
-    <div class="line" id="hideContainer" class="button-container">
-    <!-- a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a -->
-      <button id="hide" style="width:70px;margin-right:3px;" title="FERMER" class="black">FERMER</black>
+    <div id="hideContainer">
+    <a href="#" id="refresh" title="refresh"><img src="page_refresh.png"></a>
+    <a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a>
     </div>
        <form method="post" id="formUpload" action="#">
-        <table cellspacing="0" cellpadding="3px" style="width:100%;margin-bottom:10px;" class="form">
-          <tr class="line">
+        <table style="width:100%;margin-bottom:10px;" class="form">
+          <tr>
             <td style="width:30%"><label for="title">Titre</label></td>
             <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
           </tr>
         </table>
         <textarea name="gadget:htmlContent" id="richtext" cols="35" style="width:100%"></textarea>
-        <table cellspacing="0" cellpadding="3px" style="width:100%" class="form ">
-                <tr class="line">
+        <table style="width:100%" class="form ">
+                <tr>
                   <td style="width:30%"><label for="link">Lien</label></td>
                     <td style="width:70%"><input type="text" name="link" id="link-field" /></td>
                 </tr>
-                <tr class="line">
+                <tr>
                   <td style="width:30%"><label for="legend">Légende</label></td>
                   <td style="width:70%"><input type="text" name="legend" id="legend-field" /></td>
                 </tr>
-
+                <tr>
+                  <td style="width:30%"></td>
+                  <td style="width:70%">
+                      <a href="" id="upload">Valider</a>
+                  </td>
+                </tr>
         </table>
        </form>
 
        <form method="post" id="fileUploadForm" enctype="multipart/form-data" action="#">
-         <table cellspacing="0" cellpadding="3px" style="width:100%" class="form">
-            <tr >
-              <td style="border-top: solid 1px #999;">
+         <table style="width:100%" class="form">
+            <tr>
+              <td>
                 <div>
                   <label>Photo</label><a href="" title="Supprimer la photo" id="deletePhoto"><img src="/nuxeo/img/x.png" style="vertical-align:middle;"></a>
                 </div>
                 <img id="imgPreview" width="60" />
               </td>
-              <td style="border-top: solid 1px #999;">
-                  <input type="file" name="file" id="file" size="12" />
-                  <input type="hidden" name="resize_width" value="default" />
-                </td>
+              <td>
+                <input type="file" name="file" id="file" size="12" />
+                <input type="hidden" name="resize_width" value="default" />
+              </td>
+
             </tr>
             <tr>
-               <td style="width:30%;border-bottom: solid 1px #363636;">&nbsp;</td>
-               <td style="border-bottom: solid 1px #363636;">
-                 <div class="button-container" >
-                 <table><tr><td>
-                    <button id="fileuploadBtn" title="Télécharger" class="black" >TÉLÉCHARGER</button>
-                    </td>
-                    <td><button id="valid" title="Valider les modifications" class="green" >VALIDER</button></td></tr></table>
-                  </div>
-               </td>
+              <td style="width:30%"></td>
+              <td style="width:70%">
+                  <a href="" id="fileuploadBtn">Télécharger</a>
+              </td>
             </tr>
-
          </table>
        </form>
 

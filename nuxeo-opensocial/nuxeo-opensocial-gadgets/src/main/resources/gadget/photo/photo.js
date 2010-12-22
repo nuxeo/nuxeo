@@ -37,7 +37,7 @@ jQuery(document).ready(function(){
     return false;
   });
 
-  jQuery('#edit').click(function(){
+  jQuery('#show').click(function(){
     jQuery('#show').hide();
     jQuery('#form').show();
     gadgets.window.adjustHeight();
@@ -92,37 +92,22 @@ function savePrefs(){
 
 function loadImage(id){
   var photoUrl = gadgets.nuxeo.getFileActionUrl(id);
-  jQuery("#formUpload").attr("action", formUrl);
-  jQuery.ajax({
-    type : "GET",
-    url : photoUrl,
-    error : function(){
-        jQuery("#photo").attr("src", pUrl);
-        jQuery("#photo").width("30%");
-        showImage();
-    },
-    success : function(data, textStatus) {
-      jQuery("#photo").remove();
-      jQuery("#link").remove();
-      jQuery("#legend").remove();
-      var imgContainer = jQuery("<img onload=\"gadgets.window.adjustHeight()\"></img>").attr("id","photo").attr("src",photoUrl).attr("style","border:0;").width("100%");
-        if (_isSet(prefs.getString("link"))){
-          var link = jQuery("<a onload=\"gadgets.window.adjustHeight()\"></a>").attr("id","link").attr("href",prefs.getString("link")).attr("target","_tab");
-          link.append(imgContainer);
-          jQuery("#pictureContainer").append(link);
-        } else {
-          jQuery("#pictureContainer").append(imgContainer);
-        }
-        jQuery("#pictureContainer").append(jQuery("<span></span>").attr("id","legend").text(gadgets.util.unescapeString(prefs.getString("legend"))));
-        showImage();
-      }
-    });
-  };
-
-function showImage(){
-  jQuery("#loader").hide();
-  jQuery("#link").fadeIn("slow");
-  setTimeout(function(){
+  jQuery("#photo").error(function() {
+    jQuery(this).attr("src",pUrl);
+    jQuery(this).width("30%");
     gadgets.window.adjustHeight();
-  },150);
+  });
+  
+  
+  jQuery("#photo").load(function() {
+    if (_isSet(prefs.getString("link"))){
+      jQuery("#photolink").attr("href",prefs.getString("link")).attr("target","_tab");
+    }
+  
+    jQuery("#pictureLegend").text(gadgets.util.unescapeString(prefs.getString("legend")));
+    gadgets.window.adjustHeight();
+  });
+  
+  jQuery("#photo").attr("src",photoUrl);    
 };
+
