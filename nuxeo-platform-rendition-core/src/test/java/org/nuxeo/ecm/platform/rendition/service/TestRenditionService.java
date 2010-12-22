@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -69,7 +68,6 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml" })
 public class TestRenditionService {
 
     @Inject

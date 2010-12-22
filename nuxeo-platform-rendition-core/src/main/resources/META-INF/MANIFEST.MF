@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.rendition.core;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/rendition-schemas-contrib.xml,
- OSGI-INF/rendition-service.xml
+ OSGI-INF/rendition-service.xml,
+ OSGI-INF/rendition-contrib.xml
