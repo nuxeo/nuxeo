@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -39,11 +41,17 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.presets.PaletteIdentifyException;
+import org.nuxeo.theme.presets.PaletteParseException;
+import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
+
+    private static final List<String> PRESET_CATEGORIES = Arrays.asList(
+            "color", "background", "font", "border");
 
     public static List<String> getCollections(String bankName)
             throws IOException {
@@ -74,6 +82,41 @@ public class Utils {
             }
         }
         return skins;
+    }
+
+    public static Properties getPresetProperties(String bank,
+            String collection, String category) {
+        String path = String.format("%s/%s/preset/%s", bank, collection,
+                category);
+        File file;
+        try {
+            file = BankManager.getFile(path);
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
+        Properties properties = new Properties();
+        if (!file.exists()) {
+            return properties;
+        }
+        for (File f : file.listFiles()) {
+            String content;
+            try {
+                content = BankUtils.getFileContent(f);
+            } catch (IOException e) {
+                log.warn("Could not read file: " + f.getAbsolutePath());
+                continue;
+            }
+            try {
+                properties.putAll(PaletteParser.parse(content.getBytes(),
+                        f.getName()));
+            } catch (PaletteIdentifyException e) {
+                log.warn("Could not identify palette type: "
+                        + f.getAbsolutePath());
+            } catch (PaletteParseException e) {
+                log.warn("Could not parse palette: " + f.getAbsolutePath());
+            }
+        }
+        return properties;
     }
 
     /*
@@ -135,6 +178,25 @@ public class Utils {
         return styles.toString();
     }
 
+    public static String listBankPresets(String bankName) throws IOException {
+        JSONArray presets = new JSONArray();
+        for (String collection : BankManager.getCollections(bankName)) {
+            for (String category : PRESET_CATEGORIES) {
+                for (Map.Entry property : getPresetProperties(bankName,
+                        collection, category).entrySet()) {
+                    JSONObject presetMap = new JSONObject();
+                    presetMap.put("bank", bankName);
+                    presetMap.put("collection", collection);
+                    presetMap.put("category", category);
+                    presetMap.put("name", property.getKey());
+                    presetMap.put("value", property.getValue());
+                    presets.add(presetMap);
+                }
+            }
+        }
+        return presets.toString();
+    }
+
     public static String listImages(String bank) throws IOException {
         JSONArray index = new JSONArray();
         for (String collection : BankManager.getCollections(bank)) {
@@ -144,7 +206,10 @@ public class Utils {
                 throw new IOException("Expected folder: " + path);
             }
             for (File image : file.listFiles()) {
-                index.add(String.format("%s/%s", collection, image.getName()));
+                JSONObject imageMap = new JSONObject();
+                imageMap.put("name", image.getName());
+                imageMap.put("collection", collection);
+                index.add(imageMap);
             }
         }
         return index.toString();

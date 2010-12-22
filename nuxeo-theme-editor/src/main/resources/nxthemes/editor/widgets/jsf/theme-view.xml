@@ -86,7 +86,7 @@
     <div id="nxthemesEditorArea">
 
       <div id="nxthemesWaitAnimation" style="display:none">
-        <img src="%{contextPath}/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> LOADING ...
+        <img src="#{contextPath}/site/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> LOADING ...
       </div>
 
       <nxthemes:model resource="theme-editor.json" />

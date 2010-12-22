@@ -22,8 +22,6 @@ package org.nuxeo.theme.editor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.theme.themes.ThemeManager;
-
 public class StyleFieldProperty {
 
     private final String name;
@@ -62,7 +60,6 @@ public class StyleFieldProperty {
         final Matcher choiceMatcher = cssChoicePattern.matcher(type);
 
         final boolean hasChoices = choiceMatcher.find();
-        final String category = ThemeManager.getPreviewCategoryForProperty(name);
 
         if (hasChoices) {
             // render selection list
@@ -84,6 +81,7 @@ public class StyleFieldProperty {
             rendered.append(input);
         }
 
+        String category = (String) Utils.getStylePreviewCategories().get(name);
         if (category != null) {
             // add a style picker
             rendered.append(String.format(

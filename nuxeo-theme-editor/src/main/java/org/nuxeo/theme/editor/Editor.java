@@ -42,6 +42,7 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.fragments.FragmentType;
+import org.nuxeo.theme.html.CSSUtils;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.presets.PresetManager;
@@ -364,7 +365,7 @@ public class Editor {
     }
 
     public static String renderCssPreview(Element element, Style style,
-            String viewName) {
+            String viewName, String basePath) {
         FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         if (style == null) {
@@ -375,6 +376,7 @@ public class Editor {
         }
         ThemeElement theme = ThemeManager.getThemeOf(element);
         String themeName = theme.getName();
+        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
 
         StringBuilder css = new StringBuilder();
         List<Style> styles = new ArrayList<Style>();
@@ -391,7 +393,7 @@ public class Editor {
                 css.append("#stylePreviewArea");
                 css.append(' ').append(path).append(" {");
                 Properties styleProperties = s.getPropertiesFor(name, path);
-                Enumeration<?> propertyNames = org.nuxeo.theme.html.CSSUtils.getCssProperties().propertyNames();
+                Enumeration<?> propertyNames = CSSUtils.getCssProperties().propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     String propertyName = (String) propertyNames.nextElement();
                     String value = styleProperties.getProperty(propertyName);
@@ -400,14 +402,14 @@ public class Editor {
                     }
                     css.append(propertyName);
                     css.append(':');
-                    value = PresetManager.resolvePresets(themeName, value);
                     css.append(value);
                     css.append(';');
                 }
                 css.append('}');
             }
         }
-        return css.toString();
+        return CSSUtils.expandVariables(css.toString(), basePath,
+                themeDescriptor);
     }
 
     public static void pasteElement(Element element, String destId)
@@ -1187,12 +1189,22 @@ public class Editor {
         }
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(themeSrc);
         themeDescriptor.setResourceBankName(bankName);
+        resourceBank.connect(themeDescriptor.getName());
+
         saveTheme(themeDescriptor.getName());
     }
 
     public static void useNoResourceBank(String themeSrc) throws ThemeException {
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(themeSrc);
+        String bankName = themeDescriptor.getResourceBankName();
+        ResourceBank resourceBank = ThemeManager.getResourceBank(bankName);
+        if (!resourceBank.checkStatus()) {
+            throw new ThemeException("Could not disconnect from bank: "
+                    + bankName);
+        }
+        resourceBank.disconnect(themeDescriptor.getName());
         themeDescriptor.setResourceBankName(null);
+
         saveTheme(themeDescriptor.getName());
     }
 
@@ -1260,16 +1272,7 @@ public class Editor {
             ResourceBank resourceBank;
             try {
                 resourceBank = ThemeManager.getResourceBank(bankName);
-                for (String name : resourceBank.getImages()) {
-                    String[] parts = name.split("/");
-                    if (parts.length != 2) {
-                        continue;
-                    }
-                    String collection = parts[0];
-                    String resource = parts[1];
-                    images.add(new ImageInfo(name, collection, resource));
-                }
-
+                images.addAll(resourceBank.getImages());
             } catch (ThemeException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1283,36 +1286,7 @@ public class Editor {
         List<Style> styles = new ArrayList<Style>();
         ThemeManager themeManager = Manager.getThemeManager();
         for (Identifiable s : themeManager.getNamedObjects(themeName, "style")) {
-            Style style = (Style) s;
-            if (ThemeManager.listFormatsDirectlyInheritingFrom(style).isEmpty()) {
-                continue;
-            }
-            styles.add(style);
-        }
-
-        // Remote styles
-        if (resourceBank != null) {
-            String resourceBankName = resourceBank.getName();
-            for (StyleInfo styleInfo : resourceBank.getStyles()) {
-                String styleName = styleInfo.getName();
-                Style style = (Style) themeManager.getNamedObject(themeName,
-                        "style", styleName);
-                if (style == null) {
-                    style = themeManager.createStyle();
-                    style.setName(styleName);
-                    try {
-                        themeManager.setNamedObject(themeName, "style", style);
-                        ThemeManager.loadRemoteStyle(resourceBankName, style);
-                    } catch (ThemeException e) {
-                        log.error("Could not register remote style: "
-                                + styleName + " from resource bank: "
-                                + resourceBankName, e);
-                    }
-                }
-                if (!styles.contains(style)) {
-                    styles.add(style);
-                }
-            }
+            styles.add((Style) s);
         }
         return styles;
     }
