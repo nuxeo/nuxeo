@@ -28,9 +28,16 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
+import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.presets.PresetManager;
+import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.themes.ThemeException;
+import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
 
 @XObject("bank")
 public class ResourceBank implements Type {
@@ -91,8 +98,8 @@ public class ResourceBank implements Type {
         return null;
     }
 
-    public List<String> getImages() {
-        List<String> paths = new ArrayList<String>();
+    public List<ImageInfo> getImages() {
+        List<ImageInfo> images = new ArrayList<ImageInfo>();
         String src = String.format("%s/json/images", connectionUrl);
         String list = "";
         try {
@@ -100,12 +107,14 @@ public class ResourceBank implements Type {
         } catch (Exception e) {
             log.error("Could not retrieve image list: " + src
                     + " from THEME BANK: " + name);
-            return paths;
+            return images;
         }
-        for (Object path : JSONArray.fromObject(list)) {
-            paths.add((String) path);
+        for (Object object : JSONArray.fromObject(list)) {
+            Map<String, Object> image = JSONObject.fromObject(object);
+            images.add(new ImageInfo((String) image.get("name"),
+                    (String) image.get("collection")));
         }
-        return paths;
+        return images;
     }
 
     public List<String> getCollections() {
@@ -170,8 +179,109 @@ public class ResourceBank implements Type {
         return styles;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<PresetInfo> getPresets() {
+        List<PresetInfo> presets = new ArrayList<PresetInfo>();
+        String src = String.format("%s/json/presets", connectionUrl);
+        String list = "";
+        try {
+            list = new String(Utils.fetchUrl(new URL(src)));
+        } catch (Exception e) {
+            log.error("Could not retrieve the preset list: " + src
+                    + " from THEME BANK: " + name);
+            return presets;
+        }
+        for (Object object : JSONArray.fromObject(list)) {
+            Map<String, Object> preset = JSONObject.fromObject(object);
+            presets.add(new PresetInfo((String) preset.get("name"),
+                    (String) preset.get("bank"),
+                    (String) preset.get("collection"),
+                    (String) preset.get("category"),
+                    (String) preset.get("value")));
+        }
+        return presets;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void connect(String themeName) throws ThemeException {
+        loadRemotePresets();
+        loadRemoteStyles(themeName);
+    }
+
+    public void disconnect(String themeName) throws ThemeException {
+        unloadRemotePresets();
+        unloadRemoteStyles(themeName);
+    }
+
+    private void loadRemotePresets() throws ThemeException {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (PresetInfo presetInfo : getPresets()) {
+            String name = presetInfo.getName();
+            String label = name;
+            String category = presetInfo.getCategory();
+            String group = String.format("%s %s", presetInfo.getCollection(),
+                    presetInfo.getCategory());
+            String value = presetInfo.getValue();
+
+            String typeName = String.format("%s (%s)", name, group);
+            PresetType preset = PresetManager.getPresetByName(typeName);
+            if (preset == null) {
+                preset = new PresetType();
+                preset.setName(name);
+                preset.setGroup(group);
+                typeRegistry.register(preset);
+            }
+            preset.setLabel(label);
+            preset.setCategory(category);
+            preset.setValue(value);
+        }
+    }
+
+    private void loadRemoteStyles(String themeName) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        List<StyleInfo> bankStyles = getStyles();
+        for (StyleInfo styleInfo : bankStyles) {
+            String styleName = styleInfo.getName();
+            Style style = (Style) themeManager.getNamedObject(themeName,
+                    "style", styleName);
+            if (style == null) {
+                style = themeManager.createStyle();
+                style.setName(styleName);
+                ThemeManager.loadRemoteStyle(name, style);
+                themeManager.setNamedObject(themeName, "style", style);
+            }
+        }
+    }
+
+    private void unloadRemotePresets() throws ThemeException {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        for (PresetInfo presetInfo : getPresets()) {
+            String name = presetInfo.getName();
+            String group = String.format("%s %s", presetInfo.getCollection(),
+                    presetInfo.getCategory());
+            String typeName = String.format("%s (%s)", name, group);
+            PresetType preset = PresetManager.getPresetByName(typeName);
+            if (preset != null) {
+                typeRegistry.unregister(preset);
+            }
+        }
+    }
+
+    private void unloadRemoteStyles(String themeName) throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        List<StyleInfo> bankStyles = getStyles();
+        for (StyleInfo styleInfo : bankStyles) {
+            String styleName = styleInfo.getName();
+            Style style = (Style) themeManager.getNamedObject(themeName,
+                    "style", styleName);
+            if (style == null || style.isCustomized()) {
+                continue;
+            }
+            themeManager.removeNamedObject(themeName, "style", styleName);
+        }
     }
 
 }

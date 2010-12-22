@@ -58,6 +58,7 @@ import org.nuxeo.theme.presets.CustomPresetType;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
+import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.w3c.dom.Document;
@@ -223,6 +224,16 @@ public class ThemeParser {
             registerThemePages(theme, baseNode);
 
         } else {
+            // Register presets from remote resources
+            if (resourceBankName != null) {
+                try {
+                    ResourceBank resourceBank = ThemeManager.getResourceBank(resourceBankName);
+                    resourceBank.connect(themeName);
+                } catch (ThemeException e) {
+                    log.warn("Resource bank not found: " + resourceBankName);
+                }
+            }
+
             // register custom presets
             for (Node n : getChildElementsByTagName(docElem, "presets")) {
                 parsePresets(theme, n);
@@ -257,15 +268,6 @@ public class ThemeParser {
             }
 
             parseLayout(theme, baseNode);
-
-            // Look for presets in remote resources
-            for (Style style : themeManager.getNamedStyles(themeName)) {
-                PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
-            }
-            for (Style style : themeManager.getStyles(themeName)) {
-                PresetManager.loadPresetsUsedInStyle(resourceBankName, style);
-            }
-
         }
 
         if (preload) {
@@ -402,8 +404,7 @@ public class ThemeParser {
             NamedNodeMap attrs = n.getAttributes();
             final String name = attrs.getNamedItem("name").getNodeValue();
             final String category = attrs.getNamedItem("category").getNodeValue();
-            final String value = PresetManager.resolvePresets(themeName,
-                    n.getTextContent());
+            final String value = n.getTextContent();
             final String group = themeName; // use the theme's name as
             // group name
 
@@ -516,15 +517,8 @@ public class ThemeParser {
 
                 // Try to retrieve the style from the resource bank
                 if (style.isRemote() && resourceBankName != null) {
-                    try {
-                        ThemeManager.loadRemoteStyle(resourceBankName, style);
-                        if (!selectorNodes.isEmpty()) {
-                            style.setCustomized(true);
-                        }
-                    } catch (ThemeException e) {
-                        log.warn("Could not load remote style: "
-                                + style.getName() + " from resource bank: "
-                                + resourceBankName);
+                    if (!selectorNodes.isEmpty()) {
+                        style.setCustomized(true);
                     }
                 }
 

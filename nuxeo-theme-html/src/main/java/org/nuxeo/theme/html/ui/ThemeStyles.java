@@ -16,7 +16,6 @@ package org.nuxeo.theme.html.ui;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,16 +23,12 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.html.CSSUtils;
-import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeDescriptor;
-import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
 
     private static final Log log = LogFactory.getLog(ThemeStyles.class);
-
-    private static final boolean RESOLVE_PRESETS = true;
 
     private static final boolean IGNORE_VIEW_NAME = false;
 
@@ -58,45 +53,24 @@ public class ThemeStyles {
 
         if (inline) {
             final StringBuilder sb = new StringBuilder();
-            sb.append("<style type=\"text/css\">");
+
             final ThemeManager themeManager = Manager.getThemeManager();
             for (Style style : themeManager.getNamedStyles(themeName)) {
                 sb.append(CSSUtils.styleToCss(style,
-                        style.getSelectorViewNames(), RESOLVE_PRESETS,
-                        IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT));
+                        style.getSelectorViewNames(), IGNORE_VIEW_NAME,
+                        IGNORE_CLASSNAME, INDENT));
             }
             for (Style style : themeManager.getStyles(themeName)) {
                 sb.append(CSSUtils.styleToCss(style,
-                        style.getSelectorViewNames(), RESOLVE_PRESETS,
-                        IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT));
-            }
-            sb.append("</style>");
-            String rendered = sb.toString();
-            if (basePath != null) {
-                rendered = rendered.replaceAll("\\$\\{basePath\\}",
-                        Matcher.quoteReplacement(basePath));
+                        style.getSelectorViewNames(), IGNORE_VIEW_NAME,
+                        IGNORE_CLASSNAME, INDENT));
             }
 
-            // Replace images from resource banks
-            if (themeDescriptor != null) {
-                String resourceBankName = themeDescriptor.getResourceBankName();
-                if (resourceBankName != null) {
-                    ResourceBank resourceBank;
-                    try {
-                        resourceBank = ThemeManager.getResourceBank(resourceBankName);
-                        for (String imagePath : resourceBank.getImages()) {
-                            rendered = rendered.replace(imagePath,
-                                    String.format(
-                                            "'/nuxeo/nxthemes-images/%s/%s'",
-                                            resourceBankName, imagePath));
-                        }
-                    } catch (ThemeException e) {
-                        log.warn("Could not get the list of bank images in: "
-                                + resourceBankName);
-                    }
-                }
-                return rendered;
-            }
+            String rendered = sb.toString();
+            rendered = CSSUtils.expandVariables(rendered, basePath,
+                    themeDescriptor);
+            return String.format("<style type=\"text/css\">%s</style>",
+                    rendered);
         }
         if (cache) {
             return String.format(

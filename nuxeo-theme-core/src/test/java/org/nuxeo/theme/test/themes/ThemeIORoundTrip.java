@@ -35,6 +35,7 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
     }
 
     @Override

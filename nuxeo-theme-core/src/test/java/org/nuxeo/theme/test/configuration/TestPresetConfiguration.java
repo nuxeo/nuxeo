@@ -54,20 +54,4 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
         assertEquals("color", preset.getCategory());
     }
 
-    public void testRegisterPropertiesPalette3() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
-                "ChocolateBorder (default borders)");
-        assertNotNull(preset);
-        assertEquals("1px solid rgb(233,185,110)", preset.getValue());
-        assertEquals("border", preset.getCategory());
-    }
-
-    public void testRegisterPropertiesPalette4() {
-        PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
-                "PlumBorder (default borders)");
-        assertNotNull(preset);
-        assertEquals("1px solid rgb(173,127,168)", preset.getValue());
-        assertEquals("border", preset.getCategory());
-    }
-
 }
