@@ -1,20 +1,3 @@
-/*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * Contributors:
- *     Nuxeo - initial API and implementation
- */
-
 package org.nuxeo.opensocial.gadgets;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
@@ -29,6 +12,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +20,14 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +39,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -67,9 +53,17 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "GadgetDocument")
 public class GadgetDocument extends DocumentObject {
 
+    private static final String ENABLE_CACHE_HEADER = "opensocial.features.enableCacheHeader";
+
     private static final String DTEFORMAT = "ddMMMyyyyHH:mm:ss z";
 
     private static final String GADGET_HTML_CONTENT = "gadget:htmlContent";
+
+    private static final String GADGET_CONTENT_FILES = "gadgetContent";
+    private static final String FILES_FILES = "files:files";
+    private static final String FILENAME = "filename";
+    private static final String FILE = "file";
+    private static final String HTML_CONTENT = "htmlContent";
 
     private static final int DEFAULT_SIZE_WIDTH = 600;
 
@@ -78,7 +72,6 @@ public class GadgetDocument extends DocumentObject {
     private static final Log log = LogFactory.getLog(GadgetDocument.class);
 
     private ImagingService imagingService;
-
 
     @GET
     @Override
@@ -96,22 +89,37 @@ public class GadgetDocument extends DocumentObject {
             session.saveDocument(doc);
             session.save();
         } catch (ClientException e) {
-            throw WebException.wrap(e);
+            /*
+             * try to delete the file store in Files Schema with the
+             * GADGET_CONTENT_FILES filename
+             */
+            doDeleteFiles(GADGET_CONTENT_FILES);
         }
 
-        return Response.ok("File upload ok", MediaType.TEXT_PLAIN)
-                .build();
+        return Response.ok("File upload ok", MediaType.TEXT_PLAIN).build();
+    }
+
+    @POST
+    @Path("delete/{filename}")
+    public Response doDeleteFiles(@PathParam("filename") String filename) {
+        try {
+            removeFile(filename);
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+        return Response.ok("File upload ok", MediaType.TEXT_PLAIN).build();
     }
 
     @POST
     @Override
     public Response doPost() {
+        String schema = null;
         FormData form = ctx.getForm();
 
         form.fillDocument(doc);
 
         if (form.isMultipartContent()) {
-            String xpath = "file:content";
+
             Blob blob = form.getFirstBlob();
             if (blob == null) {
                 throw new IllegalArgumentException(
@@ -120,23 +128,39 @@ public class GadgetDocument extends DocumentObject {
                 if (!"".equals(blob.getFilename())) {
                     try {
 
+                        String crop = form.getString("crop");
+                        if (crop != null) {
+                            String[] dim = crop.split("x");
+                            blob = getCroppedBlob(blob, Integer
+                                    .parseInt(dim[0]), Integer.parseInt(dim[1]));
+                        }
                         String resize = form.getString("resize_width");
                         if (resize != null) {
                             int resizeWidth = DEFAULT_SIZE_WIDTH;
                             try {
                                 resizeWidth = Integer.parseInt(resize);
                             } catch (NumberFormatException e) {
-                                log.info("No width for resize picture, use default size");
+                                log
+                                        .info("No width for resize picture, use default size");
                             }
                             blob = getResizedBlobl(blob, resizeWidth);
                         }
 
-                        Property p = doc.getProperty(xpath);
-                        p.getParent()
-                                .get("filename")
-                                .setValue(blob.getFilename());
+                        schema = form.getString("schema");
+                        if (schema != null) {
+                            /* files are now stored in Files Schema */
+                            String filename = form.getMultiPartFormProperty(FILENAME);
+                            if (filename == null) {
+                                filename = GADGET_CONTENT_FILES;
+                            }
+                            addFile(blob, filename);
+                        } else {
+                            String xpath = "file:content";
+                            Property p = doc.getProperty(xpath);
+                            p.getParent().get(FILENAME).setValue(blob.getFilename());
+                            p.setValue(blob);
+                        }
 
-                        p.setValue(blob);
                     } catch (Exception e) {
                         throw WebException.wrap("Failed to attach file", e);
                     }
@@ -144,15 +168,62 @@ public class GadgetDocument extends DocumentObject {
             }
         }
 
-        try {
-            CoreSession session = getContext().getCoreSession();
-            session.saveDocument(doc);
-            session.save();
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
+        if(schema == null) {
+            try {
+                CoreSession session = getContext().getCoreSession();
+                session.saveDocument(doc);
+                session.save();
+            } catch (ClientException e) {
+                throw WebException.wrap(e);
+            }
         }
-        return Response.ok("File upload ok!", MediaType.TEXT_PLAIN)
-                .build();
+
+        return Response.ok("File upload ok!", MediaType.TEXT_PLAIN).build();
+    }
+
+    protected Blob getCroppedBlob(Blob blob, int newWidth, int newHeight)
+            throws IOException, ConversionException, ClientException {
+        String fileName = blob.getFilename();
+        blob.persist();
+
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        ImageInfo imageInfo = getImagingService().getImageInfo(blob);
+        int oldWidth = imageInfo.getWidth();
+        int oldHeight = imageInfo.getHeight();
+
+        /* if the picture's dimensions are smaller than the new dimensions */
+        if (oldWidth < newWidth && oldHeight < newHeight){
+            newWidth = oldWidth;
+            newHeight = oldHeight;
+        }
+        /* if only the picture width is smaller than the new width */
+        else if (oldWidth < newWidth && oldHeight > newHeight){
+            double ratio = newWidth/newHeight;
+            newHeight = (int) Math.round(oldWidth / ratio);
+            newWidth = oldWidth;
+        }
+        /* if only the picture height is smaller than the new height */
+        else if (oldHeight < newHeight && oldWidth > newWidth){
+            double ratio = newWidth/newHeight;
+            newWidth = (int) Math.round(oldHeight / ratio);
+            newHeight = oldHeight;
+        }
+        blob = getImagingService().crop(blob, 0, 0, newWidth, newHeight);
+        imageInfo = getImagingService().getImageInfo(blob);
+
+        BlobHolder bh = new SimpleBlobHolder(blob);
+        options.put(OPTION_RESIZE_WIDTH, newWidth);
+        options.put(OPTION_RESIZE_HEIGHT, newHeight);
+        options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+        options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
+        bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
+
+        blob = bh.getBlob() != null ? bh.getBlob() : blob;
+        String viewFilename = computeViewFilename(fileName,
+                JPEG_CONVERSATION_FORMAT);
+        blob.setFilename(viewFilename);
+
+        return blob;
     }
 
     protected Blob getResizedBlobl(Blob blob, int newWidth)
@@ -163,7 +234,8 @@ public class GadgetDocument extends DocumentObject {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         try {
-            ImageInfo imageInfo = getImagingService().getImageInfo(bh.getBlob());
+            ImageInfo imageInfo = getImagingService()
+                    .getImageInfo(bh.getBlob());
 
             int width, height, depth;
             width = imageInfo.getWidth();
@@ -196,7 +268,8 @@ public class GadgetDocument extends DocumentObject {
     protected ConversionService getConversionService() throws ClientException {
         if (conversionService == null) {
             try {
-                conversionService = Framework.getService(ConversionService.class);
+                conversionService = Framework
+                        .getService(ConversionService.class);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -221,53 +294,96 @@ public class GadgetDocument extends DocumentObject {
     public Response hasFile() {
 
         try {
+            /* Check first if there are at least one file in files schema */
+            ArrayList<Map<String, Serializable>> files = getFilesStoredInGadget();
+            for (Map<String, Serializable> map : files) {
+                if (map.get(FILE) != null && map.get(FILENAME) != null)
+                    return Response.ok("true").build();
+            }
             getBlobFromDoc(doc);
         } catch (Exception e) {
-            return Response.ok("false")
-                    .build();
+            throw new WebApplicationException(404);
         }
 
-        return Response.ok("true")
-                .build();
-
+        return Response.ok("true").build();
     }
 
     @GET
     @Path("file")
     public Object getFile(@Context Request request) {
+        Blob blob;
         try {
-            Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
-            EntityTag tag = getEntityTagForDocument(doc);
-            Response.ResponseBuilder rb = request.evaluatePreconditions(modified.getTime(), tag);
-            if (rb != null) {
-                return rb.build();
+            /* try to get the file from file schema */
+            blob = getBlobFromDoc(doc);
+            return buildResponseToGetFile(request, blob);
+        } catch (ClientException e1) {
+            try {
+                /*
+                 * try to find the file from files schema with the default
+                 * filename
+                 */
+                blob = getFileWithSpecificName(GADGET_CONTENT_FILES);
+                return buildResponseToGetFile(request, blob);
+            } catch (ClientException e) {
+                throw WebException.wrap("Failed to get the attached file", e);
             }
+        }
 
-            Blob blob = getBlobFromDoc(doc);
-            String filename = blob.getFilename();
+    }
 
-
-
-            String contentDisposition = "attachment;filename=" + filename;
-
-            // Special handling for SWF file. Since Flash Player 10, Flash
-            // player
-            // ignores reading if it sees Content-Disposition: attachment
-            // http://forum.dokuwiki.org/thread/2894
-            if (filename.endsWith(".swf")) {
-                contentDisposition = "inline;";
-            }
-
-            return Response.ok(blob)
-                    .header("Content-Disposition", contentDisposition)
-                    .type(blob.getMimeType())
-                    .lastModified(modified.getTime())
-                    .expires(modified.getTime())
-                    .tag(tag)
-                    .build();
+    @GET
+    @Path("file/{filename}")
+    public Object getFile(@Context Request request,
+            @PathParam("filename") String filename) {
+        try {
+            Blob blob = getFileWithSpecificName(filename);
+            return buildResponseToGetFile(request, blob);
         } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
+    }
+
+    /**
+     * Format the response to the getFile methods
+     */
+    private Response buildResponseToGetFile(Request request, Blob blob)
+            throws PropertyException, ClientException {
+
+        EntityTag tag = getEntityTagForDocument(doc);
+        Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
+
+        if (isCacheHeaderEnabled()) {
+            Response.ResponseBuilder rb = request.evaluatePreconditions(
+                    modified.getTime(), tag);
+            if (rb != null) {
+                return rb.build();
+            }
+        }
+
+        String filename = blob.getFilename();
+        String contentDisposition = "attachment;filename=" + filename;
+
+        /*
+         * Special handling for SWF file. Since Flash Player 10, Flash player
+         * ignores reading if it sees Content-Disposition: attachment
+         * http://forum.dokuwiki.org/thread/2894
+         */
+        if (filename.endsWith(".swf"))
+            contentDisposition = "inline;";
+
+        ResponseBuilder rb = Response.ok(blob).header("Content-Disposition",
+                contentDisposition).type(blob.getMimeType());
+
+        if (isCacheHeaderEnabled())
+            rb = rb.lastModified(modified.getTime())
+                    .expires(modified.getTime()).tag(tag);
+
+        return rb.build();
+    }
+
+    private boolean isCacheHeaderEnabled() {
+        String property = Framework.getProperty(ENABLE_CACHE_HEADER);
+        return property != null && "true".equals(property);
     }
 
     static EntityTag getEntityTagForDocument(DocumentModel doc) {
@@ -277,7 +393,8 @@ public class GadgetDocument extends DocumentObject {
         } catch (ClientException e) {
             modified = Calendar.getInstance();
         }
-        return new EntityTag(computeDigest(doc.getId() + new SimpleDateFormat(DTEFORMAT).format(modified.getTime())));
+        return new EntityTag(computeDigest(doc.getId()
+                + new SimpleDateFormat(DTEFORMAT).format(modified.getTime())));
     }
 
     private static String computeDigest(String content) {
@@ -307,7 +424,7 @@ public class GadgetDocument extends DocumentObject {
             if (p.isComplex()) { // special handling for file and files
                 // schema
                 try {
-                    fileName = (String) p.getValue("filename");
+                    fileName = (String) p.getValue(FILENAME);
                 } catch (PropertyException e) {
                     fileName = "Unknown";
                 }
@@ -320,15 +437,22 @@ public class GadgetDocument extends DocumentObject {
 
     @GET
     @Path("html")
-    public Object doGetHtml(@Context Request request) throws PropertyException, ClientException {
+    public Object doGetHtml(@Context Request request) throws PropertyException,
+            ClientException {
         EntityTag tag = getEntityTagForDocument(doc);
         Response.ResponseBuilder rb = request.evaluatePreconditions(tag);
         if (rb != null) {
             return rb.build();
         }
+
+        /* If htmlContent is stored in files schema */
+        Blob htmlContentBlob = getFileWithSpecificName(HTML_CONTENT);
+        if (htmlContentBlob != null)
+            return Response.ok(htmlContentBlob.toString(), MediaType.TEXT_HTML)
+                    .build();
+
         String htmlContent = (String) doc.getPropertyValue(GADGET_HTML_CONTENT);
-        return Response.ok(htmlContent, MediaType.TEXT_HTML)
-                .build();
+        return Response.ok(htmlContent, MediaType.TEXT_HTML).build();
     }
 
     protected String computeViewFilename(String filename, String format) {
@@ -340,4 +464,64 @@ public class GadgetDocument extends DocumentObject {
         }
     }
 
+    /* Specific methods to get stored files in files schema */
+
+    /**
+     * Get the File with the specific name from the files schema
+     */
+    protected Blob getFileWithSpecificName(String filename)
+            throws PropertyException, ClientException {
+        ArrayList<Map<String, Serializable>> files = getFilesStoredInGadget();
+        for (Map<String, Serializable> map : files) {
+            if (map.containsValue(filename))
+                if (map.get(FILE) != null) {
+                    Blob htmlContentBlob = (Blob) map.get(FILE);
+                    return htmlContentBlob;
+                }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ArrayList<Map<String, Serializable>> getFilesStoredInGadget()
+            throws PropertyException, ClientException {
+        return (ArrayList<Map<String, Serializable>>) doc
+                .getPropertyValue(FILES_FILES);
+    }
+
+    /**
+     * Update a file in files schema
+     */
+    public void addFile(Blob file, String filename) throws ClientException {
+        try {
+            ArrayList<Map<String, Serializable>> files = getFilesStoredInGadget();
+            boolean isUpdate = false;
+            for (Map<String, Serializable> map : files) {
+                if (map.containsKey(FILENAME)
+                        && filename.equals(map.get(FILENAME))) {
+                    map.put(FILE, (Serializable) file);
+                    isUpdate = true;
+                    break;
+                }
+            }
+
+            if (!isUpdate) {
+                Map<String, Serializable> fileMap = new HashMap<String, Serializable>();
+                fileMap.put(FILE, (Serializable) file);
+                fileMap.put(FILENAME, filename);
+                files.add(fileMap);
+            }
+            doc.setPropertyValue(FILES_FILES, files);
+            CoreSession session = doc.getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+        } catch (PropertyException e) {
+            log.error("No Property " + FILES_FILES + " for " + doc.getType());
+        }
+    }
+
+    public void removeFile(String filename) throws ClientException {
+        addFile(null, filename);
+    }
 }
+

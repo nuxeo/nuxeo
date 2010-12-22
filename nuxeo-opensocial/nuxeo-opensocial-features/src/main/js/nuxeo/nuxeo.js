@@ -57,14 +57,39 @@ gadgets.nuxeo.getFileActionUrl = function(id) {
 }
 
 /**
+ * Get the url to get a file with a specific name
+ */
+gadgets.nuxeo.getSpecificFileUrl = function(id, specificName) {
+  return this.getResourceUrl(id) + this.FILEACTION + "/" + specificName;
+}
+
+/**
  * Returns the current gadget's id
  */
 gadgets.nuxeo.getGadgetId = function() {
   return window.name.split("-").slice(2).join("-");
 };
 
+gadgets.nuxeo.hasPermission = function(permissionName) {
+  var tmp = gadgets.util.getUrlParameters().permission;
+  var perms = tmp.substring(1, tmp.length-1).split(",");
+
+  if (perms.indexOf("Everything")>=0) {
+    return true;
+  }
+
+  var b = false;
+  jQuery.each(perms, function(i, p){
+    if(jQuery.trim(p) == jQuery.trim(permissionName)) {
+      b = true;
+      return;
+    }
+  });
+  return b;
+};
+
 gadgets.nuxeo.isEditable = function() {
-  return gadgets.util.getUrlParameters().permission == "1";
+  return gadgets.nuxeo.hasPermission("Write");
 };
 
 gadgets.nuxeo.getNXIDPreference = function(name, id) {
@@ -74,6 +99,4 @@ gadgets.nuxeo.getNXIDPreference = function(name, id) {
 gadgets.nuxeo.refreshGadget = function(){
   gadgets.rpc.call("", "refresh", null, "");
 };
-
-
 
