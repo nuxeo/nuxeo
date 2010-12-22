@@ -85,6 +85,8 @@ public abstract class Dialect {
 
     protected final boolean aclOptimizationsEnabled;
 
+    protected final int readAclMaxSize;
+
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
@@ -138,6 +140,7 @@ public abstract class Dialect {
         this.binaryManager = binaryManager;
         fulltextDisabled = repositoryDescriptor.fulltextDisabled;
         aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
+        readAclMaxSize = repositoryDescriptor.readAclMaxSize;
     }
 
     public BinaryManager getBinaryManager() {
