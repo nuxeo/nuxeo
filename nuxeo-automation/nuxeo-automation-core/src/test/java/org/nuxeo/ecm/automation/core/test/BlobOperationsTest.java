@@ -22,6 +22,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
+import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentBlob;
@@ -253,6 +255,37 @@ public class BlobOperationsTest {
         file.delete();
 
         dir.delete();
+    }
+
+    @Test
+    public void testFilenameModification() throws Exception {
+        // create a file
+        Blob blob = new StringBlob("the blob content");
+        blob.setFilename("initial_name.txt");
+        blob.setMimeType("text/plain");
+        DocumentModel file = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");
+        file.setPropertyValue("dc:title", "The File");
+        file.setPropertyValue("file:content", (Serializable)blob);
+        file = session.createDocument(file);
+        session.save();
+        file = session.getDocument(file.getRef());
+        blob = (Blob)file.getPropertyValue("file:content");
+        assertEquals("the blob content", blob.getString());
+        assertEquals("initial_name.txt", blob.getFilename());
+
+        // execute the set blob name operation
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(file);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(SetBlobFileName.ID).set("name", "modified_name.txt");
+        service.run(ctx, chain);
+
+        file = session.getDocument(file.getRef());
+        blob = (Blob)file.getPropertyValue("file:content");
+        assertEquals("the blob content", blob.getString());
+        assertEquals("modified_name.txt", blob.getFilename());
+
     }
 
     // TODO add post and file2pdf tests

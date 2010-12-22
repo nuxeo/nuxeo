@@ -67,14 +67,14 @@ public class SendMail {
     @Param(name = "to")
     protected StringList to; // a comma separated list of emails
 
-    @Param(name = "asHTML", required = false)
+    @Param(name = "asHTML", required = false, values="false")
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
 
-    @Param(name = "viewId", required = false)
-    protected String viewId;
+    @Param(name = "viewId", required = false, values="view_documents")
+    protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {

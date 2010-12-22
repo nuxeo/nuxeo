@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
@@ -100,7 +101,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -171,6 +172,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(CreateBlob.class);
         service.putOperation(CreateZip.class);
         service.putOperation(AttachBlob.class);
+        service.putOperation(SetBlobFileName.class);
         service.putOperation(RemoveDocumentBlob.class);
         service.putOperation(PushBlob.class);
         service.putOperation(PushBlobList.class);
