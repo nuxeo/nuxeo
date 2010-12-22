@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -25,6 +26,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -43,7 +45,6 @@ import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
-import org.nuxeo.theme.presets.PresetInfo;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.resources.ImageInfo;
@@ -131,7 +132,6 @@ public class Main extends ModuleRoot {
     public Object renderStyleManager(
             @QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
-
         String currentThemeName = getCurrentThemeName(path, name);
         ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
         List<Style> styles = Editor.getNamedStyles(currentThemeName,
@@ -374,11 +374,13 @@ public class Main extends ModuleRoot {
     public Object renderStylePicker(
             @QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
-        return getTemplate("stylePicker.ftl").arg("style_category",
-                getSelectedStyleCategory()).arg("current_theme_name",
-                getCurrentThemeName(path, name)).arg("selected_preset_group",
-                getSelectedPresetGroup()).arg("preset_groups",
-                getPresetGroupsForSelectedCategory()).arg(
+        String currentThemeName = getCurrentThemeName(path, name);
+        ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
+        return getTemplate("stylePicker.ftl").arg("resource_bank", resourceBank).arg(
+                "style_category", getSelectedStyleCategory()).arg(
+                "current_theme_name", getCurrentThemeName(path, name)).arg(
+                "selected_preset_group", getSelectedPresetGroup()).arg(
+                "preset_groups", getPresetGroupsForSelectedCategory()).arg(
                 "presets_for_selected_group",
                 getPresetsForSelectedGroup(path, name));
     }
@@ -388,10 +390,12 @@ public class Main extends ModuleRoot {
     public Object renderAreaStyleChooser(
             @QueryParam("org.nuxeo.theme.application.path") String path,
             @QueryParam("org.nuxeo.theme.application.name") String name) {
-        return getTemplate("areaStyleChooser.ftl").arg("style_category",
-                getSelectedStyleCategory()).arg("current_theme_name",
-                getCurrentThemeName(path, name)).arg("preset_groups",
-                getPresetGroupsForSelectedCategory()).arg(
+        String currentThemeName = getCurrentThemeName(path, name);
+        ResourceBank resourceBank = getCurrentThemeBank(currentThemeName);
+        return getTemplate("areaStyleChooser.ftl").arg("resource_bank",
+                resourceBank).arg("style_category", getSelectedStyleCategory()).arg(
+                "current_theme_name", getCurrentThemeName(path, name)).arg(
+                "preset_groups", getPresetGroupsForSelectedCategory()).arg(
                 "presets_for_selected_group",
                 getPresetsForSelectedGroup(path, name)).arg(
                 "selected_preset_group", getSelectedPresetGroup());
@@ -418,12 +422,12 @@ public class Main extends ModuleRoot {
 
     @GET
     @Path("render_css_preview")
-    public String renderCssPreview() {
+    public String renderCssPreview(@QueryParam("basePath") String basePath) {
         Style selectedStyleLayer = getSelectedStyleLayer();
         String selectedViewName = getViewNameOfSelectedElement();
         Element selectedElement = getSelectedElement();
         return Editor.renderCssPreview(selectedElement, selectedStyleLayer,
-                selectedViewName);
+                selectedViewName, basePath);
     }
 
     // Dashboard
@@ -1722,25 +1726,23 @@ public class Main extends ModuleRoot {
             viewName = "*";
         }
         viewNames.add(viewName);
-        boolean RESOLVE_PRESETS = false;
         boolean IGNORE_VIEW_NAME = true;
         boolean IGNORE_CLASSNAME = true;
         boolean INDENT = true;
         return org.nuxeo.theme.html.CSSUtils.styleToCss(style, viewNames,
-                RESOLVE_PRESETS, IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
+                IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
     }
 
     public static String getRenderedPropertiesForNamedStyle(Style style) {
         if (style == null) {
             return "";
         }
-        boolean RESOLVE_PRESETS = false;
         boolean IGNORE_VIEW_NAME = false;
         boolean IGNORE_CLASSNAME = true;
         boolean INDENT = true;
         return org.nuxeo.theme.html.CSSUtils.styleToCss(style,
-                style.getSelectorViewNames(), RESOLVE_PRESETS,
-                IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
+                style.getSelectorViewNames(), IGNORE_VIEW_NAME,
+                IGNORE_CLASSNAME, INDENT);
     }
 
     public static Widget getWidgetOfSelectedElement() {
@@ -1808,40 +1810,29 @@ public class Main extends ModuleRoot {
         return groups;
     }
 
-    public static List<PresetInfo> getGlobalPresets(String group) {
-        List<PresetInfo> presets = new ArrayList<PresetInfo>();
-        for (PresetType preset : PresetManager.getGlobalPresets(group, null)) {
-            presets.add(new PresetInfo(preset));
-        }
-        return presets;
+    public static List<PresetType> getGlobalPresets(String group) {
+        return new ArrayList<PresetType>(PresetManager.getGlobalPresets(group,
+                null));
     }
 
-    public static List<PresetInfo> getCustomPresets(String themeName,
+    public static List<PresetType> getCustomPresets(String themeName,
             String category) {
-        List<PresetInfo> presets = new ArrayList<PresetInfo>();
         if ("".equals(category)) {
             category = null;
         }
-        for (PresetType preset : PresetManager.getCustomPresets(themeName,
-                category)) {
-            presets.add(new PresetInfo(preset));
-        }
-        return presets;
+        return new ArrayList<PresetType>(PresetManager.getCustomPresets(
+                themeName, category));
     }
 
-    public static List<PresetInfo> getPresetsForSelectedGroup(
-            String applicationPath, String name) {
+    public List<PresetType> getPresetsForSelectedGroup(String applicationPath,
+            String name) {
         String category = getSelectedStyleCategory();
         String group = getSelectedPresetGroup();
         String themeName = getCurrentThemeName(applicationPath, name);
-        List<PresetInfo> presets = new ArrayList<PresetInfo>();
         List<PresetType> presetTypes = group == null ? PresetManager.getCustomPresets(
                 themeName, category)
                 : PresetManager.getGlobalPresets(group, category);
-        for (PresetType preset : presetTypes) {
-            presets.add(new PresetInfo(preset));
-        }
-        return presets;
+        return new ArrayList<PresetType>(presetTypes);
     }
 
     public static String getPresetManagerMode() {
@@ -1852,6 +1843,33 @@ public class Main extends ModuleRoot {
         return SessionManager.getStyleManagerMode();
     }
 
+    // TODO: use CSSUtils.expandVariables(...)
+    public String resolveVariables(String themeName, String resourceBankName,
+            List<ImageInfo> images, String value) {
+        if (images == null) {
+            return value;
+        }
+
+        String contextPath = VirtualHostHelper.getContextPathProperty();
+
+        // basePath
+        String basePath = ctx.getBasePath();
+        value = value.replaceAll("\\$\\{basePath\\}",
+                Matcher.quoteReplacement(basePath));
+
+        value = PresetManager.resolvePresets(themeName, value);
+
+        // images
+        for (ImageInfo image : images) {
+            String path = image.getPath();
+            value = value.replaceAll(Matcher.quoteReplacement(path),
+                    Matcher.quoteReplacement(String.format(
+                            "%s/nxthemes-images/%s/%s", contextPath,
+                            resourceBankName, path.replace(" ", "%20"))));
+        }
+        return value;
+    }
+
     public static List<String> getUnidentifiedPresetNames(String themeName) {
         return PresetManager.getUnidentifiedPresetNames(themeName);
     }
@@ -1859,8 +1877,8 @@ public class Main extends ModuleRoot {
     public static String renderStyleView(Style style, String viewName) {
         List<String> viewNames = new ArrayList<String>();
         viewNames.add(viewName);
-        return org.nuxeo.theme.html.CSSUtils.styleToCss(style, viewNames,
-                false, true, true, true);
+        return org.nuxeo.theme.html.CSSUtils.styleToCss(style, viewNames, true,
+                true, true);
     }
 
     public static List<String> getHardcodedColors(String themeName) {

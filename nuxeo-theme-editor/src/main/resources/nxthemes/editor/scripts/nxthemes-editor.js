@@ -1738,12 +1738,11 @@ NXThemesStyleEditor.refreshPreview = function() {
 };
 
 NXThemesStyleEditor.refreshCssPreview = function() {
-    var url = nxthemesBasePath + "/nxthemes-editor/render_css_preview";
+    var url = nxthemesBasePath + "/nxthemes-editor/render_css_preview?basePath=" + nxthemesBasePath;
     new Ajax.Request(url, {
          method: 'get',
          onSuccess: function(r) {
            var text = r.responseText;
-           text = text.replace('${basePath}', nxthemesBasePath);
            $('previewCss').innerHTML = text;
          },
          onFailure: function(r) {

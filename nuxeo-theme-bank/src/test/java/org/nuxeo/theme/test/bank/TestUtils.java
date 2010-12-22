@@ -84,15 +84,18 @@ public class TestUtils extends NXRuntimeTestCase {
     public void testGetImageItemsInCollections() throws IOException {
         final List<String> items = Utils.getItemsInCollection(BANK_NAME,
                 COLLECTION_NAME, "image");
-        assertEquals("emoticon_smile.png", items.get(0));
-        assertEquals("photo.png", items.get(1));
+        assertEquals(2, items.size());
+        assertTrue(items.contains("emoticon_smile.png"));
+        assertTrue(items.contains("photo.png"));
     }
 
     public void testListSkinsInCollection() throws IOException {
         final List<String> skins = Utils.listSkinsInCollection(BANK_NAME,
                 COLLECTION_NAME);
-        assertEquals("test.css", skins.get(0));
-        assertEquals("skin-without-preview.css", skins.get(1));
+        assertEquals(3, skins.size());
+        assertTrue(skins.contains("test.css"));
+        assertTrue(skins.contains("skin-without-preview.css"));
+        assertTrue(skins.contains("base-skin.css"));
     }
 
     // JSON
@@ -106,7 +109,8 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     public void testListImages() throws IOException {
-        assertEquals("[\"Test/emoticon_smile.png\",\"Test/photo.png\"]",
+        assertEquals(
+                "[{\"name\":\"emoticon_smile.png\",\"collection\":\"Test\"},{\"name\":\"photo.png\",\"collection\":\"Test\"}]",
                 Utils.listImages(BANK_NAME));
     }
 

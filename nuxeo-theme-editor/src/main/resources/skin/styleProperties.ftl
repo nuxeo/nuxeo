@@ -95,7 +95,7 @@
           onsubmit="return false">
           <div>
             <textarea id="csseditor" name="cssSource" rows="15" cols="72"
-              style="width: 100%; height: 250px; font-size: 11px;">${rendered_style_properties}</textarea>
+              style="width: 100%; height: 250px; font-family: monospace; font-size: 11px;">${rendered_style_properties}</textarea>
             <input type="hidden" name="id" value="#{selected_element.uid}" />
             <input type="hidden" name="viewName" value="${selected_view_name}" />
           </div>

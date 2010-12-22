@@ -43,8 +43,6 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.theme.presets.PaletteIdentifyException;
-import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
@@ -93,12 +91,6 @@ public class Main extends ModuleRoot {
     @Path("{bank}/view")
     public Object displayBankView(@PathParam("bank") String bank) {
         return getTemplate("bank.ftl").arg("bank", bank);
-    }
-
-    @GET
-    @Path("{bank}/info")
-    public Object getBankInfo(@PathParam("bank") String bank) {
-        return "XXX";
     }
 
     @GET
@@ -194,6 +186,18 @@ public class Main extends ModuleRoot {
     public String listBankSkins(@PathParam("bank") String bankName) {
         try {
             return Utils.listBankSkins(bankName);
+        } catch (IOException e) {
+            throw new ThemeBankException(e.getMessage(), e);
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{bank}/json/presets")
+    @SuppressWarnings("rawtypes")
+    public String listBankPresets(@PathParam("bank") String bankName) {
+        try {
+            return Utils.listBankPresets(bankName);
         } catch (IOException e) {
             throw new ThemeBankException(e.getMessage(), e);
         }
@@ -374,33 +378,8 @@ public class Main extends ModuleRoot {
     public Object getPresetView(@PathParam("bank") String bank,
             @PathParam("collection") String collection,
             @PathParam("category") String category) {
-        String path = String.format("%s/%s/preset/%s", bank, collection,
+        Properties properties = Utils.getPresetProperties(bank, collection,
                 category);
-        File file;
-        try {
-            file = BankManager.getFile(path);
-        } catch (IOException e) {
-            throw new ThemeBankException(e.getMessage(), e);
-        }
-        Properties properties = new Properties();
-        for (File f : file.listFiles()) {
-            String content;
-            try {
-                content = BankUtils.getFileContent(f);
-            } catch (IOException e) {
-                log.warn("Could not read file: " + f.getAbsolutePath());
-                continue;
-            }
-            try {
-                properties.putAll(PaletteParser.parse(content.getBytes(),
-                        f.getName()));
-            } catch (PaletteIdentifyException e) {
-                log.warn("Could not identify palette type: "
-                        + f.getAbsolutePath());
-            } catch (PaletteParseException e) {
-                log.warn("Could not parse palette: " + f.getAbsolutePath());
-            }
-        }
         return getTemplate("preset.ftl").arg("properties", properties).arg(
                 "bank", bank).arg("collection", collection).arg("category",
                 category);

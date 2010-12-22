@@ -31,13 +31,19 @@ public class Utils {
 
     private static final Log log = LogFactory.getLog(Utils.class);
 
-    private static final String STYLE_CATEGORIES_RESOURCE = "/nxthemes/editor/styles/categories.properties";
+    private static final String CSS_STYLE_CATEGORIES = "/nxthemes/editor/styles/categories.properties";
+
+    private static final String STYLE_PREVIEW_CATEGORIES = "/nxthemes/editor/styles/preview-categories.properties";
 
     private static final Properties cssStyleCategories = new OrderedProperties();
 
+    private static final Properties stylePreviewCategories = new Properties();
+
     static {
         org.nuxeo.theme.Utils.loadProperties(cssStyleCategories,
-                STYLE_CATEGORIES_RESOURCE);
+                CSS_STYLE_CATEGORIES);
+        org.nuxeo.theme.Utils.loadProperties(stylePreviewCategories,
+                STYLE_PREVIEW_CATEGORIES);
     }
 
     private Utils() {
@@ -53,9 +59,8 @@ public class Utils {
         try {
             properties = FieldIO.dumpFieldsToProperties(element);
         } catch (ThemeIOException e) {
-            log.error(
-                    "Failed to obtain properties of element: "
-                            + element.computeXPath(), e);
+            log.error("Failed to obtain properties of element: "
+                    + element.computeXPath(), e);
             return fieldProperties;
         }
         if (properties == null) {
@@ -77,6 +82,10 @@ public class Utils {
 
     public static Properties getCssStyleCategories() {
         return cssStyleCategories;
+    }
+
+    public static Properties getStylePreviewCategories() {
+        return stylePreviewCategories;
     }
 
 }
