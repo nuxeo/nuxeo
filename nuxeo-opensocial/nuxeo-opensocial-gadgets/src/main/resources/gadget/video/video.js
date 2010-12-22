@@ -9,21 +9,23 @@ function launchVideoWidget() {
 
   loadVideo(idGadget);
 
-  if(!perm)
-    jQuery("#perm").remove();
+  if(perm)
+    jQuery("#perm").show();
 
   gadgets.window.adjustHeight();
 
-  jQuery('#show').click(function(){
+  jQuery('#edit').click(function(){
     jQuery('#show').hide();
     jQuery('#form').show();
     gadgets.window.adjustHeight();
+    return false;
   });
 
   jQuery('#hide').click(function(){
     jQuery('#form').hide();
     jQuery('#show').show();
     gadgets.window.adjustHeight();
+    return false;
   });
 
 
@@ -71,9 +73,9 @@ function setVideo(balise){
     embed.attr("type","application/x-shockwave-flash");
     //Hack, if open popup in container
     jQuery("#video").fadeOut("fast",function(){
-    	jQuery("#video").fadeIn();
+      jQuery("#video").fadeIn();
     });
-    
+
   } else {
     jQuery("#video").html("");
     jQuery("#baliseVideo").text("");

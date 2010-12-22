@@ -84,4 +84,8 @@ public class PreferencesBean implements IsSerializable {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

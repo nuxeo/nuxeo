@@ -3,6 +3,10 @@
   color: #000000;
 }
 
+.canvas iframe{
+  overflow: auto;
+}
+
 #footer-view > .x-panel-tl, #images-view > .x-panel-tl{
   min-height:0px;
 }
@@ -363,6 +367,36 @@
     background:#FFFFFF -webkit-gradient(linear,center top , white, #CCCCCC);
     border-style: none;
     min-height:25px;
+}
+
+.x-panel-header-FF0000 > .x-panel-tl{
+ background: none repeat scroll 0 0 #FF0000;
+}
+.x-panel-header-FF0066 > .x-panel-tl{
+ background: none repeat scroll 0 0#FF0066;
+}
+.x-panel-header-FF6600 > .x-panel-tl {
+ background: none repeat scroll 0 0 #FF6600;
+}
+.x-panel-header-99CC00 > .x-panel-tl {
+ background:none repeat scroll 0 0 #99CC00;
+}
+.x-panel-header-66CCFF > .x-panel-tl {
+ background:none repeat scroll 0 0 #66CCFF;
+}
+.x-panel-header-999999 > .x-panel-tl {
+ background:none repeat scroll 0 0 #999999;
+}
+.x-panel-header-CCCCCC > .x-panel-tl {
+ background:none repeat scroll 0 0 #CCCCCC;
+}
+.x-panel-header-FFFFFF > .x-panel-tl {
+ background:none repeat scroll 0 0 #FFFFFF;
+}
+
+.x-panel-header-none > .x-panel-tl {
+ background:#FFFFFF -moz-linear-gradient(center top , white, #CCCCCC);
+ background:#FFFFFF -webkit-gradient(linear,center top , white, #CCCCCC);
 }
 
 .x-panel-tc {

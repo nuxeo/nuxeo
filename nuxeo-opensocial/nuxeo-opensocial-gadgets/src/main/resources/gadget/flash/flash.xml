@@ -20,11 +20,14 @@
 
   <Content type="html" view="default">
 <![CDATA[
+<link rel="stylesheet" href="/nuxeo/css/boutons.css" type="text/css" media="screen" />
  <style type='text/css'>
  #hide img{
      border:0;
      padding:5px 5px 0 0;
    }
+
+
 
    *{
       font-family:Trebuchet, Arial,Verdana;
@@ -83,7 +86,6 @@
 
   #upload{
     padding-left:14px;
-    background:url(/nuxeo/img/accept.png) no-repeat 0 0;
     color:#FFFFFF;
     display:block;
     float:right;
@@ -94,6 +96,12 @@
 
   #upload:hover{
       text-decoration:underline;
+    }
+
+
+       .line td {
+        border-top:1px solid #999;
+        border-bottom:1px solid #363636;
     }
 
   </style>
@@ -112,19 +120,22 @@
        <img id="loader" src="/nuxeo/img/standart_waiter.gif"/>
        <div id="flash"></div>
    </div>
-   <div id="perm">
-     <div id="show">
-        <a href="#">Modifier</a>
+   <div id="perm" style="display:none;">
+     <div id="show" class="button-container">
+        <button id="edit" title="MODIFIER" style="width:70px;margin-right:3px"  class="green">MODIFIER</black>
      </div>
       <div style="display:none;margin:auto" id="form">
 
-       <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="/nuxeo/img/x.png"></a></div>
-       <table style="width:100%" id="formFlash">
-        <tr>
+       <div id="hideContainer" class="button-container">
+          <button id="hide" style="width:70px;margin-right:3px" title="FERMER" class="black">FERMER</black>
+        </div>
+
+       <table cellspacing="0" cellpadding="5px" style="width:100%" id="formFlash">
+        <tr class="line">
           <td style="width:30%"><label for="title">Titre</label></td>
           <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
         </tr>
-        <tr>
+        <tr class="line">
           <td style="width:30%"><label for="photo">Animation</label> </td>
           <td style="width:70%">
           <form style="text-align:center;" method="post" id="formUpload" enctype="multipart/form-data" action="#">
@@ -132,10 +143,12 @@
           </form>
         </td>
         </tr>
-        <tr>
-          <td style="width:30%"></td>
+        <tr class="line">
+          <td style="width:30%">&nbsp;</td>
           <td style="width:70%">
-            <a href="" id="upload">Valider</a>
+            <div class="button-container" >
+               <button id="upload" title="Valider" style="width:100px;" class="green" >VALIDER</button>
+             </div>
           </td>
         </tr>
        </table>

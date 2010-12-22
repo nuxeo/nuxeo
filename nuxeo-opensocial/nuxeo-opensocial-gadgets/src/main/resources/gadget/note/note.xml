@@ -136,10 +136,8 @@
      	 jQuery("#formtxt").remove();
      	 var textareaContent = gadgets.util.unescapeString(text).replace(/&/g,'&amp;').replace(/  /g, '&nbsp;')
      	 .replace(/<|>/g, '&gt;').replace(/\n/g, '<br />');
-         jQuery("#cacheText").width(jQuery("#txtareapostit").width())
-         .height(jQuery("#txtareapostit").height())
-         .attr("style",style.join("")).html(textareaContent + "&nbsp;")
-         .css("word-wrap","break-word")
+         jQuery("#cacheText").attr("style",style.join("")).html(textareaContent + "&nbsp;")
+         .css("word-wrap","break-word").css("min-height","220px")
          .show();
           gadgets.window.adjustHeight();
      } else {

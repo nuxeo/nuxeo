@@ -518,7 +518,10 @@ thumbnail="http://www.wofrance.fr/gifs/igooglecity_screen_fr.png">
           }
         }
         html += "<td style=\"margin:0 auto;padding=0px;text-align:center;\"><a target=\"_blank\" style=\"text-decoration:none;\" href=\"http://" + wodomain + "/"  + link + "/" + linkcity + ".htm\">";
-        html += "<img src=\"http://www.wofrance.fr/daten/symbole/vorhersagen/standard/"+weather_day_symbol+".gif\" ALT=\""+weather_day_textmodul+"\" title=\""+weather_day_textmodul+"\" width=\"40\" height=\"28\" border=\"0\"></a></td>";
+        
+        var imgSrc = gadgets.io.getProxyUrl("http://www.wofrance.fr/daten/symbole/vorhersagen/standard/"+weather_day_symbol+".gif");
+        html += "<img src=\""+ imgSrc +"\" ALT=\""+weather_day_textmodul+"\" title=\""+weather_day_textmodul+"\" width=\"40\" height=\"28\" border=\"0\"></a></td>";
+                
       }
       html += "</tr>";
       html += "</tbody>";

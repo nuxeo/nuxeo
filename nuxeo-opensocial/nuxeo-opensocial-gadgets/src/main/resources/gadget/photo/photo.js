@@ -16,7 +16,7 @@ jQuery(document).ready(function(){
   setLink(prefs.getString("link"));
   setLegend(prefs.getString("legend"));
 
-  if(!perm) jQuery("#perm").remove();
+  if(perm) jQuery("#perm").show();
 
 
   jQuery('#upload').click(function(){
@@ -37,7 +37,7 @@ jQuery(document).ready(function(){
     return false;
   });
 
-  jQuery('#show').click(function(){
+  jQuery('#edit').click(function(){
     jQuery('#show').hide();
     jQuery('#form').show();
     gadgets.window.adjustHeight();

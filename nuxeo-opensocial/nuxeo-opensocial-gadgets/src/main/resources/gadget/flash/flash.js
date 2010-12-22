@@ -13,7 +13,7 @@ jQuery(document).ready(function(){
 
   setTitle(prefs.getString("title-flash"));
 
-  if(!perm) jQuery("#perm").remove();
+  if(perm) jQuery("#perm").show();
 
     var options = {
       beforeSubmit: control,
@@ -32,12 +32,14 @@ jQuery(document).ready(function(){
     jQuery('#show').hide();
     jQuery('#form').show();
     gadgets.window.adjustHeight();
+    return false;
   });
 
   jQuery('#hide').click(function(){
     jQuery('#form').hide();
     jQuery('#show').show();
     gadgets.window.adjustHeight();
+    return false;
   });
 
   loadFlash(gadgets.nuxeo.getGadgetId());

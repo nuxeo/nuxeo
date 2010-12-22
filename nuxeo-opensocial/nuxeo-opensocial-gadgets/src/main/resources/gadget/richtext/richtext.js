@@ -1,6 +1,7 @@
 var perm = gadgets.nuxeo.isEditable();
 var firstTime = true;
 var formUrl;
+var hasFile = false;
 
 function launchGadget(){
 jQuery(document).ready(function(){
@@ -17,16 +18,10 @@ jQuery(document).ready(function(){
   setLegend(gadgets.util.unescapeString(prefs.getString("legend")));
   setPlace(gadgets.util.unescapeString(prefs.getString("templates")));
 
-  jQuery.ajax({
-    type : "GET",
-    url : [formUrl,"/hasFile"].join(""),
-    success:function(data){
-      if (data == "false") jQuery('#deletePhoto').hide();
-    }
-  });
 
   jQuery('#show').click(function(){
     jQuery("#mainContainer").hide();
+    if(!hasFile) jQuery('#deletePhoto').hide();
     jQuery('#show').hide();
     jQuery('#form').show();
     gadgets.window.adjustHeight();
@@ -43,9 +38,9 @@ jQuery(document).ready(function(){
     gadgets.window.adjustHeight();
   });
 
-  if(!perm) jQuery("#perm").remove();
+  if(perm) jQuery("#perm").show();
 
-  jQuery('#upload').click(function(){
+  jQuery('#valid').click(function(){
     jQuery('#richtext').val(jQuery('.nicEdit-main').html());
     jQuery('#formUpload').ajaxSubmit({
       success:function(){
@@ -177,6 +172,7 @@ function loadImage(id){
     url :[formUrl,"/hasFile"].join(""),
     success: function(data) {
       if (data == "true"){
+        hasFile=true;
         jQuery("#imgPreview").show();
         jQuery('#deletePhoto').show();
         var imgContainer = "";

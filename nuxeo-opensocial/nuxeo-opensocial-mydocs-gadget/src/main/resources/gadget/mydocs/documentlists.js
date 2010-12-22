@@ -1,5 +1,4 @@
 var gadgetId="";
-var path=new Array();
 var currentPage=0;
 var maxPage = 0;
 var errors = 0;
@@ -84,13 +83,16 @@ function getDocumentLists() {
 function handleJSONResponse(obj) {
   var jsonObject = obj.data;
   if (jsonObject == null) {
-    if (errors > 0) {
+   if(errors > 0 && path != ""){
+     path = [];
+  	 getDocumentLists();
+   } else if (errors > 0) {
       displayNoWorkspaceFound();
-    } else {
+   } else {
       errors++;
       getDocumentLists();
-    }
-    return;
+   }
+   return;
   } else {
     errors = 0;
   }
@@ -119,7 +121,7 @@ function tableStart(jsonObject) {
   html += "  <thead>";
   html += "    <tr>";
   html += "      <th>";
-  if (path.length > 0)
+  if ((path.length > 0 && path.join("/") != prefs.getString("defaultFolder"))|| (path.length > 0 && gadgets.nuxeo.isEditable()))
     html += "<a href=\"#\" onclick=\"upFolder();return false;\"<img border=\"0\" src=\"" + top.nxContextPath + "/icons/UpFolder_icon.gif\"></a>"
   html += "      </th>";
   html += "      <th>" + title + "</th>";
@@ -157,10 +159,16 @@ function displayDocumentList(jsonObject) {
 
   if(perm){
     jQuery(".deleteaction").click(function() {
-      deleteDoc(jQuery(this));
+      deleteDoc(this);
       return false;
     });
+	
+	bindEvents();
+  }
+}
 
+function bindEvents() {
+  
   jQuery("#uploadBtn").click(function() {
       jQuery('#formUpload').ajaxSubmit({
         beforeSubmit: control,
@@ -176,8 +184,46 @@ function displayDocumentList(jsonObject) {
         type: 'POST'
       });
       return false;
+  });
+    
+  jQuery("#createFolder").click(function(){
+    var folderName = encodeURIComponent(jQuery.trim(jQuery("#folderName").val()));
+	if(folderName != ""){
+	  function eee(){
+	  	gadgets.window.adjustHeight();
+	  	gadgets.nuxeo.refreshGadget();
+	  }
+      makeRequest([getResourceUrl(), "@create?docTitle=", folderName, "&docType=Folder"].join(""),  eee, gadgets.io.MethodType.POST);
+	}
+	return false;
+  });
+  
+  jQuery("#defaultFolder").bind("click",function(){
+		function hack(){
+		  jQuery("#defaultFolder").addClass("click");
+  		  setTimeout(function(){
+  		  	jQuery("#defaultFolder").removeClass("click");
+  		  },300); 
+		}
+		
+		if(!jQuery("#defaultFolder").hasClass("click")){
+	  	  var msg = prefs.getMsg("confirmDefault");
+	  	  var value = "";
+		  if(jQuery(this).is(':checked')){
+			msg =  prefs.getMsg("confirmFolder");
+			value = path.join("/");
+		  } 		  
+		  if(confirm(msg)) {
+		  	hack();
+		    prefs.set("defaultFolder", value);
+		    gadgets.window.adjustHeight();
+	  	  } else {
+	  	  	hack();
+	  	    return false;
+	  	  }
+		  return true
+	  }
     });
-  }
 }
 
 function getDateForDisplay(datestr) {
@@ -194,11 +240,21 @@ function getDateForDisplay(datestr) {
 
 function upFolder() {
   path.pop();
+  updateDefaultFolder();
   refresh();
+}
+
+function updateDefaultFolder(){
+  if(path.join("/") == prefs.getString("defaultFolder")){
+  	jQuery("#defaultFolder").attr("checked", true);
+  } else {
+  	jQuery("#defaultFolder").attr("checked", false);
+  }
 }
 
 function followPath(pathToFollow) {
   path.push(pathToFollow);
+  updateDefaultFolder();
   refresh();
 }
 
@@ -217,7 +273,7 @@ function mkRow(document, i) {
   htmlRow += "</td>";
   if (document.folderish == 1) {
     htmlRow += "<td><a href=\"#\" title=\"" + document.title
-        + "\" onclick=\"followPath('" + document.name
+        + "\" onclick=\"followPath('" + escape(document.name)
         + "');return false;\">";
     htmlRow += document.title + "</a></td>";
   } else if(document.type == "Picture"){
@@ -236,7 +292,7 @@ function mkRow(document, i) {
   htmlRow += "</td>";
   htmlRow += "<td class=\"iconColumn\">";
   if(perm) {
-    htmlRow += "<a class=\"deleteaction perm\" href=\"" + getResourceUrl() + document.name +"\" onclick=\"delete(this);\">";
+    htmlRow += "<a class=\"deleteaction perm\" href=\"" + getResourceUrl() + escape(document.name) +"\" onclick=\"delete(this);\">";
     htmlRow += "<img src=\"/nuxeo/icons/action_delete_mini.gif\"></a>&nbsp;";
   }
   htmlRow +="</td>";
@@ -262,15 +318,13 @@ function readCookie(name) {
   return null;
 }
 
-function deleteDoc(obj) {
-  if(confirm(prefs.getMsg("confirmDelete")))
-    makeRequest(obj.attr('href'), function() {  gadgets.nuxeo.refreshGadget();}, gadgets.io.MethodType.DELETE);
+function deleteDoc(elem) {
+  if(confirm(prefs.getMsg("confirmDelete"))) {
+    jQuery(elem).parents("tr.dataRowEven").remove();
+    makeRequest(jQuery(elem).attr('href'), function() {  gadgets.nuxeo.refreshGadget();}, gadgets.io.MethodType.DELETE);
+  }
   return false;
 }
-
-jQuery(document).ready(function(){
-
-});
 
 function control(){
   return (jQuery.trim(jQuery("#uploadFile").val()) != "");

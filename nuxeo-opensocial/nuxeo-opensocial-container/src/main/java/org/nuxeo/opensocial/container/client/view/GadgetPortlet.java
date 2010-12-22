@@ -71,7 +71,7 @@ public class GadgetPortlet extends Portlet {
     private void buildPortlet() {
         this.setLayout(new FitLayout());
         this.setTitle(this.gadget.getTitle());
-        if (!this.view.equals(DEFAULT_VIEW)) {
+        if (this.view.equals(CANVAS_VIEW)) {
             this.setDraggable(false);
             this.setHideCollapseTool(true);
         } else {
@@ -86,6 +86,7 @@ public class GadgetPortlet extends Portlet {
         this.setId(getIdWithRefAndView(gadget.getRef(), view));
         this.tools = new GadgetTools(this);
         this.setTools(tools.getButtons());
+        this.setIconCls(this.gadget.getIcon());        
         GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
         GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
     }
@@ -117,6 +118,11 @@ public class GadgetPortlet extends Portlet {
         }
     }
 
+    public void setFrameHeight(int height) {
+        this.frame.setHeight(height + "px");
+    }
+
+
     public void renderPreference(String name, String value) {
         if (DEFAULT_PREFS.isBorder(name)) {
             if (!NONE_PROPERTY.equals(value))
@@ -129,10 +135,8 @@ public class GadgetPortlet extends Portlet {
             else
                 removeTitleColor(this.getId());
         } else if (DEFAULT_PREFS.isHeader(name)) {
-            if (NONE_PROPERTY.equals(value))
-                removeHeaderColor(this.getId());
-            else
-                changeHeaderColor(this.getId(), value);
+            this.removeClass();
+            this.addClass("x-panel x-portlet x-panel-header-" + value);
         }
     }
 
@@ -291,18 +295,6 @@ public class GadgetPortlet extends Portlet {
         this.view = view;
     }
 
-    private static native void removeHeaderColor(String id)
-    /*-{
-      $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background","");
-    }-*/;
-
-    private static native void changeHeaderColor(String id, String color)
-    /*-{
-      $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-webkit-gradient(linear,center top , #"+color+", #FFFFFF)");
-      $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-image","-moz-linear-gradient(center top , #"+color+", #FFFFFF)");
-      $wnd.jQuery("#"+id).find("div.x-panel-tl").css("background-color","#"+color);
-    }-*/;
-
     static native void changeBorderColor(String id, String color)
     /*-{
       $wnd.jQuery("#"+id).find("div.x-panel-tl").css("border-bottom","1px solid #"+color);
@@ -342,5 +334,15 @@ public class GadgetPortlet extends Portlet {
     /*-{
         $wnd.jQuery("#"+id).attr("style","");
     }-*/;
+
+    public void removeClass() {
+        _removeClass(this.id);
+    }
+
+    private native static void _removeClass(String id)
+    /*-{
+      $wnd.jQuery("#"+id).attr("class","");
+    }-*/;
+
 
 }
