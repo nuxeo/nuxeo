@@ -54,7 +54,7 @@ public class SendMail {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
+    @Param(name = "message", widget = Constants.W_MAIL_TEMPLATE)
     protected String message;
 
     @Param(name = "subject")
