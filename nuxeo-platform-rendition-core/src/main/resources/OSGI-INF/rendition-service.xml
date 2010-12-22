@@ -9,15 +9,13 @@
     class="org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl" />
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.platform.rendition.service.RenditionService" />
+    <provide interface="org.nuxeo.ecm.platform.rendition.service.RenditionService" />
   </service>
 
   <extension-point name="renditionDefinitions">
     <documentation>
     </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition" />
+    <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinition" />
   </extension-point>
 
 </component>

@@ -56,12 +56,14 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
             if (!StringUtils.isEmpty(renditionName)) {
                 DocumentRef renditionDocumentRef;
                 try {
-                    renditionDocumentRef = getRenditionService().render(doc, renditionName);
-                } catch(RenditionException e) {
+                    renditionDocumentRef = getRenditionService().render(doc,
+                            renditionName);
+                } catch (RenditionException e) {
                     throw new PublisherException(e.getLocalizedMessage(), e);
                 }
                 DocumentModel renditionDocument = coreSession.getDocument(renditionDocumentRef);
-                PublishedDocument publishedDocument = super.publishDocument(renditionDocument, targetNode, params);
+                PublishedDocument publishedDocument = super.publishDocument(
+                        renditionDocument, targetNode, params);
 
                 new RemoveACP(coreSession, renditionDocumentRef).runUnrestricted();
 
@@ -81,8 +83,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
                 throw new ClientException(errMsg, e);
             }
             if (renditionService == null) {
-                throw new ClientException(
-                        "RenditionService service not bound");
+                throw new ClientException("RenditionService service not bound");
             }
         }
         return renditionService;

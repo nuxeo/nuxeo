@@ -60,10 +60,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api",
-        "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.convert",
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core" })
@@ -103,10 +101,14 @@ public class TestRenditionService {
 
         assertNotNull(renditionDocument);
         assertTrue(renditionDocument.hasFacet(RENDITION_FACET));
-        assertEquals(file.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
+        assertEquals(
+                file.getId(),
+                renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
 
         DocumentModel lastVersion = session.getLastDocumentVersion(file.getRef());
-        assertEquals(lastVersion.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+        assertEquals(
+                lastVersion.getId(),
+                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
         BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
         Blob renditionBlob = bh.getBlob();
@@ -122,7 +124,8 @@ public class TestRenditionService {
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
+    protected DocumentModel createFileWithBlob(Blob blob, String name)
+            throws ClientException {
         DocumentModel file = session.createDocumentModel("/", name, "File");
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         bh.setBlob(blob);
@@ -140,22 +143,27 @@ public class TestRenditionService {
     public void shouldNotRenderAProxyDocument() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
+        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
+                "/"));
         renditionService.render(proxy, "pdf");
     }
 
     @Test
-    public void shouldNotCreateANewVersionForACheckedInDocument() throws ClientException {
+    public void shouldNotCreateANewVersionForACheckedInDocument()
+            throws ClientException {
         DocumentModel file = createBlobFile();
 
         DocumentRef versionRef = file.checkIn(VersioningOption.MINOR, null);
         file.refresh(DocumentModel.REFRESH_STATE, null);
         DocumentModel version = session.getDocument(versionRef);
 
-        DocumentRef renditionDocumentRef = renditionService.render(version, "pdf");
+        DocumentRef renditionDocumentRef = renditionService.render(version,
+                "pdf");
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
-        assertEquals(version.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+        assertEquals(
+                version.getId(),
+                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
         List<DocumentModel> versions = session.getVersions(file.getRef());
         assertFalse(versions.isEmpty());
@@ -173,7 +181,8 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderWithAnUndefinedOperationChain() throws ClientException {
+    public void shouldNotRenderWithAnUndefinedOperationChain()
+            throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.render(file, "undefinedOperationChain");
@@ -184,7 +193,8 @@ public class TestRenditionService {
         DocumentModel fileDocument = createBlobFile();
 
         Blob firstAttachedBlob = createTextBlob("first attached blob", "first");
-        Blob secondAttachedBlob = createTextBlob("second attached blob", "second");
+        Blob secondAttachedBlob = createTextBlob("second attached blob",
+                "second");
 
         List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> file = new HashMap<String, Serializable>();
@@ -196,9 +206,11 @@ public class TestRenditionService {
         file.put("filename", secondAttachedBlob.getFilename());
         files.add(file);
 
-        fileDocument.setPropertyValue(FILES_FILES_PROPERTY, (Serializable) files);
+        fileDocument.setPropertyValue(FILES_FILES_PROPERTY,
+                (Serializable) files);
 
-        DocumentRef renditionDocumentRef = renditionService.render(fileDocument, "pdf");
+        DocumentRef renditionDocumentRef = renditionService.render(
+                fileDocument, "pdf");
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
@@ -210,8 +222,10 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderADocumentWithoutBlobHolder() throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
+    public void shouldNotRenderADocumentWithoutBlobHolder()
+            throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "dummy-folder",
+                "Folder");
         folder = session.createDocument(folder);
         renditionService.render(folder, "pdf");
     }

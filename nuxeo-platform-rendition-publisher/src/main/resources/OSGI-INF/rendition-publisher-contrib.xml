@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.rendition.publisher">
 
- <require>org.nuxeo.ecm.platform.publisher.jbpm.contrib</require>
+  <require>org.nuxeo.ecm.platform.publisher.jbpm.contrib</require>
 
   <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="factory">
+    target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+    point="factory">
 
     <publishedDocumentFactory name="RenditionPublication"
-                              class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory"
-                              validatorsRule="CoreValidatorsRule"/>
+      class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory"
+      validatorsRule="CoreValidatorsRule" />
 
   </extension>
 
   <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="tree">
+    target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+    point="tree">
 
     <publicationTree name="RenditionPublicationCoreTree"
-                     class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationCoreTree"/>
+      class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationCoreTree" />
 
   </extension>
 
   <extension
-      target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
-      point="treeInstance">
+    target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
+    point="treeInstance">
 
-    <publicationTreeConfig name="DefaultSectionsTree" tree="RenditionPublicationCoreTree"
-                           factory="RenditionPublication" localSectionTree="true"
-                           title="label.publication.tree.local.sections">
+    <publicationTreeConfig name="DefaultSectionsTree"
+      tree="RenditionPublicationCoreTree" factory="RenditionPublication"
+      localSectionTree="true" title="label.publication.tree.local.sections">
       <parameters>
         <!-- <parameter name="RootPath">/default-domain/sections</parameter> -->
         <parameter name="RelativeRootPath">/sections</parameter>

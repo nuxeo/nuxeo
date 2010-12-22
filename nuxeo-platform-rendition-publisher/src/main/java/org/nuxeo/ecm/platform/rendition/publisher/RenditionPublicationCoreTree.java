@@ -53,12 +53,14 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
         DocumentModel sourceDocument = coreSession.getDocument(docLoc.getDocRef());
 
         if (sourceDocument.isProxy()) {
-            if(!sourceDocument.hasFacet(RENDITION_FACET) && !sourceDocument.hasSchema(RENDITION_SCHEMA)) {
+            if (!sourceDocument.hasFacet(RENDITION_FACET)
+                    && !sourceDocument.hasSchema(RENDITION_SCHEMA)) {
                 return publishedDocuments;
             }
             DocumentRef docRef = new IdRef(
                     (String) sourceDocument.getPropertyValue(Constants.RENDITION_SOURCE_ID_PROPERTY));
-            publishedDocuments.addAll(getPublishedDocumentsFromProxyDocument(docRef, sourceDocument));
+            publishedDocuments.addAll(getPublishedDocumentsFromProxyDocument(
+                    docRef, sourceDocument));
         } else {
             publishedDocuments.addAll(getPublishedDocumentsFromLiveDocument(docLoc.getDocRef()));
         }
@@ -66,7 +68,8 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
     }
 
     protected List<PublishedDocument> getPublishedDocumentsFromProxyDocument(
-            DocumentRef docRef, DocumentModel sourceDocument) throws ClientException {
+            DocumentRef docRef, DocumentModel sourceDocument)
+            throws ClientException {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
         List<DocumentModel> docs = coreSession.query(String.format(
                 RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT, docRef,
