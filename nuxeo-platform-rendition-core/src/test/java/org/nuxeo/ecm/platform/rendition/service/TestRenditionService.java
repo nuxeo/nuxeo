@@ -209,4 +209,11 @@ public class TestRenditionService {
         assertTrue(renditionFiles.isEmpty());
     }
 
+    @Test(expected = RenditionException.class)
+    public void shouldNotRenderADocumentWithoutBlobHolder() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
+        folder = session.createDocument(folder);
+        renditionService.render(folder, "pdf");
+    }
+
 }

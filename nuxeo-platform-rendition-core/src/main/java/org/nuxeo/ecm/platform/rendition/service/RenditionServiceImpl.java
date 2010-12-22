@@ -127,8 +127,13 @@ public class RenditionServiceImpl extends DefaultComponent implements
             throw new RenditionException("Cannot render a proxy document");
         }
 
-        Blob mainBlob;
         BlobHolder bh = source.getAdapter(BlobHolder.class);
+        if (bh == null) {
+            throw new RenditionException("No main file attached",
+                    "label.cannot.render.without.main.blob");
+        }
+
+        Blob mainBlob;
         try {
             mainBlob = bh.getBlob();
         } catch (ClientException e) {
