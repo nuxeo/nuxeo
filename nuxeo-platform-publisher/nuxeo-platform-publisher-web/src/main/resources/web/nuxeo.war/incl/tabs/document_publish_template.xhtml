@@ -33,10 +33,10 @@
           </h:panelGroup>
         </h:panelGrid>
 
+        <ui:insert name="document_publish_before_tree" />
 
         <dl>
           <dd class="menuForm">
-            <ui:insert name="document_publish_before_tree" />
 
             <a4j:outputPanel id="sectionTree"
                              rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
@@ -74,9 +74,11 @@
 
             </a4j:outputPanel>
 
-            <ui:insert name="document_publish_after_tree" />
           </dd>
         </dl>
+
+        <ui:insert name="document_publish_after_tree" />
+
         <h:outputText
                 value="#{messages['label.publication.tree.not.available']}"
                 rendered="#{publishActions.currentPublicationTreeForPublishing == null}"/>
