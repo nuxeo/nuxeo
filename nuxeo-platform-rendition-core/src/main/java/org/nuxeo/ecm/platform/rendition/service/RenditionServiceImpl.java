@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -48,9 +49,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILE_CONTENT_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILE_FILENAME_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILE_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
@@ -103,8 +101,8 @@ public class RenditionServiceImpl extends DefaultComponent implements
             RenditionDefinition renditionDefinition) throws RenditionException {
         validateSourceDocument(sourceDocument);
         try {
-            Blob sourceBlob = (Blob) sourceDocument.getPropertyValue(FILE_CONTENT_PROPERTY);
-            Blob renditionBlob = generateRenditionBlob(sourceBlob,
+            BlobHolder bh = sourceDocument.getAdapter(BlobHolder.class);
+            Blob renditionBlob = generateRenditionBlob(bh.getBlob(),
                     renditionDefinition);
 
             CoreSession session = sourceDocument.getCoreSession();
@@ -129,15 +127,10 @@ public class RenditionServiceImpl extends DefaultComponent implements
             throw new RenditionException("Cannot render a proxy document");
         }
 
-        if (!source.hasSchema(FILE_SCHEMA)) {
-            throw new RenditionException(
-                    "Source document must have 'file' schema",
-                    "label.cannot.render.without.file.schema");
-        }
-
         Blob mainBlob;
+        BlobHolder bh = source.getAdapter(BlobHolder.class);
         try {
-            mainBlob = (Blob) source.getPropertyValue(FILE_CONTENT_PROPERTY);
+            mainBlob = bh.getBlob();
         } catch (ClientException e) {
             throw new RenditionException("Error while retrieving Main Blob", e);
         }
@@ -324,10 +317,8 @@ public class RenditionServiceImpl extends DefaultComponent implements
 
         protected void updateMainBlob(DocumentModel rendition)
                 throws ClientException {
-            rendition.setPropertyValue(FILE_CONTENT_PROPERTY,
-                    (Serializable) renditionBlob);
-            rendition.setPropertyValue(FILE_FILENAME_PROPERTY,
-                    renditionBlob.getFilename());
+            BlobHolder bh = rendition.getAdapter(BlobHolder.class);
+            bh.setBlob(renditionBlob);
         }
 
         protected void updateACP(DocumentModel rendition)

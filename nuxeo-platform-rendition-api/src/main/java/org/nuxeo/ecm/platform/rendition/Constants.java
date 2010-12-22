@@ -26,8 +26,6 @@ public class Constants {
 
     public static final String RENDITION_FACET = "Rendition";
 
-    public static final String FILE_SCHEMA = "file";
-
     public static final String FILES_SCHEMA = "files";
 
     public static final String FILES_FILES_PROPERTY = "files:files";
@@ -37,9 +35,5 @@ public class Constants {
     public static final String RENDITION_SOURCE_ID_PROPERTY = "rend:sourceId";
 
     public static final String RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY = "rend:sourceVersionableId";
-
-    public static final String FILE_CONTENT_PROPERTY = "file:content";
-
-    public static final String FILE_FILENAME_PROPERTY = "file:filename";
 
 }

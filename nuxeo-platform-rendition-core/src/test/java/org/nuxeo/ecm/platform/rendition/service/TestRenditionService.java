@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -49,8 +50,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILE_CONTENT_PROPERTY;
-import static org.nuxeo.ecm.platform.rendition.Constants.FILE_FILENAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
@@ -109,7 +108,8 @@ public class TestRenditionService {
         DocumentModel lastVersion = session.getLastDocumentVersion(file.getRef());
         assertEquals(lastVersion.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
-        Blob renditionBlob = (Blob) renditionDocument.getPropertyValue(FILE_CONTENT_PROPERTY);
+        BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
+        Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
         assertEquals("dummy.txt.pdf", renditionBlob.getFilename());
@@ -124,8 +124,8 @@ public class TestRenditionService {
 
     protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
         DocumentModel file = session.createDocumentModel("/", name, "File");
-        file.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-        file.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
+        BlobHolder bh = file.getAdapter(BlobHolder.class);
+        bh.setBlob(blob);
         file = session.createDocument(file);
         return file;
     }
@@ -201,7 +201,8 @@ public class TestRenditionService {
         DocumentRef renditionDocumentRef = renditionService.render(fileDocument, "pdf");
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
-        Blob renditionBlob = (Blob) renditionDocument.getPropertyValue(FILE_CONTENT_PROPERTY);
+        BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
+        Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
         List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(FILES_FILES_PROPERTY);
