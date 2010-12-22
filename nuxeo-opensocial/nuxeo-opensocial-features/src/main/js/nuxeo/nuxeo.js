@@ -57,10 +57,21 @@ gadgets.nuxeo.getFileActionUrl = function(id) {
 }
 
 /**
+ * Get the url to get a file with a specific name
+ */
+gadgets.nuxeo.getSpecificFileUrl = function(id, specificName) {
+  return this.getResourceUrl(id) + this.FILEACTION + "/" + specificName;
+}
+
+/**
  * Returns the current gadget's id
  */
 gadgets.nuxeo.getGadgetId = function() {
   return window.name.split("-").slice(2).join("-");
+};
+
+gadgets.nuxeo.hasPermission = function(permissionName) {
+  return this.isEditable();
 };
 
 gadgets.nuxeo.isEditable = function() {
@@ -74,6 +85,4 @@ gadgets.nuxeo.getNXIDPreference = function(name, id) {
 gadgets.nuxeo.refreshGadget = function(){
   gadgets.rpc.call("", "refresh", null, "");
 };
-
-
 

@@ -52,13 +52,14 @@
 			<schema name="dublincore" />
 			<schema name="gadget" />
 			<schema name="file" />
+			<schema name="files" />
 			<facet name="Folderish" />
 			<facet name="Indexable" />
 			<facet name="Themable" />
 			<facet name="Searchable" />
 		</doctype>
-	
+
 	</extension>
-	
+
 
 </component>

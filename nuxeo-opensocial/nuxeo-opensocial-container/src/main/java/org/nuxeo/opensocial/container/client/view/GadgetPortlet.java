@@ -71,7 +71,7 @@ public class GadgetPortlet extends Portlet {
     private void buildPortlet() {
         this.setLayout(new FitLayout());
         this.setTitle(this.gadget.getTitle());
-        if (!this.view.equals(DEFAULT_VIEW)) {
+        if (this.view.equals(CANVAS_VIEW)) {
             this.setDraggable(false);
             this.setHideCollapseTool(true);
         } else {
@@ -86,6 +86,7 @@ public class GadgetPortlet extends Portlet {
         this.setId(getIdWithRefAndView(gadget.getRef(), view));
         this.tools = new GadgetTools(this);
         this.setTools(tools.getButtons());
+        this.setIconCls(this.gadget.getIcon());        
         GadgetService.setAuthToken(getIframeId(), this.gadget.getRef());
         GadgetService.setRelayRpc(getIframeId(), this.gadget.getRef());
     }

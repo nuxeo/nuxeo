@@ -44,7 +44,7 @@ public class GadgetService {
     public static native void registerService()
     /*-{
       var rpc = $wnd.gadgets.rpc;
-      rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(I));
+      rpc.register('resize_iframe', @org.nuxeo.opensocial.container.client.GadgetService::resizeIframe(Ljava/lang/String;));
       rpc.register('refresh', @org.nuxeo.opensocial.container.client.GadgetService::refreshGadget());
       rpc.register('set_pref', @org.nuxeo.opensocial.container.client.GadgetService::setPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
       rpc.register('set_title', @org.nuxeo.opensocial.container.client.GadgetService::setTitle(Ljava/lang/String;));
@@ -57,16 +57,18 @@ public class GadgetService {
      *
      * @param height
      */
-    public static native void resizeIframe(int height)
+     public static native void resizeIframe(String height)
     /*-{
-      @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;I)(this.f,height);
+        @org.nuxeo.opensocial.container.client.GadgetService::setHeight(Ljava/lang/String;Ljava/lang/String;)(this.f,height);
     }-*/;
 
     private static Map<String, GadgetBean> beans = new HashMap<String, GadgetBean>();
 
     private static Timer saveAllGadgets;
 
-    public static void setHeight(String frameId, int height) {
+    public static void setHeight(String frameId, String strHeight) {
+        int height = Integer.parseInt(strHeight);
+    
         if (height < 10)
             return;
         if (saveAllGadgets != null)
@@ -119,7 +121,7 @@ public class GadgetService {
     /*-{
       for ( var i = 1, j = arguments.length; i < j; i += 2) {
         if(arguments[i]!="refresh")
-          @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1]);
+          @org.nuxeo.opensocial.container.client.GadgetService::setUserPref(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)(this.f,arguments[i],arguments[i+1].toString());
       }
       @org.nuxeo.opensocial.container.client.GadgetService::saveUserPref(Ljava/lang/String;)(this.f);
     }-*/;

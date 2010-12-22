@@ -65,6 +65,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
+import org.nuxeo.ecm.platform.publisher.api.PublisherException;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -123,6 +124,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     protected static Set<String> sectionTypes;
 
+    protected Map<String, String> publicationParameters = new HashMap<String, String>();
+
     @Create
     public void create() {
         try {
@@ -166,8 +169,19 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        PublishedDocument publishedDocument = tree.publish(currentDocument,
-                publicationNode);
+
+        PublishedDocument publishedDocument;
+        try {
+            publishedDocument = tree.publish(currentDocument,
+                publicationNode, publicationParameters);
+        } catch(PublisherException e) {
+            log.error(e, e);
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                resourcesAccessor.getMessages().get(
+                        e.getMessage()));
+            return null;
+        }
+
         FacesContext context = FacesContext.getCurrentInstance();
         if (publishedDocument.isPending()) {
             String comment = ComponentUtils.translate(context,
@@ -601,6 +615,10 @@ public class PublishActionsBean extends AbstractPublishActions implements
             return null;
         }
         return publishRoots;
+    }
+
+    public Map<String, String> getPublicationParameters() {
+        return publicationParameters;
     }
 
     public void notifyEvent(String eventId,

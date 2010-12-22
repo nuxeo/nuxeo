@@ -217,7 +217,11 @@ public class GadgetBean implements Comparable<GadgetBean>, IsSerializable {
     }
 
     public String getIcon() {
-        return icon;
+        if(icon != null && !"".equals(icon)) {
+           return this.icon;
+        } else {
+           return getName() + "-icon";
+        }    
     }
 
     public boolean isEditable() {

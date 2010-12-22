@@ -86,9 +86,23 @@ public class GadgetForm {
 
     private void addFields(Panel p, List<PreferencesBean> prefs) {
         for (PreferencesBean b : prefs) {
-            p.add(InputFactory.getInstance().createField(portlet, b));
+            String dispName = b.getDisplayName();
+
+            if (I18nUtils.isI18nLabel(dispName)) {
+                String i18nKey = I18nUtils.getI18nKey(dispName);
+                b.setDisplayName(getMessage(portlet.getIframeId(), i18nKey));
+            }
+
+            p.add(InputFactory.getInstance()
+                    .createField(portlet, b));
         }
     }
+
+
+    public static native String getMessage(String iFrameId, String msg)
+    /*-{
+      return $wnd.jQuery("#" + iFrameId).attr("contentWindow").gadgets.Prefs().getMsg(msg);
+    }-*/;
 
     private FormPanel addButtons(final FormPanel form) {
         Button save = new Button(CONSTANTS.save());
@@ -113,9 +127,10 @@ public class GadgetForm {
     }
 
     private void savePreferences(FormPanel form) {
-        ContainerEntryPoint.getService().saveGadgetPreferences(gadget,
-                form.getForm().getValues(), ContainerEntryPoint.getGwtParams(),
-                new SavePreferenceAsyncCallback<GadgetBean>(gadget));
+        ContainerEntryPoint.getService()
+                .saveGadgetPreferences(gadget, form.getForm()
+                        .getValues(), ContainerEntryPoint.getGwtParams(),
+                        new SavePreferenceAsyncCallback<GadgetBean>(gadget));
         JsLibrary.loadingShow();
         window.close();
     }
