@@ -42,7 +42,6 @@ import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
-import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.resources.BankImport;
 import org.nuxeo.theme.resources.BankManager;
@@ -150,8 +149,7 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         } else if (xp.equals("elements") || xp.equals("fragments")
                 || xp.equals("formats") || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("negotiations")
-                || xp.equals("shortcuts") || xp.equals("vocabularies")
-                || xp.equals("previews")) {
+                || xp.equals("shortcuts") || xp.equals("vocabularies")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -200,8 +198,7 @@ public class ThemeService extends DefaultComponent implements Reloadable {
                 || xp.equals("perspectives") || xp.equals("applications")
                 || xp.equals("shortcuts") || xp.equals("vocabularies")
                 || (xp.equals("presets")) || xp.equals("views")
-                || xp.equals("themes") || xp.equals("themesets")
-                || xp.equals("previews")) {
+                || xp.equals("themes") || xp.equals("themesets")) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("resources")) {
             unregisterResourceExtension(extension);
@@ -503,10 +500,8 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
             for (Map.Entry<String, String> entry : entries.entrySet()) {
-                String value = PresetManager.resolvePresets(null,
-                        entry.getValue());
-                PresetType preset = new PresetType(entry.getKey(), value,
-                        paletteName, category, "", "");
+                PresetType preset = new PresetType(entry.getKey(),
+                        entry.getValue(), paletteName, category, "", "");
                 typeRegistry.register(preset);
             }
         }

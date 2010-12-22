@@ -19,13 +19,13 @@ public class ImageInfo {
 
     private String collection;
 
-    private String resource;
-
-    public ImageInfo(String name, String collection, String resource) {
-        super();
+    public ImageInfo(String name, String collection) {
         this.name = name;
         this.collection = collection;
-        this.resource = resource;
+    }
+
+    public String getPath() {
+        return String.format("%s/%s", collection, name);
     }
 
     public String getName() {
@@ -42,14 +42,6 @@ public class ImageInfo {
 
     public void setCollection(String collection) {
         this.collection = collection;
-    }
-
-    public String getResource() {
-        return resource;
-    }
-
-    public void setResource(String resource) {
-        this.resource = resource;
     }
 
 }

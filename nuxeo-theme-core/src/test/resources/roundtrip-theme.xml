@@ -103,19 +103,17 @@
         <color>brown</color>
       </selector>
     </style>
-    <style name="default fonts" remote="true">
+    <style name="special fonts" inherit="default fonts">
+      <selector path="h3">
+        <color>blue</color>
+      </selector>
+    </style>
+    <style name="default fonts">
       <!-- Level 3 header -->
       <selector path="h3">
         <color>green</color>
       </selector>
     </style>
-    <style inherit="default fonts" name="special fonts">
-      <selector path="h3">
-        <color>blue</color>
-      </selector>
-    </style>
-    <style name="basic (nuxeo DM)" remote="true"/>
-    <style inherit="basic (nuxeo DM)" name="galaxy1 (Galaxy)"/>
     <!-- style for the fragment -->
     <style element="page[1]/section[1]/cell[2]/fragment[2]" inherit="default fonts">
       <!-- Level 1 header for main region -->

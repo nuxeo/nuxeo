@@ -30,12 +30,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.properties.OrderedProperties;
+import org.nuxeo.theme.resources.ImageInfo;
+import org.nuxeo.theme.resources.ResourceBank;
+import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.w3c.css.sac.CSSException;
@@ -160,9 +164,8 @@ public final class CSSUtils {
     }
 
     public static String styleToCss(final Style style,
-            final Collection<String> viewNames, final boolean resolvePresets,
-            final boolean ignoreViewName, final boolean ignoreClassName,
-            final boolean indent) {
+            final Collection<String> viewNames, final boolean ignoreViewName,
+            final boolean ignoreClassName, final boolean indent) {
 
         String themeName = null;
         if (style.isNamed()) {
@@ -228,9 +231,6 @@ public final class CSSUtils {
                     sb.append(':');
                     if (indent) {
                         sb.append(' ');
-                    }
-                    if (resolvePresets) {
-                        value = PresetManager.resolvePresets(themeName, value);
                     }
                     sb.append(value).append(';');
                     if (indent) {
@@ -456,5 +456,43 @@ public final class CSSUtils {
         String replacement = String.format("url(%s$1)",
                 Matcher.quoteReplacement(cssContextPath));
         return m.replaceAll(replacement);
+    }
+
+    public static String expandVariables(String text, String basePath,
+            ThemeDescriptor themeDescriptor) {
+
+        String themeName = themeDescriptor.getName();
+
+        if (basePath != null) {
+            text = text.replaceAll("\\$\\{basePath\\}",
+                    Matcher.quoteReplacement(basePath));
+        }
+
+        String contextPath = VirtualHostHelper.getContextPathProperty();
+
+        // Replace presets
+        text = PresetManager.resolvePresets(themeName, text);
+
+        // Replace images from resource banks
+        String resourceBankName = themeDescriptor.getResourceBankName();
+        if (resourceBankName != null) {
+            ResourceBank resourceBank;
+            try {
+                resourceBank = ThemeManager.getResourceBank(resourceBankName);
+                for (ImageInfo image : resourceBank.getImages()) {
+                    String path = image.getPath();
+                    text = text.replaceAll(
+                            Matcher.quoteReplacement(path),
+                            Matcher.quoteReplacement(String.format(
+                                    "%s/nxthemes-images/%s/%s", contextPath,
+                                    resourceBankName, path.replace(" ", "%20"))));
+                }
+            } catch (ThemeException e) {
+                log.warn("Could not get the list of bank images in: "
+                        + resourceBankName);
+            }
+        }
+
+        return text;
     }
 }

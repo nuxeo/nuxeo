@@ -20,14 +20,9 @@ import java.util.Properties;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
-import org.nuxeo.theme.elements.Element;
-import org.nuxeo.theme.elements.ElementFactory;
-import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.styles.StyleFormat;
 import org.nuxeo.theme.html.CSSUtils;
-import org.nuxeo.theme.presets.CustomPresetType;
-import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.themes.ThemeException;
 
 public class TestCSSUtils extends NXRuntimeTestCase {
@@ -106,32 +101,28 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
         assertEquals(
                 ".nxStyle1HorizontalMenu div {border:1px solid #ccc;}\n.nxStyle1VerticalMenu a {color:red;font:12px Arial;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        false, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
                 ".nxStyle1 div {border:1px solid #ccc;}\n.nxStyle1 a {color:red;font:12px Arial;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
                 "div {border:1px solid #ccc;}\na {color:red;font:12px Arial;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
                 "div {\n  border: 1px solid #ccc;\n}\n\na {\n  color: red;\n  font: 12px Arial;\n}\n\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         true // indent
                 ));
@@ -148,67 +139,28 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
         assertEquals(
                 ".nxStyle1VerticalMenu a, .nxStyle1VerticalMenu a:hover, .nxStyle1VerticalMenu a:active {color:red;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        false, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
                 ".nxStyle1 a, .nxStyle1 a:hover, .nxStyle1 a:active {color:red;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals("a, a:hover, a:active {color:red;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals("a, a:hover, a:active {\n  color: red;\n}\n\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // resolvePresets
-                        true, // ignoreViewName
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         true // indent
-                ));
-    }
-
-    public void testStyleToCssWithPresets() {
-        Element theme = ElementFactory.create("theme");
-        theme.setName("theme1");
-        Style style = Manager.getThemeManager().createStyle();
-        style.setUid(1);
-        ElementFormatter.setFormat(theme, style);
-
-        Properties properties = new Properties();
-
-        PresetType preset = new PresetType("default font", "11px Verdana",
-                "test fonts", "font", "", "");
-        PresetType customPreset1 = new CustomPresetType("custom color", "#f00",
-                "theme1", "color", "", "");
-        PresetType customPreset2 = new CustomPresetType("custom bg",
-                "url(image.png)", "theme1", "background", "", "");
-        Manager.getTypeRegistry().register(preset);
-        Manager.getTypeRegistry().register(customPreset1);
-        Manager.getTypeRegistry().register(customPreset2);
-
-        properties.setProperty("font", "\"default font (test fonts)\"");
-        properties.setProperty("color",
-                "\"custom color\" #dc0 \"custom color\" #123");
-        properties.setProperty("background",
-                "\"custom color\" \"custom bg\" no-repeat");
-        style.setPropertiesFor("horizontal menu", "a", properties);
-
-        assertEquals(
-                ".nxStyle1HorizontalMenu a {background:#f00 url(image.png) no-repeat;color:#f00 #dc0 #f00 #123;font:11px Verdana;}\n",
-                CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // resolvePresets
-                        false, // ignoreViewName
-                        false, // ignoreClassName
-                        false // indent
                 ));
     }
 
@@ -258,7 +210,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
         assertEquals(".nxStyle1 a {color:red;font:12px Arial;}\n",
                 CSSUtils.styleToCss(style1, style1.getSelectorViewNames(),
-                        false, false, false, false));
+                        false, false, false));
     }
 
     public void testToCamelCase() {
