@@ -243,7 +243,7 @@ SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
 # table to store canonical read acls
 CREATE TABLE read_acls (
   id varchar(34) PRIMARY KEY,
-  acl varchar(4096)
+  acl varchar(${readAclMaxSize})
 );
 
 
@@ -321,7 +321,7 @@ AS $$
 -- Compute the read acl for a hierarchy id using a local acl
 DECLARE
   curid ${idType} := id;
-  read_acl varchar(4096) := NULL;
+  read_acl varchar(${readAclMaxSize}) := NULL;
   r record;
 BEGIN
   -- RAISE DEBUG 'call %', curid;
@@ -357,8 +357,8 @@ DECLARE
   curid ${idType} := id;
   newid ${idType};
   first boolean := true;
-  read_acl varchar(4096);
-  ret varchar(4096);
+  read_acl varchar(${readAclMaxSize});
+  ret varchar(${readAclMaxSize});
   pos integer;
 BEGIN
   WHILE curid IS NOT NULL LOOP
