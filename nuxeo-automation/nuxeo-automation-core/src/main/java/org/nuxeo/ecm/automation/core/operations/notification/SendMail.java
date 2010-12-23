@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -96,7 +97,7 @@ public class SendMail {
             InputStream in = url.openStream();
             return FileUtils.read(in);
         } else {
-            return message;
+            return StringEscapeUtils.unescapeHtml(message);
         }
     }
 
@@ -111,7 +112,7 @@ public class SendMail {
         map.put("to", to);
         map.put("from", from);
         map.put("viewId", viewId);
-        Mailer.Message msg = createMessage(doc, message, map);
+        Mailer.Message msg = createMessage(doc, getContent(), map);
         msg.setFrom(from);
         msg.setSubject(subject);
         for (String r : getRecipients()) {
