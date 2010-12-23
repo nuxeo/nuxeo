@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -65,7 +66,10 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core" })
+@LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
+
+    public static final String PDF_RENDITION_DEFINITION = "pdf";
 
     @Inject
     protected CoreSession session;
@@ -82,21 +86,29 @@ public class TestRenditionService {
     public void testAvailableRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions();
         assertFalse(renditionDefinitions.isEmpty());
-        assertEquals(1, renditionDefinitions.size());
+        assertEquals(2, renditionDefinitions.size());
 
-        RenditionDefinition rd = renditionDefinitions.get(0);
+        RenditionServiceImpl renditionServiceImpl = (RenditionServiceImpl) renditionService;
+        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey(PDF_RENDITION_DEFINITION));
+        RenditionDefinition rd = renditionServiceImpl.renditionDefinitions.get(PDF_RENDITION_DEFINITION);
         assertNotNull(rd);
-        assertEquals("pdf", rd.getName());
+        assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
+
+        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithUndefinedOperationChain"));
+        rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithUndefinedOperationChain");
+        assertNotNull(rd);
+        assertEquals("renditionDefinitionWithUndefinedOperationChain", rd.getName());
+        assertEquals("undefinedOperationChain", rd.getOperationChain());
     }
 
     @Test
     public void doPDFRendition() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentRef renditionDocumentRef = renditionService.render(file, "pdf");
+        DocumentRef renditionDocumentRef = renditionService.render(file, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         assertNotNull(renditionDocument);
@@ -145,7 +157,7 @@ public class TestRenditionService {
 
         DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
                 "/"));
-        renditionService.render(proxy, "pdf");
+        renditionService.render(proxy, PDF_RENDITION_DEFINITION);
     }
 
     @Test
@@ -177,7 +189,15 @@ public class TestRenditionService {
     public void shouldNotRenderAnEmptyDocument() throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.render(file, "pdf");
+        renditionService.render(file, PDF_RENDITION_DEFINITION);
+    }
+
+    @Test(expected = RenditionException.class)
+    public void shouldNotRenderWithAnUndefinedRenditionDefinition()
+            throws ClientException {
+        DocumentModel file = session.createDocumentModel("/", "dummy", "File");
+        file = session.createDocument(file);
+        renditionService.render(file, "undefinedRenditionDefinition");
     }
 
     @Test(expected = RenditionException.class)
@@ -185,10 +205,11 @@ public class TestRenditionService {
             throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.render(file, "undefinedOperationChain");
+        renditionService.render(file, "renditionDefinitionWithUndefinedOperationChain");
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldRemoveFilesBlobsOnARendition() throws ClientException {
         DocumentModel fileDocument = createBlobFile();
 
@@ -210,7 +231,7 @@ public class TestRenditionService {
                 (Serializable) files);
 
         DocumentRef renditionDocumentRef = renditionService.render(
-                fileDocument, "pdf");
+                fileDocument, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
@@ -227,7 +248,7 @@ public class TestRenditionService {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder",
                 "Folder");
         folder = session.createDocument(folder);
-        renditionService.render(folder, "pdf");
+        renditionService.render(folder, PDF_RENDITION_DEFINITION);
     }
 
 }
