@@ -31,7 +31,7 @@ public class TransactionalFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         NamingContextFactory.setAsInitial();
-        NuxeoContainer.initTransactionManagement();
+        NuxeoContainer.install();
     }
 
     @Override

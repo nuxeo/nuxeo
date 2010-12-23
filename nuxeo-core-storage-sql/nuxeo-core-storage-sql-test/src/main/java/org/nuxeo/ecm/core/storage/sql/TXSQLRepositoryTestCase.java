@@ -28,8 +28,18 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
-    protected void initJTAJCA() throws Exception {
-        NuxeoContainer.initTransactionManagement();
+    @Override
+    public void setUp() throws Exception {
+        NamingContextFactory.setAsInitial();
+        setUpContainer();
+        super.setUp(); // calls deployRepositoryConfig()
+        TransactionHelper.startTransaction();
+        openSession();
+    }
+
+    /** Can be subclassed to instantiate specific pool config. */
+    protected void setUpContainer() throws Exception {
+        NuxeoContainer.install();
     }
 
     /**
@@ -48,14 +58,9 @@ public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
         }
     }
 
-    @Override
-    public void setUp() throws Exception {
-        NamingContextFactory.setAsInitial();
-        initJTAJCA();
-        super.setUp(); // calls deployRepositoryConfig()
-        deployBundle("org.nuxeo.runtime.jtajca");
-        TransactionHelper.startTransaction();
-        openSession();
+    protected boolean hasPoolingConfig() {
+        return database instanceof DatabaseH2
+                || database instanceof DatabasePostgreSQL;
     }
 
     @Override

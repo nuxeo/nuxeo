@@ -40,8 +40,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * time.
      */
     public void testSessionSharing() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            // no pooling conf available
+        if (!hasPoolingConfig()) {
             return;
         }
 
@@ -67,8 +66,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * Test that a commit implicitly does a save.
      */
     public void testSaveOnCommit() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            // no pooling conf available
+        if (!hasPoolingConfig()) {
             return;
         }
 
@@ -173,8 +171,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * (TransactionRuntimeException)
      */
     public void XXX_TODO_testConcurrentModification() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            // no pooling conf available
+        if (!hasPoolingConfig()) {
             return;
         }
         // first transaction
