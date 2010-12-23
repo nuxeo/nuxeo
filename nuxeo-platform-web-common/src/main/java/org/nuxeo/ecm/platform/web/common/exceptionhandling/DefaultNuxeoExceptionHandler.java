@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.Locale;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -113,8 +114,14 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 String errorPage = handler.getPage();
                 errorPage = (errorPage == null) ? parameters.getDefaultErrorPage()
                         : errorPage;
-                request.getRequestDispatcher(errorPage).forward(request,
-                        response);
+                RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
+                if (requestDispatcher != null) {
+                    requestDispatcher.forward(request, response);
+                } else {
+                    log.error("Cannot forward to error page, "
+                            + "no RequestDispatcher found for errorPage="
+                            + errorPage + " handler=" + handler);
+                }
                 FacesContext fContext = FacesContext.getCurrentInstance();
                 if (fContext != null) {
                     fContext.responseComplete();
