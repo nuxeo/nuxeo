@@ -11,35 +11,73 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"><c:if
   test="#{certActions.hasCertificate()}">
-  <fieldset><legend><h:outputText
-    value="${messages['label.sign.title']}" /> </legend>
-  <h2>${messages['label.sign.prompt']} :
-  #{currentDocument.dublincore.title}</h2>
 
-  <a4j:outputPanel id="signPanel">
+
+  <table class="dataInput">
+    <tbody>
+      <tr>
+        <td class="labelColumn"><h:outputText
+          value="#{messages['label.sign.prompt']}" /></td>
+        <td class="fieldColumn"><nxh:outputLink class="boldLabel"
+          value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+          <nxh:graphicImage
+            value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+            rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+          <h:outputText
+            value="#{currentDocumentAsBlobHolder.blob.filename}" />
+          <nxh:graphicImage value="/icons/download.png"
+            title="#{label.root.certificate.download}" />
+        </nxh:outputLink></td>
+      </tr>
+    </tbody>
+  </table>
+
     <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
       globalOnly="true" infoClass="infoFeedback"
       warnClass="warningFeedback" errorClass="errorFeedback" /></div>
+
+  <a4j:outputPanel id="signPanel">
     <a4j:form id="sign_form" ajaxSingle="true"
       enctype="multipart/form-data"
       rendered="#{certActions.hasCertificate()}">
-      <h:outputText value="#{messages['label.sign.reason.prompt']}" />
-      <br/>
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="labelColumn">
       <h:outputText value="#{messages['label.sign.reason']}" />
-      <h:inputText id="signingReason" value="#{signingReason}"
-        required="true" />
-      <br/>
-      <h:outputText value="#{messages['label.sign.password']}" />
-      <h:inputSecret id="password" value="#{password}" required="true" rendered="true" />
-      <br/>
-      <a4j:commandButton id="SignPDF" styleClass="button"
-        value="#{messages['label.sign.submit']}"
-        action="#{signActions.signCurrentDoc(signingReason,password)}"
-        onclick="" data="#{facesContext.maximumSeverity.ordinal ge 2}"
-        oncomplete="if (data) { hideWaiter() } else { processFinished() };"
-        reRender="signPanel,facesStatusMessage" />
+          </td>
+          <td class="fieldColumn">
+            <h:inputText id="signingReason" value="#{signingReason}" required="true" />
+          </td>
+          </tr>
+          <tr>
+            <td class="labelColumn">
+                <h:outputText value="#{messages['label.sign.password']}" />
+            </td>
+            <td class="fieldColumn">
+              <h:inputSecret id="password" value="#{password}" required="true" rendered="true" />
+
+            </td>
+          </tr>
+          <tr>
+          <td></td>
+            <td class="fieldColumn">
+
+       <a4j:commandButton id="SignPDF" styleClass="button"
+              value="#{messages['label.sign.submit']}"
+              action="#{signActions.signCurrentDoc(signingReason,password)}"
+              onclick=""
+              data="#{facesContext.maximumSeverity.ordinal ge 2}"
+              oncomplete="if (data) { hideWaiter() } else { processFinished() };"
+              reRender="signPanel,facesStatusMessage" />
+            </td>
+            </tr>
+        </tbody>
+      </table>
     </a4j:form>
-  </a4j:outputPanel></fieldset>
+  </a4j:outputPanel>
+
+
 
 </c:if> <c:if test="#{!certActions.hasCertificate()}">
   <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
