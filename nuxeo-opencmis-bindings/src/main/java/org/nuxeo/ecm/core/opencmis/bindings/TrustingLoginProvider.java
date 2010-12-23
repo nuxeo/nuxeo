@@ -16,13 +16,10 @@
  */
 package org.nuxeo.ecm.core.opencmis.bindings;
 
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 
 /**
  * Login provider that does not check the password and just logs in the provided
@@ -33,22 +30,7 @@ public class TrustingLoginProvider implements LoginProvider {
     @Override
     public LoginContext login(String username, String password)
             throws LoginException {
-        UserIdentificationInfo userIdent = new UserIdentificationInfo(username,
-                "");
-        userIdent.setLoginPluginName("Trusting_LM");
-        CallbackHandler handler = new UserIdentificationInfoCallbackHandler(
-                userIdent);
-        LoginContext loginContext;
-        try {
-            loginContext = new LoginContext("nuxeo-ecm-web", handler);
-            loginContext.login();
-        } catch (LoginException e) {
-            // No LoginModules configured for nuxeo-ecm-web
-            // do a system login
-            loginContext = Framework.loginAs(username);
-            // loginContext may still be null
-        }
-        return loginContext;
+        return NuxeoAuthenticationFilter.loginAs(username);
     }
 
 }

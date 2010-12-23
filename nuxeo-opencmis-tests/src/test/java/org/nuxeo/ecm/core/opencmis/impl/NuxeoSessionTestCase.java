@@ -105,6 +105,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.audit");
         deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 "OSGI-INF/audit-persistence-config.xml");
+        // these deployments needed for NuxeoAuthenticationFilter.loginAs
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        deployBundle("org.nuxeo.ecm.platform.login");
+        deployBundle("org.nuxeo.ecm.platform.web.common");
 
         openSession(); // nuxeo
 
