@@ -1,7 +1,12 @@
 /**
-  Contains exceptions thrown during certificate generation and signing
-  These exceptions could be used to provide initial debugging information, or provide
-  administrator or end user information about the certificate infrastructure setup
+  Exceptions thrown during certificate generation and signing.
+  <p>
+  These exceptions can be used to provide initial debugging information about
+  <ul>
+  <li>certificate infrastructure setup (CA, root certificate)
+  <li>certificate generation
+  <li>PDF signing process
+  </ul>
   @author Wojciech Sulejman
   @version 1.0
  */

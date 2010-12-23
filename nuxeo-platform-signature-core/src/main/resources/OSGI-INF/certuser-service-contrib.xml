@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.signature.api.pki.CertUserService">
+
+ <documentation>
+    The CertUser service provides user information that is required for certificate generation.
+    @version 1.0
+    @author ws@nuxeo.com
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.signature.core.user.CertUserServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.signature.api.user.CertUserService" />
+  </service>
+
+</component>

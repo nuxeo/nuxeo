@@ -6,11 +6,24 @@
 
 
   <target name="deploy-web-live" depends="web"/>
-  <target name="web" description="Deploy Web components to the live ECM"
+  <target name="webjboss" description="Deploy Web components to the live ECM"
     depends="setproperties">
     <copy todir="${jboss.nuxeo.ear}/nuxeo.war">
       <fileset dir="${basedir}/src/main/resources/nuxeo.war" />
     </copy>
   </target>
+  <target name="webtomcat" description="Deploy Web components to the live ECM"
+    depends="setproperties">
+    <copy todir="${tomcat.dir}/nxserver/nuxeo.war">
+      <fileset dir="${basedir}/src/main/resources/nuxeo.war" />
+    </copy>
+  </target>
+  <target name="web" description="Deploy Web components to the live ECM"
+    depends="setproperties">
+    <copy todir="${tomcat.dir}/nxserver/nuxeo.war">
+      <fileset dir="${basedir}/src/main/resources/nuxeo.war" />
+    </copy>
+  </target>
+
 
 </project>

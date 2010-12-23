@@ -9,33 +9,38 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"><c:if
+  test="#{certActions.hasCertificate()}">
+  <fieldset><legend><h:outputText
+    value="${messages['label.sign.title']}" /> </legend>
+  <h2>${messages['label.sign.prompt']} :
+  #{currentDocument.dublincore.title}</h2>
 
-
-<fieldset><legend><h:outputText value="${messages['label.sign.title']}" /></legend>
-
-  <h2>${messages['label.sign.prompt']} : #{currentDocument.dublincore.title}</h2>
-  <a4j:region>
   <a4j:outputPanel id="signPanel">
-
-    <div id="facesStatusMessage" class="facesStatusMessage">
-      <h:messages globalOnly="true"
-        infoClass="infoFeedback"
-        warnClass="warningFeedback"
-        errorClass="errorFeedback"/>
-    </div>
-  <a4j:form id="sign_form" ajaxSingle="true" enctype="multipart/form-data">
-  <h:outputText value="#{messages['label.sign.reason.prompt']}"/>
-  <h:inputText id="signingReason" value="#{signingReason}" required="true" />
-  <a4j:commandButton id="SignPDF" styleClass="button" value="#{messages['label.sign.submit']}" action="#{signActions.signCurrentDoc(signingReason)}"
+    <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
+      globalOnly="true" infoClass="infoFeedback"
+      warnClass="warningFeedback" errorClass="errorFeedback" /></div>
+    <a4j:form id="sign_form" ajaxSingle="true"
+      enctype="multipart/form-data"
+      rendered="#{certActions.hasCertificate()}">
+      <h:outputText value="#{messages['label.sign.reason.prompt']}" />
+      <br/>
+      <h:outputText value="#{messages['label.sign.reason']}" />
+      <h:inputText id="signingReason" value="#{signingReason}"
+        required="true" />
+      <br/>
+      <h:outputText value="#{messages['label.sign.password']}" />
+      <h:inputSecret id="password" value="#{password}" required="true" rendered="true" />
+      <br/>
+      <a4j:commandButton id="SignPDF" styleClass="button"
+        value="#{messages['label.sign.submit']}"
+        action="#{signActions.signCurrentDoc(signingReason,password)}"
         onclick="" data="#{facesContext.maximumSeverity.ordinal ge 2}"
         oncomplete="if (data) { hideWaiter() } else { processFinished() };"
         reRender="signPanel,facesStatusMessage" />
-  </a4j:form>
-  </a4j:outputPanel>
-  </a4j:region>
+    </a4j:form>
+  </a4j:outputPanel></fieldset>
 
- </fieldset>
-</div>
-
-
+</c:if> <c:if test="#{!certActions.hasCertificate()}">
+  <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
+</c:if></div>

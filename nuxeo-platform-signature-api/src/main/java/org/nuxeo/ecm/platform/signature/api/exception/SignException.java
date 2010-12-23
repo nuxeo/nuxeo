@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * A generic exception indicating signature generation problems
- * Provides error messages of client-level profile.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */

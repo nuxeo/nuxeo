@@ -4,10 +4,12 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/cert">
 
-  <xs:element name="username" type="xs:string"/>
-  <xs:element name="creationDate" type="xs:date" />
-  <xs:element name="revocationDate" type="xs:date" />
-  <xs:element name="privatekey" type="xs:base64Binary"/>
-  <xs:element name="certificate" type="xs:base64Binary"/>
-
+  <xs:include schemaLocation="core-types.xsd"/>
+  <xs:element name="userid" type="xs:string"/>
+  <xs:element name="certificate" type="xs:string"/>
+  <xs:element name="keypassword" type="xs:string"/>
+  <xs:element name="startdate" type="xs:date" />
+  <xs:element name="enddate" type="xs:date" />
+  <xs:element name="revocationdate" type="xs:date" />
+  <xs:element name="keystore" type="xs:string"/>
 </xs:schema>

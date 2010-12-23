@@ -18,8 +18,6 @@ package org.nuxeo.ecm.platform.signature.web.sign;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -36,13 +34,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.directory.sql.PasswordHelper;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
@@ -50,7 +41,6 @@ import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Certificate management actions exposed as a Seam component. Used for
@@ -148,6 +138,7 @@ public class CertActions implements Serializable {
         return canGenerateCertificate;
     }
 
+
     /**
      * Launches certificate generation. Requires valid passwords for certificate
      * encryption.
@@ -157,7 +148,7 @@ public class CertActions implements Serializable {
      * @param secondPassword
      */
     public void createCertificate(DocumentModel user, String firstPassword,
-            String secondPassword) throws ClientException {
+            String secondPassword) throws ClientException{
         boolean isPasswordValid = false;
 
         try {
@@ -174,14 +165,6 @@ public class CertActions implements Serializable {
                 facesMessages.add(FacesMessage.SEVERITY_INFO,
                         ComponentUtils.translate(
                                 FacesContext.getCurrentInstance(), "label.cert.created"), null);
-
-                EventContext ctx = new DocumentEventContext(documentManager,
-                        documentManager.getPrincipal(), user);
-                Event event = ctx.newEvent("Certificate created"); // auditable
-                event.setInline(false);
-                event.setImmediate(true);
-                Framework.getLocalService(EventService.class).fireEvent(event);
-
             } catch (CertException e) {
                 LOG.error(e);
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -210,7 +193,6 @@ public class CertActions implements Serializable {
             throws ClientException {
 
         final FacesContext facesContext = FacesContext.getCurrentInstance();
-        Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel user = userManager.getUserModel(currentUser.getName());
 
         if (firstPassword == null || secondPassword == null) {

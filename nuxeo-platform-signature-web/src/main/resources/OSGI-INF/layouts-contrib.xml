@@ -2,29 +2,25 @@
 <component name="nuxeo.platform.signature.web.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
-
-    <layout name="certificate">
+    <layout name="cert">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>username</widget>
+          <widget>usernameWidget</widget>
         </row>
         <row>
-          <widget>privkey</widget>
-        </row>
-        <row>
-          <widget>cert</widget>
+          <widget>certWidget</widget>
         </row>
       </rows>
-      <widget name="username" type="text">
+      <widget name="usernameWidget" type="text">
         <labels>
           <label mode="any">username</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="user">username</field>
+          <field schema="cert">userid</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>
@@ -33,28 +29,13 @@
           <property name="required">true</property>
         </properties>
       </widget>
-      <widget name="privkey" type="text">
-        <labels>
-          <label mode="any">Private Key</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field schema="user">privatekey</field>
-        </fields>
-        <widgetModes>
-          <mode value="any">view</mode>
-        </widgetModes>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-        </properties>
-      </widget>
-      <widget name="cert" type="text">
+      <widget name="certWidget" type="text">
         <labels>
           <label mode="any">Certificate</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="user">certificate</field>
+          <field schema="cert">certificate</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>

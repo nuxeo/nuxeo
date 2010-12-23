@@ -8,3 +8,4 @@ build.properties
 target
 *~
 *.orig
+log.txt*

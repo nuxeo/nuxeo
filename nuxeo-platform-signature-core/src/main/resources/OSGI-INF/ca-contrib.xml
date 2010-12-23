@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.signature.api.pki.CAService.config">
-  <extension target="org.nuxeo.ecm.platform.signature.api.pki.CAService"  point="ca">
-	 <configuration>
-      <rootKeystoreFilePath>/tmp/root.crt</rootKeystoreFilePath>
-    </configuration>
-  </extension>
-</component>

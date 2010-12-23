@@ -35,12 +35,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
-import org.nuxeo.ecm.platform.signature.api.pki.CAService;
+import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
-import org.nuxeo.ecm.platform.signature.api.user.CNField;
-import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.ecm.platform.signature.api.user.AliasType;
+import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
+import org.nuxeo.ecm.platform.signature.api.user.CertUserService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -52,8 +54,9 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 
 /**
- * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
+ * Base implementation for the signature service.
+ * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public class SignatureServiceImpl extends DefaultComponent implements
         SignatureService {
@@ -61,11 +64,12 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     private List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
 
-    protected CAService cAService;
+    protected CertService certService;
 
-    public File signPDF(KeyStore keystore, UserInfo userInfo,
-            String password, String reason, InputStream origPdfStream)
-            throws SignException {
+    protected CertUserService certUserService;
+
+    public File signPDF(DocumentModel user, String keyPassword, String reason,
+            InputStream origPdfStream) throws SignException {
         File outputFile = null;
         try {
             outputFile = File.createTempFile("signed-", ".pdf");
@@ -74,8 +78,15 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper stp = PdfStamper.createSignature(reader,
                     new FileOutputStream(outputFile), '\0');
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
-            Certificate certificate = getCAService().getCertificate(keystore, userInfo);
-            KeyPair keyPair = getCAService().getKeyPair(keystore, userInfo,password);
+            String userID = (String) user.getPropertyValue("user:username");
+            AliasWrapper alias = new AliasWrapper(userID);
+            KeyStore keystore = getCertUserService().getUserKeystore(userID,
+                    keyPassword);
+            Certificate certificate = getCertService().getCertificate(keystore,
+                    alias.getId(AliasType.CERT));
+            KeyPair keyPair = getCertService().getKeyPair(keystore,
+                    alias.getId(AliasType.KEY), alias.getId(AliasType.CERT),
+                    keyPassword);
             List<Certificate> certificates = new ArrayList<Certificate>();
             certificates.add(certificate);
 
@@ -85,7 +96,6 @@ public class SignatureServiceImpl extends DefaultComponent implements
             sap.setReason(reason);
             sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
             sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1, null);
-            sap.setLocation(userInfo.getUserFields().get(CNField.CN));
             sap.setAcro6Layers(true);
             sap.setRender(PdfSignatureAppearance.SignatureRenderNameAndDescription);
             stp.close();
@@ -113,11 +123,18 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return outputFile;
     }
 
-    protected CAService getCAService() throws Exception {
-        if (cAService == null) {
-            cAService = Framework.getService(CAService.class);
+    protected CertService getCertService() throws Exception {
+        if (certService == null) {
+            certService = Framework.getService(CertService.class);
         }
-        return cAService;
+        return certService;
+    }
+
+    protected CertUserService getCertUserService() throws Exception {
+        if (certUserService == null) {
+            certUserService = Framework.getService(CertUserService.class);
+        }
+        return certUserService;
     }
 
     String getReason() throws SignatureException {

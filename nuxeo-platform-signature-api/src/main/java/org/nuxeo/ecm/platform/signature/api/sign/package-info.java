@@ -1,7 +1,7 @@
 /**
   PDF signing services and utilities.
-  It is assumed that a consumer of the services defined in this package
-  is able to provide an existing certificate, associated key-pair and additional user information.
+  It is assumed that the consumer of the services defined in this package
+  is able to provide a certificate, associated PKI key pair, as well as user identity information.
   @author Wojciech Sulejman
   @version 1.0
  */

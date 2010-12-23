@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.signature.api.exception;
 
 /**
  * An exception indicating certificate or key generation related problems
- * Provides error messages of security-administration level profile.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */

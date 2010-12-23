@@ -23,16 +23,19 @@ import javax.security.auth.x500.X500Principal;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
- * Provides user information encoded inside an x509Name
- *
+ * Provides user information encoded inside an x509Name.
+ *<p>
  * This class is a DTO which exposes an X500 Principal view. It is used to pass
- * user information from between layers
- *
- * Verifies that all required tokens are present
- *
- * Required tokens: 1) user identifier (commonName field) 2) user X500Principal
- * (commonName to CN, organizationalUnitName to OU, organizationName to O,
- * countryName to C) 3) user email (emailAddress)
+ * user information between application layers.
+ *<p>
+ * Verifies that all required tokens are present.
+ *<p>
+ * Required tokens:
+ * <ul>
+ * <li>user identifier (commonName field)
+ * <li>user X500Principal:
+ * commonName CN, organizationalUnitName OU, organizationName O, countryName C
+ * <li>user email (emailAddress)
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  *
@@ -58,6 +61,13 @@ public class UserInfo {
         x500Principal = new X500Principal(getDN(userDNFields));
     }
 
+    /**
+     * Verifies that all required X500 Principal field values
+     * have been set on this object
+     *
+     * @param userFields
+     * @throws CertException
+     */
     public void verify(Map<CNField, String> userFields) throws CertException {
         for (CNField key : CNField.values()) {
             if (null == userFields.get(key)) {
@@ -67,6 +77,11 @@ public class UserInfo {
         }
     }
 
+    /**
+     * Returns a formatted DN string
+     * @param userFields
+     * @return
+     */
     public String getDN(Map<CNField, String> userFields) {
         String dN = "C=" + userFields.get(CNField.C) + ", O="
                 + userFields.get(CNField.O) + ", OU="
@@ -81,6 +96,10 @@ public class UserInfo {
 
     public X500Principal getX500Principal() {
         return x500Principal;
+    }
+
+    public String toString(){
+        return this.getUserFields().get(CNField.UserID)+" "+this.getUserFields().get(CNField.CN);
     }
 
 }

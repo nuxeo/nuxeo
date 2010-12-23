@@ -1,0 +1,192 @@
+<html>
+<head><style type='text/css'>
+body, table {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 12;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+}
+
+a {
+    text-decoration: none;
+}
+
+.title {
+    font-style: italic;
+}
+
+.selected {
+    background-color: #ffffcc;
+}
+
+.status_done {
+    background-color: #eeffee;
+}
+
+.status_passed {
+    background-color: #ccffcc;
+}
+
+.status_failed {
+    background-color: #ffcccc;
+}
+
+.breakpoint {
+    background-color: #cccccc;
+    border: 1px solid black;
+}
+</style><title>Test suite results</title></head>
+<body>
+<h1>Test suite results </h1>
+
+<table>
+<tr>
+<td>result:</td>
+<td>passed</td>
+</tr>
+<tr>
+<td>totalTime:</td>
+<td>12</td>
+</tr>
+<tr>
+<td>numTestTotal:</td>
+<td>1</td>
+</tr>
+<tr>
+<td>numTestPasses:</td>
+<td>1</td>
+</tr>
+<tr>
+<td>numTestFailures:</td>
+<td>0</td>
+</tr>
+<tr>
+<td>numCommandPasses:</td>
+<td>1</td>
+</tr>
+<tr>
+<td>numCommandFailures:</td>
+<td>0</td>
+</tr>
+<tr>
+<td>numCommandErrors:</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Selenium Version:</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>Selenium Revision:</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td>
+<table id="suiteTable" class="selenium" border="1" cellpadding="1" cellspacing="1">
+  <tbody>
+   <tr class="title status_passed">
+      <td><b>Test Suite</b></td>
+    </tr>
+   <tr class="  status_passed">
+      <td><a href="#testresult0">createWorkspace</a></td>
+    </tr> 
+ </tbody>
+</table>
+</td>
+<td>&nbsp;</td>
+</tr>
+</table><table><tr>
+<td><a name="testresult0">./login/createWorkspace.html</a><br/><div>
+<table border="1" cellpadding="1" cellspacing="1">
+<thead>
+<tr class="title status_passed"><td rowspan="1" colspan="3">createUsers</td></tr>
+</thead><tbody>
+<!--@Test groups:CreateUsers,introduction|depends:CreateStructure-->
+<tr class="  status_done" style="cursor: pointer;">
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>open</td>
+	<td>/nuxeo/logout</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>open</td>
+	<td>/nuxeo/login.jsp</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>type</td>
+	<td>username</td>
+	<td>Administrator</td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>type</td>
+	<td>password</td>
+	<td>Administrator</td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>clickAndWait</td>
+	<td>Submit</td>
+	<td></td>
+</tr>
+<tr class="  status_passed" style="cursor: pointer;">
+	<td>verifyTextPresent</td>
+	<td>You are logged as Administrator</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>clickAndWait</td>
+	<td>Link=Workspaces</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>clickAndWait</td>
+	<td>link=Create a new workspace</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>type</td>
+	<td>//input[@id='document_create:nxl_heading:nxw_title']</td>
+	<td>My Test Workspace in Digital Signature</td>
+</tr>
+
+<tr class="  status_done" style="cursor: pointer;">
+	<td>clickAndWait</td>
+	<td>//input[@value='Create']</td>
+	<td></td>
+</tr>
+<tr class="  status_done" style="cursor: pointer;">
+	<td>clickAndWait</td>
+	<td>link=Log out</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</div></td>
+<td>&nbsp;</td>
+</tr></table><pre>
+info: Starting test /selenium-server/tests/login/createWorkspace.html
+info: Executing: |setTimeout | 120000 |  |
+info: Executing: |open | /nuxeo/logout |  |
+info: Executing: |open | /nuxeo/login.jsp |  |
+info: Executing: |type | username | Administrator |
+info: Executing: |type | password | Administrator |
+info: Executing: |clickAndWait | Submit |  |
+info: Executing: |verifyTextPresent | You are logged as Administrator |  |
+info: Executing: |clickAndWait | Link=Workspaces |  |
+info: Executing: |clickAndWait | link=Create a new workspace |  |
+info: Executing: |type | //input[@id=&apos;document_create:nxl_heading:nxw_title&apos;] | My Test Workspace in Digital Signature |
+info: Executing: |clickAndWait | //input[@value=&apos;Create&apos;] |  |
+info: Executing: |clickAndWait | link=Log out |  |
+</pre></body></html>
