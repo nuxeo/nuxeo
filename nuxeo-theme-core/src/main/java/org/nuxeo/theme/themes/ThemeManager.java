@@ -699,17 +699,8 @@ public final class ThemeManager implements Registrable {
             Style inheritedStyle = (Style) getNamedObject(themeName, "style",
                     inheritedName);
             if (inheritedStyle == null) {
-                inheritedStyle = (Style) FormatFactory.create("style");
-                inheritedStyle.setName(inheritedName);
-                registerFormat(inheritedStyle);
-                setNamedObject(themeName, "style", inheritedStyle);
-                ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-                if (themeDescriptor != null) {
-                    String resourceBankName = themeDescriptor.getResourceBankName();
-                    if (resourceBankName != null) {
-                        loadRemoteStyle(resourceBankName, inheritedStyle);
-                    }
-                }
+                throw new ThemeException("Could not find named style: "
+                        + inheritedName);
             }
             makeFormatInherit(style, inheritedStyle);
         }
@@ -724,31 +715,14 @@ public final class ThemeManager implements Registrable {
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + themeName);
         }
-
-        String resourceBankName = themeDescriptor.getResourceBankName();
-
         Style style = (Style) themeManager.getNamedObject(themeName, "style",
                 styleName);
-        if (style == null && resourceBankName != null) {
-            style = (Style) FormatFactory.create("style");
-            style.setName(styleName);
-            themeManager.registerFormat(style);
-            themeManager.setNamedObject(themeName, "style", style);
-            ThemeManager.loadRemoteStyle(resourceBankName, style);
-        }
         if (style == null) {
             throw new ThemeException("Could not find named style: " + styleName);
         }
 
         Style ancestorStyle = (Style) themeManager.getNamedObject(themeName,
                 "style", ancestorStyleName);
-        if (ancestorStyle == null && resourceBankName != null) {
-            ancestorStyle = (Style) FormatFactory.create("style");
-            ancestorStyle.setName(ancestorStyleName);
-            themeManager.registerFormat(ancestorStyle);
-            themeManager.setNamedObject(themeName, "style", ancestorStyle);
-            ThemeManager.loadRemoteStyle(resourceBankName, ancestorStyle);
-        }
         if (ancestorStyle == null) {
             throw new ThemeException("Could not find named style: "
                     + ancestorStyleName);
@@ -766,19 +740,16 @@ public final class ThemeManager implements Registrable {
                     "Only named styles can be loaded from resource banks.");
         }
         String styleName = style.getName();
-        String cssSource = null;
-        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(style.getName());
+        final Matcher resourceNameMatcher = styleResourceNamePattern.matcher(styleName);
         if (resourceNameMatcher.find()) {
             String collectionName = resourceNameMatcher.group(2);
             String resourceId = resourceNameMatcher.group(1) + ".css";
-            cssSource = ResourceManager.getBankResource(resourceBankName,
-                    collectionName, "style", resourceId);
-        }
-        if (cssSource == null) {
-            throw new ThemeException("Unknown style: " + styleName);
-        } else {
+            String cssSource = ResourceManager.getBankResource(
+                    resourceBankName, collectionName, "style", resourceId);
             Utils.loadCss(style, cssSource, "*");
-            style.setRemote(true);
+        } else {
+            throw new ThemeException("Incorrect remote style name: "
+                    + styleName);
         }
     }
 

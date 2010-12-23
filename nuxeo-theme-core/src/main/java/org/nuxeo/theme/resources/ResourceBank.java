@@ -38,6 +38,7 @@ import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.uids.UidManager;
 
 @XObject("bank")
 public class ResourceBank implements Type {
@@ -247,12 +248,18 @@ public class ResourceBank implements Type {
             String styleName = styleInfo.getName();
             Style style = (Style) themeManager.getNamedObject(themeName,
                     "style", styleName);
+
             if (style == null) {
                 style = themeManager.createStyle();
                 style.setName(styleName);
-                ThemeManager.loadRemoteStyle(name, style);
+                style.setRemote(true);
                 themeManager.setNamedObject(themeName, "style", style);
             }
+            String collectionName = styleInfo.getCollection();
+            String resourceId = styleInfo.getResource();
+            String cssSource = ResourceManager.getBankResource(name,
+                    collectionName, "style", resourceId);
+            Utils.loadCss(style, cssSource, "*");
         }
     }
 
@@ -272,6 +279,7 @@ public class ResourceBank implements Type {
 
     private void unloadRemoteStyles(String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
+        UidManager uidManager = Manager.getUidManager();
         List<StyleInfo> bankStyles = getStyles();
         for (StyleInfo styleInfo : bankStyles) {
             String styleName = styleInfo.getName();
@@ -281,6 +289,8 @@ public class ResourceBank implements Type {
                 continue;
             }
             themeManager.removeNamedObject(themeName, "style", styleName);
+            themeManager.deleteFormat(style);
+            uidManager.unregister(style);
         }
     }
 
