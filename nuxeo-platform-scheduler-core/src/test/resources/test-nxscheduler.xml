@@ -5,7 +5,6 @@
     point="schedule">
     <schedule id="testing">
       <username>Administrator</username>
-      <password>Administrator</password>
       <eventId>testEvent</eventId>
       <eventCategory>default</eventCategory>
       <!-- every second -->

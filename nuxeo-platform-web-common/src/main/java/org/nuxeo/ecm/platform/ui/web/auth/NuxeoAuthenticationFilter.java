@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
+import org.nuxeo.ecm.platform.login.TrustingLoginPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
@@ -75,17 +77,20 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoAuthenticationFilter implements Filter {
 
+    private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
+
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
     public static final String DEFAULT_START_PAGE = "nxstartup.faces";
 
-    protected static final String LOGIN_DOMAIN = "nuxeo-ecm-web";
+    /**
+     * LoginContext domain name in use by default in Nuxeo.
+     */
+    public static final String LOGIN_DOMAIN = "nuxeo-ecm-web";
 
     protected static final String XMLHTTP_REQUEST_TYPE = "XMLHttpRequest";
 
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
-
-    private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
 
     private static String anonymous;
 
@@ -278,7 +283,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         CachableUserIdentificationInfo newCachableUserIdent = new CachableUserIdentificationInfo(
                 deputyLogin, deputyLogin);
 
-        newCachableUserIdent.getUserInfo().setLoginPluginName("Trusting_LM");
+        newCachableUserIdent.getUserInfo().setLoginPluginName(
+                TrustingLoginPlugin.NAME);
         newCachableUserIdent.getUserInfo().setAuthPluginName(
                 cachableUserIdent.getUserInfo().getAuthPluginName());
 
@@ -917,6 +923,36 @@ public class NuxeoAuthenticationFilter implements Filter {
         } else {
             return desc.getNeedStartingURLSaving();
         }
+    }
+
+    /**
+     * Does a forced login as the given user. Bypasses all authentication
+     * checks.
+     *
+     * @param username the user name
+     * @return the login context, which MUST be used for logout in a
+     *         {@code finally} block
+     * @throws LoginException
+     */
+    public static LoginContext loginAs(String username) throws LoginException {
+        UserIdentificationInfo userIdent = new UserIdentificationInfo(username,
+                "");
+        userIdent.setLoginPluginName(TrustingLoginPlugin.NAME);
+        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        CallbackHandler callbackHandler;
+        if (authService != null) {
+            callbackHandler = authService.getCallbackHandler(userIdent);
+        } else {
+            callbackHandler = new UserIdentificationInfoCallbackHandler(
+                    userIdent);
+        }
+        LoginContext loginContext = new LoginContext(LOGIN_DOMAIN,
+                callbackHandler);
+        synchronized (NuxeoAuthenticationFilter.class) {
+            loginContext.login();
+        }
+        return loginContext;
     }
 
 }

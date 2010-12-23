@@ -30,7 +30,6 @@
       <code>
         <schedule id="mySchedule">
           <username>Administrator</username>
-          <password>Administrator</password>
           <event>myEvent</event>
           <eventCategory>default</eventCategory>
           <!-- Every first of the month at 3am -->

@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.scheduler.core.interfaces;
  * Schedule entry.
  * <p>
  * Holds information about a schedule, including the event to send,
- * the username and password to use to open the session, and the
+ * the username to use to open the session, and the
  * periodicity for the schedule.
  *
  * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
@@ -63,12 +63,5 @@ public interface Schedule {
      * @return the username
      */
     String getUsername();
-
-    /**
-     * Returns the password.
-     *
-     * @return the password
-     */
-    String getPassword();
 
 }

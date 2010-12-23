@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -57,9 +58,9 @@ public class EventJob implements Job {
 
             // Setup a user session
             try {
-                lContext = doLogin(username, dataMap.getString("password"));
+                lContext = doLogin(username);
             } catch (LoginException e) {
-                log.error(e);
+                log.error(e, e);
                 return;
             }
 
@@ -96,12 +97,12 @@ public class EventJob implements Job {
         }
     }
 
-    protected LoginContext doLogin(String username, String password)
+    protected LoginContext doLogin(String username)
             throws LoginException {
         if (username == null) {
             return Framework.login();
         } else {
-            return Framework.login(username, password);
+            return NuxeoAuthenticationFilter.loginAs(username);
         }
     }
 

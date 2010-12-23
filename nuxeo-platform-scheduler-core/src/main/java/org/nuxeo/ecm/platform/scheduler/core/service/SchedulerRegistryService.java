@@ -113,7 +113,6 @@ public class SchedulerRegistryService extends DefaultComponent implements
         map.put("eventId", schedule.getEventId());
         map.put("eventCategory", schedule.getEventCategory());
         map.put("username", schedule.getUsername());
-        map.put("password", schedule.getPassword());
 
         if (parameters != null) {
             map.putAll(parameters);

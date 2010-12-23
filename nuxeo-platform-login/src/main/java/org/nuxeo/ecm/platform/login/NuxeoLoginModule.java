@@ -84,15 +84,13 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
         try {
             manager = Framework.getService(UserManager.class);
+            if (manager == null) {
+                log.info("UserManager implementation not found");
+            }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             log.error("UserManager implementation not found", e);
         }
-        if (manager != null) {
-            log.debug("NXLoginModule initialized");
-        } else {
-            log.error("UserManager implementation not found");
-        }
+        log.debug("NuxeoLoginModule initialized");
 
         try {
             final RuntimeService runtime = Framework.getRuntime();
@@ -110,7 +108,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     protected Group[] getRoleSets() throws LoginException {
         log.debug("getRoleSets");
         if (manager == null) {
-            throw new LoginException("UserManager implementation not found");
+            // throw new LoginException("UserManager implementation not found");
         }
         String username = identity.getName();
         List<String> roles = identity.getRoles();
@@ -256,7 +254,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     public boolean login() throws LoginException {
         if (manager == null) {
-            throw new LoginException("UserManager implementation not found");
+            // throw new LoginException("UserManager implementation not found");
         }
 
         loginOk = false;

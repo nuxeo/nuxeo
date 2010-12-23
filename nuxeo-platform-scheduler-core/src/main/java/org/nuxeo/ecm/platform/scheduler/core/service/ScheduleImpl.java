@@ -52,9 +52,6 @@ public class ScheduleImpl implements Schedule {
     @XNode("username")
     public String username;
 
-    @XNode("password")
-    public String password;
-
     public String getId() {
         return id;
     }
@@ -73,10 +70,6 @@ public class ScheduleImpl implements Schedule {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override

@@ -37,6 +37,11 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
  */
 public class TrustingLoginPlugin extends BaseLoginModule {
 
+    /**
+     * The name associated to this LoginPlugin.
+     */
+    public static final String NAME = "Trusting_LM";
+
     public Boolean initLoginModule() {
         return Boolean.TRUE;
     }

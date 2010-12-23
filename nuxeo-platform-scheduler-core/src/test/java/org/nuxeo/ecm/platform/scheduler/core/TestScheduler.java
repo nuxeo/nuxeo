@@ -45,6 +45,13 @@ public class TestScheduler extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-eventlistener.xml");
         deployBundle("org.nuxeo.ecm.core.event");
+
+        // these deployments needed for NuxeoAuthenticationFilter.loginAs
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        deployBundle("org.nuxeo.ecm.platform.login");
+        deployBundle("org.nuxeo.ecm.platform.web.common");
     }
 
     @Override
@@ -82,7 +89,6 @@ public class TestScheduler extends NXRuntimeTestCase {
         schedule.cronExpression = "*/1 * * * * ?";
         schedule.id = "testing";
         schedule.username = "Administrator";
-        schedule.password = "Administrator";
         schedule.eventId = "testEvent";
         schedule.eventCategory = "default";
         service.registerSchedule(schedule);
@@ -110,7 +116,6 @@ public class TestScheduler extends NXRuntimeTestCase {
         ScheduleImpl schedule = new ScheduleImpl();
         schedule.id = "testing";
         schedule.username = "Administrator";
-        schedule.password = "Administrator";
         schedule.eventId = "testEvent";
         schedule.eventCategory = "default";
         Calendar now = Calendar.getInstance();
