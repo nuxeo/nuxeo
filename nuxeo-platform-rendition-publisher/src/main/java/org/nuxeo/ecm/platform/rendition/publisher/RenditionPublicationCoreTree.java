@@ -32,6 +32,9 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
 
 /**
+ * Implementation of {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree}
+ * that retrieve also any published Rendition documents for the given document.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -48,11 +51,10 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
             DocumentLocation docLoc) throws ClientException {
         List<PublishedDocument> publishedDocuments = super.getExistingPublishedDocument(docLoc);
 
-        // If on a proxy, we want all the others proxy pointing to the same
-        // version
         DocumentModel sourceDocument = coreSession.getDocument(docLoc.getDocRef());
-
         if (sourceDocument.isProxy()) {
+            // If on a proxy, we want all the others proxy pointing to the same
+            // version
             if (!sourceDocument.hasFacet(RENDITION_FACET)
                     && !sourceDocument.hasSchema(RENDITION_SCHEMA)) {
                 return publishedDocuments;

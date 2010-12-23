@@ -36,6 +36,8 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Implementation of {@link PublishedDocumentFactory} that uses the
+ * {@link RenditionService} to publish a Rendition of the given document.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1

@@ -23,13 +23,31 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 
 /**
+ * Service handling Rendition Definitions and actual render based on
+ * a Rendition Definition
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
 public interface RenditionService {
 
+    /**
+     * Returns a {@code List} of registered {@code RenditionDefinition}. The
+     * order of the List does not depend on the registering order.
+     */
     List<RenditionDefinition> getAvailableRenditionDefinitions();
 
+    /**
+     * Render a document based on the given rendition definition name
+     * and returns the Rendition document.
+     * <p>
+     * Only the user launching the render operation has the Read right on the
+     * returned document.
+     *
+     * @param sourceDocument the document to render
+     * @param renditionDefinitionName the rendition definition to use
+     * @return the {@code DocumentRef} of the newly created Rendition document.
+     */
     DocumentRef render(DocumentModel sourceDocument,
             String renditionDefinitionName) throws RenditionException;
 

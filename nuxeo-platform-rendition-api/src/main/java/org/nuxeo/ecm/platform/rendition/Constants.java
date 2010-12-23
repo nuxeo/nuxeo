@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.platform.rendition;/*
+/*
  * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,7 +14,11 @@ package org.nuxeo.ecm.platform.rendition;/*
  * Nuxeo - initial API and implementation
  */
 
+package org.nuxeo.ecm.platform.rendition;
+
 /**
+ * Constants used by the {@link org.nuxeo.ecm.platform.rendition.service.RenditionService}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */

@@ -54,6 +54,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PRO
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 /**
+ * Default implementation of {@link RenditionService}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -121,6 +123,10 @@ public class RenditionServiceImpl extends DefaultComponent implements
         }
     }
 
+    /**
+     * Checks if the given {@code DocumentModel} can be rendered, throws a
+     * {@code RenditionException} if not.
+     */
     protected void validateSourceDocument(DocumentModel source)
             throws RenditionException {
         if (source.isProxy()) {
@@ -294,7 +300,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
 
             rendition = session.saveDocument(rendition);
 
-            updateACP(rendition);
+            giveReadRightToUser(rendition);
             session.save();
         }
 
@@ -326,7 +332,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
             bh.setBlob(renditionBlob);
         }
 
-        protected void updateACP(DocumentModel rendition)
+        protected void giveReadRightToUser(DocumentModel rendition)
                 throws ClientException {
             ACP acp = new ACPImpl();
             ACL acl = new ACLImpl();

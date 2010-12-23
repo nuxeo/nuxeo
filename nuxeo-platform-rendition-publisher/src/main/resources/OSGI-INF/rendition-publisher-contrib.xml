@@ -7,6 +7,9 @@
     target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
     point="factory">
 
+    <documentation>
+      Factory used to publish a Rendition of the given Document.
+    </documentation>
     <publishedDocumentFactory name="RenditionPublication"
       class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory"
       validatorsRule="CoreValidatorsRule" />
@@ -17,6 +20,10 @@
     target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
     point="tree">
 
+    <documentation>
+      PublicationTree that allows retrieving all the published Rendition documents
+      in addition to the 'standard' proxies for the given document.
+    </documentation>
     <publicationTree name="RenditionPublicationCoreTree"
       class="org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationCoreTree" />
 
@@ -26,6 +33,10 @@
     target="org.nuxeo.ecm.platform.publisher.impl.service.PublisherServiceImpl"
     point="treeInstance">
 
+    <documentation>
+      Override the default PublicationTree used in Nuxeo to use the one handling
+      Rendition documents.
+    </documentation>
     <publicationTreeConfig name="DefaultSectionsTree"
       tree="RenditionPublicationCoreTree" factory="RenditionPublication"
       localSectionTree="true" title="label.publication.tree.local.sections">

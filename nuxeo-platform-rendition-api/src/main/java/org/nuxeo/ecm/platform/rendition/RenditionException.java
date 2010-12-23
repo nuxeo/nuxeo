@@ -19,7 +19,11 @@ package org.nuxeo.ecm.platform.rendition;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
+ * Exception thrown by the {@link org.nuxeo.ecm.platform.rendition.service.RenditionService}
+ * if any error occurred.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.1
  */
 public class RenditionException extends ClientException {
 
