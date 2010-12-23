@@ -155,17 +155,8 @@ public class Utils {
     public static String listBankStyles(String bankName) throws IOException {
         JSONArray styles = new JSONArray();
         for (String collection : BankManager.getCollections(bankName)) {
-            Map<String, Object> info = BankManager.getInfo(bankName,
-                    collection, "style");
             for (String resource : getItemsInCollection(bankName, collection,
                     "style")) {
-                if (info != null && info.containsKey(resource)) {
-                    Map value = (Map) info.get(resource);
-                    if (value.containsKey("skin")
-                            && (Boolean) value.get("skin")) {
-                        continue;
-                    }
-                }
                 JSONObject styleMap = new JSONObject();
                 styleMap.put("bank", bankName);
                 styleMap.put("collection", collection);
