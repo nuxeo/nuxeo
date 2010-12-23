@@ -16,7 +16,7 @@
   </div>
 <#else>
   <div>This element has no configurable properties.</div>
-</#if>  
+</#if>
 </form>
 
 </fieldset>

@@ -28,6 +28,10 @@
 
 <#if selected_bank>
 
+  <div style="float: right">
+    <img width="200" height="135" src="${selected_bank.connectionUrl}/logo" alt="${selected_bank.name}" />
+  </div>
+
   <form class="nxthemesForm">
   <p><label>Bank name</label>
     <strong>${selected_bank.name}</strong>
@@ -38,14 +42,14 @@
   <p><label>Status</label>
     <#if current_bank && current_bank.name = selected_bank.name>
       <strong style="color: #090;">Connected</strong>&nbsp;
-     <a class="nxthemesActionButton" href="javascript:void(0)" 
+     <a class="nxthemesActionButton" href="javascript:void(0)"
         onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '', 'bank manager')">
       Disconnect
-      </a>      
+      </a>
     <#else>
      <strong style="color: #c00">Not connected</strong>&nbsp;
      <button <#if !saveable>disabled="disabled"</#if>
-        class="nxthemesActionButton" href="javascript:void(0)" 
+        class="nxthemesActionButton" href="javascript:void(0)"
         onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '${selected_bank.name}', 'bank manager')">
       Connect
       </button>
@@ -72,7 +76,7 @@
 
 <table class="nxthemesManageScreen">
 <tr>
-<td style="width: 25%">
+<td style="width: 20%">
 
 <form class="nxthemesForm">
 <ul class="nxthemesSelector">
@@ -87,12 +91,12 @@
 </form>
 
 </td>
-<td style="width: 75%">
+<td style="width: 80%">
 
 <#if selected_bank_collection>
   <form action="${current_bank.connectionUrl}/manage/${selected_bank_collection}/download" method="post">
   <p>
-    Archive file: <strong>${selected_bank_collection?replace(' ', '-')}.zip</strong>  
+    Archive file: <strong>${selected_bank_collection?replace(' ', '-')}.zip</strong>
   </p>
   <p>
     <button class="nxthemesActionButton">Download</button>
@@ -121,5 +125,5 @@
       <button class="nxthemesActionButton"
        onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'bank manager')">Customize theme</button>
     </div>
-  </div>   
+  </div>
 </#if>

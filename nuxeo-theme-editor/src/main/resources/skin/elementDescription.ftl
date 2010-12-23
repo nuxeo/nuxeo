@@ -7,12 +7,12 @@
   <div>
     <input type="hidden" name="id" value="#{selected_element.uid}" />
   </div>
-  
+
   <p>
     <label>Description</label>
     <textarea name="description">${selected_element.description}</textarea>
   </p>
-    
+
   <div>
     <button type="submit">Update</button>
   </div>

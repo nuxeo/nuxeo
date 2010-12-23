@@ -61,6 +61,6 @@
       <button class="nxthemesActionButton"
        onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'theme options')">Customize theme</button>
     </div>
-  </div>       
+  </div>
 </#if>
 

@@ -5,7 +5,7 @@
 
 <#if resource_bank>
   <#assign resource_bank_name = resource_bank.name />
-  <#assign bank_images = resource_bank.getImages() />  
+  <#assign bank_images = resource_bank.getImages() />
 </#if>
 
 <div class="title">
@@ -42,13 +42,13 @@ Style chooser - ${style_category}</div>
     <div class="noStyle"></div>
   </div>
   <#list presets_for_selected_group as preset>
-    <div>    
+    <div>
       <#if !selected_preset_group>
         <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name?js_string}', '${preset.effectiveName?js_string}', '${preset.value?js_string}', 'area style chooser');">
-	    <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
+        <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
       </#if>
       <#assign preset_value=preset.value />
-      <#assign category = preset.category />      
+      <#assign category = preset.category />
       <#if preset_value>
           <#assign value=Root.resolveVariables(current_theme_name, resource_bank_name, bank_images, preset_value) />        <div class="selection" title="${preset.effectiveName}" onclick="NXThemesEditor.updateAreaStyle('&quot;${preset.effectiveName?js_string}&quot;')">
           <div class="name">${preset.name}</div>
@@ -61,10 +61,10 @@ Style chooser - ${style_category}</div>
               </#if>
               <#if category = 'font'>
                 <div style="font: ${value}; padding-top: 5px">ABC abc</div>
-              </#if>    
+              </#if>
               <#if category = 'image'>
                 <div style="background-image: ${value}"></div>
-              </#if>                                 
+              </#if>
           </div>
           <div class="value">${preset.value?replace(r'${basePath}', '${basePath}')}</div>
         </div>
@@ -73,9 +73,9 @@ Style chooser - ${style_category}</div>
           <div class="name">${preset.name}</div>
           <div class="preview"></div>
           <div class="value">???</div>
-        </div> 
+        </div>
       </#if>
-    </div>        
+    </div>
   </#list>
 </div>
 

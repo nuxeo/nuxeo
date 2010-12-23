@@ -19,14 +19,14 @@
     <div id="nxthemesHeader">
 
       <!--  Status message -->
-      <div id="nxthemesStatusMessage" style="display: none"></div>   
-      
+      <div id="nxthemesStatusMessage" style="display: none"></div>
+
       <!--  theme selector -->
       <@nxthemes_panel identifier="theme selector"
         url="${basePath}/nxthemes-editor/themeSelector"
         controlledBy="editor perspectives,theme switcher"
         visibleInPerspectives="canvas editor,element editor,padding editor,style manager,preset manager,dashboard,skin manager,theme options,css editor,image manager,bank manager" />
-        
+
       <!--  perspective selector -->
       <@nxthemes_panel identifier="perspective selector"
         url="${basePath}/nxthemes-editor/perspectiveSelector"
@@ -37,17 +37,17 @@
       <@nxthemes_panel identifier="undo actions"
         url="${basePath}/nxthemes-editor/undoActions"
         controlledBy="editor perspectives"
-        visibleInPerspectives="canvas editor,preset manager,style manager,element editor" />
+        visibleInPerspectives="canvas editor,element editor,dashboard" />
 
       <div id="nxthemesMainButtons">
-                
+
         <@nxthemes_button identifier="quit"
           link="javascript:NXThemesEditor.exit()"
           icon="${basePath}/skin/nxthemes-editor/img/quit-14.png"
-          label="Quit" />  
+          label="Quit" />
 
       </div>
-    
+
       <div id="nxthemesLocalButtons">
 
         <!-- theme actions -->
@@ -80,11 +80,11 @@
     </div>
 
     <div id="nxthemesEditorArea">
-                  
+
       <div id="nxthemesWaitAnimation" style="display:none">
           <img src="${basePath}/skin/nxthemes-editor/img/loader.gif" alt="" width="16" height="16" /> LOADING ...
-      </div>   
-        
+      </div>
+
       <@nxthemes_model resource="theme-editor.json" />
 
       <!--  canvas area -->
@@ -104,7 +104,7 @@
       <@nxthemes_controller resource="context-menu-actions.json" />
       <@nxthemes_controller resource="toggle-context-menu.json" />
       <@nxthemes_view resource="context-menu.json" />
-      
+
       <!-- page selector -->
       <@nxthemes_panel identifier="page selector"
         url="${basePath}/nxthemes-editor/pageSelector"
@@ -127,7 +127,7 @@
 
     <@nxthemes_controller resource="theme-switcher.json" />
     <@nxthemes_controller resource="page-switcher.json" />
-    
+
     <@nxthemes_controller resource="link-disabler.json" />
 
     <!-- element editor -->

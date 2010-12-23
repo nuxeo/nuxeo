@@ -39,7 +39,7 @@
     <div style="padding: 10px 5px">
     <div>Select a base skin for the <strong>${current_theme.name}</strong> theme:
      <#if current_skin_name>
-      <button style="float: right" class="nxthemesActionButton" 
+      <button style="float: right" class="nxthemesActionButton"
       onclick="javascript:NXThemesSkinManager.deactivateSkin('${current_theme.name?js_string}')">Remove skin</button>
     </#if>
     </div>
@@ -71,7 +71,7 @@
     <a href="javascript:NXThemesEditor.manageThemeBanks()"
        class="nxthemesActionButton">Connect to a bank</a>
   </p>
-  
+
 </div>
 </div>
 </#if>
@@ -84,5 +84,5 @@
       <button class="nxthemesActionButton"
        onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'skin manager')">Customize theme</button>
     </div>
-  </div>   
+  </div>
 </#if>

@@ -16,7 +16,7 @@
 
   <f:view>
     <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
-    
+
     <nxthemes:accesskeys />
 
     <div id="nxthemesHeader">
@@ -29,7 +29,7 @@
         url="%{contextPath}/site/nxthemes-editor/themeSelector"
         controlledBy="editor perspectives,theme switcher"
         visibleInPerspectives="canvas editor,element editor,padding editor,style manager,preset manager,dashboard,skin manager,theme options,css editor,image manager,bank manager" />
-  
+
       <!--  perspective selector -->
       <nxthemes:panel identifier="perspective selector"
         url="%{contextPath}/site/nxthemes-editor/perspectiveSelector"
@@ -40,10 +40,10 @@
       <nxthemes:panel identifier="undo actions"
         url="%{contextPath}/site/nxthemes-editor/undoActions"
         controlledBy="editor perspectives"
-        visibleInPerspectives="canvas editor,preset manager,style manager,element editor" />
+        visibleInPerspectives="canvas editor,element editor,dashboard" />
 
       <div id="nxthemesMainButtons">
-          
+
         <nxthemes:button identifier="quit"
           icon="%{contextPath}/site/skin/nxthemes-editor/img/quit-14.png"
           link="javascript:NXThemesEditor.exit()"
@@ -115,13 +115,13 @@
         url="%{contextPath}/site/nxthemes-editor/pageSelector"
         controlledBy="editor perspectives,page switcher"
         visibleInPerspectives="canvas editor,padding editor" />
-     
+
     </div>
 
     <nxthemes:controller resource="perspective-selector.json" />
     <nxthemes:controller resource="color-picker.json" />
     <nxthemes:controller resource="editor-perspectives.json" />
-    
+
     <nxthemes:controller resource="editor-buttons.json" />
     <nxthemes:controller resource="theme-buttons.json" />
     <nxthemes:controller resource="canvas-mode-selector.json" />
@@ -160,7 +160,7 @@
       url="%{contextPath}/site/nxthemes-editor/fragmentFactory"
       controlledBy="editor perspectives"
       visibleInPerspectives="fragment factory" />
- 
+
     <!-- dashboard -->
     <nxthemes:panel identifier="dashboard"
       url="%{contextPath}/site/nxthemes-editor/dashboard"
@@ -168,13 +168,13 @@
       visibleInPerspectives="dashboard" />
 
   </f:subview>
-  
+
   <f:subview rendered="#{!currentNuxeoPrincipal.administrator}">
     <script type="text/javascript"><!--
       NXThemesEditor.accessDenied();
     //--></script>
   </f:subview>
-    
+
 </f:view>
 
 </body>

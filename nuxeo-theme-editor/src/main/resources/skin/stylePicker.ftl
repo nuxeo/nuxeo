@@ -5,7 +5,7 @@
 
 <#if resource_bank>
   <#assign resource_bank_name = resource_bank.name />
-  <#assign bank_images = resource_bank.getImages() />  
+  <#assign bank_images = resource_bank.getImages() />
 </#if>
 
 <div class="title">
@@ -40,7 +40,7 @@
       <div>
         <#if !selected_preset_group>
           <a class="editPreset" href="javascript:void(0)" onclick="NXThemesEditor.editPreset('${current_theme_name?js_string}', '${preset.effectiveName?js_string}', '${preset.value?js_string}', 'style picker');">
-	      <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
+          <img src="${basePath}/skin/nxthemes-editor/img/edit-12.png" /></a>
         </#if>
         <#assign preset_value=preset.value />
         <#assign category = preset.category />
@@ -57,10 +57,10 @@
               </#if>
               <#if category = 'font'>
                 <div style="font: ${value}; padding-top: 5px">ABC abc</div>
-              </#if>    
+              </#if>
               <#if category = 'image'>
                 <div style="background-image: ${value}"></div>
-              </#if>                                 
+              </#if>
             </div>
             <div class="value">${preset_value?replace(r'${basePath}', '${basePath}')}</div>
           </div>
@@ -71,7 +71,7 @@
             <div class="value">???</div>
           </div>
         </#if>
-	</div>
+    </div>
     </#list>
   </div>
 

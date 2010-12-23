@@ -9,7 +9,7 @@
     <div class="nxthemesButtonSelector"
       style="float: right; margin-top: -40px; margin-right: -10px">
       <span>Edit mode:</span>
-      <#if style_edit_mode == 'form'>            
+      <#if style_edit_mode == 'form'>
           <a href="javascript:void(0)" onclick="NXThemesStyleEditor.setStyleEditMode('css', 'form')">CSS</a>
           <a href="javascript:void(0)" class="selected">form</a>
       <#else>
@@ -25,15 +25,15 @@
             <label style="width: 154px">
               Selector
             </label>
-	        <select style="width: 247px" id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
-	          <#list style_selectors as selector>
-	            <#if selector == selected_style_selector>
-	              <option value="${selector}" selected="selected">${selector}</option>
-	            <#else>
-	              <option value="${selector}">${selector}</option>
+            <select style="width: 247px" id="viewName" onchange="NXThemesStyleEditor.chooseStyleSelector(this)">
+              <#list style_selectors as selector>
+                <#if selector == selected_style_selector>
+                  <option value="${selector}" selected="selected">${selector}</option>
+                <#else>
+                  <option value="${selector}">${selector}</option>
                 </#if>
               </#list>
-	        </select>
+            </select>
             <input type="hidden" name="id" value="#{selected_element.uid}" />
             <input type="hidden" name="path" value="${selected_style_selector}" />
             <input type="hidden" name="viewName" value="${selected_view_name}" />
@@ -45,9 +45,9 @@
             <a href="javascript:void(0)"
                onclick="NXThemesStyleEditor.collapseAllCategories()">(-) Collapse all</a>
           </div>
-               
+
           <div class="nxthemesCssInspector">
-            <table>          
+            <table>
             <#if element_style_properties>
               <#list element_style_properties as property>
               <tr>
@@ -56,7 +56,7 @@
               </tr>
               </#list>
             </#if>
-                    
+
             <#if all_style_properties>
               <#list all_style_properties?keys as category>
                 <#assign visible=selected_css_categories?seq_contains(category) />
@@ -64,9 +64,9 @@
                   <td colspan="2" class="nxthemesCategoryHeader">
                     <a href="javascript:void(0)" onclick="NXThemesStyleEditor.toggleCssCategory(this, '${category?js_string}')">
                     <#if visible>
-                      <span class="nxthemesStyleCategoryClose">&nbsp;</span> 
+                      <span class="nxthemesStyleCategoryClose">&nbsp;</span>
                     <#else>
-                      <span class="nxthemesStyleCategoryOpen">&nbsp;</span>                
+                      <span class="nxthemesStyleCategoryOpen">&nbsp;</span>
                     </#if>
                     ${category}</a>
                   </td>
@@ -88,7 +88,7 @@
             Save
           </button>
         </form>
-      
+
       <!-- Inline CSS editing -->
       <#else>
         <form id="nxthemesElementStyleCSS" class="nxthemesForm" action=""
@@ -103,8 +103,8 @@
             <button type="submit">Save</button>
           </div>
         </form>
-      </#if>  
+      </#if>
   </fieldset>
-  
+
 </div>
 

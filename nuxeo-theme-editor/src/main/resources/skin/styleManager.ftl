@@ -1,7 +1,7 @@
 <#assign screen="style manager">
 
 <!-- style menu -->
-<@nxthemes_view resource="style-menu.json" />   
+<@nxthemes_view resource="style-menu.json" />
 
 <#assign themeManager=This.getThemeManager()>
 <#assign themes=themeManager.getThemeDescriptors()>
@@ -23,7 +23,7 @@
   <tr>
   <td>
 
-<ul class="nxthemesSelector">
+<ul class="nxthemesSelector" style="overflow-y: scroll; overflow-x: hidden; height: 270px;">
 <#list named_styles as style>
   <li <#if style.name = selected_named_style_name>class="selected"</#if>>
     <a title=""
@@ -32,19 +32,19 @@
          <#if style.customized>
            style="color: #000;"
          <#else>
-           style="color: #999;"
+           style="font-style: italic; color: #333"
          </#if>
-       <#else> 
+       <#else>
          style="color: #000;"
        </#if>
     ><img src="${basePath}/skin/nxthemes-editor/img/style-16.png" width="16" height="16"/> ${style.name}</a></li>
 </#list>
 </ul>
 
-<p class="nxthemesEditor">
+<div class="nxthemesEditor" style="margin-top: 10px">
   <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
   Create style</a>
-</p>
+</div>
 
 </td>
 <td>
@@ -63,7 +63,7 @@
 ${selected_named_style_css}
       </textarea>
     </div>
-  
+
     <div style="margin-top: 5px">
      <button type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
     </div>
@@ -91,20 +91,20 @@ ${selected_named_style_css}
       <textarea id="namedStyleCssEditor" name="css_source" rows="15" cols="72"
       style="border: 1px solid #ccc; font-family: monospace; width: 100%; height: 270px; font-size: 11px;">${selected_named_style_css}</textarea>
     </div>
-  
+
     <div style="margin-top: 5px">
       <button type="submit">Save</button>
     </div>
   </form>
-  
+
   <p class="nxthemesEditor" style="float: right; margin-top: -19px">
     <button class="nxthemesActionButton"
-    onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>  
+    onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>
   </p>
 
 </#if>
 </#if>
- 
+
 </td>
 </tr>
 </table>
@@ -135,11 +135,11 @@ ${selected_named_style_css}
     <input type="hidden" name="style_uid" value="#{style.uid}" />
     <input type="hidden" name="view_name" value="${view}" />
   </div>
-   
+
   <div style="font-size: 11px; font-weight: bold">
     '${view}' view
   </div>
-  
+
   <pre style="margin: 4px 0 6px 0; font-size: 10px; background-color: #ffc; border: 1px solid #fc0">${This.renderStyleView(style, view)}</pre>
 
   <button type="submit">
@@ -175,12 +175,12 @@ ${selected_named_style_css}
     <th style="width: 25%;">Page</th>
     <th style="width: 75%;">Style</th>
   </tr>
-    
+
   <#list page_styles?keys as page_name>
   <#assign current_style_name=page_styles[page_name]>
   <tr>
   <td>
-    ${page_name} 
+    ${page_name}
   </td>
   <td>
     <select name="style_${page_name}">
@@ -192,12 +192,12 @@ ${selected_named_style_css}
   </td>
   </tr>
   </#list>
-  
+
   <tr>
     <td></td>
     <td><button type="submit">Save</button></td>
   </tr>
-  
+
   </table>
   </form>
 
@@ -219,7 +219,7 @@ ${selected_named_style_css}
     <ul>
       <#list objects as s>
         <li>${s.name}
-        
+
          <ins class="model">
           {"id": "style_${s.name}",
            "type": "named style",
@@ -235,18 +235,18 @@ ${selected_named_style_css}
                </#list>
              ],
              "can inherit": true,
-             "inherits": true          
+             "inherits": true
            }
           }
           </ins>
-        
+
           <@listTree Root.listNamedStylesDirectlyInheritingFrom(s) />
         </li>
       </#list>
     </ul>
   </#if>
-  </#macro> 
-  
+  </#macro>
+
   <div class="nxthemesStyleTree">
     <@listTree root_styles/>
   </div>

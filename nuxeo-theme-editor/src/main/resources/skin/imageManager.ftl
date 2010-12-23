@@ -50,7 +50,7 @@
 <div class="window">
 <div class="title">Image library</div>
 <div class="body">
-  
+
 <table class="nxthemesManageScreen">
   <tr>
     <th style="width: 20%;">Collection</th>
@@ -77,7 +77,7 @@
         <#if selected_bank_collection && selected_bank_collection=image.collection>
         <a href="javascript:void(0)" onclick="NXThemesImageManager.selectImage('${current_edit_field?js_string}', '${image.name?js_string}')">
           <div class="imageSingle" title="${image.resource}">
-            <div class="image"><img src="${current_bank.connectionUrl}/${image.collection}/image/${image.resource}" /></div>
+            <div class="image"><img src="${current_bank.connectionUrl}/${image.collection}/image/${image.name}" /></div>
           </div>
         </a>
         </#if>
@@ -92,11 +92,11 @@
 </table>
 
 
-  
+
 </div>
 </div>
 
-  
+
 <div class="window">
 <div class="title">Upload images</div>
 <div class="body">
@@ -124,19 +124,19 @@
 </div>
 
   <#else>
-  
+
 <div class="window">
 <div class="title">Image library</div>
 <div class="body">
-  
+
     <p>The <strong>${current_theme.name}</strong> theme is not connected to a bank.</p>
     <p>
       <a href="javascript:NXThemesEditor.manageThemeBanks()"
        class="nxthemesActionButton">Connect to a bank</a>
     </p>
-    
+
 </div>
-</div>    
+</div>
 
 </#if>
 

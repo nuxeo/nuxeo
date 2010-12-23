@@ -355,15 +355,6 @@ public class Editor {
         themeManager.stylesModified(themeName);
     }
 
-    public static void refreshTheme(String themeName) throws ThemeException {
-        ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
-        if (themeDescriptor == null) {
-            throw new ThemeException("Theme not found: " + themeName);
-        }
-        final ThemeManager themeManager = Manager.getThemeManager();
-        themeManager.themeModified(themeName);
-    }
-
     public static String renderCssPreview(Element element, Style style,
             String viewName, String basePath) {
         FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
@@ -538,8 +529,11 @@ public class Editor {
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + src);
         }
-        ThemeDescriptor themeDef = ThemeManager.customizeTheme(themeDescriptor);
-        String themeName = themeDef.getName();
+        String themeName = themeDescriptor.getName();
+        saveToUndoBuffer(themeName, "customize theme");
+
+        ThemeManager.customizeTheme(themeDescriptor);
+
         return String.format("%s/default", themeName);
     }
 
@@ -548,8 +542,10 @@ public class Editor {
         if (themeDescriptor == null) {
             throw new ThemeException("Theme not found: " + src);
         }
-        ThemeDescriptor themeDef = ThemeManager.uncustomizeTheme(themeDescriptor);
-        String themeName = themeDef.getName();
+        String themeName = themeDescriptor.getName();
+        saveToUndoBuffer(themeName, "remove theme customizations");
+
+        ThemeManager.uncustomizeTheme(themeDescriptor);
         return String.format("%s/default", themeName);
     }
 
@@ -746,7 +742,7 @@ public class Editor {
     public static void deleteStyleView(Style style, String viewName)
             throws ThemeException {
         final String themeName = ThemeManager.getThemeOfFormat(style).getName();
-        saveToUndoBuffer(themeName, "delete style");
+        saveToUndoBuffer(themeName, "delete style view");
 
         style.clearPropertiesFor(viewName);
         saveTheme(themeName);
@@ -1096,6 +1092,9 @@ public class Editor {
         if (isBaseSkin && (skinName.equals(currentBaseSkinName))) {
             return;
         }
+
+        saveToUndoBuffer(themeName, "activate skin");
+
         if (!isBaseSkin && currentBaseSkinName != null) {
             if (skinName.equals(currentTopSkinName)) {
                 return;
@@ -1117,6 +1116,9 @@ public class Editor {
 
     public static void deactivateSkin(String themeName) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
+
+        saveToUndoBuffer(themeName, "deactivate skin");
+
         for (PageElement page : themeManager.getPagesOf(themeName)) {
             Style newStyle = themeManager.createStyle();
             ElementFormatter.setFormat(page, newStyle);
@@ -1188,10 +1190,14 @@ public class Editor {
             throw new ThemeException("Could not connect to bank: " + bankName);
         }
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptor(themeSrc);
-        themeDescriptor.setResourceBankName(bankName);
-        resourceBank.connect(themeDescriptor.getName());
+        String themeName = themeDescriptor.getName();
 
-        saveTheme(themeDescriptor.getName());
+        saveToUndoBuffer(themeName, "connect to theme bank: " + bankName);
+
+        themeDescriptor.setResourceBankName(bankName);
+        resourceBank.connect(themeName);
+
+        saveTheme(themeName);
     }
 
     public static void useNoResourceBank(String themeSrc) throws ThemeException {
@@ -1202,10 +1208,14 @@ public class Editor {
             throw new ThemeException("Could not disconnect from bank: "
                     + bankName);
         }
-        resourceBank.disconnect(themeDescriptor.getName());
+        String themeName = themeDescriptor.getName();
+
+        saveToUndoBuffer(themeName, "disconnect from theme bank: " + bankName);
+
+        resourceBank.disconnect(themeName);
         themeDescriptor.setResourceBankName(null);
 
-        saveTheme(themeDescriptor.getName());
+        saveTheme(themeName);
     }
 
     public static List<SkinInfo> getBankSkins(String bankName) {

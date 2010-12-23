@@ -231,8 +231,8 @@ html, body {
   z-index: 10;
   padding:2px 17px;
   position: absolute;
-  top: 3px;
-  left: 3px;
+  top: 10px;
+  left: 12px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -273,8 +273,8 @@ html, body {
 }
 
 #nxthemesMainButtons {
-  position: absolute; 
-  right: 10px; 
+  position: absolute;
+  right: 10px;
   top: 9px
 }
 
@@ -304,7 +304,7 @@ html, body {
 }
 
 #nxthemesPerspectiveSelector label {
-  color: #eee; 
+  color: #eee;
   font: bold 11px arial;
 }
 
@@ -320,7 +320,7 @@ html, body {
 }
 
 #nxthemesThemeSelector label {
-  color: #eee; 
+  color: #eee;
   font: bold 11px arial;
 }
 
@@ -1605,11 +1605,11 @@ table.fragmentFactory td {
 }
 
 .nxthemesUndoButtons {
-  background-color: #ccc;
+  background-color: #efc;
   position: absolute;
-  right: 100px;
-  top: 9px;
-  padding: 2px 4px; 
+  right: 85px;
+  top: 10px;
+  padding: 2px 4px;
   font: bold 11px Arial;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -1951,7 +1951,7 @@ a.nxthemesActionButton img {
   background: #fceca4 url(${basePath}/skin/nxthemes-editor/img/top-bg.png) repeat-x;
 }
 
-.nxthemesInfoMessage {  
+.nxthemesInfoMessage {
   text-align: left;
   font-style: normal;
   color: #900;
@@ -1959,7 +1959,7 @@ a.nxthemesActionButton img {
   padding: 0px 30px;
 }
 
-.nxthemesInfoMessage img {  
+.nxthemesInfoMessage img {
   padding-right: 3px;
   vertical-align:top;
 }

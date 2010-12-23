@@ -178,6 +178,12 @@ NXThemesEditor.useResourceBank = function(themeSrc, bankName, screenName) {
          },
          onSuccess: function(r) {
              NXThemes.getViewById(screenName).refresh();
+             NXThemesEditor.refreshUndoActions();
+             if (bankName) {
+                NXThemesEditor.writeMessage("Connected to theme bank: " + bankName + ".");
+             } else {
+                NXThemesEditor.writeMessage("Disconnected from theme bank.");
+             }
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -256,6 +262,8 @@ NXThemesSkinManager.activateSkin = function(theme, bank, collection, resource, b
          },
          onSuccess: function(r) {
              NXThemes.getViewById("skin manager").refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Skin activated.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -273,6 +281,8 @@ NXThemesSkinManager.deactivateSkin = function(theme) {
          },
          onSuccess: function(r) {
              NXThemes.getViewById("skin manager").refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Skin deactivated.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -324,6 +334,7 @@ NXThemesEditor.setSize = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Element width changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -580,6 +591,7 @@ NXThemesEditor.setElementWidget = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Widget changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -661,6 +673,7 @@ NXThemesEditor.updateElementPadding = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Padding changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -686,6 +699,7 @@ NXThemesEditor.alignElement = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Alignment changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -705,6 +719,7 @@ NXThemesEditor.duplicateElement = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Element duplicated.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -744,6 +759,7 @@ NXThemesEditor.deleteElement = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Element deleted.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -768,8 +784,8 @@ NXThemesEditor.switchTheme = function(info) {
         NXThemesEditor.refreshThemeSelector();
         NXThemesEditor.refreshPageSelector();
         NXThemes.getViewById("theme actions").refresh();
-        NXThemes.getViewById("dashboard actions").refresh();        
-        NXThemes.getViewById("dashboard").refresh();        
+        NXThemes.getViewById("dashboard actions").refresh();
+        NXThemes.getViewById("dashboard").refresh();
         NXThemesEditor.refreshCanvas();
     }
 };
@@ -849,8 +865,8 @@ NXThemesEditor.addTheme = function(viewid) {
              var text = r.responseText;
              NXThemesEditor.selectTheme(text);
              NXThemes.getViewById(viewid).refresh();
-             NXThemes.getViewById("dashboard actions").refresh();             
-             NXThemesEditor.refreshThemeSelector();             
+             NXThemes.getViewById("dashboard actions").refresh();
+             NXThemesEditor.refreshThemeSelector();
              NXThemesEditor.refreshPageSelector();
          },
          onFailure: function(r) {
@@ -871,7 +887,9 @@ NXThemesEditor.customizeTheme = function(src, screen) {
              var text = r.responseText;
              NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshDashboard();
-             NXThemesEditor.refreshThemeActions();             
+             NXThemesEditor.refreshThemeActions();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Theme customized.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -895,7 +913,9 @@ NXThemesEditor.uncustomizeTheme = function(src, screen) {
              var text = r.responseText;
              NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshDashboard();
-             NXThemesEditor.refreshThemeActions();                       
+             NXThemesEditor.refreshThemeActions();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Theme uncustomized.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -924,11 +944,12 @@ NXThemesEditor.addPage = function(themeName) {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemesEditor.selectTheme(text);
-             NXThemes.getViewById("theme selector").refresh();             
+             NXThemes.getViewById("theme selector").refresh();
              NXThemes.getViewById("page selector").refresh();
              NXThemes.getViewById("theme actions").refresh();
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Theme customized.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -944,10 +965,6 @@ NXThemesEditor.switchToCanvas = function() {
 
 NXThemesEditor.openDashboard = function() {
     NXThemesEditor.setEditorPerspective('dashboard');
-}
-
-NXThemesEditor.openCanvas = function() {
-    NXThemesEditor.setDashboardPerspective('canvas editor');
 }
 
 NXThemesEditor.setThemeOptions = function() {
@@ -984,6 +1001,8 @@ NXThemesEditor.addPreset = function(themeName, category, view_id) {
          },
          onSuccess: function(r) {
              NXThemes.getViewById(view_id).refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Preset added.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1008,6 +1027,8 @@ NXThemesEditor.editPreset = function(themeName, presetName, value, view_id) {
          },
          onSuccess: function(r) {
              NXThemes.getViewById(view_id).refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Preset modified.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1028,6 +1049,7 @@ NXThemesEditor.addSection = function(info) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Section added.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1049,6 +1071,7 @@ NXThemesEditor.alignSection = function(info, position) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Section aligned: " + position + ".");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1131,6 +1154,7 @@ NXThemesEditor.updateAreaStyle = function(value) {
          onSuccess: function(r) {
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Area style changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1235,7 +1259,7 @@ NXThemesEditor.loadTheme = function(src, confirmation) {
            NXThemesEditor.refreshPageSelector();
            NXThemesEditor.refreshUndoActions();
            NXThemes.getViewById("theme actions").refresh();
-           NXThemes.getViewById("dashboard actions").refresh();           
+           NXThemes.getViewById("dashboard actions").refresh();
            NXThemesEditor.writeMessage("Theme loaded.");
          },
          onFailure: function(r) {
@@ -1261,9 +1285,9 @@ NXThemesEditor.deleteTheme = function(src) {
            NXThemesEditor.refreshUndoActions();
            NXThemesEditor.refreshThemeSelector();
            NXThemes.getViewById("theme actions").refresh();
-           NXThemes.getViewById("dashboard actions").refresh();              
+           NXThemes.getViewById("dashboard actions").refresh();
            NXThemesEditor.writeMessage("Theme deleted.");
-           NXThemesEditor.refreshDashboard();           
+           NXThemesEditor.refreshDashboard();
          },
          onFailure: function(r) {
            var text = r.responseText;
@@ -1271,25 +1295,6 @@ NXThemesEditor.deleteTheme = function(src) {
          }
     });
 };
-
-NXThemesEditor.refreshTheme = function(src) {
-    var url = nxthemesBasePath + "/nxthemes-editor/refresh_theme";
-    new Ajax.Request(url, {
-         method: 'post',
-         parameters: {
-             src: src
-         },
-         onSuccess: function(r) {
-           NXThemesEditor.refreshCanvas();
-           NXThemesEditor.writeMessage("Theme refreshed.");
-         },
-         onFailure: function(r) {
-           var text = r.responseText;
-           window.alert(text);
-         }
-    });
-};
-
 
 NXThemesEditor.refreshCanvas = function() {
     NXThemes.getViewById("canvas area").refresh();
@@ -1326,6 +1331,9 @@ NXThemesEditor.undo =  function(theme_name) {
                    break;
                case "element editor":
                    NXThemes.getViewById("element editor").refresh();
+                   break;
+               case "dashboard":
+                   NXThemes.getViewById("dashboard").refresh();
                    break;
                case "canvas editor":
                    NXThemesEditor.refreshCanvas();
@@ -1429,7 +1437,7 @@ NXThemesPresetManager.setEditMode = function(mode, button) {
          },
          onSuccess: function(r) {
              NXThemesPresetManager.refresh();
-         NXThemes.getControllerById("theme buttons").select(button);
+             NXThemes.getControllerById("theme buttons").select(button);
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1478,6 +1486,7 @@ NXThemesPresetManager.updatePresets = function(form) {
          onSuccess: function(r) {
              NXThemes.getViewById("preset manager").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Presets updated.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1509,6 +1518,7 @@ NXThemesPresetManager.editPreset = function(info) {
        onSuccess: function(r) {
            NXThemesPresetManager.refresh();
            NXThemesEditor.refreshUndoActions();
+           NXThemesEditor.writeMessage("Preset updated.");
        },
        onFailure: function(r) {
            var text = r.responseText;
@@ -1535,6 +1545,7 @@ NXThemesPresetManager.renamePreset = function(info) {
        onSuccess: function(r) {
            NXThemesPresetManager.refresh();
            NXThemesEditor.refreshUndoActions();
+           NXThemesEditor.writeMessage("Preset renamed.");
        },
        onFailure: function(r) {
            var text = r.responseText;
@@ -1580,6 +1591,7 @@ NXThemesPresetManager.pastePreset = function(info) {
        onSuccess: function(r) {
            NXThemesPresetManager.refresh();
            NXThemesEditor.refreshUndoActions();
+           NXThemesEditor.writeMessage("Preset pasted.");
        },
        onFailure: function(r) {
            var text = r.responseText;
@@ -1604,6 +1616,7 @@ NXThemesPresetManager.deletePreset = function(info) {
        onSuccess: function(r) {
            NXThemesPresetManager.refresh();
            NXThemesEditor.refreshUndoActions();
+           NXThemesEditor.writeMessage("Preset deleted.");
        },
        onFailure: function(r) {
            var text = r.responseText;
@@ -1633,6 +1646,7 @@ NXThemesPresetManager.setPresetCategory = function(info) {
          onSuccess: function(r) {
              NXThemesPresetManager.refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Preset category changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1684,6 +1698,7 @@ NXThemesPresetManager.convertValueToPreset = function(themeName, category, prese
          onSuccess: function(r) {
              NXThemesPresetManager.refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Preset created.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1806,6 +1821,7 @@ NXThemesStyleEditor.setPresetGroup = function(select) {
          onSuccess: function(r) {
            NXThemesStyleEditor.refreshStylePicker();
            NXThemesEditor.refreshUndoActions();
+           NXThemesEditor.writeMessage("Preset category changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -1838,7 +1854,7 @@ NXThemesStyleEditor.createStyle = function() {
          onSuccess: function(r) {
              NXThemes.getViewById("element style").refresh();
              NXThemesEditor.refreshUndoActions();
-             NXThemesEditor.writeMessage("New style created.");
+             NXThemesEditor.writeMessage("Style created.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2077,6 +2093,7 @@ NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
          onSuccess: function(req) {
              NXThemes.getViewById("element style").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Element's style changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2105,6 +2122,7 @@ NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName, screenName
          onSuccess: function(req) {
              NXThemes.getViewById(screenName).refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style created.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2129,6 +2147,7 @@ NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName)
          onSuccess: function(r) {
              NXThemes.getViewById("element style").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style deleted.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2237,6 +2256,7 @@ NXThemesStyleManager.deleteUnusedStyleView = function(info) {
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Unused style views deleted.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2260,6 +2280,7 @@ NXThemesStyleManager.deleteNamedStyle = function(currentThemeName, styleName) {
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style deleted.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2351,6 +2372,7 @@ NXThemesStyleManager.setStyleInheritance = function(info) {
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style inheritance changed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2375,6 +2397,7 @@ NXThemesStyleManager.removeStyleInheritance = function(info) {
          onSuccess: function(r) {
              NXThemes.getViewById("style manager").refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style inheritance removed.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2415,6 +2438,7 @@ NXThemesStyleManager.updateNamedStyleCSS = function(form, screen) {
          onSuccess: function(r) {
              NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("CSS updated.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2449,6 +2473,7 @@ NXThemesStyleManager.restoreNamedStyle = function(form, screen) {
          onSuccess: function(r) {
              NXThemes.getViewById(screen).refresh();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Style restored.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2601,6 +2626,7 @@ NXThemesFragmentFactory.addFragment = function(typeName, styleName, destId) {
              NXThemesEditor.switchToCanvas();
              NXThemesEditor.refreshCanvas();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Fragment added.");
          },
          onFailure: function(r) {
              var text = r.responseText;
@@ -2655,6 +2681,8 @@ NXThemesThemeOptions.updatePresets = function(form) {
          },
          onSuccess: function(r) {
              NXThemesThemeOptions.refresh();
+             NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.writeMessage("Theme options updated.");
          },
          onFailure: function(r) {
              var text = r.responseText;

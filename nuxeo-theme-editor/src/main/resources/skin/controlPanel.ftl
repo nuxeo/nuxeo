@@ -11,20 +11,20 @@
 <div class="body">
 <#if current_theme>
   <p class="nxthemesEditor">Theme name: <strong>${current_theme.name}</strong></p>
-  <p class="nxthemesEditor">Resource bank: 
+  <p class="nxthemesEditor">Resource bank:
   <#if current_bank>
     <strong style="color: #090;">${current_bank.name}</strong>
-    <a class="nxthemesActionButton" href="javascript:void(0)" 
+    <a class="nxthemesActionButton" href="javascript:void(0)"
        onclick="NXThemesEditor.useResourceBank('${current_theme.src?js_string}', '', 'control panel')">
        Disconnect
-    </a>   
+    </a>
   <#else>
     <strong style="color: #c00">Not connected</strong>
     <a href="javascript:NXThemesEditor.manageThemeBanks()"
        class="nxthemesActionButton">Connect to a bank</a>
-  </#if>  
+  </#if>
   </p>
-  <p class="nxthemesEditor">Theme source: <strong>${current_theme.src}</strong></p> 
+  <p class="nxthemesEditor">Theme source: <strong>${current_theme.src}</strong></p>
 </#if>
 
 

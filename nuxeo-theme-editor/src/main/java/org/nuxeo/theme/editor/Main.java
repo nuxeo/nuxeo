@@ -1122,16 +1122,6 @@ public class Main extends ModuleRoot {
     }
 
     @POST
-    @Path("refresh_theme")
-    public void refreshTheme(@FormParam("src") String src) {
-        try {
-            Editor.refreshTheme(src);
-        } catch (Exception e) {
-            throw new ThemeEditorException(e.getMessage(), e);
-        }
-    }
-
-    @POST
     @Path("save_theme")
     public void saveTheme(@FormParam("src") String src) {
         try {

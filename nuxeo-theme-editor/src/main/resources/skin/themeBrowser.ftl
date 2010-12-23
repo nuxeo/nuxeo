@@ -23,7 +23,7 @@
               <span>${theme.name}</span>
               <span class="info"><img src="${basePath}/skin/nxthemes-editor/img/remove-theme-from-list-16.png" width="16" height="16" /> remove from list</span>
             </#if>
-          </a> 
+          </a>
         </li>
       </#list>
     </ul>

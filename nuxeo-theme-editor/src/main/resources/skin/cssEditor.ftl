@@ -39,7 +39,7 @@
   <div style="float: left">
     <button type="submit">Save</button>
   </div>
-    
+
 <#else>
   <#if saveable>
   <div style="padding: 4px 0; float: right">
@@ -61,7 +61,7 @@ ${theme_skin_css}
   <p>
     <a href="javascript:NXThemesEditor.manageSkins()"
        class="nxthemesActionButton">Select a skin</a>
-  </p>  
+  </p>
 </#if>
 
 <#else>
@@ -84,5 +84,5 @@ ${theme_skin_css}
       <button class="nxthemesActionButton"
        onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'css editor')">Customize theme</button>
     </div>
-  </div>   
+  </div>
 </#if>

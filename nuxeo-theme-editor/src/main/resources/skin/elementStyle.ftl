@@ -11,7 +11,7 @@
           </button>
         </div>
       </form>
-  
+
   <#else>
 
       <style id="previewCss" type="text/css"></style>
@@ -22,17 +22,17 @@
 
         <div>
           <label>Inherit style properties from:</label>
-	  <select id="inherited_style" id="inherited_style" onchange="NXThemesStyleEditor.makeElementUseNamedStyle(this)">
-	    <option value=""></option>
-	    <#list named_styles as style>
-	      <#if inherited_style_name_of_selected_element == style.name>
-	        <#assign current_style = style />
-	        <option value="${style.name}" selected="selected">${style.name}</option>
-	      <#else>
-	        <option value="${style.name}">${style.name}</option>
-	      </#if>
-	    </#list>
-	  </select>
+      <select id="inherited_style" id="inherited_style" onchange="NXThemesStyleEditor.makeElementUseNamedStyle(this)">
+        <option value=""></option>
+        <#list named_styles as style>
+          <#if inherited_style_name_of_selected_element == style.name>
+            <#assign current_style = style />
+            <option value="${style.name}" selected="selected">${style.name}</option>
+          <#else>
+            <option value="${style.name}">${style.name}</option>
+          </#if>
+        </#list>
+      </select>
 
           <button onclick="NXThemesStyleEditor.createNamedStyle('#{selected_element.uid}', '${current_theme_name?js_string}', 'element style')">New style</button>
           <#if current_style && !current_style.remote>
@@ -41,7 +41,7 @@
         </div>
 
       </form>
-      
+
       <div class="nxthemesButtonSelector"
         style="text-align: left; padding: 4px 15px;">
         <span>

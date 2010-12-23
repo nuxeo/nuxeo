@@ -1,7 +1,7 @@
 <#setting url_escaping_charset='UTF-8'>
 
 <@nxthemes_controller resource="dashboard-perspectives.json" />
-    
+
 <div class="nxthemesThemeControlPanelScreen">
 <div class="nxthemesThemeControlPanel">
 
@@ -69,13 +69,13 @@
       url="${basePath}/nxthemes-editor/controlPanel"
       controlledBy="dashboard perspectives"
       visibleInPerspectives="control panel" />
-      
+
     <!-- theme options -->
     <@nxthemes_panel identifier="theme options"
       url="${basePath}/nxthemes-editor/themeOptions"
       controlledBy="dashboard perspectives,color picker"
       visibleInPerspectives="theme options" />
-      
+
     <!-- css editor -->
     <@nxthemes_panel identifier="css editor"
       url="${basePath}/nxthemes-editor/cssEditor"
@@ -99,13 +99,13 @@
       url="${basePath}/nxthemes-editor/imageManager"
       controlledBy="dashboard perspectives"
       visibleInPerspectives="image manager" />
-      
+
     <!-- preset manager -->
     <@nxthemes_panel identifier="preset manager"
       url="${basePath}/nxthemes-editor/presetManager"
       controlledBy="dashboard perspectives"
       visibleInPerspectives="preset manager" />
-      
+
     <!-- style manager -->
     <@nxthemes_controller resource="style-manager-actions.json" />
     <@nxthemes_panel identifier="style manager"
@@ -121,10 +121,10 @@
 
     <!-- dashboard preview -->
     <@nxthemes_panel identifier="dashboard preview"
-      url="${basePath}/nxthemes-editor/dashboardPreview" 
+      url="${basePath}/nxthemes-editor/dashboardPreview"
       controlledBy="dashboard perspectives"
       filter="activate dashboard preview"
-      visibleInPerspectives="dashboard preview" />      
+      visibleInPerspectives="dashboard preview" />
 
 </td>
 </tr>

@@ -31,7 +31,7 @@
              <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> Border</a></li>
          <li <#if selected_preset_category = ''>class="selected"</#if>>
              <a  href="javascript:NXThemesPresetManager.selectPresetCategory('')">
-             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> All categories</a></li>             
+             <img src="${basePath}/skin/nxthemes-editor/img/category-16.png" width="16" height="16"/> All categories</a></li>
        </ul>
      </td>
     <td>
@@ -96,7 +96,7 @@
   <div class="name">${color}</div>
 </td>
 </tr>
-</#list>        
+</#list>
 </table>
 
 </div>
@@ -203,7 +203,7 @@ ${preset_info.preview?replace(r'${basePath}', '${basePath}')}</div>
 </tr>
 
 </#list>
-        
+
 </table>
 </#if>
 

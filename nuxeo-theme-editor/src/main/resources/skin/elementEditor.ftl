@@ -21,7 +21,7 @@
   <tab switchTo="element editor perspectives/assign widget" label="Widget"  />
   <tab switchTo="element editor perspectives/edit style" label="Style"  />
   <tab switchTo="element editor perspectives/set visibility" label="Visibility"  />
-  <tab switchTo="element editor perspectives/set description" label="Description"  />    
+  <tab switchTo="element editor perspectives/set description" label="Description"  />
 </@nxthemes_tabs>
 
 <div class="nxthemesEditorFrame">
