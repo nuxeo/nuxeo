@@ -53,7 +53,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
     public PublishedDocument publishDocument(DocumentModel doc,
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
-        if (params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
+        if (params != null && params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
             String renditionName = params.get(RENDITION_NAME_PARAMETER_KEY);
             if (!StringUtils.isEmpty(renditionName)) {
                 DocumentRef renditionDocumentRef;
