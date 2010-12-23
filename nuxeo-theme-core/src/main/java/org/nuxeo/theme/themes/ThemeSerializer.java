@@ -144,6 +144,7 @@ public class ThemeSerializer {
             for (Identifiable object : themeManager.getNamedObjects(themeName,
                     formatTypeName)) {
                 Format format = (Format) object;
+                // skip unused remote styles
                 if (!format.isCustomized()
                         && ThemeManager.listFormatsDirectlyInheritingFrom(
                                 format).isEmpty()) {

@@ -224,7 +224,7 @@ public class ThemeParser {
             registerThemePages(theme, baseNode);
 
         } else {
-            // Register presets from remote resources
+            // Register resources from remote bank
             if (resourceBankName != null) {
                 try {
                     ResourceBank resourceBank = ThemeManager.getResourceBank(resourceBankName);
@@ -475,14 +475,21 @@ public class ThemeParser {
 
             } else if ("style".equals(nodeName)) {
                 Node nameAttr = attributes.getNamedItem("name");
+                Style style = (Style) format;
 
                 // register the style name
                 String styleName = null;
-                Style style = (Style) format;
                 if (nameAttr != null) {
                     styleName = nameAttr.getNodeValue();
-                    style.setName(styleName);
-                    themeManager.setNamedObject(themeName, "style", style);
+                    // the style may have been registered already
+                    Style registeredStyle = (Style) themeManager.getNamedObject(
+                            themeName, "style", styleName);
+                    if (registeredStyle == null) {
+                        style.setName(styleName);
+                        themeManager.setNamedObject(themeName, "style", style);
+                    } else {
+                        style = registeredStyle;
+                    }
                 }
 
                 Node inheritedAttr = attributes.getNamedItem("inherit");
@@ -515,7 +522,6 @@ public class ThemeParser {
                 List<Node> selectorNodes = getChildElementsByTagName(n,
                         "selector");
 
-                // Try to retrieve the style from the resource bank
                 if (style.isRemote() && resourceBankName != null) {
                     if (!selectorNodes.isEmpty()) {
                         style.setCustomized(true);
