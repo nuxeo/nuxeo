@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core.service;
 
@@ -24,8 +22,6 @@ import org.nuxeo.ecm.platform.scheduler.core.interfaces.Schedule;
 
 /**
  * ScheduleImpl extension definition.
- *
- * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
 @XObject("schedule")
 public class ScheduleImpl implements Schedule {
@@ -52,22 +48,27 @@ public class ScheduleImpl implements Schedule {
     @XNode("username")
     public String username;
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getEventId() {
         return eventId;
     }
 
+    @Override
     public String getEventCategory() {
         return eventCategory;
     }
 
+    @Override
     public String getCronExpression() {
         return cronExpression;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }

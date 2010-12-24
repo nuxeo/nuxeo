@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-scheduler-core</artifactId>
-  <name>Nuxeo Scheduler - Core</name>
+  <name>Nuxeo Scheduler</name>
   <description>Nuxeo Enterprise Platform: Nuxeo Scheduler is used to fire
     events at given time. Events to fire and time are defined through
     its extension point.</description>

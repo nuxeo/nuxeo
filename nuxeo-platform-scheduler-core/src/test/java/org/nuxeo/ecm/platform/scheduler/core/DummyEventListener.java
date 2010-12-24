@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
@@ -28,6 +26,7 @@ public class DummyEventListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(EventListener.class);
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
         if (event.getName().equals("testEvent")) {
             log.info("Received event!");

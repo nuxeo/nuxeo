@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,73 +33,74 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+/**
+ * A Quartz job whose execution sends a configured event.
+ */
 public class EventJob implements Job {
 
     private static final Log log = LogFactory.getLog(EventJob.class);
 
+    /**
+     * Job execution to send the configured event.
+     */
+    @Override
     public void execute(JobExecutionContext context)
             throws JobExecutionException {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+
+        // switch to the Nuxeo classloader so that the event listeners
+        // work as usual
+
+        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader nuxeoCL = getClass().getClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(nuxeoCL);
+            execute(dataMap);
+        } catch (Exception e) {
+            log.error(e, e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCL);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void execute(JobDataMap dataMap) throws Exception {
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
 
-        LoginContext lContext = null;
-
-        // switch to the Nuxeo classloader so that the event listeners
-        // work as usual
-        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-        ClassLoader nuxeoCL = EventJob.class.getClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(nuxeoCL);
-
-            // Setup a user session
-            try {
-                lContext = doLogin(username);
-            } catch (LoginException e) {
-                log.error(e, e);
-                return;
-            }
-
-            UserPrincipal principal = new UserPrincipal(username);
-            EventContext ctx = new EventContextImpl(null, principal);
-            ctx.setProperty("category", eventCategory);
-            ctx.setProperties(dataMap);
-
-            Event event = new EventImpl(eventId, ctx);
-
-            EventService evtService = Framework.getService(EventService.class);
-
-            if (evtService != null) {
-                log.info("Sending scheduled event id=" + eventId
-                        + ", category=" + eventCategory);
-
-                evtService.fireEvent(event);
-            } else {
-                log.error("Cannot find EventService");
-            }
-
-        } catch (Exception e) {
-            log.error(e, e);
-        } finally {
-            Thread.currentThread().setContextClassLoader(jbossCL);
-
-            if (lContext != null) {
-                try {
-                    lContext.logout();
-                } catch (Exception e) {
-                    log.error(e, e);
-                }
-            }
+        EventService eventService = Framework.getService(EventService.class);
+        if (eventService == null) {
+            log.error("Cannot find EventService");
+            return;
         }
-    }
 
-    protected LoginContext doLogin(String username)
-            throws LoginException {
-        if (username == null) {
-            return Framework.login();
-        } else {
-            return NuxeoAuthenticationFilter.loginAs(username);
+        LoginContext loginContext = null;
+        try {
+            // login
+            if (username == null) {
+                loginContext = Framework.login();
+            } else {
+                loginContext = NuxeoAuthenticationFilter.loginAs(username);
+            }
+
+            // set up event context
+            UserPrincipal principal = new UserPrincipal(username, null, false,
+                    false);
+            EventContext eventContext = new EventContextImpl(null, principal);
+            eventContext.setProperty("category", eventCategory);
+            eventContext.setProperties(dataMap);
+            Event event = new EventImpl(eventId, eventContext);
+
+            // send event
+            log.info("Sending scheduled event id=" + eventId + ", category="
+                    + eventCategory + ", username=" + username);
+            eventService.fireEvent(event);
+        } finally {
+            // logout
+            if (loginContext != null) {
+                loginContext.logout();
+            }
         }
     }
 

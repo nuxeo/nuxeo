@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core.interfaces;
 
@@ -23,8 +21,6 @@ import java.util.Map;
 
 /**
  * Scheduler registry.
- *
- * @author <a href="fg@nuxeo.com">Florent Guillaume</a>
  */
 public interface SchedulerRegistry {
 
@@ -51,7 +47,7 @@ public interface SchedulerRegistry {
      * @param scheduleId the schedule id
      * @return true if schedule has been successfully removed.
      */
-    Boolean unregisterSchedule(String scheduleId);
+    boolean unregisterSchedule(String scheduleId);
 
     /**
      * UnRegisters a schedule.
@@ -59,5 +55,5 @@ public interface SchedulerRegistry {
      * @param schedule to be unregistered
      * @return true if schedule has been successfully removed.
      */
-    Boolean unregisterSchedule(Schedule schedule);
+    boolean unregisterSchedule(Schedule schedule);
 }

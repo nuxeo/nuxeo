@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core.service;
 
@@ -44,8 +42,6 @@ import org.quartz.impl.StdSchedulerFactory;
 
 /**
  * Schedule registry service.
- *
- * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
 public class SchedulerRegistryService extends DefaultComponent implements
         SchedulerRegistry {
@@ -101,10 +97,12 @@ public class SchedulerRegistryService extends DefaultComponent implements
         return bundle;
     }
 
+    @Override
     public void registerSchedule(Schedule schedule) {
         registerSchedule(schedule, null);
     }
 
+    @Override
     public void registerSchedule(Schedule schedule,
             Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
@@ -134,14 +132,16 @@ public class SchedulerRegistryService extends DefaultComponent implements
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (ObjectAlreadyExistsException e) {
-            ; // when jobs are persisted in  a database, the job should already be there
+            ; // when jobs are persisted in a database, the job should already
+              // be there
         } catch (SchedulerException e) {
             log.error(String.format("failed to schedule job with id '%s': %s",
                     schedule.getId(), e.getMessage()), e);
         }
     }
 
-    public Boolean unregisterSchedule(String scheduleId) {
+    @Override
+    public boolean unregisterSchedule(String scheduleId) {
         log.info("Unregistering schedule with id" + scheduleId);
         try {
             return scheduler.deleteJob(scheduleId, "nuxeo");
@@ -152,7 +152,8 @@ public class SchedulerRegistryService extends DefaultComponent implements
         return false;
     }
 
-    public Boolean unregisterSchedule(Schedule schedule) {
+    @Override
+    public boolean unregisterSchedule(Schedule schedule) {
         return unregisterSchedule(schedule.getId());
     }
 

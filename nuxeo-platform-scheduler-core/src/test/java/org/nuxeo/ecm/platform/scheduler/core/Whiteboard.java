@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,17 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
-final class Whiteboard {
+import java.util.concurrent.atomic.AtomicLong;
+
+public class Whiteboard {
 
     private static Whiteboard singleton;
 
-    private Integer count = 0;
+    private AtomicLong count = new AtomicLong(0);
 
     // Utility class.
     private Whiteboard() {
@@ -35,20 +35,20 @@ final class Whiteboard {
         return singleton;
     }
 
-    public synchronized void setCount(Integer val) {
-        count = val;
+    public void setCount(long val) {
+        count.set(val);
     }
 
-    public synchronized Integer getCount() {
-        return count;
+    public long getCount() {
+        return count.get();
     }
 
-    public synchronized void incrementCount() {
-        count += 1;
+    public void incrementCount() {
+        count.incrementAndGet();
     }
 
     public synchronized void decreaseCount() {
-        count -= 1;
+        count.decrementAndGet();
     }
 
 }

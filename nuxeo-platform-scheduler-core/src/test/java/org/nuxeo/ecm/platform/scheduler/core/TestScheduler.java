@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
@@ -68,13 +66,13 @@ public class TestScheduler extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler.xml");
         try {
-            Thread.sleep(2000); // 1s so that job is called at least once
+            Thread.sleep(2000); // so that job is called at least once
         } catch (InterruptedException e) {
             log.error(e);
             fail("Timer failed");
         }
 
-        Integer count = whiteboard.getCount();
+        long count = whiteboard.getCount();
         log.info("count " + count);
         undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler.xml");
@@ -93,19 +91,20 @@ public class TestScheduler extends NXRuntimeTestCase {
         schedule.eventCategory = "default";
         service.registerSchedule(schedule);
         try {
-            Thread.sleep(2000); // 1s so that job is called at least once
+            Thread.sleep(2000); // so that job is called at least once
         } catch (InterruptedException e) {
             log.error(e);
             fail("Timer failed");
         }
 
-        Integer count = whiteboard.getCount();
+        long count = whiteboard.getCount();
         log.info("count " + count);
         undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
                 "test-nxscheduler.xml");
         assertTrue("count " + count, count >= 1);
-        Boolean unregistered = service.unregisterSchedule(schedule.id);
-        // schedule can happen again, it hasn't benn unregistered after first launch.
+        boolean unregistered = service.unregisterSchedule(schedule.id);
+        // schedule can happen again, it hasn't benn unregistered after first
+        // launch.
         assertTrue(unregistered);
     }
 
@@ -120,9 +119,9 @@ public class TestScheduler extends NXRuntimeTestCase {
         schedule.eventCategory = "default";
         Calendar now = Calendar.getInstance();
         int second = now.get(Calendar.SECOND);
-        int minute= now.get(Calendar.MINUTE);
+        int minute = now.get(Calendar.MINUTE);
         int hour = now.get(Calendar.HOUR_OF_DAY);
-        int dayOfMonth= now.get(Calendar.DAY_OF_MONTH);
+        int dayOfMonth = now.get(Calendar.DAY_OF_MONTH);
         int month = now.get(Calendar.MONTH) + 1;
         int year = now.get(Calendar.YEAR);
         second += 2;
@@ -140,7 +139,10 @@ public class TestScheduler extends NXRuntimeTestCase {
                 }
             }
         }
-        String cronExpression = String.format("%s %s %s %s %s ? %s", second, minute, hour, dayOfMonth, month, year);
+        String cronExpression = String.format("%s %s %s %s %s ? %s",
+                Integer.toString(second), Integer.toString(minute),
+                Integer.toString(hour), Integer.toString(dayOfMonth),
+                Integer.toString(month), Integer.toString(year));
         schedule.cronExpression = cronExpression;
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("flag", "1");
@@ -151,11 +153,12 @@ public class TestScheduler extends NXRuntimeTestCase {
             log.error(e);
             fail("Timer failed");
         }
-        Integer count = whiteboard.getCount();
+        long count = whiteboard.getCount();
         log.info("count " + count);
         assertTrue("count " + count, count < 0);
-        Boolean unregistered = service.unregisterSchedule(schedule.id);
-        // schedule should happen only one time, it has already been unregistered
+        boolean unregistered = service.unregisterSchedule(schedule.id);
+        // schedule should happen only one time, it has already been
+        // unregistered
         assertFalse(unregistered);
     }
 }

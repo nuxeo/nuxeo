@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.scheduler.core.interfaces;
 
@@ -24,8 +22,6 @@ package org.nuxeo.ecm.platform.scheduler.core.interfaces;
  * Holds information about a schedule, including the event to send,
  * the username to use to open the session, and the
  * periodicity for the schedule.
- *
- * @author <a href="mailto:fg@nuxeo.com">Florent Guillaume</a>
  */
 public interface Schedule {
 
