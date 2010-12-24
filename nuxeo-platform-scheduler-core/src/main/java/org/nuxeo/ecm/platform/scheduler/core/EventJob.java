@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -92,11 +93,17 @@ public class EventJob implements Job {
             eventContext.setProperties(dataMap);
             Event event = new EventImpl(eventId, eventContext);
 
+            // start transaction
+            TransactionHelper.startTransaction();
+
             // send event
             log.info("Sending scheduled event id=" + eventId + ", category="
                     + eventCategory + ", username=" + username);
             eventService.fireEvent(event);
         } finally {
+            // finish transaction
+            TransactionHelper.commitOrRollbackTransaction();
+
             // logout
             if (loginContext != null) {
                 loginContext.logout();

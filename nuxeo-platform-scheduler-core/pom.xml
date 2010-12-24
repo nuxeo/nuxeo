@@ -55,16 +55,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.naming</groupId>
-      <artifactId>jnp-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <scope>test</scope>
