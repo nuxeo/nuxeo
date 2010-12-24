@@ -126,6 +126,8 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
 
     protected Boolean showAddVirtualTaskForm;
 
+    protected Boolean formInEditMode = false;
+
     protected String userComment;
 
     public boolean getCanCreateProcess() throws ClientException {
@@ -350,6 +352,33 @@ public class JbpmActionsBean extends DocumentContextBoundActionBean implements
             showAddVirtualTaskForm = true;
         }
         return null;
+    }
+
+    public String persistProcessInstance() throws ClientException {
+        ProcessInstance pi = getCurrentProcess();
+        if (pi != null) {
+            jbpmService.persistProcessInstance(pi);
+
+            facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get(
+                            "label.review.task.edited"));
+
+            resetCurrentData();
+            formInEditMode = false;
+        }
+        return null;
+    }
+
+    public String changeVirtualTaskModification() {
+        formInEditMode = !formInEditMode;
+        if (!formInEditMode) {
+            resetCurrentData();
+        }
+        return null;
+    }
+
+    public Boolean getFormInEditMode() {
+        return formInEditMode;
     }
 
     public String moveDownVirtualTask(int index) throws ClientException {

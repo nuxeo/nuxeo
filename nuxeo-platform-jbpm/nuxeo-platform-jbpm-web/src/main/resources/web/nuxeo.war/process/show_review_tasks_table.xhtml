@@ -22,15 +22,15 @@
        <table class="dataInput">
             <tr>
               <td>
-                <h:inputText id="listName" value="#{jbpmTaskListActions.listName}" />              
+                <h:inputText id="listName" value="#{jbpmTaskListActions.listName}" />
               </td>
-              <td>  
+              <td>
                  <h:commandButton
-                      value="#{messages['label.review.list.save']}" 
+                      value="#{messages['label.review.list.save']}"
                       action="#{jbpmTaskListActions.createTaskList()}"
                       styleClass="button" />
               </td>
-            </tr>         
+            </tr>
         </table>
 
       <table class="dataOutput">
@@ -144,6 +144,7 @@
               </f:subview>
             </tr>
           </nxu:repeat>
+          <c:set var="canEdit" value="#{jbpmActions.canManageParticipants and jbpmActions.formInEditMode}" />
           <nxu:repeat var="virtualTask" value="#{virtualTasks}" index="index">
             <tr>
               <c:if test="#{jbpmActions.canManageParticipants}">
@@ -158,16 +159,50 @@
                 value="/icons/review_pending.gif" /></td>
               <td><nxl:layout name="user_group_prefixed_suggestion"
                 mode="view" value="#{virtualTask.actors}" /></td>
-              <td><h:outputText value="#{messages[virtualTask.directive]}" />
+              <td>
+                <c:if test="#{!canEdit}">
+                  <h:outputText
+                    value="#{messages[virtualTask.directive]}" />
+                </c:if>
+                <c:if test="#{canEdit}">
+                  <h:selectOneMenu value="#{virtualTask.directive}" id="directive_dir_edit">
+                    <f:selectItem itemValue="workflowDirectiveValidation"
+                      itemLabel="#{messages['workflowDirectiveValidation']}" />
+                    <f:selectItem itemValue="workflowDirectiveOpinion"
+                      itemLabel="#{messages['workflowDirectiveOpinion']}" />
+                    <f:selectItem itemValue="workflowDirectiveDiffusion"
+                      itemLabel="#{messages['workflowDirectiveDiffusion']}" />
+                    <f:selectItem itemValue="workflowDirectiveCheck"
+                      itemLabel="#{messages['workflowDirectiveCheck']}" />
+                    <f:selectItem itemValue="workflowDirectiveVerification"
+                      itemLabel="#{messages['workflowDirectiveVerification']}" />
+                  </h:selectOneMenu>
+                </c:if>
               </td>
-              <td><h:outputText value="#{virtualTask.comment}" /></td>
+              <td>
+                <c:if test="#{!canEdit}">
+                  <h:outputText value="#{virtualTask.comment}" />
+                </c:if>
+                <c:if test="#{canEdit}">
+                  <h:inputTextarea value="#{virtualTask.comment}" />
+                </c:if>
+              </td>
               <td></td>
               <td></td>
-              <td><h:outputText value="#{virtualTask.dueDate}">
-                <f:convertDateTime
-                  pattern="#{nxu:dateAndTimeFormater('medium')}"
-                  timeZone="#{timeZone}" />
-              </h:outputText></td>
+              <td>
+                <c:if test="#{!canEdit}">
+                  <h:outputText value="#{virtualTask.dueDate}">
+                    <f:convertDateTime
+                      pattern="#{nxu:dateAndTimeFormater('medium')}"
+                      timeZone="#{timeZone}" />
+                  </h:outputText>
+                </c:if>
+                <c:if test="#{canEdit}">
+                  <nxu:inputDateTime value="#{virtualTask.dueDate}" id="due_date_edit" showsTime="true"
+                    format="#{nxu:basicDateAndTimeFormater()}"
+                    validator="#{jbpmActions.validateTaskDueDate}" />
+                </c:if>
+              </td>
               <td></td>
               <td></td>
               <c:if test="#{jbpmActions.canManageParticipants}">
@@ -189,11 +224,26 @@
       </table>
 
       <f:subview
-        rendered="#{jbpmActions.canManageProcess and !jbpmActions.isProcessStarted('choose-participant')}">
-        <div><h:commandButton
+        rendered="#{jbpmActions.canManageProcess}">
+        <div>
+          <h:commandButton
+          value="#{messages['label.workflow.edit']}"
+          action="#{jbpmActions.changeVirtualTaskModification()}"
+          styleClass="button" />
+          <c:if test="#{canEdit}">
+            <h:commandButton
+            value="#{messages['label.workflow.save']}"
+            action="#{jbpmActions.persistProcessInstance()}"
+            styleClass="button" />
+          </c:if>
+          <f:subview
+            rendered="#{!jbpmActions.isProcessStarted('choose-participant')}">
+          <h:commandButton
           value="#{messages['label.workflow.start']}"
           action="#{jbpmActions.startProcess('choose-participant')}"
-          styleClass="button" /></div>
+          styleClass="button" />
+          </f:subview>
+        </div>
       </f:subview>
 
       <h:panelGroup class="dataInputGroup"
