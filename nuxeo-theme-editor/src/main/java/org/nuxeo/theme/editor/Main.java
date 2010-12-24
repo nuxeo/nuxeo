@@ -151,10 +151,11 @@ public class Main extends ModuleRoot {
         String templateEngine = getTemplateEngine(path);
         ThemeDescriptor currentThemeDef = ThemeManager.getThemeDescriptorByThemeName(
                 templateEngine, currentThemeName);
-        return getTemplate("styleManager.ftl").arg("theme", currentThemeDef).arg(
-                "named_styles", styles).arg("style_manager_mode",
-                getStyleManagerMode()).arg("selected_named_style",
-                selectedStyle).arg("selected_named_style_css",
+        return getTemplate("styleManager.ftl").arg("current_theme",
+                currentThemeDef).arg("named_styles", styles).arg(
+                "style_manager_mode", getStyleManagerMode()).arg(
+                "selected_named_style", selectedStyle).arg(
+                "selected_named_style_css",
                 getRenderedPropertiesForNamedStyle(selectedStyle)).arg(
                 "current_theme_name", currentThemeName).arg("page_styles",
                 Editor.getPageStyles(currentThemeName)).arg("root_styles",

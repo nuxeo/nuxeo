@@ -25,7 +25,7 @@
     <div style="clear: both"></div>
     </div>
   <#else>
-    <p>No skins available</p>
+    <p>No top skins available</p>
   </#if>
 </div>
 </div>
@@ -38,7 +38,7 @@
   <#if base_skins>
     <div style="padding: 10px 5px">
     <div>Select a base skin for the <strong>${current_theme.name}</strong> theme:
-     <#if current_skin_name>
+     <#if current_skin_name && saveable>
       <button style="float: right" class="nxthemesActionButton"
       onclick="javascript:NXThemesSkinManager.deactivateSkin('${current_theme.name?js_string}')">Remove skin</button>
     </#if>

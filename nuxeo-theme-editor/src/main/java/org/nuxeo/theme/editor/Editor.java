@@ -530,10 +530,7 @@ public class Editor {
             throw new ThemeException("Theme not found: " + src);
         }
         String themeName = themeDescriptor.getName();
-        saveToUndoBuffer(themeName, "customize theme");
-
         ThemeManager.customizeTheme(themeDescriptor);
-
         return String.format("%s/default", themeName);
     }
 
@@ -543,8 +540,6 @@ public class Editor {
             throw new ThemeException("Theme not found: " + src);
         }
         String themeName = themeDescriptor.getName();
-        saveToUndoBuffer(themeName, "remove theme customizations");
-
         ThemeManager.uncustomizeTheme(themeDescriptor);
         return String.format("%s/default", themeName);
     }
@@ -989,7 +984,13 @@ public class Editor {
     // UndoBuffer
     public static void saveToUndoBuffer(final String themeName,
             final String message) throws ThemeException {
+        if (themeName == null) {
+            throw new ThemeException("Theme not set.");
+        }
         ThemeDescriptor themeDef = ThemeManager.getThemeDescriptorByThemeName(themeName);
+        if (themeDef == null) {
+            throw new ThemeException("Theme not found: " + themeName);
+        }
         ThemeSerializer serializer = new ThemeSerializer();
         String xmlSource;
         try {

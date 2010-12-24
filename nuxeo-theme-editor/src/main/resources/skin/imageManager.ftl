@@ -75,7 +75,7 @@
     <div class="album" id="imageGallery">
       <#list images as image>
         <#if selected_bank_collection && selected_bank_collection=image.collection>
-        <a href="javascript:void(0)" onclick="NXThemesImageManager.selectImage('${current_edit_field?js_string}', '${image.name?js_string}')">
+        <a href="javascript:void(0)" onclick="NXThemesImageManager.selectImage('${current_edit_field?js_string}', '${image.collection}/${image.name?js_string}')">
           <div class="imageSingle" title="${image.resource}">
             <div class="image"><img src="${current_bank.connectionUrl}/${image.collection}/image/${image.name}" /></div>
           </div>

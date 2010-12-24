@@ -783,9 +783,9 @@ NXThemesEditor.switchTheme = function(info) {
         NXThemesEditor.selectTheme(name);
         NXThemesEditor.refreshThemeSelector();
         NXThemesEditor.refreshPageSelector();
-        NXThemes.getViewById("theme actions").refresh();
-        NXThemes.getViewById("dashboard actions").refresh();
-        NXThemes.getViewById("dashboard").refresh();
+        NXThemesEditor.refreshThemeActions();
+        NXThemesEditor.refreshDashboard();
+        NXThemesEditor.refreshDashboardActions();
         NXThemesEditor.refreshCanvas();
     }
 };
@@ -865,7 +865,7 @@ NXThemesEditor.addTheme = function(viewid) {
              var text = r.responseText;
              NXThemesEditor.selectTheme(text);
              NXThemes.getViewById(viewid).refresh();
-             NXThemes.getViewById("dashboard actions").refresh();
+             NXThemesEditor.refreshDashboardActions();
              NXThemesEditor.refreshThemeSelector();
              NXThemesEditor.refreshPageSelector();
          },
@@ -886,9 +886,10 @@ NXThemesEditor.customizeTheme = function(src, screen) {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemes.getViewById(screen).refresh();
-             NXThemesEditor.refreshDashboard();
              NXThemesEditor.refreshThemeActions();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.refreshDashboard();
+             NXThemesEditor.refreshDashboardActions();
              NXThemesEditor.writeMessage("Theme customized.");
          },
          onFailure: function(r) {
@@ -912,9 +913,10 @@ NXThemesEditor.uncustomizeTheme = function(src, screen) {
          onSuccess: function(r) {
              var text = r.responseText;
              NXThemes.getViewById(screen).refresh();
-             NXThemesEditor.refreshDashboard();
              NXThemesEditor.refreshThemeActions();
              NXThemesEditor.refreshUndoActions();
+             NXThemesEditor.refreshDashboard();
+             NXThemesEditor.refreshDashboardActions();
              NXThemesEditor.writeMessage("Theme uncustomized.");
          },
          onFailure: function(r) {
@@ -1258,8 +1260,8 @@ NXThemesEditor.loadTheme = function(src, confirmation) {
            NXThemesEditor.refreshThemeSelector();
            NXThemesEditor.refreshPageSelector();
            NXThemesEditor.refreshUndoActions();
-           NXThemes.getViewById("theme actions").refresh();
-           NXThemes.getViewById("dashboard actions").refresh();
+           NXThemesEditor.refreshThemeActions();
+           NXThemesEditor.refreshDashboardActions();
            NXThemesEditor.writeMessage("Theme loaded.");
          },
          onFailure: function(r) {
@@ -1284,10 +1286,10 @@ NXThemesEditor.deleteTheme = function(src) {
            NXThemesEditor.refreshCanvas();
            NXThemesEditor.refreshUndoActions();
            NXThemesEditor.refreshThemeSelector();
-           NXThemes.getViewById("theme actions").refresh();
-           NXThemes.getViewById("dashboard actions").refresh();
-           NXThemesEditor.writeMessage("Theme deleted.");
+           NXThemesEditor.refreshThemeActions();
            NXThemesEditor.refreshDashboard();
+           NXThemesEditor.refreshDashboardActions();
+           NXThemesEditor.writeMessage("Theme deleted.");
          },
          onFailure: function(r) {
            var text = r.responseText;
@@ -1341,6 +1343,8 @@ NXThemesEditor.undo =  function(theme_name) {
            }
            NXThemesEditor.refreshUndoActions();
            NXThemesEditor.refreshPageSelector();
+           NXThemesEditor.refreshThemeActions();
+           NXThemesEditor.refreshDashboardActions();
            NXThemesEditor.writeMessage("Undo: " + message);
          },
          onFailure: function(r) {
@@ -2716,6 +2720,10 @@ NXThemesEditor.showThemePreview = function() {
 
 NXThemesEditor.refreshDashboard = function() {
   NXThemes.getViewById('dashboard').refresh();
+};
+
+NXThemesEditor.refreshDashboardActions = function() {
+ NXThemes.getViewById("dashboard actions").refresh();
 };
 
 NXThemesEditor.refreshThemeActions = function() {

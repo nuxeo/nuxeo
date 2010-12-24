@@ -1,4 +1,5 @@
 <#assign screen="style manager">
+<#assign saveable=current_theme && current_theme.saveable>
 
 <!-- style menu -->
 <@nxthemes_view resource="style-menu.json" />
@@ -41,9 +42,10 @@
 </#list>
 </ul>
 
-<div class="nxthemesEditor" style="margin-top: 10px">
-  <a class="nxthemesActionButton" href="javascript:NXThemesStyleEditor.createNamedStyle(null, '${theme.name}', 'style manager')">
-  Create style</a>
+<div style="padding: 0; margin-top: 5px">
+  <button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if> type="submit"
+  onclick="javascript:NXThemesStyleEditor.createNamedStyle(null, '${current_theme.name}', 'style manager')">
+  Create style</button>
 </div>
 
 </td>
@@ -65,7 +67,7 @@ ${selected_named_style_css}
     </div>
 
     <div style="margin-top: 5px">
-     <button type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
+     <button <#if !saveable>disabled="disabled"</#if> type="submit"><#if selected_named_style.customized>Save<#else>Customize CSS</#if></button>
     </div>
 
   </form>
@@ -98,7 +100,7 @@ ${selected_named_style_css}
   </form>
 
   <p class="nxthemesEditor" style="float: right; margin-top: -19px">
-    <button class="nxthemesActionButton"
+    <button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if>
     onclick="NXThemesStyleManager.deleteNamedStyle('${current_theme_name?js_string}', '${selected_named_style.name?js_string}')">Delete style</button>
   </p>
 
@@ -195,7 +197,7 @@ ${selected_named_style_css}
 
   <tr>
     <td></td>
-    <td><button type="submit">Save</button></td>
+    <td><button class="nxthemesActionButton" <#if !saveable>disabled="disabled"</#if> type="submit">Save</button></td>
   </tr>
 
   </table>
@@ -257,3 +259,16 @@ ${selected_named_style_css}
 </div>
 
 </#if>
+
+
+<#if !saveable>
+  <div id="nxthemesTopBanner" style="position: absolute">
+    <div class="nxthemesInfoMessage">
+      <img src="${basePath}/skin/nxthemes-editor/img/error.png" width="16" height="16" style="vertical-align: bottom" />
+      <span>Before managing styles you need to customize the <strong>${current_theme.name}</strong> theme.</span>
+      <button class="nxthemesActionButton"
+       onclick="NXThemesEditor.customizeTheme('${current_theme.src?js_string}', 'style manager')">Customize theme</button>
+    </div>
+  </div>
+</#if>
+
