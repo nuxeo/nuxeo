@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -73,10 +74,20 @@ public class EventJob implements Job {
             EventService evtService = Framework.getService(EventService.class);
 
             if (evtService != null) {
+                 // start transaction
+                TransactionHelper.startTransaction();
+
                 log.info("Sending scheduled event id=" + eventId
                         + ", category=" + eventCategory);
-
-                evtService.fireEvent(event);
+		
+		 try {
+                    evtService.fireEvent(event);
+		 } catch (Throwable e) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                    log.error("Roll-backing tx, got error while processing scheduled event id " + eventId, e);
+                 } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                 }
             } else {
                 log.error("Cannot find EventService");
             }
