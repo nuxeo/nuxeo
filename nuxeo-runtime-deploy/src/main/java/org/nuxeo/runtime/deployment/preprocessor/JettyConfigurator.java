@@ -28,6 +28,8 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public static final String JETTY_CONFIG = "config/sql.properties";
 
+    public static final String DEFAULT_DATA_DIR = "data";
+
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -44,6 +46,11 @@ public class JettyConfigurator extends ServerConfigurator {
     @Override
     protected File getOutputDirectory() {
         return generator.getNuxeoHome();
+    }
+
+    @Override
+    protected String getDefaultDataDir() {
+        return DEFAULT_DATA_DIR;
     }
 
 }

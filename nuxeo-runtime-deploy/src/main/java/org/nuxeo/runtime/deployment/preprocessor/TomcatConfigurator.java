@@ -28,6 +28,9 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     public static final String TOMCAT_CONFIG = "conf/Catalina/localhost/nuxeo.xml";
 
+    public static final String DEFAULT_DATA_DIR = "nxserver" + File.separator
+            + "data";
+
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -44,6 +47,11 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     protected File getOutputDirectory() {
         return generator.getNuxeoHome();
+    }
+
+    @Override
+    protected String getDefaultDataDir() {
+        return DEFAULT_DATA_DIR;
     }
 
 }

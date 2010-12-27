@@ -34,8 +34,12 @@ public class JBossConfigurator extends ServerConfigurator {
 
     public static final String DEFAULT_CONFIGURATION = "default";
 
+    private String configuration;
+
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        configuration = generator.getUserConfig().getProperty(
+                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
     }
 
     /**
@@ -54,9 +58,17 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     public String getJBossConfig() {
-        String configuration = generator.getUserConfig().getProperty(
-                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
-        return "server/" + configuration + "/deploy/nuxeo.ear/config";
+        return "server" + File.separator + configuration + File.separator
+                + "deploy" + File.separator + "nuxeo.ear" + File.separator
+                + "config";
+    }
+
+    @Override
+    public String getDefaultDataDir() {
+        final String defaultDataDir = "server" + File.separator + configuration
+                + File.separator + "data" + File.separator + "NXRuntime"
+                + File.separator + "data";
+        return defaultDataDir;
     }
 
 }

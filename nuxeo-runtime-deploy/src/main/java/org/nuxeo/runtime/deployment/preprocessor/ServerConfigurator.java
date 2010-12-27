@@ -35,7 +35,13 @@ public abstract class ServerConfigurator {
 
     protected static final Log log = LogFactory.getLog(ServerConfigurator.class);
 
+    protected static final String DEFAULT_LOG_DIR = "log";
+
     protected final ConfigurationGenerator generator;
+
+    protected File dataDir = null;
+
+    protected File logDir = null;
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
@@ -88,5 +94,51 @@ public abstract class ServerConfigurator {
      * @return output directory for files generation
      */
     protected abstract File getOutputDirectory();
+
+    /**
+     * @return Default data directory path relative to Nuxeo Home
+     * @since 5.4.1
+     */
+    protected abstract String getDefaultDataDir();
+
+    /**
+     * @return Data directory
+     * @since 5.4.1
+     */
+    public File getDataDir() {
+        if (dataDir == null) {
+            dataDir = new File(generator.getNuxeoHome(), getDefaultDataDir());
+        }
+        return dataDir;
+    }
+
+    /**
+     * @return Log directory
+     * @since 5.4.1
+     */
+    public File getLogDir() {
+        if (logDir == null) {
+            logDir = new File(generator.getNuxeoHome(), DEFAULT_LOG_DIR);
+        }
+        return logDir;
+    }
+
+    /**
+     * @param dataDirStr Data directory path to set
+     * @since 5.4.1
+     */
+    public void setDataDir(String dataDirStr) {
+        dataDir = new File(dataDirStr);
+        dataDir.mkdirs();
+    }
+
+    /**
+     * @param logDirStr Log directory path to set
+     * @since 5.4.1
+     */
+    public void setLogDir(String logDirStr) {
+        logDir = new File(logDirStr);
+        logDir.mkdirs();
+    }
 
 }

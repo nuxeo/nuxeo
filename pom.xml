@@ -37,6 +37,7 @@
     <module>nuxeo-runtime-datasource</module>
     <!-- NXP-5660 - temporary rollback because of Hudson issue -->
     <module>nuxeo-runtime-test</module>
+    <module>nuxeo-launcher-commons</module>
   </modules>
 
 
@@ -112,6 +113,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-jboss-deployer</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-launcher-commons</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
     </dependencies>
