@@ -92,7 +92,7 @@ pre {
   <table width="100%" class="main_table">
     <tr>
       <td colspan="2" align="right">
-        <a href="?">Index</a> - <a href="wiki/">Wiki export</a>
+        <a href="${baseURL}?">Index</a> - <a href="${baseURL}wiki/">Wiki export</a>
       </td>
     </tr>
     <tr valign="top">
@@ -102,12 +102,12 @@ pre {
           <#list categories?keys as cat>
             <div class="category">${cat}</div>
             <div class="export_link">
-              <a href="widgetTypes/${cat}?all=true">JSON definitions</a>
+              <a href="${baseURL}widgetTypes/${cat}?all=true">JSON definitions</a>
             </div>
             <div class="category_content">
               <#list categories["${cat}"] as widgetType>
                 <div class="item">
-                  <a href="?widgetType=${widgetType.name}">
+                  <a href="${baseURL}?widgetType=${widgetType.name}">
                     ${This.getWidgetTypeLabel(widgetType)}
                   </a>
                 </div>
@@ -115,7 +115,7 @@ pre {
             </div>
           </#list>
           <div class="export_link">
-            <a href="widgetTypes?all=true">All JSON definitions</a>
+            <a href="${baseURL}widgetTypes?all=true">All JSON definitions</a>
           </div>
         </div>
       </td>
@@ -137,13 +137,13 @@ pre {
             </div>
             <h2>Links</h2>
             <div>
-              <a href="widgetType/${widgetType.name}">JSON definition</a>
+              <a href="${baseURL}widgetType/${widgetType.name}">JSON definition</a>
             </div>
           <#else>
             <h1>Index</h1>
             <#list widgetTypes as widgetType>
               <div class="index_item">
-                <a href="?widgetType=${widgetType.name}">${This.getWidgetTypeLabel(widgetType)}</a>
+                <a href="${baseURL}?widgetType=${widgetType.name}">${This.getWidgetTypeLabel(widgetType)}</a>
               </div>
             </#list>
           </#if>

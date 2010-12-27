@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.forms.layout.export;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
@@ -68,7 +70,7 @@ public class WebLayoutResource {
     }
 
     protected Map<String, List<WidgetTypeDefinition>> getWidgetTypesByCategory() {
-        Map<String, List<WidgetTypeDefinition>> cats = new LinkedHashMap<String, List<WidgetTypeDefinition>>();
+        Map<String, List<WidgetTypeDefinition>> cats = new HashMap<String, List<WidgetTypeDefinition>>();
         List<WidgetTypeDefinition> unknownCatWidgets = new ArrayList<WidgetTypeDefinition>();
         for (WidgetTypeDefinition wTypeDef : widgetTypes) {
             List<String> categories = null;
@@ -95,13 +97,21 @@ public class WebLayoutResource {
         if (!unknownCatWidgets.isEmpty()) {
             cats.put("unknown", unknownCatWidgets);
         }
-        return cats;
+        // sort by category key
+        List<String> sortedKeys = new ArrayList<String>(cats.keySet());
+        Collections.sort(sortedKeys);
+        Map<String, List<WidgetTypeDefinition>> res = new LinkedHashMap<String, List<WidgetTypeDefinition>>();
+        for (String key : sortedKeys) {
+            res.put(key, cats.get(key));
+        }
+        return res;
     }
 
     @GET
     @Path("widgetTypes")
-    public Object getWidgetTypeDefinitions(@Context HttpServletRequest request,
-            @QueryParam("all") Boolean all) {
+    public Object getWidgetTypeDefinitions(@Context
+    HttpServletRequest request, @QueryParam("all")
+    Boolean all) {
         return getWidgetTypeDefinitions(request, null, all);
     }
 
@@ -114,8 +124,10 @@ public class WebLayoutResource {
      */
     @GET
     @Path("widgetTypes/{category}")
-    public Object getWidgetTypeDefinitions(@Context HttpServletRequest request,
-            @PathParam("category") String category, @QueryParam("all") Boolean all) {
+    public Object getWidgetTypeDefinitions(@Context
+    HttpServletRequest request, @PathParam("category")
+    String category, @QueryParam("all")
+    Boolean all) {
         // TODO: refactor so that's cached
         WidgetTypeDefinitions res = new WidgetTypeDefinitions();
         for (WidgetTypeDefinition def : widgetTypes) {
@@ -150,8 +162,9 @@ public class WebLayoutResource {
 
     @GET
     @Path("widgetType/{name}")
-    public Object getWidgetTypeDefinition(@Context HttpServletRequest request,
-            @PathParam("name") String name) {
+    public Object getWidgetTypeDefinition(@Context
+    HttpServletRequest request, @PathParam("name")
+    String name) {
         WidgetTypeDefinition def = service.getWidgetTypeDefinition(name);
         if (def != null) {
             return def;
@@ -160,32 +173,40 @@ public class WebLayoutResource {
         }
     }
 
-    public TemplateView getTemplate() {
-        return getTemplate("index.ftl");
+    public TemplateView getTemplate(@Context
+    UriInfo uriInfo) {
+        return getTemplate("index.ftl", uriInfo);
     }
 
     @GET
     @Path("wiki")
-    public Object getWikiDocumentation() {
-        return getTemplate("wiki.ftl");
+    public Object getWikiDocumentation(@Context
+    UriInfo uriInfo) {
+        return getTemplate("wiki.ftl", uriInfo);
     }
 
-    protected TemplateView getTemplate(String name) {
+    protected TemplateView getTemplate(String name, UriInfo uriInfo) {
+        String baseURL = uriInfo.getAbsolutePath().toString();
+        if (!baseURL.endsWith("/")) {
+            baseURL += "/";
+        }
         return new TemplateView(this, name).arg("categories", widgetTypesByCat).arg(
-                "widgetTypes", widgetTypes);
+                "widgetTypes", widgetTypes).arg("baseURL", baseURL);
     }
 
     @GET
-    public Object doGet(@QueryParam("widgetType") String widgetTypeName) {
+    public Object doGet(@QueryParam("widgetType")
+    String widgetTypeName, @Context
+    UriInfo uriInfo) {
         if (widgetTypeName == null) {
-            return getTemplate();
+            return getTemplate(uriInfo);
         } else {
             WidgetTypeDefinition wType = service.getWidgetTypeDefinition(widgetTypeName);
             if (wType == null) {
                 throw new WebResourceNotFoundException(
                         "No widget type found with name: " + widgetTypeName);
             }
-            TemplateView tpl = getTemplate();
+            TemplateView tpl = getTemplate(uriInfo);
             tpl.arg("widgetType", wType);
             return tpl;
         }
