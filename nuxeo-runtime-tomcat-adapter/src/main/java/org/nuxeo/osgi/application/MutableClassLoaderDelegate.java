@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.osgi.application;
 
@@ -21,13 +21,16 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated Use {@link org.nuxeo.launcher.commons.MutableClassLoaderDelegate}
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
     protected final ClassLoader cl;
+
     protected Method addURL;
 
-    public MutableClassLoaderDelegate(ClassLoader cl) throws IllegalArgumentException {
+    public MutableClassLoaderDelegate(ClassLoader cl)
+            throws IllegalArgumentException {
         this.cl = cl;
         Class<?> clazz = cl.getClass();
         do {
@@ -36,12 +39,14 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
             } catch (NoSuchMethodException e) {
                 clazz = clazz.getSuperclass();
             } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to adapt class loader: "+cl.getClass(), e);
+                throw new IllegalArgumentException(
+                        "Failed to adapt class loader: " + cl.getClass(), e);
             }
         } while (addURL == null && clazz != null);
         if (addURL == null) {
-            throw new IllegalArgumentException(
-                    "Incompatible class loader: "+cl.getClass()+". ClassLoader must provide a method: addURL(URL url)");
+            throw new IllegalArgumentException("Incompatible class loader: "
+                    + cl.getClass()
+                    + ". ClassLoader must provide a method: addURL(URL url)");
         }
         addURL.setAccessible(true);
     }
@@ -50,7 +55,8 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
         try {
             addURL.invoke(cl, url);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to add URL to class loader: "+url, e);
+            throw new RuntimeException("Failed to add URL to class loader: "
+                    + url, e);
         }
     }
 

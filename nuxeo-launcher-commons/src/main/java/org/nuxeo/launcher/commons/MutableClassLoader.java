@@ -14,13 +14,13 @@
  * Contributors:
  *     bstefanescu, jcarsique
  */
-package org.nuxeo.osgi.application;
+package org.nuxeo.launcher.commons;
 
 import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Use {@link org.nuxeo.launcher.commons.MutableClassLoader}
+ * @since 5.4.1
  */
 public interface MutableClassLoader {
 
