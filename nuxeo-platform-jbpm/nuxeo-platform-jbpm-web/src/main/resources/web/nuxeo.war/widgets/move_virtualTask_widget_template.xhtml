@@ -1,0 +1,15 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html" id="#{widget.id}">
+
+  <h:commandLink action="#{jbpmActions.moveUpVirtualTask(index)}"
+                 rendered="#{index != 0}"
+                 id="moveUp_#{index}">
+    <h:graphicImage value="/icons/arrow_up.gif" />
+  </h:commandLink> <br />
+  <h:commandLink action="#{jbpmActions.moveDownVirtualTask(index)}"
+                 rendered="#{index +1 != virtualTasks.size()}"
+                 id="moveDown_#{index}">
+    <h:graphicImage value="/icons/arrow_down.gif" />
+  </h:commandLink>
+
+</f:subview>

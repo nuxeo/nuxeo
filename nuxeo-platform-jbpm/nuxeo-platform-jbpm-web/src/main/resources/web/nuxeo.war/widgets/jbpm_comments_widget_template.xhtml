@@ -1,0 +1,25 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <table><c:forEach var="comment" items="#{field}">
+        <f:subview rendered="#{!empty comment}">
+          <nxu:methodResult name="userInfo"
+            value="#{userSuggestionActions.getPrefixedUserInfo(comment.actorId)}">
+            <tr><td>
+            <f:subview rendered="#{userInfo.type == 'USER_TYPE'}">
+              <h:outputText
+                value="#{nxu:userDisplayName(userInfo.id, userInfo.entry[userSchema].firstName, userInfo.entry[userSchema].lastName)}" />
+            </f:subview>
+            <f:subview rendered="#{userInfo.type != 'USER_TYPE'}">
+              <h:outputText value="#{comment.actorId}" />
+            </f:subview>
+            </td><td><h:outputText value=": #{comment.message}" /></td></tr>
+          </nxu:methodResult>
+        </f:subview>
+      </c:forEach></table>
+  </c:if>
+
+</f:subview>

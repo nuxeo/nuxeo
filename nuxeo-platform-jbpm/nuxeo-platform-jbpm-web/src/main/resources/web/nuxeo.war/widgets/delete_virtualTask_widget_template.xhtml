@@ -1,0 +1,13 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:commandLink action="#{jbpmActions.removeVirtualTask(index)}"
+                   onclick="return confirmDeleteTask();"
+                   id="removeParticipant_#{index}">
+      <h:graphicImage value="/icons/action_delete.gif" />
+    </h:commandLink>
+  </c:if>
+
+</f:subview>
