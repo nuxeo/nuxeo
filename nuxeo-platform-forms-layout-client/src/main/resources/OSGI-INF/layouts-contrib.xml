@@ -721,9 +721,6 @@
           <supportedTypes>
             <type>string</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>string</type>
-          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="any">
@@ -2199,9 +2196,6 @@
           <supportedTypes>
             <type>string</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>string</type>
-          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="any">
@@ -2425,9 +2419,6 @@
           <supportedTypes>
             <type>string</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>string</type>
-          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="view">
