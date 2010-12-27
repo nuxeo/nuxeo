@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.common</groupId>
   <artifactId>nuxeo-common</artifactId>
-  <version>1.6.0</version>
+  <version>1.6.0-CP01</version>
   <name>Nuxeo Common</name>
   <description>Nuxeo Common: utilities.</description>
   <url>http://www.nuxeo.org/</url>
