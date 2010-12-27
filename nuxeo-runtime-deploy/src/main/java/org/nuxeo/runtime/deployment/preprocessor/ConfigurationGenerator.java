@@ -102,11 +102,11 @@ public class ConfigurationGenerator {
     // Common default configuration file
     private File nuxeoDefaultConf;
 
-    private boolean isJBoss;
+    public boolean isJBoss;
 
-    private boolean isJetty;
+    public boolean isJetty;
 
-    private boolean isTomcat;
+    public boolean isTomcat;
 
     private ServerConfigurator serverConfigurator;
 
@@ -135,16 +135,35 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator() {
         String nuxeoHomePath = System.getProperty(NUXEO_HOME);
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
-        if (nuxeoHomePath != null && nuxeoConfPath != null) {
+        if (nuxeoHomePath != null) {
             nuxeoHome = new File(nuxeoHomePath);
-            nuxeoConf = new File(nuxeoConfPath);
-            nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
-                    + NUXEO_DEFAULT_CONF);
         } else {
-            nuxeoHome = new File(System.getProperty("user.dir")).getParentFile();
+            File userDir = new File(System.getProperty("user.dir"));
+            if ("bin".equalsIgnoreCase(userDir.getName())) {
+                nuxeoHome = userDir.getParentFile();
+            } else {
+                nuxeoHome = userDir;
+            }
+        }
+        if (nuxeoConfPath != null) {
+            nuxeoConf = new File(nuxeoConfPath);
+        } else {
             nuxeoConf = new File(nuxeoHome, "bin" + File.separator
                     + "nuxeo.conf");
         }
+        nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
+                + NUXEO_DEFAULT_CONF);
+        // File confCheck = new File(System.getProperty("user.home"),
+        // ".nuxeoconf");
+        // if (confCheck.exists()) {
+        // BufferedReader in = new BufferedReader(new FileReader(confCheck));
+        // String previousNuxeoConfPath=in.readLine();
+        // ...
+        // } else {
+        // log.info("This is the first time Nuxeo is started by user "
+        // + System.getProperty("user.name"));
+        // }
+        log.info("Nuxeo home:          " + nuxeoHome.getPath());
         log.info("Nuxeo configuration: " + nuxeoConf.getPath());
 
         // detect server type based on System properties
@@ -257,10 +276,20 @@ public class ConfigurationGenerator {
                             PARAM_FORCE_GENERATION, "false"));
 
             // Add data and log system properties
-            userConfig.put(Environment.NUXEO_DATA_DIR,
-                    System.getProperty(Environment.NUXEO_DATA_DIR));
-            userConfig.put(Environment.NUXEO_LOG_DIR,
-                    System.getProperty(Environment.NUXEO_LOG_DIR));
+            String dataDir = userConfig.getProperty(Environment.NUXEO_DATA_DIR);
+            if (dataDir == null) {
+                userConfig.setProperty(Environment.NUXEO_DATA_DIR,
+                        serverConfigurator.getDataDir().getPath());
+            } else {
+                serverConfigurator.setDataDir(dataDir);
+            }
+            String logDir = userConfig.getProperty(Environment.NUXEO_LOG_DIR);
+            if (logDir == null) {
+                userConfig.setProperty(Environment.NUXEO_LOG_DIR,
+                        serverConfigurator.getLogDir().getPath());
+            } else {
+                serverConfigurator.setLogDir(logDir);
+            }
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -489,5 +518,12 @@ public class ConfigurationGenerator {
         userConfig.put(PARAM_TEMPLATES_NODB, nodbTemplates);
         userConfig.put(PARAM_TEMPLATE_DBNAME, dbTemplate);
         return dbTemplate;
+    }
+
+    /**
+     * @return nuxeo.conf file used
+     */
+    public File getNuxeoConf() {
+        return nuxeoConf;
     }
 }
