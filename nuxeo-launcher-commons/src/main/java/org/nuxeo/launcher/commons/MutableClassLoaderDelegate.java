@@ -14,14 +14,14 @@
  * Contributors:
  *     bstefanescu, jcarsique
  */
-package org.nuxeo.osgi.application;
+package org.nuxeo.launcher.commons;
 
 import java.lang.reflect.Method;
 import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Use {@link org.nuxeo.launcher.commons.MutableClassLoaderDelegate}
+ * @since 5.4.1
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
@@ -29,7 +29,8 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
 
     protected Method addURL;
 
-    public MutableClassLoaderDelegate(ClassLoader cl) {
+    public MutableClassLoaderDelegate(ClassLoader cl)
+            throws IllegalArgumentException {
         this.cl = cl;
         Class<?> clazz = cl.getClass();
         do {
