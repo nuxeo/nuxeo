@@ -17,14 +17,18 @@ pushd %DIRNAME%..
 set NUXEO_HOME=%CD%
 popd
 
-set NXCTL=%NUXEO_HOME%\bin\nuxeoctl.exe
-if exist "%NXCTL%" goto FOUND_NXCTL
-echo Could not locate %NXCTL%. 
+set PARAM_NUXEO_HOME="-Dnuxeo.home=%NUXEO_HOME%"
+set PARAM_NUXEO_CONF="-Dnuxeo.home=%NUXEO_HOME%\bin\nuxeo.conf"
+set NUXEO_LAUNCHER=%NUXEO_HOME%\bin\nuxeo-launcher.jar
+if exist "%NUXEO_LAUNCHER%" goto FOUND_NUXEO_LAUNCHER
+echo Could not locate %NUXEO_LAUNCHER%. 
 echo Please check that you are in the bin directory when running this script.
 goto END
 
-:FOUND_NXCTL
+:FOUND_NUXEO_LAUNCHER
 
-"%NXCTL%" %*
+echo java "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
+java "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
 
 :END
+
