@@ -52,7 +52,7 @@ public class Environment {
     /**
      * The home directory.
      *
-     * @deprecated never defined
+     * @deprecated never defined; use {@link #NUXEO_HOME_DIR}
      */
     @Deprecated
     public static final String HOME_DIR = "org.nuxeo.app.home";
@@ -60,7 +60,7 @@ public class Environment {
     /**
      * The web root.
      *
-     * @deprecated never defined
+     * @deprecated never defined; use {@link #NUXEO_WEB_DIR}
      */
     @Deprecated
     public static final String WEB_DIR = "org.nuxeo.app.web";
@@ -68,7 +68,7 @@ public class Environment {
     /**
      * The config directory.
      *
-     * @deprecated never defined
+     * @deprecated never defined; use {@link #NUXEO_CONFIG_DIR}
      */
     @Deprecated
     public static final String CONFIG_DIR = "org.nuxeo.app.config";
@@ -76,7 +76,7 @@ public class Environment {
     /**
      * The data directory.
      *
-     * @deprecated never defined
+     * @deprecated never defined; use {@link #NUXEO_DATA_DIR}
      */
     @Deprecated
     public static final String DATA_DIR = "org.nuxeo.app.data";
@@ -84,7 +84,7 @@ public class Environment {
     /**
      * The log directory.
      *
-     * @deprecated never defined
+     * @deprecated never defined; use {@link #NUXEO_LOG_DIR}
      */
     @Deprecated
     public static final String LOG_DIR = "org.nuxeo.app.log";
