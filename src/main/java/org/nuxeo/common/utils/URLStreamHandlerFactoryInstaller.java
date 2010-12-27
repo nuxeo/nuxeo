@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java
@@ -60,6 +61,7 @@ public class URLStreamHandlerFactoryInstaller {
             }
             // install it
             factoryField.set(null, null);
+            resetURLStreamHandlers();
             URL.setURLStreamHandlerFactory(factoryStack);
         }
     }
@@ -95,6 +97,15 @@ public class URLStreamHandlerFactoryInstaller {
         }
         return null;
     }
+
+    private static void resetURLStreamHandlers() throws IllegalAccessException {
+		Field handlersField = getStaticField(URL.class, Hashtable.class);
+		if (handlersField != null) {
+			Hashtable<?,?> handlers = (Hashtable<?,?>) handlersField.get(null);
+			if (handlers != null)
+				handlers.clear();
+		}
+	}
 
     private static Object getURLStreamHandlerFactoryLock() throws IllegalAccessException {
         Object lock;
