@@ -2,6 +2,31 @@
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp.base">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_path_tree">
+      <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
+        <title>Path tree</title>
+        <description>
+          Widget allowing to select one or more values from a Tree constructed
+          from the navigation tree.
+
+          Set 'showAllDomains' property to true if you want to be able to select
+          a path from an other domain than the current one.
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_path_tree_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
     <layout name="user">
@@ -194,7 +219,7 @@
           <property name="userSuggestionSearchType">GROUP_TYPE</property>
         </properties>
       </widget>
-       <widget name="vgroups" type="template">
+      <widget name="vgroups" type="template">
         <labels>
           <label mode="any">label.userManager.userVirtualGroups</label>
         </labels>

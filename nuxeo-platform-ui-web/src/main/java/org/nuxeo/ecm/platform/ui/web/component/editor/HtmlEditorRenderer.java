@@ -51,7 +51,8 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     private static Map<String, String> toolbarPluginsOptions;
 
     @Override
-    public void encodeBegin(FacesContext context, UIComponent component) throws IOException {
+    public void encodeBegin(FacesContext context, UIComponent component)
+            throws IOException {
         if (!component.isRendered()) {
             return;
         }
@@ -68,20 +69,18 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.write(" ");
         writer.endElement("script");
 
-        //Map<String, String> options = new HashMap<String, String>();
         String editorSelector = editorComp.getEditorSelector();
-        //options.put("mode", "textareas");
-        //options.put("language", locale.getLanguage());
-        //options.put("editor_selector", editorSelector);
-        //options.put("width", editorComp.getWidth());
-        //options.put("height", editorComp.getHeight());
 
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-        writer.writeText(String.format("var lang = \"%s\";", locale.getLanguage()), null);
-        writer.writeText(String.format("var editorSelector = \"%s\";", editorSelector), null);
-        writer.writeText(String.format("var width = \"%s\";", editorComp.getWidth()), null);
-        writer.writeText(String.format("var height = \"%s\";", editorComp.getHeight()), null);
+        writer.writeText(String.format("var lang = \"%s\";",
+                locale.getLanguage()), null);
+        writer.writeText(String.format("var editorSelector = \"%s\";",
+                editorSelector), null);
+        writer.writeText(String.format("var width = \"%s\";",
+                editorComp.getWidth()), null);
+        writer.writeText(String.format("var height = \"%s\";",
+                editorComp.getHeight()), null);
 
         // plugins registration
         if (pluginsOptions == null) {
@@ -91,19 +90,14 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                     pluginService.getFormattedPluginsNames());
             toolbarPluginsOptions = pluginService.getToolbarsButtons();
         }
-        //options.putAll(pluginsOptions);
-        writer.writeText(String.format("var plugins = \"%s\";", pluginsOptions.get("plugins")), null);
+        writer.writeText(String.format("var plugins = \"%s\";",
+                pluginsOptions.get("plugins")), null);
         writer.writeText(generateToolbarOptions(toolbarPluginsOptions), null);
         writer.endElement("script");
 
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
 
-        /*
-        String tinyMCESetup = String.format("tinyMCE.init(%s);",
-                generateOptions(options));
-        writer.writeText(tinyMCESetup, null);
-        */
         writer.writeAttribute("src", "tiny_mce/tiny_mce_init.js", null);
         writer.write(" ");
         writer.endElement("script");
@@ -113,9 +107,11 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.startElement("textarea", editorComp);
         writer.writeAttribute("id", clientId, null);
         writer.writeAttribute("name", clientId, null);
-        if (editorComp.getDisableHtmlInit()) {
-            writer.writeAttribute("class", editorSelector+",disableMCEInit", null);
+        if (Boolean.TRUE.equals(editorComp.getDisableHtmlInit())) {
+            writer.writeAttribute("class", editorSelector + ",disableMCEInit",
+                    null);
         } else {
+
             writer.writeAttribute("class", editorSelector, null);
         }
         writer.writeAttribute("rows", editorComp.getRows(), null);
@@ -156,7 +152,8 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         StringBuilder res = new StringBuilder();
         res.append("var toolbarOptions = new Array();");
         for (Map.Entry<String, String> option : options.entrySet()) {
-            res.append("toolbarOptions['" + option.getKey() + "'] = '" + option.getValue() + "';");
+            res.append("toolbarOptions['" + option.getKey() + "'] = '"
+                    + option.getValue() + "';");
         }
         return res.toString();
     }

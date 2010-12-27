@@ -803,12 +803,12 @@
       </description>
     </attribute>
     <attribute>
-      <name>triggerLabel</name>
+      <name>triggerImg</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>
         Image path to use for the trigger. Defaults to
-        "jscalendar/calendar.png".
+        "jscalendar/calendar.png". Available since 5.4.
       </description>
     </attribute>
     <attribute>
@@ -919,6 +919,33 @@
         The class to use to identify text areas to turn into html editors.
         Defaults to "mceEditor". See the editor_selector option in tiny_mce
         (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+      </description>
+    </attribute>
+    <attribute>
+      <name>cols</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The cols attribute sets the number of columns to display. Available
+        since 5.3.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>rows</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        The rows attribute sets the number of rows to display. Available since
+        5.3.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>disableHtmlInit</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        If set to true, the default display will be the text display (not html
+        editor). Available since 5.3.1.
       </description>
     </attribute>
     <example>

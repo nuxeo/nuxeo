@@ -8,6 +8,8 @@
     @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
+  <!-- TODO: document javascript onclick, onchange, etc... properties -->
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -46,15 +48,48 @@
             <layout name="text_widget_type_properties_any">
               <rows>
                 <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
                   <widget>styleClass</widget>
                 </row>
+                <row>
+                  <widget>title</widget>
+                </row>
               </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
               <widget name="styleClass" type="text">
                 <labels>
                   <label mode="any">Style class</label>
                 </labels>
                 <fields>
                   <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
                 </fields>
               </widget>
             </layout>
@@ -88,15 +123,130 @@
             <layout name="text_widget_type_properties_edit">
               <rows>
                 <row>
+                  <widget>accesskey</widget>
+                </row>
+                <row>
+                  <widget>alt</widget>
+                </row>
+                <row>
+                  <widget>dir</widget>
+                </row>
+                <row>
+                  <widget>disabled</widget>
+                </row>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>lang</widget>
+                </row>
+                <row>
+                  <widget>maxlength</widget>
+                </row>
+                <row>
                   <widget>required</widget>
                 </row>
+                <row>
+                  <widget>size</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
               </rows>
+              <widget name="accesskey" type="text">
+                <labels>
+                  <label mode="any">Access key</label>
+                </labels>
+                <fields>
+                  <field>accesskey</field>
+                </fields>
+              </widget>
+              <widget name="alt" type="text">
+                <labels>
+                  <label mode="any">Alt</label>
+                </labels>
+                <fields>
+                  <field>alt</field>
+                </fields>
+              </widget>
+              <widget name="dir" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Dir</label>
+                </labels>
+                <fields>
+                  <field>dir</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="" itemValue="" />
+                  <option itemLabel="Left to right" itemValue="LTR" />
+                  <option itemLabel="Right to left" itemValue="RTL" />
+                </selectOptions>
+              </widget>
+              <widget name="disabled" type="checkbox">
+                <labels>
+                  <label mode="any">Disabled</label>
+                </labels>
+                <fields>
+                  <field>disabled</field>
+                </fields>
+              </widget>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="lang" type="text">
+                <labels>
+                  <label mode="any">Lang</label>
+                </labels>
+                <fields>
+                  <field>lang</field>
+                </fields>
+              </widget>
+              <widget name="maxlength" type="int">
+                <labels>
+                  <label mode="any">Max length</label>
+                </labels>
+                <fields>
+                  <field>maxlength</field>
+                </fields>
+              </widget>
               <widget name="required" type="checkbox">
                 <labels>
                   <label mode="any">Required</label>
                 </labels>
                 <fields>
                   <field>required</field>
+                </fields>
+              </widget>
+              <widget name="size" type="int">
+                <labels>
+                  <label mode="any">Size</label>
+                </labels>
+                <fields>
+                  <field>size</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
                 </fields>
               </widget>
             </layout>
@@ -137,6 +287,190 @@
             <type>integer</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="int_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+              </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="int_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>accesskey</widget>
+                </row>
+                <row>
+                  <widget>alt</widget>
+                </row>
+                <row>
+                  <widget>dir</widget>
+                </row>
+                <row>
+                  <widget>disabled</widget>
+                </row>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>lang</widget>
+                </row>
+                <row>
+                  <widget>maxlength</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>size</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
+              </rows>
+              <widget name="accesskey" type="text">
+                <labels>
+                  <label mode="any">Access key</label>
+                </labels>
+                <fields>
+                  <field>accesskey</field>
+                </fields>
+              </widget>
+              <widget name="alt" type="text">
+                <labels>
+                  <label mode="any">Alt</label>
+                </labels>
+                <fields>
+                  <field>alt</field>
+                </fields>
+              </widget>
+              <widget name="dir" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Dir</label>
+                </labels>
+                <fields>
+                  <field>dir</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="" itemValue="" />
+                  <option itemLabel="Left to right" itemValue="LTR" />
+                  <option itemLabel="Right to left" itemValue="RTL" />
+                </selectOptions>
+              </widget>
+              <widget name="disabled" type="checkbox">
+                <labels>
+                  <label mode="any">Disabled</label>
+                </labels>
+                <fields>
+                  <field>disabled</field>
+                </fields>
+              </widget>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="lang" type="text">
+                <labels>
+                  <label mode="any">Lang</label>
+                </labels>
+                <fields>
+                  <field>lang</field>
+                </fields>
+              </widget>
+              <widget name="maxlength" type="int">
+                <labels>
+                  <label mode="any">Max length</label>
+                </labels>
+                <fields>
+                  <field>maxlength</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="size" type="int">
+                <labels>
+                  <label mode="any">Size</label>
+                </labels>
+                <fields>
+                  <field>size</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.IntWidgetTypeHandler
@@ -157,6 +491,205 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="secret_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>accesskey</widget>
+                </row>
+                <row>
+                  <widget>alt</widget>
+                </row>
+                <row>
+                  <widget>dir</widget>
+                </row>
+                <row>
+                  <widget>disabled</widget>
+                </row>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>lang</widget>
+                </row>
+                <row>
+                  <widget>maxlength</widget>
+                </row>
+                <row>
+                  <widget>redisplay</widget>
+                </row>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+                <row>
+                  <widget>size</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
+              </rows>
+              <widget name="accesskey" type="text">
+                <labels>
+                  <label mode="any">Access key</label>
+                </labels>
+                <fields>
+                  <field>accesskey</field>
+                </fields>
+              </widget>
+              <widget name="alt" type="text">
+                <labels>
+                  <label mode="any">Alt</label>
+                </labels>
+                <fields>
+                  <field>alt</field>
+                </fields>
+              </widget>
+              <widget name="dir" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Dir</label>
+                </labels>
+                <fields>
+                  <field>dir</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="" itemValue="" />
+                  <option itemLabel="Left to right" itemValue="LTR" />
+                  <option itemLabel="Right to left" itemValue="RTL" />
+                </selectOptions>
+              </widget>
+              <widget name="disabled" type="checkbox">
+                <labels>
+                  <label mode="any">Disabled</label>
+                </labels>
+                <fields>
+                  <field>disabled</field>
+                </fields>
+              </widget>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="lang" type="text">
+                <labels>
+                  <label mode="any">Lang</label>
+                </labels>
+                <fields>
+                  <field>lang</field>
+                </fields>
+              </widget>
+              <widget name="maxlength" type="int">
+                <labels>
+                  <label mode="any">Max length</label>
+                </labels>
+                <fields>
+                  <field>maxlength</field>
+                </fields>
+              </widget>
+              <widget name="redisplay" type="checkbox">
+                <labels>
+                  <label mode="any">Redisplay</label>
+                </labels>
+                <fields>
+                  <field>redisplay</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="size" type="int">
+                <labels>
+                  <label mode="any">Size</label>
+                </labels>
+                <fields>
+                  <field>size</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SecretWidgetTypeHandler
@@ -192,6 +725,226 @@
             <type>string</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="textarea_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+              </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="textarea_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>escape</widget>
+                </row>
+              </rows>
+              <widget name="escape" type="checkbox">
+                <labels>
+                  <label mode="any">Escape</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to false, the held value will not be escaped. For
+                    instance if it contains HTML tags, they will be rendered as
+                    part of the rendered HTML page instead of being rendered as
+                    text content. Defaults to true.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>escape</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="textarea_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>accesskey</widget>
+                </row>
+                <row>
+                  <widget>cols</widget>
+                </row>
+                <row>
+                  <widget>rows</widget>
+                </row>
+                <row>
+                  <widget>dir</widget>
+                </row>
+                <row>
+                  <widget>disabled</widget>
+                </row>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>lang</widget>
+                </row>
+                <row>
+                  <widget>maxlength</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>size</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
+              </rows>
+              <widget name="accesskey" type="text">
+                <labels>
+                  <label mode="any">Access key</label>
+                </labels>
+                <fields>
+                  <field>accesskey</field>
+                </fields>
+              </widget>
+              <widget name="cols" type="int">
+                <labels>
+                  <label mode="any">Number of columns</label>
+                </labels>
+                <fields>
+                  <field>cols</field>
+                </fields>
+              </widget>
+              <widget name="rows" type="int">
+                <labels>
+                  <label mode="any">Number of rows</label>
+                </labels>
+                <fields>
+                  <field>rows</field>
+                </fields>
+              </widget>
+              <widget name="dir" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Dir</label>
+                </labels>
+                <fields>
+                  <field>dir</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="" itemValue="" />
+                  <option itemLabel="Left to right" itemValue="LTR" />
+                  <option itemLabel="Right to left" itemValue="RTL" />
+                </selectOptions>
+              </widget>
+              <widget name="disabled" type="checkbox">
+                <labels>
+                  <label mode="any">Disabled</label>
+                </labels>
+                <fields>
+                  <field>disabled</field>
+                </fields>
+              </widget>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="lang" type="text">
+                <labels>
+                  <label mode="any">Lang</label>
+                </labels>
+                <fields>
+                  <field>lang</field>
+                </fields>
+              </widget>
+              <widget name="maxlength" type="int">
+                <labels>
+                  <label mode="any">Max length</label>
+                </labels>
+                <fields>
+                  <field>maxlength</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="size" type="int">
+                <labels>
+                  <label mode="any">Size</label>
+                </labels>
+                <fields>
+                  <field>size</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TextareaWidgetTypeHandler
@@ -228,6 +981,219 @@
             <type>date</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="datetime_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>pattern</widget>
+                </row>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>timeZone</widget>
+                </row>
+              </rows>
+              <widget name="pattern" type="text">
+                <labels>
+                  <label mode="any">Pattern/format</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    String format for the date and time, as described by the
+                    java.text.SimpleDateFormat class, and as used in the
+                    standard DateTimeConverter. Default value is "dd/MM/yyyy
+                    HH:mm". Sample value: "#{nxu:basicDateFormater()}" or
+                    "#{nxu:basicDateAndTimeFormater()}".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>pattern</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="timeZone" type="text">
+                <labels>
+                  <label mode="any">Time zone</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    String timeZone ID. The server time zone is used if not set.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>timeZone</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="datetime_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>format</widget>
+                </row>
+                <row>
+                  <widget>locale</widget>
+                </row>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>showsTime</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>timeZone</widget>
+                </row>
+                <row>
+                  <widget>triggerImg</widget>
+                </row>
+                <row>
+                  <widget>triggerLabel</widget>
+                </row>
+                <row>
+                  <widget>triggerStyleClass</widget>
+                </row>
+              </rows>
+              <widget name="format" type="text">
+                <labels>
+                  <label mode="any">Pattern/format</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    String format for the date and time, as described by the
+                    java.text.SimpleDateFormat class, and as used in the
+                    standard DateTimeConverter. Default value is "dd/MM/yyyy
+                    HH:mm". Sample value: "#{nxu:basicDateFormater()}" or
+                    "#{nxu:basicDateAndTimeFormater()}".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>format</field>
+                </fields>
+              </widget>
+              <widget name="locale" type="text">
+                <labels>
+                  <label mode="any">Locale</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    String representing the locale to use for the calendar.
+                    Current locale is used if not set.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>locale</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="showsTime" type="checkbox">
+                <labels>
+                  <label mode="any">Shows time</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Flag indicating that the calendar must show a time choice.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showsTime</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="timeZone" type="text">
+                <labels>
+                  <label mode="any">Time zone</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    String timeZone ID. The server time zone is used if not set.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>timeZone</field>
+                </fields>
+              </widget>
+              <widget name="triggerImg" type="text">
+                <labels>
+                  <label mode="any">Trigger image</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Image path to use for the trigger. Defaults to
+                    "jscalendar/calendar.png". Available since 5.4.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>triggerImg</field>
+                </fields>
+              </widget>
+              <widget name="triggerLabel" type="text">
+                <labels>
+                  <label mode="any">Trigger label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Label to display on the trigger image. Defaults to "...".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>triggerLabel</field>
+                </fields>
+              </widget>
+              <widget name="triggerStyleClass" type="text">
+                <labels>
+                  <label mode="any">Trigger style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class to set on the trigger button tag, defaults to
+                    'calendarTrigger'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>triggerStyleClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DateTimeWidgetTypeHandler
@@ -253,8 +1219,34 @@
           &lt;/widgetType&gt;
         </description>
         <categories>
-          <category>document</category>
+          <category>dev</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="template_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="template" type="text">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -290,6 +1282,76 @@
             <type>blob</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="file_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>downloadLabel</widget>
+                </row>
+                <row>
+                  <widget>iconRendered</widget>
+                </row>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+              </rows>
+              <widget name="downloadLabel" type="text">
+                <labels>
+                  <label mode="any">Download label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Value binding that will be used as the download link value,
+                    and will attempt to be translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>downloadLabel</field>
+                </fields>
+              </widget>
+              <widget name="iconRendered" type="checkbox">
+                <labels>
+                  <label mode="any">Icon rendered</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean flag indicating whether or not the file icon should
+                    be rendered. Defaults to true.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>iconRendered</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="file_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>required</widget>
+                </row>
+              </rows>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.FileWidgetTypeHandler
@@ -322,6 +1384,204 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="htmltext_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+              </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="htmltext_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>disableHtmlInit</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>cols</widget>
+                </row>
+                <row>
+                  <widget>rows</widget>
+                </row>
+                <row>
+                  <widget>editorSelector</widget>
+                </row>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+              </rows>
+              <widget name="disableHtmlInit" type="checkbox">
+                <labels>
+                  <label mode="any">Disable HTML init</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the default display will be the text display
+                    (not html editor). Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>disableHtmlInit</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea width. Defaults to "640".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="int">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea height. Defaults to "400".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+              <widget name="cols" type="int">
+                <labels>
+                  <label mode="any">Number of columns</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The cols attribute sets the number of columns to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cols</field>
+                </fields>
+              </widget>
+              <widget name="rows" type="int">
+                <labels>
+                  <label mode="any">Number of rows</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The rows attribute sets the number of rows to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>rows</field>
+                </fields>
+              </widget>
+              <widget name="editorSelector" type="text">
+                <labels>
+                  <label mode="any">Editor selector</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The class to use to identify text areas to turn into html
+                    editors. Defaults to "mceEditor". See the editor_selector
+                    option in tiny_mce
+                    (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>editorSelector</field>
+                </fields>
+              </widget>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HtmlTextWidgetTypeHandler
@@ -355,6 +1615,135 @@
             <type>string</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="selectOneDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>directoryName</widget>
+                </row>
+                <row>
+                  <widget>localize</widget>
+                </row>
+                <row>
+                  <widget>displayIdAndLabel</widget>
+                </row>
+              </rows>
+              <widget name="directoryName" type="selectOneDirectory">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="directoryName">vocabularies</property>
+                </properties>
+                <properties widgetMode="edit">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="localize" type="checkbox">
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+              </widget>
+              <widget name="displayIdAndLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Display id and label</label>
+                </labels>
+                <fields>
+                  <field>displayIdAndLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectOneDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>cssStyle</widget>
+                </row>
+                <row>
+                  <widget>cssStyleClass</widget>
+                </row>
+                <row>
+                  <widget>displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget>notDisplayDefaultOption</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>sortCriteria</widget>
+                </row>
+              </rows>
+              <widget name="cssStyle" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>cssStyle</field>
+                </fields>
+              </widget>
+              <widget name="cssStyleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>cssStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="displayObsoleteEntries" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entries</label>
+                </labels>
+                <fields>
+                  <field>displayObsoleteEntries</field>
+                </fields>
+              </widget>
+              <widget name="notDisplayDefaultOption" type="checkbox">
+                <labels>
+                  <label mode="any">Do not display the default option</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    True if there should not be displayed a "Please select a
+                    value" option
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>notDisplayDefaultOption</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="sortCriteria" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Sort criteria</label>
+                </labels>
+                <fields>
+                  <field>sortCriteria</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Label" itemValue="label" />
+                  <option itemLabel="Id" itemValue="id" />
+                </selectOptions>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectOneWidgetTypeHandler
@@ -386,10 +1775,136 @@
           <supportedTypes>
             <type>string</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>string</type>
-          </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="selectManyDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>directoryName</widget>
+                </row>
+                <row>
+                  <widget>localize</widget>
+                </row>
+                <row>
+                  <widget>displayIdAndLabel</widget>
+                </row>
+              </rows>
+              <widget name="directoryName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Vocabulary</label>
+                </labels>
+                <fields>
+                  <field>directoryName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">vocabularies</property>
+                </properties>
+                <properties widgetMode="edit">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="localize" type="checkbox">
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+              </widget>
+              <widget name="displayIdAndLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Display id and label</label>
+                </labels>
+                <fields>
+                  <field>displayIdAndLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="selectManyDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>cssStyle</widget>
+                </row>
+                <row>
+                  <widget>cssStyleClass</widget>
+                </row>
+                <row>
+                  <widget>displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget>notDisplayDefaultOption</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>sortCriteria</widget>
+                </row>
+              </rows>
+              <widget name="cssStyle" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>cssStyle</field>
+                </fields>
+              </widget>
+              <widget name="cssStyleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>cssStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="displayObsoleteEntries" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entries</label>
+                </labels>
+                <fields>
+                  <field>displayObsoleteEntries</field>
+                </fields>
+              </widget>
+              <widget name="notDisplayDefaultOption" type="checkbox">
+                <labels>
+                  <label mode="any">Do not display the default option</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    True if there should not be displayed a "Please select a
+                    value" option
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>notDisplayDefaultOption</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="sortCriteria" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Sort criteria</label>
+                </labels>
+                <fields>
+                  <field>sortCriteria</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Label" itemValue="label" />
+                  <option itemLabel="Id" itemValue="id" />
+                </selectOptions>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.DirectorySelectManyWidgetTypeHandler
@@ -430,8 +1945,7 @@
             <type>boolean</type>
           </supportedTypes>
           <defaultTypes>
-            <!-- let selectManyDirectory handle list of strings by default -->
-            <!--<type>string</type>-->
+            <type>string</type>
             <type>path</type>
             <type>date</type>
             <type>blob</type>
@@ -440,6 +1954,36 @@
             <type>boolean</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="selectManyDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>diff</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+              </rows>
+              <widget name="diff" type="checkbox">
+                <labels>
+                  <label mode="any">Diff</label>
+                </labels>
+                <fields>
+                  <field>diff</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -475,6 +2019,157 @@
             <type>boolean</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="checkbox_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+              </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="checkbox_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>accesskey</widget>
+                </row>
+                <row>
+                  <widget>dir</widget>
+                </row>
+                <row>
+                  <widget>disabled</widget>
+                </row>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>lang</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
+              </rows>
+              <widget name="accesskey" type="text">
+                <labels>
+                  <label mode="any">Access key</label>
+                </labels>
+                <fields>
+                  <field>accesskey</field>
+                </fields>
+              </widget>
+              <widget name="dir" type="selectOneListbox">
+                <labels>
+                  <label mode="any">Dir</label>
+                </labels>
+                <fields>
+                  <field>dir</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="" itemValue="" />
+                  <option itemLabel="Left to right" itemValue="LTR" />
+                  <option itemLabel="Right to left" itemValue="RTL" />
+                </selectOptions>
+              </widget>
+              <widget name="disabled" type="checkbox">
+                <labels>
+                  <label mode="any">Disabled</label>
+                </labels>
+                <fields>
+                  <field>disabled</field>
+                </fields>
+              </widget>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="lang" type="text">
+                <labels>
+                  <label mode="any">Lang</label>
+                </labels>
+                <fields>
+                  <field>lang</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.CheckboxWidgetTypeHandler
@@ -499,7 +2194,7 @@
           <mode>view</mode>
         </supportedModes>
         <fields>
-          <list>true</list>
+          <list>false</list>
           <complex>false</complex>
           <supportedTypes>
             <type>string</type>
@@ -508,6 +2203,114 @@
             <type>string</type>
           </defaultTypes>
         </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="hidden_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>rendered</widget>
+                </row>
+              </rows>
+              <widget name="rendered" type="checkbox">
+                <labels>
+                  <label mode="any">Rendered</label>
+                </labels>
+                <fields>
+                  <field>rendered</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="view">
+            <layout name="hidden_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>style</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>title</widget>
+                </row>
+              </rows>
+              <widget name="style" type="text">
+                <labels>
+                  <label mode="any">Style</label>
+                </labels>
+                <fields>
+                  <field>style</field>
+                </fields>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="title" type="text">
+                <labels>
+                  <label mode="any">Title</label>
+                </labels>
+                <fields>
+                  <field>title</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="hidden_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>immediate</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
+                </row>
+                <row>
+                  <widget>validator</widget>
+                </row>
+                <row>
+                  <widget>valueChangeListener</widget>
+                </row>
+              </rows>
+              <widget name="immediate" type="checkbox">
+                <labels>
+                  <label mode="any">Immediate</label>
+                </labels>
+                <fields>
+                  <field>immediate</field>
+                </fields>
+              </widget>
+              <widget name="required" type="checkbox">
+                <labels>
+                  <label mode="any">Required</label>
+                </labels>
+                <fields>
+                  <field>required</field>
+                </fields>
+              </widget>
+              <widget name="validator" type="text">
+                <labels>
+                  <label mode="any">Validator</label>
+                </labels>
+                <fields>
+                  <field>validator</field>
+                </fields>
+              </widget>
+              <widget name="valueChangeListener" type="text">
+                <labels>
+                  <label mode="any">Value change listener</label>
+                </labels>
+                <fields>
+                  <field>valueChangeListener</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.HiddenWidgetTypeHandler
@@ -516,6 +2319,7 @@
 
     <widgetType name="layout">
       <configuration>
+        <sinceVersion>5.4.0</sinceVersion>
         <title>Layout</title>
         <description>
           The layout widget renders a layout.
@@ -524,8 +2328,73 @@
           &lt;nxl:layout /&gt; tag in all modes.
         </description>
         <categories>
-          <category>document</category>
+          <category>dev</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="hidden_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>name</widget>
+                </row>
+                <row>
+                  <widget>mode</widget>
+                </row>
+                <row>
+                  <widget>value</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="name" type="text">
+                <labels>
+                  <label mode="any">Layout name</label>
+                </labels>
+                <fields>
+                  <field>name</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="mode" type="text">
+                <labels>
+                  <label mode="any">Layout mode</label>
+                </labels>
+                <fields>
+                  <field>mode</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="value" type="text">
+                <labels>
+                  <label mode="any">Value</label>
+                </labels>
+                <fields>
+                  <field>value</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="template" type="text">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.LayoutWidgetTypeHandler
@@ -534,6 +2403,7 @@
 
     <widgetType name="richtext_with_mimetype">
       <configuration>
+        <since>5.3.1</since>
         <title>Richtext</title>
         <description>
           This widget displays an html text editor or a textarea in create or
@@ -545,6 +2415,141 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>string</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="richtext_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>cssClass</widget>
+                </row>
+                <row>
+                  <widget>translatedHtml</widget>
+                </row>
+              </rows>
+              <widget name="cssClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <fields>
+                  <field>cssClass</field>
+                </fields>
+              </widget>
+              <widget name="translatedHtml" type="text">
+                <labels>
+                  <label mode="any">Translate HTML (?)</label>
+                </labels>
+                <fields>
+                  <field>translatedHtml</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="richtext_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>height</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>cols</widget>
+                </row>
+                <row>
+                  <widget>rows</widget>
+                </row>
+                <row>
+                  <widget>editorSelector</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea width. Defaults to "640".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="int">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The textarea height. Defaults to "400".
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+              <widget name="cols" type="int">
+                <labels>
+                  <label mode="any">Number of columns</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The cols attribute sets the number of columns to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cols</field>
+                </fields>
+              </widget>
+              <widget name="rows" type="int">
+                <labels>
+                  <label mode="any">Number of rows</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The rows attribute sets the number of rows to display.
+                    Available since 5.3.1.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>rows</field>
+                </fields>
+              </widget>
+              <widget name="editorSelector" type="text">
+                <labels>
+                  <label mode="any">Editor selector</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The class to use to identify text areas to turn into html
+                    editors. Defaults to "mceEditor". See the editor_selector
+                    option in tiny_mce
+                    (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>editorSelector</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -556,6 +2561,7 @@
 
     <widgetType name="duration">
       <configuration>
+        <since>5.3.2</since>
         <title>Duration</title>
         <description>
           This widget displays a i18n formatted duration of a field holding a
@@ -565,28 +2571,25 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>int</type>
+            <type>double</type>
+          </supportedTypes>
+        </fields>
+        <!-- no props -->
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /widgets/duration_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="select_path_tree">
-      <documentation>
-        Widget allowing to select one or more values from a Tree constructed
-        from the navigation tree.
-
-        Set 'showAllDomains' property to true if you want to be able to select a
-        path from an other domain than the current one.
-      </documentation>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/select_path_tree_widget_template.xhtml
       </property>
     </widgetType>
 
