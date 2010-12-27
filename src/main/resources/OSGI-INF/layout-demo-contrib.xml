@@ -23,6 +23,11 @@
       <label>Textarea widget</label>
       <viewId>textareaWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="textareaWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-textarea-widget.xml" />
@@ -33,6 +38,11 @@
       <label>Int widget</label>
       <viewId>intWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="intWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
@@ -43,6 +53,11 @@
       <label>Secret widget</label>
       <viewId>secretWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="secretWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-secret-widget.xml" />
@@ -53,6 +68,11 @@
       <label>Datetime widget</label>
       <viewId>datetimeWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="datetimeWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-datetime-widget.xml" />
@@ -64,6 +84,11 @@
       <label>File widget</label>
       <viewId>fileWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:fileField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="fileWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
@@ -74,6 +99,11 @@
       <label>Htmltext widget</label>
       <viewId>htmltextWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="htmltextWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-htmltext-widget.xml" />
@@ -84,6 +114,11 @@
       <label>SelectOneDirectory widget</label>
       <viewId>selectOneDirectoryWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="selectOneDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectOneDirectory-widget.xml" />
@@ -94,6 +129,11 @@
       <label>SelectManyDirectory widget</label>
       <viewId>selectManyDirectoryWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringArrayField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="selectManyDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-selectManyDirectory-widget.xml" />
@@ -104,6 +144,11 @@
       <label>Checkbox widget</label>
       <viewId>checkboxWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="checkboxWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-checkbox-widget.xml" />

@@ -97,6 +97,8 @@ public class PreviewLayoutDefinition implements Serializable {
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
+            // rendered by default
+            properties.put("rendered", Boolean.TRUE);
         }
         return properties;
     }

@@ -82,4 +82,11 @@
     </copy>
   </target>
 
+  <target name="webtomcat" description="Copy web files to a live Tomcat"
+    depends="setproperties">
+    <copy todir="/opt/tomcat/nxserver/nuxeo.war" failonerror="false">
+      <fileset dir="${basedir}/src/main/resources/web/nuxeo.war/" />
+    </copy>
+  </target>
+
 </project>
