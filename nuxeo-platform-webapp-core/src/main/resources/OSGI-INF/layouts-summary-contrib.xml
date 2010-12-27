@@ -13,6 +13,7 @@
 
     <widgetType name="summary_current_document_actions">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Actions (lock, restore version)</title>
         <description>
           This widgets displays the actions on the current document (lock/unlock
@@ -38,6 +39,7 @@
 
     <widgetType name="summary_current_document_description">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Description</title>
         <description>
           This widgets displays the description of the currentDocument.
@@ -62,6 +64,7 @@
 
     <widgetType name="summary_current_document_files">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Files</title>
         <description>
           This widgets displays the files held by the currentDocument
@@ -94,6 +97,7 @@
 
     <widgetType name="summary_current_document_view">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>View layout</title>
         <description>
           This widgets displays the view layouts of the currentDocument
@@ -119,6 +123,7 @@
 
     <widgetType name="summary_current_document_dublincore">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Dublincore</title>
         <description>
           This widgets displays the dublincore layout of the currentDocument
@@ -143,6 +148,7 @@
 
     <widgetType name="summary_current_document_tagging">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Tagging</title>
         <description>
           This widgets displays the tags for the currentDocument and allow to
@@ -163,6 +169,7 @@
 
     <widgetType name="summary_current_document_relations">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Relations</title>
         <description>
           This widgets displays the in/out relations for the currentDocument.
@@ -183,6 +190,7 @@
 
     <widgetType name="summary_current_document_comments">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Comments</title>
         <description>
           This widgets displays the comments for the currentDocument. This
@@ -203,6 +211,7 @@
 
     <widgetType name="summary_current_document_publications">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Publications</title>
         <description>
           This widgets displays the publications of the currentDocument. This
@@ -223,6 +232,7 @@
 
     <widgetType name="summary_current_document_lc_and_version">
       <configuration>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Life cycle state and version</title>
         <description>
           This widgets displays the life-cycle state and version of the
@@ -252,6 +262,7 @@
 
     <widgetType name="summary_current_document_single_tasks">
       <configuration>
+        <sinceVersion>5.3.2</sinceVersion>
         <title>Tasks</title>
         <description>
           This widgets displays the single tasks (out of a process instance)
