@@ -255,8 +255,7 @@ if [ "$jboss" = "true" ]; then
   NUXEO_ENDORSED="$NUXEO_HOME/lib/endorsed"
   NUXEO_BOOTJAR_PATH="$NUXEO_EAR/lib/*:$NUXEO_EAR/bundles/*:$NUXEO_HOME/server/default/lib/*:$NUXEO_HOME/common/lib/*:$NUXEO_HOME/lib/*"
   NUXEO_CONFIG_CLASSPATH="$CLASSPATH:$NUXEO_BOOTJAR_PATH"
-  LOG4J_CONF="file:$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
-  LOG4J_CONF_WIN="$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
+  LOG4J_CONF="$NUXEO_HOME/server/default/conf/jboss-log4j.xml"
 
 #
 # TOMCAT
@@ -273,8 +272,7 @@ elif [ "$tomcat" = "true" ]; then
   NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
   NUXEO_CONFIG_CLASSPATH="$CLASSPATH:$NUXEO_BOOTJAR_PATH"
   TMP_DIR=${TMP_DIR:-$NUXEO_HOME/temp}
-  LOG4J_CONF="file:$NUXEO_HOME/lib/log4j.xml"
-  LOG4J_CONF_WIN="$NUXEO_HOME/lib/log4j.xml"
+  LOG4J_CONF="$NUXEO_HOME/lib/log4j.xml"
 
 #
 # JETTY
@@ -292,8 +290,7 @@ elif [ "$jetty" = "true" ]; then
   JAVA_OPTS="$JAVA_OPTS -Dsun.lang.ClassLoader.allowArraySyntax=true"
   JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=$DATA_DIR/derby"
   JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.launcher.libdirs=lib"
-  LOG4J_CONF="file:$NUXEO_HOME/config/log4j.xml"
-  LOG4J_CONF_WIN="$NUXEO_HOME/config/log4j.xml"
+  LOG4J_CONF="$NUXEO_HOME/config/log4j.xml"
 
 #
 # Oops
@@ -323,11 +320,13 @@ if [ "$cygwin" = "true" ]; then
   [ -n "$TMP_DIR" ] && TMP_DIR=`cygpath --absolute --windows "$TMP_DIR"`
   [ -n "$DATA_DIR" ] && DATA_DIR=`cygpath --absolute --windows "$DATA_DIR"`
   LOG_DIR=`cygpath --absolute --windows "$LOG_DIR"`
-  LOG4J_CONF="file:///"`cygpath --absolute --mixed "$LOG4J_CONF_WIN"`
+  LOG4J_CONF="file:///"`cygpath --absolute --mixed "$LOG4J_CONF"`
 
   [ "$jboss" = "true" ] && NUXEO_ENDORSED=`cygpath --absolute --windows "$NUXEO_ENDORSED"`
   [ "$tomcat" = "true" ] && CATALINA_TEMP=`cygpath --absolute --windows "$CATALINA_TEMP"`
   [ "$jetty" = "true" ] && NUXEO_BUNDLES=`cygpath --path --windows "$NUXEO_BUNDLES"`
+else
+  LOG4J_CONF="file:$LOG4J_CONF"
 fi
 
 # Check old paths (NXP-5370, NXP-5460)

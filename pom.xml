@@ -23,6 +23,7 @@
   </properties>
 
   <modules>
+    <module>nuxeo-launcher</module>
     <module>nuxeo-distribution-resources</module>
   </modules>
 
@@ -223,6 +224,12 @@
         <artifactId>nuxeo-windows-startup</artifactId>
         <version>${nuxeo.windows.version}</version>
         <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-launcher</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <classifier>jar-with-dependencies</classifier>
       </dependency>
 
       <!-- Faceted Search -->

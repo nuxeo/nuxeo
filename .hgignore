@@ -28,3 +28,4 @@ syntax: regexp
 nuxeo-distribution-[^/]*/bin
 nuxeo-platform-ear/bin
 nuxeo-embedded-launcher/bin
+nuxeo-launcher/bin
