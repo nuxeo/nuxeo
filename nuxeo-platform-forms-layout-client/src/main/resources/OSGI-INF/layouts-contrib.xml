@@ -1587,9 +1587,9 @@
 
     <widgetType name="selectOneDirectory">
       <configuration>
-        <title>Select one directory</title>
+        <title>Vocabulary</title>
         <description>
-          The selectOneDirectory widget displays a selection of directory
+          The selectOneDirectory widget displays a selection of vocabulary
           entries in create or edit mode, with additional message tag for
           errors, and the directory entry label in other modes.
 
@@ -1626,7 +1626,7 @@
                   <widget>displayIdAndLabel</widget>
                 </row>
               </rows>
-              <widget name="directoryName" type="selectOneDirectory">
+              <widget name="directoryName" type="selectOneResource">
                 <labels>
                   <label mode="any">Vocabulary</label>
                 </labels>
@@ -1634,7 +1634,7 @@
                   <field>directoryName</field>
                 </fields>
                 <properties mode="any">
-                  <property name="directoryName">vocabularies</property>
+                  <property name="resourceName">vocabularies</property>
                 </properties>
                 <properties widgetMode="edit">
                   <property name="required">true</property>
@@ -1749,9 +1749,9 @@
 
     <widgetType name="selectManyDirectory">
       <configuration>
-        <title>Select many directory</title>
+        <title>Multiple vocabulary</title>
         <description>
-          The selectOneDirectory widget displays a multi selection of directory
+          The selectOneDirectory widget displays a multi selection of vocabulary
           entries in create or edit mode, with additional message tag for
           errors, and the directory entries labels in other modes.
 
