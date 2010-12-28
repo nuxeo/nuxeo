@@ -62,7 +62,7 @@ public class WebLayoutResource {
             service = Framework.getService(WebLayoutManager.class);
             widgetTypes = service.getWidgetTypeDefinitions();
             // sort so that order is deterministic
-            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator());
+            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(true));
             widgetTypesByCat = getWidgetTypesByCategory();
         } catch (Exception e) {
             throw WebException.wrap("Failed to initialize WebLayoutManager", e);

@@ -34,6 +34,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 
@@ -61,7 +63,7 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject res = new JSONObject();
         if (defs != null) {
             // sort so that order is deterministic
-            Collections.sort(defs, new WidgetTypeDefinitionComparator());
+            Collections.sort(defs, new WidgetTypeDefinitionComparator(false));
         }
         for (WidgetTypeDefinition def : defs) {
             res.element(def.getName(), exportToJson(def));
@@ -73,7 +75,10 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject json = new JSONObject();
         json.element("name", def.getName());
         json.element("handlerClassName", def.getHandlerClassName());
-        json.element("properties", exportStringPropsToJson(def.getProperties()));
+        JSONObject props = exportStringPropsToJson(def.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
         WidgetTypeConfiguration conf = def.getConfiguration();
         if (conf != null) {
             json.element("configuration", exportToJson(conf));
@@ -86,15 +91,19 @@ public class WidgetTypeDefinitionJsonExporter {
         json.element("title", conf.getTitle());
         json.element("description", conf.getDescription());
         json.element("sinceVersion", conf.getSinceVersion());
-        json.element("confProperties",
-                exportPropsToJson(conf.getConfProperties()));
+        JSONObject confProps = exportPropsToJson(conf.getConfProperties());
+        if (!confProps.isEmpty()) {
+            json.element("confProperties", confProps);
+        }
 
         JSONArray supportedModes = new JSONArray();
         List<String> confSupportedModes = conf.getSupportedModes();
         if (confSupportedModes != null) {
             supportedModes.addAll(confSupportedModes);
         }
-        json.element("supportedModes", supportedModes);
+        if (!supportedModes.isEmpty()) {
+            json.element("supportedModes", supportedModes);
+        }
 
         json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
 
@@ -107,23 +116,29 @@ public class WidgetTypeDefinitionJsonExporter {
         if (confSupportedTypes != null) {
             supportedTypes.addAll(confSupportedTypes);
         }
-        fields.element("supportedTypes", supportedTypes);
+        if (!supportedTypes.isEmpty()) {
+            fields.element("supportedTypes", supportedTypes);
+        }
 
         JSONArray defaultTypes = new JSONArray();
         List<String> confDefaultTypes = conf.getDefaultFieldTypes();
         if (confDefaultTypes != null) {
             defaultTypes.addAll(confDefaultTypes);
         }
-        fields.element("defaultTypes", defaultTypes);
+        if (!defaultTypes.isEmpty()) {
+            fields.element("defaultTypes", defaultTypes);
+        }
 
-        JSONArray defaultfieldDefs = new JSONArray();
+        JSONArray defaultFieldDefs = new JSONArray();
         List<FieldDefinition> fieldDefs = conf.getDefaultFieldDefinitions();
         if (fieldDefs != null) {
             for (FieldDefinition fieldDef : fieldDefs) {
-                defaultfieldDefs.add(exportToJson(fieldDef));
+                defaultFieldDefs.add(exportToJson(fieldDef));
             }
         }
-        fields.element("defaultConfiguration", defaultfieldDefs);
+        if (!defaultFieldDefs.isEmpty()) {
+            fields.element("defaultConfiguration", defaultFieldDefs);
+        }
 
         json.element("fields", fields);
 
@@ -132,7 +147,9 @@ public class WidgetTypeDefinitionJsonExporter {
         if (confCats != null) {
             cats.addAll(confCats);
         }
-        json.element("categories", cats);
+        if (!cats.isEmpty()) {
+            json.element("categories", cats);
+        }
 
         JSONObject props = new JSONObject();
         Map<String, List<LayoutDefinition>> confLayouts = conf.getPropertyLayouts();
@@ -148,19 +165,30 @@ public class WidgetTypeDefinitionJsonExporter {
                 }
                 layouts.element(mode, modeLayouts);
             }
-            props.element("layouts", layouts);
+            if (!layouts.isEmpty()) {
+                props.element("layouts", layouts);
+            }
         }
-        json.element("properties", props);
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
         return json;
     }
 
     protected static JSONObject exportToJson(LayoutDefinition layoutDef) {
         JSONObject json = new JSONObject();
         json.element("name", layoutDef.getName());
-        json.element("templates",
-                exportStringPropsToJson(layoutDef.getTemplates()));
-        json.element("properties",
-                exportPropsByModeToJson(layoutDef.getProperties()));
+
+        JSONObject templates = exportStringPropsToJson(layoutDef.getTemplates());
+        if (!templates.isEmpty()) {
+            json.element("templates", templates);
+        }
+
+        JSONObject props = exportPropsByModeToJson(layoutDef.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+
         JSONArray rows = new JSONArray();
         LayoutRowDefinition[] defRows = layoutDef.getRows();
         List<String> widgetsToExport = new ArrayList<String>();
@@ -175,7 +203,10 @@ public class WidgetTypeDefinitionJsonExporter {
                 }
             }
         }
-        json.element("rows", rows);
+        if (!rows.isEmpty()) {
+            json.element("rows", rows);
+        }
+
         JSONArray widgets = new JSONArray();
         for (String widgetName : widgetsToExport) {
             WidgetDefinition widgetDef = layoutDef.getWidgetDefinition(widgetName);
@@ -188,7 +219,10 @@ public class WidgetTypeDefinitionJsonExporter {
             }
             widgets.add(exportToJson(widgetDef));
         }
-        json.element("widgets", widgets);
+        if (!widgets.isEmpty()) {
+            json.element("widgets", widgets);
+        }
+
         return json;
     }
 
@@ -198,8 +232,10 @@ public class WidgetTypeDefinitionJsonExporter {
         if (name != null) {
             json.element("name", name);
         }
-        json.element("properties",
-                exportPropsByModeToJson(layoutRowDef.getProperties()));
+        JSONObject props = exportPropsByModeToJson(layoutRowDef.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
         JSONArray widgets = new JSONArray();
         String[] defWidgets = layoutRowDef.getWidgets();
         if (defWidgets != null) {
@@ -207,7 +243,9 @@ public class WidgetTypeDefinitionJsonExporter {
                 widgets.add(widget);
             }
         }
-        json.element("widgets", widgets);
+        if (!widgets.isEmpty()) {
+            json.element("widgets", widgets);
+        }
         return json;
     }
 
@@ -215,12 +253,19 @@ public class WidgetTypeDefinitionJsonExporter {
         JSONObject json = new JSONObject();
         json.element("name", widgetDef.getName());
         json.element("type", widgetDef.getType());
-        json.element("labels", exportStringPropsToJson(widgetDef.getLabels()));
-        json.element("helpLabels",
-                exportStringPropsToJson(widgetDef.getHelpLabels()));
+        JSONObject labels = exportStringPropsToJson(widgetDef.getLabels());
+        if (!labels.isEmpty()) {
+            json.element("labels", labels);
+        }
+        JSONObject helpLabels = exportStringPropsToJson(widgetDef.getHelpLabels());
+        if (!helpLabels.isEmpty()) {
+            json.element("helpLabels", helpLabels);
+        }
         json.element("translated", widgetDef.isTranslated());
-        json.element("widgetModes",
-                exportStringPropsToJson(widgetDef.getModes()));
+        JSONObject widgetModes = exportStringPropsToJson(widgetDef.getModes());
+        if (!widgetModes.isEmpty()) {
+            json.element("widgetModes", widgetModes);
+        }
 
         JSONArray fields = new JSONArray();
         FieldDefinition[] fieldDefs = widgetDef.getFieldDefinitions();
@@ -229,7 +274,9 @@ public class WidgetTypeDefinitionJsonExporter {
                 fields.add(exportToJson(fieldDef));
             }
         }
-        json.element("fields", fields);
+        if (!fields.isEmpty()) {
+            json.element("fields", fields);
+        }
 
         JSONArray subWidgets = new JSONArray();
         WidgetDefinition[] subWidgetDefs = widgetDef.getSubWidgetDefinitions();
@@ -238,12 +285,29 @@ public class WidgetTypeDefinitionJsonExporter {
                 subWidgets.add(exportToJson(wDef));
             }
         }
-        json.element("subWidgets", subWidgets);
+        if (!subWidgets.isEmpty()) {
+            json.element("subWidgets", subWidgets);
+        }
 
-        json.element("properties",
-                exportPropsByModeToJson(widgetDef.getProperties()));
-        json.element("propertiesByWidgetMode",
-                exportPropsByModeToJson(widgetDef.getWidgetModeProperties()));
+        JSONObject props = exportPropsByModeToJson(widgetDef.getProperties());
+        if (!props.isEmpty()) {
+            json.element("properties", props);
+        }
+        JSONObject widgetModeProps = exportPropsByModeToJson(widgetDef.getWidgetModeProperties());
+        if (!widgetModeProps.isEmpty()) {
+            json.element("propertiesByWidgetMode", widgetModeProps);
+        }
+
+        JSONArray selectOptions = new JSONArray();
+        WidgetSelectOption[] selectOptionDefs = widgetDef.getSelectOptions();
+        if (selectOptionDefs != null) {
+            for (WidgetSelectOption selectOptionDef : selectOptionDefs) {
+                selectOptions.add(exportToJson(selectOptionDef));
+            }
+        }
+        if (!selectOptions.isEmpty()) {
+            json.element("selectOptions", selectOptions);
+        }
 
         return json;
     }
@@ -253,6 +317,52 @@ public class WidgetTypeDefinitionJsonExporter {
         json.element("fieldName", fieldDef.getFieldName());
         json.element("schemaName", fieldDef.getSchemaName());
         json.element("propertyName", fieldDef.getPropertyName());
+        return json;
+    }
+
+    protected static JSONObject exportToJson(WidgetSelectOption selectOption) {
+        JSONObject json = new JSONObject();
+        Serializable value = selectOption.getValue();
+        boolean isMulti = selectOption instanceof WidgetSelectOptions;
+        if (isMulti) {
+            json.element("multiple", true);
+        } else {
+            json.element("multiple", false);
+        }
+        if (value != null) {
+            json.element("value", value);
+        }
+        String var = selectOption.getVar();
+        if (var != null) {
+            json.element("var", var);
+        }
+        String itemLabel = selectOption.getItemLabel();
+        if (itemLabel != null) {
+            json.element("itemLabel", itemLabel);
+        }
+        String itemValue = selectOption.getItemValue();
+        if (itemValue != null) {
+            json.element("itemValue", itemValue);
+        }
+        Serializable itemDisabled = selectOption.getItemDisabled();
+        if (itemDisabled != null) {
+            json.element("itemDisabled", itemDisabled);
+        }
+        Serializable itemRendered = selectOption.getItemRendered();
+        if (itemRendered != null) {
+            json.element("itemRendered", itemRendered);
+        }
+        if (isMulti) {
+            WidgetSelectOptions selectOptions = (WidgetSelectOptions) selectOption;
+            String ordering = selectOptions.getOrdering();
+            if (ordering != null) {
+                json.element("ordering", ordering);
+            }
+            Boolean caseSensitive = selectOptions.getCaseSensitive();
+            if (caseSensitive != null) {
+                json.element("caseSensitive", caseSensitive);
+            }
+        }
         return json;
     }
 

@@ -21,7 +21,10 @@
     "fields":     {
       "list": false,
       "complex": false,
-      "supportedTypes": ["string"],
+      "supportedTypes":       [
+        "string",
+        "path"
+      ],
       "defaultTypes": ["string"],
       "defaultConfiguration":       [
                 {
@@ -40,67 +43,99 @@
     ],
     "properties": {"layouts":     {
       "any": [      {
-        "templates": {},
-        "properties": {},
-        "rows": [        {
-          "properties": {},
-          "widgets": ["required_property"]
-        }],
+        "rows": [{"widgets": ["required_property"]}],
         "widgets": [        {
           "name": "required_property",
           "type": "text",
           "labels": {"any": "Required"},
-          "helpLabels": {},
           "translated": true,
-          "widgetModes": {},
           "fields": [          {
             "fieldName": "bar",
             "schemaName": "foo",
             "propertyName": "foo:bar"
-          }],
-          "subWidgets": [],
-          "properties": {},
-          "propertiesByWidgetMode": {}
+          }]
         }]
       }],
       "edit": [      {
-        "templates": {},
-        "properties": {},
-        "rows": [        {
-          "properties": {},
-          "widgets": ["rendered_property"]
-        }],
-        "widgets": [        {
-          "name": "rendered_property",
-          "type": "text",
-          "labels": {"any": "Rendered"},
-          "helpLabels": {},
-          "translated": true,
-          "widgetModes": {"any": "view"},
-          "fields": [          {
-            "fieldName": "bar",
-            "schemaName": "foo",
-            "propertyName": "foo:bar"
-          }],
-          "subWidgets": [          {
-            "name": "subwidget",
+        "rows":         [
+          {"widgets": ["rendered_property"]},
+          {"widgets": ["selection_property"]}
+        ],
+        "widgets":         [
+                    {
+            "name": "rendered_property",
             "type": "text",
-            "labels": {"any": "subwidget label"},
-            "helpLabels": {},
+            "labels": {"any": "Rendered"},
             "translated": true,
-            "widgetModes": {},
+            "widgetModes": {"any": "view"},
             "fields": [            {
               "fieldName": "bar",
               "schemaName": "foo",
               "propertyName": "foo:bar"
             }],
-            "subWidgets": [],
-            "properties": {},
-            "propertiesByWidgetMode": {}
-          }],
-          "properties": {},
-          "propertiesByWidgetMode": {}
-        }]
+            "subWidgets": [            {
+              "name": "subwidget",
+              "type": "text",
+              "labels": {"any": "subwidget label"},
+              "translated": true,
+              "fields": [              {
+                "fieldName": "bar",
+                "schemaName": "foo",
+                "propertyName": "foo:bar"
+              }]
+            }]
+          },
+                    {
+            "name": "selection_property",
+            "type": "selectOneListbox",
+            "labels": {"any": "Selection"},
+            "translated": true,
+            "fields": [            {
+              "fieldName": "bar2",
+              "schemaName": "foo2",
+              "propertyName": "foo2:bar2"
+            }],
+            "selectOptions":             [
+                            {
+                "multiple": false,
+                "itemLabel": "foo",
+                "itemValue": "bar"
+              },
+                            {
+                "multiple": false,
+                "value": "#{currentDocument}",
+                "var": "doc",
+                "itemLabel": "#{doc.dc.title}",
+                "itemValue": "#{doc.id}",
+                "itemDisabled": "false",
+                "itemRendered": "true"
+              },
+                            {
+                "multiple": true,
+                "value": "#{myBean.myList}",
+                "var": "item",
+                "itemLabel": "#{item.title}",
+                "itemValue": "#{item.id}"
+              },
+                            {
+                "multiple": true,
+                "value": "#{documentList}",
+                "var": "doc",
+                "itemLabel": "#{doc.dc.title}",
+                "itemValue": "#{doc.id}",
+                "itemDisabled": "false",
+                "itemRendered": "true",
+                "ordering": "label",
+                "caseSensitive": true
+              },
+                            {
+                "multiple": false,
+                "itemLabel": "foo2",
+                "itemValue": "bar2"
+              }
+            ]
+          }
+        ]
       }]
     }}
   }

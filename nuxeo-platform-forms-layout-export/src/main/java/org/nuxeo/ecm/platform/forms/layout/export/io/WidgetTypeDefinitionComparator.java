@@ -22,11 +22,20 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 
 /**
+ * Compares widget types on id or label.
+ *
  * @author Anahide Tchertchian
  * @since 5.4
  */
 public class WidgetTypeDefinitionComparator implements
         Comparator<WidgetTypeDefinition> {
+
+    protected boolean compareLabels = false;
+
+    public WidgetTypeDefinitionComparator(boolean compareLabels) {
+        super();
+        this.compareLabels = compareLabels;
+    }
 
     @Override
     public int compare(WidgetTypeDefinition o1, WidgetTypeDefinition o2) {
@@ -39,14 +48,16 @@ public class WidgetTypeDefinitionComparator implements
         if (o2 == null) {
             return 1;
         }
-        return getLabel(o1).compareTo(getLabel(o2));
+        return getComparisonString(o1).compareTo(getComparisonString(o2));
     }
 
-    protected String getLabel(WidgetTypeDefinition def) {
+    protected String getComparisonString(WidgetTypeDefinition def) {
         String res = def.getName();
-        WidgetTypeConfiguration conf = def.getConfiguration();
-        if (conf != null && conf.getTitle() != null) {
-            res = conf.getTitle();
+        if (compareLabels) {
+            WidgetTypeConfiguration conf = def.getConfiguration();
+            if (conf != null && conf.getTitle() != null) {
+                res = conf.getTitle();
+            }
         }
         return res;
     }
