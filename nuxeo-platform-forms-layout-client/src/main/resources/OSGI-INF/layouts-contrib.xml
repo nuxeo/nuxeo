@@ -17,13 +17,18 @@
       <configuration>
         <title>Text</title>
         <description>
-          The text widget displays an input text in create or edit mode, with
-          additional message tag for errors, and a regular text output in any
-          other mode.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:inputText /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;h:outputText /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The text widget displays an input text in create or edit mode, with
+            additional message tag for errors, and a regular text output in any
+            other mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputText /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <supportedModes>
           <mode>edit</mode>
@@ -262,13 +267,18 @@
       <configuration>
         <title>Int</title>
         <description>
-          The int widget displays an input text in create or edit mode, with
-          additional message tag for errors, and a regular text output in any
-          other mode. It uses a number converter.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:inputText /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;h:outputText /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The int widget displays an input text in create or edit mode, with
+            additional message tag for errors, and a regular text output in any
+            other mode. It uses a number converter.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputText /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -481,12 +491,17 @@
       <configuration>
         <title>Secret</title>
         <description>
-          The secret widget displays an input secret text in create or edit
-          mode, with additional message tag for errors, and nothing in any other
-          mode.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:inputSecret /&gt; tag in create or edit mode.
+          <![CDATA[
+          <p>
+            The secret widget displays an input secret text in create or edit
+            mode, with additional message tag for errors, and nothing in any other
+            mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputSecret /&gt; tag in create or edit mode.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -700,13 +715,18 @@
       <configuration>
         <title>Textarea</title>
         <description>
-          The textarea widget displays a textarea in create or edit mode, with
-          additional message tag for errors, and a regular text output in any
-          other mode.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:inputTextarea /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;h:outputText /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The textarea widget displays a textarea in create or edit mode, with
+            additional message tag for errors, and a regular text output in any
+            other mode.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputTextarea /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -952,14 +972,19 @@
       <configuration>
         <title>Datetime</title>
         <description>
-          The datetime widget displays a javascript calendar in create or edit
-          mode, with additional message tag for errors, and a regular text
-          output in any other mode. It uses a date time converter.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;h:outputText /&gt; tag in other modes. The converter
-          will also be given these properties.
+          <![CDATA[
+          <p>
+            The datetime widget displays a javascript calendar in create or edit
+            mode, with additional message tag for errors, and a regular text
+            output in any other mode. It uses a date time converter.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;h:outputText /&gt; tag in other modes. The converter
+            will also be given these properties.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1201,19 +1226,26 @@
       <configuration>
         <title>Template</title>
         <description>
-          The template widget displays a template content whatever the mode.
-
-          Widgets using this type must provide the path to this template ; this
-          template can check the mode to adapt the rendering.
-
-          Note that the same handler class can be used to define a new widget
-          type using a designated template, by registering it as is:
-
-          &lt;widgetType name="template"&gt; &lt;handler-class&gt;
-          org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-          &lt;/handler-class&gt; &lt;property name="template"&gt;
-          /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
-          &lt;/widgetType&gt;
+          <![CDATA[
+          <p>
+            The template widget displays a template content whatever the mode.
+          </p>
+          <p>
+            Widgets using this type must provide the path to this template ; this
+            template can check the mode to adapt the rendering.
+          </p>
+          <p>
+            Note that the same handler class can be used to define a new widget
+            type using a designated template, by registering it as is:
+          </p>
+          <p>
+            &lt;widgetType name="template"&gt; &lt;handler-class&gt;
+            org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+            &lt;/handler-class&gt; &lt;property name="template"&gt;
+            /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
+            &lt;/widgetType&gt;
+          </p>
+          ]]>
         </description>
         <categories>
           <category>dev</category>
@@ -1254,13 +1286,18 @@
       <configuration>
         <title>File</title>
         <description>
-          The file widget displays a file uploader/editor in create or edit
-          mode, with additional message tag for errors, and a link to the file
-          in other modes.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The file widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors, and a link to the file
+            in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1359,13 +1396,18 @@
       <configuration>
         <title>HTML text</title>
         <description>
-          The htmltext widget displays an html text editor in create or edit
-          mode, with additional message tag for errors, and a regular text
-          output in other modes (without escaping the text).
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxu:editor /&gt; tag in create or edit mode, and properties
-          accepted on a &lt;nxu:outputText /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The htmltext widget displays an html text editor in create or edit
+            mode, with additional message tag for errors, and a regular text
+            output in other modes (without escaping the text).
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:editor /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;nxu:outputText /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1589,14 +1631,19 @@
       <configuration>
         <title>Vocabulary</title>
         <description>
-          The selectOneDirectory widget displays a selection of vocabulary
-          entries in create or edit mode, with additional message tag for
-          errors, and the directory entry label in other modes.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxd:selectOneListbox /&gt; tag in create or edit mode, and
-          properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in
-          other modes.
+          <![CDATA[
+          <p>
+            The selectOneDirectory widget displays a selection of vocabulary
+            entries in create or edit mode, with additional message tag for
+            errors, and the directory entry label in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxd:selectOneListbox /&gt; tag in create or edit mode, and
+            properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in
+            other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1751,13 +1798,18 @@
       <configuration>
         <title>Multiple vocabulary</title>
         <description>
-          The selectOneDirectory widget displays a multi selection of vocabulary
-          entries in create or edit mode, with additional message tag for
-          errors, and the directory entries labels in other modes.
-
-          Widgets using this type can provide properties accepted on a c tag in
-          create or edit mode, and properties accepted on a
-          &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
+          <![CDATA[
+          <p>
+            The selectOneDirectory widget displays a multi selection of vocabulary
+            entries in create or edit mode, with additional message tag for
+            errors, and the directory entries labels in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a c tag in
+            create or edit mode, and properties accepted on a
+            &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1912,15 +1964,21 @@
       <configuration>
         <title>List</title>
         <description>
-          The list widget displays an editable list of items in create or edit
-          mode, with additional message tag for errors, and the same list of
-          items in other modes.
-
-          Items are defined using sub wigdets configuration.
-
-          This actually a template widget type whose template uses a
-          &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
-          iterating over items in other modes.
+          <![CDATA[
+          <p>
+            The list widget displays an editable list of items in create or edit
+            mode, with additional message tag for errors, and the same list of
+            items in other modes.
+          </p>
+          <p>
+            Items are defined using sub wigdets configuration.
+          </p>
+          <p>
+            This is actually a template widget type whose template uses a
+            &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
+            iterating over items in other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1992,12 +2050,17 @@
       <configuration>
         <title>Checkbox</title>
         <description>
-          The checkbox widget displays a checkbox in create, edit and any other
-          mode, with additional message tag for errors.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other
-          modes.
+          <![CDATA[
+          <p>
+            The checkbox widget displays a checkbox in create, edit and any other
+            mode, with additional message tag for errors.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other
+            modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2177,11 +2240,16 @@
       <configuration>
         <title>Hidden</title>
         <description>
-          The hidden widget is for a hidden field in create, edit and any other
-          mode, with additional message tag for errors.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
+          <![CDATA[
+          <p>
+            The hidden widget is for a hidden field in create, edit and any other
+            mode, with additional message tag for errors.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2316,10 +2384,15 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Layout</title>
         <description>
-          The layout widget renders a layout.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxl:layout /&gt; tag in all modes.
+          <![CDATA[
+          <p>
+            The layout widget renders a layout.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxl:layout /&gt; tag in all modes.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>dev</category>
@@ -2397,14 +2470,19 @@
 
     <widgetType name="richtext_with_mimetype">
       <configuration>
-        <since>5.3.1</since>
+        <sinceVersion>5.3.1</sinceVersion>
         <title>Richtext</title>
         <description>
-          This widget displays an html text editor or a textarea in create or
-          edit mode, depending on the mimetype defined.
-
-          Widgets using this type can provide properties accepted on a
-          &lt;nxu:editor /&gt; tag in create or edit mode.
+          <![CDATA[
+          <p>
+            This widget displays an html text editor or a textarea in create or
+            edit mode, depending on the mimetype defined.
+          </p>
+          <p>  
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:editor /&gt; tag in create or edit mode.
+          </p>
+          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2552,7 +2630,7 @@
 
     <widgetType name="duration">
       <configuration>
-        <since>5.3.2</since>
+        <sinceVersion>5.3.2</sinceVersion>
         <title>Duration</title>
         <description>
           This widget displays a i18n formatted duration of a field holding a
