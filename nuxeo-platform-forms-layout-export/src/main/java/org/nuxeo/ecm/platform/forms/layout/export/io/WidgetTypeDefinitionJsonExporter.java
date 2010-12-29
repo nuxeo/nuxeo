@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 
 /**
  * JSON exporter for a {@link WidgetTypeDefinition} object

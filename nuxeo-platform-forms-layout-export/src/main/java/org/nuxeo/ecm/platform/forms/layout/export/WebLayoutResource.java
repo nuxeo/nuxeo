@@ -35,7 +35,7 @@ import javax.ws.rs.core.UriInfo;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
-import org.nuxeo.ecm.platform.forms.layout.export.io.WidgetTypeDefinitionComparator;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
