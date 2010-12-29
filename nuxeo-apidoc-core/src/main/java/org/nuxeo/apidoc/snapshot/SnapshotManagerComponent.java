@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.snapshot;
 
 import java.io.InputStream;
@@ -51,18 +50,20 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
+public class SnapshotManagerComponent extends DefaultComponent implements
+        SnapshotManager {
 
     protected DistributionSnapshot runtimeSnapshot;
 
-    public static final String RUNTIME="current";
+    public static final String RUNTIME = "current";
 
-    public static final String RUNTIME_ADM="adm";
+    public static final String RUNTIME_ADM = "adm";
 
     protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
 
     protected final SnapshotPersister persister = new SnapshotPersister();
 
+    @Override
     public DistributionSnapshot getRuntimeSnapshot() {
         if (runtimeSnapshot == null) {
             runtimeSnapshot = new RuntimeSnapshot();
@@ -70,7 +71,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return runtimeSnapshot;
     }
 
-
+    @Override
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
         if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
             return getRuntimeSnapshot();
@@ -78,12 +79,16 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return getPersistentSnapshots(session).get(key);
     }
 
-    public List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
+    @Override
+    public List<DistributionSnapshot> readPersistentSnapshots(
+            CoreSession session) {
         List<DistributionSnapshot> snaps = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
         return snaps;
     }
 
-    public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
+    @Override
+    public Map<String, DistributionSnapshot> getPersistentSnapshots(
+            CoreSession session) {
 
         Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
 
@@ -94,31 +99,41 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return persistentSnapshots;
     }
 
+    @Override
     public List<String> getPersistentSnapshotNames(CoreSession session) {
         List<String> names = new ArrayList<String>();
         names.addAll(getPersistentSnapshots(session).keySet());
         return names;
     }
 
-    public List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session) {
+    @Override
+    public List<DistributionSnapshotDesc> getAvailableDistributions(
+            CoreSession session) {
         List<DistributionSnapshotDesc> names = new ArrayList<DistributionSnapshotDesc>();
         names.addAll(getPersistentSnapshots(session).values());
-        names.add(0,getRuntimeSnapshot());
+        names.add(0, getRuntimeSnapshot());
         return names;
     }
 
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException {
+    @Override
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
+            throws ClientException {
         return persistRuntimeSnapshot(session, null);
     }
 
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException {
+    @Override
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
+            String name) throws ClientException {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap =  persister.persist(liveSnapshot, session, name);
+        DistributionSnapshot snap = persister.persist(liveSnapshot, session,
+                name);
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
 
-    public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
+    @Override
+    public List<String> getAvailableVersions(CoreSession session,
+            NuxeoArtifact nxItem) {
         List<String> versions = new ArrayList<String>();
 
         Map<String, DistributionSnapshot> distribs = getPersistentSnapshots(session);
@@ -133,53 +148,56 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             String version = null;
             if (BundleGroup.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 BundleGroup bg = snap.getBundleGroup(nxItem.getId());
-                if (bg!=null) {
+                if (bg != null) {
                     version = bg.getVersion();
                 }
             } else if (BundleInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 BundleInfo bi = snap.getBundle(nxItem.getId());
-                if (bi!=null) {
+                if (bi != null) {
                     version = bi.getVersion();
                 }
             } else if (ComponentInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ComponentInfo ci = snap.getComponent(nxItem.getId());
-                if (ci!=null) {
+                if (ci != null) {
                     version = ci.getVersion();
                 }
             } else if (ExtensionInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ExtensionInfo ei = snap.getContribution(nxItem.getId());
-                if (ei!=null) {
+                if (ei != null) {
                     version = ei.getVersion();
                 }
             } else if (ExtensionPointInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ExtensionPointInfo epi = snap.getExtensionPoint(nxItem.getId());
-                if (epi!=null) {
+                if (epi != null) {
                     version = epi.getVersion();
                 }
             } else if (ServiceInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
                 ServiceInfo si = snap.getService(nxItem.getId());
-                if (si!=null) {
+                if (si != null) {
                     version = si.getVersion();
                 }
             }
 
-            if (version!=null && !versions.contains(version)) {
+            if (version != null && !versions.contains(version)) {
                 versions.add(version);
             }
         }
         return versions;
     }
 
-    public void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception  {
+    @Override
+    public void exportSnapshot(CoreSession session, String key, OutputStream out)
+            throws Exception {
 
-        DistributionSnapshot snap = getSnapshot(key,session);
+        DistributionSnapshot snap = getSnapshot(key, session);
 
         if (snap == null) {
             throw new Exception("Unable to find Snapshot " + key);
         }
 
         if (snap.isLive()) {
-            throw new Exception("Can not export a live distribution snapshot : " + key);
+            throw new Exception(
+                    "Can not export a live distribution snapshot : " + key);
         }
 
         RepositoryDistributionSnapshot docSnap = (RepositoryDistributionSnapshot) snap;
@@ -195,6 +213,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         writer.close();
     }
 
+    @Override
     public void importSnapshot(CoreSession session, InputStream is)
             throws Exception {
         try {
@@ -213,8 +232,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         }
     }
 
+    @Override
     public void initSeamContext(HttpServletRequest request) {
-        ((RuntimeSnapshot)getRuntimeSnapshot()).initSeamComponents(request);
+        ((RuntimeSnapshot) getRuntimeSnapshot()).initSeamComponents(request);
     }
 
     @Override

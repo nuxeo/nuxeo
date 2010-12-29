@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.introspection;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -38,21 +37,25 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
         return serviceClassName;
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public String getVersion() {
         return component.getVersion();
     }
 
+    @Override
     public String getComponentId() {
         return component.getId();
     }
 
+    @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" +  VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
+        return component.getHierarchyPath() + "/"
+                + VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
     }
-
 
 }

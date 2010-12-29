@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
@@ -34,12 +31,10 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 @WebObject(type = "bundle")
 public class BundleWO extends NuxeoArtifactWebObject {
 
+    @Override
     @GET
     @Produces("text/html")
     @Path(value = "introspection")
@@ -50,7 +45,8 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     public BundleInfo getTargetBundleInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getBundle(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),
+                ctx.getCoreSession()).getBundle(nxArtifactId);
     }
 
     @Override
@@ -59,9 +55,10 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     protected class ComponentInfoSorter implements Comparator<ComponentInfo> {
+        @Override
         public int compare(ComponentInfo ci0, ComponentInfo ci1) {
 
-            if (ci0.isXmlPureComponent() && ! ci1.isXmlPureComponent()) {
+            if (ci0.isXmlPureComponent() && !ci1.isXmlPureComponent()) {
                 return 1;
             }
             if (!ci0.isXmlPureComponent() && ci1.isXmlPureComponent()) {
@@ -76,11 +73,12 @@ public class BundleWO extends NuxeoArtifactWebObject {
         List<ComponentWO> result = new ArrayList<ComponentWO>();
         BundleInfo bundle = getTargetBundleInfo();
 
-        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(bundle.getComponents());
+        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(
+                bundle.getComponents());
         Collections.sort(cis, new ComponentInfoSorter());
 
         for (ComponentInfo ci : cis) {
-            result.add((ComponentWO)ctx.newObject("component", ci.getId()));
+            result.add((ComponentWO) ctx.newObject("component", ci.getId()));
         }
         return result;
     }

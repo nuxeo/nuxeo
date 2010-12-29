@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.api;
 
 import org.nuxeo.runtime.model.ComponentName;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
 public interface ExtensionInfo extends NuxeoArtifact {
 
-    String TYPE_NAME ="NXContribution";
+    String TYPE_NAME = "NXContribution";
 
     String getExtensionPoint();
 

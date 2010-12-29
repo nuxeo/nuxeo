@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtifactLabel implements Comparable<ArtifactLabel>{
+public class ArtifactLabel implements Comparable<ArtifactLabel> {
 
     protected final String id;
 
@@ -31,8 +30,8 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
     public ArtifactLabel(String id, String label, String simpleId) {
         this.id = id;
         this.label = label;
-        if (simpleId==null) {
-            simpleId=label;
+        if (simpleId == null) {
+            simpleId = label;
         } else {
             this.simpleId = simpleId;
         }
@@ -55,13 +54,14 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         return label;
     }
 
+    @Override
     public int compareTo(ArtifactLabel other) {
         return label.compareTo(other.label);
     }
 
     public static ArtifactLabel createLabelFromService(String service) {
         String[] parts = service.split("\\.");
-        String label = parts[parts.length-1];
+        String label = parts[parts.length - 1];
         return new ArtifactLabel(service, label, null);
     }
 
@@ -85,7 +85,8 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
         return new ArtifactLabel(component, label, null);
     }
 
-    public static ArtifactLabel createLabelFromExtensionPoint(String extensionPoint) {
+    public static ArtifactLabel createLabelFromExtensionPoint(
+            String extensionPoint) {
         String[] parts = extensionPoint.split("--");
         String component = parts[0];
         String ep = parts[1];
@@ -95,7 +96,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel>{
 
     public static ArtifactLabel createLabelFromContribution(String contribution) {
         String[] parts = contribution.split("\\.");
-        String label = parts[parts.length-1];
+        String label = parts[parts.length - 1];
         return new ArtifactLabel(contribution, label, null);
     }
 

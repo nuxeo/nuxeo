@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.introspection;
 
@@ -25,31 +26,32 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
-public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements ExtensionPointInfo {
+public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
+        ExtensionPointInfo {
 
     protected ComponentInfoImpl component;
+
     protected String name;
+
     protected String[] types;
+
     protected Collection<ExtensionInfo> extensions = new ArrayList<ExtensionInfo>();
 
     protected String documentation;
 
-    @SuppressWarnings("unchecked")
-    protected List<Class> spi = new ArrayList<Class>();
+    protected List<Class<?>> spi = new ArrayList<Class<?>>();
 
     public ExtensionPointInfoImpl(ComponentInfoImpl component, String name) {
         this.name = name;
         this.component = component;
     }
 
+    @Override
     public ComponentInfoImpl getComponent() {
         return component;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -58,10 +60,12 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
         this.types = types;
     }
 
+    @Override
     public String[] getTypes() {
         return types;
     }
 
+    @Override
     public Collection<ExtensionInfo> getExtensions() {
         return extensions;
     }
@@ -74,12 +78,12 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
         this.documentation = documentation;
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
 
-    @SuppressWarnings("unchecked")
-    public void addSpi(List<Class> spi) {
+    public void addSpi(List<Class<?>> spi) {
         this.spi.addAll(spi);
     }
 
@@ -88,20 +92,25 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
         return component.getId() + "--" + name;
     }
 
+    @Override
     public String getVersion() {
         return component.getVersion();
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public String getLabel() {
         return name + " (" + component.getId() + ")";
     }
 
+    @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId();
+        return component.getHierarchyPath() + "/"
+                + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId();
     }
 
 }

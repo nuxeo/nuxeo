@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.adapters;
 
@@ -33,9 +31,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected static final Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
@@ -88,11 +83,11 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     }
 
     protected CoreSession getCoreSession() {
-        CoreSession session=null;
+        CoreSession session = null;
         if (doc != null) {
             session = doc.getCoreSession();
         }
-        if (session==null) {
+        if (session == null) {
             session = localCoreSession.get();
         }
         return session;
@@ -100,7 +95,8 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
         try {
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(
+                    doc.getRef());
             for (DocumentModel parent : parents) {
                 T result = parent.getAdapter(artifactClass);
                 if (result != null) {
@@ -137,12 +133,14 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         }
     }
 
+    @Override
     public String getHierarchyPath() {
 
         String path = "";
         try {
 
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(
+                    doc.getRef());
             Collections.reverse(parents);
 
             for (DocumentModel doc : parents) {
@@ -154,8 +152,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
                 path = "/" + item.getId() + path;
             }
             return path;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while computing Hierarchy path", e);
             return null;
         }

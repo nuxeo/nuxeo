@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.repository;
 
@@ -40,16 +38,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
-/**
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
-public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
+public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
+        implements DistributionSnapshot {
 
     protected JavaDocHelper jdocHelper = null;
 
-    public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session, String containerPath) throws ClientException {
+    public static RepositoryDistributionSnapshot create(
+            DistributionSnapshot distrib, CoreSession session,
+            String containerPath) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
         String targetPath = new Path(containerPath).append(name).toString();
@@ -74,20 +70,20 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return new RepositoryDistributionSnapshot(doc);
     }
 
-    public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
+    public static List<DistributionSnapshot> readPersistentSnapshots(
+            CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
-        String query = "select * from " + TYPE_NAME ;
+        String query = "select * from " + TYPE_NAME;
         try {
             DocumentModelList docs = session.query(query);
             for (DocumentModel child : docs) {
                 DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
-                if (ob!=null) {
+                if (ob != null) {
                     result.add(ob);
                 }
             }
-        }
-        catch (Exception e) {
-            log.error("Error while executing query " + query ,e);
+        } catch (Exception e) {
+            log.error("Error while executing query " + query, e);
         }
         return result;
     }
@@ -98,68 +94,79 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     protected <T> List<T> getChildren(Class<T> adapter, String docType) {
         List<T> result = new ArrayList<T>();
-        String query = "select * from " + docType + " where ecm:path startswith '" + doc.getPathAsString() + "'";
+        String query = "select * from " + docType
+                + " where ecm:path startswith '" + doc.getPathAsString() + "'";
         try {
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 T ob = child.getAdapter(adapter);
-                if (ob!=null) {
+                if (ob != null) {
                     result.add(ob);
                 }
             }
-        }
-        catch (Exception e) {
-            log.error("Error while executing query " + query ,e);
+        } catch (Exception e) {
+            log.error("Error while executing query " + query, e);
         }
         return result;
     }
 
-    protected <T> T getChild(Class<T> adapter, String docType, String idField, String id) {
-        String query = "select * from " + docType + " where ecm:path startswith '" + doc.getPathAsString() + "' AND " + idField +"= '" + id + "'";
+    protected <T> T getChild(Class<T> adapter, String docType, String idField,
+            String id) {
+        String query = "select * from " + docType
+                + " where ecm:path startswith '" + doc.getPathAsString()
+                + "' AND " + idField + "= '" + id + "'";
         try {
             DocumentModelList docs = getCoreSession().query(query);
             if (docs.isEmpty()) {
                 log.error("Unable to find " + docType + " for id " + id);
-            } else if (docs.size()==1) {
+            } else if (docs.size() == 1) {
                 return docs.get(0).getAdapter(adapter);
             } else {
                 log.error("multiple match for " + docType + " for id " + id);
                 return docs.get(0).getAdapter(adapter);
             }
         } catch (Exception e) {
-            log.error("Error while executing query " + query ,e);
+            log.error("Error while executing query " + query, e);
         }
         return null;
     }
 
+    @Override
     public BundleInfo getBundle(String id) {
-        return getChild(BundleInfo.class, BundleInfo.TYPE_NAME, "nxbundle:bundleId", id);
+        return getChild(BundleInfo.class, BundleInfo.TYPE_NAME,
+                "nxbundle:bundleId", id);
     }
 
+    @Override
     public BundleGroup getBundleGroup(String groupId) {
-        return getChild(BundleGroup.class, BundleGroup.TYPE_NAME, "nxbundlegroup:key", groupId);
+        return getChild(BundleGroup.class, BundleGroup.TYPE_NAME,
+                "nxbundlegroup:key", groupId);
     }
 
+    @Override
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
         try {
-            //String query = "select * from NXBundleGroup where ecm:path startswith '" + doc.getPathAsString() + "'";
-            String query = "select * from NXBundleGroup where ecm:parentId = '" + doc.getId() + "'";
+            // String query =
+            // "select * from NXBundleGroup where ecm:path startswith '" +
+            // doc.getPathAsString() + "'";
+            String query = "select * from NXBundleGroup where ecm:parentId = '"
+                    + doc.getId() + "'";
 
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 BundleGroup bg = child.getAdapter(BundleGroup.class);
-                if (bg!=null) {
+                if (bg != null) {
                     grps.add(bg);
                 }
             }
-        }
-        catch (Exception e) {
-            log.error("Error while getting bundle groups",e);
+        } catch (Exception e) {
+            log.error("Error while getting bundle groups", e);
         }
         return grps;
     }
 
+    @Override
     public List<String> getBundleIds() {
         List<String> ids = new ArrayList<String>();
         for (BundleInfo bi : getChildren(BundleInfo.class, BundleInfo.TYPE_NAME)) {
@@ -168,105 +175,122 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return ids;
     }
 
+    @Override
     public ComponentInfo getComponent(String id) {
-        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME, "nxcomponent:componentId", id);
+        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME,
+                "nxcomponent:componentId", id);
     }
 
+    @Override
     public List<String> getComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class,
+                ComponentInfo.TYPE_NAME)) {
             ids.add(ci.getId());
         }
         return ids;
     }
 
+    @Override
     public ExtensionInfo getContribution(String id) {
-        return getChild(ExtensionInfo.class, ExtensionInfo.TYPE_NAME, "nxcontribution:contribId", id);
+        return getChild(ExtensionInfo.class, ExtensionInfo.TYPE_NAME,
+                "nxcontribution:contribId", id);
     }
 
+    @Override
     public List<String> getContributionIds() {
         List<String> ids = new ArrayList<String>();
-        for (ExtensionInfo xi : getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME)) {
+        for (ExtensionInfo xi : getChildren(ExtensionInfo.class,
+                ExtensionInfo.TYPE_NAME)) {
             ids.add(xi.getId());
         }
         return ids;
     }
 
+    @Override
     public ExtensionPointInfo getExtensionPoint(String id) {
-        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME, "nxextensionpoint:epId", id);
+        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME,
+                "nxextensionpoint:epId", id);
     }
 
+    @Override
     public List<String> getExtensionPointIds() {
         List<String> ids = new ArrayList<String>();
-        for (ExtensionPointInfo xpi : getChildren(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME)) {
+        for (ExtensionPointInfo xpi : getChildren(ExtensionPointInfo.class,
+                ExtensionPointInfo.TYPE_NAME)) {
             ids.add(xpi.getId());
         }
         return ids;
     }
 
+    @Override
     public List<String> getBundleGroupChildren(String groupId) {
-        BundleGroup bg = getChild(BundleGroup.class, BundleGroup.TYPE_NAME, "nxbundlegroup:key", groupId);
+        BundleGroup bg = getChild(BundleGroup.class, BundleGroup.TYPE_NAME,
+                "nxbundlegroup:key", groupId);
         return bg.getBundleIds();
     }
 
     public List<String> getBundleGroupIds() {
-         List<String> ids = new ArrayList<String>();
-         for (BundleGroup bg : getChildren(BundleGroup.class, BundleGroup.TYPE_NAME)) {
-             ids.add(bg.getId());
-         }
-         return ids;
-    }
-
-    public List<String> getServiceIds() {
         List<String> ids = new ArrayList<String>();
-        try {
-            String query = "select * from NXComponent where ecm:path startswith '" + doc.getPathAsString() + "'";
-
-            DocumentModelList components = getCoreSession().query(query);
-            for (DocumentModel componentDoc : components) {
-                ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
-                if (ci!=null) {
-                    ids.addAll(ci.getServiceNames());
-                }
-            }
-        }
-        catch (Exception e) {
-            log.error("Error while getting service ids",e);
+        for (BundleGroup bg : getChildren(BundleGroup.class,
+                BundleGroup.TYPE_NAME)) {
+            ids.add(bg.getId());
         }
         return ids;
     }
 
+    @Override
+    public List<String> getServiceIds() {
+        List<String> ids = new ArrayList<String>();
+        try {
+            String query = "select * from NXComponent where ecm:path startswith '"
+                    + doc.getPathAsString() + "'";
+
+            DocumentModelList components = getCoreSession().query(query);
+            for (DocumentModel componentDoc : components) {
+                ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
+                if (ci != null) {
+                    ids.addAll(ci.getServiceNames());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while getting service ids", e);
+        }
+        return ids;
+    }
+
+    @Override
     public String getName() {
         try {
             return (String) doc.getPropertyValue("nxdistribution:name");
-        }
-        catch (Exception e) {
-            log.error("Error while reading nxdistribution:name",e);
+        } catch (Exception e) {
+            log.error("Error while reading nxdistribution:name", e);
             return "!unknown!";
         }
     }
 
+    @Override
     public String getVersion() {
-         try {
-             return (String) doc.getPropertyValue("nxdistribution:version");
-         }
-         catch (Exception e) {
-             log.error("Error while reading nxdistribution:version",e);
-             return "!unknown!";
-         }
-     }
+        try {
+            return (String) doc.getPropertyValue("nxdistribution:version");
+        } catch (Exception e) {
+            log.error("Error while reading nxdistribution:version", e);
+            return "!unknown!";
+        }
+    }
 
+    @Override
     public String getKey() {
         try {
             return (String) doc.getPropertyValue("nxdistribution:key");
-        }
-        catch (Exception e) {
-            log.error("Error while reading nxdistribution:key",e);
+        } catch (Exception e) {
+            log.error("Error while reading nxdistribution:key", e);
             return "!unknown!";
         }
     }
 
-    public List<Class> getSpi() {
+    @Override
+    public List<Class<?>> getSpi() {
         return null;
     }
 
@@ -275,15 +299,18 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return getKey();
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public ServiceInfo getService(String id) {
 
         String startPath = getDoc().getPathAsString();
 
-        String query = "select * from NXService where nxservice:className='" + id + "' AND ecm:path STARTSWITH '" + startPath + "/'";
+        String query = "select * from NXService where nxservice:className='"
+                + id + "' AND ecm:path STARTSWITH '" + startPath + "/'";
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
@@ -293,16 +320,17 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 log.error("Multiple services found");
                 return null;
             }
-        }
-        catch (Exception e) {
-            log.error("Unable to fetch NXService",e);
+        } catch (Exception e) {
+            log.error("Unable to fetch NXService", e);
         }
         return null;
     }
 
+    @Override
     public List<String> getJavaComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class,
+                ComponentInfo.TYPE_NAME)) {
             if (!ci.isXmlPureComponent()) {
                 ids.add(ci.getId());
             }
@@ -310,9 +338,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return ids;
     }
 
+    @Override
     public List<String> getXmlComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class,
+                ComponentInfo.TYPE_NAME)) {
             if (ci.isXmlPureComponent()) {
                 ids.add(ci.getId());
             }
@@ -320,43 +350,48 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return ids;
     }
 
+    @Override
     public Date getCreationDate() {
         try {
-            Calendar cal =  (Calendar) getDoc().getPropertyValue("dc:created");
+            Calendar cal = (Calendar) getDoc().getPropertyValue("dc:created");
             return cal.getTime();
         } catch (Exception e) {
             return null;
         }
     }
 
+    @Override
     public boolean isLive() {
         return false;
     }
 
+    @Override
     public SeamComponentInfo getSeamComponent(String id) {
 
         String startPath = getDoc().getPathAsString();
 
         String name = id.replace("seam:", "");
-        String query = "select * from NXSeamComponent where nxseam:componentName='" + name + "' AND ecm:path STARTSWITH '" + startPath + "/'";
+        String query = "select * from NXSeamComponent where nxseam:componentName='"
+                + name + "' AND ecm:path STARTSWITH '" + startPath + "/'";
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
 
             return docs.get(0).getAdapter(SeamComponentInfo.class);
-        }
-        catch (Exception e) {
-            log.error("Unable to fetch Seam Component",e);
+        } catch (Exception e) {
+            log.error("Unable to fetch Seam Component", e);
             return null;
         }
     }
 
+    @Override
     public List<String> getSeamComponentIds() {
         List<String> result = new ArrayList<String>();
 
         String startPath = getDoc().getPathAsString();
 
-        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '" + startPath + "/'";
+        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '"
+                + startPath + "/'";
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
@@ -364,20 +399,21 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             for (DocumentModel doc : docs) {
                 result.add(doc.getAdapter(SeamComponentInfo.class).getId());
             }
-        }
-        catch (Exception e) {
-            log.error("Unable to fetch NXService",e);
+        } catch (Exception e) {
+            log.error("Unable to fetch NXService", e);
         }
         return result;
     }
 
+    @Override
     public List<SeamComponentInfo> getSeamComponents() {
 
         List<SeamComponentInfo> result = new ArrayList<SeamComponentInfo>();
 
         String startPath = getDoc().getPathAsString();
 
-        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '" + startPath + "/'";
+        String query = "select * from NXSeamComponent where ecm:path STARTSWITH '"
+                + startPath + "/'";
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
@@ -385,20 +421,20 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             for (DocumentModel doc : docs) {
                 result.add(doc.getAdapter(SeamComponentInfo.class));
             }
-        }
-        catch (Exception e) {
-            log.error("Unable to fetch NXService",e);
+        } catch (Exception e) {
+            log.error("Unable to fetch NXService", e);
         }
         return result;
     }
 
+    @Override
     public boolean containsSeamComponents() {
-        return getSeamComponentIds().size()>0;
+        return getSeamComponentIds().size() > 0;
     }
 
     @Override
     public JavaDocHelper getJavaDocHelper() {
-        if (jdocHelper==null) {
+        if (jdocHelper == null) {
             jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
         }
         return jdocHelper;

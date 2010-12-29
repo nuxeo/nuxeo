@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.documentation;
 
 import java.io.Serializable;
@@ -49,35 +48,38 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         return doc;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<String> getApplicableVersion() {
         try {
-            return (List<String>) doc
-                    .getPropertyValue("nxdoc:applicableVersions");
+            return (List<String>) doc.getPropertyValue("nxdoc:applicableVersions");
         } catch (Exception e) {
             log.error("Error while reading applicable version", e);
             return new ArrayList<String>();
         }
     }
 
+    @Override
     public String getContent() {
         String encoding = "unset";
         try {
             Blob blob = (Blob) doc.getPropertyValue("file:content");
-            if (blob==null) {
+            if (blob == null) {
                 return "";
             }
             encoding = blob.getEncoding();
-            if (encoding==null || encoding.equals("")) {
+            if (encoding == null || encoding.equals("")) {
                 blob.setEncoding("utf-8");
             }
             return blob.getString();
         } catch (Exception e) {
-            log.error("Error while reading content with encoding " + encoding, e);
+            log.error("Error while reading content with encoding " + encoding,
+                    e);
             return "ERROR : " + e.getMessage();
         }
     }
 
+    @Override
     public String getRenderingType() {
         try {
             return (String) doc.getPropertyValue("nxdoc:renderingType");
@@ -87,6 +89,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     public String getTarget() {
         try {
             return (String) doc.getPropertyValue("nxdoc:target");
@@ -96,6 +99,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     public String getTargetType() {
         try {
             return (String) doc.getPropertyValue("nxdoc:targetType");
@@ -105,6 +109,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     public String getType() {
         try {
             return (String) doc.getPropertyValue("nxdoc:type");
@@ -114,6 +119,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     public String getTypeLabel() {
         String type = getType();
         if ("".equals(type)) {
@@ -139,15 +145,18 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         return "";
     }
 
+    @Override
     public boolean isApproved() {
         try {
-            return (Boolean) doc.getPropertyValue("nxdoc:nuxeoApproved");
+            Boolean approved = (Boolean) doc.getPropertyValue("nxdoc:nuxeoApproved");
+            return approved == null ? false : approved.booleanValue();
         } catch (Exception e) {
             log.error("Error while reading type", e);
             return false;
         }
     }
 
+    @Override
     public String getId() {
         try {
             return (String) doc.getPropertyValue("nxdoc:documentationId");
@@ -157,10 +166,12 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     public String getUUID() {
         return doc.getId();
     }
 
+    @Override
     public String getTitle() {
         try {
             return (String) doc.getPropertyValue("dc:title");
@@ -170,31 +181,35 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, String> getAttachments() {
         Map<String, String> attachments = new LinkedMap();
         try {
             List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
-            if (atts!=null) {
+            if (atts != null) {
                 for (Map<String, Serializable> att : atts) {
                     Blob attBlob = (Blob) att.get("file");
-                    if (attBlob.getEncoding() == null || attBlob.getEncoding().equals("")) {
+                    if (attBlob.getEncoding() == null
+                            || attBlob.getEncoding().equals("")) {
                         attBlob.setEncoding("utf-8");
                     }
-                    attachments.put((String)att.get("filename"), attBlob.getString());
+                    attachments.put((String) att.get("filename"),
+                            attBlob.getString());
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while reading Attachments", e);
         }
         return attachments;
     }
 
+    @Override
     public boolean isPlaceHolder() {
         return false;
     }
 
+    @Override
     public String getEditId() {
         return getUUID();
     }

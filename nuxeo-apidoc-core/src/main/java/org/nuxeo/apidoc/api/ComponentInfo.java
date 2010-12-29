@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.api;
 
 import java.io.IOException;
@@ -24,13 +22,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public interface ComponentInfo extends NuxeoArtifact {
 
-    String TYPE_NAME ="NXComponent";
+    String TYPE_NAME = "NXComponent";
 
     String getName();
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.adapters;
 
@@ -34,19 +32,18 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- * Factory for DocumentModelAdapters.
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * Factory for DocumentModel adapters.
  */
 public class AdapterFactory implements DocumentAdapterFactory {
 
-    public Object getAdapter(DocumentModel doc, Class adapterClass) {
+    @Override
+    public Object getAdapter(DocumentModel doc, Class<?> adapterClass) {
 
         if (doc == null) {
             return null;
         }
 
-        String adapterClassName =adapterClass.getSimpleName();
+        String adapterClassName = adapterClass.getSimpleName();
 
         if (adapterClassName.equals(BundleGroup.class.getSimpleName())) {
             if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
@@ -125,7 +122,6 @@ public class AdapterFactory implements DocumentAdapterFactory {
                 return new SeamComponentInfoDocAdapter(doc);
             }
         }
-
 
         return null;
     }

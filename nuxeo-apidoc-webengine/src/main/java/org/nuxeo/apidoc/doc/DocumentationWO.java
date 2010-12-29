@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.doc;
 
 import java.util.ArrayList;
@@ -44,8 +43,10 @@ public class DocumentationWO extends DefaultObject {
     @Produces("text/html")
     public Object viewAll() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
-        return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
+        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(
+                getContext().getCoreSession(), null, null);
+        return getView("index").arg("distId", ctx.getProperty("distId")).arg(
+                "docsByCat", docs);
     }
 
     @GET
@@ -56,7 +57,8 @@ public class DocumentationWO extends DefaultObject {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
         ArtifactSearcher searcher = Framework.getLocalService(ArtifactSearcher.class);
-        List<DocumentationItem> items = searcher.searchDocumentation(getContext().getCoreSession(), fulltext, null);
+        List<DocumentationItem> items = searcher.searchDocumentation(
+                getContext().getCoreSession(), fulltext, null);
         Map<String, String> categories = ds.getCategories();
 
         Map<String, List<DocumentationItem>> docs = new HashMap<String, List<DocumentationItem>>();
@@ -73,19 +75,22 @@ public class DocumentationWO extends DefaultObject {
                 docs.put(catLabel, itemList);
             }
         }
-        return getView("index")
-                .arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs).arg("searchFilter", fulltext);
+        return getView("index").arg("distId", ctx.getProperty("distId")).arg(
+                "docsByCat", docs).arg("searchFilter", fulltext);
     }
 
     @GET
     @Produces("text/html")
     @Path(value = "view/{docUUID}")
-    public Object viewDoc(@PathParam("docUUID") String docUUID) throws Exception {
+    public Object viewDoc(@PathParam("docUUID") String docUUID)
+            throws Exception {
         DocumentRef docRef = new IdRef(docUUID);
-        DocumentModel docModel = getContext().getCoreSession().getDocument(docRef);
-        DocumentationItem doc=docModel.getAdapter(DocumentationItem.class);
+        DocumentModel docModel = getContext().getCoreSession().getDocument(
+                docRef);
+        DocumentationItem doc = docModel.getAdapter(DocumentationItem.class);
 
-        return getView("viewSingleDoc").arg("distId", ctx.getProperty("distId")).arg("doc", doc);
+        return getView("viewSingleDoc").arg("distId", ctx.getProperty("distId")).arg(
+                "doc", doc);
     }
 
 }

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-apidoc-server-parent</artifactId>
-    <version>5.4.0</version>
+    <version>5.4.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -14,7 +14,6 @@
   <name>Nuxeo Documentation Server Core</name>
   <description>Documentation Server for Nuxeo API</description>
   <packaging>jar</packaging>
-
 
   <build>
     <plugins>
@@ -36,20 +35,20 @@
     </plugins>
   </build>
 
-<dependencies>
+  <dependencies>
 
-  <dependency>
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <version>${nuxeo.core.version}</version>
     </dependency>
 
- <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
       <version>${nuxeo.core.version}</version>
     </dependency>
-  <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-io</artifactId>
       <version>${nuxeo.core.version}</version>
@@ -75,11 +74,11 @@
     </dependency>
 
     <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>1.4</version>
-        <scope>test</scope>
-      </dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+      <scope>test</scope>
+    </dependency>
 
 
     <dependency>
@@ -91,8 +90,8 @@
 
 
     <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
     </dependency>
 
 
@@ -121,10 +120,10 @@
       <scope>test</scope>
     </dependency>
 
-	<dependency>
-		<groupId>org.jboss.seam</groupId>
-		<artifactId>jboss-seam</artifactId>
-	</dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -132,7 +131,7 @@
       <scope>test</scope>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
       <version>${nuxeo.features.version}</version>

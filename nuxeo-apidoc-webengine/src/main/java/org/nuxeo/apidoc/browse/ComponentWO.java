@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
@@ -33,13 +30,10 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
 @WebObject(type = "component")
-public class ComponentWO  extends NuxeoArtifactWebObject {
+public class ComponentWO extends NuxeoArtifactWebObject {
 
+    @Override
     @GET
     @Produces("text/html")
     @Path(value = "introspection")
@@ -50,7 +44,8 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     }
 
     public ComponentInfo getTargetComponentInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getComponent(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),
+                ctx.getCoreSession()).getComponent(nxArtifactId);
     }
 
     @Override
@@ -61,8 +56,8 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     public List<ServiceWO> getServices() {
         List<ServiceWO> result = new ArrayList<ServiceWO>();
         ComponentInfo ci = getTargetComponentInfo();
-        for (ServiceInfo si : ci.getServices() ) {
-            result.add((ServiceWO)ctx.newObject("service", si.getId()));
+        for (ServiceInfo si : ci.getServices()) {
+            result.add((ServiceWO) ctx.newObject("service", si.getId()));
         }
         return result;
     }
@@ -70,8 +65,9 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     public List<ExtensionPointWO> getExtensionPoints() {
         List<ExtensionPointWO> result = new ArrayList<ExtensionPointWO>();
         ComponentInfo ci = getTargetComponentInfo();
-        for (ExtensionPointInfo ei  : ci.getExtensionPoints() ) {
-            result.add((ExtensionPointWO)ctx.newObject("extensionPoint", ei.getId()));
+        for (ExtensionPointInfo ei : ci.getExtensionPoints()) {
+            result.add((ExtensionPointWO) ctx.newObject("extensionPoint",
+                    ei.getId()));
         }
         return result;
     }
@@ -79,8 +75,9 @@ public class ComponentWO  extends NuxeoArtifactWebObject {
     public List<ContributionWO> getContributions() {
         List<ContributionWO> result = new ArrayList<ContributionWO>();
         ComponentInfo ci = getTargetComponentInfo();
-        for (ExtensionInfo ei  : ci.getExtensions() ) {
-            result.add((ContributionWO)ctx.newObject("contribution", ei.getId()));
+        for (ExtensionInfo ei : ci.getExtensions()) {
+            result.add((ContributionWO) ctx.newObject("contribution",
+                    ei.getId()));
         }
         return result;
     }

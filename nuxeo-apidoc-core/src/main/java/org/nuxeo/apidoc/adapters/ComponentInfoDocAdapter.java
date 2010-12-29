@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.adapters;
 
@@ -38,16 +36,15 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
-public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
+public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
+        implements ComponentInfo {
 
     public ComponentInfoDocAdapter(DocumentModel doc) {
         super(doc);
     }
 
-    public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath) throws Exception {
+    public static ComponentInfoDocAdapter create(ComponentInfo componentInfo,
+            CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -61,20 +58,25 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", componentInfo.getName());
         doc.setPropertyValue("nxcomponent:componentId", componentInfo.getId());
-        doc.setPropertyValue("nxcomponent:componentName", componentInfo.getName());
-        doc.setPropertyValue("nxcomponent:componentClass", componentInfo.getComponentClass());
-        doc.setPropertyValue("nxcomponent:builtInDocumentation", componentInfo.getDocumentation());
-        doc.setPropertyValue("nxcomponent:isXML", componentInfo.isXmlPureComponent());
-        doc.setPropertyValue("nxcomponent:services", (Serializable) componentInfo.getServiceNames());
+        doc.setPropertyValue("nxcomponent:componentName",
+                componentInfo.getName());
+        doc.setPropertyValue("nxcomponent:componentClass",
+                componentInfo.getComponentClass());
+        doc.setPropertyValue("nxcomponent:builtInDocumentation",
+                componentInfo.getDocumentation());
+        doc.setPropertyValue("nxcomponent:isXML",
+                Boolean.valueOf(componentInfo.isXmlPureComponent()));
+        doc.setPropertyValue("nxcomponent:services",
+                (Serializable) componentInfo.getServiceNames());
 
         Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
-        String xmlFileName ="descriptor.xml";
-        if (componentInfo.getXmlFileUrl()!=null) {
+        String xmlFileName = "descriptor.xml";
+        if (componentInfo.getXmlFileUrl() != null) {
             xmlFileName = new Path(componentInfo.getXmlFileUrl().getFile()).lastSegment();
         }
         xmlBlob.setFilename(xmlFileName);
         xmlBlob.setMimeType("text/xml");
-        doc.setPropertyValue("file:content",(Serializable) xmlBlob);
+        doc.setPropertyValue("file:content", (Serializable) xmlBlob);
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -84,39 +86,45 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return new ComponentInfoDocAdapter(doc);
     }
 
+    @Override
     public BundleInfo getBundle() {
         try {
-            DocumentModel parent = getCoreSession().getDocument(doc.getParentRef());
+            DocumentModel parent = getCoreSession().getDocument(
+                    doc.getParentRef());
             return parent.getAdapter(BundleInfo.class);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // TODO: handle exception
         }
         return null;
     }
 
+    @Override
     public String getComponentClass() {
         return safeGet("nxcomponent:componentClass");
     }
 
+    @Override
     public String getDocumentation() {
         return safeGet("nxcomponent:builtInDocumentation");
     }
 
+    @Override
     public ExtensionPointInfo getExtensionPoint(String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public Collection<ExtensionPointInfo> getExtensionPoints() {
         List<ExtensionPointInfo> xps = new ArrayList<ExtensionPointInfo>();
         try {
-            String query = "select * from NXExtensionPoint where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
+            String query = "select * from NXExtensionPoint where ecm:path STARTSWITH '"
+                    + doc.getPathAsString() + "'";
 
             DocumentModelList docs = getCoreSession().query(query);
-            for(DocumentModel child : docs) {
+            for (DocumentModel child : docs) {
                 ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
-                if (xp!=null) {
+                if (xp != null) {
                     xps.add(xp);
                 }
             }
@@ -126,15 +134,17 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return xps;
     }
 
+    @Override
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
         try {
-            String query = "select * from NXContribution where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
+            String query = "select * from NXContribution where ecm:path STARTSWITH '"
+                    + doc.getPathAsString() + "'";
 
             DocumentModelList docs = getCoreSession().query(query);
-            for(DocumentModel child : docs) {
+            for (DocumentModel child : docs) {
                 ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
-                if (xp!=null) {
+                if (xp != null) {
                     contribs.add(xp);
                 }
             }
@@ -144,25 +154,27 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return contribs;
     }
 
+    @Override
     public String getName() {
         return safeGet("nxcomponent:componentName");
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<String> getServiceNames() {
         try {
             return (List<String>) doc.getPropertyValue("nxcomponent:services");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while getting service names", e);
         }
         return null;
     }
 
+    @Override
     public String getXmlFileContent() throws IOException {
         try {
             Blob xml = safeGet(Blob.class, "file:content", null);
-            if (xml.getEncoding()==null || "".equals(xml.getEncoding())) {
+            if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
                 xml.setEncoding("utf-8");
             }
             return xml.getString();
@@ -172,21 +184,25 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         }
     }
 
+    @Override
     public String getXmlFileName() {
         Blob xml = safeGet(Blob.class, "file:content", null);
-        if (xml!=null) {
+        if (xml != null) {
             return xml.getFilename();
         } else {
             return null;
         }
     }
 
+    @Override
     public URL getXmlFileUrl() {
         return null;
     }
 
+    @Override
     public boolean isXmlPureComponent() {
-        return safeGet(Boolean.class,"nxcomponent:isXML", new Boolean(true));
+        Boolean isXml = safeGet(Boolean.class, "nxcomponent:isXML", Boolean.TRUE);
+        return isXml == null ? true : isXml.booleanValue();
     }
 
     @Override
@@ -194,11 +210,12 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return getName();
     }
 
+    @Override
     public String getVersion() {
 
         BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
-        if (parentBundle!=null) {
+        if (parentBundle != null) {
             return parentBundle.getVersion();
         }
 
@@ -206,17 +223,18 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return "?";
     }
 
-
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
-
+    @Override
     public List<ServiceInfo> getServices() {
 
         List<ServiceInfo> result = new ArrayList<ServiceInfo>();
 
-        String query = "select * from NXService where ecm:path STARTSWITH '" + getDoc().getPathAsString() + "/'";
+        String query = "select * from NXService where ecm:path STARTSWITH '"
+                + getDoc().getPathAsString() + "/'";
 
         try {
             DocumentModelList docs = getCoreSession().query(query);
@@ -224,13 +242,12 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             for (DocumentModel siDoc : docs) {
 
                 ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
-                if (si!=null) {
+                if (si != null) {
                     result.add(si);
                 }
             }
-        }
-        catch (Exception e) {
-            log.error("Unable to fetch NXService",e);
+        } catch (Exception e) {
+            log.error("Unable to fetch NXService", e);
         }
         return result;
     }

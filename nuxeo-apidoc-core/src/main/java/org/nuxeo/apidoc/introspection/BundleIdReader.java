@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.introspection;
 
 import java.io.BufferedInputStream;
@@ -52,7 +49,7 @@ public class BundleIdReader {
             for (int i = 0; i < size; i++) {
                 String key = in.readUTF();
                 long id = in.readLong();
-                ids.put(key, id);
+                ids.put(key, Long.valueOf(id));
             }
         } catch (FileNotFoundException e) {
             // do nothing - this is the first time the runtime is started

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.snapshot;
 
 import java.util.List;
@@ -30,14 +27,9 @@ import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 
-/**
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
-    String TYPE_NAME ="NXDistribution";
+    String TYPE_NAME = "NXDistribution";
 
     String getKey();
 
@@ -71,7 +63,7 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     List<String> getBundleGroupChildren(String groupId);
 
-    List<Class> getSpi();
+    List<Class<?>> getSpi();
 
     List<String> getSeamComponentIds();
 

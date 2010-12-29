@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.api;
 
 import java.util.List;
@@ -58,7 +57,8 @@ public interface DocumentationItem {
     String getTarget();
 
     /**
-     * Gets the Type of the target documented artifact (NXBundle, NXComponent ...)
+     * Gets the Type of the target documented artifact (NXBundle, NXComponent
+     * ...)
      */
     String getTargetType();
 
@@ -90,8 +90,8 @@ public interface DocumentationItem {
     boolean isPlaceHolder();
 
     /**
-     * Return the id used by quick editor
-     * (can contains a real UUID for existing doc or an artifact id for new one)
+     * Return the id used by quick editor (can contains a real UUID for existing
+     * doc or an artifact id for new one)
      *
      * @return
      */

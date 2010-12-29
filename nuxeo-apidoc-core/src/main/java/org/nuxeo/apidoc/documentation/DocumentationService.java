@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.documentation;
 
 import java.io.InputStream;
@@ -29,26 +28,35 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface DocumentationService {
 
-     DocumentationItem createDocumentationItem(CoreSession session, NuxeoArtifact item,String title, String content, String type, List<String> applicableVersions, boolean approved, String renderingType) throws ClientException;
+    DocumentationItem createDocumentationItem(CoreSession session,
+            NuxeoArtifact item, String title, String content, String type,
+            List<String> applicableVersions, boolean approved,
+            String renderingType) throws ClientException;
 
-     DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem) throws ClientException;
+    DocumentationItem updateDocumentationItem(CoreSession session,
+            DocumentationItem docItem) throws ClientException;
 
-     List<DocumentationItem> findDocumentItems(CoreSession session,NuxeoArtifact nxItem) throws ClientException;
+    List<DocumentationItem> findDocumentItems(CoreSession session,
+            NuxeoArtifact nxItem) throws ClientException;
 
-     List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item) throws ClientException;
+    List<DocumentationItem> findDocumentationItemVariants(CoreSession session,
+            DocumentationItem item) throws ClientException;
 
-     Map<String, String> getCategories()  throws Exception;
+    Map<String, String> getCategories() throws Exception;
 
-     List<String> getCategoryKeys()  throws Exception;
+    List<String> getCategoryKeys() throws Exception;
 
-     void exportDocumentation(CoreSession session, OutputStream out);
+    void exportDocumentation(CoreSession session, OutputStream out);
 
-     void importDocumentation(CoreSession session,InputStream is);
+    void importDocumentation(CoreSession session, InputStream is);
 
-     String getDocumentationStats(CoreSession session);
+    String getDocumentationStats(CoreSession session);
 
-     Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType) throws Exception;
+    Map<String, List<DocumentationItem>> listDocumentationItems(
+            CoreSession session, String category, String targetType)
+            throws Exception;
 
-     Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType) throws Exception;
+    Map<String, DocumentationItem> getAvailableDescriptions(
+            CoreSession session, String targetType) throws Exception;
 
 }

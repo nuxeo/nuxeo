@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.documentation;
 
 import java.io.InputStream;
@@ -69,9 +68,11 @@ public class DocumentationComponent extends DefaultComponent implements
     public static final String DIRECTORY_NAME = "documentationTypes";
 
     public static final String Root_PATH = "/";
+
     public static final String Root_NAME = "nuxeo-api-doc";
 
     public static final String Read_Grp = SecurityConstants.Read_Group;
+
     public static final String Write_Grp = SecurityConstants.Write_Group;
 
     protected static final Log log = LogFactory.getLog(DocumentationComponent.class);
@@ -92,13 +93,14 @@ public class DocumentationComponent extends DefaultComponent implements
 
         @Override
         public void run() throws ClientException {
-            DocumentModel root = session.createDocumentModel(Root_PATH,Root_NAME,"Folder");
+            DocumentModel root = session.createDocumentModel(Root_PATH,
+                    Root_NAME, "Folder");
             root.setProperty("dublincore", "title", Root_NAME);
             root = session.createDocument(root);
 
             ACL acl = new ACLImpl();
-            acl.add(new ACE(Write_Grp,"Write",true));
-            acl.add(new ACE(Read_Grp,"Read",true));
+            acl.add(new ACE(Write_Grp, "Write", true));
+            acl.add(new ACE(Read_Grp, "Read", true));
             ACP acp = root.getACP();
             acp.addACL(acl);
             session.setACP(root.getRef(), acp, true);
@@ -139,14 +141,17 @@ public class DocumentationComponent extends DefaultComponent implements
         return null;
     }
 
-    public Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType) throws Exception {
+    @Override
+    public Map<String, List<DocumentationItem>> listDocumentationItems(
+            CoreSession session, String category, String targetType)
+            throws Exception {
 
         String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
 
         if (category != null) {
             query += " AND nxdoc:type='" + category + "' ";
         }
-        if (targetType!=null) {
+        if (targetType != null) {
             query += " AND nxdoc:targetType='" + targetType + "' ";
         }
 
@@ -195,13 +200,18 @@ public class DocumentationComponent extends DefaultComponent implements
         return sortedResult;
     }
 
+    @Override
     public List<DocumentationItem> findDocumentItems(CoreSession session,
             NuxeoArtifact nxItem) throws ClientException {
 
         String id = nxItem.getId();
         String type = nxItem.getArtifactType();
-        String query = "select * from NXDocumentation where nxdoc:target='" + id + "' AND nxdoc:targetType='" + type + "' AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
-        List<DocumentModel> docs =  session.query(query);
+        String query = "select * from NXDocumentation where nxdoc:target='"
+                + id
+                + "' AND nxdoc:targetType='"
+                + type
+                + "' AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
+        List<DocumentModel> docs = session.query(query);
 
         Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
         for (DocumentModel doc : docs) {
@@ -220,13 +230,15 @@ public class DocumentationComponent extends DefaultComponent implements
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
 
         for (String documentationId : sortMap.keySet()) {
-            DocumentationItem bestDoc = findBestMatch(nxItem, sortMap.get(documentationId));
+            DocumentationItem bestDoc = findBestMatch(nxItem,
+                    sortMap.get(documentationId));
             result.add(bestDoc);
         }
         return result;
     }
 
-    protected DocumentationItem findBestMatch(NuxeoArtifact nxItem, List<DocumentationItem> docItems) {
+    protected DocumentationItem findBestMatch(NuxeoArtifact nxItem,
+            List<DocumentationItem> docItems) {
         for (DocumentationItem docItem : docItems) {
             // get first possible because already sorted on modification date
             if (docItem.getApplicableVersion().contains(nxItem.getVersion())) {
@@ -237,36 +249,41 @@ public class DocumentationComponent extends DefaultComponent implements
         return docItems.get(0);
     }
 
+    @Override
     public List<DocumentationItem> findDocumentationItemVariants(
             CoreSession session, DocumentationItem item) throws ClientException {
 
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
         List<DocumentModel> docs = findDocumentModelVariants(session, item);
 
-        for (DocumentModel doc: docs) {
+        for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
-            if (docItem!=null) {
+            if (docItem != null) {
                 result.add(docItem);
             }
         }
         return result;
     }
 
-    public List<DocumentModel> findDocumentModelVariants(
-            CoreSession session, DocumentationItem item) throws ClientException {
+    public List<DocumentModel> findDocumentModelVariants(CoreSession session,
+            DocumentationItem item) throws ClientException {
         String id = item.getId();
         String type = item.getTargetType();
-        String query = "select * from NXDocumentation where nxdoc:documentationId='" + id + "' AND nxdoc:targetType='" + type + "'AND ecm:currentLifeCycleState != 'deleted'";
+        String query = "select * from NXDocumentation where nxdoc:documentationId='"
+                + id
+                + "' AND nxdoc:targetType='"
+                + type
+                + "'AND ecm:currentLifeCycleState != 'deleted'";
         return session.query(query);
     }
 
+    @Override
     public DocumentationItem createDocumentationItem(CoreSession session,
             NuxeoArtifact item, String title, String content, String type,
             List<String> applicableVersions, boolean approved,
             String renderingType) throws ClientException {
 
-        DocumentModel doc = session
-                .createDocumentModel(DocumentationItemDocAdapter.DOC_TYPE);
+        DocumentModel doc = session.createDocumentModel(DocumentationItemDocAdapter.DOC_TYPE);
 
         String name = title + '-' + item.getId();
         name = IdUtils.generateId(name, "-", true, 64);
@@ -279,11 +296,11 @@ public class DocumentationComponent extends DefaultComponent implements
         blob.setFilename(type);
         blob.setMimeType("text/plain");
         blob.setEncoding("utf-8");
-        doc.setPropertyValue("file:content", (Serializable)blob);
+        doc.setPropertyValue("file:content", (Serializable) blob);
         doc.setPropertyValue("nxdoc:target", item.getId());
         doc.setPropertyValue("nxdoc:targetType", item.getArtifactType());
         doc.setPropertyValue("nxdoc:documentationId", docUUID.toString());
-        doc.setPropertyValue("nxdoc:nuxeoApproved", approved);
+        doc.setPropertyValue("nxdoc:nuxeoApproved", Boolean.valueOf(approved));
         doc.setPropertyValue("nxdoc:type", type);
         doc.setPropertyValue("nxdoc:renderingType", renderingType);
         doc.setPropertyValue("nxdoc:applicableVersions",
@@ -295,7 +312,8 @@ public class DocumentationComponent extends DefaultComponent implements
         return doc.getAdapter(DocumentationItem.class);
     }
 
-    protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) throws ClientException{
+    protected DocumentModel updateDocumentModel(DocumentModel doc,
+            DocumentationItem item) throws ClientException {
 
         doc.setPropertyValue("dc:title", item.getTitle());
         Blob content = new StringBlob(item.getContent());
@@ -304,14 +322,15 @@ public class DocumentationComponent extends DefaultComponent implements
         content.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable) content);
         doc.setPropertyValue("nxdoc:documentationId", item.getId());
-        doc.setPropertyValue("nxdoc:nuxeoApproved", item.isApproved());
+        doc.setPropertyValue("nxdoc:nuxeoApproved",
+                Boolean.valueOf(item.isApproved()));
         doc.setPropertyValue("nxdoc:renderingType", item.getRenderingType());
         doc.setPropertyValue("nxdoc:applicableVersions",
                 (Serializable) item.getApplicableVersion());
 
         List<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
         Map<String, String> attData = item.getAttachments();
-        if (attData!=null && attData.size()>0) {
+        if (attData != null && attData.size() > 0) {
             for (String fileName : attData.keySet()) {
                 Map<String, Serializable> fileItem = new HashMap<String, Serializable>();
                 Blob blob = new StringBlob(attData.get(fileName));
@@ -330,10 +349,12 @@ public class DocumentationComponent extends DefaultComponent implements
         return doc;
     }
 
-    public DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem)
-            throws ClientException {
+    @Override
+    public DocumentationItem updateDocumentationItem(CoreSession session,
+            DocumentationItem docItem) throws ClientException {
 
-        DocumentModel existingDoc = session.getDocument(new IdRef(docItem.getUUID()));
+        DocumentModel existingDoc = session.getDocument(new IdRef(
+                docItem.getUUID()));
         DocumentationItem existingDocItem = existingDoc.getAdapter(DocumentationItem.class);
 
         List<String> applicableVersions = docItem.getApplicableVersion();
@@ -344,10 +365,11 @@ public class DocumentationComponent extends DefaultComponent implements
             if (!applicableVersions.contains(version)) {
                 discardedVersion.add(version);
             }
-            // XXX check for older versions in case of inconsistent applicableVersions values ...
+            // XXX check for older versions in case of inconsistent
+            // applicableVersions values ...
         }
 
-        if (discardedVersion.size()>0) {
+        if (discardedVersion.size() > 0) {
             // save old version
             String newName = existingDoc.getName();
             Collections.sort(discardedVersion);
@@ -356,8 +378,10 @@ public class DocumentationComponent extends DefaultComponent implements
             }
             newName = IdUtils.generateId(newName, "-", true, 100);
 
-            DocumentModel discardedDoc = session.copy(existingDoc.getRef(), existingDoc.getParentRef(), newName);
-            discardedDoc.setPropertyValue("nxdoc:applicableVersions", (Serializable) discardedVersion);
+            DocumentModel discardedDoc = session.copy(existingDoc.getRef(),
+                    existingDoc.getParentRef(), newName);
+            discardedDoc.setPropertyValue("nxdoc:applicableVersions",
+                    (Serializable) discardedVersion);
 
             discardedDoc = session.saveDocument(discardedDoc);
         }
@@ -368,8 +392,8 @@ public class DocumentationComponent extends DefaultComponent implements
         return existingDoc.getAdapter(DocumentationItem.class);
     }
 
-
-    public List<String> getCategoryKeys()  throws Exception {
+    @Override
+    public List<String> getCategoryKeys() throws Exception {
 
         List<String> categories = new ArrayList<String>();
 
@@ -386,7 +410,8 @@ public class DocumentationComponent extends DefaultComponent implements
         return categories;
     }
 
-    public Map<String, String> getCategories()  throws Exception {
+    @Override
+    public Map<String, String> getCategories() throws Exception {
         Map<String, String> categories = new HashMap<String, String>();
 
         DirectoryService dm = Framework.getService(DirectoryService.class);
@@ -403,6 +428,7 @@ public class DocumentationComponent extends DefaultComponent implements
         return categories;
     }
 
+    @Override
     public void exportDocumentation(CoreSession session, OutputStream out) {
         try {
             String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
@@ -420,7 +446,8 @@ public class DocumentationComponent extends DefaultComponent implements
         }
     }
 
-    public void importDocumentation(CoreSession session, InputStream is ) {
+    @Override
+    public void importDocumentation(CoreSession session, InputStream is) {
         try {
             String importPath = getDocumentationRoot(session).getPathAsString();
             DocumentReader reader = new NuxeoArchiveReader(is);
@@ -430,6 +457,7 @@ public class DocumentationComponent extends DefaultComponent implements
             pipe.setReader(reader);
             pipe.setWriter(writer);
             DocumentTransformer rootCutter = new DocumentTransformer() {
+                @Override
                 public boolean transform(ExportedDocument doc) {
                     doc.setPath(doc.getPath().removeFirstSegments(1));
                     return true;
@@ -439,33 +467,35 @@ public class DocumentationComponent extends DefaultComponent implements
             pipe.run();
             reader.close();
             writer.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while importing documentation", e);
         }
     }
 
+    @Override
     public String getDocumentationStats(CoreSession session) {
-        String result="";
+        String result = "";
         try {
             String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
             DocumentModelList docList = session.query(query);
             result = docList.size() + " documents";
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while exporting documentation", e);
         }
         return result;
     }
 
+    @Override
     public Map<String, DocumentationItem> getAvailableDescriptions(
             CoreSession session, String targetType) throws Exception {
 
-        Map<String, List<DocumentationItem>> itemsByCat = listDocumentationItems(session, DefaultDocumentationType.DESCRIPTION.getValue(), targetType);
+        Map<String, List<DocumentationItem>> itemsByCat = listDocumentationItems(
+                session, DefaultDocumentationType.DESCRIPTION.getValue(),
+                targetType);
         Map<String, DocumentationItem> result = new HashMap<String, DocumentationItem>();
 
-        if (itemsByCat.size()>0) {
+        if (itemsByCat.size() > 0) {
             String labelKey = itemsByCat.keySet().iterator().next();
             List<DocumentationItem> docs = itemsByCat.get(labelKey);
             for (DocumentationItem doc : docs) {

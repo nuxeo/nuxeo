@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.test;
 
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         return Framework.getLocalService(SnapshotManager.class);
     }
 
-
     public void testService() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         assertNotNull(ds);
@@ -79,7 +77,8 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
 
     }
 
-    protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact) throws Exception {
+    protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact)
+            throws Exception {
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
@@ -87,14 +86,17 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         applicableVersions.add(artifact.getVersion());
 
         // create and verify
-        DocumentationItem item = ds.createDocumentationItem(session,artifact, "testTitle", "testContent", "", applicableVersions, true, "");
+        DocumentationItem item = ds.createDocumentationItem(session, artifact,
+                "testTitle", "testContent", "", applicableVersions, true, "");
         assertNotNull(item);
-        List<DocumentationItem> variants = ds.findDocumentationItemVariants(session, item);
+        List<DocumentationItem> variants = ds.findDocumentationItemVariants(
+                session, item);
         assertEquals(1, variants.size());
         assertEquals("testTitle", variants.get(0).getTitle());
         assertEquals("testContent", variants.get(0).getContent());
 
-        List<DocumentationItem> foundItems = ds.findDocumentItems(session, artifact);
+        List<DocumentationItem> foundItems = ds.findDocumentItems(session,
+                artifact);
         assertEquals(1, foundItems.size());
         assertEquals("testTitle", foundItems.get(0).getTitle());
         assertEquals("testContent", foundItems.get(0).getContent());
@@ -148,13 +150,12 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         assertEquals("newContent2", foundItems.get(0).getContent());
 
         FakeNuxeoArtifact testArtifact = new FakeNuxeoArtifact(artifact);
-        testArtifact.version= "v3";
+        testArtifact.version = "v3";
         foundItems = ds.findDocumentItems(session, testArtifact);
         assertEquals(1, foundItems.size());
         assertEquals("testTitle", foundItems.get(0).getTitle());
         assertEquals("newContent3", foundItems.get(0).getContent());
 
     }
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.test;
 
 import org.nuxeo.apidoc.api.AssociatedDocuments;
@@ -35,22 +34,27 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
         type = artifact.getArtifactType();
     }
 
+    @Override
     public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
         return null;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getVersion() {
         return version;
     }
 
+    @Override
     public String getArtifactType() {
         return type;
     }
 
+    @Override
     public String getHierarchyPath() {
         // TODO Auto-generated method stub
         return null;

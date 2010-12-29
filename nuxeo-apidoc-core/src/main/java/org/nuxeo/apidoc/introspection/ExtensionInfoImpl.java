@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.introspection;
 
@@ -21,14 +22,13 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.runtime.model.ComponentName;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
-public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
+public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
+        ExtensionInfo {
 
     protected String id;
+
     protected ComponentInfoImpl component;
+
     protected String extensionPoint;
 
     protected String documentation;
@@ -45,6 +45,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.extensionPoint = xpoint;
     }
 
+    @Override
     public String getExtensionPoint() {
         return targetComponentName.getName() + "--" + extensionPoint;
     }
@@ -66,10 +67,12 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.documentation = documentation;
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
 
+    @Override
     public ComponentName getTargetComponentName() {
         return targetComponentName;
     }
@@ -86,6 +89,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.contribution = contribution;
     }
 
+    @Override
     public String getXml() {
         return xml;
     }
@@ -94,16 +98,20 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.xml = xml;
     }
 
+    @Override
     public String getVersion() {
         return component.getVersion();
     }
 
+    @Override
     public String getArtifactType() {
         return ExtensionInfo.TYPE_NAME;
     }
 
+    @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
+        return component.getHierarchyPath() + "/"
+                + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
     }
 
 }

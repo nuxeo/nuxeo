@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,21 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public interface BundleGroup extends NuxeoArtifact {
 
-    String TYPE_NAME ="NXBundleGroup";
+    String TYPE_NAME = "NXBundleGroup";
 
     String getName();
 

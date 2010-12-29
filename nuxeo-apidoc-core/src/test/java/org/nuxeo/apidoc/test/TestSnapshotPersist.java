@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,16 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.test;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -35,6 +34,8 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestSnapshotPersist extends SQLRepositoryTestCase {
+
+    private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
 
     @Override
     public void setUp() throws Exception {
@@ -64,13 +65,15 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
 
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         for (BundleGroupFlatTree info : tree) {
-            String pad =" ";
-            for (int i = 0 ; i<=info.getLevel(); i++) {
-                pad = pad+ " ";
+            String pad = " ";
+            for (int i = 0; i <= info.getLevel(); i++) {
+                pad = pad + " ";
             }
-            sb.append(pad + "- " + info.getGroup().getName() + "("+ info.getGroup().getId()+")");
+            sb.append(pad + "- " + info.getGroup().getName() + "("
+                    + info.getGroup().getId() + ")");
             sb.append(" *** ");
-            sb.append(info.getGroup().getHierarchyPath());;
+            sb.append(info.getGroup().getHierarchyPath());
+            ;
             sb.append("\n");
         }
 
@@ -135,29 +138,31 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
 
         String rtDump = dumpSnapshot(runtimeSnapshot);
-        System.out.println("Live Dump:");
-        System.out.println(rtDump);
+        log.info("Live Dump:");
+        log.info(rtDump);
 
-        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
+        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(
+                session);
         assertNotNull(persistent);
 
         session.save();
 
-        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
+        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(),
+                session);
         assertNotNull(persistent);
         session.save();
 
-        /*DocumentModelList docs = session.query("select * from NXBundle");
-        for (DocumentModel doc : docs) {
-            System.out.println("Bundle : " + doc.getTitle() + " --- " + doc.getPathAsString());
-        }*/
+        /*
+         * DocumentModelList docs = session.query("select * from NXBundle"); for
+         * (DocumentModel doc : docs) { log.info("Bundle : " + doc.getTitle() +
+         * " --- " + doc.getPathAsString()); }
+         */
 
         String pDump = dumpSnapshot(persistent);
-        System.out.println("Persisted Dump:");
-        System.out.println(pDump);
+        log.info("Persisted Dump:");
+        log.info(pDump);
 
         assertEquals(rtDump, pDump);
-
 
     }
 

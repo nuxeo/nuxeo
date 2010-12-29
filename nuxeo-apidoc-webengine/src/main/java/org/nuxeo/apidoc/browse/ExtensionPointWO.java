@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import javax.ws.rs.GET;
@@ -28,12 +25,10 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 @WebObject(type = "extensionPoint")
 public class ExtensionPointWO extends NuxeoArtifactWebObject {
 
+    @Override
     @GET
     @Produces("text/html")
     @Path(value = "introspection")
@@ -43,14 +38,14 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionPointInfo getTargetExtensionPointInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),
+                ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
     }
 
     @Override
     public NuxeoArtifact getNxArtifact() {
         return getTargetExtensionPointInfo();
     }
-
 
     @GET
     @Produces("text/html")
@@ -59,8 +54,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
         NuxeoArtifact nxItem = getNxArtifact();
         getTargetExtensionPointInfo().getExtensions();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("simple")
-                .arg("nxItem", nxItem).arg("docs", docs);
+        return getView("simple").arg("nxItem", nxItem).arg("docs", docs);
     }
 
 }

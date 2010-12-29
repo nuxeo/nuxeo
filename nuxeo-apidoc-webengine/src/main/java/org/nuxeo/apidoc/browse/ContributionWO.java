@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import javax.ws.rs.GET;
@@ -27,13 +24,10 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
 @WebObject(type = "contribution")
 public class ContributionWO extends NuxeoArtifactWebObject {
 
+    @Override
     @GET
     @Produces("text/html")
     @Path(value = "introspection")
@@ -43,7 +37,8 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionInfo getTargetExtensionInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),ctx.getCoreSession()).getContribution(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(),
+                ctx.getCoreSession()).getContribution(nxArtifactId);
     }
 
     @Override

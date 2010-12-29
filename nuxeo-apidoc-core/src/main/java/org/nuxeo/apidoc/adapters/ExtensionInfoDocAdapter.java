@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.adapters;
 
 import java.io.IOException;
@@ -33,9 +30,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements ExtensionInfo {
 
@@ -55,12 +49,12 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue("dc:title", xi.getId());
 
         doc.setPropertyValue("nxcontribution:contribId", xi.getId());
-        doc.setPropertyValue("nxcontribution:documentation", xi
-                .getDocumentation());
-        doc.setPropertyValue("nxcontribution:extensionPoint", xi
-                .getExtensionPoint());
-        doc.setPropertyValue("nxcontribution:targetComponentName", xi
-                .getTargetComponentName().getName());
+        doc.setPropertyValue("nxcontribution:documentation",
+                xi.getDocumentation());
+        doc.setPropertyValue("nxcontribution:extensionPoint",
+                xi.getExtensionPoint());
+        doc.setPropertyValue("nxcontribution:targetComponentName",
+                xi.getTargetComponentName().getName());
 
         Blob xmlBlob = new StringBlob(xi.getXml());
         xmlBlob.setFilename("contrib.xml"); // !!!!!
@@ -80,10 +74,12 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         super(doc);
     }
 
+    @Override
     public String getDocumentation() {
         return safeGet("nxcontribution:documentation");
     }
 
+    @Override
     public String getExtensionPoint() {
         return safeGet("nxcontribution:extensionPoint");
     }
@@ -93,14 +89,16 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return safeGet("nxcontribution:contribId");
     }
 
+    @Override
     public ComponentName getTargetComponentName() {
         return new ComponentName(safeGet("nxcontribution:targetComponentName"));
     }
 
+    @Override
     public String getXml() {
         try {
             Blob xml = safeGet(Blob.class, "file:content", new StringBlob(""));
-            if (xml.getEncoding()==null || "".equals(xml.getEncoding())) {
+            if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
                 xml.setEncoding("utf-8");
             }
             return xml.getString();
@@ -110,11 +108,12 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
     }
 
+    @Override
     public String getVersion() {
 
         BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
-        if (parentBundle!=null) {
+        if (parentBundle != null) {
             return parentBundle.getVersion();
         }
 
@@ -122,16 +121,17 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return "?";
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
-
 
     @Override
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/"
+                + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
     }
 
 }

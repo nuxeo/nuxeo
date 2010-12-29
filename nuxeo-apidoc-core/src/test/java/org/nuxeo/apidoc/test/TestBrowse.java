@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.test;
 
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestBrowse extends NXRuntimeTestCase {
 
+    private static final Log log = LogFactory.getLog(TestBrowse.class);
 
     @Override
     public void setUp() throws Exception {
@@ -45,19 +46,8 @@ public class TestBrowse extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployContrib("org.nuxeo.apidoc.core", "OSGI-INF/snapshot-service-framework.xml");
-    }
-
-
-    public void testMe() {
-
-        String id = "oprg.nuxeo.class";
-
-        String[] parts = id.split("\\.");
-
-        String name = parts[parts.length-1];
-
-
+        deployContrib("org.nuxeo.apidoc.core",
+                "OSGI-INF/snapshot-service-framework.xml");
     }
 
     protected SnapshotManager getSnapshotManager() {
@@ -72,55 +62,55 @@ public class TestBrowse extends NXRuntimeTestCase {
 
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         for (BundleGroupFlatTree info : tree) {
-            String pad =" ";
-            for (int i = 0 ; i<=info.getLevel(); i++) {
-                pad = pad+ " ";
+            String pad = " ";
+            for (int i = 0; i <= info.getLevel(); i++) {
+                pad = pad + " ";
             }
-            System.out.println(pad + "- " + info.getGroup().getName() + "("+ info.getGroup().getId()+")");
+            log.info(pad + "- " + info.getGroup().getName() + "("
+                    + info.getGroup().getId() + ")");
         }
 
         for (String bid : runtimeSnapshot.getBundleIds()) {
-            System.out.println("bundle : " + bid);
+            log.info("bundle : " + bid);
         }
 
         for (String cid : runtimeSnapshot.getComponentIds()) {
-            System.out.println("component : " + cid);
-            ComponentInfo ci = runtimeSnapshot.getComponent(cid);
-            //System.out.println(ci.getXmlFileContent());
+            log.info("component : " + cid);
+            // ComponentInfo ci = runtimeSnapshot.getComponent(cid);
+            // log.info(ci.getXmlFileContent());
         }
 
         for (String sid : runtimeSnapshot.getServiceIds()) {
-            System.out.println("service : " + sid);
+            log.info("service : " + sid);
         }
 
-        for (Class spi : runtimeSnapshot.getSpi()) {
-            System.out.println("SPI : " + spi.getCanonicalName());
+        for (Class<?> spi : runtimeSnapshot.getSpi()) {
+            log.info("SPI : " + spi.getCanonicalName());
         }
 
         for (String epid : runtimeSnapshot.getExtensionPointIds()) {
-            System.out.println("extensionPoint : " + epid);
-            //System.out.println(ci.getXmlFileContent());
+            log.info("extensionPoint : " + epid);
+            // log.info(ci.getXmlFileContent());
         }
     }
 
     protected void dumpBundleGroup(BundleGroup bGroup, int level) {
 
-        String pad =" ";
-        for (int i = 0 ; i<=level; i++) {
-            pad = pad+ " ";
+        String pad = " ";
+        for (int i = 0; i <= level; i++) {
+            pad = pad + " ";
         }
 
-        System.out.println(pad + "- " + bGroup.getName() + "("+ bGroup.getId()+")");
+        log.info(pad + "- " + bGroup.getName() + "(" + bGroup.getId() + ")");
 
         for (BundleGroup subGroup : bGroup.getSubGroups()) {
-            dumpBundleGroup(subGroup, level+1);
+            dumpBundleGroup(subGroup, level + 1);
         }
 
         for (String bundle : bGroup.getBundleIds()) {
-            System.out.println( pad + "  - bundle : " + bundle);
+            log.info(pad + "  - bundle : " + bundle);
         }
     }
-
 
     public void testIntrospection() throws Exception {
 
@@ -130,10 +120,10 @@ public class TestBrowse extends NXRuntimeTestCase {
         ComponentInfo ci = runtimeSnapshot.getComponent(cid);
         assertNotNull(ci);
 
-        assertEquals(2,ci.getExtensionPoints().size());
+        assertEquals(2, ci.getExtensionPoints().size());
 
         for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
-            System.out.println(epi.getId());
+            log.info(epi.getId());
         }
 
         String epid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService--types";
@@ -143,12 +133,6 @@ public class TestBrowse extends NXRuntimeTestCase {
 
         Collection<ExtensionInfo> contribs = epi.getExtensions();
         assertFalse(contribs.isEmpty());
-    }
-
-    public void testIdGen() {
-        String service="org.nuxeo.ecm.core.service";
-        String[] parts = service.split("\\.");
-        String label = parts[parts.length-1];
     }
 
 }

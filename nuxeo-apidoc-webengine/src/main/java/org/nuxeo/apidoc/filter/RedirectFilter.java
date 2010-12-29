@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.apidoc.filter;
 
 import java.io.IOException;
@@ -38,15 +54,17 @@ public class RedirectFilter extends BaseApiDocFilter {
         httpResponse.sendRedirect(location);
     }
 
-    protected void internalDoFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    @Override
+    protected void internalDoFilter(ServletRequest request,
+            ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         NuxeoPrincipal nxUser = (NuxeoPrincipal) httpRequest.getUserPrincipal();
 
-        if (nxUser!=null && nxUser.isAnonymous()) {
+        if (nxUser != null && nxUser.isAnonymous()) {
             if (!isUriValidForAnnonymous(httpRequest)) {
                 redirectToWebEngineView(httpRequest, httpResponse);
             }

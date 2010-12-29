@@ -1,47 +1,46 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.nuxeo.ecm.platform</groupId>
-		<artifactId>nuxeo-apidoc-server-parent</artifactId>
-		<version>5.4.0</version>
-	</parent>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-apidoc-server-parent</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+  </parent>
 
-	<groupId>org.nuxeo.ecm.platform</groupId>
-	<artifactId>nuxeo-apidoc-webengine</artifactId>
-	<name>Nuxeo Documentation Server Webengine front end</name>
-	<description>Documentation Web Server for Nuxeo API</description>
-	<packaging>jar</packaging>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-apidoc-webengine</artifactId>
+  <name>Nuxeo Documentation Server Webengine Front End</name>
+  <description>Documentation Web Server for Nuxeo API</description>
+  <packaging>jar</packaging>
 
+  <build>
+    <plugins>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
 
-	<build>
-		<plugins>
-			<!-- APT plugin for annotation preprocessing -->
-			<plugin>
-				<groupId>org.apache.myfaces.tobago</groupId>
-				<artifactId>maven-apt-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-bindings</id>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- end APT plugin -->
+    </plugins>
+  </build>
+  <dependencies>
 
-		</plugins>
-	</build>
-	<dependencies>
-
-		<dependency>
-			<groupId>org.nuxeo.ecm.core</groupId>
-			<artifactId>nuxeo-core-api</artifactId>
-		</dependency>
- <dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-io</artifactId>
       <version>${nuxeo.core.version}</version>
@@ -53,97 +52,97 @@
     </dependency>
 
 
-		<dependency>
-			<groupId>org.nuxeo.ecm.core</groupId>
-			<artifactId>nuxeo-core-event</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.nuxeo.ecm.platform</groupId>
-			<artifactId>nuxeo-apidoc-core</artifactId>
-		</dependency>
-                <dependency>
-                         <groupId>commons-collections</groupId>
-                         <artifactId>commons-collections</artifactId>
-                </dependency>
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-apidoc-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
 
-                <dependency>
-                        <groupId>javax.ws.rs</groupId>
-                        <artifactId>jsr311-api</artifactId>
-                </dependency>
-		<dependency>
-			<groupId>org.nuxeo.ecm.webengine</groupId>
-			<artifactId>nuxeo-webengine-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.nuxeo.ecm.webengine</groupId>
-			<artifactId>nuxeo-webengine-ui</artifactId>
-                        <version>5.3.2-SNAPSHOT</version>
-		</dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-ui</artifactId>
+      <version>5.3.2-SNAPSHOT</version>
+    </dependency>
 
-		<dependency>
-			<groupId>org.jboss.seam</groupId>
-			<artifactId>jboss-seam</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>javax.ressource</groupId>
-			<artifactId>jca-api</artifactId>
-			<version>1.5</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
 
- <dependency>
+    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
 
 
-	</dependencies>
+  </dependencies>
 
-	<repositories>
-		<repository>
-			<id>public</id>
-			<url>http://maven.nuxeo.org/public
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/public
       </url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>public-snapshot</id>
-			<url>http://maven.nuxeo.org/public-snapshot
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/public-snapshot
       </url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>always</updatePolicy>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>vendor-release</id>
-			<url>http://maven.nuxeo.org/vendor-release
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vendor-release</id>
+      <url>http://maven.nuxeo.org/vendor-release
       </url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

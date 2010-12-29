@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.api;
 
@@ -23,16 +21,14 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public interface AssociatedDocuments {
 
-    List<String> getCategoryKeys()  throws Exception;
+    List<String> getCategoryKeys() throws Exception;
 
-    Map<String, String> getCategories()  throws Exception;
+    Map<String, String> getCategories() throws Exception;
 
-    Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception;
+    Map<String, List<DocumentationItem>> getDocumentationItems(
+            CoreSession session) throws Exception;
 
     DocumentationItem getDescription(CoreSession session) throws Exception;
 

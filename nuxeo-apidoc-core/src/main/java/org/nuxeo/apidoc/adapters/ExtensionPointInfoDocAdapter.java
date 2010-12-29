@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.adapters;
 
 import java.util.ArrayList;
@@ -34,9 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements ExtensionPointInfo {
 
@@ -52,12 +46,13 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             exist = true;
             doc = session.getDocument(new PathRef(targetPath));
         }
-        doc.setPathInfo(containerPath,name);
+        doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", xpi.getId());
 
         doc.setPropertyValue("nxextensionpoint:name", xpi.getName());
         doc.setPropertyValue("nxextensionpoint:epId", xpi.getId());
-        doc.setPropertyValue("nxextensionpoint:documentation", xpi.getDocumentation());
+        doc.setPropertyValue("nxextensionpoint:documentation",
+                xpi.getDocumentation());
         doc.setPropertyValue("nxextensionpoint:extensionPoint", xpi.getTypes());
 
         if (exist) {
@@ -72,20 +67,25 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         super(doc);
     }
 
+    @Override
     public ComponentInfo getComponent() {
         log.error("getComponent Not implemented");
         return null;
     }
 
+    @Override
     public String getDocumentation() {
         return safeGet("nxextensionpoint:documentation");
     }
 
+    @Override
     public Collection<ExtensionInfo> getExtensions() {
 
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {
-            String query = "select * from " + ExtensionInfo.TYPE_NAME + " where nxcontribution:extensionPoint='" + this.getId() + "'";
+            String query = "select * from " + ExtensionInfo.TYPE_NAME
+                    + " where nxcontribution:extensionPoint='" + this.getId()
+                    + "'";
 
             DocumentModelList docs = getCoreSession().query(query);
 
@@ -101,14 +101,15 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return result;
     }
 
+    @Override
     public String getName() {
         return safeGet("nxextensionpoint:name");
     }
 
+    @Override
     public String[] getTypes() {
         try {
-            return (String[]) doc
-                    .getPropertyValue("nxextensionpoint:types");
+            return (String[]) doc.getPropertyValue("nxextensionpoint:types");
         } catch (Exception e) {
             log.error("Unable to get documentation field", e);
         }
@@ -120,10 +121,11 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return safeGet("nxextensionpoint:epId");
     }
 
+    @Override
     public String getVersion() {
         BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
-        if (parentBundle!=null) {
+        if (parentBundle != null) {
             return parentBundle.getVersion();
         }
 
@@ -131,10 +133,12 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return "?";
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public String getLabel() {
         return getName() + " (" + getComponent().getId() + ")";
     }
@@ -143,7 +147,8 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/"
+                + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId());
     }
 
 }

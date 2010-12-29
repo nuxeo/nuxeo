@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.browse;
 
 import java.io.File;
@@ -50,12 +47,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
- */
 @WebObject(type = "distribution")
-public class Distribution extends ModuleRoot{
+public class Distribution extends ModuleRoot {
 
     protected static final Log log = LogFactory.getLog(Distribution.class);
 
@@ -105,21 +98,25 @@ public class Distribution extends ModuleRoot{
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView("index").arg("hideNav", true);
+        return getView("index").arg("hideNav", Boolean.TRUE);
     }
 
     @Path(value = "{distributionId}")
-    public Resource viewDistribution(@PathParam("distributionId") String distributionId) {
+    public Resource viewDistribution(
+            @PathParam("distributionId") String distributionId) {
         try {
-            if (distributionId==null || "".equals(distributionId)) {
+            if (distributionId == null || "".equals(distributionId)) {
                 return this;
             }
-            Boolean embeddedMode = false;
+            Boolean embeddedMode = Boolean.FALSE;
             if ("adm".equals(distributionId)) {
-                embeddedMode = true;
+                embeddedMode = Boolean.TRUE;
             }
-            ctx.setProperty("embeddedMode",embeddedMode);
-            ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId,ctx.getCoreSession()));
+            ctx.setProperty("embeddedMode", embeddedMode);
+            ctx.setProperty(
+                    "distribution",
+                    getSnapshotManager().getSnapshot(distributionId,
+                            ctx.getCoreSession()));
             ctx.setProperty("distId", distributionId);
             return ctx.newObject("apibrowser", distributionId, embeddedMode);
         } catch (Exception e) {
@@ -128,7 +125,8 @@ public class Distribution extends ModuleRoot{
     }
 
     public List<DistributionSnapshotDesc> getAvailableDistributions() {
-        return getSnapshotManager().getAvailableDistributions(ctx.getCoreSession());
+        return getSnapshotManager().getAvailableDistributions(
+                ctx.getCoreSession());
     }
 
     public String getRuntimeDistributionName() {
@@ -139,15 +137,17 @@ public class Distribution extends ModuleRoot{
         return getSnapshotManager().getRuntimeSnapshot();
     }
 
-    public Map<String,DistributionSnapshot> getPersistedDistributions() {
+    public Map<String, DistributionSnapshot> getPersistedDistributions() {
         return getSnapshotManager().getPersistentSnapshots(ctx.getCoreSession());
     }
 
     public DistributionSnapshot getCurrentDistribution() {
         String distId = (String) ctx.getProperty("distId");
         DistributionSnapshot currentDistribution = (DistributionSnapshot) ctx.getProperty("currentDistribution");
-        if (currentDistribution==null || !currentDistribution.getKey().equals(distId)) {
-            currentDistribution = getSnapshotManager().getSnapshot(distId,ctx.getCoreSession());
+        if (currentDistribution == null
+                || !currentDistribution.getKey().equals(distId)) {
+            currentDistribution = getSnapshotManager().getSnapshot(distId,
+                    ctx.getCoreSession());
             ctx.setProperty("currentDistribution", currentDistribution);
         }
         return currentDistribution;
@@ -161,24 +161,25 @@ public class Distribution extends ModuleRoot{
             return null;
         }
         log.info("Start Snapshot...");
-        boolean startedTx=false;
+        boolean startedTx = false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx!=null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+        if (tx != null
+                && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             tx.begin();
-            startedTx=true;
+            startedTx = true;
         }
         try {
-            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession());
-        }
-        catch (Exception e) {
+            getSnapshotManager().persistRuntimeSnapshot(
+                    getContext().getCoreSession());
+        } catch (Exception e) {
             log.error("Error during storage", e);
-            if (tx!=null) {
+            if (tx != null) {
                 tx.rollback();
             }
             return getView("index");
         }
         log.info("Snapshot saved.");
-        if (tx!=null && startedTx) {
+        if (tx != null && startedTx) {
             tx.commit();
         }
         return getView("index");
@@ -212,22 +213,25 @@ public class Distribution extends ModuleRoot{
         out.close();
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
         return Response.ok(aFile).header("Content-Disposition",
-                 "attachment;filename=" + "nuxeo-documentation.zip").type("application/zip").build();
+                "attachment;filename=" + "nuxeo-documentation.zip").type(
+                "application/zip").build();
     }
 
     @GET
     @Path(value = "download/{distributionId}")
-    public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
+    public Response downloadDistrib(
+            @PathParam("distributionId") String distribId) throws Exception {
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
-        getSnapshotManager().exportSnapshot(getContext().getCoreSession(), distribId, out);
+        getSnapshotManager().exportSnapshot(getContext().getCoreSession(),
+                distribId, out);
         out.close();
         String fName = "nuxeo-distribution-" + distribId + ".zip";
         fName = fName.replace(" ", "_");
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
         return Response.ok(aFile).header("Content-Disposition",
-                 "attachment;filename=" + fName).type("application/zip").build();
+                "attachment;filename=" + fName).type("application/zip").build();
     }
 
     @POST
@@ -239,8 +243,10 @@ public class Distribution extends ModuleRoot{
         }
         Blob blob = getContext().getForm().getFirstBlob();
 
-        getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
-        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
+        getSnapshotManager().importSnapshot(getContext().getCoreSession(),
+                blob.getStream());
+        getSnapshotManager().readPersistentSnapshots(
+                getContext().getCoreSession());
 
         return getView("index");
     }
@@ -248,13 +254,13 @@ public class Distribution extends ModuleRoot{
     @POST
     @Path(value = "uploadDoc")
     @Produces("text/html")
-    //@Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
+    // @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object uploadDoc() throws Exception {
         if (!isEditor()) {
             return null;
         }
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx!=null) {
+        if (tx != null) {
             tx.begin();
         }
         Blob blob = getContext().getForm().getFirstBlob();
@@ -263,14 +269,15 @@ public class Distribution extends ModuleRoot{
         ds.importDocumentation(getContext().getCoreSession(), blob.getStream());
 
         log.info("Documents imported.");
-        if (tx!=null) {
+        if (tx != null) {
             tx.commit();
         }
         return getView("index");
     }
 
     public boolean isEmbeddedMode() {
-        return (Boolean) getContext().getProperty("embeddedMode", false);
+        Boolean embed = (Boolean) getContext().getProperty("embeddedMode", Boolean.FALSE);
+        return embed == null ? false : embed.booleanValue();
     }
 
     public boolean isEditor() {

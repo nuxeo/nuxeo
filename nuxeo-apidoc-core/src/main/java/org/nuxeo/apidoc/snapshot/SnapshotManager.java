@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.snapshot;
 
 import java.io.InputStream;
@@ -30,9 +27,6 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public interface SnapshotManager {
 
     void initSeamContext(HttpServletRequest request);
@@ -53,12 +47,15 @@ public interface SnapshotManager {
 
     List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem);
 
-    void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception ;
+    void exportSnapshot(CoreSession session, String key, OutputStream out)
+            throws Exception;
 
-    void importSnapshot(CoreSession session,InputStream is) throws Exception;
+    void importSnapshot(CoreSession session, InputStream is) throws Exception;
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException;
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
+            throws ClientException;
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException;
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name)
+            throws ClientException;
 
 }

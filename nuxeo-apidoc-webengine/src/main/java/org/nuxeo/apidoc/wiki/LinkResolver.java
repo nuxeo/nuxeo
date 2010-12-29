@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.wiki;
 
 import java.util.regex.Matcher;
@@ -28,9 +27,12 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 public class LinkResolver implements WikiFilter {
 
     public static final String PATTERN = "(\\.)?([A-Z]+[a-z]+[A-Z][A-Za-z]*\\.)*([A-Z]+[a-z]+[A-Z][A-Za-z]*)";
+
     public static final Pattern LINK_PATTERN = Pattern.compile(PATTERN);
+
     public static final String LINK_TEMPLATE = "<a href=\"%s\">%s</a>";
 
+    @Override
     public String apply(String content) {
         Matcher m = LINK_PATTERN.matcher(content);
         StringBuffer sb = new StringBuffer();

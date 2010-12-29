@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.documentation;
 
 import java.util.ArrayList;
@@ -44,7 +43,9 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
         this.session = session;
     }
 
-    public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception {
+    @Override
+    public Map<String, List<DocumentationItem>> getDocumentationItems(
+            CoreSession session) throws Exception {
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
@@ -71,17 +72,21 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
         return result;
     }
 
+    @Override
     public Map<String, String> getCategories() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
     }
 
+    @Override
     public List<String> getCategoryKeys() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategoryKeys();
     }
 
-    public DocumentationItem getDescription(CoreSession session) throws Exception {
+    @Override
+    public DocumentationItem getDescription(CoreSession session)
+            throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         for (DocumentationItem docItem : docItems) {
@@ -93,70 +98,85 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
         return new DocumentationItem() {
 
+            @Override
             public boolean isApproved() {
                 return false;
             }
 
+            @Override
             public String getUUID() {
                 return null;
             }
 
+            @Override
             public String getTypeLabel() {
                 return null;
             }
 
+            @Override
             public String getType() {
                 return null;
             }
 
+            @Override
             public String getTitle() {
                 if (item.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
-                    return ((ExtensionPointInfo)item).getName();
-                } else if (item.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
-                    return ((ExtensionInfo)item).getExtensionPoint();
+                    return ((ExtensionPointInfo) item).getName();
+                } else if (item.getArtifactType().equals(
+                        ExtensionInfo.TYPE_NAME)) {
+                    return ((ExtensionInfo) item).getExtensionPoint();
                 } else if (item.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
-                    String id = ((ServiceInfo)item).getId();
+                    String id = ((ServiceInfo) item).getId();
                     String[] parts = id.split("\\.");
-                    if (parts.length>1) {
-                        String name = parts[parts.length-1];
+                    if (parts.length > 1) {
+                        String name = parts[parts.length - 1];
                         return name;
                     }
                 }
                 return item.getId();
             }
 
+            @Override
             public String getTargetType() {
                 return item.getArtifactType();
             }
 
+            @Override
             public String getTarget() {
                 return item.getId();
             }
 
+            @Override
             public String getRenderingType() {
                 return "html";
             }
 
+            @Override
             public String getId() {
                 return null;
             }
 
+            @Override
             public String getContent() {
                 return "";
             }
 
+            @Override
             public List<String> getApplicableVersion() {
                 return null;
             }
 
+            @Override
             public Map<String, String> getAttachments() {
                 return new HashMap<String, String>();
             }
 
+            @Override
             public boolean isPlaceHolder() {
                 return true;
             }
 
+            @Override
             public String getEditId() {
                 return "placeholder_" + item.getId();
             }

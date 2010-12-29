@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.introspection;
 
@@ -24,21 +25,22 @@ import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected final String bundleId;
+
     protected final Collection<ComponentInfo> components;
 
     protected String fileName;
-    protected String manifest; //TODO
+
+    protected String manifest; // TODO
+
     protected String[] requirements;
 
     protected String groupId;
+
     protected String artifactId;
+
     protected String artifactVersion;
 
     protected BundleGroup bundleGroup;
@@ -58,6 +60,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         components = new ArrayList<ComponentInfo>();
     }
 
+    @Override
     public Collection<ComponentInfo> getComponents() {
         return components;
     }
@@ -66,6 +69,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         components.add(component);
     }
 
+    @Override
     public String getFileName() {
         return fileName;
     }
@@ -74,10 +78,12 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.fileName = fileName;
     }
 
+    @Override
     public String getBundleId() {
         return bundleId;
     }
 
+    @Override
     public String[] getRequirements() {
         return requirements;
     }
@@ -86,6 +92,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.requirements = requirements;
     }
 
+    @Override
     public String getManifest() {
         return manifest;
     }
@@ -94,6 +101,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.manifest = manifest;
     }
 
+    @Override
     public String getLocation() {
         return location;
     }
@@ -102,6 +110,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.location = location;
     }
 
+    @Override
     public String getArtifactGroupId() {
         return groupId;
     }
@@ -110,6 +119,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.groupId = groupId;
     }
 
+    @Override
     public String getArtifactId() {
         return artifactId;
     }
@@ -118,6 +128,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.artifactId = artifactId;
     }
 
+    @Override
     public String getArtifactVersion() {
         return artifactVersion;
     }
@@ -131,14 +142,17 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         return bundleId;
     }
 
+    @Override
     public String getVersion() {
         return artifactVersion;
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public String getHierarchyPath() {
         return bundleGroup.getHierarchyPath() + "/" + getId();
     }

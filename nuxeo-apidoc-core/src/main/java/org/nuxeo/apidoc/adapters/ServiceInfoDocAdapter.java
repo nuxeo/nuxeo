@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.adapters;
 
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -25,13 +24,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ServiceInfo {
+public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
+        implements ServiceInfo {
 
     public ServiceInfoDocAdapter(DocumentModel doc) {
         super(doc);
     }
 
-    public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath) throws Exception {
+    public static ServiceInfoDocAdapter create(ServiceInfo si,
+            CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -62,10 +63,12 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         return safeGet("nxservice:className", "unknown_service");
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public String getVersion() {
         BundleInfo parentBundle = getParentNuxeoArtifact(BundleInfo.class);
 
@@ -77,6 +80,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         return "?";
     }
 
+    @Override
     public String getComponentId() {
         return safeGet("nxservice:componentId", "unknown_service");
     }
@@ -85,6 +89,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/"
+                + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId());
     }
 }

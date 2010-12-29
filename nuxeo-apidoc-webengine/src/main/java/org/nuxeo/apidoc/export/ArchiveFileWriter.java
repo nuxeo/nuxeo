@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.export;
 
 import java.io.FileInputStream;
@@ -33,10 +32,14 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebException;
 
 @Provider
-@Produces({"*/*", "text/plain"})
+@Produces({ "*/*", "text/plain" })
 public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
 
-    public void writeTo(ArchiveFile t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+    @Override
+    public void writeTo(ArchiveFile t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(t);
@@ -54,12 +57,16 @@ public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
         }
     }
 
-    public long getSize(ArchiveFile arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
+    @Override
+    public long getSize(ArchiveFile arg0, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4) {
         long n = arg0.length();
         return n <= 0 ? -1 : n;
     }
 
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
+    @Override
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
+            MediaType arg3) {
         return ArchiveFile.class.isAssignableFrom(arg0);
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.search;
 
 import java.util.ArrayList;
@@ -52,25 +51,27 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         NuxeoArtifact artifact = null;
 
         if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
-            artifact=  new BundleGroupDocAdapter(doc);
+            artifact = new BundleGroupDocAdapter(doc);
         } else if (doc.getType().equals(BundleInfo.TYPE_NAME)) {
-            artifact =  new BundleInfoDocAdapter(doc);
+            artifact = new BundleInfoDocAdapter(doc);
         } else if (doc.getType().equals(ComponentInfo.TYPE_NAME)) {
-            artifact =  new ComponentInfoDocAdapter(doc);
+            artifact = new ComponentInfoDocAdapter(doc);
         } else if (doc.getType().equals(ExtensionPointInfo.TYPE_NAME)) {
-            artifact =  new ExtensionPointInfoDocAdapter(doc);
-        } else  if (doc.getType().equals(ExtensionInfo.TYPE_NAME)) {
-            artifact =  new ExtensionInfoDocAdapter(doc);
-        } else  if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
+            artifact = new ExtensionPointInfoDocAdapter(doc);
+        } else if (doc.getType().equals(ExtensionInfo.TYPE_NAME)) {
+            artifact = new ExtensionInfoDocAdapter(doc);
+        } else if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
             artifact = new RepositoryDistributionSnapshot(doc);
         } else if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
-            artifact =  new ServiceInfoDocAdapter(doc);
+            artifact = new ServiceInfoDocAdapter(doc);
         }
 
         return artifact;
     }
 
-    public List<NuxeoArtifact> searchArtifact(CoreSession session, String fulltext) throws Exception {
+    @Override
+    public List<NuxeoArtifact> searchArtifact(CoreSession session,
+            String fulltext) throws Exception {
 
         List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
 
@@ -90,11 +91,14 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         return result;
     }
 
-    public List<DocumentationItem> searchDocumentation(CoreSession session,String fulltext, String targetType) throws Exception {
+    @Override
+    public List<DocumentationItem> searchDocumentation(CoreSession session,
+            String fulltext, String targetType) throws Exception {
 
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
 
-        String query = "select * from NXDocumentation where ecm:fulltext like '" + fulltext + "'";
+        String query = "select * from NXDocumentation where ecm:fulltext like '"
+                + fulltext + "'";
         if (targetType != null) {
             query += " AND nxdoc.targetType='" + targetType + "'";
         }
@@ -103,7 +107,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
         for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
-            if (docItem!=null) {
+            if (docItem != null) {
                 result.add(docItem);
             }
         }
@@ -111,37 +115,46 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         return result;
     }
 
-    public List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext) throws Exception {
+    @Override
+    public List<NuxeoArtifact> filterArtifact(CoreSession session,
+            String distribId, String type, String fulltext) throws Exception {
         List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
 
-        List<NuxeoArtifact> matchingArtifacts = searchArtifact(session, fulltext);
-        List<DocumentationItem> matchingDocumentationItems = searchDocumentation(session,fulltext, null);
+        List<NuxeoArtifact> matchingArtifacts = searchArtifact(session,
+                fulltext);
+        List<DocumentationItem> matchingDocumentationItems = searchDocumentation(
+                session, fulltext, null);
 
         Map<String, ArtifactWithWeight> sortMap = new HashMap<String, ArtifactWithWeight>();
 
-        for (NuxeoArtifact matchingArtifact: matchingArtifacts) {
-            NuxeoArtifact resultArtifact = resolveInTree(session, distribId, matchingArtifact, type);
-            if (resultArtifact!=null) {
+        for (NuxeoArtifact matchingArtifact : matchingArtifacts) {
+            NuxeoArtifact resultArtifact = resolveInTree(session, distribId,
+                    matchingArtifact, type);
+            if (resultArtifact != null) {
                 if (sortMap.containsKey(resultArtifact.getId())) {
                     sortMap.get(resultArtifact.getId()).addHit();
                 } else {
-                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(resultArtifact));
+                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(
+                            resultArtifact));
                 }
             }
         }
 
-        for (DocumentationItem matchingDocumentationItem: matchingDocumentationItems) {
-            NuxeoArtifact resultArtifact = resolveInTree(session, distribId, matchingDocumentationItem, type);
-            if (resultArtifact!=null) {
+        for (DocumentationItem matchingDocumentationItem : matchingDocumentationItems) {
+            NuxeoArtifact resultArtifact = resolveInTree(session, distribId,
+                    matchingDocumentationItem, type);
+            if (resultArtifact != null) {
                 if (sortMap.containsKey(resultArtifact.getId())) {
                     sortMap.get(resultArtifact.getId()).addHit();
                 } else {
-                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(resultArtifact));
+                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(
+                            resultArtifact));
                 }
             }
         }
 
-        List<ArtifactWithWeight> artifacts = new ArrayList<ArtifactWithWeight>(sortMap.values());
+        List<ArtifactWithWeight> artifacts = new ArrayList<ArtifactWithWeight>(
+                sortMap.values());
         Collections.sort(artifacts);
 
         for (ArtifactWithWeight item : artifacts) {
@@ -150,10 +163,13 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         return result;
     }
 
-    protected NuxeoArtifact resolveInTree(CoreSession session, String distribId, NuxeoArtifact matchingArtifact, String searchedType) throws Exception {
+    protected NuxeoArtifact resolveInTree(CoreSession session,
+            String distribId, NuxeoArtifact matchingArtifact,
+            String searchedType) throws Exception {
 
-        SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
-        DistributionSnapshot snap = sm.getSnapshot(distribId, session);
+        // SnapshotManager sm =
+        // Framework.getLocalService(SnapshotManager.class);
+        // DistributionSnapshot snap = sm.getSnapshot(distribId, session);
 
         String cType = matchingArtifact.getArtifactType();
 
@@ -175,7 +191,9 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         return null;
     }
 
-    protected NuxeoArtifact resolveInTree(CoreSession session, String distribId, DocumentationItem matchingDocumentationItem, String searchedType) throws Exception {
+    protected NuxeoArtifact resolveInTree(CoreSession session,
+            String distribId, DocumentationItem matchingDocumentationItem,
+            String searchedType) throws Exception {
 
         String targetId = matchingDocumentationItem.getTarget();
         String targetType = matchingDocumentationItem.getTargetType();
@@ -186,17 +204,17 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         NuxeoArtifact artifact = null;
 
         if (targetType.equals(BundleGroup.TYPE_NAME)) {
-            artifact=snap.getBundleGroup(targetId);
+            artifact = snap.getBundleGroup(targetId);
         } else if (targetType.equals(BundleInfo.TYPE_NAME)) {
-            artifact=snap.getBundle(targetId);
+            artifact = snap.getBundle(targetId);
         } else if (targetType.equals(ComponentInfo.TYPE_NAME)) {
-            artifact=snap.getComponent(targetId);
+            artifact = snap.getComponent(targetId);
         } else if (targetType.equals(ExtensionPointInfo.TYPE_NAME)) {
-            artifact=snap.getExtensionPoint(targetId);
-        } else  if (targetType.equals(ExtensionInfo.TYPE_NAME)) {
-            artifact=snap.getContribution(targetId);
+            artifact = snap.getExtensionPoint(targetId);
+        } else if (targetType.equals(ExtensionInfo.TYPE_NAME)) {
+            artifact = snap.getContribution(targetId);
         } else if (targetType.equals(ServiceInfo.TYPE_NAME)) {
-            artifact=snap.getService(targetId);
+            artifact = snap.getService(targetId);
         }
 
         return resolveInTree(session, distribId, artifact, searchedType);

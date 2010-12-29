@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.apidoc.filter;
 
 import java.io.IOException;
@@ -17,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator;
 import org.nuxeo.runtime.api.Framework;
 
-public class CacheAndAuthFilter extends BaseApiDocFilter  {
+public class CacheAndAuthFilter extends BaseApiDocFilter {
 
     public static final DateFormat HTTP_EXPIRES_DATE_FORMAT = httpExpiresDateFormat();
 
@@ -25,13 +41,16 @@ public class CacheAndAuthFilter extends BaseApiDocFilter  {
 
     protected boolean forceAnonymous() {
         if (forceAnonymous == null) {
-            forceAnonymous = Boolean.valueOf(Framework.getProperty("org.nuxeo.apidoc.forceanonymous", "false"));
+            forceAnonymous = Boolean.valueOf(Framework.getProperty(
+                    "org.nuxeo.apidoc.forceanonymous", "false"));
         }
-        return forceAnonymous;
+        return forceAnonymous.booleanValue();
     }
 
-    protected void internalDoFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    @Override
+    protected void internalDoFilter(ServletRequest request,
+            ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -40,10 +59,12 @@ public class CacheAndAuthFilter extends BaseApiDocFilter  {
         String anonymousHeader = httpRequest.getHeader("X-NUXEO-ANONYMOUS-ACCESS");
         if ("true".equals(anonymousHeader) || forceAnonymous()) {
             // activate cache
-            activateCaching=true;
+            activateCaching = true;
         } else {
             // desactivate anonymous login
-            httpRequest.setAttribute(AnonymousAuthenticator.BLOCK_ANONYMOUS_LOGIN_KEY, Boolean.TRUE);
+            httpRequest.setAttribute(
+                    AnonymousAuthenticator.BLOCK_ANONYMOUS_LOGIN_KEY,
+                    Boolean.TRUE);
         }
 
         if (activateCaching) {
@@ -62,21 +83,23 @@ public class CacheAndAuthFilter extends BaseApiDocFilter  {
         return df;
     }
 
-    public static void addCacheHeader(HttpServletResponse httpResponse, Boolean isPrivate, String cacheTime) {
-        if (isPrivate){
-            httpResponse.addHeader("Cache-Control", "private, max-age=" + cacheTime);
+    public static void addCacheHeader(HttpServletResponse httpResponse,
+            boolean isPrivate, String cacheTime) {
+        if (isPrivate) {
+            httpResponse.addHeader("Cache-Control", "private, max-age="
+                    + cacheTime);
         } else {
-            httpResponse.addHeader("Cache-Control", "public, max-age=" + cacheTime);
+            httpResponse.addHeader("Cache-Control", "public, max-age="
+                    + cacheTime);
         }
 
         // Generating expires using current date and adding cache time.
         // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
         Date date = new Date();
-        long newDate = date.getTime() + new Long(cacheTime) * 1000;
+        long newDate = date.getTime() + Long.parseLong(cacheTime) * 1000;
         date.setTime(newDate);
 
-        httpResponse.setHeader("Expires",
-                HTTP_EXPIRES_DATE_FORMAT.format(date));
+        httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));
     }
 
 }

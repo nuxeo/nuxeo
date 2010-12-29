@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo sSAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,17 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.introspection;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -33,8 +39,6 @@ import java.util.zip.ZipFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
-import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
@@ -48,26 +52,32 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
 
 /**
- * The entry point to the server runtime introspection
- * To build a description of the current running server you need to create a {@link ServerInfo}
- * object using the method {@link #build(String, String)}.
- * <p>Example
+ * The entry point to the server runtime introspection To build a description of
+ * the current running server you need to create a {@link ServerInfo} object
+ * using the method {@link #build(String, String)}.
+ * <p>
+ * Example
+ *
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * </pre>
+ *
  * The server name and version will be fetched form the runtime properties:
- * <code>org.nuxeo.ecm.product.name</code> and <code>org.nuxeo.ecm.product.version</code>
- * If you ant to use another name and version just call {@link #build(String, String)} instead
- * to build your server information.
+ * <code>org.nuxeo.ecm.product.name</code> and
+ * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and
+ * version just call {@link #build(String, String)} instead to build your server
+ * information.
  * <p>
- * After building a <code>ServerInfo</code> object you can start browsing the bundles
- * deployed on the server by calling {@link #getBundles()} or fetch a specific bundle
- * given its symbolic name {@link #getBundle(String)}.
+ * After building a <code>ServerInfo</code> object you can start browsing the
+ * bundles deployed on the server by calling {@link #getBundles()} or fetch a
+ * specific bundle given its symbolic name {@link #getBundle(String)}.
  * <p>
- * To write down the server information as XML use {@link #toXML(Writer)} and to read it back use {@link #fromXML(Reader)}.
+ * To write down the server information as XML use {@link #toXML(Writer)} and to
+ * read it back use {@link #fromXML(Reader)}.
  *
  * <p>
  * Example:
+ *
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * BundleInfo binfo =info.getBundle("org.nuxeo.runtime");
@@ -92,18 +102,18 @@ import org.osgi.framework.Bundle;
  *   }
  * }
  * </pre>
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
  */
 public class ServerInfo {
 
     protected static final Log log = LogFactory.getLog(ServerInfo.class);
 
     protected final String name;
+
     protected final String version;
+
     protected final Map<String, BundleInfoImpl> bundles = new HashMap<String, BundleInfoImpl>();
-    protected final List<Class> allSpi = new ArrayList<Class>();
+
+    protected final List<Class<?>> allSpi = new ArrayList<Class<?>>();
 
     public ServerInfo(String name, String version) {
         this.name = name;
@@ -137,8 +147,9 @@ public class ServerInfo {
     }
 
     public static ServerInfo build() {
-        return build(Framework.getProperty("org.nuxeo.ecm.product.name", "Nuxeo"),
-                Framework.getProperty("org.nuxeo.ecm.product.version", "unknown"));
+        return build(Framework.getProperty("org.nuxeo.ecm.product.name",
+                "Nuxeo"), Framework.getProperty(
+                "org.nuxeo.ecm.product.version", "unknown"));
     }
 
     protected static BundleInfoImpl computeBundleInfo(Bundle bundle) {
@@ -150,7 +161,7 @@ public class ServerInfo {
         if (bundle instanceof BundleImpl) {
             BundleImpl nxBundle = (BundleImpl) bundle;
             BundleFile file = nxBundle.getBundleFile();
-            File jarFile=null;
+            File jarFile = null;
             if (file instanceof JarBundleFile) {
                 JarBundleFile jar = (JarBundleFile) file;
                 jarFile = jar.getFile();
@@ -158,19 +169,19 @@ public class ServerInfo {
                 JBossBundleFile jar = (JBossBundleFile) file;
                 jarFile = jar.getFile();
             }
-            if (jarFile!=null) {
+            if (jarFile != null) {
                 if (jarFile.isDirectory()) {
                     // XXX
-                }
-                else {
+                } else {
                     try {
                         ZipFile zFile = new ZipFile(jarFile);
-                        Enumeration<ZipEntry> entries =(Enumeration<ZipEntry>) zFile.entries();
+                        Enumeration<? extends ZipEntry> entries = zFile.entries();
                         while (entries.hasMoreElements()) {
                             ZipEntry entry = entries.nextElement();
                             if (entry.getName().endsWith("pom.properties")) {
                                 InputStream pomStream = zFile.getInputStream(entry);
-                                PropertyResourceBundle prb = new PropertyResourceBundle(pomStream);
+                                PropertyResourceBundle prb = new PropertyResourceBundle(
+                                        pomStream);
                                 String groupId = prb.getString("groupId");
                                 String artifactId = prb.getString("artifactId");
                                 String version = prb.getString("version");
@@ -183,7 +194,7 @@ public class ServerInfo {
                         }
 
                         ZipEntry mfEntry = zFile.getEntry("META-INF/MANIFEST.MF");
-                        if (mfEntry!=null) {
+                        if (mfEntry != null) {
                             InputStream mfStream = zFile.getInputStream(mfEntry);
                             String mf = FileUtils.read(mfStream);
                             binfo.setManifest(mf);
@@ -197,15 +208,15 @@ public class ServerInfo {
         return binfo;
     }
 
-    protected static List<Class> getSPI(Class klass) {
-        List<Class> spi = new ArrayList<Class>();
+    protected static List<Class<?>> getSPI(Class<?> klass) {
+        List<Class<?>> spi = new ArrayList<Class<?>>();
         for (Field field : klass.getDeclaredFields()) {
             String cName = field.getType().getCanonicalName();
             if (cName.startsWith("org.nuxeo")) {
                 // remove XObjects
-                Class fieldClass = field.getType();
+                Class<?> fieldClass = field.getType();
                 Annotation[] annotations = fieldClass.getDeclaredAnnotations();
-                if (annotations.length==0) {
+                if (annotations.length == 0) {
                     spi.add(fieldClass);
                 }
             }
@@ -216,24 +227,25 @@ public class ServerInfo {
     public static ServerInfo build(String name, String version) {
         RuntimeService runtime = Framework.getRuntime();
         ServerInfo server = new ServerInfo(name, version);
-        BundleInfoImpl configVirtualBundle = new BundleInfoImpl("org.nuxeo.ecm.config");
+        BundleInfoImpl configVirtualBundle = new BundleInfoImpl(
+                "org.nuxeo.ecm.config");
         server.addBundle(configVirtualBundle);
 
         Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<String, ExtensionPointInfoImpl>();
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<ExtensionInfoImpl>();
 
-        Collection<RegistrationInfo> registrations  = runtime.getComponentManager().getRegistrations();
+        Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
 
         for (RegistrationInfo ri : registrations) {
             String cname = ri.getName().getName();
             Bundle bundle = ri.getContext().getBundle();
-            BundleInfoImpl binfo=null;
+            BundleInfoImpl binfo = null;
 
-            if (bundle==null) {
+            if (bundle == null) {
                 binfo = configVirtualBundle;
             } else {
                 String symName = bundle.getSymbolicName();
-                if (symName==null) {
+                if (symName == null) {
                     log.error("No symbolic name found for bundle " + cname);
                     continue;
                 }
@@ -245,17 +257,18 @@ public class ServerInfo {
                 }
             }
 
-//TODO            binfo.setRequirements(requirements);
+            // TODO binfo.setRequirements(requirements);
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
-            if (ri.getExtensionPoints()!=null) {
+            if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
-                    ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(component, xp.getName());
-                    Class[] ctypes = xp.getContributions();
+                    ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(
+                            component, xp.getName());
+                    Class<?>[] ctypes = xp.getContributions();
                     String[] descriptors = new String[ctypes.length];
 
-                    for (int i=0; i< ctypes.length; i++) {
+                    for (int i = 0; i < ctypes.length; i++) {
                         descriptors[i] = ctypes[i].getCanonicalName();
-                        List<Class> spi = getSPI(ctypes[i]);
+                        List<Class<?>> spi = getSPI(ctypes[i]);
                         xpinfo.addSpi(spi);
                         server.allSpi.addAll(spi);
                     }
@@ -269,15 +282,16 @@ public class ServerInfo {
             URL xmlComponentFile = ri.getXmlFileUrl();
             component.setXmlFileUrl(xmlComponentFile);
 
-            if (ri.getProvidedServiceNames()!=null) {
+            if (ri.getProvidedServiceNames() != null) {
                 for (String serviceName : ri.getProvidedServiceNames()) {
                     component.addService(serviceName);
                 }
             }
 
-            if (ri.getExtensions()!=null) {
+            if (ri.getExtensions() != null) {
                 for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint());
+                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component,
+                            xt.getExtensionPoint());
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());
@@ -296,7 +310,7 @@ public class ServerInfo {
         }
 
         // now register the bundles that contains no components !!!
-        Bundle[] allbundles =  runtime.getContext().getBundle().getBundleContext().getBundles();
+        Bundle[] allbundles = runtime.getContext().getBundle().getBundleContext().getBundles();
         for (Bundle bundle : allbundles) {
             if (!server.bundles.containsKey(bundle.getSymbolicName())) {
                 BundleInfoImpl bi = computeBundleInfo(bundle);
@@ -308,7 +322,7 @@ public class ServerInfo {
         for (ExtensionInfoImpl contrib : contribRegistry) {
             String xp = contrib.getExtensionPoint();
             ExtensionPointInfoImpl ep = xpRegistry.get(xp);
-            if (ep!=null) {
+            if (ep != null) {
                 ep.addExtension(contrib);
             }
         }
@@ -323,15 +337,12 @@ public class ServerInfo {
         for (BundleInfoImpl bundle : bundles.values()) {
             xw.element("bundle").attr("id", bundle.bundleId).start();
             xw.element("fileName").content(bundle.fileName);
-            //TODO requirements
+            // TODO requirements
             for (ComponentInfo component : bundle.getComponents()) {
                 xw.element("component").attr("id", component.getId()).start();
-                for (ExtensionPointInfo xp : component.getExtensionPoints()) {
-
-                }
-                for (ExtensionInfo xt : component.getExtensions()) {
-
-                }
+                // for (ExtensionPointInfo xp : component.getExtensionPoints())
+                // { }
+                // for (ExtensionInfo xt : component.getExtensions()) { }
                 xw.close();
             }
             xw.close();
@@ -353,7 +364,7 @@ public class ServerInfo {
         return null;
     }
 
-    public List<Class> getAllSpi() {
+    public List<Class<?>> getAllSpi() {
         return allSpi;
     }
 

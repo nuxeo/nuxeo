@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.adapters;
 
@@ -31,13 +29,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         implements BundleGroup {
 
-    public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath) throws ClientException {
+    public static BundleGroupDocAdapter create(BundleGroup bundleGroup,
+            CoreSession session, String containerPath) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bg-" + bundleGroup.getId());
@@ -63,22 +59,23 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         super(doc);
     }
 
+    @Override
     public List<String> getBundleIds() {
         List<String> bundles = new ArrayList<String>();
 
-        String query = "select * from NXBundle where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
-         try {
-             DocumentModelList docs = getCoreSession().query(query);
-             for(DocumentModel child : docs) {
-                 BundleInfo bi = child.getAdapter(BundleInfo.class);
-                 if (bi != null && !bi.getId().equals(this.getId())) {
-                     bundles.add(bi.getId());
-                 }
-             }
-         }
-         catch (Exception e) {
-             log.error("Error while getting subGroups",e);
-         }
+        String query = "select * from NXBundle where ecm:path STARTSWITH '"
+                + doc.getPathAsString() + "'";
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+            for (DocumentModel child : docs) {
+                BundleInfo bi = child.getAdapter(BundleInfo.class);
+                if (bi != null && !bi.getId().equals(this.getId())) {
+                    bundles.add(bi.getId());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while getting subGroups", e);
+        }
         return bundles;
     }
 
@@ -86,14 +83,17 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         return safeGet("nxbundlegroup:key", "unknown_bundle_group");
     }
 
+    @Override
     public String getName() {
         return safeGet("nxbundlegroup:groupName", "unknow_bundle_group");
     }
 
+    @Override
     public List<BundleGroup> getSubGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
 
-        String query = "select * from NXBundleGroup where ecm:path STARTSWITH '" + doc.getPathAsString() + "'";
+        String query = "select * from NXBundleGroup where ecm:path STARTSWITH '"
+                + doc.getPathAsString() + "'";
         try {
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
@@ -113,6 +113,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         return getKey();
     }
 
+    @Override
     public String getVersion() {
         DistributionSnapshot parentSnapshot = getParentNuxeoArtifact(DistributionSnapshot.class);
 
@@ -124,6 +125,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         return parentSnapshot.getVersion();
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }

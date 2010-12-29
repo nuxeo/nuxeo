@@ -11,9 +11,10 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>  
   <artifactId>nuxeo-apidoc-server-parent</artifactId>
-  <name>Nuxeo ApiDoc Server Parent</name>
-  <description>Parent for api documentation server</description>
+  <name>Nuxeo Documentation Server</name>
+  <description>Parent for Documentation Server</description>
   <packaging>pom</packaging>
+  <version>5.4.1-SNAPSHOT</version>
 
   <properties>
     <nuxeo.platform.version>5.4.0</nuxeo.platform.version>

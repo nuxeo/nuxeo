@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.apidoc.introspection;
 
@@ -37,25 +38,26 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 
-
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
-public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
+public class ComponentInfoImpl extends BaseNuxeoArtifact implements
+        ComponentInfo {
 
     protected BundleInfoImpl bundle;
+
     protected String name;
+
     protected Map<String, ExtensionPointInfo> extensionPoints;
+
     protected Collection<ExtensionInfo> extensions;
+
     protected List<String> serviceNames = new ArrayList<String>();
+
     protected List<ServiceInfo> services = new ArrayList<ServiceInfo>();
 
     protected URL xmlFileUrl;
 
     protected String componentClass;
 
-    protected String documentation; //TODO
+    protected String documentation; // TODO
 
     protected static Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
@@ -66,18 +68,22 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         extensions = new ArrayList<ExtensionInfo>();
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public BundleInfoImpl getBundle() {
         return bundle;
     }
 
+    @Override
     public Collection<ExtensionPointInfo> getExtensionPoints() {
         return extensionPoints.values();
     }
 
+    @Override
     public Collection<ExtensionInfo> getExtensions() {
         return extensions;
     }
@@ -86,6 +92,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         extensionPoints.put(xp.getId(), xp);
     }
 
+    @Override
     public ExtensionPointInfo getExtensionPoint(String name) {
         return extensionPoints.get(name);
     }
@@ -94,6 +101,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         extensions.add(xt);
     }
 
+    @Override
     public String getDocumentation() {
         return documentation;
     }
@@ -108,10 +116,12 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         services.add(si);
     }
 
+    @Override
     public List<String> getServiceNames() {
         return serviceNames;
     }
 
+    @Override
     public String getComponentClass() {
         return componentClass;
     }
@@ -120,11 +130,12 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         this.componentClass = componentClass;
     }
 
-
+    @Override
     public boolean isXmlPureComponent() {
-        return componentClass==null;
+        return componentClass == null;
     }
 
+    @Override
     public URL getXmlFileUrl() {
         return xmlFileUrl;
     }
@@ -133,19 +144,21 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         this.xmlFileUrl = xmlFileUrl;
     }
 
+    @Override
     public String getXmlFileName() {
         if (xmlFileUrl == null) {
             return "";
         }
         String path = xmlFileUrl.getPath();
         String[] parts = path.split("!");
-        if (parts.length==2) {
+        if (parts.length == 2) {
             return parts[1];
         } else {
             return path;
         }
     }
 
+    @Override
     public String getXmlFileContent() {
         if (xmlFileUrl == null) {
             return "";
@@ -155,7 +168,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
         File jar = new File(parts[0].replace("file:", ""));
         if (!jar.exists()) {
-            return "Unable to locate Bundle :" +parts[0];
+            return "Unable to locate Bundle :" + parts[0];
         }
 
         try {
@@ -164,18 +177,18 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
             }
 
             if (jar.isDirectory()) {
-                File xml = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
+                File xml = new File(new Path(jar.getAbsolutePath()).append(
+                        parts[1]).toString());
                 if (!xml.exists()) {
                     return "Unable to locate file :" + xml.getAbsolutePath();
                 }
                 return FileUtils.readFile(xml);
             } else {
                 ZipFile jarArchive = new ZipFile(jar);
-                ZipEntry entry  = jarArchive.getEntry(parts[1].substring(1));
+                ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
                 return FileUtils.read(jarArchive.getInputStream(entry));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while getting XML file", e);
             return "";
         }
@@ -186,18 +199,22 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         return name;
     }
 
+    @Override
     public String getVersion() {
         return bundle.getVersion();
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
+    @Override
     public List<ServiceInfo> getServices() {
         return services;
     }
 
+    @Override
     public String getHierarchyPath() {
         return getBundle().getHierarchyPath() + "/" + getId();
     }

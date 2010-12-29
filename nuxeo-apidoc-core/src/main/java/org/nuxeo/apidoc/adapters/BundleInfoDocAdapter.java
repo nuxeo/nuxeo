@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
-
 package org.nuxeo.apidoc.adapters;
 
 import java.io.IOException;
@@ -35,13 +32,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
-/**
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- */
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         BundleInfo {
 
-    public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath) throws ClientException {
+    public static BundleInfoDocAdapter create(BundleInfo bundleInfo,
+            CoreSession session, String containerPath) throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bundle-" + bundleInfo.getId());
@@ -53,15 +48,17 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
-        doc.setPropertyValue("nxbundle:artifactGroupId", bundleInfo.getArtifactGroupId());
+        doc.setPropertyValue("nxbundle:artifactGroupId",
+                bundleInfo.getArtifactGroupId());
         doc.setPropertyValue("nxbundle:artifactId", bundleInfo.getArtifactId());
-        doc.setPropertyValue("nxbundle:artifactVersion", bundleInfo.getArtifactVersion());
+        doc.setPropertyValue("nxbundle:artifactVersion",
+                bundleInfo.getArtifactVersion());
         doc.setPropertyValue("nxbundle:bundleId", bundleInfo.getId());
         doc.setPropertyValue("nxbundle:jarName", bundleInfo.getFileName());
         Blob manifestBlob = new StringBlob(bundleInfo.getManifest());
         manifestBlob.setFilename("MANIFEST.MF");
         manifestBlob.setMimeType("text/plain");
-        doc.setPropertyValue("file:content",(Serializable) manifestBlob);
+        doc.setPropertyValue("file:content", (Serializable) manifestBlob);
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -76,50 +73,58 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         super(doc);
     }
 
+    @Override
     public String getArtifactId() {
         return safeGet("nxbundle:artifactId");
     }
 
+    @Override
     public String getBundleId() {
         return safeGet("nxbundle:bundleId");
     }
 
+    @Override
     public Collection<ComponentInfo> getComponents() {
         List<ComponentInfo> components = new ArrayList<ComponentInfo>();
 
         try {
-            List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
+            List<DocumentModel> children = getCoreSession().getChildren(
+                    doc.getRef());
 
             for (DocumentModel child : children) {
                 ComponentInfo comp = child.getAdapter(ComponentInfo.class);
-                if (comp!=null) {
+                if (comp != null) {
                     components.add(comp);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // TODO: handle exception
         }
         return components;
     }
 
+    @Override
     public String getFileName() {
         return safeGet("nxbundle:jarName");
     }
 
+    @Override
     public String getArtifactGroupId() {
         return safeGet("nxbundle:artifactGroupId");
     }
 
+    @Override
     public String getLocation() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    @Override
     public String getManifest() {
         try {
-            Blob mf = safeGet(Blob.class, "file:content", new StringBlob("No MANIFEST"));
-            if (mf.getEncoding()==null || "".equals(mf.getEncoding())) {
+            Blob mf = safeGet(Blob.class, "file:content", new StringBlob(
+                    "No MANIFEST"));
+            if (mf.getEncoding() == null || "".equals(mf.getEncoding())) {
                 mf.setEncoding("utf-8");
             }
             return mf.getString();
@@ -129,10 +134,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
     }
 
+    @Override
     public String[] getRequirements() {
         return null;
     }
 
+    @Override
     public String getArtifactVersion() {
         return safeGet("nxbundle:artifactVersion", null);
     }
@@ -142,10 +149,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         return getBundleId();
     }
 
+    @Override
     public String getVersion() {
         return getArtifactVersion();
     }
 
+    @Override
     public String getArtifactType() {
         return TYPE_NAME;
     }
