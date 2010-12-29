@@ -177,6 +177,13 @@ public class ThemeDescriptor implements Type {
         this.lastSaved = lastSaved;
     }
 
+    public Date getLastModified() {
+        if (lastSaved != null && lastSaved.after(lastLoaded)) {
+            return lastSaved;
+        }
+        return lastLoaded;
+    }
+
     public String getName() {
         return name;
     }

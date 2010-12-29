@@ -17,6 +17,7 @@ package org.nuxeo.theme.html.servlets;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServlet;
@@ -101,6 +102,8 @@ public final class Styles extends HttpServlet implements Serializable {
 
         if (rendered == null) {
             final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("/* CSS styles for theme '%s' (%s) */\n\n",
+                    themeName, new Date()));
             for (Style style : themeManager.getNamedStyles(themeName)) {
                 sb.append(CSSUtils.styleToCss(style,
                         style.getSelectorViewNames(), IGNORE_VIEW_NAME,

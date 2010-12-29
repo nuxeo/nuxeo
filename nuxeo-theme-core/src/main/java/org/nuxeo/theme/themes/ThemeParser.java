@@ -268,6 +268,8 @@ public class ThemeParser {
             }
 
             parseLayout(theme, baseNode);
+
+            themeManager.removeOrphanedFormats();
         }
 
         if (preload) {
