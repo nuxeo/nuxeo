@@ -16,13 +16,18 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Actions (lock, restore version)</title>
         <description>
-          This widgets displays the actions on the current document (lock/unlock
-          and undelete by default).
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the actions on the current document (lock/unlock
+            and undelete by default).
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -42,12 +47,17 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Description</title>
         <description>
-          This widgets displays the description of the currentDocument.
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the description of the currentDocument.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -67,20 +77,25 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Files</title>
         <description>
-          This widgets displays the files held by the currentDocument
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-            <li>
-              currentDocumentAsBlobHolder : the BlobHolder on the
-              currentDocument
-            </li>
-            <li>
-              conversionActions : the Seam Bean wrapping the conversionService
-            </li>
-            <li>liveEditHelper : the Seam Bean encapsulating LiveEdit</li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the files held by the currentDocument
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentAsBlobHolder : the BlobHolder on the
+                currentDocument
+              </li>
+              <li>
+                conversionActions : the Seam Bean wrapping the conversionService
+              </li>
+              <li>liveEditHelper : the Seam Bean encapsulating LiveEdit</li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -100,13 +115,18 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>View layout</title>
         <description>
-          This widgets displays the view layouts of the currentDocument
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-            <li>currentDocumentType : the Type of the current document</li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the view layouts of the currentDocument
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentType : the Type of the current document</li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -126,12 +146,17 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Dublincore</title>
         <description>
-          This widgets displays the dublincore layout of the currentDocument
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the dublincore layout of the currentDocument
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -235,17 +260,22 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Life cycle state and version</title>
         <description>
-          This widgets displays the life-cycle state and version of the
-          currentDocument
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>currentDocument: the current document</li>
-            <li>
-              currentDocumentVersionInfo: the current document versionning
-              information
-            </li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the life-cycle state and version of the
+            currentDocument.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>
+                currentDocumentVersionInfo: the current document versionning
+                information
+              </li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
@@ -265,15 +295,20 @@
         <sinceVersion>5.3.2</sinceVersion>
         <title>Tasks</title>
         <description>
-          This widgets displays the single tasks (out of a process instance)
-          attached to current document model.
-
-          It requires the following variables to be present in the EL context:
-          <ul>
-            <li>
-              currentSingleTasks: the single tasks attached to current document
-            </li>
-          </ul>
+          <![CDATA[
+          <p>
+            This widgets displays the single tasks (out of a process instance)
+            attached to current document model.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>
+                currentSingleTasks: the single tasks attached to current document
+              </li>
+            </ul>
+          </p>
+          ]]>
         </description>
         <categories>
           <category>summary</category>
