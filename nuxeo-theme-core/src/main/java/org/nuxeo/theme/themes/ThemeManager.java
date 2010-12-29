@@ -1203,6 +1203,7 @@ public final class ThemeManager implements Registrable {
         } catch (IOException e) {
             throw new ThemeIOException("Could not save theme to " + src, e);
         }
+        themeDescriptor.setLastSaved(new Date());
         log.debug("Saved theme: " + src);
     }
 

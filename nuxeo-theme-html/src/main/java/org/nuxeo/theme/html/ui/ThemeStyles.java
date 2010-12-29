@@ -27,7 +27,6 @@ import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class ThemeStyles {
-
     private static final Log log = LogFactory.getLog(ThemeStyles.class);
 
     private static final boolean IGNORE_VIEW_NAME = false;
@@ -72,18 +71,17 @@ public class ThemeStyles {
             return String.format("<style type=\"text/css\">%s</style>",
                     rendered);
         }
+
+        long timestamp = 0;
         if (cache) {
-            return String.format(
-                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
-                            + cssPath
-                            + "/?theme=%s&amp;path=%s&amp;basepath=%s\" />",
-                    themeName, path, basePath);
+            if (themeDescriptor != null) {
+                timestamp = themeDescriptor.getLastModified().getTime();
+            }
         } else {
-            return String.format(
-                    "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\""
-                            + cssPath
-                            + "/?theme=%s&amp;path=%s&amp;basepath=%s&amp;timestamp=%s\" />",
-                    themeName, path, basePath, new Date().getTime());
+            timestamp = new Date().getTime();
         }
+        return String.format(
+                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"%s/%s-styles.css?theme=%s&amp;path=%s&amp;basepath=%s&amp;timestamp=%s\" />",
+                cssPath, themeName, themeName, path, basePath, timestamp);
     }
 }
