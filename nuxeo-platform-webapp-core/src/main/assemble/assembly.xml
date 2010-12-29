@@ -1,0 +1,39 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <property name="outdir" value="${maven.project.build.directory}" />
+
+  <target name="build"
+          description="Build theme collections">
+    <!-- nuxeo DM -->
+    <antcall target="build-theme-collection">
+      <param name="collection" value="nuxeo-DM" />
+    </antcall>
+    <!-- Galaxy -->
+    <antcall target="build-theme-collection">
+      <param name="collection" value="Galaxy" />
+    </antcall>
+
+    <copy todir="${outdir}/classes/" overwrite="true">
+      <fileset dir="src/main/resources">
+        <exclude name="themes/collections/**" />
+      </fileset>
+    </copy>
+    <jar destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar" basedir="${outdir}/classes"/>
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar" type="jar"
+                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+  </target>
+
+  <target name="build-theme-collection"
+          description="Build theme collection: ${collection}">
+    <delete dir="${outdir}/classes/themes/collections/${collection}" failonerror="false" />
+    <zip destfile="${outdir}/classes/themes/collections/${collection}.zip"
+         basedir="src/main/resources/themes/collections/${collection}" />
+  </target>
+
+</project>

@@ -1,0 +1,10 @@
+
+galaxy1.css:
+     description: Default theme
+     preview: galaxy1.png
+     skin: true
+
+galaxy2.css:
+     description: Default theme big font
+     preview: galaxy2.png
+     skin: true

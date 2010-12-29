@@ -1,0 +1,392 @@
+body {
+  font: normal 11px 'Lucida Grande', Verdana, Arial, sans-serif;
+}
+
+input.button {
+  background: "buttons (Galaxy background)";
+  border: "buttons (Galaxy border)";
+  color: "black.lite (Galaxy color)";
+  font: "default (Galaxy font)";
+}
+
+input.button:hover {
+  border: "buttons.hover (Galaxy border)";
+  color: "black (Galaxy color)";
+}
+
+input.button[disabled="disabled"], input.button[disabled="disabled"]:hover {
+  border: "buttons (Galaxy border)";
+  color: "gray.medium (Galaxy color)";
+}
+
+.header {
+  background: "topbar (Galaxy background)";
+  border: "topbar (Galaxy border)";
+}
+
+.header .logo {
+}
+
+.userActions, .searchService {
+  color: #cecece;
+}
+
+.userActions a, .searchService a, .userActions a:visited, .searchService a:visited {
+  color: #fff;
+}
+
+div.breadcrumbArea {
+  background-color: #EEEFF0;
+}
+
+.breadcrumbArea a, .breadcrumbArea a:visited {
+  color: #666666;
+}
+
+.clipboardFunctions {
+  border-top: 2px solid #E7E7E7;
+}
+
+.userClipboard h4 {
+  border-bottom: 1px dotted #999;
+  color: #5c5c5c;
+}
+
+.tabsBar {
+  border-bottom: "tabsbar (Galaxy border)";
+}
+
+.tabsBar a, .tabsBar a:hover, .tabsBar a:visited {
+  background: "white (Galaxy background)";
+  border: "tabisnotselected (Galaxy border)";
+  color: "blue.link (Galaxy color)";
+}
+
+.tabsBar li.selected a, .tabsBar li.selected a:hover, .tabsBar li.selected a:visited {
+  background: "tabiselected (Galaxy background)";
+  border: "tabiselected (Galaxy border)";
+  color: "white (Galaxy color)";
+}
+
+.tabsBar li a:hover {
+  background: "tabiselected (Galaxy background)";
+  color: "white (Galaxy color)";
+}
+
+.subtabsBar {
+  border-bottom: "subtabsbar (Galaxy border)";
+  font: "default (Galaxy font)";
+}
+
+.subtabsBar a, .subtabsBar a:hover, .subtabsBar a:visited {
+  border: "subtabisnotselected (Galaxy border)";
+  color: "blue.link (Galaxy color)";
+}
+
+.subtabsBar li a:hover {
+  background: "subtabiselected (Galaxy background)";
+  color: "gray.dark (Galaxy color)";
+}
+
+.subtabsBar li.selected a, .subtabsBar li.selected a:hover, .subtabsBar li.selected a:visited {
+  background: "subtabiselected (Galaxy background)";
+  border: "subtabiselected (Galaxy border)";
+  color: "gray.dark (Galaxy color)";
+}
+
+h1 {
+  color: "gray.dark (Galaxy color)";
+}
+
+h2 {
+  color: "gray.dark (Galaxy color)";
+}
+
+h3 {
+  color: "gray.dark (Galaxy color)";
+}
+
+h4, h5, h6 {
+  color: "gray.dark (Galaxy color)";
+}
+
+.directoryBack {
+  background: "back (Galaxy background)";
+}
+
+.wizardFrame {
+  border: "blue.sky (Galaxy border)";
+}
+
+.wizardFrame .templatePreview {
+  border: "blue.sky (Galaxy border)";
+}
+
+.wizardFrame .templatePreview img {
+  border: "preview (Galaxy border)";
+}
+
+.iconColumn .dropInto {
+  background: "blue.sky (Galaxy background)";
+}
+
+.focusColumn {
+  background: "blue.sky (Galaxy background)";
+}
+
+table.dataOutput thead th a, table.dataOutput thead th a:hover, table.dataOutput thead th a:active, table.dataOutput thead th a:visited {
+  color: "gray (Galaxy color)";
+}
+
+.vocabularyEntryContent .currentDocumentInformation {
+  background: "blue.sky (Galaxy background)";
+}
+
+.dataList td {
+  border-bottom: "tablelines (Galaxy border)";
+  border-top: "tablelines (Galaxy border)";
+}
+
+.dataList thead th {
+  background: "tablethead (Galaxy background)";
+  border-bottom: "tablelines (Galaxy)";
+  color: "gray (Galaxy color)";
+}
+
+.dataList thead th a, .dataList thead th a:link {
+  color: "gray (Galaxy color)";
+}
+
+.dataList thead th a:visited {
+  color: "gray (Galaxy color)";
+}
+
+.dataList thead th a:active {
+  color: "gray (Galaxy color)";
+}
+
+.dataList thead th a:hover {
+  color: "gray (Galaxy color)";
+}
+
+.pageNavigationControls {
+  border: "blue.sky.mini (Galaxy border)";
+}
+
+.dataInput .fieldColumn table.mceEditor .mceToolbarBottom {
+  background: "blue.sky (Galaxy background)";
+}
+
+.pictureBookItem {
+  background: "blue.sky (Galaxy background)";
+  border: "blue.sky.mini (Galaxy border)";
+}
+
+.itemSelected {
+  background: "selected.orange (Galaxy background)";
+  border: "orange (Galaxy border)";
+}
+
+.pictureBookItemTitle {
+  background: "big.blue (Galaxy background)";
+}
+
+.slideShowControl span {
+  color: "gray (Galaxy color)";
+}
+
+.foldableBox {
+  border: "tabisnotselected (Galaxy border)";
+}
+
+.foldableBox h3 {
+  background: "tabiselected (Galaxy background)";
+  border-bottom: "tabiselected (Galaxy border)";
+}
+
+.foldableBox h3.folded {
+  background: "folded (Galaxy background)";
+}
+
+.foldableBox h3.unfolded {
+  background: "unfolded (Galaxy background)";
+}
+
+.archiveTabContent .currentDocumentInformation {
+  background-color: "blue.sky (Galaxy background)";
+}
+
+.dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize {
+  border: "dataInput (Galaxy border)";
+}
+
+.commentAuthor {
+  background: "comment (Galaxy background)";
+}
+
+.dataInput .fieldColumn table.mceEditor {
+  background: "blue.sky (Galaxy background)";
+  border: "gray.light (Galaxy border)";
+}
+
+table.dataOutput thead th {
+  background: "tablethead (Galaxy background)";
+  border-bottom: "tablelines (Galaxy border)";
+  color: "gray (Galaxy color)";
+}
+
+.required {
+  background: "required (Galaxy background)";
+}
+
+.closedContent {
+  background: "white (Galaxy background)";
+  border: "blue.border (Galaxy border)";
+}
+
+.dataOutput td {
+  border-bottom: "tablelines (Galaxy border)";
+  border-top: "tablelines (Galaxy border)";
+}
+
+.rightsAddManager {
+  background: "addmanager (Galaxy background)";
+}
+
+.rightsAddTitle {
+  background: "blue.light (Galaxy background)";
+  border: "blue.border (Galaxy border)";
+}
+
+.rightsAddSelect {
+  border: "dataInput (Galaxy border)";
+}
+
+.rightsAddManager td {
+  background-color: "white (Galaxy background)";
+  border: "tabiselected (Galaxy border)";
+}
+
+.dataInput select {
+  border: "dataInput (Galaxy border)";
+}
+
+.dataInput .fieldColumn table.mceEditor .mceEditorIframe {
+  background-color: "white (Galaxy background)";
+  border: "preview (Galaxy border)";
+}
+
+.action_bar a {
+  background: "buttons (Galaxy background)";
+  border: "buttons (Galaxy border)";
+  color: "black.lite (Galaxy color)";
+}
+
+.tabsContent table.trashTable thead th {
+  background-color: "orange.lite (Galaxy background)";
+}
+
+table.trashTable tbody tr.dataRowOdd {
+  background-color: "orange.odd (Galaxy background)";
+}
+
+.taskAssign {
+  background: "blue.light (Galaxy background)";
+  border: "blue.border (Galaxy border)";
+}
+
+.directoryFilter, .searchField {
+  background: "search (Galaxy background)";
+  border: "dataInput (Galaxy border)";
+}
+
+.taskPrincipalSelect select {
+  border: "dataInput (Galaxy border)";
+}
+
+.dataRowOdd {
+  background: "tableevenlines (Galaxy background)";
+}
+
+h3.summaryTitle {
+  border-bottom: "summary (Galaxy border)";
+  color: "gray.dark (Galaxy color)";
+}
+
+.note_content_block {
+  border: 1px solid #D7D7D7;
+}
+
+.summary_locked {
+  color: "red (Galaxy color)";
+}
+
+.summary_unlocked {
+  color: "green (Galaxy color)";
+}
+
+.lcAndVersion {
+  border: 1px solid #dedede;
+}
+
+.actions_block {
+  border: 1px solid #dedede;
+}
+
+.layoutViewMode a:hover img, .layoutViewMode li.selected img {
+  border: 1px solid #aaa;
+}
+
+.summary_div_1 h3.summaryTitle {
+  color: #848484;
+}
+
+div.syndicationButton {
+  background-color: "rss (Galaxy background)";
+}
+
+.error {
+  color: "red (Galaxy color)";
+}
+
+.infoMessage {
+  background: "info (Galaxy background)";
+  border: "blue.border (Galaxy border)";
+  color: "blue.dark (Galaxy color)";
+}
+
+.infoFeedback {
+  background: "info (Galaxy background)";
+  border: "infofeedback (Galaxy border)";
+  color: "blue.dark (Galaxy color)";
+}
+
+.warningMessage {
+  background: "warning (Galaxy background)";
+  border: "dataInput (Galaxy border)";
+  color: "black (Galaxy color)";
+}
+
+.warningFeedback {
+  background: "warning (Galaxy background)";
+  border: "warningfeedback (Galaxy border)";
+  color: "black (Galaxy color)";
+}
+
+.errorMessage {
+  background: "warning (Galaxy background)";
+  border: "dataInput (Galaxy border)";
+  color: "black (Galaxy color)";
+}
+
+.errorFeedback {
+  background: "warning (Galaxy background)";
+  border: "warningfeedback (Galaxy border)";
+  color: "black (Galaxy color)";
+}
+
+.footerArea {
+  color: #5c5c5c;
+}
+
+
