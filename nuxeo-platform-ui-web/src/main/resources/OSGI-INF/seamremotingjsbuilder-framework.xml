@@ -11,7 +11,7 @@
 
   <service>
     <provide
-        interface="org.nuxeo.ecm.platform.ui.web.seamremoting.SeamRemotingJSBuilder"/>
+        interface="org.nuxeo.ecm.platform.ui.web.seamremoting.SeamRemotingJSBuilderService"/>
   </service>
 
   <extension-point name="remotableSeamBeans">
