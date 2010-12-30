@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,7 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.launcher.commons.text.TextTemplate;
 
 /**
  * @author jcarsique
@@ -141,5 +141,11 @@ public abstract class ServerConfigurator {
         logDir = new File(logDirStr);
         logDir.mkdirs();
     }
+
+    /**
+     * Initialize logs
+     * @since 5.4.1
+     */
+    public abstract void initLogs();
 
 }

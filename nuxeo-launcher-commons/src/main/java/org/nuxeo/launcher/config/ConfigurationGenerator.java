@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,7 +36,8 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
+import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.NullEnumeration;
 
 /**
  * Builder for server configuration and datasource files from templates and
@@ -163,8 +164,6 @@ public class ConfigurationGenerator {
         // log.info("This is the first time Nuxeo is started by user "
         // + System.getProperty("user.name"));
         // }
-        log.info("Nuxeo home:          " + nuxeoHome.getPath());
-        log.info("Nuxeo configuration: " + nuxeoConf.getPath());
 
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
@@ -189,6 +188,11 @@ public class ConfigurationGenerator {
         } else if (isJetty) {
             serverConfigurator = new JettyConfigurator(this);
         }
+        if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
+            serverConfigurator.initLogs();
+        }
+        log.info("Nuxeo home:          " + nuxeoHome.getPath());
+        log.info("Nuxeo configuration: " + nuxeoConf.getPath());
     }
 
     public void setForceGeneration(boolean forceGeneration) {
@@ -281,6 +285,10 @@ public class ConfigurationGenerator {
                 userConfig.setProperty(Environment.NUXEO_DATA_DIR,
                         serverConfigurator.getDataDir().getPath());
             } else {
+                if (!new File(dataDir).isAbsolute()) {
+                    dataDir = new File(getNuxeoHome(), dataDir).getPath();
+                    userConfig.setProperty(Environment.NUXEO_DATA_DIR, dataDir);
+                }
                 serverConfigurator.setDataDir(dataDir);
             }
             String logDir = userConfig.getProperty(Environment.NUXEO_LOG_DIR);
@@ -525,5 +533,13 @@ public class ConfigurationGenerator {
      */
     public File getNuxeoConf() {
         return nuxeoConf;
+    }
+
+    /**
+     * Delegate logs initialization to serverConfigurator instance
+     * @since 5.4.1
+     */
+    public void initLogs() {
+        serverConfigurator.initLogs();
     }
 }

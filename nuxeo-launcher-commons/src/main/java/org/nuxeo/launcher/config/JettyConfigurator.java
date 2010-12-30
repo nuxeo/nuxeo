@@ -17,9 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import java.io.File;
+import java.net.MalformedURLException;
+
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @author jcarsique
@@ -51,6 +54,19 @@ public class JettyConfigurator extends ServerConfigurator {
     @Override
     protected String getDefaultDataDir() {
         return DEFAULT_DATA_DIR;
+    }
+
+    @Override
+    public void initLogs() {
+        File logFile = new File(generator.getNuxeoHome(), "config"
+                + File.separator + "log4j.xml");
+        try {
+            System.out.println("Try to configure logs with " + logFile);
+            DOMConfigurator.configure(logFile.toURI().toURL());
+            log.info("Logs succesfully configured.");
+        } catch (MalformedURLException e) {
+            log.error("Could not initialize logs with " + logFile, e);
+        }
     }
 
 }
