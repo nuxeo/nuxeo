@@ -22,16 +22,13 @@ package org.nuxeo.launcher;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationException;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
-import org.nuxeo.runtime.deployment.preprocessor.PackZip;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.xml.sax.SAXException;
 
 /**
@@ -55,6 +52,14 @@ public class Launcher {
     public Launcher(String[] params) {
         this.params = params;
         configurationGenerator = new ConfigurationGenerator();
+
+        // if (configurationGenerator.isJBoss) {
+        // throw new UnsupportedOperationException();
+        // } else if (configurationGenerator.isJetty) {
+        // throw new UnsupportedOperationException();
+        // } else if (configurationGenerator.isTomcat) {
+        // }
+
         nuxeoThread = new NuxeoThread(configurationGenerator);
     }
 
@@ -86,9 +91,8 @@ public class Launcher {
         }
         String command = params[0];
 
-        // Setup nuxeo.log.dir
         // if JBoss, setup jboss.server.log.dir ?
-        // Setup log4j.configuration
+
         // Setup nuxeo.pid.dir
         // Setup nuxeo.tmp.dir
         // Setup nuxeo.bind.address
@@ -134,7 +138,7 @@ public class Launcher {
         } else if ("configure".equalsIgnoreCase(command)) {
             configure();
         } else if ("pack".equalsIgnoreCase(command)) {
-            PackZip.main(Arrays.copyOfRange(params, 1, params.length));
+            // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
         }
     }
 
@@ -150,7 +154,6 @@ public class Launcher {
 
     private void start() throws ConfigurationException {
         configure();
-        log.debug("LOG: "+ System.getProperty(Environment.NUXEO_LOG_DIR));
         nuxeoThread.start();
     }
 
