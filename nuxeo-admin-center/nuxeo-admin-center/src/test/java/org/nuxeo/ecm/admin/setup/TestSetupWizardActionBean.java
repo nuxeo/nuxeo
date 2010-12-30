@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * @author jcarsique
