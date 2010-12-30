@@ -226,7 +226,7 @@
             <phase>process-resources</phase>
             <configuration>
               <buildFiles>
-                <buildFile>src/main/assemble/assembly.xml</buildFile>
+                <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
               </buildFiles>
             </configuration>
             <goals>
