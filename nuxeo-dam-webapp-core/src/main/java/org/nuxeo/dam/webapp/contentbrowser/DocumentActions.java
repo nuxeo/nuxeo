@@ -37,6 +37,7 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.dam.webapp.chainselect.ChainSelectCleaner;
 import org.nuxeo.dam.webapp.helper.DownloadHelper;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -268,16 +270,15 @@ public class DocumentActions implements Serializable {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
                         "file:content");
+
+                Blob blob = currentSelection.getAdapter(BlobHolder.class).getBlob();
                 params.put(
-                        DocumentFileCodec.FILENAME_KEY,
-                        (String) currentSelection.getPropertyValue("file:filename"));
+                        DocumentFileCodec.FILENAME_KEY, blob.getFilename());
                 DocumentView docView = new DocumentViewImpl(docLoc, null,
                         params);
 
                 download(docView);
-            }
-
-            if (currentSelection.hasSchema("picture")) {
+            } else if (currentSelection.hasSchema("picture")) {
                 PictureResourceAdapter pra = currentSelection.getAdapter(PictureResourceAdapter.class);
                 String xpath = pra.getViewXPath(downloadSize);
                 String filename = (String) currentSelection.getPropertyValue(xpath
