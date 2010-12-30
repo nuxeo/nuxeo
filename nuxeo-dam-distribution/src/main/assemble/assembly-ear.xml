@@ -116,10 +116,6 @@
       <artifact:resolveFile key="org.apache.derby:derby" />
       <artifact:resolveFile key="commons-el:commons-el" />
       <artifact:resolveFile key="org.jboss.el:jboss-el" />
-
-      <!-- missing PDFBox dependencies -->
-      <artifact:resolveFile key="org.fontbox:fontbox" />
-      <artifact:resolveFile key="org.jempbox:jempbox" />
     </copy>
   </target>
 
