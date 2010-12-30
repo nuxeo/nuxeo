@@ -166,10 +166,6 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   <target name="third-party-libraries">
     <copy todir="${nxserver}/lib" overwrite="true">
       <artifact:resolveFile key="de.schlichtherle.io:truezip" />
-
-      <!-- missing PDFBox dependencies -->
-      <artifact:resolveFile key="org.fontbox:fontbox" />
-      <artifact:resolveFile key="org.jempbox:jempbox" />
     </copy>
 
     <copy todir="${tomcatdir}/lib">
