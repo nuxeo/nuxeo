@@ -22,6 +22,10 @@ public interface BundleGroup extends NuxeoArtifact {
 
     String TYPE_NAME = "NXBundleGroup";
 
+    String PROP_GROUP_NAME = "nxbundlegroup:groupName";
+
+    String PROP_KEY = "nxbundlegroup:key";
+
     String getName();
 
     List<BundleGroup> getSubGroups();

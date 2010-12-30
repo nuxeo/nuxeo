@@ -23,6 +23,16 @@ public interface SeamComponentInfo extends NuxeoArtifact,
 
     String TYPE_NAME = "NXSeamComponent";
 
+    String PROP_COMPONENT_NAME = "nxseam:componentName";
+
+    String PROP_CLASS_NAME = "nxseam:className";
+
+    String PROP_SCOPE = "nxseam:scope";
+
+    String PROP_INTERFACES = "nxseam:interfaces";
+
+    String PROP_PRECEDENCE = "nxseam:precedence";
+
     public String getName();
 
     public String getScope();

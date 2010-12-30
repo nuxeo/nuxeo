@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,8 +46,8 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleGroup.getName());
-        doc.setPropertyValue("nxbundlegroup:groupName", bundleGroup.getName());
-        doc.setPropertyValue("nxbundlegroup:key", bundleGroup.getId());
+        doc.setPropertyValue(PROP_GROUP_NAME, bundleGroup.getName());
+        doc.setPropertyValue(PROP_KEY, bundleGroup.getId());
         if (exist) {
             doc = session.saveDocument(doc);
         } else {
@@ -63,8 +64,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     public List<String> getBundleIds() {
         List<String> bundles = new ArrayList<String>();
 
-        String query = "select * from NXBundle where ecm:path STARTSWITH '"
-                + doc.getPathAsString() + "'";
+        String query = QueryHelper.selectByPath(BundleInfo.TYPE_NAME, doc);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
@@ -80,20 +80,18 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     private String getKey() {
-        return safeGet("nxbundlegroup:key", "unknown_bundle_group");
+        return safeGet(PROP_KEY, "unknown_bundle_group");
     }
 
     @Override
     public String getName() {
-        return safeGet("nxbundlegroup:groupName", "unknow_bundle_group");
+        return safeGet(PROP_GROUP_NAME, "unknow_bundle_group");
     }
 
     @Override
     public List<BundleGroup> getSubGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
-
-        String query = "select * from NXBundleGroup where ecm:path STARTSWITH '"
-                + doc.getPathAsString() + "'";
+        String query = QueryHelper.selectByPath(TYPE_NAME, doc);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {

@@ -21,6 +21,22 @@ import java.util.Map;
 
 public interface DocumentationItem {
 
+    String TYPE_NAME = "NXDocumentation";
+
+    String PROP_TARGET = "nxdoc:target";
+
+    String PROP_TARGET_TYPE = "nxdoc:targetType";
+
+    String PROP_APPLICABLE_VERSIONS = "nxdoc:applicableVersions";
+
+    String PROP_DOCUMENTATION_ID = "nxdoc:documentationId";
+
+    String PROP_NUXEO_APPROVED = "nxdoc:nuxeoApproved";
+
+    String PROP_TYPE = "nxdoc:type";
+
+    String PROP_RENDERING_TYPE = "nxdoc:renderingType";
+
     /**
      * Gets Title of the Documentation
      */

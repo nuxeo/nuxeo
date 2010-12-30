@@ -34,8 +34,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DocumentationItemDocAdapter implements DocumentationItem {
 
-    public static final String DOC_TYPE = "NXDocumentation";
-
     protected static final Log log = LogFactory.getLog(DocumentationItemDocAdapter.class);
 
     protected final DocumentModel doc;
@@ -52,7 +50,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @SuppressWarnings("unchecked")
     public List<String> getApplicableVersion() {
         try {
-            return (List<String>) doc.getPropertyValue("nxdoc:applicableVersions");
+            return (List<String>) doc.getPropertyValue(PROP_APPLICABLE_VERSIONS);
         } catch (Exception e) {
             log.error("Error while reading applicable version", e);
             return new ArrayList<String>();
@@ -82,7 +80,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public String getRenderingType() {
         try {
-            return (String) doc.getPropertyValue("nxdoc:renderingType");
+            return (String) doc.getPropertyValue(PROP_RENDERING_TYPE);
         } catch (Exception e) {
             log.error("Error while reading rendering type", e);
             return "";
@@ -92,7 +90,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public String getTarget() {
         try {
-            return (String) doc.getPropertyValue("nxdoc:target");
+            return (String) doc.getPropertyValue(PROP_TARGET);
         } catch (Exception e) {
             log.error("Error while reading target", e);
             return "";
@@ -102,7 +100,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public String getTargetType() {
         try {
-            return (String) doc.getPropertyValue("nxdoc:targetType");
+            return (String) doc.getPropertyValue(PROP_TARGET_TYPE);
         } catch (Exception e) {
             log.error("Error while reading targetType", e);
             return "";
@@ -112,7 +110,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public String getType() {
         try {
-            return (String) doc.getPropertyValue("nxdoc:type");
+            return (String) doc.getPropertyValue(PROP_TYPE);
         } catch (Exception e) {
             log.error("Error while reading type", e);
             return "";
@@ -148,7 +146,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public boolean isApproved() {
         try {
-            Boolean approved = (Boolean) doc.getPropertyValue("nxdoc:nuxeoApproved");
+            Boolean approved = (Boolean) doc.getPropertyValue(PROP_NUXEO_APPROVED);
             return approved == null ? false : approved.booleanValue();
         } catch (Exception e) {
             log.error("Error while reading type", e);
@@ -159,7 +157,7 @@ public class DocumentationItemDocAdapter implements DocumentationItem {
     @Override
     public String getId() {
         try {
-            return (String) doc.getPropertyValue("nxdoc:documentationId");
+            return (String) doc.getPropertyValue(PROP_DOCUMENTATION_ID);
         } catch (Exception e) {
             log.error("Error while reading target", e);
             return "";

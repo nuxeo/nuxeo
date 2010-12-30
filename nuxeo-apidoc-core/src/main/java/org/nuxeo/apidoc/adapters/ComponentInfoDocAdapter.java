@@ -27,6 +27,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -57,16 +58,15 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", componentInfo.getName());
-        doc.setPropertyValue("nxcomponent:componentId", componentInfo.getId());
-        doc.setPropertyValue("nxcomponent:componentName",
-                componentInfo.getName());
-        doc.setPropertyValue("nxcomponent:componentClass",
+        doc.setPropertyValue(PROP_COMPONENT_ID, componentInfo.getId());
+        doc.setPropertyValue(PROP_COMPONENT_NAME, componentInfo.getName());
+        doc.setPropertyValue(PROP_COMPONENT_CLASS,
                 componentInfo.getComponentClass());
-        doc.setPropertyValue("nxcomponent:builtInDocumentation",
+        doc.setPropertyValue(PROP_BUILT_IN_DOC,
                 componentInfo.getDocumentation());
-        doc.setPropertyValue("nxcomponent:isXML",
+        doc.setPropertyValue(PROP_IS_XML,
                 Boolean.valueOf(componentInfo.isXmlPureComponent()));
-        doc.setPropertyValue("nxcomponent:services",
+        doc.setPropertyValue(PROP_SERVICES,
                 (Serializable) componentInfo.getServiceNames());
 
         Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
@@ -100,12 +100,12 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getComponentClass() {
-        return safeGet("nxcomponent:componentClass");
+        return safeGet(PROP_COMPONENT_CLASS);
     }
 
     @Override
     public String getDocumentation() {
-        return safeGet("nxcomponent:builtInDocumentation");
+        return safeGet(PROP_BUILT_IN_DOC);
     }
 
     @Override
@@ -118,9 +118,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public Collection<ExtensionPointInfo> getExtensionPoints() {
         List<ExtensionPointInfo> xps = new ArrayList<ExtensionPointInfo>();
         try {
-            String query = "select * from NXExtensionPoint where ecm:path STARTSWITH '"
-                    + doc.getPathAsString() + "'";
-
+            String query = QueryHelper.selectByPath(ExtensionPointInfo.TYPE_NAME,
+                    doc);
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
@@ -138,9 +137,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
         try {
-            String query = "select * from NXContribution where ecm:path STARTSWITH '"
-                    + doc.getPathAsString() + "'";
-
+            String query = QueryHelper.selectByPath(ExtensionInfo.TYPE_NAME, doc);
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
@@ -156,14 +153,14 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getName() {
-        return safeGet("nxcomponent:componentName");
+        return safeGet(PROP_COMPONENT_NAME);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<String> getServiceNames() {
         try {
-            return (List<String>) doc.getPropertyValue("nxcomponent:services");
+            return (List<String>) doc.getPropertyValue(PROP_SERVICES);
         } catch (Exception e) {
             log.error("Error while getting service names", e);
         }
@@ -201,7 +198,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public boolean isXmlPureComponent() {
-        Boolean isXml = safeGet(Boolean.class, "nxcomponent:isXML", Boolean.TRUE);
+        Boolean isXml = safeGet(Boolean.class, PROP_IS_XML, Boolean.TRUE);
         return isXml == null ? true : isXml.booleanValue();
     }
 
@@ -230,17 +227,11 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public List<ServiceInfo> getServices() {
-
         List<ServiceInfo> result = new ArrayList<ServiceInfo>();
-
-        String query = "select * from NXService where ecm:path STARTSWITH '"
-                + getDoc().getPathAsString() + "/'";
-
         try {
+            String query = QueryHelper.selectByPath(ServiceInfo.TYPE_NAME, doc);
             DocumentModelList docs = getCoreSession().query(query);
-
             for (DocumentModel siDoc : docs) {
-
                 ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
                 if (si != null) {
                     result.add(si);

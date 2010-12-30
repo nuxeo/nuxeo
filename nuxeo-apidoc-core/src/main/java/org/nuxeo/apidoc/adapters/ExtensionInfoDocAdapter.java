@@ -48,12 +48,10 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", xi.getId());
 
-        doc.setPropertyValue("nxcontribution:contribId", xi.getId());
-        doc.setPropertyValue("nxcontribution:documentation",
-                xi.getDocumentation());
-        doc.setPropertyValue("nxcontribution:extensionPoint",
-                xi.getExtensionPoint());
-        doc.setPropertyValue("nxcontribution:targetComponentName",
+        doc.setPropertyValue(PROP_CONTRIB_ID, xi.getId());
+        doc.setPropertyValue(PROP_DOC, xi.getDocumentation());
+        doc.setPropertyValue(PROP_EXTENSION_POINT, xi.getExtensionPoint());
+        doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME,
                 xi.getTargetComponentName().getName());
 
         Blob xmlBlob = new StringBlob(xi.getXml());
@@ -76,22 +74,22 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getDocumentation() {
-        return safeGet("nxcontribution:documentation");
+        return safeGet(PROP_DOC);
     }
 
     @Override
     public String getExtensionPoint() {
-        return safeGet("nxcontribution:extensionPoint");
+        return safeGet(PROP_EXTENSION_POINT);
     }
 
     @Override
     public String getId() {
-        return safeGet("nxcontribution:contribId");
+        return safeGet(PROP_CONTRIB_ID);
     }
 
     @Override
     public ComponentName getTargetComponentName() {
-        return new ComponentName(safeGet("nxcontribution:targetComponentName"));
+        return new ComponentName(safeGet(PROP_TARGET_COMPONENT_NAME));
     }
 
     @Override

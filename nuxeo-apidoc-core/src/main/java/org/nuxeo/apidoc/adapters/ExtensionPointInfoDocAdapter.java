@@ -24,6 +24,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,11 +50,11 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", xpi.getId());
 
-        doc.setPropertyValue("nxextensionpoint:name", xpi.getName());
-        doc.setPropertyValue("nxextensionpoint:epId", xpi.getId());
-        doc.setPropertyValue("nxextensionpoint:documentation",
-                xpi.getDocumentation());
-        doc.setPropertyValue("nxextensionpoint:extensionPoint", xpi.getTypes());
+        doc.setPropertyValue(PROP_NAME, xpi.getName());
+        doc.setPropertyValue(PROP_EP_ID, xpi.getId());
+        doc.setPropertyValue(PROP_DOC, xpi.getDocumentation());
+        // TODO incoherent naming here, also schema has no types
+        doc.setPropertyValue(PROP_EXTENSION_POINT, xpi.getTypes());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -75,20 +76,16 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getDocumentation() {
-        return safeGet("nxextensionpoint:documentation");
+        return safeGet(PROP_DOC);
     }
 
     @Override
     public Collection<ExtensionInfo> getExtensions() {
-
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {
-            String query = "select * from " + ExtensionInfo.TYPE_NAME
-                    + " where nxcontribution:extensionPoint='" + this.getId()
-                    + "'";
-
+            String query = QueryHelper.select(ExtensionInfo.TYPE_NAME,
+                    PROP_EXTENSION_POINT, getId());
             DocumentModelList docs = getCoreSession().query(query);
-
             for (DocumentModel contribDoc : docs) {
                 ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
                 if (contrib != null) {
@@ -103,7 +100,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getName() {
-        return safeGet("nxextensionpoint:name");
+        return safeGet(PROP_NAME);
     }
 
     @Override
@@ -118,7 +115,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getId() {
-        return safeGet("nxextensionpoint:epId");
+        return safeGet(PROP_EP_ID);
     }
 
     @Override

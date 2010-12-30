@@ -48,13 +48,13 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
-        doc.setPropertyValue("nxbundle:artifactGroupId",
+        doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID,
                 bundleInfo.getArtifactGroupId());
-        doc.setPropertyValue("nxbundle:artifactId", bundleInfo.getArtifactId());
-        doc.setPropertyValue("nxbundle:artifactVersion",
+        doc.setPropertyValue(PROP_ARTIFACT_ID, bundleInfo.getArtifactId());
+        doc.setPropertyValue(PROP_ARTIFACT_VERSION,
                 bundleInfo.getArtifactVersion());
-        doc.setPropertyValue("nxbundle:bundleId", bundleInfo.getId());
-        doc.setPropertyValue("nxbundle:jarName", bundleInfo.getFileName());
+        doc.setPropertyValue(PROP_BUNDLE_ID, bundleInfo.getId());
+        doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
         Blob manifestBlob = new StringBlob(bundleInfo.getManifest());
         manifestBlob.setFilename("MANIFEST.MF");
         manifestBlob.setMimeType("text/plain");
@@ -75,12 +75,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public String getArtifactId() {
-        return safeGet("nxbundle:artifactId");
+        return safeGet(PROP_ARTIFACT_ID);
     }
 
     @Override
     public String getBundleId() {
-        return safeGet("nxbundle:bundleId");
+        return safeGet(PROP_BUNDLE_ID);
     }
 
     @Override
@@ -105,12 +105,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public String getFileName() {
-        return safeGet("nxbundle:jarName");
+        return safeGet(PROP_JAR_NAME);
     }
 
     @Override
     public String getArtifactGroupId() {
-        return safeGet("nxbundle:artifactGroupId");
+        return safeGet(PROP_ARTIFACT_GROUP_ID);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public String getArtifactVersion() {
-        return safeGet("nxbundle:artifactVersion", null);
+        return safeGet(PROP_ARTIFACT_VERSION, null);
     }
 
     @Override

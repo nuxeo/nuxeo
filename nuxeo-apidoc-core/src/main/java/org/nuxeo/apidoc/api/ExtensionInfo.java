@@ -23,6 +23,14 @@ public interface ExtensionInfo extends NuxeoArtifact {
 
     String TYPE_NAME = "NXContribution";
 
+    String PROP_CONTRIB_ID = "nxcontribution:contribId";
+
+    String PROP_DOC = "nxcontribution:documentation";
+
+    String PROP_EXTENSION_POINT = "nxcontribution:extensionPoint";
+
+    String PROP_TARGET_COMPONENT_NAME = "nxcontribution:targetComponentName";
+
     String getExtensionPoint();
 
     String getDocumentation();

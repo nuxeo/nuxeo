@@ -23,6 +23,14 @@ public interface ExtensionPointInfo extends NuxeoArtifact {
 
     String TYPE_NAME = "NXExtensionPoint";
 
+    String PROP_NAME = "nxextensionpoint:name";
+
+    String PROP_EP_ID = "nxextensionpoint:epId";
+
+    String PROP_DOC = "nxextensionpoint:documentation";
+
+    String PROP_EXTENSION_POINT = "nxextensionpoint:extensionPoint";
+
     ComponentInfo getComponent();
 
     String getName();

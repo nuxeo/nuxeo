@@ -26,6 +26,18 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     String TYPE_NAME = "NXComponent";
 
+    String PROP_COMPONENT_ID = "nxcomponent:componentId";
+
+    String PROP_COMPONENT_NAME = "nxcomponent:componentName";
+
+    String PROP_COMPONENT_CLASS = "nxcomponent:componentClass";
+
+    String PROP_BUILT_IN_DOC = "nxcomponent:builtInDocumentation";
+
+    String PROP_IS_XML = "nxcomponent:isXML";
+
+    String PROP_SERVICES = "nxcomponent:services";
+
     String getName();
 
     BundleInfo getBundle();

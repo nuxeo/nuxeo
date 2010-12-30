@@ -82,7 +82,7 @@ public class AdapterFactory implements DocumentAdapterFactory {
         }
 
         if (adapterClassName.equals(DocumentationItem.class.getSimpleName())) {
-            if (doc.getType().equals(DocumentationItemDocAdapter.DOC_TYPE)) {
+            if (doc.getType().equals(DocumentationItem.TYPE_NAME)) {
                 return new DocumentationItemDocAdapter(doc);
             }
         }

@@ -17,11 +17,13 @@
 package org.nuxeo.apidoc.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleGroupDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
@@ -36,6 +38,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -43,6 +46,7 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 public class ArtifactSearcherImpl implements ArtifactSearcher {
@@ -72,16 +76,20 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     @Override
     public List<NuxeoArtifact> searchArtifact(CoreSession session,
             String fulltext) throws Exception {
-
         List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
-
-        String query = "select * from Document where ecm:primaryType IN ('NXDistribution','NXBundleGroup', 'NXBundle', 'NXComponent', 'NXExtensionPoint', 'NXContribution', 'NXService') ";
+        StrBuilder q = new StrBuilder("SELECT * FROM Document WHERE "
+                + NXQL.ECM_PRIMARYTYPE + " IN ('");
+        q.appendWithSeparators(Arrays.asList(BundleGroup.TYPE_NAME,
+                BundleInfo.TYPE_NAME, ComponentInfo.TYPE_NAME,
+                ExtensionPointInfo.TYPE_NAME, ExtensionInfo.TYPE_NAME,
+                DistributionSnapshot.TYPE_NAME, ServiceInfo.TYPE_NAME), "', '");
+        q.append("')");
+        String query = q.toString();
         if (fulltext != null) {
-            query += " AND ecm:fulltext like '" + fulltext + "'";
+            query += " AND " + NXQL.ECM_FULLTEXT + " = "
+                    + QueryHelper.quoted(fulltext);
         }
-
         DocumentModelList docs = session.query(query);
-
         for (DocumentModel doc : docs) {
             NuxeoArtifact artifact = mapDoc2Artifact(doc);
             if (artifact != null) {
@@ -94,24 +102,20 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     @Override
     public List<DocumentationItem> searchDocumentation(CoreSession session,
             String fulltext, String targetType) throws Exception {
-
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
-
-        String query = "select * from NXDocumentation where ecm:fulltext like '"
-                + fulltext + "'";
+        String query = QueryHelper.select(DocumentationItem.TYPE_NAME,
+                NXQL.ECM_FULLTEXT, fulltext);
         if (targetType != null) {
-            query += " AND nxdoc.targetType='" + targetType + "'";
+            query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = "
+                    + QueryHelper.quoted(targetType);
         }
-
         DocumentModelList docs = session.query(query);
-
         for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
             if (docItem != null) {
                 result.add(docItem);
             }
         }
-
         return result;
     }
 

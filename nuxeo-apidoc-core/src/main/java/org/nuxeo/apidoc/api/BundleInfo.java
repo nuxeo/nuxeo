@@ -23,6 +23,16 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String TYPE_NAME = "NXBundle";
 
+    String PROP_ARTIFACT_GROUP_ID = "nxbundle:artifactGroupId";
+
+    String PROP_ARTIFACT_ID = "nxbundle:artifactId";
+
+    String PROP_ARTIFACT_VERSION = "nxbundle:artifactVersion";
+
+    String PROP_BUNDLE_ID = "nxbundle:bundleId";
+
+    String PROP_JAR_NAME = "nxbundle:jarName";
+
     Collection<ComponentInfo> getComponents();
 
     String getFileName();

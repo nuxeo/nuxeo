@@ -31,6 +31,12 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     String TYPE_NAME = "NXDistribution";
 
+    String PROP_NAME = "nxdistribution:name";
+
+    String PROP_VERSION = "nxdistribution:version";
+
+    String PROP_KEY = "nxdistribution:key";
+
     String getKey();
 
     List<BundleGroup> getBundleGroups();

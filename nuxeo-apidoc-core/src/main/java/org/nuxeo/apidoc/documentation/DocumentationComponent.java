@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
 import org.nuxeo.apidoc.security.SecurityConstants;
@@ -146,16 +147,20 @@ public class DocumentationComponent extends DefaultComponent implements
             CoreSession session, String category, String targetType)
             throws Exception {
 
-        String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+        String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
+                + " WHERE " + QueryHelper.NOT_DELETED;
 
         if (category != null) {
-            query += " AND nxdoc:type='" + category + "' ";
+            query += " AND " + DocumentationItem.PROP_TYPE + " = "
+                    + QueryHelper.quoted(category);
         }
         if (targetType != null) {
-            query += " AND nxdoc:targetType='" + targetType + "' ";
+            query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = "
+                    + QueryHelper.quoted(targetType);
         }
 
-        query += " ORDER BY nxdoc:documentationId, dc:modified";
+        query += " ORDER BY " + DocumentationItem.PROP_DOCUMENTATION_ID
+                + ", dc:modified";
         List<DocumentModel> docs = session.query(query);
 
         Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
@@ -206,11 +211,13 @@ public class DocumentationComponent extends DefaultComponent implements
 
         String id = nxItem.getId();
         String type = nxItem.getArtifactType();
-        String query = "select * from NXDocumentation where nxdoc:target='"
-                + id
-                + "' AND nxdoc:targetType='"
-                + type
-                + "' AND ecm:currentLifeCycleState != 'deleted' ORDER BY nxdoc:documentationId, dc:modified";
+        String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
+                + " WHERE " + DocumentationItem.PROP_TARGET + " = "
+                + QueryHelper.quoted(id) + " AND "
+                + DocumentationItem.PROP_TARGET_TYPE + " = "
+                + QueryHelper.quoted(type) + " AND " + QueryHelper.NOT_DELETED
+                + " ORDER BY " + DocumentationItem.PROP_DOCUMENTATION_ID
+                + ", dc:modified";
         List<DocumentModel> docs = session.query(query);
 
         Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
@@ -269,11 +276,11 @@ public class DocumentationComponent extends DefaultComponent implements
             DocumentationItem item) throws ClientException {
         String id = item.getId();
         String type = item.getTargetType();
-        String query = "select * from NXDocumentation where nxdoc:documentationId='"
-                + id
-                + "' AND nxdoc:targetType='"
-                + type
-                + "'AND ecm:currentLifeCycleState != 'deleted'";
+        String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
+                + " WHERE " + DocumentationItem.PROP_DOCUMENTATION_ID + " = "
+                + QueryHelper.quoted(id) + " AND "
+                + DocumentationItem.PROP_TARGET_TYPE + " = "
+                + QueryHelper.quoted(type) + " AND " + QueryHelper.NOT_DELETED;
         return session.query(query);
     }
 
@@ -283,7 +290,7 @@ public class DocumentationComponent extends DefaultComponent implements
             List<String> applicableVersions, boolean approved,
             String renderingType) throws ClientException {
 
-        DocumentModel doc = session.createDocumentModel(DocumentationItemDocAdapter.DOC_TYPE);
+        DocumentModel doc = session.createDocumentModel(DocumentationItem.TYPE_NAME);
 
         String name = title + '-' + item.getId();
         name = IdUtils.generateId(name, "-", true, 64);
@@ -297,13 +304,17 @@ public class DocumentationComponent extends DefaultComponent implements
         blob.setMimeType("text/plain");
         blob.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable) blob);
-        doc.setPropertyValue("nxdoc:target", item.getId());
-        doc.setPropertyValue("nxdoc:targetType", item.getArtifactType());
-        doc.setPropertyValue("nxdoc:documentationId", docUUID.toString());
-        doc.setPropertyValue("nxdoc:nuxeoApproved", Boolean.valueOf(approved));
-        doc.setPropertyValue("nxdoc:type", type);
-        doc.setPropertyValue("nxdoc:renderingType", renderingType);
-        doc.setPropertyValue("nxdoc:applicableVersions",
+        doc.setPropertyValue(DocumentationItem.PROP_TARGET, item.getId());
+        doc.setPropertyValue(DocumentationItem.PROP_TARGET_TYPE,
+                item.getArtifactType());
+        doc.setPropertyValue(DocumentationItem.PROP_DOCUMENTATION_ID,
+                docUUID.toString());
+        doc.setPropertyValue(DocumentationItem.PROP_NUXEO_APPROVED,
+                Boolean.valueOf(approved));
+        doc.setPropertyValue(DocumentationItem.PROP_TYPE, type);
+        doc.setPropertyValue(DocumentationItem.PROP_RENDERING_TYPE,
+                renderingType);
+        doc.setPropertyValue(DocumentationItem.PROP_APPLICABLE_VERSIONS,
                 (Serializable) applicableVersions);
 
         doc = session.createDocument(doc);
@@ -321,11 +332,13 @@ public class DocumentationComponent extends DefaultComponent implements
         content.setFilename(item.getTypeLabel());
         content.setEncoding("utf-8");
         doc.setPropertyValue("file:content", (Serializable) content);
-        doc.setPropertyValue("nxdoc:documentationId", item.getId());
-        doc.setPropertyValue("nxdoc:nuxeoApproved",
+        doc.setPropertyValue(DocumentationItem.PROP_DOCUMENTATION_ID,
+                item.getId());
+        doc.setPropertyValue(DocumentationItem.PROP_NUXEO_APPROVED,
                 Boolean.valueOf(item.isApproved()));
-        doc.setPropertyValue("nxdoc:renderingType", item.getRenderingType());
-        doc.setPropertyValue("nxdoc:applicableVersions",
+        doc.setPropertyValue(DocumentationItem.PROP_RENDERING_TYPE,
+                item.getRenderingType());
+        doc.setPropertyValue(DocumentationItem.PROP_APPLICABLE_VERSIONS,
                 (Serializable) item.getApplicableVersion());
 
         List<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
@@ -380,7 +393,8 @@ public class DocumentationComponent extends DefaultComponent implements
 
             DocumentModel discardedDoc = session.copy(existingDoc.getRef(),
                     existingDoc.getParentRef(), newName);
-            discardedDoc.setPropertyValue("nxdoc:applicableVersions",
+            discardedDoc.setPropertyValue(
+                    DocumentationItem.PROP_APPLICABLE_VERSIONS,
                     (Serializable) discardedVersion);
 
             discardedDoc = session.saveDocument(discardedDoc);
@@ -431,7 +445,8 @@ public class DocumentationComponent extends DefaultComponent implements
     @Override
     public void exportDocumentation(CoreSession session, OutputStream out) {
         try {
-            String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+            String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
+                    + " WHERE " + QueryHelper.NOT_DELETED;
             DocumentModelList docList = session.query(query);
             DocumentReader reader = new DocumentModelListReader(docList);
             DocumentWriter writer = new NuxeoArchiveWriter(out);
@@ -476,7 +491,8 @@ public class DocumentationComponent extends DefaultComponent implements
     public String getDocumentationStats(CoreSession session) {
         String result = "";
         try {
-            String query = "select * from NXDocumentation where ecm:currentLifeCycleState != 'deleted' ";
+            String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
+                    + " WHERE " + QueryHelper.NOT_DELETED;
             DocumentModelList docList = session.query(query);
             result = docList.size() + " documents";
 

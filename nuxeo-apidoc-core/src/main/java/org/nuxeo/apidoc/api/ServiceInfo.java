@@ -20,5 +20,9 @@ public interface ServiceInfo extends NuxeoArtifact {
 
     String TYPE_NAME = "NXService";
 
+    String PROP_CLASS_NAME = "nxservice:className";
+
+    String PROP_COMPONENT_ID = "nxservice:componentId";
+
     public String getComponentId();
 }

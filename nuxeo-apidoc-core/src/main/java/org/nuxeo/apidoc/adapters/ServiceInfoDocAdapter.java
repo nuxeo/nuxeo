@@ -46,8 +46,8 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", si.getId());
 
-        doc.setPropertyValue("nxservice:className", si.getId());
-        doc.setPropertyValue("nxservice:componentId", si.getComponentId());
+        doc.setPropertyValue(PROP_CLASS_NAME, si.getId());
+        doc.setPropertyValue(PROP_COMPONENT_ID, si.getComponentId());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -60,7 +60,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getId() {
-        return safeGet("nxservice:className", "unknown_service");
+        return safeGet(PROP_CLASS_NAME, "unknown_service");
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public String getComponentId() {
-        return safeGet("nxservice:componentId", "unknown_service");
+        return safeGet(PROP_COMPONENT_ID, "unknown_service");
     }
 
     @Override

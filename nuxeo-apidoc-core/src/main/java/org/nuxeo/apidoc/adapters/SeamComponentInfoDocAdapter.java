@@ -26,7 +26,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements SeamComponentInfo {
+public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
+        implements SeamComponentInfo {
 
     protected SeamComponentInfoDocAdapter(DocumentModel doc) {
         super(doc);
@@ -34,21 +35,20 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
 
     @Override
     public String getId() {
-        return "seam:"+ getName();
+        return "seam:" + getName();
     }
 
     @Override
     public String getClassName() {
-        return safeGet("nxseam:className");
+        return safeGet(PROP_CLASS_NAME);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<String> getInterfaceNames() {
         try {
-            return (List<String>) doc.getPropertyValue("nxseam:interfaces");
-        }
-        catch (Exception e) {
+            return (List<String>) doc.getPropertyValue(PROP_INTERFACES);
+        } catch (Exception e) {
             log.error("Error while getting service names", e);
         }
         return null;
@@ -56,17 +56,17 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
 
     @Override
     public String getName() {
-        return safeGet("nxseam:componentName");
+        return safeGet(PROP_COMPONENT_NAME);
     }
 
     @Override
     public String getPrecedence() {
-        return safeGet("nxseam:precedence");
+        return safeGet(PROP_PRECEDENCE);
     }
 
     @Override
     public String getScope() {
-        return safeGet("nxseam:scope");
+        return safeGet(PROP_SCOPE);
     }
 
     @Override
@@ -91,8 +91,8 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
         return getClassName().compareTo(o.getClassName());
     }
 
-
-    public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath) throws Exception {
+    public static SeamComponentInfo create(SeamComponentInfo sci,
+            CoreSession session, String containerPath) throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -107,10 +107,11 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", sci.getName());
 
-        doc.setPropertyValue("nxseam:componentName", sci.getName());
-        doc.setPropertyValue("nxseam:className", sci.getClassName());
-        doc.setPropertyValue("nxseam:scope", sci.getScope());
-        doc.setPropertyValue("nxseam:interfaces", (Serializable) sci.getInterfaceNames());
+        doc.setPropertyValue(PROP_COMPONENT_NAME, sci.getName());
+        doc.setPropertyValue(PROP_CLASS_NAME, sci.getClassName());
+        doc.setPropertyValue(PROP_SCOPE, sci.getScope());
+        doc.setPropertyValue(PROP_INTERFACES,
+                (Serializable) sci.getInterfaceNames());
 
         if (exist) {
             doc = session.saveDocument(doc);
