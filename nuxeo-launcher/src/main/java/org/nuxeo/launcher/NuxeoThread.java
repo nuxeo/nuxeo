@@ -26,10 +26,10 @@ import java.net.MalformedURLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.MutableClassLoader;
 import org.nuxeo.launcher.commons.MutableClassLoaderDelegate;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.Environment;
 
 /**
  * Main Nuxeo server thread
@@ -48,7 +48,7 @@ public class NuxeoThread extends Thread {
 
     private ConfigurationGenerator configurationGenerator;
 
-    private MutableClassLoader loader;
+    // private MutableClassLoader loader;
 
     @SuppressWarnings("rawtypes")
     private Class startupClass;
@@ -65,15 +65,19 @@ public class NuxeoThread extends Thread {
         } else if (configurationGenerator.isJetty) {
             throw new UnsupportedOperationException();
         } else if (configurationGenerator.isTomcat) {
+            // setTomcatLogs();
             startTomcat();
         }
     }
 
     private void startTomcat() {
-        loader = new MutableClassLoaderDelegate(getClass().getClassLoader());
-        setTomcatClassPath();
+        MutableClassLoader loader = new MutableClassLoaderDelegate(
+                getClass().getClassLoader());
+        // setJavaProperties();
+        setTomcatClassPath(loader);
         setTomcatSystemProperties();
-        log.debug("LOG: "+ System.getProperty(Environment.NUXEO_LOG_DIR));
+        setNuxeoSystemProperties();
+        configurationGenerator.initLogs();
         try {
             startupClass = loader.getClassLoader().loadClass(
                     TOMCAT_STARTUP_CLASS);
@@ -99,6 +103,28 @@ public class NuxeoThread extends Thread {
         }
     }
 
+    // private void setJavaProperties() {
+    // String javaOpts = configurationGenerator.getUserConfig().getProperty(
+    // "JAVA_OPTS");
+    // }
+
+    private void setNuxeoSystemProperties() {
+        System.setProperty("nuxeo.home",
+                configurationGenerator.getNuxeoHome().getPath());
+        System.setProperty("nuxeo.conf",
+                configurationGenerator.getNuxeoConf().getPath());
+        setNuxeoSystemProperty(Environment.NUXEO_LOG_DIR);
+        setNuxeoSystemProperty(Environment.NUXEO_DATA_DIR);
+        // setNuxeoSystemProperty(Environment.NUXEO_TMP_DIR);
+    }
+
+    private void setNuxeoSystemProperty(String property) {
+        log.debug("Set system " + property + ": "
+                + configurationGenerator.getUserConfig().getProperty(property));
+        System.setProperty(property,
+                configurationGenerator.getUserConfig().getProperty(property));
+    }
+
     private void setTomcatSystemProperties() {
         System.setProperty("java.util.logging.manager",
                 "org.apache.juli.ClassLoaderLogManager");
@@ -108,17 +134,24 @@ public class NuxeoThread extends Thread {
                 configurationGenerator.getNuxeoHome().getPath());
     }
 
-    private void setTomcatClassPath() {
+    private void setTomcatClassPath(MutableClassLoader loader) {
         try {
-            addToClassPath("bin" + File.separator + "bootstrap.jar");
+            addToClassPath(loader, "nxserver" + File.separator + "lib");
+            addToClassPath(loader, "bin" + File.separator + "bootstrap.jar");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void addToClassPath(String filename) throws MalformedURLException {
+    private void addToClassPath(MutableClassLoader loader, String filename)
+            throws MalformedURLException {
         File classPathEntry = new File(configurationGenerator.getNuxeoHome(),
                 filename);
+        if (!classPathEntry.exists()) {
+            throw new RuntimeException(
+                    "Tried to add inexistant classpath entry: "
+                            + classPathEntry);
+        }
         loader.addURL(classPathEntry.toURI().toURL());
     }
 
