@@ -38,6 +38,7 @@
             <li>
               <h:outputText class="separator" value=" • " />
             </li>
+            <f:subview rendered="#{currentUser.isAdministrator()}">
             <li>
               <h:commandLink action="view_admin">
                 <h:outputText class="logOutButton" value="#{messages['action.admin.center']}" />
@@ -46,6 +47,7 @@
             <li>
               <h:outputText class="separator" value=" • " />
             </li>
+            </f:subview>
             <li>
               <h:commandLink action="#{logoutActions.logout}">
                 <h:outputText class="logOutButton" value="#{messages['command.logout']}" />
