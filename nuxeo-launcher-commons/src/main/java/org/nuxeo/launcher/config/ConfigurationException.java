@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 /**
  * @author jcarsique

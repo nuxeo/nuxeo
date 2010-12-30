@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -25,14 +25,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author jcarsique
@@ -54,7 +56,7 @@ public class JBossConfiguratorTest {
 
     @Before
     public void setUp() throws Exception {
-        File nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf");
+        File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         System.setProperty(ConfigurationGenerator.NUXEO_CONF,
                 nuxeoConf.getPath());
         nuxeoHome = File.createTempFile("nuxeo", null);
@@ -79,12 +81,12 @@ public class JBossConfiguratorTest {
                 + File.separator + "h2" + File.separator
                 + "testinclude;AUTO_SERVER=true</config-property>";
 
-        FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
-                new File(nuxeoHome, "templates"));
+        FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(
+                nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator();
 
-        nuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf2");
+        nuxeoConf = getResourceFile("configurator/nuxeo.conf2");
         System.setProperty(ConfigurationGenerator.NUXEO_CONF,
                 nuxeoConf.getPath());
         configGenerator2 = new ConfigurationGenerator();
@@ -120,16 +122,19 @@ public class JBossConfiguratorTest {
                 + JBossConfigurator.DEFAULT_CONFIGURATION
                 + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
+
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
                 generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate, generatedProperty);
+
         // Check windows path parsing
         generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds_2.xml");
         generatedProperty = new BufferedReader(new FileReader(generatedFile)).readLine();
         assertEquals(generatedProperty, propertyToGenerate2, generatedProperty);
+
         // ignored extension must not be parsed
         generatedFile = new File(configDir.getParentFile(),
                 "config/extension.ignored");
@@ -159,10 +164,12 @@ public class JBossConfiguratorTest {
                 config.getProperty("test.nuxeo.conf.override.defaults.template"));
         assertEquals("testinclude", config.getProperty("nuxeo.db.name"));
         assertEquals("sa", config.getProperty("nuxeo.db.user"));
+
         File configDir = new File(nuxeoHome, "server/"
                 + JBossConfigurator.DEFAULT_CONFIGURATION
                 + "/deploy/nuxeo.ear/config");
         assertTrue(new File(configDir, "test2").exists());
+
         File generatedFile = new File(configDir.getParentFile(),
                 "datasources/default-repository-ds.xml");
         String generatedProperty = new BufferedReader(new FileReader(
@@ -181,6 +188,16 @@ public class JBossConfiguratorTest {
         configGenerator2.setForceGeneration(true);
         configGenerator2.run();
         assertTrue(testFile.exists());
+    }
+
+    public File getResourceFile(String resource) {
+        URL url = getClass().getResource(resource);
+        try {
+            return new File(URLDecoder.decode(url.getPath(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.error(e);
+            return null;
+        }
     }
 
 }
