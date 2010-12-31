@@ -18,6 +18,7 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,20 +37,24 @@ import java.util.PropertyResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
-import org.nuxeo.osgi.JarBundleFile;
-import org.nuxeo.osgi.jboss.JBossBundleFile;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
+import org.w3c.dom.Document;
 
 /**
  * The entry point to the server runtime introspection To build a description of
@@ -105,7 +110,17 @@ import org.osgi.framework.Bundle;
  */
 public class ServerInfo {
 
-    protected static final Log log = LogFactory.getLog(ServerInfo.class);
+    private static final Log log = LogFactory.getLog(ServerInfo.class);
+
+    public static final String META_INF_MANIFEST_MF = "META-INF/MANIFEST.MF";
+
+    public static final String POM_XML = "pom.xml";
+
+    public static final String POM_PROPERTIES = "pom.properties";
+
+    protected static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+    protected static final XPathFactory xpathFactory = XPathFactory.newInstance();
 
     protected final String name;
 
@@ -157,53 +172,93 @@ public class ServerInfo {
         BundleInfoImpl binfo = new BundleInfoImpl(bundle.getSymbolicName());
         binfo.setFileName(runtime.getBundleFile(bundle).getName());
         binfo.setLocation(bundle.getLocation());
-
-        if (bundle instanceof BundleImpl) {
-            BundleImpl nxBundle = (BundleImpl) bundle;
-            BundleFile file = nxBundle.getBundleFile();
-            File jarFile = null;
-            if (file instanceof JarBundleFile) {
-                JarBundleFile jar = (JarBundleFile) file;
-                jarFile = jar.getFile();
-            } else if (file instanceof JBossBundleFile) {
-                JBossBundleFile jar = (JBossBundleFile) file;
-                jarFile = jar.getFile();
-            }
-            if (jarFile != null) {
-                if (jarFile.isDirectory()) {
-                    // XXX
-                } else {
-                    try {
-                        ZipFile zFile = new ZipFile(jarFile);
-                        Enumeration<? extends ZipEntry> entries = zFile.entries();
-                        while (entries.hasMoreElements()) {
-                            ZipEntry entry = entries.nextElement();
-                            if (entry.getName().endsWith("pom.properties")) {
-                                InputStream pomStream = zFile.getInputStream(entry);
-                                PropertyResourceBundle prb = new PropertyResourceBundle(
-                                        pomStream);
-                                String groupId = prb.getString("groupId");
-                                String artifactId = prb.getString("artifactId");
-                                String version = prb.getString("version");
-                                binfo.setArtifactId(artifactId);
-                                binfo.setGroupId(groupId);
-                                binfo.setArtifactVersion(version);
-                                pomStream.close();
-                                break;
-                            }
-                        }
-
-                        ZipEntry mfEntry = zFile.getEntry("META-INF/MANIFEST.MF");
-                        if (mfEntry != null) {
-                            InputStream mfStream = zFile.getInputStream(mfEntry);
-                            String mf = FileUtils.read(mfStream);
-                            binfo.setManifest(mf);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        if (!(bundle instanceof BundleImpl)) {
+            return binfo;
+        }
+        BundleImpl nxBundle = (BundleImpl) bundle;
+        File jarFile = nxBundle.getBundleFile().getFile();
+        if (jarFile == null) {
+            return binfo;
+        }
+        try {
+            if (jarFile.isDirectory()) {
+                // directory: run from Eclipse in unit tests
+                // .../nuxeo-runtime/nuxeo-runtime/bin
+                // or sometimes
+                // .../nuxeo-runtime/nuxeo-runtime/bin/main
+                File manifest = new File(jarFile, META_INF_MANIFEST_MF);
+                if (manifest.exists()) {
+                    InputStream is = new FileInputStream(manifest);
+                    String mf = FileUtils.read(is);
+                    binfo.setManifest(mf);
+                }
+                // find and parse pom.xml
+                File up = new File(jarFile, "..");
+                File pom = new File(up, POM_XML);
+                if (!pom.exists()) {
+                    pom = new File(new File(up, ".."), POM_XML);
+                    if (!pom.exists()) {
+                        pom = null;
                     }
                 }
+                if (pom != null) {
+                    DocumentBuilder b = documentBuilderFactory.newDocumentBuilder();
+                    Document doc = b.parse(new FileInputStream(pom));
+                    XPath xpath = xpathFactory.newXPath();
+                    String groupId = (String) xpath.evaluate(
+                            "//project/groupId", doc, XPathConstants.STRING);
+                    if ("".equals(groupId)) {
+                        groupId = (String) xpath.evaluate(
+                                "//project/parent/groupId", doc,
+                                XPathConstants.STRING);
+                    }
+                    String artifactId = (String) xpath.evaluate(
+                            "//project/artifactId", doc, XPathConstants.STRING);
+                    if ("".equals(artifactId)) {
+                        artifactId = (String) xpath.evaluate(
+                                "//project/parent/artifactId", doc,
+                                XPathConstants.STRING);
+                    }
+                    String version = (String) xpath.evaluate(
+                            "//project/version", doc, XPathConstants.STRING);
+                    if ("".equals(version)) {
+                        version = (String) xpath.evaluate(
+                                "//project/parent/version", doc,
+                                XPathConstants.STRING);
+                    }
+                    binfo.setArtifactId(artifactId);
+                    binfo.setGroupId(groupId);
+                    binfo.setArtifactVersion(version);
+                }
+            } else {
+                ZipFile zFile = new ZipFile(jarFile);
+                ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);
+                if (mfEntry != null) {
+                    InputStream mfStream = zFile.getInputStream(mfEntry);
+                    String mf = FileUtils.read(mfStream);
+                    binfo.setManifest(mf);
+                }
+                Enumeration<? extends ZipEntry> entries = zFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    if (entry.getName().endsWith(POM_PROPERTIES)) {
+                        InputStream is = zFile.getInputStream(entry);
+                        PropertyResourceBundle prb = new PropertyResourceBundle(
+                                is);
+                        String groupId = prb.getString("groupId");
+                        String artifactId = prb.getString("artifactId");
+                        String version = prb.getString("version");
+                        binfo.setArtifactId(artifactId);
+                        binfo.setGroupId(groupId);
+                        binfo.setArtifactVersion(version);
+                        is.close();
+                        break;
+                    }
+                }
+                zFile.close();
             }
+        } catch (Exception e) {
+            log.error(e, e);
         }
         return binfo;
     }
