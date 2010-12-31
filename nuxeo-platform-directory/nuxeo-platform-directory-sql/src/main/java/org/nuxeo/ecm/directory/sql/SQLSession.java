@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -586,6 +587,10 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
                 String leftSide = column.getQuotedName(dialect);
                 String operator;
+                if (value.equals("") && isOracleDialect(dialect)) {
+                    // see NXP-6172, empty values are Null in Oracle
+                    value = null;
+                }
                 if (value != null) {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
@@ -973,5 +978,9 @@ public class SQLSession extends BaseSession implements EntrySource {
      */
     public Connection getSqlConnection() {
         return sqlConnection;
+    }
+
+    private boolean isOracleDialect(Dialect dialect) {
+        return dialect instanceof Oracle10gDialect;
     }
 }
