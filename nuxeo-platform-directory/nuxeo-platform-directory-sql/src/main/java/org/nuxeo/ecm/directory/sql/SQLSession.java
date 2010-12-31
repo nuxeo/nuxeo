@@ -587,7 +587,8 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
                 String leftSide = column.getQuotedName(dialect);
                 String operator;
-                if (value.equals("") && isOracleDialect(dialect)) {
+                if (value != null && value.equals("")
+                        && isOracleDialect(dialect)) {
                     // see NXP-6172, empty values are Null in Oracle
                     value = null;
                 }
