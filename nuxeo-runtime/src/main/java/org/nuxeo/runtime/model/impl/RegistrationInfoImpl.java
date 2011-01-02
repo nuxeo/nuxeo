@@ -204,6 +204,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return component;
     }
 
+    /**
+     * Reload the underlying component if reload is supported
+     * @throws Exception
+     */
+    public synchronized void reload() throws Exception {
+        if (component != null) {
+            component.reload();
+        }
+    }
+
     @Override
     public ComponentName getName() {
         return name;
@@ -412,7 +422,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
-    synchronized void resolve() throws Exception {
+    public synchronized void resolve() throws Exception {
         if (state != REGISTERED) {
             return;
         }
@@ -427,7 +437,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         activate();
     }
 
-    synchronized void unresolve() throws Exception {
+    public synchronized void unresolve() throws Exception {
         if (state == REGISTERED || state == UNREGISTERED) {
             return;
         }

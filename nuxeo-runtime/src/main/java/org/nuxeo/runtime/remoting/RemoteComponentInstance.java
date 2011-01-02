@@ -51,7 +51,12 @@ public class RemoteComponentInstance implements ComponentInstance {
 
     @Override
     public void destroy() throws Exception {
+        throw new UnsupportedOperationException("Operation not supported for remote components");
+    }
 
+    @Override
+    public void reload() throws Exception {
+        throw new UnsupportedOperationException("Operation not supported for remote components");
     }
 
     @Override
