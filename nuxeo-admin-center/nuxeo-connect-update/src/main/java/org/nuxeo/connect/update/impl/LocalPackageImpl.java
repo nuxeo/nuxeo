@@ -34,6 +34,8 @@ import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.impl.task.InstallTask;
+import org.nuxeo.connect.update.impl.task.StudioInstallTask;
+import org.nuxeo.connect.update.impl.task.StudioUninstallTask;
 import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.FormsDefinition;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
@@ -177,11 +179,13 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     protected String getDefaultInstallTaskType() {
-        return InstallTask.class.getName();
+        return def.getType() != PackageType.STUDIO ? InstallTask.class.getName()
+                : StudioInstallTask.class.getName();
     }
 
     protected String getDefaultUninstallTaskType() {
-        return UninstallTask.class.getName();
+        return def.getType() != PackageType.STUDIO ? UninstallTask.class.getName()
+                : StudioUninstallTask.class.getName();
     }
 
     public Task getInstallTask() throws PackageException {
