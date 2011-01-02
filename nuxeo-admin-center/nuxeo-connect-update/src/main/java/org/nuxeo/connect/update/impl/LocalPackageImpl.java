@@ -34,6 +34,8 @@ import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.impl.task.InstallTask;
+import org.nuxeo.connect.update.impl.task.StudioInstallTask;
+import org.nuxeo.connect.update.impl.task.StudioUninstallTask;
 import org.nuxeo.connect.update.impl.task.UninstallTask;
 import org.nuxeo.connect.update.impl.xml.FormsDefinition;
 import org.nuxeo.connect.update.impl.xml.PackageDefinitionImpl;
@@ -176,12 +178,20 @@ public class LocalPackageImpl implements LocalPackage {
         return true;
     }
 
+    protected String getDefaultInstallTaskType() {
+        return def.getType() != PackageType.STUDIO ? InstallTask.class.getName() : StudioInstallTask.class.getName();
+    }
+
+    protected String getDefaultUninstallTaskType() {
+        return def.getType() != PackageType.STUDIO ? UninstallTask.class.getName() : StudioUninstallTask.class.getName();
+    }
+
     public Task getInstallTask() throws PackageException {
         if (def.getInstaller() == null) {
             def.setInstaller(new TaskDefinitionImpl(
-                    InstallTask.class.getName(), false));
+                    getDefaultInstallTaskType(), false));
         } else if (def.getInstaller().getType() == null) {
-            def.getInstaller().setType(InstallTask.class.getName());
+            def.getInstaller().setType(getDefaultInstallTaskType());
         }
         return getTask(def.getInstaller());
     }
@@ -189,9 +199,9 @@ public class LocalPackageImpl implements LocalPackage {
     public Task getUninstallTask() throws PackageException {
         if (def.getUninstaller() == null) {
             def.setUninstaller(new TaskDefinitionImpl(
-                    UninstallTask.class.getName(), false));
+                    getDefaultUninstallTaskType(), false));
         } else if (def.getUninstaller().getType() == null) {
-            def.getUninstaller().setType(UninstallTask.class.getName());
+            def.getUninstaller().setType(getDefaultUninstallTaskType());
         }
         return getTask(def.getUninstaller());
     }
