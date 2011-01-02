@@ -72,6 +72,11 @@ public class NotificationEventListener implements PostCommitEventListener {
         }
 
         for (Event event : events) {
+            Boolean block = (Boolean)event.getContext().getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE);
+            if (block != null && block) {
+                // ignore the event - we are blocked by the caller
+                continue;
+            }
             List<Notification> notifs = service.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {
                 try {

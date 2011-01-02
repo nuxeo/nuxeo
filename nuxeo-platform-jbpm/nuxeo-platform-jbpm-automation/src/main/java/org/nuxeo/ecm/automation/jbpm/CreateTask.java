@@ -40,6 +40,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
 import org.nuxeo.ecm.platform.jbpm.JbpmTaskService;
 
 /**
@@ -166,6 +167,9 @@ public class CreateTask {
                     OperationTaskVariableName.rejectOperationChain.name(),
                     rejectOperationChain);
         }
+
+        // disable notification service
+        taskVariables.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
 
         if (jbpmTaskService == null) {
             throw new OperationException("Service jbpmTaskService not found");

@@ -101,6 +101,12 @@ public final class JbpmEventNames {
      */
     public static final String WORK_ITEMS_LIST_LOADED = "workItemsListLoaded";
 
+    /**
+     * A task variable key to disable the notification service.
+     * (i.e. no email sending through this service)
+     */
+    public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
+
     // Constant utility class.
     private JbpmEventNames() {
     }

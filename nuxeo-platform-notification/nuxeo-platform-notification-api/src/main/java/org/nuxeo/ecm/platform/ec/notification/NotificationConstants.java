@@ -26,6 +26,12 @@ package org.nuxeo.ecm.platform.ec.notification;
  */
 public class NotificationConstants {
 
+    /**
+     * A event property to block the notification service.
+     * (use Boolen.TRUE as the value to block)
+     */
+    public static final String DISABLE_NOTIFICATION_SERVICE = "disableNotificationService";
+
     public static final String SUBJECT_KEY = "subject";
 
     public static final String TEMPLATE_KEY = "template";
