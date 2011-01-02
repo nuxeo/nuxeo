@@ -169,7 +169,7 @@ public class CreateTask {
         }
 
         // disable notification service
-        taskVariables.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
+        taskVariables.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, "true");
 
         if (jbpmTaskService == null) {
             throw new OperationException("Service jbpmTaskService not found");
