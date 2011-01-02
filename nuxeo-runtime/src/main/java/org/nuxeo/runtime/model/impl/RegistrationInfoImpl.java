@@ -254,6 +254,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
+    /**
+     * Reload the underlying component if reload is supported
+     * @throws Exception
+     */
+    public synchronized void reload() throws Exception {
+        if (component != null) {
+            component.reload();
+        }
+    }
+
     @Override
     public String toString() {
         return "RegistrationInfo: " + name;
