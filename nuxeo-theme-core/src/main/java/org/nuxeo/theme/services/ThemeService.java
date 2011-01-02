@@ -74,6 +74,9 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     // registries.
     protected List<Extension> extensions = new ArrayList<Extension>();
 
+    // collect all registered extensions here to be able to reload the registries.
+    protected List<Extension> extensions = new ArrayList<Extension>();
+
     public Map<String, Registrable> getRegistries() {
         return registries;
     }
@@ -92,6 +95,16 @@ public class ThemeService extends DefaultComponent implements Reloadable {
             registry.clear();
         }
         registries.remove(name);
+    }
+
+    @Override
+    public void reload(ComponentContext context) throws Exception {
+        deactivate(context);
+        activate(context);
+        for (Extension xt : extensions) {
+            doRegisterExtension(xt);
+        }
+        applicationStarted(context);
     }
 
     @Override
