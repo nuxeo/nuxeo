@@ -139,7 +139,7 @@ public class JbpmAutomationTest {
         assertTrue(task.isOpen());
         assertFalse(task.isCancelled());
         assertFalse(task.hasEnded());
-        assertEquals(6, task.getVariables().size());
+        assertEquals(7, task.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -220,7 +220,7 @@ public class JbpmAutomationTest {
         assertTrue(task1.isOpen());
         assertFalse(task1.isCancelled());
         assertFalse(task1.hasEnded());
-        assertEquals(6, task1.getVariables().size());
+        assertEquals(7, task1.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task1.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -265,7 +265,7 @@ public class JbpmAutomationTest {
         assertTrue(task2.isOpen());
         assertFalse(task2.isCancelled());
         assertFalse(task2.hasEnded());
-        assertEquals(6, task2.getVariables().size());
+        assertEquals(7, task2.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task2.getVariable(JbpmService.VariableName.documentRepositoryName.name()));
@@ -297,7 +297,7 @@ public class JbpmAutomationTest {
         assertTrue(task3.isOpen());
         assertFalse(task3.isCancelled());
         assertFalse(task3.hasEnded());
-        assertEquals(6, task3.getVariables().size());
+        assertEquals(7, task3.getVariables().size());
         assertEquals(
                 document.getRepositoryName(),
                 task3.getVariable(JbpmService.VariableName.documentRepositoryName.name()));

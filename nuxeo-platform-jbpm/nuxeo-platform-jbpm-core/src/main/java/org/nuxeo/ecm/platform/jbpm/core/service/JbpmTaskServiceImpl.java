@@ -300,9 +300,9 @@ public class JbpmTaskServiceImpl implements JbpmTaskService {
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
         properties.put(JbpmTaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
-        Boolean disableNotif = (Boolean)task.getVariable(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE);
-        if (disableNotif != null) {
-            properties.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, disableNotif);
+        String disableNotif = (String)task.getVariable(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE);
+        if (disableNotif != null && Boolean.valueOf(disableNotif)) {
+            properties.put(JbpmEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
         }
         eventContext.setProperties(properties);
 
