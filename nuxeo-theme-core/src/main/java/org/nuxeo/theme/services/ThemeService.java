@@ -70,7 +70,8 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     private RuntimeContext context;
 
-    // collect all registered extensions here to be able to reload the registries.
+    // collect all registered extensions here to be able to reload the
+    // registries.
     protected List<Extension> extensions = new ArrayList<Extension>();
 
     public Map<String, Registrable> getRegistries() {
@@ -123,7 +124,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         // setup resource banks
         BankManager.setupBanks();
     }
-
 
     @Override
     public void registerExtension(Extension extension) {
@@ -631,7 +631,14 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     }
 
     private void unregisterBank(Extension extension) {
-        // TODO
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (Object contrib : contribs) {
+            if (contrib instanceof ResourceBank) {
+                ResourceBank resourceBank = (ResourceBank) contrib;
+                typeRegistry.unregister(resourceBank);
+            }
+        }
     }
 
 }
