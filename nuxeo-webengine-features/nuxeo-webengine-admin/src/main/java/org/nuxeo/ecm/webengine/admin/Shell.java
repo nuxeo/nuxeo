@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.impl.RootResource;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @Path("/shell")
 @WebObject(type = "Shell")
@@ -68,7 +68,7 @@ public class Shell extends RootResource {
     public Object getShellJar() {
         File file = null;
         try {
-            URL url = Class.forName("org.nuxeo.ecm.shell.Shell").getProtectionDomain().getCodeSource().getLocation();
+            URL url = Class.forName("org.nuxeo.shell.Shell").getProtectionDomain().getCodeSource().getLocation();
             return new File(url.toURI());
         } catch (Exception e) {
             file = new File(Environment.getDefault().getHome(), "client");

@@ -16,7 +16,7 @@
         <jar href="shell.jar" main="true" />
 
     </resources>
-    <application-desc main-class="org.nuxeo.ecm.shell.swing.ShellFrame">
+    <application-desc main-class="org.nuxeo.shell.swing.ShellFrame">
       <#if Context.principal??> 
       <argument>-u ${Context.principal.name}</argument>
       </#if>
