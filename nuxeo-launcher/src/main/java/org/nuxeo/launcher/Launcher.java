@@ -23,13 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.xml.sax.SAXException;
 
 /**
  * Nuxeo server controller
@@ -52,15 +49,13 @@ public class Launcher {
     public Launcher(String[] params) {
         this.params = params;
         configurationGenerator = new ConfigurationGenerator();
-
-        // if (configurationGenerator.isJBoss) {
-        // throw new UnsupportedOperationException();
-        // } else if (configurationGenerator.isJetty) {
-        // throw new UnsupportedOperationException();
-        // } else if (configurationGenerator.isTomcat) {
-        // }
-
-        nuxeoThread = new NuxeoThread(configurationGenerator);
+        if (configurationGenerator.isJBoss) {
+            throw new UnsupportedOperationException();
+        } else if (configurationGenerator.isJetty) {
+            throw new UnsupportedOperationException();
+        } else if (configurationGenerator.isTomcat) {
+            nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
+        }
     }
 
     /**
@@ -75,18 +70,14 @@ public class Launcher {
     /**
      * @throws URISyntaxException
      * @throws ConfigurationException
-     * @throws SAXException
-     * @throws ParserConfigurationException
      * @throws IOException
+     * @throws InterruptedException
      *
      */
     private void run() throws URISyntaxException, ConfigurationException,
-            IOException, ParserConfigurationException, SAXException {
+            IOException, InterruptedException {
         if (params.length == 0) {
-            System.err.println("Usage: java -jar "
-                    + new File(
-                            getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                    + " (help|start|stop|restart|configure|console|status|startbg|pack)");
+            printHelp();
             return;
         }
         String command = params[0];
@@ -122,12 +113,23 @@ public class Launcher {
         if ("status".equalsIgnoreCase(command)) {
             status();
         } else if ("startbg".equalsIgnoreCase(command)) {
+            // nuxeoThread.setDaemon(true);
             start();
         } else if ("start".equalsIgnoreCase(command)) {
-            start();
+            // nuxeoThread.setDaemon(true);
+            // start();
+            ProcessBuilder pb = new ProcessBuilder(
+                    "java",
+                    "-jar",
+                    "target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar",
+                    "console");
+            // Map<String, String> env = pb.environment();
+            // env.put("VAR1", "myValue");
+            // pb.directory(new File("myDir"));
+            Process p = pb.start();
+            p.waitFor();
             // TODO wait for end of start
         } else if ("console".equalsIgnoreCase(command)) {
-            // TODO redirect output to console
             start();
         } else if ("stop".equalsIgnoreCase(command)) {
             stop();
@@ -142,6 +144,17 @@ public class Launcher {
         }
     }
 
+    /**
+     * Print class usage on standard system output.
+     * @throws URISyntaxException
+     */
+    public void printHelp() throws URISyntaxException {
+        System.err.println("Usage: java -jar "
+                + new File(
+                        getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                + " (help|start|stop|restart|configure|console|status|startbg|pack)");
+    }
+
     private void stop() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -153,6 +166,8 @@ public class Launcher {
     }
 
     private void start() throws ConfigurationException {
+        log.debug("Thread: " + nuxeoThread);
+        log.debug("Thread ID: " + nuxeoThread.getId());
         configure();
         nuxeoThread.start();
     }
