@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.publisher.impl.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -107,18 +108,27 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         return folder.getCoreSession();
     }
 
+    protected String buildChildrenWhereClause(boolean queryDocuments) {
+        String clause = String.format("ecm:parentId = '%s'", folder.getId());
+        clause.
+            concat(" AND ").
+            concat(String.format("ecm:currentLifeCycleState != '%s'",
+                    LifeCycleConstants.DELETED_STATE));
+        if (queryDocuments) {
+            clause.concat(" AND ").
+                concat(String.format("AND ecm:mixinType NOT IN ('%s', '%s')",
+                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+        } else {
+            clause.concat(" AND ")
+                .concat(String.format("AND ecm:mixinType IN ('%s' ) and NOT IN ('%s')",
+                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+        }
+        return clause;
+    }
+
     public List<PublishedDocument> getChildrenDocuments()
             throws ClientException {
-        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
-        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
-        FacetFilter facetFilter = new FacetFilter(null, Arrays.asList(
-                FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
-        LifeCycleFilter lfFilter = new LifeCycleFilter(
-                LifeCycleConstants.DELETED_STATE, false);
-        DocumentModelList children = getCoreSession().getChildren(
-                folder.getRef(), null, null,
-                new CompoundFilter(facetFilter, lfFilter), sorter);
-
+        DocumentModelList children = getSortedChildren(true);
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
         for (DocumentModel child : children) {
             try {
@@ -132,12 +142,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     public List<PublicationNode> getChildrenNodes() throws ClientException {
-        DocumentModelList children;
-        if (folder.hasFacet(FacetNames.ORDERABLE)) {
-            children = getOrderedChildren();
-        } else {
-            children = getChildrenSortedByTitle();
-        }
+        DocumentModelList children = getSortedChildren(false);
 
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         for (DocumentModel child : children) {
@@ -161,12 +166,16 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         return new CompoundFilter(facetFilter, lfFilter);
     }
 
-    protected DocumentModelList getChildrenSortedByTitle()
+    protected DocumentModelList getSortedChildren(boolean queryDocuments)
             throws ClientException {
-        DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
-        sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
-        return getCoreSession().getChildren(folder.getRef(), null, null,
-                computeGetChildrenFilter(), sorter);
+        String whereClause = buildChildrenWhereClause(queryDocuments);
+        DocumentModelList children = getCoreSession().query("SELECT * FROM Document WHERE " + whereClause);
+        if (!folder.hasFacet(FacetNames.ORDERABLE)) {
+            DefaultDocumentTreeSorter sorter = new DefaultDocumentTreeSorter();
+            sorter.setSortPropertyPath(DEFAULT_SORT_PROP_NAME);
+            Collections.sort(children, sorter);
+        }
+        return children;
     }
 
     public String getTitle() throws ClientException {
