@@ -66,4 +66,9 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
         return cl;
     }
 
+    @Override
+    public Class<?> loadClass(String startupClass) throws ClassNotFoundException {
+        return cl.loadClass(startupClass);
+    }
+
 }
