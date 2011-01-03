@@ -28,4 +28,11 @@ public interface MutableClassLoader {
 
     ClassLoader getClassLoader();
 
+    /**
+     * @param startupClass The binary name of the class
+     * @return The resulting Class object
+     * @throws ClassNotFoundException If the class was not found
+     */
+    Class<?> loadClass(String startupClass) throws ClassNotFoundException;
+
 }
