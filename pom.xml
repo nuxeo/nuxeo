@@ -41,6 +41,7 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
+    <module>nuxeo-shell</module>
 
     <!--
       deactivated since 5.3.2 release; reactivate modules after alignment on 5.4
