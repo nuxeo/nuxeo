@@ -77,7 +77,6 @@
     <module>nuxeo-platform-ws-sun-jaxws</module>
     <module>nuxeo-platform-ws-jbossws</module>
     <module>nuxeo-platform-htmlsanitizer</module>
-    <module>nuxeo-shell-core</module>
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-query-api</module>
   </modules>
@@ -94,7 +93,7 @@
       <module>nuxeo-platform-placeful-theme</module> <module>nuxeo-platform-types-facade</module>
       <module>nuxeo-platform-uidgen-core</module> <module>nuxeo-platform-url-facade</module>
       <module>nuxeo-platform-usermanager-facade</module> <module>nuxeo-platform-ws</module>
-      <module>nuxeo-platform-htmlsanitizer</module> <module>nuxeo-shell-core</module> <module>nuxeo-platform-test</module>
+      <module>nuxeo-platform-htmlsanitizer</module> <module>nuxeo-platform-test</module>
       </modules> </profile> -->
   </profiles>
 
@@ -660,11 +659,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-el</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-shell-core</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
