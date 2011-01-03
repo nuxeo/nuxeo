@@ -156,10 +156,18 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             war = new File(war, "nuxeo.war");
             if (war.isDirectory()) {
                 FileUtils.copyTree(war, getAppDir());
+            } else {
+                // compatibility mode with studio 1.5 - see NXP-6186
+                war = new File(file, "nuxeo.war");
+                if (war.isDirectory()) {
+                    FileUtils.copyTree(war, getAppDir());
+                }
             }
         } else if (file.isFile()) { // a jar
             File war = getWarDir();
             ZipUtils.unzip("web/nuxeo.war", file, war);
+            // compatibility mode with studio 1.5 - see NXP-6186
+            ZipUtils.unzip("nuxeo.war", file, war);
         }
     }
 
