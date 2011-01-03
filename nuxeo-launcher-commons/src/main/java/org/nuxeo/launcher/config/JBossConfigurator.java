@@ -17,9 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import java.io.File;
+import java.net.MalformedURLException;
+
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @author jcarsique
@@ -34,8 +37,12 @@ public class JBossConfigurator extends ServerConfigurator {
 
     public static final String DEFAULT_CONFIGURATION = "default";
 
+    private String configuration;
+
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        configuration = generator.getUserConfig().getProperty(
+                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
     }
 
     /**
@@ -54,9 +61,31 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     public String getJBossConfig() {
-        String configuration = generator.getUserConfig().getProperty(
-                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
-        return "server/" + configuration + "/deploy/nuxeo.ear/config";
+        return "server" + File.separator + configuration + File.separator
+                + "deploy" + File.separator + "nuxeo.ear" + File.separator
+                + "config";
+    }
+
+    @Override
+    public String getDefaultDataDir() {
+        final String defaultDataDir = "server" + File.separator + configuration
+                + File.separator + "data" + File.separator + "NXRuntime"
+                + File.separator + "data";
+        return defaultDataDir;
+    }
+
+    @Override
+    public void initLogs() {
+        File logFile = new File(generator.getNuxeoHome(), "server"
+                + File.separator + configuration + File.separator + "conf"
+                + File.separator + "jboss-log4j.xml");
+        try {
+            System.out.println("Try to configure logs with " + logFile);
+            DOMConfigurator.configure(logFile.toURI().toURL());
+            log.info("Logs succesfully configured.");
+        } catch (MalformedURLException e) {
+            log.error("Could not initialize logs with " + logFile, e);
+        }
     }
 
 }

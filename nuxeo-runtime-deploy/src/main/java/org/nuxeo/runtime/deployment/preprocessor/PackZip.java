@@ -12,24 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -83,7 +88,8 @@ public class PackZip {
         }
     }
 
-    public void execute() throws Exception {
+    public void execute() throws ConfigurationException, IOException,
+            ParserConfigurationException, SAXException {
         // configure from templates
         new ConfigurationGenerator().run();
         // run preprocessor
@@ -116,7 +122,8 @@ public class PackZip {
         // TODO do we really need that?
     }
 
-    protected void moveNonEjbsToLib(File wd) throws Exception {
+    protected void moveNonEjbsToLib(File wd)
+            throws ParserConfigurationException, SAXException, IOException {
         File file = new File(wd, "META-INF/application.xml");
         if (!file.isFile()) {
             System.err.println("You should run this tool from a preprocessed nuxeo.ear folder");
@@ -176,7 +183,8 @@ public class PackZip {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException,
+            ConfigurationException, ParserConfigurationException, SAXException {
         if (args.length != 2) {
             fail("Usage: PackZip nuxeo_ear_directory target_directory");
             System.err.println();

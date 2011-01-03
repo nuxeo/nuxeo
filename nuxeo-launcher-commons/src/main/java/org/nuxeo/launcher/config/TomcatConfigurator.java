@@ -17,9 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
+package org.nuxeo.launcher.config;
 
 import java.io.File;
+import java.net.MalformedURLException;
+
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @author jcarsique
@@ -27,6 +30,9 @@ import java.io.File;
 public class TomcatConfigurator extends ServerConfigurator {
 
     public static final String TOMCAT_CONFIG = "conf/Catalina/localhost/nuxeo.xml";
+
+    public static final String DEFAULT_DATA_DIR = "nxserver" + File.separator
+            + "data";
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
@@ -44,6 +50,25 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     protected File getOutputDirectory() {
         return generator.getNuxeoHome();
+    }
+
+    @Override
+    protected String getDefaultDataDir() {
+        return DEFAULT_DATA_DIR;
+    }
+
+    @Override
+    public void initLogs() {
+        File logFile = new File(generator.getNuxeoHome(), "lib"
+                + File.separator + "log4j.xml");
+        try {
+            System.out.println("Configuring logs with " + logFile);
+            System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+            DOMConfigurator.configure(logFile.toURI().toURL());
+            log.info("Logs succesfully configured.");
+        } catch (MalformedURLException e) {
+            log.error("Could not initialize logs with " + logFile, e);
+        }
     }
 
 }
