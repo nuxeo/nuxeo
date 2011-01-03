@@ -23,6 +23,11 @@
         <artifactId>nuxeo-launcher-commons</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.directory.daemon</groupId>
+        <artifactId>daemon-bootstrappers</artifactId>
+        <version>1.1.8</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -36,6 +41,16 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.daemon</groupId>
+      <artifactId>daemon-bootstrappers</artifactId>
     </dependency>
   </dependencies>
 
