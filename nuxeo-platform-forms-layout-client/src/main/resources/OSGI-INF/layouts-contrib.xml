@@ -8,8 +8,6 @@
     @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
-  <!-- TODO: document javascript onclick, onchange, etc... properties -->
-
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -17,7 +15,6 @@
       <configuration>
         <title>Text</title>
         <description>
-          <![CDATA[
           <p>
             The text widget displays an input text in create or edit mode, with
             additional message tag for errors, and a regular text output in any
@@ -28,7 +25,6 @@
             &lt;h:inputText /&gt; tag in create or edit mode, and properties
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <supportedModes>
           <mode>edit</mode>
@@ -53,9 +49,6 @@
             <layout name="text_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>style</widget>
                 </row>
                 <row>
@@ -65,14 +58,6 @@
                   <widget>title</widget>
                 </row>
               </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="style" type="text">
                 <labels>
                   <label mode="any">Style</label>
@@ -267,7 +252,6 @@
       <configuration>
         <title>Int</title>
         <description>
-          <![CDATA[
           <p>
             The int widget displays an input text in create or edit mode, with
             additional message tag for errors, and a regular text output in any
@@ -278,7 +262,6 @@
             &lt;h:inputText /&gt; tag in create or edit mode, and properties
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -302,9 +285,6 @@
             <layout name="int_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>style</widget>
                 </row>
                 <row>
@@ -314,14 +294,6 @@
                   <widget>title</widget>
                 </row>
               </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="style" type="text">
                 <labels>
                   <label mode="any">Style</label>
@@ -491,17 +463,15 @@
       <configuration>
         <title>Secret</title>
         <description>
-          <![CDATA[
           <p>
             The secret widget displays an input secret text in create or edit
-            mode, with additional message tag for errors, and nothing in any other
-            mode.
+            mode, with additional message tag for errors, and nothing in any
+            other mode.
           </p>
           <p>
             Widgets using this type can provide properties accepted on a
             &lt;h:inputSecret /&gt; tag in create or edit mode.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -543,9 +513,6 @@
                 </row>
                 <row>
                   <widget>redisplay</widget>
-                </row>
-                <row>
-                  <widget>rendered</widget>
                 </row>
                 <row>
                   <widget>required</widget>
@@ -638,14 +605,6 @@
                   <field>redisplay</field>
                 </fields>
               </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="required" type="checkbox">
                 <labels>
                   <label mode="any">Required</label>
@@ -715,7 +674,6 @@
       <configuration>
         <title>Textarea</title>
         <description>
-          <![CDATA[
           <p>
             The textarea widget displays a textarea in create or edit mode, with
             additional message tag for errors, and a regular text output in any
@@ -726,7 +684,6 @@
             &lt;h:inputTextarea /&gt; tag in create or edit mode, and properties
             accepted on a &lt;h:outputText /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -747,9 +704,6 @@
             <layout name="textarea_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>style</widget>
                 </row>
                 <row>
@@ -759,14 +713,6 @@
                   <widget>title</widget>
                 </row>
               </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="style" type="text">
                 <labels>
                   <label mode="any">Style</label>
@@ -972,7 +918,6 @@
       <configuration>
         <title>Datetime</title>
         <description>
-          <![CDATA[
           <p>
             The datetime widget displays a javascript calendar in create or edit
             mode, with additional message tag for errors, and a regular text
@@ -980,11 +925,10 @@
           </p>
           <p>
             Widgets using this type can provide properties accepted on a
-            &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and properties
-            accepted on a &lt;h:outputText /&gt; tag in other modes. The converter
-            will also be given these properties.
+            &lt;nxu:inputDatetime /&gt; tag in create or edit mode, and
+            properties accepted on a &lt;h:outputText /&gt; tag in other modes.
+            The converter will also be given these properties.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1011,9 +955,6 @@
                   <widget>pattern</widget>
                 </row>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>timeZone</widget>
                 </row>
               </rows>
@@ -1032,14 +973,6 @@
                 </helpLabels>
                 <fields>
                   <field>pattern</field>
-                </fields>
-              </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
                 </fields>
               </widget>
               <widget name="timeZone" type="text">
@@ -1065,9 +998,6 @@
                 </row>
                 <row>
                   <widget>locale</widget>
-                </row>
-                <row>
-                  <widget>rendered</widget>
                 </row>
                 <row>
                   <widget>required</widget>
@@ -1120,14 +1050,6 @@
                 </helpLabels>
                 <fields>
                   <field>locale</field>
-                </fields>
-              </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
                 </fields>
               </widget>
               <widget name="required" type="checkbox">
@@ -1226,13 +1148,12 @@
       <configuration>
         <title>Template</title>
         <description>
-          <![CDATA[
           <p>
             The template widget displays a template content whatever the mode.
           </p>
           <p>
-            Widgets using this type must provide the path to this template ; this
-            template can check the mode to adapt the rendering.
+            Widgets using this type must provide the path to this template ;
+            this template can check the mode to adapt the rendering.
           </p>
           <p>
             Note that the same handler class can be used to define a new widget
@@ -1245,7 +1166,6 @@
             /widgets/my_custom_widget_template.xhtml &lt;/property&gt;
             &lt;/widgetType&gt;
           </p>
-          ]]>
         </description>
         <categories>
           <category>dev</category>
@@ -1262,13 +1182,16 @@
                   <widget>template</widget>
                 </row>
               </rows>
-              <widget name="template" type="text">
+              <widget name="template" type="selectOneResource">
                 <labels>
                   <label mode="any">Template</label>
                 </labels>
                 <fields>
                   <field>template</field>
                 </fields>
+                <properties mode="any">
+                  <property name="resourceName">xhtml_templates</property>
+                </properties>
                 <properties widgetMode="any">
                   <property name="required">true</property>
                 </properties>
@@ -1286,7 +1209,6 @@
       <configuration>
         <title>File</title>
         <description>
-          <![CDATA[
           <p>
             The file widget displays a file uploader/editor in create or edit
             mode, with additional message tag for errors, and a link to the file
@@ -1297,7 +1219,6 @@
             &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
             accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1326,9 +1247,6 @@
                 <row>
                   <widget>iconRendered</widget>
                 </row>
-                <row>
-                  <widget>rendered</widget>
-                </row>
               </rows>
               <widget name="downloadLabel" type="text">
                 <labels>
@@ -1356,14 +1274,6 @@
                 </helpLabels>
                 <fields>
                   <field>iconRendered</field>
-                </fields>
-              </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
                 </fields>
               </widget>
             </layout>
@@ -1396,7 +1306,6 @@
       <configuration>
         <title>HTML text</title>
         <description>
-          <![CDATA[
           <p>
             The htmltext widget displays an html text editor in create or edit
             mode, with additional message tag for errors, and a regular text
@@ -1407,7 +1316,6 @@
             &lt;nxu:editor /&gt; tag in create or edit mode, and properties
             accepted on a &lt;nxu:outputText /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1428,9 +1336,6 @@
             <layout name="htmltext_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>style</widget>
                 </row>
                 <row>
@@ -1440,14 +1345,6 @@
                   <widget>title</widget>
                 </row>
               </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="style" type="text">
                 <labels>
                   <label mode="any">Style</label>
@@ -1496,9 +1393,6 @@
                   <widget>editorSelector</widget>
                 </row>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>required</widget>
                 </row>
               </rows>
@@ -1514,14 +1408,6 @@
                 </helpLabels>
                 <fields>
                   <field>disableHtmlInit</field>
-                </fields>
-              </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
                 </fields>
               </widget>
               <widget name="required" type="checkbox">
@@ -1602,14 +1488,6 @@
                   <field>editorSelector</field>
                 </fields>
               </widget>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="required" type="checkbox">
                 <labels>
                   <label mode="any">Required</label>
@@ -1631,7 +1509,6 @@
       <configuration>
         <title>Vocabulary</title>
         <description>
-          <![CDATA[
           <p>
             The selectOneDirectory widget displays a selection of vocabulary
             entries in create or edit mode, with additional message tag for
@@ -1643,7 +1520,6 @@
             properties accepted on a &lt;nxd:directoryEntryOutput /&gt; tag in
             other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1798,18 +1674,16 @@
       <configuration>
         <title>Multiple vocabulary</title>
         <description>
-          <![CDATA[
           <p>
-            The selectOneDirectory widget displays a multi selection of vocabulary
-            entries in create or edit mode, with additional message tag for
-            errors, and the directory entries labels in other modes.
+            The selectOneDirectory widget displays a multi selection of
+            vocabulary entries in create or edit mode, with additional message
+            tag for errors, and the directory entries labels in other modes.
           </p>
           <p>
-            Widgets using this type can provide properties accepted on a c tag in
-            create or edit mode, and properties accepted on a
+            Widgets using this type can provide properties accepted on a c tag
+            in create or edit mode, and properties accepted on a
             &lt;nxd:directoryEntryOutput /&gt; tag in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -1964,21 +1838,17 @@
       <configuration>
         <title>List</title>
         <description>
-          <![CDATA[
           <p>
             The list widget displays an editable list of items in create or edit
             mode, with additional message tag for errors, and the same list of
             items in other modes.
           </p>
-          <p>
-            Items are defined using sub wigdets configuration.
-          </p>
+          <p>Items are defined using sub wigdets configuration.</p>
           <p>
             This is actually a template widget type whose template uses a
             &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
             iterating over items in other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2050,17 +1920,15 @@
       <configuration>
         <title>Checkbox</title>
         <description>
-          <![CDATA[
           <p>
-            The checkbox widget displays a checkbox in create, edit and any other
-            mode, with additional message tag for errors.
+            The checkbox widget displays a checkbox in create, edit and any
+            other mode, with additional message tag for errors.
           </p>
           <p>
             Widgets using this type can provide properties accepted on a
-            &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and other
-            modes.
+            &lt;h:selectBooleanCheckbox /&gt; tag in create, edit mode, and
+            other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2084,9 +1952,6 @@
             <layout name="checkbox_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>rendered</widget>
-                </row>
-                <row>
                   <widget>style</widget>
                 </row>
                 <row>
@@ -2096,14 +1961,6 @@
                   <widget>title</widget>
                 </row>
               </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
               <widget name="style" type="text">
                 <labels>
                   <label mode="any">Style</label>
@@ -2240,16 +2097,14 @@
       <configuration>
         <title>Hidden</title>
         <description>
-          <![CDATA[
           <p>
-            The hidden widget is for a hidden field in create, edit and any other
-            mode, with additional message tag for errors.
+            The hidden widget is for a hidden field in create, edit and any
+            other mode, with additional message tag for errors.
           </p>
           <p>
             Widgets using this type can provide properties accepted on a
             &lt;h:inputHidden /&gt; tag in create, edit mode, and other modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>
@@ -2266,23 +2121,6 @@
           </supportedTypes>
         </fields>
         <properties>
-          <layouts mode="any">
-            <layout name="hidden_widget_type_properties_any">
-              <rows>
-                <row>
-                  <widget>rendered</widget>
-                </row>
-              </rows>
-              <widget name="rendered" type="checkbox">
-                <labels>
-                  <label mode="any">Rendered</label>
-                </labels>
-                <fields>
-                  <field>rendered</field>
-                </fields>
-              </widget>
-            </layout>
-          </layouts>
           <layouts mode="view">
             <layout name="hidden_widget_type_properties_view">
               <rows>
@@ -2384,15 +2222,11 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Layout</title>
         <description>
-          <![CDATA[
-          <p>
-            The layout widget renders a layout.
-          </p>
+          <p>The layout widget renders a layout.</p>
           <p>
             Widgets using this type can provide properties accepted on a
             &lt;nxl:layout /&gt; tag in all modes.
           </p>
-          ]]>
         </description>
         <categories>
           <category>dev</category>
@@ -2410,9 +2244,6 @@
                 </row>
                 <row>
                   <widget>mode</widget>
-                </row>
-                <row>
-                  <widget>value</widget>
                 </row>
                 <row>
                   <widget>template</widget>
@@ -2440,24 +2271,16 @@
                   <property name="required">true</property>
                 </properties>
               </widget>
-              <widget name="value" type="text">
-                <labels>
-                  <label mode="any">Value</label>
-                </labels>
-                <fields>
-                  <field>value</field>
-                </fields>
-                <properties widgetMode="any">
-                  <property name="required">true</property>
-                </properties>
-              </widget>
-              <widget name="template" type="text">
+              <widget name="template" type="selectOneResource">
                 <labels>
                   <label mode="any">Template</label>
                 </labels>
                 <fields>
                   <field>template</field>
                 </fields>
+                <properties mode="any">
+                  <property name="resourceName">xhtml_templates</property>
+                </properties>
               </widget>
             </layout>
           </layouts>
@@ -2473,16 +2296,14 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Richtext</title>
         <description>
-          <![CDATA[
           <p>
             This widget displays an html text editor or a textarea in create or
             edit mode, depending on the mimetype defined.
           </p>
-          <p>  
+          <p>
             Widgets using this type can provide properties accepted on a
             &lt;nxu:editor /&gt; tag in create or edit mode.
           </p>
-          ]]>
         </description>
         <categories>
           <category>document</category>

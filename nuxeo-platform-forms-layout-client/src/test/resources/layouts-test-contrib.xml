@@ -14,7 +14,9 @@
       <property name="foo2">bar2</property>
       <configuration>
         <title>Test widget type</title>
-        <description>This is a test widget type</description>
+        <description>
+          <p>This is a test widget type</p>
+        </description>
         <confProperties>
           <property name="confProp">foo</property>
           <property name="sortProperty">dc:title</property>

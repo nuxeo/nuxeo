@@ -75,7 +75,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         WidgetTypeConfiguration conf = wTypeDef.getConfiguration();
         assertNotNull(conf);
         assertEquals("Test widget type", conf.getTitle());
-        assertEquals("This is a test widget type", conf.getDescription());
+        assertEquals("<p>This is a test widget type</p>", conf.getDescription());
         Map<String, Serializable> confProps = conf.getConfProperties();
         assertNotNull(confProps);
         assertEquals(2, confProps.size());

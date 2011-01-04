@@ -84,7 +84,6 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Selection checkbox with current document</title>
         <description>
-          <![CDATA[
           <p>
             This widget type displays a selection checkbox, that will perform
             remote selection of given item. The current document information is
@@ -93,9 +92,12 @@
           <p>
             It requires the following fields configuration:
             <ul>
-              <li>first field maps a boolean representing the selection state</li>
               <li>
-                second field maps the string identifier used to perform selection
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
               </li>
             </ul>
           </p>
@@ -104,8 +106,8 @@
             context:
             <ul>
               <li>
-                provider: result provider used to get the list of items, its name
-                will be used.
+                provider: result provider used to get the list of items, its
+                name will be used.
               </li>
               <li>
                 listName: the name of the list that will hold selected items
@@ -113,7 +115,6 @@
               <li>currentDocument: the current document</li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -141,18 +142,20 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Ajax selection checkbox with current document</title>
         <description>
-          <![CDATA[
           <p>
-            This widget type displays a selection checkbox, that will perform ajax
-            selection of given item. The current document information is also
-            provided to restore current context when clicking on the link.
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item. The current document information is
+            also provided to restore current context when clicking on the link.
           </p>
           <p>
             It requires the following fields configuration:
             <ul>
-              <li>first field maps a boolean representing the selection state</li>
               <li>
-                second field maps the string identifier used to perform selection
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
               </li>
             </ul>
           </p>
@@ -161,8 +164,8 @@
             context:
             <ul>
               <li>
-                provider: result provider used to get the list of items, its name
-                will be used.
+                provider: result provider used to get the list of items, its
+                name will be used.
               </li>
               <li>
                 listName: the name of the list that will hold selected items
@@ -170,7 +173,6 @@
               <li>currentDocument: the current document</li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -198,7 +200,6 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Selection checkbox</title>
         <description>
-          <![CDATA[
           <p>
             This widget type displays a selection checkbox, that will perform
             remote selection of given item.
@@ -206,9 +207,12 @@
           <p>
             It requires the following fields configuration:
             <ul>
-              <li>first field maps a boolean representing the selection state</li>
               <li>
-                second field maps the string identifier used to perform selection
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
               </li>
             </ul>
           </p>
@@ -217,15 +221,14 @@
             context:
             <ul>
               <li>
-                provider: result provider used to get the list of items, its name
-                will be used.
+                provider: result provider used to get the list of items, its
+                name will be used.
               </li>
               <li>
                 listName: the name of the list that will hold selected items
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -253,17 +256,19 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Ajax selection checkbox</title>
         <description>
-          <![CDATA[
           <p>
-            This widget type displays a selection checkbox, that will perform ajax
-            selection of given item.
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item.
           </p>
           <p>
             It requires the following fields configuration:
             <ul>
-              <li>first field maps a boolean representing the selection state</li>
               <li>
-                second field maps the string identifier used to perform selection
+                first field maps a boolean representing the selection state
+              </li>
+              <li>
+                second field maps the string identifier used to perform
+                selection
               </li>
             </ul>
           </p>
@@ -272,15 +277,14 @@
             context:
             <ul>
               <li>
-                provider: result provider used to get the list of items, its name
-                will be used.
+                provider: result provider used to get the list of items, its
+                name will be used.
               </li>
               <li>
                 listName: the name of the list that will hold selected items
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -307,7 +311,6 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Icon and document type</title>
         <description>
-          <![CDATA[
           <p>
             This widget type displays a draggable icon corresponding to a
             document.
@@ -320,19 +323,18 @@
                 will be used to provide its icon
               </li>
               <li>
-                second field maps the unique id to be used as drag/drop identified
-                (e.g. the document model id)
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
               </li>
               <li>
                 third field maps the icon title (can be the document model type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays a
-                droppable zone (e.g. if document is folderish)
+                fourth field maps a boolean stating whether the widget displays
+                a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -362,7 +364,6 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Big icon and document type</title>
         <description>
-          <![CDATA[
           <p>
             This widget type displays a big draggable icon corresponding to a
             document.
@@ -375,20 +376,19 @@
                 nxd:bigIconPath will be used to provide its icon
               </li>
               <li>
-                second field maps the unique id to be used as drag/drop identified
-                (e.g. the document model id)
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
               </li>
               <li>
                 third field maps the displayed icon title (can be the document
                 model type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays a
-                droppable zone (e.g. if document is folderish)
+                fourth field maps a boolean stating whether the widget displays
+                a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -418,7 +418,6 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Big icon and document type with link</title>
         <description>
-          <![CDATA[
           <p>
             This widget type displays a big draggable icon corresponding to a
             document with a link to the document.
@@ -432,20 +431,19 @@
                 the document link
               </li>
               <li>
-                second field maps the unique id to be used as drag/drop identified
-                (e.g. the document model id)
+                second field maps the unique id to be used as drag/drop
+                identified (e.g. the document model id)
               </li>
               <li>
                 third field maps the displayed icon title (can be the document
                 model type)
               </li>
               <li>
-                fourth field maps a boolean stating whether the widget displays a
-                droppable zone (e.g. if document is folderish)
+                fourth field maps a boolean stating whether the widget displays
+                a droppable zone (e.g. if document is folderish)
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -475,10 +473,9 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Title with link</title>
         <description>
-          <![CDATA[
           <p>
-            This widget type displays a link to navigate to a document, as well as
-            a download link for the document binary content.
+            This widget type displays a link to navigate to a document, as well
+            as a download link for the document binary content.
           </p>
           <p>
             It requires the following fields configuration:
@@ -496,8 +493,8 @@
                 model description)
               </li>
               <li>
-                fourth field maps the document model file to be used for download
-                link
+                fourth field maps the document model file to be used for
+                download link
               </li>
               <li>
                 fifth field maps the file name to be used for download link (can
@@ -509,15 +506,14 @@
             It also requires the following properties configuration:
             <ul>
               <li>
-                file_schema: the file schema name, used to check whether download
-                link should be displayed (e.g: file)
+                file_schema: the file schema name, used to check whether
+                download link should be displayed (e.g: file)
               </li>
               <li>
                 file_property_name: the file property name (e.g file:content)
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <confProperties>
           <property name="sortPropertyName">dc:title</property>
@@ -551,10 +547,7 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Lock icon</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays a lock icon.
-          </p>
+          <p>This widget type displays a lock icon.</p>
           <p>
             It requires the following fields configuration:
             <ul>
@@ -564,7 +557,6 @@
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -590,17 +582,13 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Author</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays a user name.
-          </p>
+          <p>This widget type displays a user name.</p>
           <p>
             It requires the following fields configuration:
             <ul>
               <li>first field mapping the user identifier</li>
             </ul>
           </p>
-          ]]>
         </description>
         <confProperties>
           <property name="sortPropertyName">dc:creator</property>
@@ -627,17 +615,13 @@
         <sinceVersion>5.4.1</sinceVersion>
         <title>Last contributor</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays the last contributor name
-          </p>
+          <p>This widget type displays the last contributor name</p>
           <p>
             It requires the following fields configuration:
             <ul>
               <li>first field mapping the lastContributor field</li>
             </ul>
           </p>
-          ]]>
         </description>
         <confProperties>
           <property name="sortPropertyName">dc:creator</property>
@@ -667,17 +651,13 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Lifecycle state</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays a life cycle state name.
-          </p>
+          <p>This widget type displays a life cycle state name.</p>
           <p>
             It requires the following fields configuration:
             <ul>
               <li>first field mapping the life cycle state name</li>
             </ul>
           </p>
-          ]]>
         </description>
         <confProperties>
           <property name="sortPropertyName">ecm:currentLifeCycleState</property>
@@ -706,10 +686,7 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Live edit link</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays a live edit link.
-          </p>
+          <p>This widget type displays a live edit link.</p>
           <p>
             It requires the following fields configuration:
             <ul>
@@ -727,7 +704,6 @@
               <li>filename_field_name: the file name field name</li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>
@@ -754,20 +730,16 @@
         <sinceVersion>5.4.0</sinceVersion>
         <title>Version</title>
         <description>
-          <![CDATA[
-          <p>
-            This widget type displays a document model version label
-          </p>
+          <p>This widget type displays a document model version label</p>
           <p>
             It requires the following fields configuration:
             <ul>
               <li>
-                first field mapping the document model, its version label will be
-                retrieved querying the versioning service
+                first field mapping the document model, its version label will
+                be retrieved querying the versioning service
               </li>
             </ul>
           </p>
-          ]]>
         </description>
         <fields>
           <list>false</list>

@@ -16,12 +16,18 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.descriptors;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.xml.serialize.OutputFormat;
+import org.nuxeo.common.xmap.DOMSerializer;
+import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -29,6 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.w3c.dom.DocumentFragment;
 
 /**
  * Descriptor for a widget type configuration
@@ -42,13 +49,15 @@ public class WidgetTypeConfigurationDescriptor implements
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(WidgetTypeConfigurationDescriptor.class);
+
     @XNode("sinceVersion")
     String sinceVersion;
 
     @XNode("title")
     String title;
 
-    @XNode("description")
+    // retrieve HTML tags => introspect DOM on setter
     String description;
 
     @XNodeList(value = "supportedModes/mode", type = ArrayList.class, componentType = String.class)
@@ -87,6 +96,17 @@ public class WidgetTypeConfigurationDescriptor implements
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @XContent("description")
+    public void setDescription(DocumentFragment descriptionDOM) {
+        try {
+            OutputFormat of = new OutputFormat();
+            of.setOmitXMLDeclaration(true);
+            this.description = DOMSerializer.toString(descriptionDOM, of).trim();
+        } catch (IOException e) {
+            log.error(e, e);
+        }
     }
 
     @Override
