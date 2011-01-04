@@ -17,33 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.deployment.preprocessor;
-
-import java.io.File;
+package org.nuxeo.launcher.config;
 
 /**
  * @author jcarsique
  */
-public class JettyConfigurator extends ServerConfigurator {
+public class ConfigurationException extends Exception {
 
-    public static final String JETTY_CONFIG = "config/sql.properties";
+    private static final long serialVersionUID = 1L;
 
-    public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
-        super(configurationGenerator);
+    public ConfigurationException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 
-    /**
-     * @return true if "config" files directory already exists
-     */
-    @Override
-    protected boolean isConfigured() {
-        log.info("Detected Jetty server.");
-        return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
-    }
-
-    @Override
-    protected File getOutputDirectory() {
-        return generator.getNuxeoHome();
+    public ConfigurationException(Throwable throwable) {
+        super(throwable);
     }
 
 }
