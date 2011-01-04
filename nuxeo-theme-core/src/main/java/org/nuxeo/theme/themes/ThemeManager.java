@@ -191,11 +191,6 @@ public final class ThemeManager implements Registrable {
                     + " cannot be customized.");
         }
 
-        if (themeDescriptor.isCustomization()) {
-            throw new ThemeException("Theme : " + themeName
-                    + " is already a customized theme.");
-        }
-
         ThemeSerializer serializer = new ThemeSerializer();
         String xmlSource;
         try {
