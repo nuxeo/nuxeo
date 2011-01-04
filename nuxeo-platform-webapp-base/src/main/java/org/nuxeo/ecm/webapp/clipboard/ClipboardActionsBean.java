@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.ScopeType.SESSION;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -78,6 +75,9 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.ScopeType.SESSION;
 
 /**
  * This is the action listener behind the copy/paste template that knows how to
@@ -202,7 +202,8 @@ public class ClipboardActionsBean extends InputController implements
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
-                    FacesMessage.SEVERITY_INFO, "#0 "
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 "
                             + resourcesAccessor.getMessages().get(
                                     "n_copied_docs"), params);
 
@@ -229,9 +230,11 @@ public class ClipboardActionsBean extends InputController implements
         canEditSelectedDocs = null;
         if (null != docsList) {
             Object[] params = { docsList.size() };
-            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
-                    + resourcesAccessor.getMessages().get(
-                            "n_added_to_worklist_docs"), params);
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
+                    "#0 "
+                            + resourcesAccessor.getMessages().get(
+                                    "n_added_to_worklist_docs"), params);
 
             // Add to the default working list
             documentsListsManager.addToWorkingList(
@@ -638,7 +641,8 @@ public class ClipboardActionsBean extends InputController implements
                 setFacesMessage("label.clipboard.emptyDocuments");
                 return null;
             }
-            response.setHeader("Content-Disposition", "attachment; filename=\"clipboard.zip\";");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=\"clipboard.zip\";");
             response.setContentType("application/zip");
             response.flushBuffer();
             context.responseComplete();
@@ -924,9 +928,10 @@ public class ClipboardActionsBean extends InputController implements
                     if (tryCount == 0) {
                         entry = new ZipEntry(path + fileName);
                     } else {
-                        entry = new ZipEntry(path
-                                + formatFileName(fileName, "(" + tryCount
-                                        + ")"));
+                        entry = new ZipEntry(
+                                path
+                                        + formatFileName(fileName, "("
+                                                + tryCount + ")"));
                     }
                     out.putNextEntry(entry);
                     break;
@@ -1021,8 +1026,8 @@ public class ClipboardActionsBean extends InputController implements
                 actionCache = new HashMap<String, List<Action>>();
             }
             if (!actionCache.containsKey(lstName)) {
-                actionCache.put(lstName, webActions.getActionsList(lstName
-                        + "_LIST"));
+                actionCache.put(lstName,
+                        webActions.getActionsList(lstName + "_LIST"));
             }
             return actionCache.get(lstName);
         } else {
