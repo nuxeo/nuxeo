@@ -341,8 +341,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         String bigtext = buf.toString();
         assertEquals(5000, bigtext.length());
         nodea.setSimpleProperty("tst:bignote", bigtext);
+        nodea.setCollectionProperty("tst:bignotes", new String[] { bigtext });
         assertEquals(bigtext,
                 nodea.getSimpleProperty("tst:bignote").getString());
+        assertEquals(bigtext,
+                nodea.getCollectionProperty("tst:bignotes").getStrings()[0]);
         session.save();
 
         // now read from another session
@@ -353,6 +356,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea = session.getChildNode(root, "foo", false);
         String readtext = nodea.getSimpleProperty("tst:bignote").getString();
         assertEquals(bigtext, readtext);
+        String[] readtexts = nodea.getCollectionProperty("tst:bignotes").getStrings();
+        assertEquals(bigtext, readtexts[0]);
     }
 
     public void testPropertiesSameName() throws Exception {
@@ -1284,7 +1289,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Model model = ((SessionImpl) session).getModel();
         assertEquals(
                 new HashSet<String>(Arrays.asList("testschema", "tst:subjects",
-                        "tst:tags", //
+                        "tst:bignotes", "tst:tags", //
                         "acls", "versions", "misc", "locks")),
                 model.getTypePrefetchedFragments("TestDoc"));
         assertEquals(new HashSet<String>(Arrays.asList("testschema2", //

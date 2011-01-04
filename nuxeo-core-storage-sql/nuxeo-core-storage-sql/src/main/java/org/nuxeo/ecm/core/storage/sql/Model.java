@@ -1338,8 +1338,16 @@ public class Model {
                         PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
                         ColumnType type = ColumnType.fromFieldType(listFieldType);
-                        // don't check repositoryDescriptor.schemaFields, assume
-                        // arrays never contain CLOBs
+                        if (type == ColumnType.VARCHAR) {
+                            for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
+                                if (propertyName.equals(fd.field)
+                                        && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
+                                    type = ColumnType.CLOB;
+                                }
+                            }
+                            log.debug("  String array field '" + propertyName
+                                    + "' using column type " + type);
+                        }
                         addPropertyInfo(typeName, propertyName, propertyType,
                                 fragmentName, null, false, null, null);
 

@@ -65,10 +65,11 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.clusteringEnabled = clusteringDelay != -1;
         descriptor.clusteringDelay = clusteringDelay;
-        FieldDescriptor schemaField = new FieldDescriptor();
-        schemaField.field = "tst:bignote";
-        schemaField.type = Model.FIELD_TYPE_LARGETEXT;
-        descriptor.schemaFields = Arrays.asList(schemaField);
+        FieldDescriptor schemaField1 = new FieldDescriptor("tst:bignote",
+                Model.FIELD_TYPE_LARGETEXT);
+        FieldDescriptor schemaField2 = new FieldDescriptor("tst:bignotes",
+                Model.FIELD_TYPE_LARGETEXT);
+        descriptor.schemaFields = Arrays.asList(schemaField1, schemaField2);
         descriptor.binaryStorePath = "testbinaries";
         descriptor.fulltextDisabled = fulltextDisabled;
         return descriptor;

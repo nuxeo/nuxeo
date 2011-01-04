@@ -70,6 +70,15 @@ public class RepositoryDescriptor {
 
     @XObject(value = "field")
     public static class FieldDescriptor {
+        // empty constructor needed by XMap
+        public FieldDescriptor() {
+        }
+
+        public FieldDescriptor(String field, String type) {
+            this.field = field;
+            this.type = type;
+        }
+
         @XNode("@type")
         public String type;
 
