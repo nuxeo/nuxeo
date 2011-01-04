@@ -15,7 +15,7 @@
     </resources>
     <applet-desc
          name="Nuxeo Shell"
-         main-class="org.nuxeo.ecm.shell.swing.ShellApplet"
+         main-class="org.nuxeo.shell.swing.ShellApplet"
          width="800"
          height="600">
      </applet-desc>
