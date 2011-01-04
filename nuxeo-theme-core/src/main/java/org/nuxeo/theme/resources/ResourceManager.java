@@ -153,7 +153,7 @@ public final class ResourceManager implements Registrable {
 
     @Override
     public void clear() {
-        // TODO Auto-generated method stub
+        globalCache.clear();
     }
 
 }

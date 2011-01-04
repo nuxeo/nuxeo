@@ -107,9 +107,6 @@ public class PerspectiveManager implements Registrable {
         return perspectives;
     }
 
-    public void clear() {
-    }
-
     public static List<PerspectiveType> listPerspectives() {
         List<PerspectiveType> perspectives = new ArrayList<PerspectiveType>();
         for (Type perspective : Manager.getTypeRegistry().getTypes(
@@ -124,6 +121,9 @@ public class PerspectiveManager implements Registrable {
                 null)) {
             relationStorage.remove(relation);
         }
+    }
+
+    public void clear() {
     }
 
 }

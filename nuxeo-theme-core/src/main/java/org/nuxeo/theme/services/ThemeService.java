@@ -33,6 +33,7 @@ import org.nuxeo.runtime.model.Reloadable;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -66,7 +67,7 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     private static final Log log = LogFactory.getLog(ThemeService.class);
 
-    private Map<String, Registrable> registries;
+    private Map<String, Registrable> registries = new HashMap<String, Registrable>();
 
     private RuntimeContext context;
 
@@ -103,22 +104,31 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     @Override
     public void activate(ComponentContext ctx) {
         context = ctx.getRuntimeContext();
-        registries = new HashMap<String, Registrable>();
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
-        registries = null;
+        Manager.getVocabularyManager().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getResourceManager().clear();
+        Manager.getThemeManager().clear();
+        Manager.getRelationStorage().clear();
+        Manager.getUidManager().clear();
+        Manager.getTypeRegistry().clear();
+        registries.clear();
         log.debug("Theme service deactivated");
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        // themes registered as contributions
         for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
             registerTheme(themeDescriptor);
         }
+        // custom themes located on the file-system
         registerCustomThemes();
+
         ThemeManager.updateThemeDescriptors();
 
         // setup resource banks
