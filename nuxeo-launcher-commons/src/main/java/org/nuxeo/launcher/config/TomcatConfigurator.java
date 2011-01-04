@@ -34,6 +34,11 @@ public class TomcatConfigurator extends ServerConfigurator {
     public static final String DEFAULT_DATA_DIR = "nxserver" + File.separator
             + "data";
 
+    /**
+     * @since 5.4.1
+     */
+    public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
+
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -69,6 +74,20 @@ public class TomcatConfigurator extends ServerConfigurator {
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
+    }
+
+    @Override
+    public File getLibDir() {
+        if (libDir == null) {
+            libDir = new File(generator.getNuxeoHome(), "lib");
+        }
+        return libDir;
+    }
+
+    @Override
+    public File getBootstrap() {
+        return new File(generator.getNuxeoHome(), "bin" + File.separator
+                + "bootstrap.jar");
     }
 
 }
