@@ -142,6 +142,11 @@
         <version>${nuxeo.opencmis.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-opencmis-bindings</artifactId>
         <version>${nuxeo.opencmis.version}</version>
