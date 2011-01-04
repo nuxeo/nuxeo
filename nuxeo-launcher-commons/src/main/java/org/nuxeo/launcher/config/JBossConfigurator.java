@@ -37,6 +37,11 @@ public class JBossConfigurator extends ServerConfigurator {
 
     public static final String DEFAULT_CONFIGURATION = "default";
 
+    /**
+     * @since 5.4.1
+     */
+    public static final String STARTUP_CLASS = "org.jboss.Main";
+
     private String configuration;
 
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
@@ -86,6 +91,20 @@ public class JBossConfigurator extends ServerConfigurator {
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
+    }
+
+    @Override
+    public File getLibDir() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public File getBootstrap() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
     }
 
 }

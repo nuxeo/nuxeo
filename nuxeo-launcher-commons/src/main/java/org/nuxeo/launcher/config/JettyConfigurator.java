@@ -33,6 +33,11 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public static final String DEFAULT_DATA_DIR = "data";
 
+    /**
+     * @since 5.4.1
+     */
+    public static final String STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
+
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
@@ -67,6 +72,20 @@ public class JettyConfigurator extends ServerConfigurator {
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
+    }
+
+    @Override
+    public File getLibDir() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public File getBootstrap() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
     }
 
 }

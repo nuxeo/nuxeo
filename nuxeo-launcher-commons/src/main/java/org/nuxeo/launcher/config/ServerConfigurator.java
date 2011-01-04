@@ -43,6 +43,10 @@ public abstract class ServerConfigurator {
 
     protected File logDir = null;
 
+    private File runDir = null;
+
+    protected File libDir = null;
+
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
     }
@@ -144,8 +148,32 @@ public abstract class ServerConfigurator {
 
     /**
      * Initialize logs
+     *
      * @since 5.4.1
      */
     public abstract void initLogs();
+
+    /**
+     * @return Main lib directory
+     * @since 5.4.1
+     */
+    public abstract File getLibDir();
+
+    /**
+     * @return Run directory; Returns log directory if not set by configuration.
+     * @since 5.4.1
+     */
+    public File getRunDir() {
+        if (runDir == null) {
+            runDir = getLogDir();
+        }
+        return runDir;
+    }
+
+    /**
+     * @return Server bootstrap file
+     * @since 5.4.1
+     */
+    public abstract File getBootstrap();
 
 }
