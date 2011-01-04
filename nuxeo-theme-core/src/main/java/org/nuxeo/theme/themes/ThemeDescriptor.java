@@ -30,17 +30,26 @@ public class ThemeDescriptor implements Type {
 
     protected RuntimeContext ctx;
 
+    /**
+     * Is the theme configured as an runtime contribution?
+     */
     private boolean configured = false;
 
+    /**
+     * Is the theme customized?
+     */
     private boolean customized = false;
 
+    /**
+     * Is the theme a customization of another theme?
+     */
     private boolean customization = false;
 
     private Date lastSaved;
 
     private Date lastLoaded;
 
-    private boolean loadingFailed = false;
+    private boolean loadingFailed = true;
 
     private String name;
 

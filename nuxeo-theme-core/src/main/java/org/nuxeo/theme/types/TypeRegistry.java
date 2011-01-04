@@ -15,7 +15,6 @@
 package org.nuxeo.theme.types;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,15 +100,8 @@ public final class TypeRegistry implements Registrable {
     }
 
     public synchronized void clear() {
-        Collection<Type> objects = new ArrayList<Type>();
-        for (Type t : registry.values()) {
-            objects.add(t);
-        }
-        for (Type t : objects) {
-            unregister(t);
-        }
-        objects.clear();
-        objects = null;
+        registry.clear();
+        typeNames.clear();
     }
 
 }

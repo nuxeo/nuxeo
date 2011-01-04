@@ -40,8 +40,6 @@ public final class ElementRenderer {
 
     private static final Log log = LogFactory.getLog(ElementRenderer.class);
 
-    private static final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-
     private ElementRenderer() {
         // This class is not supposed to be instantiated.
     }
@@ -164,6 +162,8 @@ public final class ElementRenderer {
     private static FilterType getFilterFor(final String engineName,
             final String filterName, final String templateEngineName,
             final String viewMode) {
+
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
         // get the filter for this specified template engine and view mode
         FilterType filterType = (FilterType) typeRegistry.lookup(

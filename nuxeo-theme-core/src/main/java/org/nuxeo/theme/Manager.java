@@ -85,7 +85,7 @@ public final class Manager {
         return (VocabularyManager) getRegistry("vocabularies");
     }
 
-    @SuppressWarnings({ "ResultOfObjectAllocationIgnored" })
+    @SuppressWarnings( { "ResultOfObjectAllocationIgnored" })
     public static void initializeProtocols() {
         Properties properties = System.getProperties();
         String handlers = System.getProperty("java.protocol.handler.pkgs");
