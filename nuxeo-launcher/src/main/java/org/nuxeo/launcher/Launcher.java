@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 
 /**
  * Nuxeo server controller
@@ -54,7 +55,8 @@ public class Launcher {
         } else if (configurationGenerator.isJetty) {
             throw new UnsupportedOperationException();
         } else if (configurationGenerator.isTomcat) {
-            nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
+            nuxeoThread = new DaemonThreadFactory().newThread(new NuxeoTomcatThread(
+                    configurationGenerator));
         }
     }
 
@@ -113,22 +115,9 @@ public class Launcher {
         if ("status".equalsIgnoreCase(command)) {
             status();
         } else if ("startbg".equalsIgnoreCase(command)) {
-            // nuxeoThread.setDaemon(true);
             start();
         } else if ("start".equalsIgnoreCase(command)) {
-            // nuxeoThread.setDaemon(true);
-            // start();
-            ProcessBuilder pb = new ProcessBuilder(
-                    "java",
-                    "-jar",
-                    "target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar",
-                    "console");
-            // Map<String, String> env = pb.environment();
-            // env.put("VAR1", "myValue");
-            // pb.directory(new File("myDir"));
-            Process p = pb.start();
-            p.waitFor();
-            // TODO wait for end of start
+            start();
         } else if ("console".equalsIgnoreCase(command)) {
             start();
         } else if ("stop".equalsIgnoreCase(command)) {
@@ -146,6 +135,7 @@ public class Launcher {
 
     /**
      * Print class usage on standard system output.
+     *
      * @throws URISyntaxException
      */
     public void printHelp() throws URISyntaxException {
