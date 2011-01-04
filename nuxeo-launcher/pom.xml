@@ -24,9 +24,9 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.daemon</groupId>
-        <artifactId>daemon-bootstrappers</artifactId>
-        <version>1.1.8</version>
+        <groupId>commons-daemon</groupId>
+        <artifactId>commons-daemon</artifactId>
+        <version>1.0.3</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -49,8 +49,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.directory.daemon</groupId>
-      <artifactId>daemon-bootstrappers</artifactId>
+      <groupId>commons-daemon</groupId>
+      <artifactId>commons-daemon</artifactId>
     </dependency>
   </dependencies>
 

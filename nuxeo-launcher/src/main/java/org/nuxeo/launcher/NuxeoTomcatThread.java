@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.commons.MutableClassLoader;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.TomcatConfigurator;
 
 /**
  * Main Nuxeo server thread
@@ -46,8 +47,6 @@ public class NuxeoTomcatThread extends NuxeoThread {
 
     static final Log log = LogFactory.getLog(NuxeoTomcatThread.class);
 
-    private static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
-
     private static final String JBOSS_STARTUP_CLASS = "org.jboss.Main";
 
     private static final String JETTY_STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
@@ -56,7 +55,7 @@ public class NuxeoTomcatThread extends NuxeoThread {
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, SecurityException, NoSuchMethodException,
             IllegalArgumentException, InvocationTargetException {
-        startupClass = loader.loadClass(STARTUP_CLASS);
+        startupClass = loader.loadClass(TomcatConfigurator.STARTUP_CLASS);
         Object server = startupClass.newInstance();
         @SuppressWarnings("unchecked")
         Method method = startupClass.getMethod("main", String[].class);

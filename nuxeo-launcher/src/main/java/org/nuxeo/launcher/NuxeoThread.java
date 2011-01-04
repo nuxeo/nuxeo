@@ -58,7 +58,6 @@ public abstract class NuxeoThread extends Thread {
         log.debug("1");
         configurationGenerator.initLogs();
         log.debug("2");
-        System.out.println("2");
         try {
             startServer(loader);
         } catch (ClassNotFoundException e) {
