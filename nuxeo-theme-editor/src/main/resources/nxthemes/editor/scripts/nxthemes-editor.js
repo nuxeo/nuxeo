@@ -1261,6 +1261,7 @@ NXThemesEditor.loadTheme = function(src, confirmation) {
            NXThemesEditor.refreshPageSelector();
            NXThemesEditor.refreshUndoActions();
            NXThemesEditor.refreshThemeActions();
+           NXThemesEditor.refreshDashboard();
            NXThemesEditor.refreshDashboardActions();
            NXThemesEditor.writeMessage("Theme loaded.");
          },

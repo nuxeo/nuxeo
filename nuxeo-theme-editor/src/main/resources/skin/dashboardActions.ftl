@@ -7,14 +7,19 @@
   icon="${basePath}/skin/nxthemes-editor/img/back-14.png"
   label="Canvas editor" />
 
-<#if theme.customization>
-    <@nxthemes_button identifier="dashboard remove customizations"
+<@nxthemes_button identifier="dashboard refresh button"
+  link="javascript:NXThemesEditor.loadTheme('${theme.src?js_string}')"
+  icon="${basePath}/skin/nxthemes-editor/img/refresh-14.png"
+  label="Refresh page" />
+
+<#if theme.customization && theme.saveable>
+  <@nxthemes_button identifier="dashboard remove customizations"
   link="javascript:NXThemesEditor.uncustomizeTheme('${theme.src}', 'dashboard actions')"
   icon="${basePath}/skin/nxthemes-editor/img/remove-14.png"
   label="Remove customizations" />
 </#if>
 
-<#if !theme.saveable>
+<#if theme.customizable>
   <@nxthemes_button identifier="dashboard customize theme"
   link="javascript:NXThemesEditor.customizeTheme('${theme.src}', 'dashboard actions')"
   icon="${basePath}/skin/nxthemes-editor/img/edit-14.png"

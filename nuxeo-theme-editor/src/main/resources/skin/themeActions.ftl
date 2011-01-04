@@ -12,14 +12,14 @@
   icon="${basePath}/skin/nxthemes-editor/img/refresh-14.png"
   label="Refresh page" />
 
-<#if !theme.saveable>
+<#if theme.customizable>
   <@nxthemes_button identifier="canvas customize theme"
   link="javascript:NXThemesEditor.customizeTheme('${theme.src}', 'canvas editor')"
   icon="${basePath}/skin/nxthemes-editor/img/edit-14.png"
   label="Customize theme" />
 </#if>
 
-<#if theme.customization>
+<#if theme.customization && theme.saveable>
     <@nxthemes_button identifier="canvas remove customizations"
   link="javascript:NXThemesEditor.uncustomizeTheme('${theme.src}', 'canvas editor')"
   icon="${basePath}/skin/nxthemes-editor/img/remove-14.png"
