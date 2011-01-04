@@ -109,19 +109,13 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
     }
 
     protected String buildChildrenWhereClause(boolean queryDocuments) {
-        String clause = String.format("ecm:parentId = '%s'", folder.getId());
-        clause.
-            concat(" AND ").
-            concat(String.format("ecm:currentLifeCycleState != '%s'",
-                    LifeCycleConstants.DELETED_STATE));
+        String clause = String.format("ecm:parentId = '%s' AND ecm:currentLifeCycleState != '%s'", folder.getId(), LifeCycleConstants.DELETED_STATE);
         if (queryDocuments) {
-            clause.concat(" AND ").
-                concat(String.format("AND ecm:mixinType NOT IN ('%s', '%s')",
-                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+            clause += String.format(" AND ecm:mixinType NOT IN ('%s', '%s')",
+                 FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION);
         } else {
-            clause.concat(" AND ")
-                .concat(String.format("AND ecm:mixinType IN ('%s' ) and NOT IN ('%s')",
-                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+            clause += String.format("AND ecm:mixinType IN ('%s' ) AND ecm:mixinType NOT IN ('%s')",
+                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION);
         }
         return clause;
     }
