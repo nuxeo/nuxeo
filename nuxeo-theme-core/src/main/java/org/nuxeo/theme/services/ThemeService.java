@@ -33,6 +33,7 @@ import org.nuxeo.runtime.model.Reloadable;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -74,10 +75,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     // registries.
     protected List<Extension> extensions = new ArrayList<Extension>();
 
-    // collect all registered extensions here to be able to reload the
-    // registries.
-    protected List<Extension> extensions = new ArrayList<Extension>();
-
     public Map<String, Registrable> getRegistries() {
         return registries;
     }
@@ -109,16 +106,6 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     }
 
     @Override
-    public void reload(ComponentContext context) throws Exception {
-        deactivate(context);
-        activate(context);
-        for (Extension xt : extensions) {
-            doRegisterExtension(xt);
-        }
-        applicationStarted(context);
-    }
-
-    @Override
     public void activate(ComponentContext ctx) {
         context = ctx.getRuntimeContext();
         log.debug("Theme service activated");
@@ -126,6 +113,13 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     @Override
     public void deactivate(ComponentContext ctx) {
+        Manager.getVocabularyManager().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getResourceManager().clear();
+        Manager.getThemeManager().clear();
+        Manager.getRelationStorage().clear();
+        Manager.getUidManager().clear();
+        Manager.getTypeRegistry().clear();
         for (Registrable registry : registries.values()) {
             registry.clear();
         }
