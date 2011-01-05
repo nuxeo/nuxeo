@@ -55,15 +55,6 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        super.tearDown();
-    }
-
     public void testSerializeTheme() throws ThemeException, NodeException,
             ThemeIOException, IOException {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");

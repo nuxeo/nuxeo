@@ -27,10 +27,6 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestCustomThemes extends NXRuntimeTestCase {
 
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -38,21 +34,6 @@ public class TestCustomThemes extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testFileNameFilter() {
@@ -81,6 +62,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
     }
 
     public void testUpdateDescriptors() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeManager.updateThemeDescriptors();
 
         ThemeDescriptor theme1 = new ThemeDescriptor();
@@ -126,6 +108,7 @@ public class TestCustomThemes extends NXRuntimeTestCase {
     }
 
     public void testCreateCustomTheme() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         final String THEME_NAME = "custom";
         assertTrue(ThemeManager.getCustomThemeFiles().isEmpty());
         ThemeDescriptor themeDef = ThemeManager.createCustomTheme(THEME_NAME);

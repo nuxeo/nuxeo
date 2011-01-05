@@ -14,20 +14,15 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.negotiation.NegotiationType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.test.Scheme1;
 import org.nuxeo.theme.test.Scheme2;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestNegotiationConfiguration extends NXRuntimeTestCase {
-
-    private NegotiationType negotiation1;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -37,14 +32,12 @@ public class TestNegotiationConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "negotiation-config.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
     public void testRegisterNegotiation() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // negotiation
-        negotiation1 = (NegotiationType) typeRegistry.lookup(
+        NegotiationType negotiation1 = (NegotiationType) typeRegistry.lookup(
                 TypeFamily.NEGOTIATION, "strategy1/test negotiation");
         assertNotNull(negotiation1);
         assertEquals("strategy1", negotiation1.getStrategy());

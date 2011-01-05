@@ -30,12 +30,6 @@ import org.nuxeo.theme.themes.ThemeParser;
 
 public class TestThemeParser extends NXRuntimeTestCase {
 
-    private ThemeManager themeManager;
-
-    private ThemeElement theme1;
-
-    private PageElement page1;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -49,25 +43,12 @@ public class TestThemeParser extends NXRuntimeTestCase {
         themeDef.setSrc("theme.xml");
         final boolean preload = false;
         ThemeParser.registerTheme(themeDef, preload);
-
-        themeManager = Manager.getThemeManager();
-        theme1 = themeManager.getThemeByName("theme1");
-        page1 = themeManager.getPageByPath("theme1/page1");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        themeManager = null;
-        theme1 = null;
-        page1 = null;
-        super.tearDown();
     }
 
     public void testParseTheme() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         assertNotNull(theme1);
         assertNotNull(page1);
 
@@ -96,12 +77,18 @@ public class TestThemeParser extends NXRuntimeTestCase {
     }
 
     public void testWidgets() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         Format themeWidget = ElementFormatter.getFormatFor(theme1, "widget");
         assertEquals("theme-icon.png", themeWidget.getProperty("icon"));
         assertEquals("utf-8", themeWidget.getProperty("charset"));
     }
 
     public void testThemeStructure() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         assertFalse(theme1.hasSiblings());
         assertTrue(theme1.hasChildren());
         assertTrue(theme1.getChildren().contains(page1));
@@ -110,13 +97,16 @@ public class TestThemeParser extends NXRuntimeTestCase {
     }
 
     public void testStyles() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         Style style1 = (Style) themeManager.getNamedObject(theme1.getName(),
                 "style", "default fonts");
         assertNotNull(style1);
         assertEquals("default fonts", style1.getName());
         assertTrue(style1.getPathsForView("*").contains("h3"));
-        assertEquals("green",
-                style1.getPropertiesFor("*", "h3").getProperty("color"));
+        assertEquals("green", style1.getPropertiesFor("*", "h3").getProperty(
+                "color"));
 
         // test style inheritance
         Element fragment = (Element) page1.getChildren().get(0).getChildren().get(
@@ -128,6 +118,9 @@ public class TestThemeParser extends NXRuntimeTestCase {
     }
 
     public void testCommonStyles() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         // Make sure that new common styles are created if no style selector is
         // set on a given style
         Style common1 = (Style) themeManager.getNamedObject(theme1.getName(),
@@ -135,13 +128,14 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertNotNull(common1);
         assertEquals("common style 1", common1.getName());
         assertTrue(common1.getPathsForView("*").contains("div"));
-        assertEquals(
-                "blue",
-                common1.getPropertiesFor("*", "div").getProperty(
-                        "background-color"));
+        assertEquals("blue", common1.getPropertiesFor("*", "div").getProperty(
+                "background-color"));
     }
 
     public void testCommonStylesWithInheritance() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ThemeElement theme1 = themeManager.getThemeByName("theme1");
+        PageElement page1 = themeManager.getPageByPath("theme1/page1");
         // if the style already inherits make it inherit from a common style
         // while preserving inheritance
         Style common2 = (Style) themeManager.getNamedObject(theme1.getName(),
@@ -150,8 +144,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertEquals("common style 2", common2.getName());
         assertTrue(common2.getPathsForView("*").contains("table"));
 
-        assertEquals(
-                "orange",
+        assertEquals("orange",
                 common2.getPropertiesFor("*", "table").getProperty(
                         "border-color"));
 

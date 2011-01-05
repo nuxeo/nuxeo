@@ -33,8 +33,6 @@ import org.nuxeo.theme.themes.ThemeRepairer;
 
 public class TestThemeRepairer extends NXRuntimeTestCase {
 
-    private ThemeManager themeManager;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -42,21 +40,11 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-        themeManager = Manager.getThemeManager();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        themeManager.clear();
-        themeManager = null;
-        super.tearDown();
     }
 
     public void testMissingFormats() throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -84,6 +72,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     }
 
     public void testLayoutProperties() throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -135,6 +124,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     }
 
     public void testStyleProperties() throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");
@@ -179,6 +169,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
 
     public void testCleanupEmptyStylePaths() throws ThemeException,
             NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         theme.addChild(page);
@@ -207,6 +198,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     }
 
     public void testSharedStyles() throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section1 = ElementFactory.create("section");
@@ -252,6 +244,7 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
 
     public void testSharedStylesOnDifferentElementTypes()
             throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
         Element section = ElementFactory.create("section");

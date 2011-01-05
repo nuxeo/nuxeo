@@ -14,16 +14,13 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.presets.PresetType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestPresetConfiguration extends NXRuntimeTestCase {
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -33,12 +30,10 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "preset-config.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
     public void testRegisterPropertiesPalette1() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
                 "Plum (default colors)");
         assertNotNull(preset);
@@ -47,6 +42,7 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
     }
 
     public void testRegisterPropertiesPalette2() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset = (PresetType) typeRegistry.lookup(TypeFamily.PRESET,
                 "Chocolate (default colors)");
         assertNotNull(preset);

@@ -33,7 +33,6 @@ import org.nuxeo.runtime.model.Reloadable;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -88,6 +87,10 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     }
 
     public synchronized void removeRegistry(String name) {
+        Registrable registry = registries.get(name);
+        if (registry != null) {
+            registry.clear();
+        }
         registries.remove(name);
     }
 
@@ -109,14 +112,11 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     @Override
     public void deactivate(ComponentContext ctx) {
-        Manager.getVocabularyManager().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getResourceManager().clear();
-        Manager.getThemeManager().clear();
-        Manager.getRelationStorage().clear();
-        Manager.getUidManager().clear();
-        Manager.getTypeRegistry().clear();
+        for (Registrable registry : registries.values()) {
+            registry.clear();
+        }
         registries.clear();
+        context = null;
         log.debug("Theme service deactivated");
     }
 

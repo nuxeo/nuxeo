@@ -14,18 +14,13 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.models.ModelType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestModelConfiguration extends NXRuntimeTestCase {
-
-    private ModelType model1;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -35,14 +30,12 @@ public class TestModelConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "model-config.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
     public void testRegisterModel() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // model 1
-        model1 = (ModelType) typeRegistry.lookup(TypeFamily.MODEL,
+        ModelType model1 = (ModelType) typeRegistry.lookup(TypeFamily.MODEL,
                 "test model 1");
         assertNotNull(model1);
         assertEquals("test model 1", model1.getTypeName());

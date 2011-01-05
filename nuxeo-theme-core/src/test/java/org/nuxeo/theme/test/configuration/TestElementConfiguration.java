@@ -14,21 +14,14 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementType;
 import org.nuxeo.theme.nodes.NodeTypeFamily;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestElementConfiguration extends NXRuntimeTestCase {
-
-    private ElementType element1;
-
-    private ElementType element2;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -38,15 +31,13 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "element-config.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
     public void testRegisterElement1() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // element 1
-        element1 = (ElementType) typeRegistry.lookup(TypeFamily.ELEMENT,
-                "test element 1");
+        ElementType element1 = (ElementType) typeRegistry.lookup(
+                TypeFamily.ELEMENT, "test element 1");
         assertNotNull(element1);
         assertEquals("test element 1", element1.getTypeName());
         assertEquals(NodeTypeFamily.INNER, element1.getNodeTypeFamily());
@@ -55,9 +46,10 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
     }
 
     public void testRegisterElement2() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         // element 2
-        element2 = (ElementType) typeRegistry.lookup(TypeFamily.ELEMENT,
-                "test element 2");
+        ElementType element2 = (ElementType) typeRegistry.lookup(
+                TypeFamily.ELEMENT, "test element 2");
         assertNotNull(element2);
         assertEquals("test element 2", element2.getTypeName());
         assertEquals(NodeTypeFamily.LEAF, element2.getNodeTypeFamily());
