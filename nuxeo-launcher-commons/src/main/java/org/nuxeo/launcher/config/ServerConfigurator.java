@@ -154,12 +154,6 @@ public abstract class ServerConfigurator {
     public abstract void initLogs();
 
     /**
-     * @return Main lib directory
-     * @since 5.4.1
-     */
-    public abstract File getLibDir();
-
-    /**
      * @return Run directory; Returns log directory if not set by configuration.
      * @since 5.4.1
      */
@@ -169,11 +163,5 @@ public abstract class ServerConfigurator {
         }
         return runDir;
     }
-
-    /**
-     * @return Server bootstrap file
-     * @since 5.4.1
-     */
-    public abstract File getBootstrap();
 
 }

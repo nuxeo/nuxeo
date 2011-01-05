@@ -74,18 +74,4 @@ public class JettyConfigurator extends ServerConfigurator {
         }
     }
 
-    @Override
-    public File getLibDir() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public File getBootstrap() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
-
 }

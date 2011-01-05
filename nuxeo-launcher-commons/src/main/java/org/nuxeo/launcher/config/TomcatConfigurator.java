@@ -76,18 +76,4 @@ public class TomcatConfigurator extends ServerConfigurator {
         }
     }
 
-    @Override
-    public File getLibDir() {
-        if (libDir == null) {
-            libDir = new File(generator.getNuxeoHome(), "lib");
-        }
-        return libDir;
-    }
-
-    @Override
-    public File getBootstrap() {
-        return new File(generator.getNuxeoHome(), "bin" + File.separator
-                + "bootstrap.jar");
-    }
-
 }
