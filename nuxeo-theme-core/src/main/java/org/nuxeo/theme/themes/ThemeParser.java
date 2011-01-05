@@ -269,10 +269,10 @@ public class ThemeParser {
         }
 
         if (preload) {
-            log.info("Pre-loaded THEME: " + themeName);
+            log.debug("Registered THEME: " + themeName);
             themeDescriptor.setLastLoaded(null);
         } else {
-            log.info("Loaded THEME: " + themeName);
+            log.debug("Loaded THEME: " + themeName);
             themeDescriptor.setLastLoaded(new Date());
         }
 
