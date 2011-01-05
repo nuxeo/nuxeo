@@ -20,7 +20,10 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
@@ -63,8 +66,8 @@ public class Launcher {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-         Launcher launcher = new Launcher(args);
-         launcher.run();
+        Launcher launcher = new Launcher(args);
+        launcher.run();
     }
 
     /**
@@ -112,22 +115,39 @@ public class Launcher {
 
         if ("status".equalsIgnoreCase(command)) {
             status();
-        } else if ("startbg".equalsIgnoreCase(command)) {
-            start();
-        } else if ("start".equalsIgnoreCase(command)) {
+        } else if ("startbg".equalsIgnoreCase(command)
+                || "start".equalsIgnoreCase(command)) {
+            configure();
+            redirectConsoleToFile();
             start();
         } else if ("console".equalsIgnoreCase(command)) {
+            configure();
             start();
         } else if ("stop".equalsIgnoreCase(command)) {
             stop();
         } else if ("restart".equalsIgnoreCase(command)) {
             stop();
-            // TODO wait for/check end of stop
+            configure();
             start();
         } else if ("configure".equalsIgnoreCase(command)) {
             configure();
         } else if ("pack".equalsIgnoreCase(command)) {
             // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private void redirectConsoleToFile() {
+        // Logger.getRootLogger().removeAppender("CONSOLE");
+        try {
+            PrintStream fileStream = new PrintStream(
+                    new FileOutputStream(new File(
+                            configurationGenerator.getLogDir(), "console.log")));
+            // Redirect stdout and stderr to file
+            System.setOut(fileStream);
+            System.setErr(fileStream);
+        } catch (FileNotFoundException e) {
+            log.error("Error in IO Redirection", e);
         }
     }
 
@@ -144,23 +164,19 @@ public class Launcher {
     }
 
     private void stop() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     private void status() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    private void start() throws ConfigurationException {
-        log.debug("Thread: " + nuxeoThread);
-        log.debug("Thread ID: " + nuxeoThread.getId());
-        configure();
+    private void start() {
         nuxeoThread.start();
     }
 
     private void configure() throws ConfigurationException {
+        // configurationGenerator.verifyInstallation();
         configurationGenerator.run();
     }
 

@@ -19,7 +19,7 @@
   <!-- ================================= -->
   <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
-    <param name="File" value="log/launcher.log" />
+    <param name="File" value="console.log" />
     <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
@@ -34,7 +34,6 @@
   <root>
     <level value="DEBUG" />
     <appender-ref ref="CONSOLE" />
-<!--    <appender-ref ref="FILE" />-->
   </root>
 
 </log4j:configuration>
