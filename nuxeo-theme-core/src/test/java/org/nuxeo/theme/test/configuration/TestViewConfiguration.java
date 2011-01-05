@@ -14,18 +14,13 @@
 
 package org.nuxeo.theme.test.configuration;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.services.ThemeService;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
 
 public class TestViewConfiguration extends NXRuntimeTestCase {
-
-    private ViewType view1;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -36,14 +31,12 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "model-config.xml");
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
-
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
     public void testRegisterView() {
-        view1 = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+
+        ViewType view1 = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
                 "widget/page/page frame/menu item/default/*/jsf-facelets");
         assertNotNull(view1);
 

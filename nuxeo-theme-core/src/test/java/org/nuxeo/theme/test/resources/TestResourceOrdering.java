@@ -19,13 +19,8 @@ import java.util.List;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
-import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestResourceOrdering extends NXRuntimeTestCase {
-
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -35,21 +30,10 @@ public class TestResourceOrdering extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "resource-ordering.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getTypeRegistry().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testResourceOrdering() {
+        ThemeManager themeManager = Manager.getThemeManager();
         List<String> ordering = themeManager.getResourceOrdering();
         assertTrue(ordering.indexOf("1") > ordering.indexOf("5"));
         assertTrue(ordering.indexOf("2") > ordering.indexOf("1"));
