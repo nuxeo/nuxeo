@@ -114,8 +114,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
 
         tableUpgrader = new TableUpgrader(this);
-        tableUpgrader.add(model.VERSION_TABLE_NAME, model.VERSION_IS_LATEST_KEY,
-                "upgradeVersions", TEST_UPGRADE_VERSIONS);
+        tableUpgrader.add(model.VERSION_TABLE_NAME,
+                model.VERSION_IS_LATEST_KEY, "upgradeVersions",
+                TEST_UPGRADE_VERSIONS);
         tableUpgrader.add("dublincore", "lastContributor",
                 "upgradeLastContributor", TEST_UPGRADE_LAST_CONTRIBUTOR);
     }
@@ -200,21 +201,35 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 boolean create = sqlInfo.dialect.preCreateTable(connection,
                         table, model, sqlInfo.database);
                 if (!create) {
-                    log.warn("Creation skipped for table: " + table.getPhysicalName());
+                    log.warn("Creation skipped for table: " + tableName);
                     continue;
                 }
 
                 String sql = table.getCreateSql();
                 logger.log(sql);
-                st.execute(sql);
+                try {
+                    st.execute(sql);
+                } catch (SQLException e) {
+                    throw new SQLException("Error creating table: " + sql, e);
+                }
                 for (String s : table.getPostCreateSqls(model)) {
                     logger.log(s);
-                    st.execute(s);
+                    try {
+                        st.execute(s);
+                    } catch (SQLException e) {
+                        throw new SQLException("Error post creating table: "
+                                + s, e);
+                    }
                 }
                 for (String s : sqlInfo.dialect.getPostCreateTableSqls(table,
                         model, sqlInfo.database)) {
                     logger.log(s);
-                    st.execute(s);
+                    try {
+                        st.execute(s);
+                    } catch (SQLException e) {
+                        throw new SQLException("Error post creating table: "
+                                + s, e);
+                    }
                 }
                 added.put(table.getKey(), null); // null = table created
             }
@@ -256,10 +271,19 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                             + column.getFullQuotedName());
                     String sql = table.getAddColumnSql(column);
                     logger.log(sql);
-                    st.execute(sql);
+                    try {
+                        st.execute(sql);
+                    } catch (SQLException e) {
+                        throw new SQLException("Error adding column: " + sql, e);
+                    }
                     for (String s : table.getPostAddSqls(column, model)) {
                         logger.log(s);
-                        st.execute(s);
+                        try {
+                            st.execute(s);
+                        } catch (SQLException e) {
+                            throw new SQLException("Error post adding column: "
+                                    + s, e);
+                        }
                     }
                     addedColumns.add(column);
                 } else {
