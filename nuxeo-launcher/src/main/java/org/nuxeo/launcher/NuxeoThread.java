@@ -55,9 +55,7 @@ public abstract class NuxeoThread extends Thread {
         setClassPath(loader);
         setSystemProperties();
         setNuxeoSystemProperties();
-        log.debug("1");
         configurationGenerator.initLogs();
-        log.debug("2");
         try {
             startServer(loader);
         } catch (ClassNotFoundException e) {
