@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 
 /**
  * Nuxeo server controller
@@ -55,8 +54,7 @@ public class Launcher {
         } else if (configurationGenerator.isJetty) {
             throw new UnsupportedOperationException();
         } else if (configurationGenerator.isTomcat) {
-            nuxeoThread = new DaemonThreadFactory().newThread(new NuxeoTomcatThread(
-                    configurationGenerator));
+            nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
         }
     }
 
@@ -65,8 +63,8 @@ public class Launcher {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Launcher launcher = new Launcher(args);
-        launcher.run();
+         Launcher launcher = new Launcher(args);
+         launcher.run();
     }
 
     /**
