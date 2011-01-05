@@ -545,14 +545,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return third-party libraries directory
-     * @since 5.4.1
-     */
-    public File getLibDir() {
-        return serverConfigurator.getLibDir();
-    }
-
-    /**
      * @return log directory
      * @since 5.4.1
      */
@@ -569,14 +561,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return Server bootstrap file
-     * @since 5.4.1
-     */
-    public File getBootstrap() {
-        return serverConfigurator.getBootstrap();
-    }
-
-    /**
      * @return Data directory
      * @since 5.4.1
      */
@@ -584,32 +568,4 @@ public class ConfigurationGenerator {
         return serverConfigurator.getDataDir();
     }
 
-    /**
-     * @return Bootstrap classname for starting the server
-     * @since 5.4.1
-     * @deprecated
-     */
-    public String getStartClassName() {
-        if (isJBoss) {
-            return JBossConfigurator.STARTUP_CLASS;
-        } else if (isTomcat) {
-            return TomcatConfigurator.STARTUP_CLASS;
-        } else if (isJetty) {
-            return JettyConfigurator.STARTUP_CLASS;
-        } else {
-            return "Unknown server";
-        }
-    }
-
-    /**
-     * @return Bootstrap classname for stopping the server.
-     *         Currently returns {@link #getStartClassName()}.
-     *
-     * @since 5.4.1
-     * @deprecated
-     *
-     */
-    public String getStopClassName() {
-        return getStartClassName();
-    }
 }
