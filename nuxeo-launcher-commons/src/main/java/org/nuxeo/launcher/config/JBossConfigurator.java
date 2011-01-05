@@ -21,6 +21,7 @@ package org.nuxeo.launcher.config;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Properties;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -42,12 +43,26 @@ public class JBossConfigurator extends ServerConfigurator {
      */
     public static final String STARTUP_CLASS = "org.jboss.Main";
 
-    private String configuration;
+    private String configuration = null;
+
+    public String getConfiguration() {
+        if (configuration == null) {
+            Properties userConfig = generator.getUserConfig();
+            if (userConfig != null) {
+                configuration = generator.getUserConfig().getProperty(
+                        "org.nuxeo.ecm.jboss.configuration",
+                        DEFAULT_CONFIGURATION);
+            } else {
+                configuration = System.getProperty(
+                        "org.nuxeo.ecm.jboss.configuration",
+                        DEFAULT_CONFIGURATION);
+            }
+        }
+        return configuration;
+    }
 
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
-        configuration = generator.getUserConfig().getProperty(
-                "org.nuxeo.ecm.jboss.configuration", DEFAULT_CONFIGURATION);
     }
 
     /**
@@ -66,23 +81,23 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     public String getJBossConfig() {
-        return "server" + File.separator + configuration + File.separator
+        return "server" + File.separator + getConfiguration() + File.separator
                 + "deploy" + File.separator + "nuxeo.ear" + File.separator
                 + "config";
     }
 
     @Override
     public String getDefaultDataDir() {
-        final String defaultDataDir = "server" + File.separator + configuration
-                + File.separator + "data" + File.separator + "NXRuntime"
-                + File.separator + "data";
+        final String defaultDataDir = "server" + File.separator
+                + getConfiguration() + File.separator + "data" + File.separator
+                + "NXRuntime" + File.separator + "data";
         return defaultDataDir;
     }
 
     @Override
     public void initLogs() {
         File logFile = new File(generator.getNuxeoHome(), "server"
-                + File.separator + configuration + File.separator + "conf"
+                + File.separator + getConfiguration() + File.separator + "conf"
                 + File.separator + "jboss-log4j.xml");
         try {
             System.out.println("Try to configure logs with " + logFile);
