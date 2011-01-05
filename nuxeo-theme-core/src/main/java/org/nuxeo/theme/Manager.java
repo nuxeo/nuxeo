@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -50,7 +51,13 @@ public final class Manager {
     }
 
     private static Map<String, Registrable> getRegistries() {
-        return getThemeService().getRegistries();
+        // avoid error when clearing registries at shutdown
+        ThemeService service = getThemeService();
+        if (service != null) {
+            return service.getRegistries();
+        } else {
+            return Collections.emptyMap();
+        }
     }
 
     public static Registrable getRegistry(final String name) {
@@ -100,9 +107,9 @@ public final class Manager {
         /*
          * Register the 'nxtheme' URL protocol handler programmatically to get
          * around m2/surefire classloading bug.
-         * 
+         *
          * ref. http://jira.codehaus.org/browse/SUREFIRE-104
-         * 
+         *
          * TODO: remove with Maven surefire 2.4
          */
 
