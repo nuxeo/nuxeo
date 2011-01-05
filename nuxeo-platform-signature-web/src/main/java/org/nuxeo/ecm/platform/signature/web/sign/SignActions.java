@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.security.Principal;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -51,6 +53,7 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 
 /**
  * Document signing actions
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 @Name("signActions")
@@ -84,6 +87,7 @@ public class SignActions implements Serializable {
 
     /**
      * Signs digitally a PDF blob contained in the current document.
+     *
      * @param signingReason
      * @param password
      * @throws SignException
@@ -150,8 +154,10 @@ public class SignActions implements Serializable {
             }
         } catch (CertException e) {
             LOG.info("PDF SIGNING PROBLEM. CERTIFICATE ACCESS PROBLEM" + e);
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    "Problem accessing your certificate. Make sure your password is correct.", e);
+            facesMessages.add(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Problem accessing your certificate. Make sure your password is correct.",
+                    e);
         } catch (SignException e) {
             LOG.info("PDF SIGNING PROBLEM:" + e);
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
@@ -165,5 +171,87 @@ public class SignActions implements Serializable {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
                     "PDF signing problem, see the logs ", ce);
         }
+    }
+
+    /**
+     * Checks whether a document was already signed with an X509 certificate.
+     * @return
+     * @throws SignException
+     * @throws ClientException
+     */
+    public boolean isPDFSigned() throws SignException, ClientException {
+        boolean isSigned = false;
+
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc == null) {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            "Current document missing");
+        }
+
+        BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
+        Blob blob = null;
+        blob = blobHolder.getBlob();
+        if (blob == null) {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "Your document does not contain any attachments", null);
+        } else {
+            if (!blob.getMimeType().equals("application/pdf")) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "The attachment must be a PDF", null);
+            }
+            List<X509Certificate> pdfCertificates;
+            try {
+                pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
+            } catch (IOException e) {
+                throw new SignException(e);
+            }
+            if (pdfCertificates.size() > 0) {
+                isSigned = true;
+            }
+        }
+        return isSigned;
+    }
+
+/**
+ * Returns a basic textual description of the certificate contained in the current document.
+ * The information has the following format:
+ * "This document was certified by CN=aaa bbb,OU=IT,O=Nuxeo,C=US. The certificate was issued by E=pdfca@nuxeo.com,C=US,ST=MA,L=Burlington,O=Nuxeo,OU=CA,CN=PDFCA. The certificate is valid till Thu Jan 05 09:31:15 EST 2012"
+ * @return
+ * @throws SignException
+ * @throws ClientException
+ */
+    public String getPDFCertificateInfo() throws SignException, ClientException {
+        boolean isSigned = false;
+        String pdfCertificateInfo="";
+
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc == null) {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "Current document missing");
+        }
+
+        BlobHolder blobHolder = (BlobHolder) currentDoc.getAdapter(BlobHolder.class);
+        Blob blob = null;
+        blob = blobHolder.getBlob();
+        if (blob == null) {
+            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                    "Your document does not contain any attachments", null);
+        } else {
+            if (!blob.getMimeType().equals("application/pdf")) {
+                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                        "The attachment must be a PDF", null);
+            }
+            List<X509Certificate> pdfCertificates;
+            try {
+                pdfCertificates = signatureService.getPDFCertificates(blob.getStream());
+            } catch (IOException e) {
+                throw new SignException(e);
+            }
+            if (pdfCertificates.size() > 0) {
+                X509Certificate certificate=pdfCertificates.get(0);
+                pdfCertificateInfo="This document was certified by "+certificate.getSubjectDN()+". The certificate was issued by "+certificate.getIssuerDN()+". The certificate is valid till "+certificate.getNotAfter();
+            }
+        }
+        return pdfCertificateInfo;
     }
 }

@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
+import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
@@ -84,6 +87,9 @@ public class SignatureServiceTest {
     @Inject
     protected CoreSession session;
 
+    // mark this true if you want to keep the signed pdf for verification
+    private static final boolean KEEP_SIGNED_PDF = false;
+
     private static final String ROOT_KEY_PASSWORD = "abc";
 
     private static final String ROOT_KEYSTORE_PASSWORD = "abc";
@@ -101,11 +107,6 @@ public class SignatureServiceTest {
 
     private static final Log log = LogFactory.getLog(SignatureServiceTest.class);
 
-    /**
-     * mark this true if you want to keep the signed pdf for verification
-     * (integration testing scenario)
-     */
-    private static final boolean KEEP_SIGNED_PDF = false;
 
     private File origPdfFile;
 
@@ -137,7 +138,7 @@ public class SignatureServiceTest {
         userModel.setProperty("user", "firstName", "Homer");
         userModel.setProperty("user", "lastName", "Simpson");
         userModel.setProperty("user", "email", "simps@on.com");
-        userModel.setPathInfo("/", "hsimpson");
+        userModel.setPathInfo("/", USER_NAME);
         user = userManager.createUser(userModel);
 
         // delete the certificate test object if it exists
@@ -157,11 +158,7 @@ public class SignatureServiceTest {
         certService.setRootService(rootService);
         origPdfFile = FileUtils.getResourceFileFromContext("pdf-tests/original.pdf");
 
-        /*
-         * Prerequisite: there is a user with a certificate that is to be used
-         * for signing a document
-         */
-
+        // Prerequisite: there is a user with a certificate that is to be used for document signing
         DocumentModel certificate = certUserService.createCert(userModel,
                 USER_KEY_PASSWORD);
         assertNotNull(certificate.getPropertyValue("cert:keystore"));
@@ -172,7 +169,9 @@ public class SignatureServiceTest {
 
     @After
     public void destroy() throws Exception {
-
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        DocumentModel userDM=userManager.getUserModel(USER_NAME);
+        userManager.deleteUser(userDM);
     }
 
     @Test
@@ -187,6 +186,20 @@ public class SignatureServiceTest {
         }
     }
 
+
+    @Test
+    public void testGetPDFCertificates() throws Exception {
+        // sign the original PDF file
+        File signedFile = signatureService.signPDF(user, USER_KEY_PASSWORD,
+                "test reason", new FileInputStream(origPdfFile));
+        assertTrue(signedFile.exists());
+        // verify there are certificates in the signed file
+        List<X509Certificate> certificates = signatureService.getPDFCertificates(new FileInputStream(signedFile));
+        assertTrue("There has to be at least 1 certificate in a signed document", certificates.size()>0);
+        assertTrue(certificates.get(0).getSubjectDN().toString().contains("CN=Homer Simpson"));
+    }
+
+
     InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
         return new FileInputStream(keystoreFile);
@@ -197,6 +210,10 @@ public class SignatureServiceTest {
                 password);
         return keystore;
     }
+
+
+
+
 
     private UserInfo getSampleUserInfo(DocumentModel userModel)
             throws Exception {

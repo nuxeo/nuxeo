@@ -30,7 +30,9 @@ import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -49,6 +51,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.PdfFormField;
+import com.lowagie.text.pdf.PdfPKCS7;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
@@ -56,6 +61,7 @@ import com.lowagie.text.pdf.PdfStamper;
 /**
  *
  * Base implementation for the signature service.
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 public class SignatureServiceImpl extends DefaultComponent implements
@@ -78,6 +84,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper stp = PdfStamper.createSignature(reader,
                     new FileOutputStream(outputFile), '\0');
             PdfSignatureAppearance sap = stp.getSignatureAppearance();
+
+            PdfFormField signatureField = PdfFormField.createSignature(stp.getWriter());
+
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
             KeyStore keystore = getCertUserService().getUserKeystore(userID,
@@ -95,7 +104,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
                     PdfSignatureAppearance.SELF_SIGNED);
             sap.setReason(reason);
             sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
-            sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1, null);
+            sap.setVisibleSignature(new Rectangle(400, 450, 200, 200), 1,
+                    "SOME NAME");
             sap.setAcro6Layers(true);
             sap.setRender(PdfSignatureAppearance.SignatureRenderNameAndDescription);
             stp.close();
@@ -123,6 +133,27 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return outputFile;
     }
 
+    @Override
+    public List<X509Certificate> getPDFCertificates(InputStream pdfStream)
+            throws SignException {
+        List<X509Certificate> pdfCertificates = new ArrayList<X509Certificate>();
+        try {
+            PdfReader pdfReader = new PdfReader(pdfStream);
+            AcroFields acroFields = pdfReader.getAcroFields();
+            // get all signatures
+            List signatureNames = acroFields.getSignatureNames();
+            for (int k = 0; k < signatureNames.size(); ++k) {
+                String signatureName = (String) signatureNames.get(k);
+                PdfPKCS7 pdfPKCS7 = acroFields.verifySignature(signatureName);
+                X509Certificate signingCertificate=pdfPKCS7.getSigningCertificate();
+                pdfCertificates.add(signingCertificate);
+            }
+        } catch (IOException e) {
+            throw new SignException(e);
+        }
+        return pdfCertificates;
+    }
+
     protected CertService getCertService() throws Exception {
         if (certService == null) {
             certService = Framework.getService(CertService.class);
@@ -137,7 +168,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return certUserService;
     }
 
-    String getReason() throws SignatureException {
+    private String getReason() throws SignatureException {
         String reason = null;
         for (SignatureDescriptor sd : config) {
             if (sd.getReason() != null) {
