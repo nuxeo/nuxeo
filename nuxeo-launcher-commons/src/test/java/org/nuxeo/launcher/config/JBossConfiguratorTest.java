@@ -191,7 +191,7 @@ public class JBossConfiguratorTest {
     }
 
     public File getResourceFile(String resource) {
-        URL url = getClass().getResource(resource);
+        URL url = getClass().getClassLoader().getResource(resource);
         try {
             return new File(URLDecoder.decode(url.getPath(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
