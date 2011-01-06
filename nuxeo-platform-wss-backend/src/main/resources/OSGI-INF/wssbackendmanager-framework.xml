@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.wss.service.WSSPlugableBackendManager">
+
+    <implementation class="org.nuxeo.ecm.platform.wss.service.WSSPlugableBackendManager"/>
+
+    <extension-point name="backendFactory">
+        <documentation>
+      This extension can be used to register WSS backend Factory
+        </documentation>
+        <object class="org.nuxeo.ecm.platform.wss.service.BackendFactoryDescriptor"/>
+    </extension-point>
+
+    <extension-point name="itemFactory">
+        <documentation>
+      This extension can be used to register WSSListItem Factory
+        </documentation>
+        <object class="org.nuxeo.ecm.platform.wss.service.ItemFactoryDescriptor"/>
+    </extension-point>
+
+    <extension-point name="docTypes">
+        <documentation>
+      This extension can be used to register default types mapping
+        </documentation>
+        <object class="org.nuxeo.ecm.platform.wss.service.DocTypesDescriptor"/>
+    </extension-point>
+
+</component>

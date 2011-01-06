@@ -1,0 +1,4 @@
+ABCD
+${test}
+${FPRPCConts.METHOD_PARAM}
+END

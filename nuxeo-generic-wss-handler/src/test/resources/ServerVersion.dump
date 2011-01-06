@@ -1,0 +1,15 @@
+POST /_vti_bin/shtml.dll/_vti_rpc HTTP/1.1
+Date: Fri, 04 Sep 2009 13:51:45 GMT
+MIME-Version: 1.0
+User-Agent: MSFrontPage/6.0
+Host: vm2k3
+Accept: auth/sicily
+Content-Length: 41
+Content-Type: application/x-www-form-urlencoded
+X-Vermeer-Content-Type: application/x-www-form-urlencoded
+Connection: Keep-Alive
+Cache-Control: no-cache
+Authorization: Basic bnV4ZW86bnV4ZW9zcGlyaXQ=
+
+method=server+version%3a6%2e0%2e2%2e5523
+

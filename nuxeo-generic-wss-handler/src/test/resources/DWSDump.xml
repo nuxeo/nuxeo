@@ -1,0 +1,171 @@
+<Results>
+    <SubscribeUrl>http://vm2k3/subsite/_layouts/SubNew.aspx</SubscribeUrl>
+    <MtgInstance />
+    <SettingUrl>http://vm2k3/subsite/_layouts/settings.aspx</SettingUrl>
+    <PermsUrl>http://vm2k3/subsite/_layouts/EditPrms.aspx</PermsUrl>
+    <UserInfoUrl>http://vm2k3/subsite/_layouts/UserEdit.aspx</UserInfoUrl>
+    <Roles>
+        <Role Name="Full Control" Type="Administrator" Description="Has full control." />
+        <Role Name="Design" Type="WebDesigner" Description="Can view, add, update, delete, approve, and customize." />
+        <Role Name="Contribute" Type="Contributor" Description="Can view, add, update, and delete." />
+        <Role Name="Read" Type="Reader" Description="Can view only." />
+    </Roles>
+    <Schema Name="Tasks">
+        <Field Name="Title" Type="Text" Required="True">
+            <Choices />
+        </Field>
+        <Field Name="Priority" Type="Choice" Required="False">
+            <Choices>
+                <Choice>(1) High</Choice>
+                <Choice>(2) Normal</Choice>
+                <Choice>(3) Low</Choice>
+            </Choices>
+        </Field>
+        <Field Name="Status" Type="Choice" Required="False">
+            <Choices>
+                <Choice>Not Started</Choice>
+                <Choice>In Progress</Choice>
+                <Choice>Completed</Choice>
+                <Choice>Deferred</Choice>
+                <Choice>Waiting on someone else</Choice>
+            </Choices>
+        </Field>
+        <Field Name="PercentComplete" Type="Number" Required="False">
+            <Choices />
+        </Field>
+        <Field Name="AssignedTo" Type="User" Required="False">
+            <Choices />
+        </Field>
+        <Field Name="Body" Type="Note" Required="False">
+            <Choices />
+        </Field>
+        <Field Name="StartDate" Type="DateTime" Required="False">
+            <Choices />
+        </Field>
+        <Field Name="DueDate" Type="DateTime" Required="False">
+            <Choices />
+        </Field>
+    </Schema>
+    <Schema Name="Documents" Url="Shared Documents">
+        <Field Name="FileLeafRef" Type="File" Required="True">
+            <Choices />
+        </Field>
+        <Field Name="Title" Type="Text" Required="False">
+            <Choices />
+        </Field>
+    </Schema>
+    <Schema Name="Links">
+        <Field Name="URL" Type="URL" Required="True">
+            <Choices />
+        </Field>
+        <Field Name="Comments" Type="Note" Required="False">
+            <Choices />
+        </Field>
+    </Schema>
+    <ListInfo Name="Tasks">
+        <Moderated>False</Moderated>
+        <ListPermissions>
+            <InsertListItems />
+            <EditListItems />
+            <DeleteListItems />
+            <ManageLists />
+        </ListPermissions>
+    </ListInfo>
+    <ListInfo Name="Documents">
+        <Moderated>False</Moderated>
+        <ListPermissions>
+            <InsertListItems />
+            <EditListItems />
+            <DeleteListItems />
+            <ManageLists />
+        </ListPermissions>
+    </ListInfo>
+    <ListInfo Name="Links">
+        <Moderated>False</Moderated>
+        <ListPermissions>
+            <InsertListItems />
+            <EditListItems />
+            <DeleteListItems />
+            <ManageLists />
+        </ListPermissions>
+    </ListInfo>
+    <Permissions>
+        <ManageSubwebs />
+        <ManageWeb />
+        <ManageRoles />
+        <ManageLists />
+        <InsertListItems />
+        <EditListItems />
+        <DeleteListItems />
+    </Permissions>
+    <HasUniquePerm>False</HasUniquePerm>
+    <WorkspaceType />
+    <IsADMode>False</IsADMode>
+    <DocUrl>http://vm2k3/subsite/Shared%20Documents/JBossWS.doc</DocUrl>
+    <Minimal>False</Minimal>
+    <Results>
+        <Title>SubSite</Title>
+        <LastUpdate>633894903292597500</LastUpdate>
+        <User>
+            <ID>1</ID>
+            <Name>Nuxeo</Name>
+            <LoginName>VM2K3\nuxeo</LoginName>
+            <Email>someone@example.com</Email>
+            <IsDomainGroup>False</IsDomainGroup>
+            <IsSiteAdmin>True</IsSiteAdmin>
+        </User>
+        <Members>
+            <Member>
+                <ID>5</ID>
+                <Name>Team Site Members</Name>
+                <Email />
+                <LoginName />
+                <IsDomainGroup>True</IsDomainGroup>
+            </Member>
+            <Member>
+                <ID>3</ID>
+                <Name>Team Site Owners</Name>
+                <Email />
+                <LoginName />
+                <IsDomainGroup>True</IsDomainGroup>
+            </Member>
+            <Member>
+                <ID>4</ID>
+                <Name>Team Site Visitors</Name>
+                <Email />
+                <LoginName />
+                <IsDomainGroup>True</IsDomainGroup>
+            </Member>
+        </Members>
+        <Assignees>
+            <Member>
+                <ID>7</ID>
+                <Name>NT AUTHORITY\authenticated users</Name>
+                <LoginName>NT AUTHORITY\authenticated users</LoginName>
+            </Member>
+            <Member>
+                <ID>6</ID>
+                <Name>NT AUTHORITY\LOCAL SERVICE</Name>
+                <LoginName>NT AUTHORITY\LOCAL SERVICE</LoginName>
+            </Member>
+            <Member>
+                <ID>1</ID>
+                <Name>Nuxeo</Name>
+                <LoginName>VM2K3\nuxeo</LoginName>
+            </Member>
+        </Assignees>
+        <List Name="Tasks">
+            <ID>{845AED3A-1548-4508-A6A9-2F352429901E}</ID>
+            <z:row ows_Title="MySampleTask" ows_AssignedTo="1;#Nuxeo" ows_Status="Not Started" ows_Priority="(2) Normal" ows_DueDate="2009-09-27T22:00:00Z" ows_Body="This is a task" ows_Created="2009-09-25T14:17:34Z" ows_Author="1;#Nuxeo" ows_Modified="2009-09-25T14:17:34Z" ows_Editor="1;#Nuxeo" ows_owshiddenversion="1" ows__ModerationStatus="0" ows__Level="1" ows_ID="1" ows_UniqueId="1;#{13127003-50EB-4BE3-AFEE-BEAD5B33419B}" ows_FSObjType="1;#0" ows_FileRef="1;#subSite/Lists/Tasks/1_.000" ows_MetaInfo="1;#" xmlns:z="#RowsetSchema" />
+            <z:row ows_Title="Task2" ows_AssignedTo="1;#Nuxeo" ows_Status="In Progress" ows_Priority="(3) Low" ows_Body="Second task" ows_Created="2009-09-25T15:44:50Z" ows_Author="1;#Nuxeo" ows_Modified="2009-09-25T15:44:50Z" ows_Editor="1;#Nuxeo" ows_owshiddenversion="1" ows__ModerationStatus="0" ows__Level="1" ows_ID="2" ows_UniqueId="2;#{A91AFC3A-65DE-4BAA-83D5-E78BE4EB377B}" ows_FSObjType="2;#0" ows_FileRef="2;#subSite/Lists/Tasks/2_.000" ows_MetaInfo="2;#" xmlns:z="#RowsetSchema" />
+        </List>
+        <List Name="Documents">
+            <ID>{A64EFD14-0E98-4299-B5F3-2AD5D5A71C1A}</ID>
+            <z:row ows_FileRef="Shared Documents/JBossWS.doc" ows_Title="Mon Doc" ows_FSObjType="0" ows_Created="2009-09-24T13:58:40Z" ows_Author="1;#Nuxeo" ows_Modified="2009-09-25T14:34:01Z" ows_Editor="1;#Nuxeo" ows_ID="1" ows_ProgID="" xmlns:z="#RowsetSchema" />
+        </List>
+        <List Name="Links">
+            <ID>{5E00A9E6-9781-4B79-B39C-A1FBB63B2A1A}</ID>
+            <z:row ows_URL="http://www.google.com, Google Line" ows_Comments="This is a sample link" ows_Created="2009-09-25T14:16:33Z" ows_Author="1;#Nuxeo" ows_Modified="2009-09-25T14:16:33Z" ows_Editor="1;#Nuxeo" ows_owshiddenversion="1" ows_MetaInfo="1;#" ows__ModerationStatus="0" ows__Level="1" ows_ID="1" ows_UniqueId="1;#{62958880-B354-4ADB-A49F-2C254DE8C1C0}" ows_FSObjType="1;#0" ows_FileRef="1;#subSite/Lists/Links/1_.000" xmlns:z="#RowsetSchema" />
+        </List>
+    </Results>
+</Results>
