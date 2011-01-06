@@ -76,7 +76,11 @@ public final class NuxeoClient {
 
     private static final Log log = LogFactory.getLog(NuxeoClient.class);
 
-    private NuxeoClient() {
+    /**
+     * Constructs a new NuxeoClient. NOTE: Using {@link #getInstance()} instead
+     * of this constructor is recommended.
+     */
+    public NuxeoClient() {
         connectionListeners = new ListenerList();
         cfg = new AutoConfigurationService();
         loginHandler = loginHandler == null ? new DefaultLoginHandler()
