@@ -1,6 +1,9 @@
 <component name="MyAPP.Cas2SSO">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+   <require>org.nuxeo.opensocial.OAuthFilter</require>
    <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
    <require>org.nuxeo.ecm.platform.login.Cas2SSO</require>
+   <require>org.nuxeo.ecm.platform.login.Portal</require>
 
    <!--  configure you CAS server parameters -->
    <extension
@@ -26,8 +29,8 @@
       point="chain">
     <authenticationChain>
       <plugins>
-        <plugin>BASIC_AUTH</plugin>
         <plugin>CAS2_AUTH</plugin>
+        <plugin>BASIC_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
