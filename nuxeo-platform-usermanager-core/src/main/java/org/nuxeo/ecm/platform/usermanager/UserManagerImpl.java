@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
@@ -1116,7 +1115,7 @@ public class UserManagerImpl implements UserManager {
     protected List<String> getLeafPermissions(String perm)
             throws ClientException {
         ArrayList<String> permissions = new ArrayList<String>();
-        PermissionProvider permissionProvider = NXCore.getSecurityService().getPermissionProvider();
+        PermissionProvider permissionProvider = Framework.getLocalService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
         if (subpermissions == null || subpermissions.length <= 0) {
             // it's a leaf
@@ -1146,7 +1145,8 @@ public class UserManagerImpl implements UserManager {
                 if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
                     // it seems that with everything, it does return an empty
                     // array
-                    acePermissions = Arrays.asList(NXCore.getSecurityService().getPermissionProvider().getPermissions());
+                    acePermissions = Arrays.asList(Framework.getLocalService(
+                            PermissionProvider.class).getPermissions());
                 }
                 currentPermissions = getLeafPermissions(perm);
             } catch (ClientException e1) {
