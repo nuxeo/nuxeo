@@ -22,6 +22,7 @@ import java.io.Serializable;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -78,6 +79,11 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
+    }
+
+    @Override
     public String getExtensionPoint() {
         return safeGet(PROP_EXTENSION_POINT);
     }
@@ -95,7 +101,10 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getXml() {
         try {
-            Blob xml = safeGet(Blob.class, "file:content", new StringBlob(""));
+            Blob xml = safeGet(Blob.class, "file:content", null);
+            if (xml == null) {
+                return "";
+            }
             if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
                 xml.setEncoding("utf-8");
             }

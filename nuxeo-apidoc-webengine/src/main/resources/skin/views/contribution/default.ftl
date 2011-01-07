@@ -13,7 +13,9 @@
 
 In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.id?split("--")[0]}">${nxItem.id?split("--")[0]}</a>
 
-<@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+<h2>Description</h2>
+${nxItem.documentationHtml}
+<@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
 <h2>Extension point</h2>
 Extension point

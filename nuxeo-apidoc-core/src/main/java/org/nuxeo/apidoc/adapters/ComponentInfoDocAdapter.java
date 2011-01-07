@@ -186,11 +186,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getXmlFileName() {
         Blob xml = safeGet(Blob.class, "file:content", null);
-        if (xml != null) {
-            return xml.getFilename();
-        } else {
-            return null;
-        }
+        return xml == null ? "" : xml.getFilename() == null ? ""
+                : xml.getFilename();
     }
 
     @Override

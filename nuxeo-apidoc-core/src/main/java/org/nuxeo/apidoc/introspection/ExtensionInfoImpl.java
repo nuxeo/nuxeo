@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.introspection;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
@@ -62,6 +63,11 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
     @Override
     public String getDocumentation() {
         return documentation;
+    }
+
+    @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
     }
 
     @Override

@@ -122,8 +122,10 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getManifest() {
         try {
-            Blob mf = safeGet(Blob.class, "file:content", new StringBlob(
-                    "No MANIFEST"));
+            Blob mf = safeGet(Blob.class, "file:content", null);
+            if (mf == null) {
+                return "No MANIFEST.MF";
+            }
             if (mf.getEncoding() == null || "".equals(mf.getEncoding())) {
                 mf.setEncoding("utf-8");
             }
