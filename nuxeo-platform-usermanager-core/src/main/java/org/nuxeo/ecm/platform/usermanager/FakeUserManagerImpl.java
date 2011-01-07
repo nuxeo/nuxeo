@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
@@ -112,11 +113,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public void setUserSortField(String sortField) {
-        this.userSortField = sortField;
+        userSortField = sortField;
     }
 
     public void setGroupSortField(String sortField) {
-        this.groupSortField = sortField;
+        groupSortField = sortField;
     }
 
     public void setUserDirectoryName(String userDirectoryName) {
@@ -422,6 +423,10 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public List<String> getAdministratorsGroups() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String[] getUsersForPermission(String perm, ACP acp) {
         throw new UnsupportedOperationException();
     }
 

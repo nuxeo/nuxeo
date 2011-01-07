@@ -28,13 +28,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
@@ -43,6 +44,10 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -1106,6 +1111,86 @@ public class UserManagerImpl implements UserManager {
 
     public List<String> getAdministratorsGroups() {
         return administratorGroups;
+    }
+
+    protected List<String> getLeafPermissions(String perm)
+            throws ClientException {
+        ArrayList<String> permissions = new ArrayList<String>();
+        PermissionProvider permissionProvider = NXCore.getSecurityService().getPermissionProvider();
+        String[] subpermissions = permissionProvider.getSubPermissions(perm);
+        if (subpermissions == null || subpermissions.length <= 0) {
+            // it's a leaf
+            permissions.add(perm);
+            return permissions;
+        }
+        for (String subperm : subpermissions) {
+            permissions.addAll(getLeafPermissions(subperm));
+        }
+        return permissions;
+    }
+
+    @Override
+    public String[] getUsersForPermission(String perm, ACP acp) {
+        // using a hashset to avoid duplicates
+        HashSet<String> usernames = new HashSet<String>();
+
+        ACL merged = acp.getMergedACLs("merged");
+        for (ACE ace : merged.getACEs()) {
+            // Checking if the permission contains the permission we want to
+            // check (we use the security service method for coumpound
+            // permissions)
+            List<String> acePermissions;
+            List<String> currentPermissions;
+            try {
+                acePermissions = getLeafPermissions(ace.getPermission());
+                if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
+                    // it seems that with everything, it does return an empty
+                    // array
+                    acePermissions = Arrays.asList(NXCore.getSecurityService().getPermissionProvider().getPermissions());
+                }
+                currentPermissions = getLeafPermissions(perm);
+            } catch (ClientException e1) {
+                throw new Error("An unexpected error occured", e1);
+            }
+            if (acePermissions.containsAll(currentPermissions)) {
+
+                try {
+                    String aceUsername = ace.getUsername();
+                    List<String> users = null;
+                    // If everyone, add/remove all the users
+                    if (SecurityConstants.EVERYONE.equals(aceUsername)) {
+                        users = getUserIds();
+                    }
+                    // if a group, add/remove all the user from the group (and
+                    // subgroups)
+                    if (users == null) {
+                        NuxeoGroup group;
+                        group = getGroup(aceUsername);
+                        if (group != null) {
+                            users = getUsersInGroupAndSubGroups(aceUsername);
+                        }
+
+                    }
+                    // otherwise, add the user
+                    if (users == null) {
+                        users = new ArrayList<String>();
+                        users.add(aceUsername);
+                    }
+                    if (ace.isGranted()) {
+                        usernames.addAll(users);
+                    } else {
+                        usernames.removeAll(users);
+                    }
+                } catch (ClientException e) {
+                    // Unexpected: throwing a runtime exception
+                    throw new Error(
+                            "An unexpected error occured while getting user ids",
+                            e);
+                }
+            }
+
+        }
+        return usernames.toArray(new String[usernames.size()]);
     }
 
 }

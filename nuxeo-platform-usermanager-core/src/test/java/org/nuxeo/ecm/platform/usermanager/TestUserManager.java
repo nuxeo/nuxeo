@@ -32,6 +32,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
@@ -715,4 +720,238 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(newG, g);
     }
 
+    /**
+     * common init method for initialising tests for the method
+     * getUsernamesForPermission
+     *
+     * @throws Exception
+     */
+    private void initTestGetUsernamesForPermission() throws Exception {
+        deleteTestObjects();
+        userManager.deleteUser("Administrator");
+        userManager.createUser(getUser("alex"));
+        userManager.createUser(getUser("bree"));
+        userManager.createUser(getUser("jdoe"));
+        userManager.createUser(getUser("stef"));
+
+        List<String> g1Users = Arrays.asList("alex", "stef");
+        DocumentModel g1 = getGroup("group1");
+        g1.setProperty("group", "members", g1Users);
+        userManager.createGroup(g1);
+
+        List<String> g2Users = Arrays.asList("alex", "bree");
+        DocumentModel g2 = getGroup("group2");
+        g2.setProperty("group", "members", g2Users);
+        userManager.createGroup(g2);
+
+        // group3 has jdoe and a subgroup: g2
+        List<String> g3Users = Arrays.asList("jdoe");
+        List<String> g3SubGroups = Arrays.asList("group2");
+        DocumentModel g3 = getGroup("group3");
+        g3.setProperty("group", "members", g3Users);
+        g3.setProperty("group", "subGroups", g3SubGroups);
+        userManager.createGroup(g3);
+
+    }
+
+    /**
+     * Testing the method getUsernamesForPermission for a simple case.
+     *
+     * @throws Exception
+     */
+    public void testGetUsernamesForPermission() throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE("group1", SecurityConstants.READ, false));
+        acl.add(new ACE("alex", SecurityConstants.READ, true));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
+                "jdoe", "bree" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
+
+    /**
+     * Testing the method getUsernamesForPermission for a simple case.
+     *
+     * @throws Exception
+     */
+    public void testGetUsernamesForPermission2() throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE("group1", SecurityConstants.READ, false));
+        acl.add(new ACE("alex", SecurityConstants.READ, true));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
+
+    /**
+     * Same test as before but without the first ace (default value: everyone,
+     * everything false)
+     *
+     * @throws Exception
+     */
+    public void testGetUsernamesForPermissionWithoutEveryoneEverythingACE()
+            throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+
+        acl.add(new ACE("group1", SecurityConstants.READ, false));
+        acl.add(new ACE("alex", SecurityConstants.READ, true));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
+
+    /**
+     * Testing getUsernamesForPermission with a user in 2 groups
+     *
+     * @throws Exception
+     */
+    public void testGetUsernamesForPermissionIn2Groups() throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE("group2", SecurityConstants.READ, false));
+        acl.add(new ACE("group1", SecurityConstants.READ, true));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+
+        // Should contain alex and stef (in group1) and jdoe (in none of these
+        // groups) but not bree (in group2)
+
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
+                "stef", "jdoe" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
+
+    /**
+     * Testing getUsernamesForPermission with compound permission. For example,
+     * READ_WRITE contains READ
+     */
+    public void testGetUsernamesForPermissionWithCompoundPermission()
+            throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE("group2", SecurityConstants.READ_WRITE, false));
+        acl.add(new ACE("group1", SecurityConstants.READ, true));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+        // Should contain alex and stef (in group1) and jdoe (in none of these
+        // groups) but not bree (in group2)
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
+                "stef", "jdoe" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
+
+    /**
+     * Testing getUsernamesForPermission with a ACP having more than one ACL
+     */
+    public void testGetUsernamesForPermissionWithMultipleACL() throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl(ACL.INHERITED_ACL);
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE("group2", SecurityConstants.READ_WRITE, false));
+        acp.addACL(acl);
+
+        ACLImpl acl2 = new ACLImpl(ACL.LOCAL_ACL);
+        acl2.add(new ACE("group1", SecurityConstants.READ, true));
+        acp.addACL(acl2);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+        // Should contain alex and stef (in group1) and jdoe (in none of these
+        // groups) but not bree (in group2)
+        List<String> expectedUsers = Arrays.asList(new String[] { "alex",
+                "stef", "jdoe" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+    }
+
+    /**
+     * Testing getUsernamesForPermission with subgroups
+     */
+    public void testGetUsernamesForPermissionWithSubGroups() throws Exception {
+        initTestGetUsernamesForPermission();
+
+        ACPImpl acp = new ACPImpl();
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE("group3", SecurityConstants.READ_WRITE, true));
+        acl.add(new ACE("group1", SecurityConstants.READ, false));
+        acp.addACL(acl);
+
+        List<String> users = Arrays.asList(userManager.getUsersForPermission(
+                SecurityConstants.READ, acp));
+        // group3 and group2 but alex should have read access
+        List<String> expectedUsers = Arrays.asList(new String[] { "bree",
+                "jdoe" });
+        Collections.sort(users);
+        Collections.sort(expectedUsers);
+        assertEquals("Expected users having read access are ", expectedUsers,
+                users);
+
+    }
 }

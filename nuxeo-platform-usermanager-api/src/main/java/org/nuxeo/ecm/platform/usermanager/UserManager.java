@@ -31,11 +31,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
  * @author Anahide Tchertchian
+ * @author Sun Seng David TAN <stan@nuxeo.com>
  *
  */
 public interface UserManager extends Serializable {
@@ -477,5 +479,16 @@ public interface UserManager extends Serializable {
      */
     @Deprecated
     void updateGroup(NuxeoGroup group) throws ClientException;
+
+    /**
+     * For an ACP, get the list of user that has a permission. This method
+     * should be use with care as it can cause performance issues while getting
+     * the list of users.
+     *
+     * @param perm the permission
+     * @param acp The access control policy of the document
+     * @return the list of user ids
+     */
+    String[] getUsersForPermission(String perm, ACP acp);
 
 }
