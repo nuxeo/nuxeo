@@ -18,7 +18,6 @@
 
   </f:subview>
 
-
   <a id="videoPlayerStaticPreview" href="#play"
    onclick="return unhidePlayerAndPlay('videoPlayerStaticPreview', 'videoPlayerObject');">
     <nxh:graphicImage
@@ -35,10 +34,9 @@
     <param name="scale" value="aspect"/>
     <embed src="#{videoActions.getURLForPlayer(videoDoc)}"
      name="videoPlayerObject" EnableJavaScript="true"
-     width="400" autoplay="true"
+     width="400" autoplay="true" loop="true" scale="aspect"
      bgcolor="#6F6F6F"
      pluginspage="http://www.apple.com/quicktime/download/" />
   </object>
-
 
 </div>
