@@ -1167,7 +1167,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
-            } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+            } else if (name != null
+                    && name.startsWith(NXQL.ECM_FULLTEXT)
+                    && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN

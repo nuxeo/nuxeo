@@ -144,12 +144,19 @@ public class BinaryTextListener implements PostCommitEventListener {
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(indexedDoc);
                 String text = blobsToText(blobs);
-                DocumentModelList impactedDocs = session.query("SELECT * from Document where ecm:fulltextJobId = '".concat(indexedDoc.getId()).concat("'"));
+                String impactedQuery =
+                    String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
+                            indexedDoc.getId());
+                DocumentModelList impactedDocs = session.query(impactedQuery);
                 for (DocumentModel impactedDoc : impactedDocs) {
                     try {
                         DocumentRef ref = impactedDoc.getRef();
-                        session.setDocumentSystemProp(ref, SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
-                        session.setDocumentSystemProp(ref, SQLDocument.BINARY_TEXT_SYS_PROP + getFulltextIndexSuffix(indexName), text);
+                        session.setDocumentSystemProp(ref,
+                                SQLDocument.FULLTEXT_JOBID_SYS_PROP,
+                                null);
+                        session.setDocumentSystemProp(ref,
+                                SQLDocument.BINARY_TEXT_SYS_PROP + getFulltextIndexSuffix(indexName),
+                                text);
                     } catch (DocumentException e) {
                         log.error("Couldn't set fulltext on: " + id, e);
                         continue;

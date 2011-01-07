@@ -31,15 +31,32 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
     protected static DocumentModel doc;
 
-    {
-        database = new DatabaseH2WithMVCCEnabled();
+    Object originalPoolSize;
+    Object originalMaxPoolSize;
+
+    protected void setEventAsyncPoolSizes() {
         Properties properties = System.getProperties();
-        properties.setProperty("org.nuxeo.ecm.core.event.async.poolSize", "1");
-        properties.setProperty("org.nuxeo.ecm.core.event.async.maxPoolSize", "1");
+        originalPoolSize = properties.setProperty("org.nuxeo.ecm.core.event.async.poolSize", "1");
+        originalMaxPoolSize = properties.setProperty("org.nuxeo.ecm.core.event.async.maxPoolSize", "1");
+    }
+
+    protected void restoreEventAsyncPoolSizes() {
+        Properties properties = System.getProperties();
+        if (originalPoolSize == null) {
+            properties.remove("org.nuxeo.ecm.core.event.async.poolSize");
+        } else {
+            properties.put("org.nuxeo.ecm.core.event.async.poolSize", originalPoolSize);
+        }
+        if (originalMaxPoolSize == null) {
+            properties.remove("org.nuxeo.ecm.core.event.async.maxPoolSize");
+        } else {
+            properties.put("org.nuxeo.ecm.core.event.async.maxPoolSize", originalMaxPoolSize);
+        }
     }
 
     @Override
     public void setUp() throws Exception {
+        setEventAsyncPoolSizes();
         startIndexation = new CountDownLatch(1);
         super.setUp();
         populate(session);
@@ -49,6 +66,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         startIndexation.countDown();
+        restoreEventAsyncPoolSizes();
         super.tearDown();
     }
 
@@ -105,8 +123,10 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     protected List<DocumentModel> requestedDocs() throws ClientException {
-        List<DocumentModel> requested = session.query("SELECT * from Document where ecm:fulltextJobId = '".concat(doc.getId()).concat("'"));
-        return requested;
+        String request =
+            String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
+                doc.getId());
+        return session.query(request);
     }
 
     protected void waitForIndexing() throws Exception {
