@@ -51,7 +51,9 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -59,6 +61,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSimpleProperty;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -342,18 +346,28 @@ public class SessionImpl implements Session, XAResource {
             }
         }
 
-        if (!dirtyBinaries.isEmpty()) {
-            log.debug("Queued documents for asynchronous fulltext extraction: "
-                    + dirtyBinaries.size());
-            EventContext eventContext = new EventContextImpl(dirtyBinaries,
-                    model.getFulltextInfo());
-            eventContext.setRepositoryName(getRepositoryName());
-            Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
-            try {
-                eventProducer.fireEvent(event);
-            } catch (ClientException e) {
-                throw new StorageException(e);
-            }
+        updateFulltextBinaries(dirtyBinaries);
+    }
+
+    protected void updateFulltextBinaries(final Set<Serializable> dirtyBinaries) throws StorageException {
+        if (dirtyBinaries.isEmpty()) {
+            return;
+        }
+
+        // mark indexation in progress
+        for (Node node:getNodesByIds(new ArrayList<Serializable>() { { addAll(dirtyBinaries); }})) {
+            SimpleProperty simple = node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP);
+            simple.setValue(node.getId());
+        }
+
+        log.debug("Queued documents for asynchronous fulltext extraction: " + dirtyBinaries.size());
+        EventContext eventContext = new EventContextImpl(dirtyBinaries, model.getFulltextInfo());
+        eventContext.setRepositoryName(getRepositoryName());
+        Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
+        try {
+            eventProducer.fireEvent(event);
+        } catch (ClientException e) {
+            throw new StorageException(e);
         }
     }
 

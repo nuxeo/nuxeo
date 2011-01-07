@@ -235,6 +235,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         systemPropNameMap = new HashMap<String, String>();
         systemPropNameMap.put(BINARY_TEXT_SYS_PROP,
                 Model.FULLTEXT_BINARYTEXT_PROP);
+        systemPropNameMap.put(FULLTEXT_JOBID_SYS_PROP,
+                Model.FULLTEXT_JOBID_PROP);
     }
 
     @Override
