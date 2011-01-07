@@ -1,58 +1,43 @@
 <@extends src="base.ftl">
-
-<@block name="stylesheets">
-</@block>
-
-
+<@block name="title">All bundles</@block>
 <@block name="header_scripts">
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
 </@block>
 
 <@block name="right">
 
 <#include "/docMacros.ftl">
 
-<@filterForm bundleIds?size 'Bundle'/>
+<@filterForm bundleIds?size 'bundle'/>
 
-<#assign showDesc=false>
-<#if Context.request.getParameter("showDesc")??>
-  <#assign showDesc=true>
-</#if>
-
-<table width="100% class="tabs" id="tabbox">
+<table id="bundlesTable" class="tablesorter">
+<thead>
   <tr>
-    <td width="50%" >
-     <div class="tabs
-     <#if !showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listBundles">Introspection view</A></div>
-    </td>
-    <td width="50%" >
-     <div class="tabs
-     <#if showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listBundles?showDesc=true"> Documentation view</A></div>
+    <th>
+      Bundle
+    </th>
+  </tr>
+</thead>
+<tbody>
+  <#list bundleIds as bundleId>
+  <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
+  <tr class="${rowCss}">
+    <td>
+      <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
     </td>
   </tr>
+  </#list>
+</tbody>
 </table>
 
-<#if Context.request.getParameter("showDesc")??>
-   <#assign descriptions=This.getDescriptions("NXBundle")/>
-</#if>
+</@block>
 
-<#list bundleIds as bundleId>
-
-  <A href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</A>
-  <#if Context.request.getParameter("showDesc")??>
-     <#assign desc=descriptions[bundleId]/>
-    <@inlineEdit bundleId desc/>
-  </#if>
-
-  <br/>
-
-</#list>
-
+<@block name="footer_scripts">
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#bundlesTable").tablesorter({sortList:[[0,0]], widgets:['zebra']} );
+    });
+</script>
 </@block>
 
 </@extends>

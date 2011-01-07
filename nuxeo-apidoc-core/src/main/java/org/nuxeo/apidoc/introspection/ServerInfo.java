@@ -327,15 +327,14 @@ public class ServerInfo {
                         xpinfo.addSpi(spi);
                         server.allSpi.addAll(spi);
                     }
-                    xpinfo.setTypes(descriptors);
+                    xpinfo.setDescriptors(descriptors);
                     xpinfo.setDocumentation(xp.getDocumentation());
                     xpRegistry.put(xpinfo.getId(), xpinfo);
                     component.addExtensionPoint(xpinfo);
                 }
             }
 
-            URL xmlComponentFile = ri.getXmlFileUrl();
-            component.setXmlFileUrl(xmlComponentFile);
+            component.setXmlFileUrl(ri.getXmlFileUrl());
 
             if (ri.getProvidedServiceNames() != null) {
                 for (String serviceName : ri.getProvidedServiceNames()) {
@@ -359,6 +358,7 @@ public class ServerInfo {
             }
 
             component.setComponentClass(ri.getImplementation());
+            component.setDocumentation(ri.getDocumentation());
 
             binfo.addComponent(component);
             server.addBundle(binfo);

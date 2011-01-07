@@ -27,15 +27,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "seamComponent")
 public class SeamComponentWO extends NuxeoArtifactWebObject {
 
-    /*
-     * @Override
-     *
-     * @GET
-     *
-     * @Produces("text/html") public Object doViewAggregated() throws Exception
-     * { return doGet(); // no aggregated view for Seam Components }
-     */
-
     @Override
     @GET
     @Produces("text/html")

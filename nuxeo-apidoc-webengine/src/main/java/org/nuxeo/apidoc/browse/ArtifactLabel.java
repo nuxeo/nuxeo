@@ -68,7 +68,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
     protected static String removePrefix(String name, List<String> prefixes) {
         for (String prefix : prefixes) {
             if (name.startsWith(prefix)) {
-                return name.replace(prefix, "");
+                name = name.substring(prefix.length());
             }
         }
         return name;
@@ -77,10 +77,15 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
     public static ArtifactLabel createLabelFromComponent(String component) {
         String label = component;
         List<String> prefixes = new ArrayList<String>();
+        prefixes.add("org.nuxeo.ecm.platform.web.common.");
+        prefixes.add("org.nuxeo.ecm.platform.ui.web.");
         prefixes.add("org.nuxeo.ecm.platform.");
         prefixes.add("org.nuxeo.ecm.core.");
         prefixes.add("org.nuxeo.ecm.");
         prefixes.add("org.nuxeo.");
+        prefixes.add("webapp.");
+        prefixes.add("webengine.");
+        prefixes.add("api.");
         label = removePrefix(component, prefixes);
         return new ArtifactLabel(component, label, null);
     }
@@ -91,7 +96,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
         String component = parts[0];
         String ep = parts[1];
         String label = ep + " (" + component + ")";
-        return new ArtifactLabel(extensionPoint, label, ep);
+        return new ArtifactLabel(extensionPoint, ep, component);
     }
 
     public static ArtifactLabel createLabelFromContribution(String contribution) {

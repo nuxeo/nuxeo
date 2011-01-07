@@ -45,8 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
-    public static final String DIST_ID = "distId";
-
     protected String nxArtifactId;
 
     @Override
@@ -64,8 +62,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @Override
     public Template getView(String viewId) {
-        return super.getView(viewId).arg(DIST_ID, getDistributionId()).arg(
-                "enableDocumentationView", Boolean.TRUE);
+        return super.getView(viewId).arg(Distribution.DIST_ID,
+                getDistributionId()).arg("enableDocumentationView",
+                Boolean.TRUE);
     }
 
     public abstract NuxeoArtifact getNxArtifact();
@@ -73,7 +72,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     protected abstract Object doGet() throws Exception;
 
     protected String getDistributionId() {
-        return (String) ctx.getProperty(DIST_ID);
+        return (String) ctx.getProperty(Distribution.DIST_ID);
     }
 
     public AssociatedDocuments getAssociatedDocuments() {
@@ -145,6 +144,15 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    public Object doViewDefault() throws Exception {
+        NuxeoArtifact nxItem = getNxArtifact();
+        AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
+        return getView("default").arg("nxItem", nxItem).arg("docs", docs).arg(
+                "selectedTab", "defView");
+    }
+
+    @GET
+    @Produces("text/html")
     @Path(value = "doc")
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
@@ -155,6 +163,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path(value = "aggregated")
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());

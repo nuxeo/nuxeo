@@ -1,11 +1,5 @@
 <#macro docContent docItem>
   <div class="docContent" id="${docItem.editId}_doccontent">
-    <#if docItem.renderingType=='html'>
-        ${docItem.content}
-    </#if>
-    <#if docItem.renderingType=='wiki'>
-        <@wiki>${docItem.content}</@wiki>
-    </#if>
     <#if docItem.applicableVersion??>
       <#if ((docItem.applicableVersion?size)>0) >
         <div class="docVersionDisplay">
@@ -16,6 +10,12 @@
           </ul>
         </div>
       </#if>
+    </#if>
+    <#if docItem.renderingType=='html'>
+        ${docItem.content}
+    </#if>
+    <#if docItem.renderingType=='wiki'>
+        <@wiki>${docItem.content}</@wiki>
     </#if>
 
     <#assign attachments=docItem.attachments>
@@ -57,7 +57,7 @@
 <#macro viewAdditionalDoc docsByCat>
   <#assign categories=docsByCat?keys/>
   <#if ((categories?size)>1)>
-    <div class="additionalDocs"> Additional documentation <br/>
+    <h2> Additional documentation </h2>
     <table>
     <tr>
     <#list categories as category>
@@ -93,17 +93,24 @@
   </#if>
 </#macro>
 
+<#macro viewSecDescriptions docsByCat title=true>
+  <#if docsByCat?keys?seq_contains("Description")>
+    <#if title>
+      <h2> Description </h2>
+    </#if>
+    <#list docsByCat["Description"] as docItem>
+      <@docContent docItem/>
+    </#list>
+  </#if>
+</#macro>
+
+
 <#macro filterForm resultSize artifactType>
   <#if searchFilter??>
     <h1> All ${artifactType}s with filter '${searchFilter}' (${resultSize}) </h1>
+  <#else>
+    <h1> All ${artifactType}s</h1>
   </#if>
-  <#if !searchFilter>
-    <h1> All ${artifactType}s (${resultSize})</h1>
-  </#if>
-
-  <p>
-  Here is the list of the ${artifactType}s present in the selected distribution (${distId}).
-  </p>
 
   <#if !Root.currentDistribution.live>
     <span style="float:right">

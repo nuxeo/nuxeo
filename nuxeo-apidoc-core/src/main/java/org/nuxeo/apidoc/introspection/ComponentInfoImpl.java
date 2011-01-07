@@ -35,6 +35,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 
@@ -104,6 +105,11 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements
     @Override
     public String getDocumentation() {
         return documentation;
+    }
+
+    @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
     }
 
     public void setDocumentation(String documentation) {

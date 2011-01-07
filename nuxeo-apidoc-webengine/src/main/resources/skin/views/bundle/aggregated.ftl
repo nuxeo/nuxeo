@@ -10,10 +10,10 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View Nuxeo Bundle <span class="componentTitle">${nxItem.id}</span></H1>
+<h1>Bundle <span class="componentTitle">${nxItem.id}</span></h1>
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 
-<#include "/views/bundle/bundleMacros.ftl">
+<#include "/views/bundle/macros.ftl">
 
 <@viewBundle bundleWO=This />
 

@@ -26,6 +26,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,7 +55,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue(PROP_EP_ID, xpi.getId());
         doc.setPropertyValue(PROP_DOC, xpi.getDocumentation());
         // TODO incoherent naming here, also schema has no types
-        doc.setPropertyValue(PROP_EXTENSION_POINT, xpi.getTypes());
+        doc.setPropertyValue(PROP_DESCRIPTORS, xpi.getDescriptors());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -80,11 +81,16 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
+    }
+
+    @Override
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {
             String query = QueryHelper.select(ExtensionInfo.TYPE_NAME,
-                    PROP_EXTENSION_POINT, getId());
+                    PROP_DESCRIPTORS, getId());
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel contribDoc : docs) {
                 ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
@@ -104,11 +110,11 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     @Override
-    public String[] getTypes() {
+    public String[] getDescriptors() {
         try {
-            return (String[]) doc.getPropertyValue("nxextensionpoint:types");
+            return (String[]) doc.getPropertyValue(PROP_DESCRIPTORS);
         } catch (Exception e) {
-            log.error("Unable to get documentation field", e);
+            log.error("Unable to get descriptors field", e);
         }
         return null;
     }

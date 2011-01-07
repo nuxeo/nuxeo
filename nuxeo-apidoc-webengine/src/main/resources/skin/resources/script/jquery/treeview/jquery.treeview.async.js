@@ -38,7 +38,7 @@ function load(settings, root, child, container) {
         if (this.hasChildren) {
           current.addClass("hasChildren");
           createNode.call({
-            text:"placeholder",
+            text:"(loading)",
             id:"placeholder",
             children:[]
           }, branch);

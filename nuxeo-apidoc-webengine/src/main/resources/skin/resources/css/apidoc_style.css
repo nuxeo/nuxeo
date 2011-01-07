@@ -6,7 +6,7 @@ html, body {
 height:100%;
 }
 
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+html, body, div, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
 border:0 none;
 font:normal 12px "Lucida Grande", Verdana, sans-serif;
 margin:0;
@@ -24,11 +24,19 @@ margin:10px 0 15px;
 color:black;
 }
 
+h1 span, h1 a, h1 a:link, h1 a:active, h1 a:visited, h1 a:hover {
+font-size: 100%;
+}
+
 h2 {
 font:normal 1.7em "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
 border-bottom:1px dotted #ccc;
 color:black;
+}
+
+h2 a, h2 a:link, h2 a:active, h2 a:visited, h2 a:hover {
+font-size: 100%;
 }
 
 h3{
@@ -75,7 +83,7 @@ outline-style:none;
 
 /* Header style */
 
-.header {
+.pageheader {
 background:black url(../images/small_gray_bar.png) repeat-x scroll left top;
 padding:5px 5px 5px 20px;
 }
@@ -256,26 +264,21 @@ color:#fff;
 .docVersionDisplay {
   float:right;
   font-size:10pt;
-  padding:4px;
+  padding: 1px;
   border-style:solid;
   border-width:1px;
   border-color:#CCCCCC;
 }
 
 
-.bundleInfo td {
- border-style:solid;
- border-width:1px;
- border-color:#CCCCCC;
- margin:0px;
- padding:4px;
-}
 .bundleInfo {
- border-style:solid;
- border-width:1px;
- border-color:#BBBBBB;
- margin:0px;
- padding:0px;
+  border: 0 none;
+  margin: 0px;
+  padding: 0px;
+  -webkit-border-horizontal-spacing: 0px;
+}
+.bundleInfo td {
+  padding-right: 5px;
 }
 
 
@@ -346,12 +349,13 @@ color:#fff;
 }
 
 .docContent {
+  clear: both;
   color:green;
   //background-color:red;
 }
 .doc p,ul,li{
   color:black;
-  font-style:italic;
+  // font-style:italic;
 }
 
 .componentId {
@@ -361,14 +365,14 @@ color:#fff;
   margin;4px;
  }
 
+.componentTitle {
+  font-style:italic;
+}
+
 .builtindoc {
   color:#444466;
   font-family:monospace;
 }
-
-.componentTitle {
-  font-size:13pt;
- }
 
 .folder {
   color:red;
@@ -402,4 +406,33 @@ color:#fff;
 .row_even {
   background-color:#eeeeff;
 }
+
+code, code span {
+  font-family: monospace;
+}
+
+.tablesorter .header {
+  background-position: center left;
+  background-repeat: no-repeat;
+  padding: 2px 2px 2px 20px;
+}
+
+.tablesorter .headerSortDown {
+  background-color: #F8F8FF;
+  background-image: url(../images/down.gif);
+}
+
+.tablesorter .headerSortUp {
+  background-color: #F8F8FF;
+  background-image: url(../images/up.gif);
+}
+
+.tablesorter .odd {
+  background-color: #f6f6f6;
+}
+
+.tablesorter .even {
+  background-color: #eeeeff;
+}
+
 

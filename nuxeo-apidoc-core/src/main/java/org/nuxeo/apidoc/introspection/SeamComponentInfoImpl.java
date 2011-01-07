@@ -57,10 +57,6 @@ public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements
         return className;
     }
 
-    public int compareTo(SeamComponentInfoImpl o) {
-        return className.compareTo(o.className);
-    }
-
     public void addInterfaceName(String name) {
         if (!interfaceNames.contains(name)) {
             interfaceNames.add(name);
@@ -98,6 +94,10 @@ public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements
 
     @Override
     public int compareTo(SeamComponentInfo o) {
+        int c = getName().compareToIgnoreCase(o.getName());
+        if (c != 0) {
+            return c;
+        }
         return getClassName().compareTo(o.getClassName());
     }
 

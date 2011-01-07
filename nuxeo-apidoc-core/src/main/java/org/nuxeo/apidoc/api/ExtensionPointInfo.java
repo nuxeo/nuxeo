@@ -29,17 +29,20 @@ public interface ExtensionPointInfo extends NuxeoArtifact {
 
     String PROP_DOC = "nxextensionpoint:documentation";
 
-    String PROP_EXTENSION_POINT = "nxextensionpoint:extensionPoint";
+    /** misnamed in schema */
+    String PROP_DESCRIPTORS = "nxextensionpoint:extensionPoint";
 
     ComponentInfo getComponent();
 
     String getName();
 
-    String[] getTypes();
+    String[] getDescriptors();
 
     Collection<ExtensionInfo> getExtensions();
 
     String getDocumentation();
+
+    String getDocumentationHtml();
 
     String getLabel();
 

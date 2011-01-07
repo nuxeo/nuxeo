@@ -34,7 +34,7 @@
 <table width="100%" cellpadding="0" cellspacing="0">
 <#if !Root.isEmbeddedMode()>
   <tr valign="middle">
-    <td class="header">
+    <td class="pageheader">
       <@block name="header">
         <div class="logo">
           <a href="${Root.path}"><img src="${skinPath}/images/logo_nxplorer_white.png" height="28px" border="0"/></a>
@@ -70,29 +70,17 @@
             <table width="100% class="tabs" id="tabbox">
             <tr>
 
-            <td width="33%" >
-            <div class="tabs
-            <#if "aggView"==selectedTab>
-            tabselected
-            </#if>
-            "> <A href="${This.path}/">Aggregated view</A></div></td>
+            <td width="25%" >
+              <div class="tabs <#if selectedTab=="defView">tabselected</#if>">
+                <a href="${This.path}/">View</a>
+              </div>
+            </td>
 
-            <td width="33%">
-            <div class="tabs
-            <#if "docView"!=selectedTab && "aggView"!=selectedTab>
-        tabselected
-            </#if>
-            ">
-             <A href="${This.path}/introspection">Introspection view</A>
-            </div> </td>
-
-            <td width="33%" >
-            <div class="tabs
-            <#if "docView"==selectedTab>
-            tabselected
-            </#if>
-            "> <A href="${This.path}/doc">Documentation view</A></div></td>
-
+            <td width="25%" >
+              <div class="tabs <#if selectedTab=="docView">tabselected</#if>">
+                <a href="${This.path}/doc">Documentation view</a>
+              </div>
+            </td>
 
             </tr>
             </table>
@@ -153,7 +141,10 @@
       lastDisplayedDoc=docId;
     }
 
+
 </script>
+
+<@block name="footer_scripts" />
 
 </body>
 </html>

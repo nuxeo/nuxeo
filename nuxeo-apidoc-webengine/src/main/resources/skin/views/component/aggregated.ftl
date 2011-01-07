@@ -8,13 +8,15 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1> View for Nuxeo Component <span class="componentTitle">${nxItem.id}</span>
-<A href="${Root.path}/${distId}/viewBundle/${This.nxArtifact.bundle.id}/" title="go to parent bundle"> <img src="${skinPath}/images/up.gif"/> </A>
+<h1>Component <span class="componentTitle">${nxItem.id}</span>
+  <a href="${Root.path}/${distId}/viewBundle/${nxItem.bundle.id}" title="Go to parent bundle">
+    <img src="${skinPath}/images/up.gif"/>
+  </a>
 </h1>
 
 <#assign description=docs.getDescription(Context.getCoreSession())/>
 
-<#include "/views/component/componentMacros.ftl">
+<#include "/views/component/macros.ftl">
 
 <@viewComponent componentWO=This />
 </@block>

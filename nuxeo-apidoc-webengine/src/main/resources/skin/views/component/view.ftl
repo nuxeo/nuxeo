@@ -9,49 +9,22 @@
 </@block>
 
 <@block name="right">
-<h1> view component ${component.name} </h1>
+<#include "/views/component/macros.ftl">
 
-<#if component.xmlPureComponent>
-Xml  Component
-</#if>
+<h1>Component <span class="componentTitle">${component.id}</span>
+  <a href="${Root.path}/${distId}/viewBundle/${component.bundle.id}" title="Go to parent bundle">
+    <img src="${skinPath}/images/up.gif"/>
+  </a>
+</h1>
 
-<#if !component.xmlPureComponent>
-Implementation class: ${component.componentClass}
-</#if>
-<br/>
+<@viewComponentDoc component This.getAssociatedDocuments()/>
+<@viewComponentImpl component/>
+<@viewComponentServices component/>
+<@viewComponentExtensionPoints component/>
+<@viewComponentContributions component/>
 
-<div class="tab">
-<h2> Documentation </h2>
-${component.documentation}
-
-XML File:
-<pre>
-<code>
- ${component.xmlFileContent?html}
-</code>
-</pre>
-
-<h2> Services </h2>
-<ul>
-<#list component.serviceNames as service>
-    <li><A href="${Root.path}/${distId}/viewService/${service}"> ${service} </A></li>
-</#list>
-</ul>
-
-<h2> ExtensionPoints </h2>
-<ul>
-<#list component.extensionPoints as ep>
-    <li><A href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}"> ${ep.name} </A></li>
-</#list>
-</ul>
-
-<h2> Contributions </h2>
-<ul>
-<#list component.extensions as ex>
-    <li><A href="${Root.path}/${distId}/viewContribution/${ex.id?url}"> ${ex.id} </A></li>
-</#list>
-
-</ul>
+<h2> XML source </h2>
+<pre><code>${component.xmlFileContent?html}</code></pre>
 
 </@block>
 

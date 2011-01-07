@@ -204,6 +204,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     }
 
     @Override
+    public List<ExtensionInfo> getContributions() {
+        return getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME);
+    }
+
+    @Override
     public ExtensionPointInfo getExtensionPoint(String id) {
         return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME,
                 ExtensionPointInfo.PROP_EP_ID, id);

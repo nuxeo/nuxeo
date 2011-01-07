@@ -1,58 +1,62 @@
-<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-
-<@block name="stylesheets">
-</@block>
-
-
+<@block name="title">All contributions</@block>
 <@block name="header_scripts">
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
 </@block>
 
 <@block name="right">
-
 <#include "/docMacros.ftl">
 
-<@filterForm cIds?size 'Contribution'/>
+<@filterForm cIds?size 'contribution'/>
 
 <#assign showDesc=false>
 <#if Context.request.getParameter("showDesc")??>
   <#assign showDesc=true>
 </#if>
-
-<table width="100% class="tabs" id="tabbox">
-  <tr>
-    <td width="50%" >
-     <div class="tabs
-     <#if !showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listContributions">Introspection view</A></div>
-    </td>
-    <td width="50%" >
-     <div class="tabs
-     <#if showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listContributions?showDesc=true"> Documentation view</A></div>
-    </td>
-  </tr>
-</table>
-
-<#if Context.request.getParameter("showDesc")??>
+<#if showDesc>
    <#assign descriptions=This.getDescriptions("NXContribution")/>
 </#if>
 
-<#list cIds as cId>
+<table id="contributionsTable" class="tablesorter">
+<thead>
+  <tr>
+    <th>
+      Contribution
+    </th>
+    <th>
+      Target extension point
+    </th>
+    <th>
+      Target component
+    </th>
+  </tr>
+</thead>
+<tbody>
+  <#list contributions as contrib>
+  <#assign rowCss = (contrib_index % 2 == 0)?string("even","odd")/>
+  <tr class="${rowCss}">
+    <td>
+      <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a>
+    </td>
+    <td>
+      <a href="${Root.path}/${distId}/viewExtensionPoint/${contrib.extensionPoint}">${contrib.extensionPoint?split("--")[1]}</a>
+    </td>
+    <td>
+      <a href="${Root.path}/${distId}/viewComponent/${contrib.targetComponentName.name}">${contrib.targetComponentName.name}</a>
+    </td>
+  </tr>
+  </#list>
+</tbody>
+</table>
 
-  <A href="${Root.path}/${distId}/viewContribution/${cId}">${cId}</A>
-    <#if Context.request.getParameter("showDesc")??>
-     <#assign desc=descriptions[cId]/>
-    <@inlineEdit cId desc/>
-  </#if>
-  <br/>
+</@block>
 
-</#list>
-
+<@block name="footer_scripts">
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#contributionsTable").tablesorter({sortList:[[1,0]], widgets:['zebra']} );
+    });
+</script>
 </@block>
 
 </@extends>

@@ -1,4 +1,4 @@
-<#include "/views/bundle/bundleMacros.ftl">
+<#include "/views/bundle/macros.ftl">
 <#macro viewBundleGroup bundleGroupWO >
 
   <#assign nestedLevel=nestedLevel+1/>

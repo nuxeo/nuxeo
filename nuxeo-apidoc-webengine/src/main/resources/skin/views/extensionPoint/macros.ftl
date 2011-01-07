@@ -31,21 +31,16 @@
 
   <span class="resourceToggle"> Built-in documentation</span> for this extension point.
   <div class="hiddenResource">
-  <pre>
-  <code>
-  ${extensionPointItem.documentation?html}
-  </code>
-  </pre>
+  ${extensionPointItem.documentationHtml}
   </div>
 
   <br/>
 <br/>
   <p>
-  <b> Known contributions </b>
-  <br/>
- <span class="builtindoc">
-   This extension points has ${extensionPointItem.extensions?size} known contribution(s).<br/>
- </span>
+  <b>Contributions</b><br/>
+  <#if extensionPointItem.extensions?size == 0>
+    No known contributions.
+  <#else>
   <ul>
   <#list extensionPointItem.extensions as contrib>
     <#if !expand>
@@ -64,6 +59,7 @@
     </#if>
   </#list>
   </ul>
+  </#if>
   </p>
 
 <#if !expand>

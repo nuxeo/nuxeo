@@ -4,19 +4,24 @@
 <@block name="header_scripts"></@block>
 
 <@block name="right">
-<h1> view ExtensionPoint ${extensionPoint.name} </h1>
 
-<h2> Documentation </h2>
-<pre>
-<code>
-${extensionPoint.documentation?html}
-</code>
-</pre>
-<h2> Contributions </h2>
+<h1>Extension point <span class="componentTitle">${extensionPoint.name}</span>
+  of component ${extensionPoint.component.name?replace(".*\\.", "", "r")}
+  <a href="${Root.path}/${distId}/viewComponent/${extensionPoint.component.name}" title="Go to parent component">
+    <img src="${skinPath}/images/up.gif"/>
+  </a>
+</h1>
+
+<h2>Documentation</h2>
+${extensionPoint.documentationHtml}
+
+<h2>Contributions</h2>
 <ul>
-<#list extensionPoint.extensions as contrib>
-    <li>From <A href="${Root.path}/${distId}/viewComponent/${contrib.targetComponentName.name}"> ${contrib.targetComponentName.name}</A> contribution : <A href="${Root.path}/${distId}/viewContribution/${contrib.id}"> ${contrib.id} </A></li>
-</#list>
+  <#list extensionPoint.extensions as contrib>
+  <li>
+    <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a>
+  </li>
+  </#list>
 </ul>
 
 </@block>

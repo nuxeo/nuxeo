@@ -306,6 +306,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
     }
 
     @Override
+    public List<ExtensionInfo> getContributions() {
+        List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
+        contribs.addAll(contributions.values());
+        // TODO sort
+        return contribs;
+    }
+
+    @Override
     public ExtensionInfo getContribution(String id) {
         return contributions.get(id);
     }

@@ -50,6 +50,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @WebObject(type = "distribution")
 public class Distribution extends ModuleRoot {
 
+    public static final String DIST_ID = "distId";
+
     protected static final Log log = LogFactory.getLog(Distribution.class);
 
     protected SnapshotManager getSnapshotManager() {
@@ -65,7 +67,7 @@ public class Distribution extends ModuleRoot {
         } else if (currentUrl.contains("/listSeamComponents")) {
             navPoint = "listSeamComponents";
         } else if (currentUrl.contains("/viewSeamComponent")) {
-            navPoint = "listSeamComponents";
+            navPoint = "viewSeamComponent";
         } else if (currentUrl.contains("/listComponents")) {
             navPoint = "listComponents";
         } else if (currentUrl.contains("/listServices")) {
@@ -117,7 +119,7 @@ public class Distribution extends ModuleRoot {
                     "distribution",
                     getSnapshotManager().getSnapshot(distributionId,
                             ctx.getCoreSession()));
-            ctx.setProperty("distId", distributionId);
+            ctx.setProperty(DIST_ID, distributionId);
             return ctx.newObject("apibrowser", distributionId, embeddedMode);
         } catch (Exception e) {
             throw new WebApplicationException(e);
@@ -142,7 +144,7 @@ public class Distribution extends ModuleRoot {
     }
 
     public DistributionSnapshot getCurrentDistribution() {
-        String distId = (String) ctx.getProperty("distId");
+        String distId = (String) ctx.getProperty(DIST_ID);
         DistributionSnapshot currentDistribution = (DistributionSnapshot) ctx.getProperty("currentDistribution");
         if (currentDistribution == null
                 || !currentDistribution.getKey().equals(distId)) {
@@ -276,7 +278,8 @@ public class Distribution extends ModuleRoot {
     }
 
     public boolean isEmbeddedMode() {
-        Boolean embed = (Boolean) getContext().getProperty("embeddedMode", Boolean.FALSE);
+        Boolean embed = (Boolean) getContext().getProperty("embeddedMode",
+                Boolean.FALSE);
         return embed == null ? false : embed.booleanValue();
     }
 

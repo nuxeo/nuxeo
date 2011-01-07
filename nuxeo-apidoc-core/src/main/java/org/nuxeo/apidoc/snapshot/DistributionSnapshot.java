@@ -65,6 +65,8 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     List<String> getContributionIds();
 
+    List<ExtensionInfo> getContributions();
+
     ExtensionInfo getContribution(String id);
 
     List<String> getBundleGroupChildren(String groupId);

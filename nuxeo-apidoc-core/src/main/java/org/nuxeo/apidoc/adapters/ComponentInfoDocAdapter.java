@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -106,6 +107,11 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getDocumentation() {
         return safeGet(PROP_BUILT_IN_DOC);
+    }
+
+    @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
     }
 
     @Override

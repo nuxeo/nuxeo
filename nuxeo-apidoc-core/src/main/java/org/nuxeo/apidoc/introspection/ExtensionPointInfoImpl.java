@@ -25,6 +25,7 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.DocumentationHelper;
 
 public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
         ExtensionPointInfo {
@@ -33,7 +34,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
 
     protected String name;
 
-    protected String[] types;
+    protected String[] descriptors;
 
     protected Collection<ExtensionInfo> extensions = new ArrayList<ExtensionInfo>();
 
@@ -56,13 +57,13 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
         return name;
     }
 
-    public void setTypes(String[] types) {
-        this.types = types;
+    public void setDescriptors(String[] descriptors) {
+        this.descriptors = descriptors;
     }
 
     @Override
-    public String[] getTypes() {
-        return types;
+    public String[] getDescriptors() {
+        return descriptors;
     }
 
     @Override
@@ -81,6 +82,11 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements
     @Override
     public String getDocumentation() {
         return documentation;
+    }
+
+    @Override
+    public String getDocumentationHtml() {
+        return DocumentationHelper.getHtml(getDocumentation());
     }
 
     public void addSpi(List<Class<?>> spi) {

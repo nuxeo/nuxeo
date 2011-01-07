@@ -8,13 +8,14 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1> View Extension Point <span class="componentTitle">${nxItem.id}</span>
-<#if This.nxArtifact.component??>
-  <A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.component.id}/" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
-</#if>
+<h1>Extension point <span class="componentTitle">${nxItem.name}</span>
+  of component ${nxItem.component.name?replace(".*\\.", "", "r")}
+  <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.name}" title="Go to parent component">
+    <img src="${skinPath}/images/up.gif"/>
+  </a>
 </h1>
 
-<#include "/views/extensionPoint/extensionPointMacros.ftl">
+<#include "/views/extensionPoint/macros.ftl">
 
 <@viewExtensionPoint extensionPointWO=This expand=false/>
 

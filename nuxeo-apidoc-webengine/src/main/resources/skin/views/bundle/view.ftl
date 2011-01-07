@@ -8,15 +8,12 @@
 </@block>
 
 <@block name="right">
-<h1> view Bundle ${bundle.bundleId}</h1>
+<#include "/views/bundle/macros.ftl">
+<#assign nestedLevel=0/>
 
-<h2> Filename </h2>
-${bundle.fileName}
+<h1>Bundle <span class="componentTitle">${bundle.bundleId}<span></h1>
 
-<h2> Maven Artifact</h2>
-ArtifactId : ${bundle.artifactId} <br/>
-GroupId : ${bundle.artifactGroupId} <br/>
-Version : ${bundle.artifactVersion} <br/>
+<@viewBundleArtifact bundleItem=This.nxArtifact/>
 
 <h2> MANIFEST </h2>
 <pre>
@@ -24,11 +21,15 @@ ${bundle.manifest}
 </pre>
 
 <h2> Components </h2>
+<#if components?size == 0>
+No components.
+<#else>
 <ul>
 <#list components as component>
     <li><A href="${Root.path}/${distId}/viewComponent/${component.name}"> ${component.name} </A></li>
 </#list>
 </ul>
+</#if>
 
 </@block>
 

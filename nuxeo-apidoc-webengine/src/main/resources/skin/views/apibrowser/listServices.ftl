@@ -1,58 +1,48 @@
 <@extends src="base.ftl">
-
-<@block name="stylesheets">
-</@block>
-
-
+<@block name="title">All services</@block>
 <@block name="header_scripts">
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
 </@block>
 
 <@block name="right">
-
 <#include "/docMacros.ftl">
 
-<@filterForm services?size 'Service'/>
+<@filterForm services?size 'service'/>
 
-<#assign showDesc=false>
-<#if Context.request.getParameter("showDesc")??>
-  <#assign showDesc=true>
-</#if>
-
-<table width="100% class="tabs" id="tabbox">
+<table id="servicesTable" class="tablesorter">
+<thead>
   <tr>
-    <td width="50%" >
-     <div class="tabs
-     <#if !showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listServices">Introspection view</A></div>
+    <th>
+      Service (short)
+    </th>
+    <th>
+      Service
+    </th>
+  </tr>
+</thead>
+<tbody>
+  <#list services as service>
+  <#assign rowCss = (service_index % 2 == 0)?string("even","odd")/>
+  <tr class="${rowCss}">
+    <td>
+      <a href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</a>
     </td>
-    <td width="50%" >
-     <div class="tabs
-     <#if showDesc>
-       tabSelected
-     </#if>
-     "> <A href="${Root.path}/${distId}/listServices?showDesc=true"> Documentation view</A></div>
+    <td>
+      <a href="${Root.path}/${distId}/viewService/${service.id}">${service.id}</a>
     </td>
   </tr>
+  </#list>
+</tbody>
 </table>
 
-<#if Context.request.getParameter("showDesc")??>
-   <#assign descriptions=This.getDescriptions("NXService")/>
-</#if>
+</@block>
 
-<#list services as service>
-
-  <A href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</A>
-  <#if Context.request.getParameter("showDesc")??>
-     <#assign cid=service.id/>
-     <#assign desc=descriptions[cid]/>
-    <@inlineEdit cid desc/>
-  </#if>
-  <br/>
-
-</#list>
-
+<@block name="footer_scripts">
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#servicesTable").tablesorter({sortList:[[0,0]], widgets:['zebra']} );
+    });
+</script>
 </@block>
 
 </@extends>

@@ -50,6 +50,8 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     String getDocumentation();
 
+    String getDocumentationHtml();
+
     List<String> getServiceNames();
 
     List<ServiceInfo> getServices();

@@ -18,7 +18,7 @@
     <td class="iconHolder"><img src="${skinPath}/images/NXBundle.png"/></td>
     <td class="linkHolder">
       <A href="${Root.path}/${distId}/listBundleGroups">
-       Artifacts groups
+       Bundle groups
       </A>
     </td>
     <td>&nbsp;</td>
@@ -65,7 +65,7 @@
     <td class="iconHolder"><img src="${skinPath}/images/NXExtensionPoint.png"/></td>
     <td class="linkHolder">
       <A href="${Root.path}/${distId}/listExtensionPoints">
-       ExtensionPoints
+       Extension points
       </A>
     </td>
 
