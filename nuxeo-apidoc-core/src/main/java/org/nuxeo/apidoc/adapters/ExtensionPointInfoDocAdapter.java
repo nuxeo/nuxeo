@@ -76,6 +76,11 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     }
 
     @Override
+    public String getComponentId() {
+        return getId().split("--")[0];
+    }
+
+    @Override
     public String getDocumentation() {
         return safeGet(PROP_DOC);
     }
@@ -90,7 +95,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
         try {
             String query = QueryHelper.select(ExtensionInfo.TYPE_NAME,
-                    PROP_DESCRIPTORS, getId());
+                    ExtensionInfo.PROP_EXTENSION_POINT, getId());
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel contribDoc : docs) {
                 ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
@@ -112,7 +117,9 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String[] getDescriptors() {
         try {
-            return (String[]) doc.getPropertyValue(PROP_DESCRIPTORS);
+            @SuppressWarnings("unchecked")
+            List<String> descriptors = (List<String>) doc.getPropertyValue(PROP_DESCRIPTORS);
+            return descriptors.toArray(new String[0]);
         } catch (Exception e) {
             log.error("Unable to get descriptors field", e);
         }

@@ -71,11 +71,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
                 (Serializable) componentInfo.getServiceNames());
 
         Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
-        String xmlFileName = "descriptor.xml";
-        if (componentInfo.getXmlFileUrl() != null) {
-            xmlFileName = new Path(componentInfo.getXmlFileUrl().getFile()).lastSegment();
-        }
-        xmlBlob.setFilename(xmlFileName);
+        xmlBlob.setFilename(componentInfo.getXmlFileName());
         xmlBlob.setMimeType("text/xml");
         doc.setPropertyValue("file:content", (Serializable) xmlBlob);
 

@@ -7,12 +7,12 @@
 <#assign nestedLevel=0/>
 
 <h1>Extension point <span class="componentTitle">${nxItem.name}</span>
-  <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.name}" title="Go to parent component">
+  <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}" title="Go to parent component">
     <img src="${skinPath}/images/up.gif"/>
   </a>
 </h1>
 
-In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.name}">${nxItem.component.name}</a>
+In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a>
 
 <h2>Documentation</h2>
 ${nxItem.documentationHtml}

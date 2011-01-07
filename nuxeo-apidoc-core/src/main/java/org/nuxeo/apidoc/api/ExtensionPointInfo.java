@@ -34,6 +34,8 @@ public interface ExtensionPointInfo extends NuxeoArtifact {
 
     ComponentInfo getComponent();
 
+    String getComponentId();
+
     String getName();
 
     String[] getDescriptors();
