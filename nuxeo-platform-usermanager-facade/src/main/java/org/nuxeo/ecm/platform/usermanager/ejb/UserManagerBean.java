@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -536,4 +537,7 @@ public class UserManagerBean implements UserManagerLocal {
         return getUserManager().getAdministratorsGroups();
     }
 
+    public String[] getUsersForPermission(String perm, ACP acp) {
+        return getUserManager().getUsersForPermission(perm, acp);
+    }
 }
