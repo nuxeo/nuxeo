@@ -96,7 +96,11 @@ public class NXQLQueryBuilder {
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
             try {
-                Escaper escaper = whereClause.getEscaperClass().newInstance();
+                Escaper escaper = null;
+                Class<? extends Escaper> escaperClass = whereClause.getEscaperClass();
+                if (escaperClass != null) {
+                    escaper = escaperClass.newInstance();
+                }
                 for (PredicateDefinition predicate : predicates) {
                     String predicateString = getQueryElement(model, predicate,
                             escaper);
@@ -288,7 +292,8 @@ public class NXQLQueryBuilder {
                 // value not provided: ignore predicate
                 return "";
             }
-            if (operator.equals("LIKE") || operator.equals("ILIKE")) {
+            if (escaper != null
+                    && (operator.equals("LIKE") || operator.equals("ILIKE"))) {
                 value = escaper.escape(value);
             }
             return serializeUnary(parameter, operator, value);
@@ -376,7 +381,10 @@ public class NXQLQueryBuilder {
             }
             String lhs = parameter.startsWith(NXQL.ECM_FULLTEXT) ? parameter
                     : NXQL.ECM_FULLTEXT + '.' + parameter;
-            return lhs + ' ' + serializeFullText(escaper.escape(value));
+            if (escaper != null) {
+                value = escaper.escape(value);
+            }
+            return lhs + ' ' + serializeFullText(value);
         } else {
             throw new ClientException("Unsupported operator: " + operator);
         }

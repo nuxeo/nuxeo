@@ -23,14 +23,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
-import org.nuxeo.ecm.core.search.api.client.querymodel.LuceneMinimalEscaper;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
  * Generic descriptor for query where clause, accepting predicates and a fixed
- * part. A custom escaper can also be set: {@link LuceneMinimalEscaper} will be
- * used by default.
+ * part. A custom escaper can also be set.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -42,7 +40,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
     protected String docType;
 
     @XNode("@escaper")
-    private final Class<? extends Escaper> escaperClass = LuceneMinimalEscaper.class;
+    protected Class<? extends Escaper> escaperClass;
 
     @XNodeList(value = "predicate", componentType = PredicateDescriptor.class, type = PredicateDefinition[].class)
     protected PredicateDefinition[] predicates;

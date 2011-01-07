@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.core.search.api.client.querymodel;
 
-
 /**
- * A very minimal escaper: does double quotes (putting just one is incorrect), +, - and !
+ * A very minimal escaper: does double quotes (putting just one is incorrect), +, -
+ * and !
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
+// XXX this escaper does not seem to be doing an accurate job for VCS
 public class LuceneMinimalEscaper implements Escaper {
 
     public String escape(String s) {
