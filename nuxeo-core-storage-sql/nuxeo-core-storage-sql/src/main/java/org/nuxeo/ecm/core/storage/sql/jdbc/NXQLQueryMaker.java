@@ -876,6 +876,13 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 return;
             }
+            if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                props.add(model.FULLTEXT_JOBID_PROP);
+                if (inOrderBy) {
+                    orderKeys.add(name);
+                }
+                return;
+            }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (model.getRepositoryDescriptor().fulltextDisabled) {
                     throw new QueryMakerException(
@@ -1088,6 +1095,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
+            if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                return database.getTable(model.FULLTEXT_TABLE_NAME).
+                    getColumn(model.FULLTEXT_JOBID_KEY);
+            }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " must be used as left-hand operand");
@@ -1156,7 +1167,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
-            } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
+            } else if (name != null
+                    && name.startsWith(NXQL.ECM_FULLTEXT)
+                    && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN

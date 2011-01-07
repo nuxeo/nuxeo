@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.binaries-indexing-synch">
+
+  <require>org.nuxeo.ecm.core.convert.plugins</require>
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener priority="10" async="true" class="org.nuxeo.ecm.core.storage.sql.TestSQLBinariesIndexing$SynchHandler" name="binariesIndexingSynchHandler"/>
+  </extension>
+
+</component>

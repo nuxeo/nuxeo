@@ -54,6 +54,8 @@ public class NXQL {
 
     public static final String ECM_FULLTEXT = "ecm:fulltext";
 
+    public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
+
     public static final String ECM_LOCK = "ecm:lock";
 
 }
