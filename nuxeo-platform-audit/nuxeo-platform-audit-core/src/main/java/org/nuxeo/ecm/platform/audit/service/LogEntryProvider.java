@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
-import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -55,16 +54,17 @@ public class LogEntryProvider {
         em.persist(entry);
     }
 
-
     protected List<LogEntry> doPublish(List<LogEntry> entries) {
-        for (LogEntry entry:entries) {
+        for (LogEntry entry : entries) {
             doPublish(entry);
         }
         return entries;
     }
 
     protected LogEntry doPublish(LogEntry entry) {
-        entry.getExtendedInfos().size(); // force lazy loading
+        if (entry.getExtendedInfos() != null) {
+            entry.getExtendedInfos().size(); // force lazy loading
+        }
         return entry;
     }
 
@@ -197,11 +197,9 @@ public class LogEntryProvider {
 
         String queryStr = "";
         if (eventIds == null || eventIds.length == 0) {
-            queryStr = "from LogEntry log"
-                + " where log.eventDate >= :limit"
-                + " ORDER BY log.eventDate DESC";
-        }
-        else {
+            queryStr = "from LogEntry log" + " where log.eventDate >= :limit"
+                    + " ORDER BY log.eventDate DESC";
+        } else {
             String inClause = "(";
             for (String eventId : eventIds) {
                 inClause += "'" + eventId + "',";
@@ -209,10 +207,9 @@ public class LogEntryProvider {
             inClause = inClause.substring(0, inClause.length() - 1);
             inClause += ")";
 
-            queryStr = "from LogEntry log"
-            + " where log.eventId in " + inClause
-            + " AND log.eventDate >= :limit"
-            + " ORDER BY log.eventDate DESC";
+            queryStr = "from LogEntry log" + " where log.eventId in "
+                    + inClause + " AND log.eventDate >= :limit"
+                    + " ORDER BY log.eventDate DESC";
         }
 
         if (log.isDebugEnabled()) {
@@ -263,7 +260,7 @@ public class LogEntryProvider {
             queryString.append(" log.eventId IN ").append(inClause);
             queryString.append(" AND ");
         }
-        if (categories.length>0) {
+        if (categories.length > 0) {
             String inClause = "(";
             for (String cat : categories) {
                 inClause += "'" + cat + "',";
@@ -316,13 +313,13 @@ public class LogEntryProvider {
     public Long countEventsById(String eventId) {
         Query query = em.createNamedQuery("LogEntry.countEventsById");
         query.setParameter("eventId", eventId);
-        return (Long)query.getSingleResult();
+        return (Long) query.getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public List<String> findEventIds() {
         Query query = em.createNamedQuery("LogEntry.findEventIds");
-        return (List<String>)query.getResultList();
+        return (List<String>) query.getResultList();
     }
 
 }
