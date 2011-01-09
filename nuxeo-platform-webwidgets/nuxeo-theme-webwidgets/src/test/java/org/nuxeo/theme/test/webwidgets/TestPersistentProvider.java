@@ -14,7 +14,9 @@
 
 package org.nuxeo.theme.test.webwidgets;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -23,6 +25,7 @@ import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetState;
 import org.nuxeo.theme.webwidgets.providers.PersistentProvider;
+import org.nuxeo.theme.webwidgets.providers.WidgetEntity;
 
 public class TestPersistentProvider extends NXRuntimeTestCase {
 
@@ -41,6 +44,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        provider.destroy();
         provider.deactivate();
         provider = null;
         super.tearDown();
@@ -87,7 +91,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
 
-    public void disabledTestReorderWidgets() throws ProviderException {
+    public void testReorderWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -120,7 +124,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
     }
 
-    public void testRemoveWidgets() throws ProviderException {
+    public void testRemoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("remove test widget");
         Widget widget2 = provider.createWidget("remove test widget");
         Widget widget3 = provider.createWidget("remove test widget");
@@ -143,7 +147,7 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertTrue(provider.getWidgets("remove region A").isEmpty());
     }
 
-    public void disabledTestMoveWidgets() throws ProviderException {
+    public void testMoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -228,4 +232,22 @@ public class TestPersistentProvider extends NXRuntimeTestCase {
         assertNull(provider.getWidgetData(widget, dataName));
     }
 
+    public void testReorderWidgets() throws ProviderException {
+        WidgetEntity widget1 = (WidgetEntity) provider.createWidget("test widget 1");
+        WidgetEntity widget2 = (WidgetEntity) provider.createWidget("test widget 2");
+        WidgetEntity widget3 = (WidgetEntity) provider.createWidget("test widget 3");
+        widget1.setOrder(10);
+        widget2.setOrder(20);
+        widget3.setOrder(30);
+        provider.addWidget(widget1, "region A", 0);
+        provider.addWidget(widget2, "region A", 1);
+        provider.addWidget(widget3, "region A", 2);
+
+        List<Widget> widgets = provider.getWidgets("region A");
+        assertEquals(0, widget1.getOrder());
+        assertEquals(1, widget2.getOrder());
+        assertEquals(2, widget3.getOrder());
+        Collections.swap(widgets, 0, 1);
+        provider.reorderWidgets(widgets);
+    }
 }

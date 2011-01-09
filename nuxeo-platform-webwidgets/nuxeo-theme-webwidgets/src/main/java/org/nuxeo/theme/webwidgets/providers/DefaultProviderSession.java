@@ -80,13 +80,22 @@ public class DefaultProviderSession {
         return statesByWidget;
     }
 
-
     public Widget getWidgetByUid(String uid) {
         return widgetsByUid.get(uid);
     }
 
     public List<Widget> getWidgets(String regionName) {
         return widgetsByRegion.get(regionName);
+    }
+
+    public void clear() {
+        widgetsByRegion.clear();
+        widgetsByUid.clear();
+        regionsByUid.clear();
+        preferencesByWidget.clear();
+        dataByWidget.clear();
+        statesByWidget.clear();
+        counter = 0;
     }
 
 }

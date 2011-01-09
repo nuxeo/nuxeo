@@ -42,6 +42,15 @@ public class DefaultProvider implements Provider {
     public void deactivate() {
     }
 
+    public void destroy() {
+        UserSession userSession = WebEngine.getActiveContext().getUserSession();
+        DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
+        if (session != null) {
+            session.clear();
+            userSession.remove(PROVIDER_SESSION_ID);
+        }
+    }
+
     public DefaultProviderSession getDefaultProviderSession() {
         UserSession userSession = WebEngine.getActiveContext().getUserSession();
         DefaultProviderSession session = (DefaultProviderSession) userSession.get(PROVIDER_SESSION_ID);
@@ -136,8 +145,7 @@ public class DefaultProvider implements Provider {
         final String regionName = getRegionOfWidget(widget);
         Map<String, List<Widget>> widgetsByRegion = session.getWidgetsByRegion();
         final List<Widget> widgets = widgetsByRegion.get(regionName);
-        final int oldOrder = widgets.indexOf(widget);
-        widgets.remove(oldOrder);
+        widgets.remove(widget);
         widgets.add(order, widget);
         log.debug("Reordered web widget '" + widget.getName() + "' (uid "
                 + widget.getUid() + ") in region '" + regionName
@@ -259,9 +267,6 @@ public class DefaultProvider implements Provider {
 
     public boolean canWrite() {
         return true;
-    }
-
-    public void destroy() {
     }
 
 }
