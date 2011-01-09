@@ -1134,6 +1134,9 @@ public class UserManagerImpl implements UserManager {
         HashSet<String> usernames = new HashSet<String>();
 
         ACL merged = acp.getMergedACLs("merged");
+        // The list of permission that is has "perm" as its (compound)
+        // permission
+        ArrayList<ACE> filteredACEbyPerm = new ArrayList<ACE>();
         for (ACE ace : merged.getACEs()) {
             // Checking if the permission contains the permission we want to
             // check (we use the security service method for coumpound
@@ -1153,44 +1156,53 @@ public class UserManagerImpl implements UserManager {
                 throw new Error("An unexpected error occured", e1);
             }
             if (acePermissions.containsAll(currentPermissions)) {
-
-                try {
-                    String aceUsername = ace.getUsername();
-                    List<String> users = null;
-                    // If everyone, add/remove all the users
-                    if (SecurityConstants.EVERYONE.equals(aceUsername)) {
-                        users = getUserIds();
-                    }
-                    // if a group, add/remove all the user from the group (and
-                    // subgroups)
-                    if (users == null) {
-                        NuxeoGroup group;
-                        group = getGroup(aceUsername);
-                        if (group != null) {
-                            users = getUsersInGroupAndSubGroups(aceUsername);
-                        }
-
-                    }
-                    // otherwise, add the user
-                    if (users == null) {
-                        users = new ArrayList<String>();
-                        users.add(aceUsername);
-                    }
-                    if (ace.isGranted()) {
-                        usernames.addAll(users);
-                    } else {
-                        usernames.removeAll(users);
-                    }
-                } catch (ClientException e) {
-                    // Unexpected: throwing a runtime exception
-                    throw new Error(
-                            "An unexpected error occured while getting user ids",
-                            e);
+                // special case: everybody perm grand false, don't take in
+                // account the previous ace
+                if (SecurityConstants.EVERYONE.equals(ace.getUsername())
+                        && !ace.isGranted()) {
+                    filteredACEbyPerm.clear();
+                } else {
+                    filteredACEbyPerm.add(ace);
                 }
+
+            }
+        }
+
+        for (ACE ace : filteredACEbyPerm) {
+            try {
+                String aceUsername = ace.getUsername();
+                List<String> users = null;
+                // If everyone, add/remove all the users
+                if (SecurityConstants.EVERYONE.equals(aceUsername)) {
+                    users = getUserIds();
+                }
+                // if a group, add/remove all the user from the group (and
+                // subgroups)
+                if (users == null) {
+                    NuxeoGroup group;
+                    group = getGroup(aceUsername);
+                    if (group != null) {
+                        users = getUsersInGroupAndSubGroups(aceUsername);
+                    }
+
+                }
+                // otherwise, add the user
+                if (users == null) {
+                    users = new ArrayList<String>();
+                    users.add(aceUsername);
+                }
+                if (ace.isGranted()) {
+                    usernames.addAll(users);
+                } else {
+                    usernames.removeAll(users);
+                }
+            } catch (ClientException e) {
+                // Unexpected: throwing a runtime exception
+                throw new Error(
+                        "An unexpected error occured while getting user ids", e);
             }
 
         }
         return usernames.toArray(new String[usernames.size()]);
     }
-
 }
