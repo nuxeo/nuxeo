@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistryImpl">
+  <implementation
+          class="org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistryImpl" />
+  <documentation>
+    Component and Service to manage the OAuth Consumer that can access Nuxeo services via OAuth
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+        <provide interface="org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry" />
+  </service>
+
+</component>

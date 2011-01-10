@@ -43,16 +43,6 @@
         </filter>
 
         <filter>
-            <display-name>Nuxeo OAuth Filter</display-name>
-            <filter-name>NuxeoOAuthFilter
-            </filter-name>
-            <filter-class>
-                org.nuxeo.ecm.platform.ui.web.auth.oauth.NuxeoOAuthFilter
-            </filter-class>
-        </filter>
-
-
-        <filter>
             <display-name>Nuxeo Security Filter</display-name>
             <filter-name>NuxeoAuthenticationFilter
             </filter-name>
@@ -70,21 +60,6 @@
             </filter-name>
             <url-pattern>/*</url-pattern>
             <dispatcher>REQUEST</dispatcher>
-        </filter-mapping>
-
-        <filter-mapping>
-            <filter-name>NuxeoOAuthFilter
-            </filter-name>
-            <url-pattern>/oauth/*</url-pattern>
-            <dispatcher>REQUEST</dispatcher>
-            <dispatcher>FORWARD</dispatcher>
-        </filter-mapping>
-        <filter-mapping>
-            <filter-name>NuxeoAuthenticationFilter
-            </filter-name>
-            <url-pattern>/oauthGrant.jsp</url-pattern>
-            <dispatcher>REQUEST</dispatcher>
-            <dispatcher>FORWARD</dispatcher>
         </filter-mapping>
         <filter-mapping>
             <filter-name>NuxeoAuthenticationFilter

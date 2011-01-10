@@ -3,13 +3,10 @@ package org.nuxeo.ecm.platform.ui.web.auth.oauth;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -18,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
-import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
 import net.oauth.SimpleOAuthValidator;
@@ -26,11 +22,17 @@ import net.oauth.server.OAuthServlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
+import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
+import org.nuxeo.ecm.platform.oauth.tokens.OAuthToken;
+import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
-public class NuxeoOAuthFilter implements Filter {
+public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
     protected static Log log = LogFactory.getLog(NuxeoOAuthFilter.class);
 
@@ -38,11 +40,6 @@ public class NuxeoOAuthFilter implements Filter {
 
     protected static OAuthConsumerRegistry consumerRegistry;
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-
-    }
 
     protected OAuthValidator getValidator() {
         if (validator==null) {
@@ -53,9 +50,13 @@ public class NuxeoOAuthFilter implements Filter {
 
     protected OAuthConsumerRegistry getOAuthConsumerRegistry() {
         if (consumerRegistry==null) {
-            consumerRegistry = new OAuthConsumerRegistry();
+            consumerRegistry = Framework.getLocalService(OAuthConsumerRegistry.class);
         }
         return consumerRegistry;
+    }
+
+    protected OAuthTokenStore getOAuthTokenStore() {
+        return Framework.getLocalService(OAuthTokenStore.class);
     }
 
     @Override
@@ -84,11 +85,10 @@ public class NuxeoOAuthFilter implements Filter {
                 } else {
                     httpResponse.sendError(500, "OAuth call not supported");
                 }
-
+                return;
             }
             // Signed request (simple 2 legged OAuth call or signed request after a 3 ledged nego)
             else if (authHeader != null && authHeader.contains("OAuth")) {
-
 
                 LoginContext loginContext = processSignedRequest(httpRequest, httpResponse);
                 // foward the call if authenticated
@@ -105,9 +105,11 @@ public class NuxeoOAuthFilter implements Filter {
                         }
                     }
                 } else {
-                    //httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    if (!httpResponse.isCommitted()) {
+                        httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    }
+                    return;
                 }
-
             }
            // Non OAuth calls can pass through
             else {
@@ -130,7 +132,7 @@ public class NuxeoOAuthFilter implements Filter {
             // initial access => send to real login page
             String loginUrl = VirtualHostHelper.getBaseURL(httpRequest);
 
-            httpRequest.getSession(true).setAttribute("OAUTH-INFO", RequestTokenStore.instance().get(token));
+            httpRequest.getSession(true).setAttribute("OAUTH-INFO", getOAuthTokenStore().getRequestToken(token));
 
             String redirectUrl = "oauthGrant.jsp" + "?" + OAuth.OAUTH_TOKEN + "=" + token;
             redirectUrl = URLEncoder.encode(redirectUrl, "UTF-8");
@@ -146,18 +148,24 @@ public class NuxeoOAuthFilter implements Filter {
 
             // XXX get what user has granted !!!
 
-            Map<String, String> data = RequestTokenStore.instance().generateVerifier(token);
-            RequestTokenStore.instance().get(token).put("nuxeo-login", nuxeo_login);
+            OAuthToken rToken = getOAuthTokenStore().addVerifierToRequestToken(token);
+            rToken.setNuxeoLogin(nuxeo_login);
 
-            StringBuffer sb = new StringBuffer(data.get(OAuth.OAUTH_CALLBACK));
+            //Map<String, String> data = RequestTokenStore.instance().generateVerifier(token);
+            //RequestTokenStore.instance().get(token).put("nuxeo-login", nuxeo_login);
+
+            //StringBuffer sb = new StringBuffer(data.get(OAuth.OAUTH_CALLBACK));
+            StringBuffer sb = new StringBuffer(rToken.getCallbackUrl());
             sb.append("?");
             sb.append(OAuth.OAUTH_TOKEN);
             sb.append("=");
-            sb.append(data.get(OAuth.OAUTH_TOKEN));
+            //sb.append(data.get(OAuth.OAUTH_TOKEN));
+            sb.append(rToken.getToken());
             sb.append("&");
             sb.append("oauth_verifier");
             sb.append("=");
-            sb.append(data.get("oauth_verifier"));
+            //sb.append(data.get("oauth_verifier"));
+            sb.append(rToken.getVerifier());
 
             String targetUrl = sb.toString();
 
@@ -174,7 +182,7 @@ public class NuxeoOAuthFilter implements Filter {
         String consumerKey = message.getConsumerKey();
         //String consumerSecret = getConsumerSecret(consumerKey);
 
-        OAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
         OAuthAccessor accessor = new OAuthAccessor(consumer);
 
         OAuthValidator validator = getValidator();
@@ -191,7 +199,8 @@ public class NuxeoOAuthFilter implements Filter {
         String callBack = message.getParameter(OAuth.OAUTH_CALLBACK);
 
         // XXX should not only use consumerKey !!!
-        Map<String, String> data = RequestTokenStore.instance().store(consumerKey, callBack);
+        //Map<String, String> data = RequestTokenStore.instance().store(consumerKey, callBack);
+        OAuthToken rToken = getOAuthTokenStore().createRequestToken(consumerKey, callBack);
 
         httpResponse.setContentType("application/x-www-form-urlencoded");
         httpResponse.setStatus(HttpServletResponse.SC_OK);
@@ -199,11 +208,13 @@ public class NuxeoOAuthFilter implements Filter {
         StringBuffer sb = new StringBuffer();
         sb.append(OAuth.OAUTH_TOKEN);
         sb.append("=");
-        sb.append(data.get(OAuth.OAUTH_TOKEN));
+        //sb.append(data.get(OAuth.OAUTH_TOKEN));
+        sb.append(rToken.getToken());
         sb.append("&");
         sb.append(OAuth.OAUTH_TOKEN_SECRET);
         sb.append("=");
-        sb.append(data.get(OAuth.OAUTH_TOKEN_SECRET));
+        //sb.append(data.get(OAuth.OAUTH_TOKEN_SECRET));
+        sb.append(rToken.getTokenSecret());
         sb.append("&oauth_callback_confirmed=true");
 
         log.info("returning : " + sb.toString());
@@ -218,13 +229,14 @@ public class NuxeoOAuthFilter implements Filter {
         String consumerKey = message.getConsumerKey();
         String token = message.getToken();
 
-        OAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
         OAuthAccessor accessor = new OAuthAccessor(consumer);
 
-        Map<String, String> data = RequestTokenStore.instance().get(token);
+        //Map<String, String> data = RequestTokenStore.instance().get(token);
+        OAuthToken rToken = getOAuthTokenStore().getRequestToken(token);
 
-        accessor.requestToken = data.get(OAuth.OAUTH_TOKEN);
-        accessor.tokenSecret = data.get(OAuth.OAUTH_TOKEN_SECRET);
+        accessor.requestToken = rToken.getToken();
+        accessor.tokenSecret = rToken.getTokenSecret();
 
         OAuthValidator validator = getValidator();
 
@@ -245,23 +257,31 @@ public class NuxeoOAuthFilter implements Filter {
         log.info("OAuth verifier = " + verif);
 
         // cleanup temp store
-        RequestTokenStore.instance().remove(token);
+        //RequestTokenStore.instance().remove(token);
 
-        if (data.get("oauth_verifier").equals(verif)) {
+        //if (data.get("oauth_verifier").equals(verif)) {
+        if (rToken.getVerifier().equals(verif)) {
+
             // Ok we can authenticate
-            Map<String, String> newdata = AccessTokenStore.instance().generate(data);
+
+            OAuthToken aToken = getOAuthTokenStore().createAccessTokenFromRequestToken(rToken);
+
+            //Map<String, String> newdata = AccessTokenStore.instance().generate(data);
 
             httpResponse.setContentType("application/x-www-form-urlencoded");
             httpResponse.setStatus(HttpServletResponse.SC_OK);
 
+            // XXX WRONG !!!
             StringBuffer sb = new StringBuffer();
             sb.append(OAuth.OAUTH_TOKEN);
             sb.append("=");
-            sb.append(data.get(OAuth.OAUTH_TOKEN));
+            //sb.append(data.get(OAuth.OAUTH_TOKEN));
+            sb.append(aToken.getToken());
             sb.append("&");
             sb.append(OAuth.OAUTH_TOKEN_SECRET);
             sb.append("=");
-            sb.append(data.get(OAuth.OAUTH_TOKEN_SECRET));
+            //sb.append(data.get(OAuth.OAUTH_TOKEN_SECRET));
+            sb.append(aToken.getTokenSecret());
 
             log.info("returning : " + sb.toString());
 
@@ -286,7 +306,7 @@ public class NuxeoOAuthFilter implements Filter {
                 + consumerKey + " and signature method "
                 + signatureMethod);
 
-        OAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
+        NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
 
         if (consumer == null) {
             log.error("Consumer " + consumerKey + " is unknow, can not authenticated");
@@ -297,13 +317,18 @@ public class NuxeoOAuthFilter implements Filter {
             OAuthAccessor accessor = new OAuthAccessor(consumer);
             OAuthValidator validator = getValidator();
 
-            Map<String, String> data = AccessTokenStore.instance().get(message.getToken());
+            //Map<String, String> data = AccessTokenStore.instance().get(message.getToken());
+            OAuthToken aToken = getOAuthTokenStore().getAccessToken(message.getToken());
+
             String targetLogin = null;
-            if (data!=null) {
+            if (aToken!=null) {
                 // Auth was done via 3 legged
-                accessor.accessToken = data.get(OAuth.OAUTH_TOKEN);
-                accessor.tokenSecret = data.get(OAuth.OAUTH_TOKEN_SECRET);
-                targetLogin = data.get("nuxeo-login");
+                //accessor.accessToken = data.get(OAuth.OAUTH_TOKEN);
+                accessor.accessToken = aToken.getToken();
+                //accessor.tokenSecret = data.get(OAuth.OAUTH_TOKEN_SECRET);
+                accessor.tokenSecret = aToken.getTokenSecret();
+                //targetLogin = data.get("nuxeo-login");
+                targetLogin = aToken.getNuxeoLogin();
             } else {
                 // find login from consumer ?
                 // or find login from OpenSocial headers
@@ -325,12 +350,6 @@ public class NuxeoOAuthFilter implements Filter {
             }
         }
         return null;
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
-
     }
 
 }

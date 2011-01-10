@@ -57,9 +57,11 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.login.TrustingLoginPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
+import org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain;
 import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -315,6 +317,19 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         doInitIfNeeded();
 
+        List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
+
+        if (preFilters==null) {
+            doFilterInternal(request, response, chain);
+        } else {
+            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(preFilters, chain, this);
+            chainWithPreFilters.doFilter(request, response);
+        }
+    }
+
+    public void doFilterInternal(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+
         // NXP-5555: set encoding to UTF-8 in case this method is called before
         // encoding is set to UTF-8 on the request
         if (request.getCharacterEncoding() == null) {
@@ -560,6 +575,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (service==null && Framework.getRuntime()!=null) {
             service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
+            // init preFilters
+            service.initPreFilters();
             if (service == null) {
                 log.error("Unable to get Service "
                         + PluggableAuthenticationService.NAME);

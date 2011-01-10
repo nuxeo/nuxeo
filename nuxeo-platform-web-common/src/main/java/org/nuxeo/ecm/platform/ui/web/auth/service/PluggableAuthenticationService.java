@@ -19,14 +19,18 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
@@ -34,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
@@ -64,12 +69,18 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_OPENURL = "openUrl";
 
+    public static final String EP_PREFILTER = "preFilter";
+
     private static final Log log = LogFactory
             .getLog(PluggableAuthenticationService.class);
 
     private Map<String, AuthenticationPluginDescriptor> authenticatorsDescriptors;
 
     private Map<String, NuxeoAuthenticationPlugin> authenticators;
+
+    private Map<String, AuthPreFilterDescriptor> preFiltersDesc;
+
+    private List<NuxeoAuthPreFilter> preFilters;
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
 
@@ -188,6 +199,12 @@ public class PluggableAuthenticationService extends DefaultComponent {
         } else if (extensionPoint.equals(EP_SPECIFIC_CHAINS)) {
             SpecificAuthChainDescriptor desc = (SpecificAuthChainDescriptor) contribution;
             specificAuthChains.put(desc.name, desc);
+        } else if (extensionPoint.equals(EP_PREFILTER)) {
+            AuthPreFilterDescriptor desc = (AuthPreFilterDescriptor) contribution;
+            if (preFiltersDesc==null) {
+                preFiltersDesc = new HashMap<String, AuthPreFilterDescriptor>();
+            }
+            preFiltersDesc.put(desc.getName(),desc);
         }
     }
 
@@ -427,4 +444,33 @@ public class PluggableAuthenticationService extends DefaultComponent {
         return openUrls;
     }
 
+    // preFilter management
+
+    public synchronized void initPreFilters() {
+
+        List<AuthPreFilterDescriptor> sortableDesc = new ArrayList<AuthPreFilterDescriptor>();
+
+        sortableDesc.addAll(preFiltersDesc.values());
+
+        Collections.sort(sortableDesc);
+
+        preFilters = new ArrayList<NuxeoAuthPreFilter>();
+
+        for (AuthPreFilterDescriptor desc : sortableDesc) {
+            try {
+                NuxeoAuthPreFilter preFilter = (NuxeoAuthPreFilter) desc.getClassName().newInstance();
+                preFilters.add(preFilter);
+            }
+            catch (Exception e) {
+                log.error("Unable to create preFilter " + desc.getName() + " and class" + desc.getClassName(), e);
+            }
+        }
+    }
+
+    public List<NuxeoAuthPreFilter> getPreFilters() {
+        if (preFilters==null || preFilters.size()==0) {
+            return null;
+        }
+        return preFilters;
+    }
 }

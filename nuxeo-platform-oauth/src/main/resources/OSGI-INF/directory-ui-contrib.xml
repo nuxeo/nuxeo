@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.directoryUIContrib">
+
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
+    point="directories">
+    <directory name="oauthConsumers" layout="oauthConsumerLayout"
+      sortField="consumerKey" />
+    <directory name="oauthTokens" layout="oauthTokenLayout"
+      sortField="token" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="oauthConsumerLayout">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>consumerSecret</widget>
+        </row>
+        <row>
+          <widget>enabled</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>allowSignedFetch</widget>
+        </row>
+        <row>
+          <widget>callbackURL</widget>
+        </row>
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.consumerKey</field>
+        </fields>
+      </widget>
+      <widget name="consumerSecret" type="text">
+        <labels>
+          <label mode="any">Consumer Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.consumerSecret</field>
+        </fields>
+      </widget>
+      <widget name="enabled" type="template">
+        <labels>
+          <label mode="any">Enabled</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.enabled</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.description</field>
+        </fields>
+      </widget>
+
+      <widget name="allowSignedFetch" type="template">
+        <labels>
+          <label mode="any">Allow 2 legged auth</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.allowSignedFetch</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+        </properties>
+      </widget>
+
+      <widget name="callbackURL" type="text">
+        <labels>
+          <label mode="any">Callback URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.callbackURL</field>
+        </fields>
+      </widget>
+
+    </layout>
+
+
+
+
+
+
+    <layout name="oauthTokenLayout">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>token</widget>
+        </row>
+        <row>
+          <widget>tokenSecret</widget>
+        </row>
+        <row>
+          <widget>callbackUrl</widget>
+        </row>
+        <row>
+          <widget>nuxeoLogin</widget>
+        </row>
+        <row>
+          <widget>duration</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.consumerKey</field>
+        </fields>
+      </widget>
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+      </widget>
+      <widget name="token" type="text">
+        <labels>
+          <label mode="any">Token</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.token</field>
+        </fields>
+      </widget>
+      <widget name="tokenSecret" type="text">
+        <labels>
+          <label mode="any">Token Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.tokenSecret</field>
+        </fields>
+      </widget>
+      <widget name="callbackUrl" type="text">
+        <labels>
+          <label mode="any">Callback URL</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.callbackUrl</field>
+        </fields>
+      </widget>
+      <widget name="nuxeoLogin" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.nuxeoLogin</field>
+        </fields>
+      </widget>
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration in minutes</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+      </widget>
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation date</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+      </widget>
+    </layout>
+  </extension>
+</component>
