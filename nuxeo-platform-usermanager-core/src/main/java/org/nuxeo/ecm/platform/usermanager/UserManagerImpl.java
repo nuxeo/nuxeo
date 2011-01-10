@@ -1115,7 +1115,12 @@ public class UserManagerImpl implements UserManager {
     protected List<String> getLeafPermissions(String perm)
             throws ClientException {
         ArrayList<String> permissions = new ArrayList<String>();
-        PermissionProvider permissionProvider = Framework.getLocalService(PermissionProvider.class);
+        PermissionProvider permissionProvider;
+        try {
+            permissionProvider = Framework.getService(PermissionProvider.class);
+        } catch (Exception e) {
+            throw new Error("An unexpected error occured", e);
+        }
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
         if (subpermissions == null || subpermissions.length <= 0) {
             // it's a leaf
@@ -1150,14 +1155,18 @@ public class UserManagerImpl implements UserManager {
                 List<String> acePermissions;
 
                 acePermissions = getLeafPermissions(ace.getPermission());
+                // Everything is a special permission (not compound)
                 if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
-                    // it seems that with everything, it does return an empty
-                    // array
-                    acePermissions = Arrays.asList(Framework.getLocalService(
-                            PermissionProvider.class).getPermissions());
+                    try {
+                        acePermissions = Arrays.asList(Framework.getService(
+                                PermissionProvider.class).getPermissions());
+                    } catch (Exception e) {
+                        throw new Error("An unexpected error occured", e);
+                    }
                 }
+
                 if (acePermissions.containsAll(currentPermissions)) {
-                    // special case: everybody perm grand false, don't take in
+                    // special case: everybody perm grant false, don't take in
                     // account the previous ace
                     if (SecurityConstants.EVERYONE.equals(ace.getUsername())
                             && !ace.isGranted()) {
