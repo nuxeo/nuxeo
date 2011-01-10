@@ -36,7 +36,6 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
 import com.sun.facelets.tag.jsf.ConverterConfig;
-import com.sun.facelets.tag.jsf.core.ConvertNumberHandler;
 
 /**
  * Double widget.
@@ -62,7 +61,7 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, new TagAttributes(new TagAttribute[0]), leaf,
                     DoubleConverter.CONVERTER_ID);
-            ConvertHandler convert = new ConvertNumberHandler(convertConfig);
+            ConvertHandler convert = new ConvertHandler(convertConfig);
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,
                     convert, HtmlInputText.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
@@ -75,7 +74,7 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, new TagAttributes(new TagAttribute[0]), leaf,
                     DoubleConverter.CONVERTER_ID);
-            ConvertHandler convert = new ConvertNumberHandler(convertConfig);
+            ConvertHandler convert = new ConvertHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(
                     attributes, convert, HtmlOutputText.COMPONENT_TYPE, null);
             return output;
