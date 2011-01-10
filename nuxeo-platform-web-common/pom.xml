@@ -68,6 +68,10 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.oauth.core</groupId>
+      <artifactId>oauth</artifactId>
+    </dependency>
     <!-- to get the OAuthSecurityToken into the HttpRequest during Filtering -->
     <dependency>
       <groupId>org.apache.shindig</groupId>
