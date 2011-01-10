@@ -22,9 +22,14 @@ package org.nuxeo.launcher;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,16 +53,19 @@ public class Launcher {
 
     /**
      * @param args
+     * @throws ConfigurationException
      */
-    public Launcher(String[] params) {
+    public Launcher(String[] params) throws ConfigurationException {
         this.params = params;
         configurationGenerator = new ConfigurationGenerator();
         if (configurationGenerator.isJBoss) {
-            throw new UnsupportedOperationException();
+            nuxeoThread = new NuxeoJBossThread(configurationGenerator);
         } else if (configurationGenerator.isJetty) {
-            throw new UnsupportedOperationException();
+            nuxeoThread = new NuxeoJettyThread(configurationGenerator);
         } else if (configurationGenerator.isTomcat) {
             nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
+        } else {
+            throw new ConfigurationException("Unknown server !");
         }
     }
 
@@ -105,8 +113,6 @@ public class Launcher {
 
         // Read or set bind address
 
-        // Detect host server
-
         // Setup server parameters
 
         // Check old paths
@@ -118,8 +124,8 @@ public class Launcher {
         } else if ("startbg".equalsIgnoreCase(command)
                 || "start".equalsIgnoreCase(command)) {
             configure();
-            redirectConsoleToFile();
-            start();
+            // redirectConsoleToFile();
+            startbg();
         } else if ("console".equalsIgnoreCase(command)) {
             configure();
             start();
@@ -128,7 +134,7 @@ public class Launcher {
         } else if ("restart".equalsIgnoreCase(command)) {
             stop();
             configure();
-            start();
+            startbg();
         } else if ("configure".equalsIgnoreCase(command)) {
             configure();
         } else if ("pack".equalsIgnoreCase(command)) {
@@ -137,9 +143,51 @@ public class Launcher {
         }
     }
 
+    private Process startbg() throws IOException {
+        return start(true);
+    }
+
+    public Process start(boolean daemon) throws IOException {
+        File javaExec = new File(System.getProperty("java.home"), "bin"
+                + File.separator + "java");
+        File jarLauncher = new File(configurationGenerator.getNuxeoHome(),
+                "bin").listFiles(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File dir, String name) {
+                if (name.startsWith("nuxeo-launcher")) {
+                    return true;
+                } else
+                    return false;
+            }
+        })[0];
+        List<String> command = new ArrayList<String>();
+        command.add(javaExec.getPath());
+        command.add("-cp");
+        command.add(jarLauncher.getPath());
+        command.add(NuxeoThread.class.getName());
+        command.addAll(Arrays.asList(params));
+//        if (daemon) {
+            command.add("&");
+//        }
+        ProcessBuilder pb = new ProcessBuilder(command);
+        Map<String, String> env = pb.environment();
+        env.put(ConfigurationGenerator.NUXEO_HOME,
+                configurationGenerator.getNuxeoHome().getPath());
+        env.put(ConfigurationGenerator.NUXEO_CONF,
+                configurationGenerator.getNuxeoConf().getPath());
+        pb.directory(configurationGenerator.getNuxeoHome());
+        log.debug("Command: " + command);
+        log.debug("Env: " + env);
+        Process nuxeoProcess = pb.start();
+        // log.info("Process ID: "+((UNI)nuxeoProcess));
+        return nuxeoProcess;
+    }
+
     private void redirectConsoleToFile() {
         // Logger.getRootLogger().removeAppender("CONSOLE");
         try {
+            configurationGenerator.getLogDir().mkdirs();
             PrintStream fileStream = new PrintStream(
                     new FileOutputStream(new File(
                             configurationGenerator.getLogDir(), "console.log")));
@@ -171,8 +219,15 @@ public class Launcher {
         throw new UnsupportedOperationException();
     }
 
-    private void start() {
-        nuxeoThread.start();
+    private void start() throws IOException, ConfigurationException {
+         NuxeoThread.main(params);
+//        Process nuxeoProcess = start(false);
+//        log.debug("after start, before waitfor()");
+//        try {
+//            nuxeoProcess.waitFor();
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private void configure() throws ConfigurationException {

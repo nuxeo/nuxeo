@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.commons.MutableClassLoader;
 import org.nuxeo.launcher.commons.MutableClassLoaderDelegate;
+import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 
@@ -103,14 +104,46 @@ public abstract class NuxeoThread extends Thread {
 
     protected void addToClassPath(MutableClassLoader loader, String filename)
             throws MalformedURLException {
-                File classPathEntry = new File(configurationGenerator.getNuxeoHome(),
-                        filename);
-                if (!classPathEntry.exists()) {
-                    throw new RuntimeException(
-                            "Tried to add inexistant classpath entry: "
-                                    + classPathEntry);
-                }
-                loader.addURL(classPathEntry.toURI().toURL());
-            }
+        File classPathEntry = new File(configurationGenerator.getNuxeoHome(),
+                filename);
+        if (!classPathEntry.exists()) {
+            throw new RuntimeException(
+                    "Tried to add inexistant classpath entry: "
+                            + classPathEntry);
+        }
+        loader.addURL(classPathEntry.toURI().toURL());
+    }
 
+    public static void main(String[] args) throws ConfigurationException {
+        Thread nuxeoThread;
+        ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
+        if (configurationGenerator.isJBoss) {
+            nuxeoThread = new NuxeoJBossThread(configurationGenerator);
+        } else if (configurationGenerator.isJetty) {
+            nuxeoThread = new NuxeoJettyThread(configurationGenerator);
+        } else if (configurationGenerator.isTomcat) {
+            nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
+        } else {
+            throw new ConfigurationException("Unknown server !");
+        }
+        if (configurationGenerator.init()) {
+            nuxeoThread.setDaemon(true);
+            nuxeoThread.start();
+        }
+        synchronized (nuxeoThread) {
+            try {
+                nuxeoThread.wait();
+            } catch (InterruptedException e) {
+                log.debug(e);
+                System.out.println("DEBUG: " + e);
+                nuxeoThread.interrupt();
+                try {
+                    nuxeoThread.join(3000);
+                } catch (InterruptedException e1) {
+                    log.debug(e1);
+                    System.out.println("DEBUG: " + e1);
+                }
+            }
+        }
+    }
 }
