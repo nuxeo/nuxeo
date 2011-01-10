@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>serialReviewOK</title>
 </head>
 <body>
@@ -10,9 +13,14 @@
 </thead><tbody>
 <!--@Test groups:SerialReviewOK,off|depends:SerialReviewAbandon,ParallelReviewOK-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium serialReviewOK</td>
-        <td></td>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium serialReviewOK</td>
+	<td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -52,17 +60,17 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table//tr[2]//input</td>
+	<td>//table[@class=&quot;dataInput&quot;]/tbody/tr/td[2]/span/table//tr[2]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationAllowed"]</td>
+	<td>//input[@value=&quot;workflowDocumentModificationAllowed&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>//input[@value=&quot;Start&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -78,17 +86,17 @@
 <!--Chargement de la liste-->
 <tr>
 	<td>select</td>
-	<td>//div[@class="tabsContent"]//div[4]//table[@class="dataInput"]//tr[1]/td[2]/select</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//div[4]//table[@class=&quot;dataInput&quot;]//tr[1]/td[2]/select</td>
 	<td>label=serial_review_list</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Load selected for the current workflow"]</td>
+	<td>//input[@value=&quot;Load selected for the current workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -98,7 +106,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -124,17 +132,17 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/textarea</td>
 	<td>desc testNote1 modified during a serial review</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
+	<td>//input[@value=&quot;ACTION_INCREMENT_MINOR&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -154,7 +162,7 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[3]//form//textarea</td>
 	<td>allright for me</td>
 </tr>
 <tr>
@@ -230,7 +238,7 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[3]//form//textarea</td>
 	<td>Allright for me as well</td>
 </tr>
 <tr>
@@ -306,7 +314,7 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[3]//form//textarea</td>
 	<td>I don't agree!</td>
 </tr>
 <tr>
@@ -382,17 +390,17 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/textarea</td>
 	<td>desc testNote1 modified during a serial review again</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
+	<td>//input[@value=&quot;ACTION_INCREMENT_MINOR&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -417,7 +425,7 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[3]//form//textarea</td>
 	<td>I still agree</td>
 </tr>
 <tr>
@@ -493,17 +501,17 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/textarea</td>
 	<td>desc testNote1 modified during a serial review again and again</td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="ACTION_INCREMENT_MINOR"]</td>
+	<td>//input[@value=&quot;ACTION_INCREMENT_MINOR&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -528,7 +536,7 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[3]//form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[3]//form//textarea</td>
 	<td>allright, allright!</td>
 </tr>
 <tr>

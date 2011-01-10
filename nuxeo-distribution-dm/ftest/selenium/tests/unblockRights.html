@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>unblockRights</title>
 </head>
 <body>
@@ -9,16 +12,16 @@
 <tr><td rowspan="1" colspan="3">unblockRights</td></tr>
 </thead><tbody>
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium unblockRights</td>
-        <td></td>
-</tr>
-<!--Identification-->
-<tr>
 	<td>setTimeout</td>
 	<td>120000</td>
 	<td></td>
 </tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium unblockRights</td>
+	<td></td>
+</tr>
+<!--Identification-->
 <tr>
 	<td>open</td>
 	<td>logout</td>
@@ -51,9 +54,9 @@
 </tr>
 <!--Déboquer l'héritage des droits-->
 <tr>
-        <td>clickAndWait</td>
-        <td>link=Manage</td>
-        <td></td>
+	<td>clickAndWait</td>
+	<td>link=Manage</td>
+	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -67,12 +70,12 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//form[@id="block_inherit"]/input[@type="checkbox"]</td>
+	<td>//form[@id=&quot;block_inherit&quot;]/input[@type=&quot;checkbox&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyNotChecked</td>
-	<td>//form[@id="block_inherit"]/input[@type="checkbox"]</td>
+	<td>//form[@id=&quot;block_inherit&quot;]/input[@type=&quot;checkbox&quot;]</td>
 	<td></td>
 </tr>
 <tr>

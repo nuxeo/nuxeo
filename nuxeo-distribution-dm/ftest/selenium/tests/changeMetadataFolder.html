@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>changeMetadataFolder</title>
 </head>
 <body>
@@ -12,9 +15,14 @@
 <!--Ce test provoque une erreur 404 (NXP-1856)-->
 <!--Identification-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium changeMetadataFolder</td>
-        <td></td>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium changeMetadataFolder</td>
+	<td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -64,18 +72,18 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//table[@class="dataInput"]//tr[2]//input</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[2]//input</td>
 	<td>copyright Nuxeo 2007</td>
 </tr>
 <!--!!! A rajouter: test du choix du continent puis du pays-->
 <tr>
 	<td>type</td>
-	<td>//table[@class="dataInput"]//tr[8]//input</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[8]//input</td>
 	<td>English (United Kingdom)</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Save"]</td>
+	<td>//input[@value=&quot;Save&quot;]</td>
 	<td></td>
 </tr>
 <!--Déconnexion-->

@@ -1,6 +1,9 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
 <title>serialReviewAddReviewers</title>
 </head>
 <body>
@@ -10,9 +13,14 @@
 </thead><tbody>
 <!--@Test groups:SerialReviewAddReviewers,off|depends:CreateNote-->
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium serialReviewAddReviewers</td>
-        <td></td>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=INFO&amp;message=----- Selenium serialReviewAddReviewers</td>
+	<td></td>
 </tr>
 <!--Identification-->
 <tr>
@@ -53,17 +61,17 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@class="dataInput"]/tbody/tr/td[2]/span/table/tbody/tr[2]//input</td>
+	<td>//table[@class=&quot;dataInput&quot;]/tbody/tr/td[2]/span/table/tbody/tr[2]//input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//input[@value="workflowDocumentModificationNotAllowed"]</td>
+	<td>//input[@value=&quot;workflowDocumentModificationNotAllowed&quot;]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start"]</td>
+	<td>//input[@value=&quot;Start&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -94,7 +102,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <!--vérification des droits de lecture des non-intervenants-->
@@ -135,7 +143,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//div[@id="lock_unlock_button"]</td>
+	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -145,7 +153,7 @@
 </tr>
 <tr>
 	<td>verifyElementNotPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -206,12 +214,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//td[@class=&quot;labelField&quot;]//input</td>
 	<td>bree</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -226,22 +234,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table[@class=&quot;rightsAddManager&quot;]'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[3]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table//textarea</td>
 	<td>Comment for bree</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value=&quot;Add&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -251,7 +259,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -267,7 +275,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Start the workflow"]</td>
+	<td>//input[@value=&quot;Start the workflow&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -343,7 +351,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -353,17 +361,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//td[@class=&quot;labelField&quot;]//input</td>
 	<td>lbramard</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -378,22 +386,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table[@class=&quot;rightsAddManager&quot;]'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[3]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table//textarea</td>
 	<td>Comment for lbramard</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value=&quot;Add&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -480,7 +488,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -490,17 +498,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//td[@class=&quot;labelField&quot;]//input</td>
 	<td>jdoe</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -515,22 +523,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table[@class=&quot;rightsAddManager&quot;]'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[3]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table//textarea</td>
 	<td>Comment for jdoe</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value=&quot;Add&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -617,7 +625,7 @@
 </tr>
 <tr>
 	<td>verifyNotVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
@@ -627,17 +635,17 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//form</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//form</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//td[@class="labelField"]//input</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//td[@class=&quot;labelField&quot;]//input</td>
 	<td>jsmith</td>
 </tr>
 <tr>
 	<td>submitAndWait</td>
-	<td>//div[@class="tabsContent"]//form/</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//form/</td>
 	<td></td>
 </tr>
 <tr>
@@ -652,22 +660,22 @@
 </tr>
 <tr>
 	<td>waitForCondition</td>
-	<td>var value = selenium.getText('//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table[@class="rightsAddManager"]'); value.match(/Remove/);</td>
+	<td>var value = selenium.getText('//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table[@class=&quot;rightsAddManager&quot;]'); value.match(/Remove/);</td>
 	<td>15000</td>
 </tr>
 <tr>
 	<td>select</td>
-	<td>//table[@class="dataInput"]//tr[3]//select</td>
+	<td>//table[@class=&quot;dataInput&quot;]//tr[3]//select</td>
 	<td>label=Diffusion</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]/div/div[2]//div[@class="boxBody"]//table//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]/div/div[2]//div[@class=&quot;boxBody&quot;]//table//textarea</td>
 	<td>Comment for jsmith</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Add"]</td>
+	<td>//input[@value=&quot;Add&quot;]</td>
 	<td></td>
 </tr>
 <tr>
@@ -729,12 +737,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//div[@class="tabsContent"]//div[5]/form//textarea</td>
+	<td>//div[@class=&quot;tabsContent&quot;]//div[5]/form//textarea</td>
 	<td>Abandoning serial review #2</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>//input[@value="Abandon workflow"]</td>
+	<td>//input[@value=&quot;Abandon workflow&quot;]</td>
 	<td></td>
 </tr>
 <!--vérification de l'abandon-->
@@ -745,7 +753,7 @@
 </tr>
 <tr>
 	<td>verifyElementPresent</td>
-	<td>//div[@id="lock_unlock_button"]</td>
+	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
 	<td></td>
 </tr>
 <tr>
