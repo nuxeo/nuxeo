@@ -54,13 +54,6 @@
       </modules>
     </profile>
     <profile>
-      <id>shell</id>
-      <modules>
-        <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
-      </modules>
-    </profile>
-    <profile>
       <id>nuxeo-cap</id>
       <modules>
         <module>nuxeo-distribution-cap</module>
@@ -111,7 +104,6 @@
       </activation>
       <modules>
         <module>nuxeo-distribution-base</module>
-        <module>nuxeo-distribution-shell</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-distribution-jboss</module>
@@ -139,11 +131,6 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-opencmis-impl</artifactId>
         <version>${nuxeo.opencmis.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-shell-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -209,12 +196,6 @@
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
         <classifier>nuxeo-dm-cmis</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-shell</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

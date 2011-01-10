@@ -127,12 +127,11 @@
     <echo message="jboss                - build all JBoss distributions" />
     <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
     <echo message="tomcat               - build all Tomcat distribution" />
-    <echo message="shell                - build Nuxeo Shell" />
     <echo message="all-distributions    - build all available distributions" />
   </target>
   <target name="choose-distrib" unless="distrib">
     <input message="Which distribution do you want to build?"
-           validargs="nuxeo-cap,nuxeo-dm,jboss,jetty,shell,tomcat,all-distributions"
+           validargs="nuxeo-cap,nuxeo-dm,jboss,jetty,tomcat,all-distributions"
            addproperty="distrib" />
   </target>
   <target name="distrib"
