@@ -5,12 +5,12 @@
     <Require feature="oauthpopup" />
     <OAuth>
       <Service>
-        <Access url="http://marge:7070/plugins/servlet/oauth/access-token"
+        <Access url="http://127.0.0.1:9090/plugins/servlet/oauth/access-token"
           method="POST" />
-        <Request url="http://marge:7070/plugins/servlet/oauth/request-token"
+        <Request url="http://127.0.0.1:9090/plugins/servlet/oauth/request-token"
           method="POST" />
         <Authorization
-          url="http://marge:7070/plugins/servlet/oauth/authorize" />
+          url="http://127.0.0.1:9090/plugins/servlet/oauth/authorize" />
       </Service>
     </OAuth>
   </ModulePrefs>
@@ -38,8 +38,8 @@
       <a href="#" id="approvaldone">I've approved access</a>
       once you've approved access to your data.
     </div>
-    
-    <script type="text/javascript" language="javascript" src="nuxeoauth.js"></script>       
+
+    <script type="text/javascript" language="javascript" src="nuxeoauth.js"></script>
         ]]>
   </Content>
 </Module>

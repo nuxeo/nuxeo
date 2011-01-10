@@ -65,11 +65,25 @@
       <icon>richtext_icon.png</icon>
     </internalGadget>
 
-    <internalGadget name="confluencefeed" disabled="true">
+    <internalGadget name="confluencefeed" disabled="false">
       <mountPoint>/confluencefeed</mountPoint>
       <entryPoint>confluencefeed.xml</entryPoint>
       <category>Atlassian</category>
       <icon>confluencefeed_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="simple2legged" disabled="false">
+      <mountPoint>/simple2legged</mountPoint>
+      <entryPoint>simple2legged.xml</entryPoint>
+      <category>Atlassian</category>
+      <icon>mappy_icon.png</icon>
+    </internalGadget>
+
+    <internalGadget name="nuxeoworkspaces" disabled="false">
+      <mountPoint>/nuxeoworkspaces</mountPoint>
+      <entryPoint>nuxeoworkspaces.xml</entryPoint>
+      <category>Atlassian</category>
+      <icon>Nuxeo.png</icon>
     </internalGadget>
 
   </extension>
