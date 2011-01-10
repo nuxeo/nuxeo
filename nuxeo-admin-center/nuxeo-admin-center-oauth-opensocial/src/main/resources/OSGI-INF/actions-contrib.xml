@@ -1,0 +1,40 @@
+<component name="org.nuxeo.connect.client.actions.monitoring">
+
+  <require>org.nuxeo.connect.client.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="OAuthOpensocial" link="view_admin-fragment.xhtml"
+      label="admcommand.OAuthOpensocial" order="40">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+        <action id="NuxeoServerKey" link="/incl/oauth/serverkey.xhtml"
+          label="tab.oauth.serverkey" order="10">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="ServiceProvides" link="/incl/oauth/providers.xhtml"
+          label="tab.oauth.providers" order="20">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="Consumers" link="/incl/oauth/consumers.xhtml"
+          label="tab.oauth.consumers" order="30">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+        <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
+          label="tab.oauth.externalGadgets" order="30">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
+  </extension>
+
+</component>
