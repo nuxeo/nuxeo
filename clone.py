@@ -21,8 +21,8 @@ for line in os.popen("mvn -N help:effective-pom"):
     addon = m.group(1)
 
     if os.path.isdir(addon):
-        print "Existing " + addon
+        print "Updating " + addon
     else:
         print "Cloning " + addon
         system("hg clone https://hg.nuxeo.org/addons/%s" % addon)
-        system("cd %s ; hg up %s" % (addon, branch))
+    system("cd %s ; hg up %s" % (addon, branch))
