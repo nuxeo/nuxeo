@@ -1122,16 +1122,16 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:creator</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
           </properties>
-          <widget>listing_author</widget>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:lastContributor</property>
+            <property name="sortPropertyName">dc:creator</property>
           </properties>
-          <widget>listing_last_contributor</widget>
+          <widget>listing_author</widget>
         </column>
         <column>
           <properties mode="any">
@@ -1210,16 +1210,16 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:creator</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
           </properties>
-          <widget>listing_author</widget>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="isSortable">false</property>
+            <property name="sortPropertyName">dc:creator</property>
           </properties>
-          <widget>listing_last_contributor</widget>
+          <widget>listing_author</widget>
         </column>
         <column>
           <properties mode="any">
@@ -1295,16 +1295,16 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:creator</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
           </properties>
-          <widget>listing_author</widget>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:lastContributor</property>
+            <property name="sortPropertyName">dc:creator</property>
           </properties>
-          <widget>listing_last_contributor</widget>
+          <widget>listing_author</widget>
         </column>
         <column>
           <properties mode="any">
@@ -1649,20 +1649,6 @@
           </properties>
           <widget>listing_modification_date</widget>
         </column>
-        <column name="creator">
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:creator</property>
-            <property name="label">label.content.header.author</property>
-          </properties>
-          <properties mode="edit_sort_infos">
-            <property name="showInSortInfoSelection">true</property>
-          </properties>
-          <properties mode="edit_sort_infos_map">
-            <property name="showInSortInfoSelection">true</property>
-          </properties>
-          <widget>listing_author</widget>
-        </column>
         <column name="lastContributor">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
@@ -1678,6 +1664,20 @@
             <property name="showInSortInfoSelection">true</property>
           </properties>
           <widget>listing_last_contributor</widget>
+        </column>
+        <column name="creator">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:creator</property>
+            <property name="label">label.content.header.author</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_author</widget>
         </column>
         <column name="version">
           <properties mode="any">
