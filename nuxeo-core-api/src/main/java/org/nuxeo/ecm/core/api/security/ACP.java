@@ -155,18 +155,22 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Returns the usernames having a given permission.
      *
+     * @deprecated Use the method from UserManager service getUsersForPermission instead
      * @param perm the permission name.
      * @return a list of usernames
      */
+    @Deprecated
     String[] listUsernamesForPermission(String perm);
 
     /**
      * Returns the usernames granted to perform an operation based on a list of
      * permissions.
      *
+     * @deprecated Use the method from UserManager service getUsersForPermission instead
      * @param perms the list of permissions.
      * @return a list of usernames
      */
+    @Deprecated
     String[] listUsernamesForAnyPermission(Set<String> perms);
 
     /**
