@@ -114,7 +114,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
                 "/", "testFile", "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
         blob.setFilename("test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
@@ -136,7 +136,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
                 "/", "testFile", "SimpleBlobDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
         blob.setFilename("test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
@@ -158,7 +158,7 @@ public class TestMimetypeIconUpdater extends SQLRepositoryTestCase {
                 "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
-        Blob blob = new StringBlob("SOMEDUMMYDATA");
+        Blob blob = new StringBlob("SOMEDUMMYDATA", null);
         blob.setFilename("test.pdf");
         if (setMimeType) {
             blob.setMimeType("application/pdf");
