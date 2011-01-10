@@ -184,6 +184,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         systemPropNameMap.put("WfIncOption", Model.MISC_WF_INC_OPTION_PROP);
         systemPropNameMap.put(BINARY_TEXT_SYS_PROP,
                 Model.FULLTEXT_BINARYTEXT_PROP);
+        systemPropNameMap.put(FULLTEXT_JOBID_SYS_PROP,
+                Model.FULLTEXT_JOBID_PROP);
     }
 
     public <T extends Serializable> void setSystemProp(String name, T value)

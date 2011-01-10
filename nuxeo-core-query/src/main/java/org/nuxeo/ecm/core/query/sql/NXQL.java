@@ -53,5 +53,7 @@ public class NXQL {
     public static final String ECM_VERSIONLABEL = "ecm:versionLabel";
 
     public static final String ECM_FULLTEXT = "ecm:fulltext";
+    
+    public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
 }

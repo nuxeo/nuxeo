@@ -39,7 +39,7 @@ public class StringBlob extends DefaultBlob implements Serializable {
     protected final String content;
 
     public StringBlob(String content) {
-        this(content, null, null);
+        this(content, "text/plain", null);
     }
 
     public StringBlob(String content, String ctype) {

@@ -220,18 +220,27 @@ public class PersistenceContext {
             }
         }
 
-        if (!dirtyBinaries.isEmpty()) {
-            log.debug("Queued documents for asynchronous fulltext extraction: "
-                    + dirtyBinaries.size());
-            EventContext eventContext = new EventContextImpl(dirtyBinaries,
-                    model.getFulltextInfo());
-            eventContext.setRepositoryName(session.getRepositoryName());
-            Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
-            try {
-                getEventProducer().fireEvent(event);
-            } catch (ClientException e) {
-                throw new StorageException(e);
-            }
+        updateFulltextBinaries(session, dirtyBinaries);
+    }
+
+    protected void updateFulltextBinaries(Session session, final Set<Serializable> dirtyBinaries) throws StorageException {
+        if (dirtyBinaries.isEmpty()) {
+            return;
+        }
+
+        // mark indexation in progress
+        for (Node node:session.getNodesByIds(new ArrayList<Serializable>(dirtyBinaries))) {            SimpleProperty simple = node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP);
+            node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(node.getId());
+        }
+
+        log.debug("Queued documents for asynchronous fulltext extraction: " + dirtyBinaries.size());
+        EventContext eventContext = new EventContextImpl(dirtyBinaries, model.getFulltextInfo());
+        eventContext.setRepositoryName(session.getRepositoryName());
+        Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
+        try {
+            getEventProducer().fireEvent(event);
+        } catch (ClientException e) {
+            throw new StorageException(e);
         }
     }
 

@@ -18,6 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -33,6 +36,13 @@ import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
  */
 public class SQLSimpleProperty extends SQLBaseProperty {
 
+   protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
+            Arrays.asList( 
+            Model.FULLTEXT_JOBID_PROP,
+            Model.FULLTEXT_BINARYTEXT_PROP, 
+            Model.MISC_LIFECYCLE_STATE_PROP
+            ));
+        
     private final SimpleProperty property;
 
     /**
@@ -61,7 +71,7 @@ public class SQLSimpleProperty extends SQLBaseProperty {
     }
 
     public void setValue(Object value) throws DocumentException {
-        if (!Model.MISC_LIFECYCLE_STATE_PROP.equals(getName())) {
+        if (!VERSION_WRITABLE_PROPS.contains(getName())) {
             checkWritable();
         }
         if (value != null && !(value instanceof Serializable)) {

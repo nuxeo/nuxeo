@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -120,8 +121,8 @@ public class BinaryTextListener implements PostCommitEventListener {
             if (!existsWithItsHierarchy(session, rootRef, docRef)) {
                 continue;
             }
-            DocumentModel doc = session.getDocument(docRef);
-            if (doc.isProxy()) {
+            DocumentModel indexedDoc = session.getDocument(docRef);
+            if (indexedDoc.isProxy()) {
                 // proxies don't have any fulltext attached, it's
                 // the target document that carries it
                 continue;
@@ -139,14 +140,18 @@ public class BinaryTextListener implements PostCommitEventListener {
                             fulltextInfo.propPathsByIndexBinary.get(indexName),
                             fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
                             fulltextInfo.indexesAllBinary.contains(indexName));
-                    List<Blob> blobs = extractor.getBlobs(doc);
+                    List<Blob> blobs = extractor.getBlobs(indexedDoc);
                     String text = blobsToText(blobs);
-                    try {
-                        session.setDocumentSystemProp(docRef,
-                                SQLDocument.BINARY_TEXT_SYS_PROP, text);
-                    } catch (DocumentException e) {
+                    DocumentModelList impactedDocs = session.query("SELECT * from Document where ecm:fulltextJobId = '".concat(indexedDoc.getId()).concat("'"));
+                    for (DocumentModel impactedDoc : impactedDocs) {
+                      try {
+                         DocumentRef ref = impactedDoc.getRef();
+                         session.setDocumentSystemProp(ref, SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
+                         session.setDocumentSystemProp(ref, SQLDocument.BINARY_TEXT_SYS_PROP , text);
+                      } catch (DocumentException e) {
                         log.error("Couldn't set fulltext on: " + id, e);
                         continue;
+                      }
                     }
                 }
             }

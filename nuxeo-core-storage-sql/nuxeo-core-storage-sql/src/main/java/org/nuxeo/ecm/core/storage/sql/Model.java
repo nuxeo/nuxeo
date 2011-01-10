@@ -226,6 +226,10 @@ public class Model {
 
     public static final String FULLTEXT_TABLE_NAME = "fulltext";
 
+    public static final String FULLTEXT_JOBID_PROP = "ecm:fulltextJobId";
+
+    public static final String FULLTEXT_JOBID_KEY = "jobid";
+
     public static final String FULLTEXT_FULLTEXT_PROP = "ecm:fulltext";
 
     public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
@@ -1287,6 +1291,8 @@ public class Model {
      * Special model for the fulltext table.
      */
     private void initFullTextModel() {
+        addPropertyInfo(null, FULLTEXT_JOBID_PROP, PropertyType.STRING,
+                FULLTEXT_TABLE_NAME, FULLTEXT_JOBID_KEY, false, StringType.INSTANCE, ColumnType.SYSNAME);
         for (String indexName : fulltextInfo.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
             if (dialect.getMaterializeFulltextSyntheticColumn()) {

@@ -238,7 +238,7 @@ public class TestBlob extends NXRuntimeTestCase {
 
         Blob blob = new StringBlob(s);
 
-        assertNull(blob.getMimeType());
+        assertEquals(blob.getMimeType(), "text/plain");
         assertNull(blob.getEncoding());
         assertEquals(1000000, blob.getLength());
 
