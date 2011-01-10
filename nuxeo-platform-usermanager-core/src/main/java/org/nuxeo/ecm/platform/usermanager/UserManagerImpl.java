@@ -1137,13 +1137,18 @@ public class UserManagerImpl implements UserManager {
         // The list of permission that is has "perm" as its (compound)
         // permission
         ArrayList<ACE> filteredACEbyPerm = new ArrayList<ACE>();
-        for (ACE ace : merged.getACEs()) {
-            // Checking if the permission contains the permission we want to
-            // check (we use the security service method for coumpound
-            // permissions)
-            List<String> acePermissions;
-            List<String> currentPermissions;
-            try {
+
+        List<String> currentPermissions = null;
+
+        try {
+            currentPermissions = getLeafPermissions(perm);
+
+            for (ACE ace : merged.getACEs()) {
+                // Checking if the permission contains the permission we want to
+                // check (we use the security service method for coumpound
+                // permissions)
+                List<String> acePermissions;
+
                 acePermissions = getLeafPermissions(ace.getPermission());
                 if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
                     // it seems that with everything, it does return an empty
@@ -1151,21 +1156,19 @@ public class UserManagerImpl implements UserManager {
                     acePermissions = Arrays.asList(Framework.getLocalService(
                             PermissionProvider.class).getPermissions());
                 }
-                currentPermissions = getLeafPermissions(perm);
-            } catch (ClientException e1) {
-                throw new Error("An unexpected error occured", e1);
-            }
-            if (acePermissions.containsAll(currentPermissions)) {
-                // special case: everybody perm grand false, don't take in
-                // account the previous ace
-                if (SecurityConstants.EVERYONE.equals(ace.getUsername())
-                        && !ace.isGranted()) {
-                    filteredACEbyPerm.clear();
-                } else {
-                    filteredACEbyPerm.add(ace);
+                if (acePermissions.containsAll(currentPermissions)) {
+                    // special case: everybody perm grand false, don't take in
+                    // account the previous ace
+                    if (SecurityConstants.EVERYONE.equals(ace.getUsername())
+                            && !ace.isGranted()) {
+                        filteredACEbyPerm.clear();
+                    } else {
+                        filteredACEbyPerm.add(ace);
+                    }
                 }
-
             }
+        } catch (ClientException e2) {
+            throw new Error("An unexpected error occured", e2);
         }
 
         for (ACE ace : filteredACEbyPerm) {
