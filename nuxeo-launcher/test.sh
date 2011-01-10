@@ -64,7 +64,6 @@ if [ -z "$JAVA_HOME" ]; then
   JAVA_HOME=`dirname "$JAVA_HOME"`
 fi
 PATH="$JAVA_HOME/bin:$PATH"
-echo JAVA_HOME=$JAVA_HOME
 
 while read line; do
   if [[ "$line" != \#* ]]; then
@@ -94,7 +93,6 @@ if [ "x$SERVER_SET" = "x" ]; then
     fi
   fi
 fi
-echo JAVA_OPTS=$JAVA_OPTS
 
 ## OS specific checks
 # Check file descriptor limit is not too low
@@ -115,111 +113,10 @@ if [ "$cygwin" = "false" ]; then
 fi
 
 launcher() {
-  if checkalive; then
-    die "Nuxeo is already running."
-  else
-    if [ "$1" = "background" ]; then
-      shift
-      echo "Command: $JAVA $JAVA_OPTS \"$PARAM_NUXEO_HOME\" \"$PARAM_NUXEO_CONF\" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@ 2>&1 &"
-      $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@ 2>&1 &
-      NUXEO_PID=$!
-      if [ ! -z "$NUXEO_PID" ]; then
-        echo $NUXEO_PID > "$PID"
-        sleep 1
-        echo PID: $NUXEO_PID
-      fi
-    else
-      echo Command: $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
-      $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
-    fi
-  fi
+    echo JAVA_HOME=$JAVA_HOME
+    echo JAVA_OPTS=$JAVA_OPTS
+    echo Command: $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
+    $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
 }
 
-waitforstart() {
-  return
-}
-
-checkalive() {
-  if [ ! -r "$PID" ]; then
-    return 1
-  fi
-  MYPID=`cat "$PID"`
-#  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
-  JPS=`jps -v | grep $MYPID`
-  if [ "x$JPS" = "x" ]; then
-    return 1
-  else
-    return 0
-  fi
-}
-
-stop() {
-  if checkalive; then
-    kill `cat "$PID"`
-    max_count=100
-    count=0
-    while [ $count -le $max_count ]; do
-      if checkalive; then
-        /bin/echo -n "."
-        count=`expr $count + 1`
-        sleep 1 || exit 1
-      else
-        rm "$PID"
-        echo "Nuxeo stopped."
-        return 0
-      fi
-    done
-    echo "Stopping process is taking too long - giving up. Check end of process `cat \"$PID\"`."
-  else
-    echo "Nuxeo is not running or $PID file is missing."
-  fi
-}
-
-warn() {
-  echo "WARNING: $*"
-}
-
-die() {
-  echo "ERROR: $*"
-  exit 1
-}
-
-status() {
-  if checkalive; then
-    echo "Nuxeo is running with process ID `cat \"$PID\"`"
-  else
-    echo "Nuxeo is not running."
-  fi
-}
-
-case "$1" in
-  status)
-    status
-    ;;
-  startbg)
-    launcher background $@
-    ;;
-  start)
-    launcher background $@
-    waitforstart
-    ;;
-  console)
-    launcher $@
-    ;;
-  stop)
-    stop
-    ;;
-  restart)
-    stop
-    start
-    ;;
-  configure)
-    launcher configure
-    ;;
-  pack)
-    launcher pack $@
-    ;;
-  *)
-    launcher
-    ;;
-esac
+launcher $@

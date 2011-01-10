@@ -23,11 +23,6 @@
         <artifactId>nuxeo-launcher-commons</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-      <dependency>
-        <groupId>commons-daemon</groupId>
-        <artifactId>commons-daemon</artifactId>
-        <version>1.0.3</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -49,8 +44,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-daemon</groupId>
-      <artifactId>commons-daemon</artifactId>
+      <groupId>org.artofsolving.jodconverter</groupId>
+      <artifactId>jodconverter-core</artifactId>
     </dependency>
   </dependencies>
 

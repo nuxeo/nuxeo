@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
 
 import org.nuxeo.launcher.commons.MutableClassLoader;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.config.JettyConfigurator;
 
 /**
  * Main Nuxeo server thread
@@ -34,12 +34,12 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
  * @author jcarsique
  * @since 5.4.1
  */
-public class NuxeoTomcatThread extends NuxeoThread {
+public class NuxeoJettyThread extends NuxeoThread {
 
     /**
      * @param configurationGenerator
      */
-    public NuxeoTomcatThread(ConfigurationGenerator configurationGenerator) {
+    public NuxeoJettyThread(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
 
@@ -47,7 +47,7 @@ public class NuxeoTomcatThread extends NuxeoThread {
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, SecurityException, NoSuchMethodException,
             IllegalArgumentException, InvocationTargetException {
-        startupClass = loader.loadClass(TomcatConfigurator.STARTUP_CLASS);
+        startupClass = loader.loadClass(JettyConfigurator.STARTUP_CLASS);
         Object server = startupClass.newInstance();
         @SuppressWarnings("unchecked")
         Method method = startupClass.getMethod("main", String[].class);

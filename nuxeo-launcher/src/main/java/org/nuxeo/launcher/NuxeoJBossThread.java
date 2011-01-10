@@ -34,12 +34,12 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
  * @author jcarsique
  * @since 5.4.1
  */
-public class NuxeoTomcatThread extends NuxeoThread {
+public class NuxeoJBossThread extends NuxeoThread {
 
     /**
      * @param configurationGenerator
      */
-    public NuxeoTomcatThread(ConfigurationGenerator configurationGenerator) {
+    public NuxeoJBossThread(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
     }
 
