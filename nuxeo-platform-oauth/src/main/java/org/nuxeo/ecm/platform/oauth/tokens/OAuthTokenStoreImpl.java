@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.oauth.tokens;
 
 import java.io.Serializable;
@@ -17,6 +36,17 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * Service implementation for {@link OAuthTokenStore}.
+ *
+ * This service is responsible for managing storage of the {@link OAuthToken}. A
+ * simple SQL Directory is used for ACCESS Token whereas a simple in memory
+ * storage is used for REQUEST Tokens.
+ *
+ *
+ * @author tiry
+ *
+ */
 public class OAuthTokenStoreImpl extends DefaultComponent implements
         OAuthTokenStore {
 
@@ -24,14 +54,13 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     protected static final String DIRECTORY_NAME = "oauthTokens";
 
-    protected Map<String, OAuthToken> requestTokenStore=new HashMap<String, OAuthToken>();
-
+    protected Map<String, OAuthToken> requestTokenStore = new HashMap<String, OAuthToken>();
 
     @Override
     public OAuthToken addVerifierToRequestToken(String token) {
 
         NuxeoOAuthToken rToken = (NuxeoOAuthToken) getRequestToken(token);
-        if (rToken!=null) {
+        if (rToken != null) {
             rToken.verifier = "NX-VERIF-" + UUID.randomUUID().toString();
         }
         return rToken;
@@ -41,48 +70,50 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     @Override
     public OAuthToken createAccessTokenFromRequestToken(OAuthToken requestToken) {
 
-        NuxeoOAuthToken aToken = new NuxeoOAuthToken((NuxeoOAuthToken)requestToken);
-        String token = "NX-AT-" +  UUID.randomUUID().toString();
-        aToken.token =token;
+        NuxeoOAuthToken aToken = new NuxeoOAuthToken(
+                (NuxeoOAuthToken) requestToken);
+        String token = "NX-AT-" + UUID.randomUUID().toString();
+        aToken.token = token;
         aToken.tokenSecret = "NX-ATS-" + UUID.randomUUID().toString();
-        aToken.type=OAuthToken.Type.ACCESS;
+        aToken.type = OAuthToken.Type.ACCESS;
 
         try {
-            aToken= storeAccessTokenAsDirectoryEntry(aToken);
+            aToken = storeAccessTokenAsDirectoryEntry(aToken);
             removeRequestToken(requestToken.getToken());
             return aToken;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error during directory persistence", e);
             return null;
         }
-     }
+    }
 
-    protected NuxeoOAuthToken getTokenFromDirectory(String token) throws Exception {
+    protected NuxeoOAuthToken getTokenFromDirectory(String token)
+            throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = ds.open(DIRECTORY_NAME);
         try {
             DocumentModel entry = session.getEntry(token);
-            if (entry==null) {
+            if (entry == null) {
                 return null;
             }
             return getTokenFromDirectoryEntry(entry);
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
 
-    protected NuxeoOAuthToken getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
+    protected NuxeoOAuthToken getTokenFromDirectoryEntry(DocumentModel entry)
+            throws ClientException {
         return new NuxeoOAuthToken(entry);
     }
 
-    protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(NuxeoOAuthToken aToken) throws Exception {
+    protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(
+            NuxeoOAuthToken aToken) throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = ds.open(DIRECTORY_NAME);
         try {
             DocumentModel entry = session.getEntry(aToken.getToken());
-            if (entry==null) {
+            if (entry == null) {
                 Map<String, Object> init = new HashMap<String, Object>();
                 init.put("token", aToken.getToken());
                 entry = session.createEntry(init);
@@ -92,21 +123,21 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             session.updateEntry(entry);
 
             return getTokenFromDirectoryEntry(session.getEntry(aToken.getToken()));
-        }
-        finally {
+        } finally {
             session.commit();
             session.close();
         }
     }
 
-
     @Override
     public OAuthToken createRequestToken(String consumerKey, String callBack) {
 
         NuxeoOAuthToken rToken = new NuxeoOAuthToken(consumerKey, callBack);
-        String token = "NX-RT-" + consumerKey + "-" + UUID.randomUUID().toString();
-        rToken.token =token;
-        rToken.tokenSecret = "NX-RTS-" + consumerKey + UUID.randomUUID().toString();
+        String token = "NX-RT-" + consumerKey + "-"
+                + UUID.randomUUID().toString();
+        rToken.token = token;
+        rToken.tokenSecret = "NX-RTS-" + consumerKey
+                + UUID.randomUUID().toString();
         rToken.type = OAuthToken.Type.REQUEST;
         requestTokenStore.put(token, rToken);
 
@@ -118,8 +149,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
         try {
             return getTokenFromDirectory(token);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while accessing Token SQL storage", e);
             return null;
         }
@@ -141,16 +171,14 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put("consumerKey", consumerKey);
                 DocumentModelList entries = session.query(filter);
-                for (DocumentModel entry :entries) {
+                for (DocumentModel entry : entries) {
                     result.add(new NuxeoOAuthToken(entry));
                 }
-            }
-            finally {
+            } finally {
                 session.commit();
                 session.close();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error during token listing", e);
         }
         return result;
@@ -168,16 +196,14 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put("nuxeoLogin", login);
                 DocumentModelList entries = session.query(filter);
-                for (DocumentModel entry :entries) {
+                for (DocumentModel entry : entries) {
                     result.add(new NuxeoOAuthToken(entry));
                 }
-            }
-            finally {
+            } finally {
                 session.commit();
                 session.close();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error during token listing", e);
         }
         return result;
@@ -190,8 +216,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         Session session = ds.open(DIRECTORY_NAME);
         try {
             session.deleteEntry(token);
-        }
-        finally {
+        } finally {
             session.commit();
             session.close();
         }

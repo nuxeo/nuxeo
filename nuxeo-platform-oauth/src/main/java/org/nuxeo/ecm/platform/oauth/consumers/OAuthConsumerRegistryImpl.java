@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.oauth.consumers;
 
 import java.util.ArrayList;
@@ -14,7 +33,15 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuthConsumerRegistry {
+/**
+ * Implementation of the {@link OAuthConsumerRegistry} Service. It's basically a
+ * simple Storage API on top of an SQL Directory.
+ *
+ * @author tiry
+ *
+ */
+public class OAuthConsumerRegistryImpl extends DefaultComponent implements
+        OAuthConsumerRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuthConsumerRegistryImpl.class);
 
@@ -24,12 +51,14 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
     public NuxeoOAuthConsumer getConsumer(String consumerKey) {
         try {
             NuxeoOAuthConsumer consumer = getEntry(consumerKey);
-            if (consumer==null && consumerKey.equals("confluence")) {
-                consumer = new NuxeoOAuthConsumer(null,consumerKey,"testoauthsharedsecret", null );
+            if (consumer == null && consumerKey.equals("confluence")) {
+                consumer = new NuxeoOAuthConsumer(null, consumerKey,
+                        "testoauthsharedsecret", null);
             }
             return consumer;
         } catch (Exception e) {
-            log.error("Unable to read consumer " + consumerKey + " from Directory backend", e);
+            log.error("Unable to read consumer " + consumerKey
+                    + " from Directory backend", e);
             return null;
         }
     }
@@ -39,18 +68,18 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
         Session session = ds.open(DIRECTORY_NAME);
         try {
             DocumentModel entry = session.getEntry(consumerKey);
-            if (entry==null) {
+            if (entry == null) {
                 return null;
             }
-            NuxeoOAuthConsumer consumer =  NuxeoOAuthConsumer.createFromDirectoryEntry(entry);
+            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry);
             return consumer;
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
 
-    public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) throws Exception {
+    public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer)
+            throws Exception {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = ds.open(DIRECTORY_NAME);
@@ -62,17 +91,15 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             consumer.asDocumentModel(entry);
             session.updateEntry(entry);
             session.commit();
-            if (entry==null) {
+            if (entry == null) {
                 return null;
             }
-            consumer =  NuxeoOAuthConsumer.createFromDirectoryEntry(entry);
+            consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry);
             return consumer;
-        }
-        finally {
+        } finally {
             session.close();
         }
     }
-
 
     @Override
     public void deleteConsumer(String consumerKey) {
@@ -82,11 +109,10 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             try {
                 session.deleteEntry(consumerKey);
                 session.commit();
-            }
-            finally {
+            } finally {
                 session.close();
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Unable to delete consumer " + consumerKey, e);
         }
     }
@@ -103,12 +129,10 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
                 for (DocumentModel entry : entries) {
                     result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry));
                 }
-            }
-            finally {
+            } finally {
                 session.close();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error while fetching consumer directory", e);
         }
         return result;
