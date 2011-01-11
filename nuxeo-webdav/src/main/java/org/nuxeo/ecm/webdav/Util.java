@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webdav;
 
+import net.java.dev.webdav.core.jaxrs.xml.properties.*;
 import net.java.dev.webdav.jaxrs.xml.conditions.*;
 import net.java.dev.webdav.jaxrs.xml.elements.*;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
@@ -85,7 +86,8 @@ public class Util {
                 NoExternalEntities.class, Owner.class, PreservedLiveProperties.class, Prop.class, PropertyUpdate.class,
                 PropFind.class, PropFindFiniteDepth.class, PropName.class, PropStat.class, Remove.class,
                 ResourceType.class, Response.class, ResponseDescription.class, Set.class, Shared.class, Status.class,
-                SupportedLock.class, TimeOut.class, Write.class});
+                SupportedLock.class, TimeOut.class, Write.class, IsCollection.class, IsFolder.class, IsHidden.class,
+                Win32CreationTime.class, Win32FileAttributes.class, Win32LastAccessTime.class, Win32LastModifiedTime.class});
     }
 
     public static Unmarshaller getUnmarshaller() throws JAXBException {

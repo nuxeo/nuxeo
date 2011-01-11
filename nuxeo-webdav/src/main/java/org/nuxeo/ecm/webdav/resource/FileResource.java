@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.webdav.Util;
+import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,8 +52,8 @@ import static javax.ws.rs.core.Response.Status.OK;
  */
 public class FileResource extends ExistingResource {
 
-    public FileResource(DocumentModel doc, HttpServletRequest request) throws Exception {
-        super(doc, request);
+    public FileResource(DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+        super(doc, request, backend);
     }
 
     @GET
@@ -67,8 +68,7 @@ public class FileResource extends ExistingResource {
 
     @PUT
     public Response put() throws Exception {
-        String token = Util.getTokenFromHeaders("if", request);
-        if (lockManager.isLocked(path) && !lockManager.canUnlock(path, token)) {
+        if (backend.isLocked(doc.getRef()) && !backend.canUnlock(doc.getRef())) {
             return Response.status(423).build();
         }
 
@@ -77,8 +77,8 @@ public class FileResource extends ExistingResource {
         content.setFilename(name);
 
         doc.getProperty("file:content").setValue(content);
-        session.saveDocument(doc);
-        session.save();
+        backend.getSession().saveDocument(doc);
+        backend.saveChanges();
 
         return Response.created(new URI(URLEncoder.encode(path, "UTF8"))).build();
     }
@@ -88,13 +88,15 @@ public class FileResource extends ExistingResource {
 
         Unmarshaller u = Util.getUnmarshaller();
 
-        PropFind propFind;
-        try {
-            propFind = (PropFind) u.unmarshal(request.getInputStream());
-        } catch (JAXBException e) {
-            return Response.status(400).build();
+        if (request.getInputStream() != null && request.getInputStream().available() > 0) {
+            PropFind propFind;
+            try {
+                propFind = (PropFind) u.unmarshal(request.getInputStream());
+            } catch (JAXBException e) {
+                return Response.status(400).build();
+            }
+            Prop prop = propFind.getProp();
         }
-        Prop prop = propFind.getProp();
         //Util.printAsXml(prop);
 
 
@@ -102,6 +104,7 @@ public class FileResource extends ExistingResource {
         Date creationDate = ((Calendar) doc.getPropertyValue("dc:created")).getTime();
         Blob content = (Blob) doc.getPropertyValue("file:content");
 
+        System.out.println("@PROPFIND. Path: " + path + " content:" + content.getLength());
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
                 new HRef(uriInfo.getRequestUri()), null, null, null,
