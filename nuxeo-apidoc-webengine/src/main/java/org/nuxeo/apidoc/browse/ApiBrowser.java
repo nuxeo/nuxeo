@@ -425,8 +425,8 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(value = "listContributions")
     public Object getContributions() {
-        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId,
-                ctx.getCoreSession());
+        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(
+                distributionId, ctx.getCoreSession());
         List<String> cIds = snapshot.getContributionIds();
         return getView("listContributions").arg("cIds", cIds).arg(
                 "contributions", snapshot.getContributions()).arg(

@@ -28,7 +28,7 @@
   <#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
   <tr class="${rowCss}">
     <td>
-      Java
+      Java<span style="display:none"> ${component.label}</span>
     </td>
     <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>
@@ -42,7 +42,7 @@
   <#assign rowCss = ((javaComponents?size + component_index) % 2 == 0)?string("even","odd")/>
   <tr class="${rowCss}">
     <td>
-      XML
+      XML<span style="display:none"> ${component.label}</span>
     </td>
     <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>

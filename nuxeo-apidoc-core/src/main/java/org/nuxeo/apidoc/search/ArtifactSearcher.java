@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface ArtifactSearcher {
@@ -28,7 +29,8 @@ public interface ArtifactSearcher {
             throws Exception;
 
     List<DocumentationItem> searchDocumentation(CoreSession session,
-            String fulltext, String targetType) throws Exception;
+            String distribId, String fulltext, String targetType)
+            throws Exception;
 
     List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId,
             String type, String fulltext) throws Exception;

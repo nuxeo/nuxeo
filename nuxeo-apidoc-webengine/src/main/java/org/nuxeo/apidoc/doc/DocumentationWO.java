@@ -58,7 +58,8 @@ public class DocumentationWO extends DefaultObject {
 
         ArtifactSearcher searcher = Framework.getLocalService(ArtifactSearcher.class);
         List<DocumentationItem> items = searcher.searchDocumentation(
-                getContext().getCoreSession(), fulltext, null);
+                getContext().getCoreSession(),
+                (String) ctx.getProperty("distId"), fulltext, null);
         Map<String, String> categories = ds.getCategories();
 
         Map<String, List<DocumentationItem>> docs = new HashMap<String, List<DocumentationItem>>();

@@ -40,16 +40,18 @@ public class QueryHelper {
     /**
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString()
      */
-    public static String selectByPath(String type, DocumentModel doc) {
+    public static String select(String type, DocumentModel doc) {
         return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH
                 + " STARTSWITH " + quoted(doc.getPathAsString());
     }
 
     /**
-     * SELECT * FROM type WHERE prop = value
+     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop
+     * = value
      */
-    public static String select(String type, String prop, String value) {
-        return "SELECT * FROM " + type + " WHERE " + prop + " = "
-                + quoted(value);
+    public static String select(String type, DocumentModel doc, String prop,
+            String value) {
+        return select(type, doc) + " AND " + prop + " = " + quoted(value);
     }
+
 }

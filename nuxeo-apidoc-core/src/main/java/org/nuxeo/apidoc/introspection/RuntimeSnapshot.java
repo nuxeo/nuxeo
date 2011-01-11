@@ -101,19 +101,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
                 }
                 String artifactId = bInfo.getArtifactId();
 
-                if (groupId != null && artifactId != null) {
-                    if (!mavenGroups.containsKey(groupId)) {
-                        mavenGroups.put(groupId, new ArrayList<String>());
-                    }
-                    mavenGroups.get(groupId).add(bInfo.getId());
-                } else {
-                    if (!mavenGroups.containsKey(VIRTUAL_BUNDLE_GROUP)) {
-                        mavenGroups.put(VIRTUAL_BUNDLE_GROUP,
-                                new ArrayList<String>());
-                    }
-                    bInfo.setGroupId(VIRTUAL_BUNDLE_GROUP);
-                    mavenGroups.get(VIRTUAL_BUNDLE_GROUP).add(bInfo.getId());
+                if (groupId == null || artifactId == null) {
+                    groupId = VIRTUAL_BUNDLE_GROUP;
+                    bInfo.setGroupId(groupId);
                 }
+                if (!mavenGroups.containsKey(groupId)) {
+                    mavenGroups.put(groupId, new ArrayList<String>());
+                }
+                mavenGroups.get(groupId).add(bInfo.getId());
 
                 for (ComponentInfo cInfo : bInfo.getComponents()) {
                     components2Bundles.put(cInfo.getId(), bInfo.getId());
@@ -136,7 +131,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
             }
         }
 
-        // post process mavenGroups
+        // post process bundle groups
         List<String> mvnGroupNames = new ArrayList<String>();
         mvnGroupNames.addAll(mavenGroups.keySet());
 
@@ -179,9 +174,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         }
 
         for (String grpId : mavenGroups.keySet()) {
-            if (!grpId.startsWith("grp:")) {
-                grpId = "grp:" + grpId;
-            }
             BundleGroupImpl bGroup = buildBundleGroup(grpId,
                     serverInfo.getVersion());
             bundleGroups.add(bGroup);

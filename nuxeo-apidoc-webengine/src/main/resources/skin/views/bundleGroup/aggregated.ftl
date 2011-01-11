@@ -12,7 +12,7 @@
 
 <H1> View Bundle group ${nxItem.id}</H1>
 
-<#include "/views/bundleGroup/bundleGroupMacros.ftl">
+<#include "/views/bundleGroup/macros.ftl">
 
 <@viewBundleGroup bundleGroupWO=This />
 

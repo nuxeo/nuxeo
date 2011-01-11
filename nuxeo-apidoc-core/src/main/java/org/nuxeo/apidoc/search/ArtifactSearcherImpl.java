@@ -101,15 +101,19 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
     @Override
     public List<DocumentationItem> searchDocumentation(CoreSession session,
-            String fulltext, String targetType) throws Exception {
-        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
-        String query = QueryHelper.select(DocumentationItem.TYPE_NAME,
+            String distribId, String fulltext, String targetType)
+            throws Exception {
+        DistributionSnapshot snap = Framework.getLocalService(
+                SnapshotManager.class).getSnapshot(distribId, session);
+        DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
+        String query = QueryHelper.select(DocumentationItem.TYPE_NAME, dist,
                 NXQL.ECM_FULLTEXT, fulltext);
         if (targetType != null) {
             query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = "
                     + QueryHelper.quoted(targetType);
         }
         DocumentModelList docs = session.query(query);
+        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
         for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
             if (docItem != null) {
@@ -127,7 +131,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         List<NuxeoArtifact> matchingArtifacts = searchArtifact(session,
                 fulltext);
         List<DocumentationItem> matchingDocumentationItems = searchDocumentation(
-                session, fulltext, null);
+                session, distribId, fulltext, null);
 
         Map<String, ArtifactWithWeight> sortMap = new HashMap<String, ArtifactWithWeight>();
 
@@ -170,23 +174,14 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     protected NuxeoArtifact resolveInTree(CoreSession session,
             String distribId, NuxeoArtifact matchingArtifact,
             String searchedType) throws Exception {
-
-        // SnapshotManager sm =
-        // Framework.getLocalService(SnapshotManager.class);
-        // DistributionSnapshot snap = sm.getSnapshot(distribId, session);
-
         String cType = matchingArtifact.getArtifactType();
-
         if (cType.equals(searchedType)) {
             return matchingArtifact;
         }
-
         BaseNuxeoArtifactDocAdapter docAdapter = (BaseNuxeoArtifactDocAdapter) matchingArtifact;
         DocumentModel doc = docAdapter.getDoc();
-
         List<DocumentModel> parents = session.getParentDocuments(doc.getRef());
         Collections.reverse(parents);
-
         for (DocumentModel parent : parents) {
             if (parent.getType().equals(searchedType)) {
                 return mapDoc2Artifact(parent);
@@ -198,15 +193,11 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     protected NuxeoArtifact resolveInTree(CoreSession session,
             String distribId, DocumentationItem matchingDocumentationItem,
             String searchedType) throws Exception {
-
+        DistributionSnapshot snap = Framework.getLocalService(
+                SnapshotManager.class).getSnapshot(distribId, session);
         String targetId = matchingDocumentationItem.getTarget();
         String targetType = matchingDocumentationItem.getTargetType();
-
-        SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
-        DistributionSnapshot snap = sm.getSnapshot(distribId, session);
-
-        NuxeoArtifact artifact = null;
-
+        NuxeoArtifact artifact;
         if (targetType.equals(BundleGroup.TYPE_NAME)) {
             artifact = snap.getBundleGroup(targetId);
         } else if (targetType.equals(BundleInfo.TYPE_NAME)) {
@@ -219,8 +210,9 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
             artifact = snap.getContribution(targetId);
         } else if (targetType.equals(ServiceInfo.TYPE_NAME)) {
             artifact = snap.getService(targetId);
+        } else {
+            artifact = null;
         }
-
         return resolveInTree(session, distribId, artifact, searchedType);
     }
 
