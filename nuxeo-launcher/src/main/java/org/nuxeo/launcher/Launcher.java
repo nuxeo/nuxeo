@@ -37,7 +37,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * Nuxeo server controller
+ * Nuxeo server launcher
  *
  * @author jcarsique
  * @since 5.4.1
@@ -49,24 +49,12 @@ public class Launcher {
 
     private String[] params;
 
-    private Thread nuxeoThread;
-
     /**
      * @param args
      * @throws ConfigurationException
      */
     public Launcher(String[] params) throws ConfigurationException {
         this.params = params;
-        configurationGenerator = new ConfigurationGenerator();
-        if (configurationGenerator.isJBoss) {
-            nuxeoThread = new NuxeoJBossThread(configurationGenerator);
-        } else if (configurationGenerator.isJetty) {
-            nuxeoThread = new NuxeoJettyThread(configurationGenerator);
-        } else if (configurationGenerator.isTomcat) {
-            nuxeoThread = new NuxeoTomcatThread(configurationGenerator);
-        } else {
-            throw new ConfigurationException("Unknown server !");
-        }
     }
 
     /**
@@ -165,11 +153,11 @@ public class Launcher {
         command.add(javaExec.getPath());
         command.add("-cp");
         command.add(jarLauncher.getPath());
-        command.add(NuxeoThread.class.getName());
+        command.add(NuxeoLauncher.class.getName());
         command.addAll(Arrays.asList(params));
-//        if (daemon) {
-            command.add("&");
-//        }
+        // if (daemon) {
+        command.add("&");
+        // }
         ProcessBuilder pb = new ProcessBuilder(command);
         Map<String, String> env = pb.environment();
         env.put(ConfigurationGenerator.NUXEO_HOME,
@@ -220,14 +208,14 @@ public class Launcher {
     }
 
     private void start() throws IOException, ConfigurationException {
-         NuxeoThread.main(params);
-//        Process nuxeoProcess = start(false);
-//        log.debug("after start, before waitfor()");
-//        try {
-//            nuxeoProcess.waitFor();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
+        NuxeoLauncher.main(params);
+        // Process nuxeoProcess = start(false);
+        // log.debug("after start, before waitfor()");
+        // try {
+        // nuxeoProcess.waitFor();
+        // } catch (InterruptedException e) {
+        // throw new RuntimeException(e);
+        // }
     }
 
     private void configure() throws ConfigurationException {
