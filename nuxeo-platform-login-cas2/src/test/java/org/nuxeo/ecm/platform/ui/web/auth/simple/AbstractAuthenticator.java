@@ -32,12 +32,11 @@ import javax.servlet.http.Cookie;
 import org.jboss.seam.mock.MockFilterConfig;
 import org.jboss.seam.mock.MockHttpSession;
 import org.jboss.seam.mock.MockServletContext;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import sun.misc.BASE64Encoder;
 
 /**
  * @author Benjamin JALON
@@ -93,8 +92,7 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
 
     protected void setLoginPasswordInHeader(String login, String password,
             MockHttpRequest request) {
-        BASE64Encoder encoder = new BASE64Encoder();
-        String b64userpassword = encoder.encodeBuffer((login + ":" + password).getBytes());
+        String b64userpassword = Base64.encodeBytes((login + ":" + password).getBytes());
         request.setHeaderParam("authorization",
                 new String[] { "basic " + b64userpassword, });
     }
