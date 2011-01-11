@@ -56,7 +56,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.nuxeo.launcher.Launcher</mainClass>
+              <mainClass>org.nuxeo.launcher.NuxeoThread</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

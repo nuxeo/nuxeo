@@ -20,11 +20,10 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-import org.nuxeo.launcher.commons.MutableClassLoader;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.JettyConfigurator;
 
@@ -34,24 +33,13 @@ import org.nuxeo.launcher.config.JettyConfigurator;
  * @author jcarsique
  * @since 5.4.1
  */
-public class NuxeoJettyThread extends NuxeoThread {
+public class NuxeoJettyLauncher extends NuxeoLauncher {
 
     /**
      * @param configurationGenerator
      */
-    public NuxeoJettyThread(ConfigurationGenerator configurationGenerator) {
+    public NuxeoJettyLauncher(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
-    }
-
-    protected void startServer(MutableClassLoader loader)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, SecurityException, NoSuchMethodException,
-            IllegalArgumentException, InvocationTargetException {
-        startupClass = loader.loadClass(JettyConfigurator.STARTUP_CLASS);
-        Object server = startupClass.newInstance();
-        @SuppressWarnings("unchecked")
-        Method method = startupClass.getMethod("main", String[].class);
-        method.invoke(server, new Object[] { new String[] { "start" } });
     }
 
     protected void setSystemProperties() {
@@ -63,13 +51,29 @@ public class NuxeoJettyThread extends NuxeoThread {
                 configurationGenerator.getNuxeoHome().getPath());
     }
 
-    protected void setClassPath(MutableClassLoader loader) {
-        try {
-            addToClassPath(loader, "nxserver" + File.separator + "lib");
-            addToClassPath(loader, "bin" + File.separator + "bootstrap.jar");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    protected String getClassPath() {
+        String cp = ".";
+        cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
+        cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
+        return cp;
+    }
+
+    @Override
+    protected void setServerProperties(Map<String, String> env) {
+        // TODO needed properties ?
+    }
+
+    @Override
+    protected void setServerStartCommand(List<String> command) {
+        command.add(JettyConfigurator.STARTUP_CLASS);
+        command.add("start");
+    }
+
+    @Override
+    protected Collection<? extends String> getServerProperties() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -115,8 +115,10 @@ fi
 launcher() {
     echo JAVA_HOME=$JAVA_HOME
     echo JAVA_OPTS=$JAVA_OPTS
-    echo Command: $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
-    $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $@
+    echo Command: $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
 }
+
+cp target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $NUXEO_HOME/bin/nuxeo-launcher.jar
 
 launcher $@
