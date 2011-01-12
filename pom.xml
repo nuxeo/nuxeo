@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.common</groupId>
   <artifactId>nuxeo-common</artifactId>
-  <version>1.6.0-CP01</version>
+  <version>1.6.0-CP02</version>
   <name>Nuxeo Common</name>
   <description>Nuxeo Common: utilities.</description>
   <url>http://www.nuxeo.org/</url>
@@ -22,11 +22,22 @@
 
   <distributionManagement>
     <site>
-      <id>maven_website</id>
-      <url>
-        scpexe://gironde.nuxeo.com/home/mavenweb/site/${project.artifactId}/${project.version}
-      </url>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
     </site>
+    <repository>
+      <id>public-releases</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
   </distributionManagement>
 
   <dependencies>

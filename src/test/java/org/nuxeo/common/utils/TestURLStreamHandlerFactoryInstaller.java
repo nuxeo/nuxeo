@@ -38,7 +38,6 @@ public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
         static int invokeCount = 0;
 
-        @Override
         public URLStreamHandler createURLStreamHandler(String protocol) {
             invokeCount += 1;
             return new TestHandler();
