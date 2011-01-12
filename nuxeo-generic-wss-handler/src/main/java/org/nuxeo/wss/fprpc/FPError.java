@@ -31,7 +31,7 @@ public class FPError {
 
     public static final String FolderNameAlreadyExists = "0x0009000D";
 
-    public static final String AlreadyLocked = "0x0009000E";
+    public static final String AlreadyLocked = "589838";//"0x0009000E";
 
     public static final String NotCheckedOut = "0x0009000F";
 

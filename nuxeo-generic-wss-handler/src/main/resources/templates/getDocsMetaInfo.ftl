@@ -30,7 +30,7 @@
 <li>_Comments
 <li>SW|
 <li>vti_sourcecontrolcheckedoutby
-<li>SR|${request.UserName}
+<li>SR|${doc.checkoutUser}
 <li>vti_sourcecontroltimecheckedout
 <li>TR|${doc.checkoutTS}
 <li>vti_sourcecontrolversion
@@ -62,7 +62,7 @@
 <li>vti_timelastmodified
 <li>TR|${doc.modifiedTS}
 <li>vti_sourcecontrolmultiuserchkoutby
-<li>VR|${request.UserName}
+<li>VR|${doc.checkoutUser}
 <li>vti_candeleteversion
 <li>BR|true
 </ul>

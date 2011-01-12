@@ -65,6 +65,10 @@ public class OWSSvrHandler extends AbstractFPRPCHandler implements FPRPCHandler 
                 fpResponse.setContentType("text/html");
                 fpResponse.getHttpResponse().setStatus(HttpServletResponse.SC_GONE);
                 return;
+            } else {
+                fpResponse.setContentType("text/html");
+                fpResponse.getHttpResponse().setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
         }
     }

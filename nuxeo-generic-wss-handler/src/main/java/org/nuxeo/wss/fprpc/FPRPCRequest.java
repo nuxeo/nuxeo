@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -50,7 +51,9 @@ public class FPRPCRequest extends WSSRequest {
 
     protected int requestMode = FPRPC_GET_REQUEST;
 
-    protected InputStream vermeerBinary;
+    protected InputStream vermeerBinary = null;
+
+    protected Principal principal;
 
     public FPRPCRequest(HttpServletRequest httpRequest, String sitePath) throws MalformedFPRPCRequest {
         super(httpRequest, sitePath);
@@ -59,11 +62,11 @@ public class FPRPCRequest extends WSSRequest {
 
     protected void parseRequest() throws MalformedFPRPCRequest {
 
+        principal = httpRequest.getUserPrincipal();
         // get Method
         if ("GET".equals(httpRequest.getMethod()) || "HEAD".equals(httpRequest.getMethod())) {
             requestMode = FPRPC_GET_REQUEST;
             parseGETRequest();
-
         } else if ("POST".equals(httpRequest.getMethod())) {
             String ct = httpRequest.getHeader(FPRPCConts.FP_CONTENT_TYPE_HEADER);
             if (FPRPCConts.FORM_ENCODED_CONTENT_TYPE.equals(ct)) {
@@ -220,6 +223,10 @@ public class FPRPCRequest extends WSSRequest {
 
     public InputStream getVermeerBinary() {
         return vermeerBinary;
+    }
+
+    public String getPrincipalName(){
+        return principal != null ? principal.getName() : "anonymous";
     }
 
     @Override

@@ -28,7 +28,7 @@
 <li>vti_sourcecontrolcookie
 <li>SR|fp_internal
 <li>vti_sourcecontrolcheckedoutby
-<li>SR|${request.UserName}
+<li>SR|${doc.checkoutUser}
 <li>vti_sourcecontroltimecheckedout
 <li>TR|04 Sep 2009 13:51:50 -0000
 <li>vti_sourcecontrolversion
@@ -60,7 +60,7 @@
 <li>vti_candeleteversion
 <li>BR|true
 <li>vti_sourcecontrolmultiuserchkoutby
-<li>VR|${request.UserName}
+<li>VR|${doc.checkoutUser}
 <li>vti_title
 <li>SR|
 <li>_Author
