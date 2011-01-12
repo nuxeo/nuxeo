@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationDocumentationImpl;
 import org.nuxeo.ecm.automation.OperationParameters;
 
 /**
@@ -41,11 +42,11 @@ public class AutomationInfo {
         // build a map for easy lookup
         Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>();
         for (OperationDocumentation doc : ops) {
-            map.put(doc.id, doc);
+            map.put(doc.getId(), doc);
         }
         chains = new ArrayList<OperationDocumentation>();
         for (OperationChain chain : service.getOperationChains()) {
-            OperationDocumentation doc = new OperationDocumentation(
+            OperationDocumentationImpl doc = new OperationDocumentationImpl(
                     chain.getId());
             doc.description = chain.getDescription();
             doc.category = "Chain";
@@ -57,11 +58,11 @@ public class AutomationInfo {
                 doc.signature = new String[] { "void", "void" };
             } else if (ops.size() == 1) {
                 OperationDocumentation opdoc = map.get(ops.get(0).id());
-                doc.signature = opdoc.signature;
+                doc.signature = opdoc.getSignature();
             } else {
                 ArrayList<String[]> sigs = new ArrayList<String[]>();
                 for (OperationParameters o : ops) {
-                    sigs.add(map.get(o.id()).signature);
+                    sigs.add(map.get(o.id()).getSignature());
                 }
                 String[] head = sigs.get(0);
                 ArrayList<String> rs = new ArrayList<String>();

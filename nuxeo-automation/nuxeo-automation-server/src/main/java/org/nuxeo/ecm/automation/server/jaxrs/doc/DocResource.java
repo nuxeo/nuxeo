@@ -107,23 +107,23 @@ public class DocResource {
     }
 
     public String[] getInputs(OperationDocumentation op) {
-        if (op.signature == null && op.signature.length == 0) {
+        if (op.getSignature() == null && op.getSignature().length == 0) {
             return new String[0];
         }
-        String[] result = new String[op.signature.length / 2];
-        for (int i = 0, k = 0; i < op.signature.length; i += 2, k++) {
-            result[k] = op.signature[i];
+        String[] result = new String[op.getSignature().length / 2];
+        for (int i = 0, k = 0; i < op.getSignature().length; i += 2, k++) {
+            result[k] = op.getSignature()[i];
         }
         return result;
     }
 
     public String[] getOutputs(OperationDocumentation op) {
-        if (op.signature == null && op.signature.length == 0) {
+        if (op.getSignature() == null && op.getSignature().length == 0) {
             return new String[0];
         }
-        String[] result = new String[op.signature.length / 2];
-        for (int i = 1, k = 0; i < op.signature.length; i += 2, k++) {
-            result[k] = op.signature[i];
+        String[] result = new String[op.getSignature().length / 2];
+        for (int i = 1, k = 0; i < op.getSignature().length; i += 2, k++) {
+            result[k] = op.getSignature()[i];
         }
         return result;
     }
