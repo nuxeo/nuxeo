@@ -63,9 +63,12 @@ namespace NuxeoService
 		}
 		
 		private void Log(String message, String loglevel) {
-			using (StreamWriter sw = new StreamWriter(getLogFilePath(), true)) {
-				sw.Write(String.Format("[{0}] {1}\n", loglevel, message.Trim()));
-			}
+            try {
+			    using (StreamWriter sw = new StreamWriter(getLogFilePath(), true)) {
+				    sw.Write(String.Format("[{0}] {1}\n", loglevel, message.Trim()));
+			    }
+            } catch (IOException e) {
+            }
 		}
 		
 		private void OutputLog(object sender, DataReceivedEventArgs outLine) {
