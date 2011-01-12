@@ -25,14 +25,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 /**
- * Used to force installation of URLStreamHandlerFactory as the default mechanism in Java
- * is failing to set a new factory if one was already set.
+ * Used to force installation of URLStreamHandlerFactory as the default
+ * mechanism in Java is failing to set a new factory if one was already set.
  * <p>
- * This class provides the capability to stack any number of factories - each factory having
- * precedence over the last one.
+ * This class provides the capability to stack any number of factories - each
+ * factory having precedence over the last one.
  * <p>
- * Thus, when querying for a URL protocol handler all factories will be asked in turn
- * (from the newest one to the older one) until a stream handler is obtained.
+ * Thus, when querying for a URL protocol handler all factories will be asked in
+ * turn (from the newest one to the older one) until a stream handler is
+ * obtained.
  * <p>
  * Contains some code from Eclipse Framework class.
  *
@@ -53,7 +54,8 @@ public class URLStreamHandlerFactoryInstaller {
             URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
             if (factory == null) { // not installed - install it
                 factoryStack.push(shf); // push the new factory
-            } else if (factory != factoryStack) { // another factory is installed
+            } else if (factory != factoryStack) { // another factory is
+                                                  // installed
                 factoryStack.push(factory);
                 factoryStack.push(shf); // push the new factory
             } else { // already installed
@@ -68,23 +70,46 @@ public class URLStreamHandlerFactoryInstaller {
 
     public static void uninstallURLStreamHandlerFactory() {
         try {
-            Field factoryField = getStaticField(URL.class, URLStreamHandlerFactoryInstaller.class);
+           Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
+            if (factoryField == null) {
+                return; // oh well, we tried
+            }
+            factoryField.set(null, null);
+            resetURLStreamHandlers();
+        } catch (Exception e) {
+           // ignore and continue closing the framework
+        }
+    }
+
+    public static void uninstallURLStreamHandlerFactory(URLStreamHandlerFactory shf) {
+        try {
+            Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
             if (factoryField == null) {
                 return; // oh well, we tried
             }
             Object lock = getURLStreamHandlerFactoryLock();
             synchronized (lock) {
                 URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
-                if (factory != null && factory == factoryStack) {
+                if (factory == null) {
+                    return;
+                }
+                if (factory != factoryStack) {
+                    return;
+                }
+                if (shf == null) {
                     factoryStack.pop();
+                } else {
+                    factoryStack.remove(shf);
                 }
                 // reinstall factory (to flush cache)
                 factoryField.set(null, null);
+                resetURLStreamHandlers();
                 URL.setURLStreamHandlerFactory(factoryStack);
             }
         } catch (Exception e) {
             // ignore and continue closing the framework
         }
+
     }
 
     private static Field getStaticField(Class<?> clazz, Class<?> type) {
@@ -98,14 +123,19 @@ public class URLStreamHandlerFactoryInstaller {
         return null;
     }
 
-    private static void resetURLStreamHandlers() throws IllegalAccessException {
-		Field handlersField = getStaticField(URL.class, Hashtable.class);
-		if (handlersField != null) {
-			Hashtable<?,?> handlers = (Hashtable<?,?>) handlersField.get(null);
-			if (handlers != null)
-				handlers.clear();
-		}
-	}
+    public static void resetURLStreamHandlers()  {
+        Field handlersField = getStaticField(URL.class, Hashtable.class);
+        if (handlersField != null) {
+            Hashtable<?, ?> handlers;
+            try {
+                handlers = (Hashtable<?, ?>) handlersField.get(null);
+            } catch (Exception e) {
+                throw new Error("Cannot clear URL handlers cache");
+            }
+            if (handlers != null)
+                handlers.clear();
+        }
+    }
 
     private static Object getURLStreamHandlerFactoryLock() throws IllegalAccessException {
         Object lock;
@@ -123,8 +153,9 @@ public class URLStreamHandlerFactoryInstaller {
     /**
      * Get the underlying stack.
      * <p>
-     * This should not be used to register/unregister factories (since it is not synchronized).
-     * To install / uninstall factories use the static method of that class.
+     * This should not be used to register/unregister factories (since it is not
+     * synchronized). To install / uninstall factories use the static method of
+     * that class.
      */
     public static FactoryStack getStack() {
         return factoryStack;
@@ -135,7 +166,7 @@ public class URLStreamHandlerFactoryInstaller {
         final ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
 
         public URLStreamHandler createURLStreamHandler(String protocol) {
-            for (int i = factories.size()-1; i>=0; i--) {
+            for (int i = factories.size() - 1; i >= 0; i--) {
                 URLStreamHandler h = factories.get(i).createURLStreamHandler(protocol);
                 if (h != null) {
                     return h;
@@ -143,28 +174,37 @@ public class URLStreamHandlerFactoryInstaller {
             }
             return null;
         }
+
         public void push(URLStreamHandlerFactory factory) {
             factories.add(factory);
         }
+
         public URLStreamHandlerFactory pop() {
             if (factories.isEmpty()) {
                 return null;
             }
-            return factories.remove(factories.size()-1);
+            return factories.remove(factories.size() - 1);
         }
+
+        URLStreamHandlerFactory remove(URLStreamHandlerFactory shf) {
+            return factories.remove(factories.indexOf(shf));
+        }
+
         public URLStreamHandlerFactory peek() {
             if (factories.isEmpty()) {
                 return null;
             }
-            return factories.get(factories.size()-1);
+            return factories.get(factories.size() - 1);
         }
 
         public boolean isEmpty() {
             return factories.isEmpty();
         }
+
         public int size() {
             return factories.size();
         }
+
         public void clear() {
             factories.clear();
         }

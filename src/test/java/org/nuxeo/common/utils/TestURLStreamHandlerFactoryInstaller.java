@@ -16,10 +16,17 @@
  */
 package org.nuxeo.common.utils;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import junit.framework.TestCase;
+
+import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller.FactoryStack;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,25 +34,71 @@ import junit.framework.TestCase;
  */
 public class TestURLStreamHandlerFactoryInstaller extends TestCase {
 
-    public void testInstaller() throws Exception {
-        URLStreamHandlerFactory f1 = new URLStreamHandlerFactory() {
-            public URLStreamHandler createURLStreamHandler(String protocol) {
-                return null;
-            }
-        };
-        URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f1);
+    public static class TestHandlerFactory implements URLStreamHandlerFactory {
 
-        URLStreamHandlerFactory f2 = new URLStreamHandlerFactory() {
-            public URLStreamHandler createURLStreamHandler(String protocol) {
-                return null;
-            }
-        };
-        URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f2);
+        static int invokeCount = 0;
 
-        assertEquals(f2, URLStreamHandlerFactoryInstaller.getStack().pop());
-        assertEquals(f1, URLStreamHandlerFactoryInstaller.getStack().pop());
-        assertTrue(URLStreamHandlerFactoryInstaller.getStack().isEmpty());
+        @Override
+        public URLStreamHandler createURLStreamHandler(String protocol) {
+            invokeCount += 1;
+            return new TestHandler();
+        }
 
     }
 
+
+    public static class TestHandler extends URLStreamHandler {
+
+        @Override
+        protected URLConnection openConnection(URL arg0) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+    URLStreamHandlerFactory f1;
+    URLStreamHandlerFactory f2;
+
+
+    @Override
+    protected void setUp() throws Exception {
+        TestHandlerFactory.invokeCount = 0;
+        f1 = new TestHandlerFactory();
+        URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f1);
+
+        f2 = new TestHandlerFactory();
+        URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(f2);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory();
+    }
+
+    boolean checkInstalled() {
+        boolean installed = true;
+        try {
+            new URL("test:foo");
+        } catch (MalformedURLException e) {
+            installed = false;
+        }
+        return installed;
+    }
+
+    public void testInstaller() throws Exception {
+        assertTrue(checkInstalled());
+        URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory();
+        assertFalse(checkInstalled());
+    }
+
+
+    public void testReset() throws MalformedURLException, SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException {
+        new URL("test:pfff"); // create test protocol handler
+        assertEquals(1, TestHandlerFactory.invokeCount);
+        new URL("test:pfff"); // use cached handler
+        assertEquals(1, TestHandlerFactory.invokeCount);
+        URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory(f1); // reset cache
+        new URL("test:pfff"); // create new test protocol handler
+        assertEquals(2, TestHandlerFactory.invokeCount);
+    }
 }
