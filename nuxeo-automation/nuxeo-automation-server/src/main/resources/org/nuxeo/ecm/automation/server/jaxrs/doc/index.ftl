@@ -1,3 +1,4 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
@@ -89,7 +90,7 @@ pre {
     <td width="30%"> <!-- menu -->
       <div class="tree">
       <#list categories?keys as cat>
-        <div class="category">${cat}</div>
+        <div class="category">${cat?xml}</div>
         <div class="category_content">
           <#list categories["${cat}"] as item>
           <div class="item"><a href="?id=${item.id}">${item.label}</a></div>
@@ -107,7 +108,7 @@ pre {
         </div>
         <h2>General Information</h2>
         <div class="info">
-        <div><b>Category:</b> ${operation.category}</div>
+        <div><b>Category:</b> ${operation.category?xml}</div>
         <div><b>Operation Id:</b> ${operation.id}</div>
         </div>
         <h2>Parameters</h2>
