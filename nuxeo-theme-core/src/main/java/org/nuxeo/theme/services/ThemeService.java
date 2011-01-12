@@ -33,6 +33,7 @@ import org.nuxeo.runtime.model.Reloadable;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -104,12 +105,14 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     public void activate(ComponentContext ctx) {
         context = ctx.getRuntimeContext();
         registries = new HashMap<String, Registrable>();
+        Manager.initializeProtocols();
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
         registries = null;
+        Manager.resetProtocols();
         log.debug("Theme service deactivated");
     }
 
