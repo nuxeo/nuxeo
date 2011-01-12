@@ -210,7 +210,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 try {
                     st.execute(sql);
                 } catch (SQLException e) {
-                    throw new SQLException("Error creating table: " + sql, e);
+                    throw new SQLException("Error creating table: " + sql
+                            + " : " + e.getMessage(), e);
                 }
                 for (String s : table.getPostCreateSqls(model)) {
                     logger.log(s);
@@ -218,7 +219,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         st.execute(s);
                     } catch (SQLException e) {
                         throw new SQLException("Error post creating table: "
-                                + s, e);
+                                + s + " : " + e.getMessage(), e);
                     }
                 }
                 for (String s : sqlInfo.dialect.getPostCreateTableSqls(table,
@@ -228,7 +229,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         st.execute(s);
                     } catch (SQLException e) {
                         throw new SQLException("Error post creating table: "
-                                + s, e);
+                                + s + " : " + e.getMessage(), e);
                     }
                 }
                 added.put(table.getKey(), null); // null = table created
@@ -274,7 +275,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     try {
                         st.execute(sql);
                     } catch (SQLException e) {
-                        throw new SQLException("Error adding column: " + sql, e);
+                        throw new SQLException("Error adding column: " + sql
+                                + " : " + e.getMessage(), e);
                     }
                     for (String s : table.getPostAddSqls(column, model)) {
                         logger.log(s);
@@ -282,7 +284,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                             st.execute(s);
                         } catch (SQLException e) {
                             throw new SQLException("Error post adding column: "
-                                    + s, e);
+                                    + s + " : " + e.getMessage(), e);
                         }
                     }
                     addedColumns.add(column);

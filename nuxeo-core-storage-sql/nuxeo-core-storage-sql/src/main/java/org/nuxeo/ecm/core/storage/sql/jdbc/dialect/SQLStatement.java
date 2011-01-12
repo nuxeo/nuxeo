@@ -270,13 +270,18 @@ public class SQLStatement {
                     sql = sql.substring(0, sql.length() - 1);
                 }
 
-                if (test) {
-                    ResultSet rs = st.executeQuery(sql);
-                    Boolean emptyResult = Boolean.valueOf(!rs.next());
-                    properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
-                    jdbc.logger.log("  -> emptyResult = " + emptyResult);
-                } else {
-                    st.execute(sql);
+                try {
+                    if (test) {
+                        ResultSet rs = st.executeQuery(sql);
+                        Boolean emptyResult = Boolean.valueOf(!rs.next());
+                        properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
+                        jdbc.logger.log("  -> emptyResult = " + emptyResult);
+                    } else {
+                        st.execute(sql);
+                    }
+                } catch (SQLException e) {
+                    throw new SQLException("Error executing: " + sql + " : "
+                            + e.getMessage(), e);
                 }
             }
         } finally {
