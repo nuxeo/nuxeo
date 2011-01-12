@@ -22,10 +22,6 @@ PARAM_NUXEO_HOME="-Dnuxeo.home=$NUXEO_HOME/"
 NUXEO_CONF=${NUXEO_CONF:-$NUXEO_HOME/bin/nuxeo.conf}
 PARAM_NUXEO_CONF="-Dnuxeo.conf=$NUXEO_CONF"
 
-CONF_DIR=`dirname "$NUXEO_CONF"`
-# TODO Should be in $RUN_DIR or $LOG_DIR, not $CONF_DIR
-PID="$CONF_DIR/nuxeo.pid"
-
 ## OS detection
 cygwin=false
 darwin=false
@@ -115,8 +111,9 @@ fi
 launcher() {
     echo JAVA_HOME=$JAVA_HOME
     echo JAVA_OPTS=$JAVA_OPTS
-    echo Command: $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
-    $JAVA $JAVA_OPTS "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    echo Launcher command: $JAVA -Djava.launcher.opts="$JAVA_OPTS" "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    echo
+    $JAVA -Djava.launcher.opts="$JAVA_OPTS" "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
 }
 
 cp target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $NUXEO_HOME/bin/nuxeo-launcher.jar

@@ -25,10 +25,12 @@ echo Could not locate %NUXEO_LAUNCHER%.
 echo Please check that you are in the bin directory when running this script.
 goto END
 
+set PARAM_JAVA_OPTS="-Djava.launcher.opts=-Xms512m -Xmx1024m -XX:MaxPermSize=512m"
+
 :FOUND_NUXEO_LAUNCHER
 
-echo java "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
-java "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
+echo Launcher command: java "%PARAM_JAVA_OPTS%" "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
+java "%PARAM_JAVA_OPTS%" "%PARAM_NUXEO_HOME%" "%PARAM_NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %*
 
 :END
 
