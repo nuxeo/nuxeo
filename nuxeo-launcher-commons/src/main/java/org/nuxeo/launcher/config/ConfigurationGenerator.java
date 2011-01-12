@@ -568,4 +568,72 @@ public class ConfigurationGenerator {
         return serverConfigurator.getDataDir();
     }
 
+    /**
+     * Create needed directories.
+     * Check existence of old paths.
+     * If old paths have been found and they cannot be upgraded automatically,
+     * then upgrading message is logged and error thrown.
+     *
+     * @since 5.4.1
+     */
+    public void verifyInstallation() {
+        // TODO Auto-generated method stub
+        // if [ ! -d "$LOG_DIR" ]; then
+        // mkdir -p "$LOG_DIR"
+        // fi
+        // if [ ! -d "$PID_DIR" ]; then
+        // mkdir -p "$PID_DIR"
+        // fi
+        // if [ ! -z "$DATA_DIR" ] && [ ! -d "$DATA_DIR" ]; then
+        // mkdir -p "$DATA_DIR"
+        // fi
+        // if [ ! -z "$TMP_DIR" ] && [ ! -d "$TMP_DIR" ]; then
+        // mkdir -p "$TMP_DIR"
+        // fi
+
+        // # Check JBoss paths
+        // if [ "$jboss" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e
+        // "$NUXEO_HOME"/server/default/data/derby ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // die
+        // "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME/server/default/data/\" to \"$DATA_DIR\""
+        // exit 1
+        // fi
+        // if [ "$jboss" = "true" ] && [ -e
+        // "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
+        // echo "ERROR: Deprecated paths used (NXP-5460)."
+        // die
+        // "Please move 'binaries' directory from \"$NUXEO_HOME/server/default/data/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+        // exit 1
+        // fi
+        // if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ];
+        // then
+        // echo "ERROR: Deprecated paths used (NXP-5460)."
+        // die
+        // "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+        // exit 1
+        // fi
+        // # Check Tomcat paths
+        // if [ "$tomcat" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/nxserver/data/vcsh2repo ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // die
+        // "Please rename 'vcsh2repo' directory from \"$NUXEO_HOME/nxserver/data/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
+        // exit 1
+        // fi
+        // if [ "$tomcat" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/nxserver/data/derby/nxsqldirectory ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // echo "ERROR: It is not possible to migrate derby data."
+        // die "Please remove 'nx*' directories from
+        // \"$NUXEO_HOME/nxserver/data/derby/\"
+        // or edit templates/default/conf/Catalina/localhost/nuxeo.xml
+        // following
+        // http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml"
+        // exit 1
+        // fi
+        throw new UnsupportedOperationException();
+    }
+
 }
