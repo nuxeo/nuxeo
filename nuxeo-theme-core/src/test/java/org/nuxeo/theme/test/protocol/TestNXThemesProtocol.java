@@ -17,7 +17,6 @@ package org.nuxeo.theme.test.protocol;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
@@ -27,16 +26,11 @@ import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.nodes.NodeException;
 import org.nuxeo.theme.perspectives.PerspectiveType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestNXThemesProtocol extends NXRuntimeTestCase {
-
-    private TypeRegistry typeRegistry;
-
-    private ThemeManager themeManager;
 
     @Override
     public void setUp() throws Exception {
@@ -46,10 +40,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
-        themeManager = (ThemeManager) themeService.getRegistry("themes");
+
     }
 
     public void testProtocol() throws MalformedURLException {
@@ -65,6 +56,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     }
 
     public void testGetEngineByUrl() throws MalformedURLException {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         EngineType engine = new EngineType();
         engine.setName("engine");
         typeRegistry.register(engine);
@@ -76,6 +68,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     }
 
     public void testGetTemplateEngineByUrl() throws MalformedURLException {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         TemplateEngineType templateEngine = new TemplateEngineType();
         templateEngine.setName("templateEngine");
         typeRegistry.register(templateEngine);
@@ -90,6 +83,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
 
     public void testGetThemePageByUrl() throws MalformedURLException,
             NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         PageElement page = (PageElement) ElementFactory.create("page");
         theme.setName("theme1");
@@ -103,6 +97,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     }
 
     public void testGetThemeByUrl() throws MalformedURLException {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("theme1");
         themeManager.registerTheme(theme);
@@ -112,6 +107,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     }
 
     public void testGetPagePathByUrl() throws MalformedURLException {
+        ThemeManager themeManager = Manager.getThemeManager();
         URL url = new URL(
                 "nxtheme://theme/engine/mode/templateEngine/theme1/page1");
         assertEquals("theme1/page1", themeManager.getPagePathByUrl(url));
@@ -144,13 +140,6 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
             caught = true;
         }
         assertTrue(caught);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        typeRegistry = null;
-        themeManager = null;
-        super.tearDown();
     }
 
 }

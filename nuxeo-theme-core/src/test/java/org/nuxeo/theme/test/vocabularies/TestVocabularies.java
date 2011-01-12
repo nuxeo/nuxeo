@@ -18,15 +18,10 @@ import java.util.List;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.vocabularies.VocabularyItem;
 import org.nuxeo.theme.vocabularies.VocabularyManager;
 
 public class TestVocabularies extends NXRuntimeTestCase {
-
-    private VocabularyManager vocabularyManager;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -36,24 +31,10 @@ public class TestVocabularies extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "vocabulary-config.xml");
-        typeRegistry = Manager.getTypeRegistry();
-        vocabularyManager = Manager.getVocabularyManager();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        typeRegistry.clear();
-        typeRegistry = null;
-        vocabularyManager.clear();
-        vocabularyManager = null;
-        super.tearDown();
     }
 
     public void testClassVocabulary() {
+        VocabularyManager vocabularyManager = Manager.getVocabularyManager();
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as class");
         assertEquals(2, items.size());
         assertEquals("value1", items.get(0).getValue());
@@ -63,6 +44,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
     }
 
     public void testResourceVocabulary() {
+        VocabularyManager vocabularyManager = Manager.getVocabularyManager();
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as csv resource");
         assertEquals(3, items.size());
         assertEquals("value1", items.get(0).getValue());

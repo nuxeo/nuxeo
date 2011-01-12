@@ -20,7 +20,6 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.nuxeo.theme.presets.PaletteParser;
-import org.nuxeo.theme.presets.PropertiesPaletteParser;
 
 public class TestPropertiesPaletteParser extends TestCase {
 

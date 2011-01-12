@@ -14,11 +14,11 @@
 
 package org.nuxeo.theme;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.lucene.analysis.Tokenizer;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
@@ -43,7 +43,13 @@ public final class Manager {
     }
 
     private static Map<String, Registrable> getRegistries() {
-        return getThemeService().getRegistries();
+        // avoid error when clearing registries at shutdown
+        ThemeService service = getThemeService();
+        if (service != null) {
+            return service.getRegistries();
+        } else {
+            return Collections.emptyMap();
+        }
     }
 
     public static Registrable getRegistry(final String name) {

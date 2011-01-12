@@ -20,13 +20,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeSet;
-import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestThemeSet extends NXRuntimeTestCase {
-
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
 
     @Override
     public void setUp() throws Exception {
@@ -36,27 +31,18 @@ public class TestThemeSet extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "themeset-config.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
 
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getTypeRegistry().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testGetThemeSets() {
+        ThemeManager themeManager = Manager.getThemeManager();
         List<ThemeSet> themeSets = themeManager.getThemeSets();
         assertEquals(1, themeSets.size());
         assertEquals("galaxy", themeSets.get(0).getName());
     }
 
     public void testGetThemeSetByName() {
+        ThemeManager themeManager = Manager.getThemeManager();
         ThemeSet themeSet = themeManager.getThemeSetByName("galaxy");
         assertEquals("galaxy", themeSet.getName());
         assertEquals("galaxy-blogs", themeSet.getThemeForFeature("blogs"));

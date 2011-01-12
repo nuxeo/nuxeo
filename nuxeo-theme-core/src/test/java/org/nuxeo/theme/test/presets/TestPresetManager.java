@@ -28,10 +28,6 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestPresetManager extends NXRuntimeTestCase {
 
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -39,34 +35,20 @@ public class TestPresetManager extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testExtractPresetName() {
         // Global preset
-        assertEquals("green (colors)",
-                PresetManager.extractPresetName(null, " \"green (colors)\"  "));
+        assertEquals("green (colors)", PresetManager.extractPresetName(null,
+                " \"green (colors)\"  "));
         // Custom preset
-        assertEquals("theme1/green",
-                PresetManager.extractPresetName("theme1", "\"green\""));
+        assertEquals("theme1/green", PresetManager.extractPresetName("theme1",
+                "\"green\""));
         assertNull(PresetManager.extractPresetName(null, "\"green\""));
     }
 
     public void testGetPresetByName() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors",
                 "color", "", "");
         PresetType preset2 = new PresetType("green", "#0f0", "colors", "color",
@@ -78,6 +60,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
     }
 
     public void testGetAllPresets() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assert PresetManager.getAllPresets().isEmpty();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors",
                 "color", "", "");
@@ -92,6 +75,7 @@ public class TestPresetManager extends NXRuntimeTestCase {
     }
 
     public void testResolvePresets() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         PresetType preset1 = new PresetType("orange", "#fc0", "colors",
                 "color", "", "");
         PresetType preset2 = new PresetType("green", "#0f0", "colors", "color",
@@ -100,15 +84,17 @@ public class TestPresetManager extends NXRuntimeTestCase {
         typeRegistry.register(preset2);
         assertEquals("#000 #fc0 #0f0 #fff", PresetManager.resolvePresets(null,
                 "#000 \"orange (colors)\" \"green (colors)\" #fff"));
-        assertEquals("1px solid \"red\"",
-                PresetManager.resolvePresets(null, "1px solid \"red\""));
+        assertEquals("1px solid \"red\"", PresetManager.resolvePresets(null,
+                "1px solid \"red\""));
         assertEquals("1px solid #fc0", PresetManager.resolvePresets(null,
                 "1px solid \"orange (colors)\""));
-        assertEquals("#fc0",
-                PresetManager.resolvePresets(null, "\"orange (colors)\""));
+        assertEquals("#fc0", PresetManager.resolvePresets(null,
+                "\"orange (colors)\""));
     }
 
     public void testResolveCustomPresets() {
+        ThemeManager themeManager = Manager.getThemeManager();
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeElement theme = new ThemeElement();
         theme.setName("theme1");
         themeManager.registerTheme(theme);
@@ -120,12 +106,12 @@ public class TestPresetManager extends NXRuntimeTestCase {
         typeRegistry.register(preset2);
         assertEquals("#000 #fc0 #0f0 #fff", PresetManager.resolvePresets(
                 "theme1", "#000 \"orange\" \"green\" #fff"));
-        assertEquals("1px solid \"red\"",
-                PresetManager.resolvePresets("theme1", "1px solid \"red\""));
-        assertEquals("1px solid #fc0",
-                PresetManager.resolvePresets("theme1", "1px solid \"orange\""));
-        assertEquals("#fc0",
-                PresetManager.resolvePresets("theme1", "\"orange\""));
+        assertEquals("1px solid \"red\"", PresetManager.resolvePresets(
+                "theme1", "1px solid \"red\""));
+        assertEquals("1px solid #fc0", PresetManager.resolvePresets("theme1",
+                "1px solid \"orange\""));
+        assertEquals("#fc0", PresetManager.resolvePresets("theme1",
+                "\"orange\""));
     }
 
 }

@@ -14,16 +14,13 @@
 
 package org.nuxeo.theme.test.types;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.presets.PresetType;
-import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestTypeRegistry extends NXRuntimeTestCase {
-
-    private TypeRegistry typeRegistry;
 
     private PresetType preset1;
 
@@ -36,15 +33,14 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
+
         preset1 = new PresetType("preset1", "value", "group", "category", "",
                 "");
         preset2 = new PresetType("preset2", "value", "", "category", "", "");
     }
 
     public void testPresetType() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).isEmpty());
         assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).isEmpty());
         assertNull(typeRegistry.lookup(TypeFamily.PRESET, "preset1 (group)"));
@@ -62,8 +58,8 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).contains(
                 "preset2"));
 
-        assertSame(preset1,
-                typeRegistry.lookup(TypeFamily.PRESET, "preset1 (group)"));
+        assertSame(preset1, typeRegistry.lookup(TypeFamily.PRESET,
+                "preset1 (group)"));
         assertSame(preset2, typeRegistry.lookup(TypeFamily.PRESET, "preset2"));
 
         // unregister presets

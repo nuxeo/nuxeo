@@ -140,16 +140,19 @@ public final class ThemeManager implements Registrable {
     }
 
     @Override
-    public void clear() {
+    public synchronized void clear() {
         themes.clear();
         pages.clear();
         formatsByTypeName.clear();
+        modelsByClassname.clear();
         namedObjectsByTheme.clear();
         themeOfNamedObjects.clear();
         infoMap.clear();
         cachedStyles.clear();
         cachedResources.clear();
+        cachedBinaries.clear();
         resourceOrdering.clear();
+        lastModified.clear();
     }
 
     public Map<String, Info> getGlobalInfoMap() {
@@ -186,11 +189,6 @@ public final class ThemeManager implements Registrable {
         if (!themeDescriptor.isCustomizable()) {
             throw new ThemeException("Theme : " + themeName
                     + " cannot be customized.");
-        }
-
-        if (themeDescriptor.isCustomization()) {
-            throw new ThemeException("Theme : " + themeName
-                    + " is already a customized theme.");
         }
 
         ThemeSerializer serializer = new ThemeSerializer();

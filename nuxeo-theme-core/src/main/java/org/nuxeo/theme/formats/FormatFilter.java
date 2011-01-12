@@ -41,10 +41,7 @@ public class FormatFilter extends AbstractFilter {
 
     private FormatType formatType;
 
-    private final TypeRegistry typeRegistry;
-
     public FormatFilter() {
-        typeRegistry = Manager.getTypeRegistry();
     }
 
     public FilterTypeFamily getFilterTypeFamily() {
@@ -167,6 +164,8 @@ public class FormatFilter extends AbstractFilter {
             final String elementTypeName, final String viewName,
             final String modelTypeName, final String engineName,
             final String viewMode, final String templateEngineName) {
+
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
         ViewType viewType = (ViewType) typeRegistry.lookup(
                 TypeFamily.VIEW,

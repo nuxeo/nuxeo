@@ -23,19 +23,13 @@ import java.util.Map;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.BankManager;
 import org.nuxeo.theme.resources.BankUtils;
 import org.nuxeo.theme.resources.ResourceBank;
 import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.themes.ThemeManager;
-import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestResourceBank extends NXRuntimeTestCase {
-
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
 
     private final String BANK_NAME = "test";
 
@@ -54,18 +48,6 @@ public class TestResourceBank extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getTypeRegistry().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testGetRegisteredBanks() throws ThemeException {
@@ -120,7 +102,6 @@ public class TestResourceBank extends NXRuntimeTestCase {
     }
 
     public void testGetStylePreviewFileNotFound() throws IOException {
-
         boolean thrown = false;
         try {
             BankManager.getStylePreviewFile(BANK_NAME, COLLECTION_NAME,

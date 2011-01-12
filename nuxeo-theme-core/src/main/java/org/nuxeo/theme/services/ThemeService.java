@@ -67,7 +67,7 @@ public class ThemeService extends DefaultComponent implements Reloadable {
 
     private static final Log log = LogFactory.getLog(ThemeService.class);
 
-    private Map<String, Registrable> registries;
+    private Map<String, Registrable> registries = new HashMap<String, Registrable>();
 
     private RuntimeContext context;
 
@@ -88,6 +88,10 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     }
 
     public synchronized void removeRegistry(String name) {
+        Registrable registry = registries.get(name);
+        if (registry != null) {
+            registry.clear();
+        }
         registries.remove(name);
     }
 
@@ -104,24 +108,30 @@ public class ThemeService extends DefaultComponent implements Reloadable {
     @Override
     public void activate(ComponentContext ctx) {
         context = ctx.getRuntimeContext();
-        registries = new HashMap<String, Registrable>();
         Manager.initializeProtocols();
         log.debug("Theme service activated");
     }
 
     @Override
     public void deactivate(ComponentContext ctx) {
-        registries = null;
+        for (Registrable registry : registries.values()) {
+            registry.clear();
+        }
+        registries.clear();
+        context = null;
         Manager.resetProtocols();
         log.debug("Theme service deactivated");
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        // themes registered as contributions
         for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
             registerTheme(themeDescriptor);
         }
+        // custom themes located on the file-system
         registerCustomThemes();
+
         ThemeManager.updateThemeDescriptors();
 
         // setup resource banks

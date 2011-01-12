@@ -61,8 +61,8 @@ public final class UidManager implements Registrable {
         for (Identifiable o : objects) {
             unregister(o);
         }
-        objects.clear();
         objects = null;
+        registry.clear();
     }
 
     public Collection<Integer> listUids() {

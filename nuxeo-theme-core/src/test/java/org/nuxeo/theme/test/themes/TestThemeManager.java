@@ -47,10 +47,6 @@ import org.nuxeo.theme.types.TypeRegistry;
 
 public class TestThemeManager extends NXRuntimeTestCase {
 
-    private ThemeManager themeManager;
-
-    private TypeRegistry typeRegistry;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -59,21 +55,6 @@ public class TestThemeManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
-        themeManager = Manager.getThemeManager();
-        typeRegistry = Manager.getTypeRegistry();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        Manager.getRelationStorage().clear();
-        Manager.getPerspectiveManager().clear();
-        Manager.getTypeRegistry().clear();
-        Manager.getUidManager().clear();
-        themeManager.clear();
-        themeManager = null;
-        typeRegistry.clear();
-        typeRegistry = null;
-        super.tearDown();
     }
 
     public void testValidateThemeName() {
@@ -97,6 +78,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testGetThemeNames() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         assertTrue(ThemeManager.getThemeNames().isEmpty());
         ThemeDescriptor themeDescriptor1 = new ThemeDescriptor();
         themeDescriptor1.setName("theme1");
@@ -143,6 +125,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testGetPageNames() throws NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         assertTrue(themeManager.getPageNames("default").isEmpty());
 
         ThemeElement theme = new ThemeElement();
@@ -211,6 +194,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateElement() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         Element element = ElementFactory.create("page");
         element.setName("page 1");
 
@@ -233,6 +217,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateFragment() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
         DummyFragment fragment = (DummyFragment) FragmentFactory.create("dummy fragment");
         fragment.setField1("value of field 1");
         fragment.setField2("value of field 2");
@@ -274,6 +259,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateWidget() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Widget widget = (Widget) FormatFactory.create("widget");
         widget.setName("vertical menu");
         widget.setDescription("Description");
@@ -287,6 +274,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateLayout() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Layout layout = (Layout) FormatFactory.create("layout");
         layout.setProperty("width", "100%");
         layout.setProperty("height", "50px");
@@ -298,6 +287,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateStyle() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Style style = (Style) FormatFactory.create("style");
         Properties properties1 = new Properties();
         properties1.setProperty("color", "red");
@@ -317,6 +308,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDuplicateFormatWithAncestors() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Style style = (Style) FormatFactory.create("style");
 
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -335,6 +328,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testListFormats() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
         DefaultFormat widget1 = (DefaultFormat) FormatFactory.create("widget");
         assertTrue(themeManager.listFormats().isEmpty());
@@ -348,6 +343,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testRemoveOrphanedFormats() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Element theme = ElementFactory.create("theme");
 
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
@@ -393,6 +390,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testRemoveOrphanedFormatsOnTestTheme() throws ThemeIOException,
             ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setSrc("theme.xml");
         final boolean preload = false;
@@ -405,6 +404,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testDestroyTestTheme() throws ThemeIOException, ThemeException,
             NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setSrc("theme.xml");
         final boolean preload = false;
@@ -420,6 +421,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testStyleInheritance() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -494,6 +497,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testStyleInheritanceCycles() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -520,6 +525,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testDestroyElement() throws ThemeException, NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("theme");
         Element page = ElementFactory.create("page");
@@ -580,6 +587,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testDeletePage() throws ThemeIOException, NodeException,
             ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         theme.setName("theme");
         PageElement page = (PageElement) ElementFactory.create("page");
@@ -595,6 +604,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testMakeElementUseNamedStyle() throws ThemeException,
             NodeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         final String currentThemeName = "theme";
 
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
@@ -630,6 +641,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testSetStyleInheritance() throws NodeException, ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String currentThemeName = "theme";
 
         ThemeDescriptor themeDescriptor = new ThemeDescriptor();
@@ -685,6 +698,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testRemoveInheritanceFrom() throws NodeException,
             ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+        ;
         Style ancestor = (Style) FormatFactory.create("style");
         ancestor.setUid(0);
         Style descendant1 = (Style) FormatFactory.create("style");
@@ -709,6 +724,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
     public void testRemoveInheritanceTowards() throws NodeException,
             ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
+
         Style descendant = (Style) FormatFactory.create("style");
         descendant.setUid(0);
         Style ancestor1 = (Style) FormatFactory.create("style");
@@ -728,6 +745,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testRemoveNamedStyles() throws ThemeException {
+        ThemeManager themeManager = Manager.getThemeManager();
 
         String currentThemeName = "theme";
 
