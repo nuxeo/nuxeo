@@ -40,10 +40,10 @@
 
 <hr/>
 
-<#if Document.modified>                                                                                                                                     
-<div class="byline">Last modified on ${Document.modified?datetime}< by ${Document.author}</div>                                                             
-<hr/>                                                                                                                                                       
-</#if>  
+<#if Document.modified>
+<div class="byline">Last modified on ${Document.modified?datetime}< by ${Document.author}</div>
+<hr/>
+</#if>
 
 <hr/>
 

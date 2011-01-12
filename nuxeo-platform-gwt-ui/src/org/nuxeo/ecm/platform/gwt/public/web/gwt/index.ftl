@@ -1,5 +1,5 @@
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 
 <!-- The HTML 4.01 Transitional DOCTYPE declaration-->
@@ -52,7 +52,7 @@
             height: 100%;
             left: 0;
             top: 0;
-            
+
         }
 
         #loading a {
@@ -99,7 +99,7 @@
               </td><tr>
         </div>
       </div>
-    </div> 
+    </div>
 
 
     <!-- OPTIONAL: include this if you want history support -->
@@ -109,7 +109,7 @@
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
-    <!--                                           -->    
+    <!--                                           -->
     <script type="text/javascript" language="javascript" src="${skinPath}/resources/org.nuxeo.ecm.platform.gwt.UI.nocache.js"></script>
 
     <!--script type="text/javascript">document.getElementById('loadingMsg').innerHTML = 'Loading Core API...';</script-->

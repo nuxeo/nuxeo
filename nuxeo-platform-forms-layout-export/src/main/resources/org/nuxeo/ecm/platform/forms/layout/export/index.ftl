@@ -1,34 +1,34 @@
 <html>
-  <head>  
+  <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>Nuxeo Layout Documentation</title>
   </head>
   <style>
   .tree {
- 	border-left: 1px solid black;
-  	border-right: 1px solid black;
-  	border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
   }
   .category {
-    border-top: 1px solid black;	 
-    border-bottom: 1px solid black;    
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     padding: 2px;
     background-color: #cafeca
   }
   .export_link {
-    border-top: 1px solid black;   
-    border-bottom: 1px solid black;    
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     padding: 2px;
   }
   .category_content {
-  	padding-top: 10px;
+    padding-top: 10px;
     padding-bottom: 10px;
   }
   .item {
-  	margin-left: 20px;
+    margin-left: 20px;
   }
   .content {
-  	margin: 10px 10px;
+    margin: 10px 10px;
   }
 
   .params table {
@@ -37,15 +37,15 @@
   }
 
   .params th {
-  	background-color: #cecece;
+    background-color: #cecece;
   }
-  
+
   .params td,th {
-    border: 1px solid black;	
+    border: 1px solid black;
     padding: 6px;
   }
 
-  
+
 h1 {
 /* H1 */
     font: normal small-caps bold 240% "Century Gothic", "Trebuchet MS", Verdana, sans-serif;
@@ -88,7 +88,7 @@ pre {
 </style>
 
 <body>
-  
+
   <table width="100%" class="main_table">
     <tr>
       <td colspan="2" align="right">
@@ -126,7 +126,7 @@ pre {
             <div class="description">
               ${This.getWidgetTypeDescription(widgetType)}
             </div>
-            <h2>General Information</h2>        
+            <h2>General Information</h2>
             <div class="info">
               <div>
                 <b>Categories:</b> ${This.getWidgetTypeCategoriesAsString(widgetType)}
@@ -151,7 +151,7 @@ pre {
       </td>
     </tr>
   </table>
-  
+
 </body>
 
 </html>
