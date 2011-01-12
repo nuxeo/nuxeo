@@ -22,7 +22,6 @@ package org.nuxeo.launcher;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.JettyConfigurator;
@@ -42,25 +41,12 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
         super(configurationGenerator);
     }
 
-    protected void setSystemProperties() {
-        System.setProperty("java.util.logging.manager",
-                "org.apache.juli.ClassLoaderLogManager");
-        System.setProperty("catalina.base",
-                configurationGenerator.getNuxeoHome().getPath());
-        System.setProperty("catalina.home",
-                configurationGenerator.getNuxeoHome().getPath());
-    }
-
+    @Override
     protected String getClassPath() {
         String cp = ".";
         cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
         cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
         return cp;
-    }
-
-    @Override
-    protected void setServerProperties(Map<String, String> env) {
-        // TODO needed properties ?
     }
 
     @Override

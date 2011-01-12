@@ -11,6 +11,9 @@
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n" />
     </layout>
+    <filter class="org.apache.log4j.varia.LevelRangeFilter">
+      <param name="levelMin" value="INFO" />
+    </filter>
   </appender>
 
   <!-- ================================= -->
@@ -27,11 +30,15 @@
     </layout>
   </appender>
 
+  <logger name="org.nuxeo">
+    <level value="DEBUG" />
+  </logger>
+
   <!-- ======================= -->
   <!-- Setup the Root category -->
   <!-- ======================= -->
   <root>
-    <level value="DEBUG" />
+    <priority value="INFO" />
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
   </root>
