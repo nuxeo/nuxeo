@@ -21,7 +21,8 @@ package org.nuxeo.launcher;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,13 +30,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.process.MacProcessManager;
@@ -64,6 +66,11 @@ public abstract class NuxeoLauncher {
 
     private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
 
+    /**
+     * Max time to wait for server startup summary in logs (in seconds).
+     */
+    private static final int LOG_MAX_WAIT = 300;
+
     protected ConfigurationGenerator configurationGenerator;
 
     protected ProcessManager processManager;
@@ -78,8 +85,6 @@ public abstract class NuxeoLauncher {
             "NuxeoProcessThread"));
 
     private boolean consoleLogs = false;
-
-    // private boolean background = false;
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
@@ -106,20 +111,16 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    public void start() throws IOException, InterruptedException {
-        // Check if already running
-        try {
-            String existingPid = getPid();
-            if (existingPid != null) {
-                throw new IllegalStateException(
-                        "A server is already running with process ID "
-                                + existingPid);
-            }
-        } catch (IOException e) {
-            log.warn("Could not check existing process" + e.getMessage());
-        }
-
-        // Prepare startup command
+    /**
+     * Do not directly call this method without a call to
+     * {@link #checkNoRunningServer()}
+     *
+     * @see #doStart()
+     * @throws IOException In case of issue with process.
+     * @throws InterruptedException If any thread has interrupted the current
+     *             thread.
+     */
+    protected void start() throws IOException, InterruptedException {
         List<String> command = new ArrayList<String>();
         command.add(getJavaExecutable().getPath());
         command.addAll(Arrays.asList(System.getProperty(JAVA_OPTS_PROPERTY,
@@ -138,12 +139,32 @@ public abstract class NuxeoLauncher {
             streamHandler.start();
         }
         Thread.sleep(1000);
-        pid = processManager.findPid(processRegex);
-        log.info("Started process" + (pid != null ? "; pid = " + pid : ""));
+        log.info("Server started"
+                + (getPid() != null ? " with process ID " + pid : "") + ".");
+    }
+
+    /**
+     * Check if some server is already running (from another thread) and throw a
+     * Runtime exception if it finds one. That method will work where
+     * {@link #isRunning()} won't.
+     *
+     * @throws IllegalThreadStateException Thrown if a server is already
+     *             running.
+     */
+    public void checkNoRunningServer() throws IllegalThreadStateException {
+        try {
+            String existingPid = getPid();
+            if (existingPid != null) {
+                throw new IllegalStateException(
+                        "A server is already running with process ID "
+                                + existingPid);
+            }
+        } catch (IOException e) {
+            log.warn("Could not check existing process" + e.getMessage());
+        }
     }
 
     protected class ThreadedStreamHandler extends Thread {
-
         private InputStream inputStream;
 
         ThreadedStreamHandler(InputStream is) {
@@ -163,7 +184,6 @@ public abstract class NuxeoLauncher {
                 log.error(e);
             }
         }
-
     }
 
     public Thread logProcessStreams(ProcessBuilder pb) {
@@ -210,28 +230,11 @@ public abstract class NuxeoLauncher {
 
     protected abstract void setServerStartCommand(List<String> command);
 
-    protected File getJarLauncher() {
-        File jarLauncher = new File(configurationGenerator.getNuxeoHome(),
-                "bin").listFiles(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name.startsWith("nuxeo-launcher")) {
-                    return true;
-                } else
-                    return false;
-            }
-        })[0];
-        return jarLauncher;
-    }
-
     private File getJavaExecutable() {
         File javaExec = new File(System.getProperty("java.home"), "bin"
                 + File.separator + "java");
         return javaExec;
     }
-
-    protected abstract void setServerProperties(Map<String, String> env);
 
     protected abstract String getClassPath();
 
@@ -246,24 +249,9 @@ public abstract class NuxeoLauncher {
         return nuxeoProperties;
     }
 
-    protected void setNuxeoProperties(Map<String, String> env) {
-        env.put("nuxeo.home", configurationGenerator.getNuxeoHome().getPath());
-        env.put("nuxeo.conf", configurationGenerator.getNuxeoConf().getPath());
-        setNuxeoProperty(env, Environment.NUXEO_LOG_DIR);
-        setNuxeoProperty(env, Environment.NUXEO_DATA_DIR);
-        // setNuxeoProperty(Environment.NUXEO_TMP_DIR);
-    }
-
     private String getNuxeoProperty(String property) {
         return "-D" + property + "="
                 + configurationGenerator.getUserConfig().getProperty(property);
-    }
-
-    private void setNuxeoProperty(Map<String, String> env, String property) {
-        log.debug("Set property " + property + ": "
-                + configurationGenerator.getUserConfig().getProperty(property));
-        env.put(property,
-                configurationGenerator.getUserConfig().getProperty(property));
     }
 
     protected String addToClassPath(String cp, String filename) {
@@ -286,38 +274,128 @@ public abstract class NuxeoLauncher {
         }
         String command = args[0];
         final NuxeoLauncher launcher = createLauncher();
-
+        boolean commandSucceeded = true;
         if ("status".equalsIgnoreCase(command)) {
             launcher.status();
         } else if ("startbg".equalsIgnoreCase(command)) {
-            launcher.doStart();
+            commandSucceeded = launcher.doStart();
         } else if ("start".equalsIgnoreCase(command)) {
-            launcher.doStart();
-            // TODO wait for effective start if returned true
+            commandSucceeded = launcher.doStartAndWait();
         } else if ("console".equalsIgnoreCase(command)) {
             launcher.setConsoleLogs(true);
             launcher.executor.execute(new Runnable() {
                 public void run() {
-                    launcher.doStart();
+                    launcher.addShutdownHook();
+                    if (!launcher.doStart()) {
+                        System.exit(1);
+                    }
                 }
             });
         } else if ("stop".equalsIgnoreCase(command)) {
             launcher.stop();
+        } else if ("restartbg".equalsIgnoreCase(command)) {
+            launcher.stop();
+            commandSucceeded = launcher.doStart();
         } else if ("restart".equalsIgnoreCase(command)) {
             launcher.stop();
-            launcher.doStart();
+            commandSucceeded = launcher.doStartAndWait();
         } else if ("configure".equalsIgnoreCase(command)) {
             launcher.configure();
         } else if ("pack".equalsIgnoreCase(command)) {
             // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
             throw new UnsupportedOperationException();
         }
-
+        if (!commandSucceeded) {
+            System.exit(1);
+        }
     }
 
-    // private void setBackground(boolean background) {
-    // this.background = background;
-    // }
+    /**
+     * Whereas {@link #doStart()} considers the server as started when the
+     * process is running, {@link #doStartAndWait()} waits for effective start
+     * by watching the logs
+     *
+     * @return true if the server started successfully
+     */
+    protected boolean doStartAndWait() {
+        boolean commandSucceeded = true;
+        if (doStart()) {
+//            addShutdownHook();
+            if (!waitForEffectiveStart()) {
+                commandSucceeded = false;
+                stop();
+            } else {
+//                removeShutdownHook();
+            }
+        } else {
+            commandSucceeded = false;
+        }
+        return commandSucceeded;
+    }
+
+    protected boolean waitForEffectiveStart() {
+        long startTime = new Date().getTime();
+        Pattern nuxeoStartedPattern = Pattern.compile(".*OSGiRuntimeService.*Nuxeo EP Started");
+        Pattern separatorPattern = Pattern.compile("======================================================================");
+        File logFile = new File(configurationGenerator.getLogDir(),
+                "server.log");
+        final StringBuilder startSummary = new StringBuilder();
+        final String newLine = System.getProperty("line.separator");
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(logFile));
+            int count = 0;
+            int countStatus = 0;
+            boolean countActive = false;
+            String line;
+            // Go to end of file
+            while (in.readLine() != null)
+                ;
+            do {
+                // Wait for something to read
+                while (!in.ready() && count < LOG_MAX_WAIT && isRunning()) {
+                    System.out.print(".");
+                    count++;
+                    synchronized (nuxeoProcess) {
+                        nuxeoProcess.wait(1000);
+                    }
+                }
+                line = in.readLine();
+                if (line != null && nuxeoStartedPattern.matcher(line).matches()) {
+                    countActive = true;
+                }
+                if (countActive) {
+                    if (line != null
+                            && separatorPattern.matcher(line).matches()) {
+                        countStatus++;
+                    }
+                    if (countStatus > 0) {
+                        startSummary.append(newLine + line);
+                    }
+                }
+            } while (countStatus < 3 && count < LOG_MAX_WAIT && isRunning());
+            if (countStatus == 3) {
+                long duration = (new Date().getTime() - startTime) / 1000;
+                startSummary.append(newLine
+                        + "Started in "
+                        + String.format("%dmin%02ds", new Long(duration / 60),
+                                new Long(duration % 60)));
+                System.out.println(startSummary);
+                return true;
+            } else {
+                log.error("Starting process is taking too long - giving up.");
+            }
+        } catch (FileNotFoundException e) {
+            log.error("Unable to open " + logFile.getPath(), e);
+        } catch (IOException e) {
+            log.error(e);
+        } catch (InterruptedException e) {
+            log.debug(e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+        return false;
+    }
 
     /**
      * @return true if server successfully started
@@ -325,9 +403,10 @@ public abstract class NuxeoLauncher {
     protected boolean doStart() {
         boolean serverStarted = false;
         try {
+            checkNoRunningServer();
             configure();
             start();
-            serverStarted = true;
+            serverStarted = isRunning();
         } catch (ConfigurationException e) {
             log.error("Could not run configuration", e);
         } catch (IOException e) {
@@ -336,8 +415,31 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process", e);
         } catch (IllegalStateException e) {
             log.error(e.getMessage());
+        } catch (IllegalThreadStateException e) {
+            // Already running server
         }
         return serverStarted;
+    }
+
+    protected class ShutdownThread extends Thread {
+
+        private NuxeoLauncher launcher;
+
+        public ShutdownThread(NuxeoLauncher launcher) {
+            super();
+            this.launcher = launcher;
+        }
+
+        public void run() {
+            log.debug("Shutting down...");
+            launcher.stop();
+            log.debug("Shutdown complete.");
+        }
+    }
+
+    protected void addShutdownHook() {
+        log.debug("Add shutdown hook");
+        Runtime.getRuntime().addShutdownHook(new ShutdownThread(this));
     }
 
     private void setConsoleLogs(boolean consoleLogs) {
@@ -346,13 +448,15 @@ public abstract class NuxeoLauncher {
 
     public void stop() {
         try {
-            if (getPid() == null) {
+            if (!(processManager instanceof PureJavaProcessManager)
+                    && getPid() == null) {
                 log.info("Server is not running.");
                 return;
             }
-            int retry = 0;
+            System.out.print("Stopping server...");
+            int nbTry = 0;
+            boolean retry = false;
             do {
-                retry++;
                 List<String> command = new ArrayList<String>();
                 command.add(getJavaExecutable().getPath());
                 command.add("-cp");
@@ -365,36 +469,54 @@ public abstract class NuxeoLauncher {
                 log.debug("Server command: " + pb.command());
                 try {
                     nuxeoProcess = pb.start();
-                    // Thread streamHandler = logProcessStreams(pb);
-                    // streamHandler.start();
+                    Thread streamHandler = logProcessStreams(pb);
+                    streamHandler.start();
                     nuxeoProcess.waitFor();
-                    // streamHandler.interrupt();
-                    // streamHandler.join();
-                    try {
-                        if (nuxeoProcess.exitValue() == 0) {
-                            // Wait for server end
-                            Thread.sleep(2000);
+                    streamHandler.interrupt();
+                    streamHandler.join();
+                    boolean wait = true;
+                    while (wait) {
+                        try {
+                            if (nuxeoProcess.exitValue() == 0) {
+                                // Successful call for server stop
+                                retry = false;
+                            } else {
+                                // Failed to call for server stop
+                                retry = ++nbTry < 3;
+                                Thread.sleep(1000);
+                            }
+                            wait = false;
+                        } catch (IllegalThreadStateException e) {
+                            // Stop call is still running
+                            wait = true;
+                            System.out.print(".");
+                            Thread.sleep(1000);
                         }
-                    } catch (IllegalThreadStateException e) {
-                        log.debug("Wait for end of stop");
-                        Thread.sleep(2000);
+                    }
+                    // Exit if there's no way to check for server stop
+                    if (processManager instanceof PureJavaProcessManager) {
+                        log.info("Can't check server status on your OS.");
+                        return;
+                    }
+                    // Wait a few seconds for effective stop
+                    for (int i = 0; !retry && getPid() != null && i < 10; i++) {
+                        System.out.print(".");
+                        Thread.sleep(1000);
                     }
                 } catch (InterruptedException e) {
                     log.error(e);
                 }
-
-                if (processManager instanceof PureJavaProcessManager) {
-                    log.info("Can't check server status as your OS doesn't allow to manage processes.");
-                    return;
-                }
-                if (getPid() == null) {
-                    log.info("Server stopped.");
-                    return;
-                }
-            } while (pid != null && retry < 3);
-            processManager.kill(nuxeoProcess, pid);
+            } while (retry);
             if (getPid() == null) {
-                log.info("Server forcibly stopped.");
+                log.info("Server stopped.");
+            } else {
+                log.info("No answer from server, try to kill it...");
+                if (pid != null) {
+                    processManager.kill(nuxeoProcess, pid);
+                    if (getPid() == null) {
+                        log.info("Server forcibly stopped.");
+                    }
+                }
             }
         } catch (IOException e) {
             log.error("Could not manage process!", e);
@@ -404,9 +526,7 @@ public abstract class NuxeoLauncher {
     protected abstract void setServerStopCommand(List<String> command);
 
     private String getPid() throws IOException {
-        // if (pid == null) {
         pid = processManager.findPid(processRegex);
-        // }
         return pid;
     }
 
@@ -415,14 +535,19 @@ public abstract class NuxeoLauncher {
     }
 
     public void status() {
+        if (processManager instanceof PureJavaProcessManager) {
+            log.info("Can't check server status on your OS.");
+            return;
+        }
         try {
             if (getPid() == null) {
                 log.info("Server is not running.");
             } else {
-                log.info("Server is running with process ID " + getPid());
+                log.info("Server is running with process ID " + getPid() + ".");
             }
         } catch (IOException e) {
-            log.warn("Could not check existing process" + e.getMessage());
+            log.warn("Could not check existing process (" + e.getMessage()
+                    + ").");
         }
     }
 
@@ -456,10 +581,15 @@ public abstract class NuxeoLauncher {
         System.err.println("Usage: java -jar "
                 + new File(
                         NuxeoLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-                + " (help|start|stop|restart|configure|console|status|startbg|pack)");
+                + " (help|start|stop|restart|configure|console|status|startbg|restartbg|pack)");
     }
 
-    public boolean isRunning() {
+    /**
+     * Works only on current nuxeoProcess
+     *
+     * @return true if current process is running
+     */
+    protected boolean isRunning() {
         if (nuxeoProcess == null) {
             return false;
         }
