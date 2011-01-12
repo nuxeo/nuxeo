@@ -10,7 +10,6 @@
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n" />
-      <!-- <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c] %m%n" /> -->
     </layout>
   </appender>
 
@@ -19,7 +18,7 @@
   <!-- ================================= -->
   <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
-    <param name="File" value="console.log" />
+    <param name="File" value="${nuxeo.home}/log/console.log" />
     <param name="Append" value="true" />
     <!-- Rollover at midnight every day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
@@ -34,6 +33,7 @@
   <root>
     <level value="DEBUG" />
     <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

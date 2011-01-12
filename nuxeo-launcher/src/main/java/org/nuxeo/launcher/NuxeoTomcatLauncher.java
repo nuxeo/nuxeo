@@ -85,6 +85,8 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     protected String getClassPath() {
         // String cp = getJarLauncher().getPath();
         String cp = ".";
+        // cp = addToClassPath(cp,"bin" + File.separator +
+        // "nuxeo-launcher.jar");
         cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
         cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
         return cp;
@@ -94,5 +96,16 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     protected void setServerStartCommand(List<String> command) {
         command.add(TomcatConfigurator.STARTUP_CLASS);
         command.add("start");
+    }
+
+    @Override
+    protected void setServerStopCommand(List<String> command) {
+        command.add(TomcatConfigurator.STARTUP_CLASS);
+        command.add("stop");
+    }
+
+    @Override
+    protected String getServerPrint() {
+        return TomcatConfigurator.STARTUP_CLASS;
     }
 }

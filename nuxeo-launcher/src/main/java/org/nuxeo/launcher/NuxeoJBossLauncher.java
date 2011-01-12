@@ -70,10 +70,21 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     }
 
     @Override
+    protected void setServerStopCommand(List<String> command) {
+        command.add(JBossConfigurator.STARTUP_CLASS);
+        command.add("stop");
+    }
+
+    @Override
     protected Collection<? extends String> getServerProperties() {
         // TODO Auto-generated method stub
         // return null;
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected String getServerPrint() {
+        return JBossConfigurator.STARTUP_CLASS;
     }
 
 }
