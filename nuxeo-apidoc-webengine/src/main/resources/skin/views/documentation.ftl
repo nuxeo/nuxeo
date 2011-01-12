@@ -1,46 +1,52 @@
 <#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-<@block name="stylesheets">
-</@block>
-
-<@block name="header_scripts">
-</@block>
+<@block name="title">Documentation for ${nxItem.id}</@block>
 
 <@block name="right">
-<H1> Documentation for ${nxItem.id}</H1>
-
-<#if Root.isEditor()>
-<A href="${This.path}/createForm"> Add new </A>
-</#if>
-<br/>
+<h1>Documentation for <span class="componentTitle">${nxItem.id}</span></h1>
 
 <#assign docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
-<#assign docsByCat2=docs.getDocumentationItems(Context.getCoreSession())/>
 
-<h2> Documentation index </h2>
+<p>[ <a href="${This.path}/createForm"> Add new documentation </a> ]</p>
+
+<#--
+<h2> Index </h2>
+<#if Root.isEditor()>
+</#if>
+<ul>
 <#list docsByCat?keys as category>
- <h3>${category}</h3>
+ <li>${category}
  <ul>
- <#list docsByCat2[category] as docItem>
+ <#list docsByCat[category] as docItem>
     <li><A href="#${docItem.id}">${docItem.title}</A> </li>
  </#list>
  </ul>
+ </li>
 </#list>
+</ul>
 
 <hr>
+-->
 
 <#list docsByCat?keys as category>
  <h2>${category}</h2>
 
- <#list docsByCat2[category] as docItem>
-    <A name="${docItem.id}"> ${docItem.title} </A> &nbsp;
+ <#list docsByCat[category] as docItem>
+  <div style="border: 1px solid #CCC; margin-bottom:1em; padding:3px">
+    <h3><a name="${docItem.id}"> </a>${docItem.title}</h3>
     <#if Root.isEditor()>
-      [ <A href="${This.path}/editForm/${docItem.getUUID()}">Edit</A> ]
+      [ <a href="${This.path}/editForm/${docItem.getUUID()}">Edit</a> ]
+      <div style="float:right">
+        <form method="POST" action="${This.path}/deleteDocumentation">
+          <input type="hidden" name="uuid" value="${docItem.getUUID()}" />
+          <input type="submit" value="Delete" onclick="return confirm('Really delete?')"/>
+        </form>
+      </div>
     </#if>
     <#include "docItemView.ftl">
+  </div>
  </#list>
 </#list>
 
 </@block>
-
 </@extends>

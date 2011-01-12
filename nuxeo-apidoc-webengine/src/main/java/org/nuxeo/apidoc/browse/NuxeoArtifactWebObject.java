@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -139,6 +140,20 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
                 docItem.getTitle(), docItem.getContent(), docItem.getType(),
                 docItem.getApplicableVersion(), docItem.isApproved(),
                 docItem.getRenderingType());
+        return redirect(getDocUrl());
+    }
+
+    @POST
+    @Produces("text/html")
+    @Path(value = "deleteDocumentation")
+    public Object doDeleteDocumentation(@FormParam("uuid") String uuid)
+            throws Exception {
+        if (!SecurityHelper.canEditDocumentation(getContext())) {
+            throw new WebSecurityException(
+                    "You are not allowed to do this operation");
+        }
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        ds.deleteDocumentationItem(ctx.getCoreSession(), uuid);
         return redirect(getDocUrl());
     }
 

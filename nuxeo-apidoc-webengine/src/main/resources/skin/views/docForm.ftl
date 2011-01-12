@@ -8,7 +8,7 @@
   <h1> Add Documentation for ${nxItem.id}</h1>
 </#if>
 <#if mode=="edit">
-  <h1> Edit Documentation for ${nxItem.id}</h1>
+  <h1> Edit ${docItem.typeLabel} for ${nxItem.id}</h1>
 </#if>
 
 <#include "docItemForm.ftl">

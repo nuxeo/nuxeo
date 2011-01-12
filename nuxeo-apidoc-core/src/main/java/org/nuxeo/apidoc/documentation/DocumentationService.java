@@ -36,6 +36,9 @@ public interface DocumentationService {
     DocumentationItem updateDocumentationItem(CoreSession session,
             DocumentationItem docItem) throws ClientException;
 
+    void deleteDocumentationItem(CoreSession session, String uuid)
+            throws ClientException;
+
     List<DocumentationItem> findDocumentItems(CoreSession session,
             NuxeoArtifact nxItem) throws ClientException;
 

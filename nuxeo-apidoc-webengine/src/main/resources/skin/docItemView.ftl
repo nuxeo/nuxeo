@@ -1,28 +1,21 @@
-<table width="90%">
+<table width="100%">
 <tr>
   <td width="70%">
-<#if docItem.renderingType=='html'>
+  <#if docItem.renderingType=='html'>
     ${docItem.content}
-</#if>
-<#if docItem.renderingType=='wiki'>
+  </#if>
+  <#if docItem.renderingType=='wiki'>
     <@wiki>${docItem.content}</@wiki>
-</#if>
-</td>
+  </#if>
+  </td>
   <td>
     <table>
       <tr>
-        <td> Approved by Nuxeo : </td>
-        <td>
-        <#if docItem.approved>
-            true
-        </#if>
-        <#if !docItem.approved>
-            true
-        </#if>
-        </td>
+        <td> Approved by Nuxeo: </td>
+        <td> ${docItem.approved?string("yes", "no")} </td>
     </tr>
     <tr>
-        <td> Applicable versions : </td>
+        <td> Applicable versions: </td>
         <td>
         <#list docItem.applicableVersion as version>
            ${version} <br/>

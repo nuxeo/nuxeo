@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -323,6 +324,24 @@ public class DocumentationComponent extends DefaultComponent implements
         return doc.getAdapter(DocumentationItem.class);
     }
 
+    @Override
+    public void deleteDocumentationItem(CoreSession session, String uuid)
+            throws ClientException {
+        DocumentModel doc = session.getDocument(new IdRef(uuid));
+        // check type
+        if (!doc.getType().equals(DocumentationItem.TYPE_NAME)) {
+            throw new RuntimeException("Invalid documentation item");
+        }
+        // check under our root
+        DocumentModel root = getDocumentationRoot(session);
+        DocumentModel parent = session.getDocument(doc.getParentRef());
+        if (!root.getId().equals(parent.getId())) {
+            throw new RuntimeException("Invalid documentation item");
+        }
+        // ok to delete
+        session.removeDocument(doc.getRef());
+    }
+
     protected DocumentModel updateDocumentModel(DocumentModel doc,
             DocumentationItem item) throws ClientException {
 
@@ -406,38 +425,32 @@ public class DocumentationComponent extends DefaultComponent implements
         return existingDoc.getAdapter(DocumentationItem.class);
     }
 
-    @Override
-    public List<String> getCategoryKeys() throws Exception {
-
-        List<String> categories = new ArrayList<String>();
-
+    protected List<DocumentModel> listCategories() throws Exception {
         DirectoryService dm = Framework.getService(DirectoryService.class);
         Session session = dm.open(DIRECTORY_NAME);
         try {
-            DocumentModelList entries = session.getEntries();
-            for (DocumentModel entry : entries) {
-                categories.add(entry.getId());
-            }
+            return session.query(Collections.<String, Serializable> emptyMap(),
+                    null, Collections.singletonMap("ordering", "ASC"));
         } finally {
             session.close();
+        }
+    }
+
+    @Override
+    public List<String> getCategoryKeys() throws Exception {
+        List<String> categories = new ArrayList<String>();
+        for (DocumentModel entry : listCategories()) {
+            categories.add(entry.getId());
         }
         return categories;
     }
 
     @Override
     public Map<String, String> getCategories() throws Exception {
-        Map<String, String> categories = new HashMap<String, String>();
-
-        DirectoryService dm = Framework.getService(DirectoryService.class);
-        Session session = dm.open(DIRECTORY_NAME);
-        try {
-            DocumentModelList entries = session.getEntries();
-            for (DocumentModel entry : entries) {
-                String value = (String) entry.getProperty("vocabulary", "label");
-                categories.put(entry.getId(), value);
-            }
-        } finally {
-            session.close();
+        Map<String, String> categories = new LinkedHashMap<String, String>();
+        for (DocumentModel entry : listCategories()) {
+            String value = (String) entry.getProperty("vocabulary", "label");
+            categories.put(entry.getId(), value);
         }
         return categories;
     }

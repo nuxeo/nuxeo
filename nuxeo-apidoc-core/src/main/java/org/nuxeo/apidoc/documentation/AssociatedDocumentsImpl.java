@@ -18,6 +18,7 @@ package org.nuxeo.apidoc.documentation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,28 +47,26 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     @Override
     public Map<String, List<DocumentationItem>> getDocumentationItems(
             CoreSession session) throws Exception {
-
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
-
-        Map<String, List<DocumentationItem>> result = new HashMap<String, List<DocumentationItem>>();
-
         Map<String, String> categories = getCategories();
-
+        Map<String, List<DocumentationItem>> result = new LinkedHashMap<String, List<DocumentationItem>>();
+        // put categories in result in same order
+        List<String> empty = new ArrayList<String>();
+        for (String catLabel : categories.values()) {
+            result.put(catLabel, new ArrayList<DocumentationItem>());
+            empty.add(catLabel);
+        }
+        // read items
         for (DocumentationItem docItem : docItems) {
             String cat = docItem.getType();
             String catLabel = categories.get(cat);
-
-            List<DocumentationItem> itemList = result.get(catLabel);
-
-            if (itemList != null) {
-                itemList.add(docItem);
-            } else {
-                itemList = new ArrayList<DocumentationItem>();
-                itemList.add(docItem);
-                result.put(catLabel, itemList);
-            }
+            result.get(catLabel).add(docItem);
+            empty.remove(catLabel);
+        }
+        // clear empty
+        for (String catLabel : empty) {
+            result.remove(catLabel);
         }
         return result;
     }

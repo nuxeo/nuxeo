@@ -11,20 +11,12 @@
 <!-- end tinyMCE -->
 
 <form method="POST"
-<#if mode=='create'>
-  action="${This.path}/createDocumentation"
-</#if>
-<#if mode=='edit'>
-  action="${This.path}/updateDocumentation"
-</#if>
+  action="${This.path}/${(mode=="create")?string("createDocumentation","updateDocumentation")}"
+  enctype="application/x-www-form-urlencoded">
 
-enctype="application/x-www-form-urlencoded">
-
-<table width="90%">
-<tr><td>
-  <table>
-  <tr>
-    <#if mode=='create'>
+<table>
+  <#if mode=='create'>
+    <tr>
       <#if preselectedType??>
       <td colspan="2">
         <input type="hidden" name="type" value="${preselectedType}"/>
@@ -43,18 +35,15 @@ enctype="application/x-www-form-urlencoded">
         </#list>
         </select>
      </#if>
-    </#if>
-    <#if mode=='edit'>
-     ${docItem.typeLabel}
-    </#if>
     </td>
   </tr>
+  </#if>
   <tr>
-    <td> Title : </td>
+    <td> Title: </td>
     <td> <input type="text" name="title" value="${docItem.title}" size="80"/> </td>
   </tr>
   <tr>
-    <td> Content Type : </td>
+    <td> Content Type: </td>
     <td> <select name="renderingType" onchange="changeEditor(this.value)">
       <option value="wiki"
       <#if docItem.renderingType=='wiki'>
@@ -66,22 +55,18 @@ enctype="application/x-www-form-urlencoded">
       <#if docItem.renderingType=='html'>
        selected
       </#if>
-      > Html </option>
+      > HTML </option>
     </select>
   </tr>
   <tr>
-    <td> Content : </td>
+    <td style="vertical-align: top"> Content: </td>
     <td><div id="contentEditorContainer">
      <textarea id="contentEditor" name="content" cols="80" rows="20">${docItem.content}</textarea>
      </div>
     </td>
   </tr>
-  </table>
-</td>
-<td>
-  <table>
   <tr>
-      <td> Approved by Nuxeo : </td>
+      <td> <label for="approved">Approved by Nuxeo:</label> </td>
       <td> <input type="checkbox" name="approved"
       <#if docItem.approved>
        checked
@@ -89,24 +74,15 @@ enctype="application/x-www-form-urlencoded">
       /> </td>
   </tr>
   <tr>
-    <td> Applicable versions : </td>
+    <td style="vertical-align: top"> Applicable versions: </td>
     <td> <select size="3" name="versions" multiple="multiple">
     <#list versions as version>
-    <option value="${version}"
-
-    <#if docItem.applicableVersion?seq_contains(version)>
-      selected
-    </#if>
-
-    >
+    <option value="${version}" ${docItem.applicableVersion?seq_contains(version)?string("selected","")}>
     ${version}</option>
     </#list>
     </select>
    </td>
   </tr>
-  </table>
-</td>
-</tr>
 </table>
 
 <#if mode=='edit'>
