@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.wss.backend;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -166,6 +167,13 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
             throw new WSSException("can not move this item");
         } else {
             String baseDest = new Path(newLocation).segment(0);
+
+            try {
+                newLocation = new String(newLocation.getBytes("ISO-8859-1"));
+            } catch (UnsupportedEncodingException ex) {
+                throw new WSSException("Encoding problem", ex);
+            }
+
             if (base.equals(baseDest)) {
                 // move within the same workspace
                 WSSListItem item = getBackend(base).moveItem(path.removeFirstSegments(1).toString(), new Path(newLocation).removeFirstSegments(1).toString());
@@ -209,7 +217,13 @@ public class SearchBasedVirtualRootBackend extends AbstractNuxeoCoreBackend impl
     public Map<String, String> getName2path() throws ClientException, Exception {
         if (name2path == null) {
             name2path = new HashMap<String, String>();
-            DocumentModelList docs = getCoreSession().query(query);
+
+            //In order to have identical paths in WSS and WebDAV
+            //We can't use list of workspace because they  
+            //DocumentModelList docs = getCoreSession().query(query);
+            DocumentModel domain = getCoreSession().getDocument(new PathRef("/default-domain"));
+            DocumentModelList docs = getCoreSession().getChildren(domain.getRef());
+
             List<String> paths = new ArrayList<String>();
             for (DocumentModel doc : docs) {
                 paths.add(doc.getPathAsString());

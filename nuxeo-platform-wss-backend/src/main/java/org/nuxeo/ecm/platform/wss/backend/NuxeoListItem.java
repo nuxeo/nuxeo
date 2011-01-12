@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.wss.backend;
 
 import java.io.InputStream;
+import java.lang.System;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -25,6 +26,8 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,6 +35,8 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.spi.AbstractWSSListItem;
@@ -66,11 +71,11 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
             log.error("Unable to get lock", e);
         }
         if (existingLock != null) {
-            String[] info = existingLock.split(":");
+            String[] info = existingLock.split(":", 2);
             if (info.length == 2) {
                 String dateStr = info[1];
                 try {
-                    return DateFormat.getDateInstance(DateFormat.MEDIUM).parse(
+                    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).parse(
                             dateStr);
                 } catch (ParseException e) {
                     log.error("Unable to parse date", e);
@@ -284,6 +289,10 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
                 }
                 doc.setProperty("file", "content", blob);
                 doc.setProperty("file", "filename", fileName);
+                doc.getContextData().putScopedValue(ScopeType.REQUEST,
+                		VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+                doc.getContextData().putScopedValue(ScopeType.REQUEST,
+                        VersioningActions.KEY_FOR_INC_OPTION, VersioningActions.ACTION_INCREMENT_MINOR);
                 doc = getSession().saveDocument(doc);
             } catch (ClientException e) {
                 log.error("Error while setting stream", e);

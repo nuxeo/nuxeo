@@ -42,6 +42,10 @@
         <param-value>org.nuxeo.ecm.platform.wss.service.PluggableBackendFactory</param-value>
         <!--<param-value>org.nuxeo.ecm.platform.wss.backend.SearchBasedVirtualHostedBackendfactory</param-value>-->
       </init-param>
+    <init-param>
+        <param-name>org.nuxeo.wss.webdav.base.url</param-name>
+        <param-value>/site/dav/default-domain</param-value>
+      </init-param>
     </filter>
     <filter-mapping>
       <filter-name>WSSFilter</filter-name>
