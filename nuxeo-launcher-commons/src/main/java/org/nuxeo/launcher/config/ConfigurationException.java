@@ -34,4 +34,12 @@ public class ConfigurationException extends Exception {
         super(throwable);
     }
 
+    /**
+     * @since 5.4.1
+     * @param message Error message
+     */
+    public ConfigurationException(String message) {
+        super(message);
+    }
+
 }
