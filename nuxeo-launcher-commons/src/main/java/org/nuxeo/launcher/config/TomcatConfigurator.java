@@ -37,6 +37,11 @@ public class TomcatConfigurator extends ServerConfigurator {
     /**
      * @since 5.4.1
      */
+    public static final String DEFAULT_TMP_DIR = "tmp";
+
+    /**
+     * @since 5.4.1
+     */
     public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
@@ -74,6 +79,34 @@ public class TomcatConfigurator extends ServerConfigurator {
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
+    }
+
+    @Override
+    public void checkPaths() {
+        // # Check Tomcat paths
+        // if [ "$tomcat" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/nxserver/data/vcsh2repo ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // die
+        // "Please rename 'vcsh2repo' directory from \"$NUXEO_HOME/nxserver/data/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
+        // exit 1
+        // fi
+        // if [ "$tomcat" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/nxserver/data/derby/nxsqldirectory ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // echo "ERROR: It is not possible to migrate derby data."
+        // die "Please remove 'nx*' directories from
+        // \"$NUXEO_HOME/nxserver/data/derby/\"
+        // or edit templates/default/conf/Catalina/localhost/nuxeo.xml
+        // following
+        // http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml"
+        // exit 1
+        // fi
+    }
+
+    @Override
+    public String getDefaultTmpDir() {
+        return DEFAULT_TMP_DIR;
     }
 
 }

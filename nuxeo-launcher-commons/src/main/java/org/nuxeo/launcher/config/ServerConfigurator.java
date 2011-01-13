@@ -47,6 +47,8 @@ public abstract class ServerConfigurator {
 
     protected File libDir = null;
 
+    private File tmpDir = null;
+
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
     }
@@ -172,6 +174,98 @@ public abstract class ServerConfigurator {
     public void setPidDir(String pidDirStr) {
         pidDir = new File(pidDirStr);
         pidDir.mkdirs();
+    }
+
+    /**
+     * Check server paths; warn if existing deprecated paths
+     *
+     * @since 5.4.1
+     */
+    public abstract void checkPaths();
+
+    /**
+     * @return Temporary directory
+     * @since 5.4.1
+     */
+    public File getTmpDir() {
+        if (tmpDir == null) {
+            tmpDir = new File(generator.getNuxeoHome(), getDefaultTmpDir());
+        }
+        return tmpDir;
+    }
+
+    /**
+     * @return Default temporary directory path relative to Nuxeo Home
+     * @since 5.4.1
+     */
+    public abstract String getDefaultTmpDir();
+
+    /**
+     * @param tmpDirStr Temporary directory path to set
+     * @since 5.4.1
+     */
+    public void setTmpDir(String tmpDirStr) {
+        tmpDir = new File(tmpDirStr);
+        tmpDir.mkdirs();
+    }
+
+    /**
+     * @see Environment
+     * @param key directory system key
+     * @param directory absolute or relative directory path
+     * @since 5.4.1
+     */
+    public void setDirectory(String key, String directory) {
+        String absoluteDirectory = setAbsolutePath(key, directory);
+        if (Environment.NUXEO_DATA_DIR.equals(key)) {
+            setDataDir(absoluteDirectory);
+        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
+            setLogDir(absoluteDirectory);
+        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
+            setPidDir(absoluteDirectory);
+        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
+            setTmpDir(absoluteDirectory);
+        } else {
+            log.error("Unknown directory key: " + key);
+        }
+    }
+
+    /**
+     * Make absolute the directory passed in parameter. If it was relative, then
+     * store absolute path in user config instead of relative and return value
+     *
+     * @param key Directory system key
+     * @param directory absolute or relative directory path
+     * @return absolute directory path
+     * @since 5.4.1
+     */
+    private String setAbsolutePath(String key, String directory) {
+        if (!new File(directory).isAbsolute()) {
+            directory = new File(generator.getNuxeoHome(), directory).getPath();
+            generator.getUserConfig().setProperty(key, directory);
+        }
+        return directory;
+    }
+
+    /**
+     * @see Environment
+     * @param key directory system key
+     * @return Directory denoted by key
+     * @since 5.4.1
+     */
+    public File getDirectory(String key) {
+        if (Environment.NUXEO_DATA_DIR.equals(key)) {
+            return getDataDir();
+        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
+            return getLogDir();
+        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
+            return getPidDir();
+        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
+            return getTmpDir();
+        } else {
+            log.error("Unknown directory key: " + key);
+            return null;
+        }
     }
 
 }
