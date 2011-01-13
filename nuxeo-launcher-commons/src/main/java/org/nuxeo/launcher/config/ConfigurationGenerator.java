@@ -298,6 +298,13 @@ public class ConfigurationGenerator {
             } else {
                 serverConfigurator.setLogDir(logDir);
             }
+            String pidDir = userConfig.getProperty(Environment.NUXEO_PID_DIR);
+            if (pidDir == null) {
+                userConfig.setProperty(Environment.NUXEO_PID_DIR,
+                        serverConfigurator.getPidDir().getPath());
+            } else {
+                serverConfigurator.setLogDir(logDir);
+            }
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -553,11 +560,11 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return run directory
+     * @return pid directory
      * @since 5.4.1
      */
-    public File getRunDir() {
-        return serverConfigurator.getRunDir();
+    public File getPidDir() {
+        return serverConfigurator.getPidDir();
     }
 
     /**
