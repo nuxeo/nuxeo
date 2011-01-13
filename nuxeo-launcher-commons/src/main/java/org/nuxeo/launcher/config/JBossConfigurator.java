@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -42,6 +42,11 @@ public class JBossConfigurator extends ServerConfigurator {
      * @since 5.4.1
      */
     public static final String STARTUP_CLASS = "org.jboss.Main";
+
+    /**
+     * @since 5.4.1
+     */
+    public static final String SHUTDOWN_CLASS = "org.jboss.Shutdown";
 
     private String configuration = null;
 
@@ -132,7 +137,8 @@ public class JBossConfigurator extends ServerConfigurator {
         checkPath(oldPath, message);
 
         oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
-                + jbossConfig + File.separator + "data" + File.separator + "derby");
+                + jbossConfig + File.separator + "data" + File.separator
+                + "derby");
         checkPath(oldPath, message);
 
         oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
