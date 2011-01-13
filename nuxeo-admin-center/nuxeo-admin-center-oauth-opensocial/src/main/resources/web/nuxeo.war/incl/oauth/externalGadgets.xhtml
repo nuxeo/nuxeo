@@ -3,10 +3,16 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core">
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<h2><h:outputText value="#{messages['adminsubtab.oauth.externalGadgets']}" /></h2>
+<h2><h:outputText
+  value="#{messages['adminsubtab.oauth.externalGadgets']}" /></h2>
 
-<br/>
+<ui:include src="directoryBasedEditor.xhtml">
+  <ui:param name="bean" value="#{externalGadgetsActions}" />
+  <ui:param name="entryLayoutName" value="externalGadgetLayoutAdmin" />
+</ui:include>
 
 </div>

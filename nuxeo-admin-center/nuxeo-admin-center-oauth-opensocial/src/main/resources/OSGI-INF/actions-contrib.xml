@@ -1,4 +1,4 @@
-<component name="org.nuxeo.connect.client.actions.monitoring">
+<component name="org.nuxeo.connect.client.actions.oauth">
 
   <require>org.nuxeo.connect.client.actions</require>
 
