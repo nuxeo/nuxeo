@@ -35,7 +35,6 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Manager.initializeProtocols();
         deployContrib("org.nuxeo.theme.core",
                 "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core",
@@ -129,6 +128,17 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL url = new URL(
                 "nxtheme://theme/engine/mode/templateEngine//theme/page/view");
         assertEquals("mode", ThemeManager.getViewModeByUrl(url));
+    }
+
+    public void testReset() {
+        Manager.resetProtocols();
+        boolean caught = false;
+        try {
+            new URL("nxtheme:foo");
+        } catch (MalformedURLException e) {
+            caught = true;
+        }
+        assertTrue(caught);
     }
 
 }
