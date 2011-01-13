@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
- *     Florent Guillaume
+ *     bstefanescu
  */
 package org.nuxeo.ecm.automation.core.doc;
 
@@ -29,11 +28,10 @@ import net.sf.json.JSONObject;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
-import org.nuxeo.ecm.automation.OperationDocumentationImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Exporter to JSON of documentation-related objects.
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JSONExporter {
 
@@ -42,7 +40,8 @@ public class JSONExporter {
     }
 
     public static void toJSON(Writer writer) throws Exception {
-        toJSON(Framework.getService(AutomationService.class).getDocumentation(),
+        toJSON(
+                Framework.getService(AutomationService.class).getDocumentation(),
                 writer);
     }
 
@@ -68,22 +67,22 @@ public class JSONExporter {
     public static JSONObject toJSON(OperationDocumentation doc)
             throws IOException {
         JSONObject op = new JSONObject();
-        op.element("id", doc.getId());
-        op.element("label", doc.getLabel());
-        op.element("category", doc.getCategory());
-        op.element("requires", doc.getRequires());
-        op.element("description", doc.getDescription());
-        if (doc.getSince() != null && doc.getSince().length() > 0) {
-            op.element("since", doc.getSince());
+        op.element("id", doc.id);
+        op.element("label", doc.label);
+        op.element("category", doc.category);
+        op.element("requires", doc.requires);
+        op.element("description", doc.description);
+        if (doc.since != null && doc.since.length() > 0) {
+            op.element("since", doc.since);
         }
-        op.element("url", doc.getUrl());
+        op.element("url", doc.url);
         JSONArray sig = new JSONArray();
-        for (String in : doc.getSignature()) {
+        for (String in : doc.signature) {
             sig.add(in);
         }
         op.element("signature", sig);
         JSONArray params = new JSONArray();
-        for (Param p : doc.getParams()) {
+        for (Param p : doc.params) {
             JSONObject param = new JSONObject();
             param.element("name", p.name);
             param.element("type", p.type);
@@ -102,7 +101,7 @@ public class JSONExporter {
     }
 
     public static OperationDocumentation fromJSON(JSONObject json) {
-        OperationDocumentationImpl op = new OperationDocumentationImpl(
+        OperationDocumentation op = new OperationDocumentation(
                 json.getString("id"));
         op.category = json.optString("label", null);
         op.category = json.optString("category", null);
@@ -121,20 +120,20 @@ public class JSONExporter {
         if (params != null) {
             op.params = new ArrayList<Param>(params.size());
             for (int j = 0, size = params.size(); j < size; j++) {
-                String[] values;
                 JSONObject p = params.getJSONObject(j);
+                Param para = new Param();
+                para.name = p.optString("name", null);
+                para.type = p.optString("type", null);
+                para.isRequired = p.optBoolean("required", false);
+                para.widget = p.optString("widget", null);
+                para.order = p.optInt("order", 0);
                 JSONArray ar = p.optJSONArray("values");
-                if (ar == null) {
-                    values = null;
-                } else {
-                    values = new String[ar.size()];
+                if (ar != null) {
+                    para.values = new String[ar.size()];
                     for (int k = 0, size2 = ar.size(); k < size2; k++) {
-                        values[k] = ar.getString(k);
+                        para.values[k] = ar.getString(k);
                     }
                 }
-                Param para = new Param(p.optString("name", null), p.optString(
-                        "type", null), p.optString("widget", null), values,
-                        p.optInt("order", 0), p.optBoolean("required", false));
                 op.params.add(para);
             }
         }

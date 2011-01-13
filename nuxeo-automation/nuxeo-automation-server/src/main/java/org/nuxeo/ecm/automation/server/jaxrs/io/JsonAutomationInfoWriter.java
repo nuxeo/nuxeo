@@ -43,19 +43,16 @@ import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 public class JsonAutomationInfoWriter implements
         MessageBodyWriter<AutomationInfo> {
 
-    @Override
     public long getSize(AutomationInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
-    @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return AutomationInfo.class.isAssignableFrom(arg0);
     }
 
-    @Override
     public void writeTo(AutomationInfo arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream arg6)
@@ -76,7 +73,7 @@ public class JsonAutomationInfoWriter implements
         JSONArray chains = new JSONArray();
         for (OperationDocumentation doc : arg0.getChains()) {
             JSONObject op = JSONExporter.toJSON(doc);
-            op.element("url", "Chain." + doc.getId());
+            op.element("url", "Chain." + doc.id);
             chains.add(op);
         }
         json.element("chains", chains);

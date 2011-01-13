@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
- *     Florent Guillaume
+ *     bstefanescu
  */
 package org.nuxeo.ecm.automation.core.impl;
 
@@ -32,7 +31,6 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.OperationDocumentationImpl;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.OutputCollector;
@@ -50,7 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 
 /**
- * Implementation for an operation class.
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationTypeImpl implements OperationType {
 
@@ -85,6 +83,7 @@ public class OperationTypeImpl implements OperationType {
      */
     protected List<Field> injectableFields;
 
+
     public OperationTypeImpl(AutomationService service, Class<?> type) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
@@ -104,17 +103,14 @@ public class OperationTypeImpl implements OperationType {
         initFields();
     }
 
-    @Override
     public AutomationService getService() {
         return service;
     }
 
-    @Override
     public String getId() {
         return id;
     }
 
-    @Override
     public Class<?> getType() {
         return type;
     }
@@ -150,7 +146,6 @@ public class OperationTypeImpl implements OperationType {
         }
     }
 
-    @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
             throws Exception {
         Object obj = type.newInstance();
@@ -226,7 +221,6 @@ public class OperationTypeImpl implements OperationType {
             this.priority = priority;
         }
 
-        @Override
         public int compareTo(Match o) {
             return o.priority - priority;
         }
@@ -234,7 +228,7 @@ public class OperationTypeImpl implements OperationType {
 
     public OperationDocumentation getDocumentation() {
         Operation op = type.getAnnotation(Operation.class);
-        OperationDocumentationImpl doc = new OperationDocumentationImpl(op.id());
+        OperationDocumentation doc = new OperationDocumentation(op.id());
         doc.label = op.label();
         doc.requires = op.requires();
         doc.category = op.category();
@@ -250,10 +244,16 @@ public class OperationTypeImpl implements OperationType {
         doc.params = new ArrayList<OperationDocumentation.Param>();
         for (Field field : params.values()) {
             Param p = field.getAnnotation(Param.class);
-            OperationDocumentation.Param param = new OperationDocumentation.Param(
-                    p.name(), getParamDocumentationType(field.getType()),
-                    p.widget().length() == 0 ? null : p.widget(), p.values(),
-                    p.order(), p.required());
+            OperationDocumentation.Param param = new OperationDocumentation.Param();
+            param.name = p.name();
+            param.type = getParamDocumentationType(field.getType());
+            param.widget = p.widget();
+            if (param.widget.length() == 0) {
+                param.widget = null;
+            }
+            param.order = p.order();
+            param.values = p.values();
+            param.isRequired = p.required();
             doc.params.add(param);
         }
         Collections.sort(doc.params);
@@ -261,8 +261,7 @@ public class OperationTypeImpl implements OperationType {
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         Collection<String> collectedSigs = new HashSet<String>();
         for (InvokableMethod m : methods) {
-            String in = getParamDocumentationType(m.getInputType(),
-                    m.isIterable());
+            String in = getParamDocumentationType(m.getInputType(), m.isIterable());
             String out = getParamDocumentationType(m.getOutputType());
             String sigKey = in + ":" + out;
             if (!collectedSigs.contains(sigKey)) {

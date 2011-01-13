@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,43 +12,97 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Bogdan Stefanescu
- *     Florent Guillaume
+ *     bstefanescu
  */
 package org.nuxeo.ecm.automation;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * The interface for the documentation about an operation.
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface OperationDocumentation extends
-        Comparable<OperationDocumentation> {
+public class OperationDocumentation implements
+        Comparable<OperationDocumentation>, Serializable {
 
-    String getId();
+    private static final long serialVersionUID = 1L;
 
-    String getDescription();
+    public String id;
 
     /**
-     * An array of size multiple of 2. Each pair in the array is the input and
+     * an array of size multiple of 2. Each pair in the array is the input and
      * output type of a method
      */
-    String[] getSignature();
+    public String[] signature;
 
-    String getCategory();
+    public String category;
 
-    String getUrl();
+    public String label;
 
-    String getLabel();
+    public String requires;
 
-    String getRequires();
+    public String since;
 
-    String getSince();
+    public String description;
 
-    List<Param> getParams();
+    public List<Param> params;
 
-    /** The documentation on a parameter of an operation. */
+    // optional URL indicating the relative path (relative to the automation
+    // service home)
+    // of the page where the operation is exposed
+    public String url;
+
+    public OperationDocumentation(String id) {
+        this.id = id;
+        this.url = id;
+    }
+
+    public int compareTo(OperationDocumentation o) {
+        String s1 = label == null ? id : label;
+        String s2 = o.label == null ? o.id : o.label;
+        return s1.compareTo(s2);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String[] getSignature() {
+        return signature;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getRequires() {
+        return requires;
+    }
+
+    public List<Param> getParams() {
+        return params;
+    }
+
+    @Override
+    public String toString() {
+        return category + " > " + label + " [" + id + ": "
+                + Arrays.asList(signature) + "] (" + params + ")\n"
+                + description;
+    }
+
     public static class Param implements Serializable, Comparable<Param> {
         private static final long serialVersionUID = 1L;
 
@@ -63,16 +117,6 @@ public interface OperationDocumentation extends
         public int order;
 
         public boolean isRequired;
-
-        public Param(String name, String type, String widget, String[] values,
-                int order, boolean isRequired) {
-            this.name = name;
-            this.type = type;
-            this.widget = widget;
-            this.values = values;
-            this.order = order;
-            this.isRequired = isRequired;
-        }
 
         public String getName() {
             return name;
@@ -104,7 +148,6 @@ public interface OperationDocumentation extends
                     + (isRequired ? "required" : "optional");
         }
 
-        @Override
         public int compareTo(Param o) {
             if (order != 0 && o.order != 0) {
                 if (order < o.order) {
