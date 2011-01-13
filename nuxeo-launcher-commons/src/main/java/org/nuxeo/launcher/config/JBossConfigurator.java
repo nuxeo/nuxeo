@@ -116,8 +116,8 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public void checkPaths() throws ConfigurationException {
         super.checkPaths();
-        checkPaths(configuration);
-        if (!configuration.equals(DEFAULT_CONFIGURATION)) {
+        checkPaths(getConfiguration());
+        if (!getConfiguration().equals(DEFAULT_CONFIGURATION)) {
             checkPaths(DEFAULT_CONFIGURATION);
         }
 
