@@ -131,15 +131,4 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         assertEquals("mode", ThemeManager.getViewModeByUrl(url));
     }
 
-    public void testReset() {
-        Manager.resetProtocols();
-        boolean caught = false;
-        try {
-            new URL("nxtheme:foo");
-        } catch (MalformedURLException e) {
-            caught = true;
-        }
-        assertTrue(caught);
-    }
-
 }

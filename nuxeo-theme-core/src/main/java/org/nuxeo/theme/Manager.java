@@ -14,14 +14,18 @@
 
 package org.nuxeo.theme;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
+import org.nuxeo.theme.protocol.nxtheme.Handler;
 import org.nuxeo.theme.relations.RelationStorage;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.services.ThemeService;
@@ -33,6 +37,10 @@ import org.nuxeo.theme.vocabularies.VocabularyManager;
 public final class Manager {
 
     private static final String PROTOCOL_HANDLER_PKG = "org.nuxeo.theme.protocol";
+
+    static {
+        initializeProtocols();
+    }
 
     private Manager() {
     }
@@ -84,6 +92,7 @@ public final class Manager {
         return (VocabularyManager) getRegistry("vocabularies");
     }
 
+    @SuppressWarnings( { "ResultOfObjectAllocationIgnored" })
     public static void initializeProtocols() {
         Properties properties = System.getProperties();
         String handlers = System.getProperty("java.protocol.handler.pkgs");
@@ -94,28 +103,37 @@ public final class Manager {
                     + "|" + handlers);
         }
         System.setProperties(properties);
+
+        /*
+         * Register the 'nxtheme' URL protocol handler programmatically to get
+         * around m2/surefire classloading bug.
+         * 
+         * ref. http://jira.codehaus.org/browse/SUREFIRE-104
+         * 
+         * TODO: remove with Maven surefire 2.4
+         */
+
+        boolean protocolInitialized = true;
+        try {
+            new URL("nxtheme://test");
+        } catch (MalformedURLException e) {
+            protocolInitialized = false;
+        }
+
+        if (!protocolInitialized) {
+            try {
+                URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+                    public URLStreamHandler createURLStreamHandler(
+                            String protocol) {
+                        if ("nxtheme".equals(protocol)) {
+                            return new Handler();
+                        }
+                        return null;
+                    }
+                });
+            } catch (Throwable e) {
+            }
+        }
     }
 
-    public static void resetProtocols() {
-        String lastPkgs = System.getProperty("java.protocol.handler.pkgs");
-        if (lastPkgs == null) {
-            return;
-        }
-        String newPkgs = "";
-        String sep = "";
-        StringTokenizer tokenizer = new StringTokenizer(lastPkgs, "|");
-        while (tokenizer.hasMoreElements()) {
-            String pkg = tokenizer.nextToken();
-            if (PROTOCOL_HANDLER_PKG.equals(pkg)) {
-                continue;
-            }
-            if (pkg.isEmpty()) {
-                continue;
-            }
-            newPkgs += sep + pkg;
-            sep = "|";
-        }
-        System.setProperty("java.protocol.handler.pkgs", newPkgs);
-        URLStreamHandlerFactoryInstaller.resetURLStreamHandlers();
-    }
 }
