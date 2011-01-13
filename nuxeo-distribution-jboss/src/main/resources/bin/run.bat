@@ -19,8 +19,8 @@ popd
 
 set NXCTL=%NUXEO_HOME%\bin\nuxeoctl.exe
 if exist "%NXCTL%" goto FOUND_NXCTL
-echo Could not locate %NXCTL%. Please check that you are in the
-echo bin directory when running this script.
+echo Could not locate %NXCTL%. 
+echo Please check that you are in the bin directory when running this script.
 goto END
 
 :FOUND_NXCTL

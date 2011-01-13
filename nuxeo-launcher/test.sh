@@ -1,6 +1,6 @@
 #!/bin/sh
 ##
-## (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+## (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
@@ -15,10 +15,9 @@
 ## Contributors:
 ##     Julien Carsique
 ##
-## Shell script calling a multi-OS Nuxeo Java launcher.
-##
+MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
-NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0)/..; pwd -P)}
+NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0)/../nuxeo-distribution-tomcat/target/nuxeo-dm-5.4.1-SNAPSHOT-tomcat; pwd -P)}
 NUXEO_CONF=${NUXEO_CONF:-$NUXEO_HOME/bin/nuxeo.conf}
 
 ## OS detection
@@ -108,14 +107,13 @@ if [ "$cygwin" = "false" ]; then
 fi
 
 launcher() {
-    NUXEO_LAUNCHER=$NUXEO_HOME/bin/nuxeo-launcher.jar
-    if [ ! -e "$NUXEO_LAUNCHER" ]; then
-        echo Could not locate $NUXEO_LAUNCHER. 
-        # echo Please check that you are in the bin directory when running this script.
-        exit 1
-    fi
-    echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_LAUNCHER $@
-    $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_LAUNCHER $@
+    echo JAVA_HOME=$JAVA_HOME
+    echo JAVA_OPTS=$JAVA_OPTS
+    echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    echo
+    $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
 }
+
+cp target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $NUXEO_HOME/bin/nuxeo-launcher.jar
 
 launcher $@

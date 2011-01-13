@@ -22,6 +22,10 @@
     <unzip dest="${outdir}/bin">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-windows-startup:${nuxeo.windows.version}:zip" />
     </unzip>
+    <copy tofile="${outdir}/bin/nuxeo-launcher.jar">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-launcher:${nuxeo.distribution.version}:jar"
+                            classifier="jar-with-dependencies" />
+    </copy>
     <antcall target="zip-resources">
       <param name="distribution" value="bin" />
     </antcall>
