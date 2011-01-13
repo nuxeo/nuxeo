@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -36,6 +36,10 @@ import org.nuxeo.launcher.config.JBossConfigurator;
  */
 public class NuxeoJBossLauncher extends NuxeoLauncher {
 
+    private static final String BIND_ADDRESS_PARAM = "nuxeo.bind.address";
+
+    private static final String BIND_ADDRESS_DEFAULT = "0.0.0.0";
+
     /**
      * @param configurationGenerator
      */
@@ -46,8 +50,7 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected String getClassPath() {
         String cp = ".";
-        cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
-        cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
+        cp = addToClassPath(cp, "bin" + File.separator + "run.jar");
         return cp;
     }
 
@@ -55,12 +58,15 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     protected void setServerStartCommand(List<String> command) {
         command.add(JBossConfigurator.STARTUP_CLASS);
         command.add("start");
+        command.add("-b");
+        command.add(configurationGenerator.getUserConfig().getProperty(
+                BIND_ADDRESS_PARAM, BIND_ADDRESS_DEFAULT));
     }
 
     @Override
     protected void setServerStopCommand(List<String> command) {
-        command.add(JBossConfigurator.STARTUP_CLASS);
-        command.add("stop");
+        command.add(JBossConfigurator.SHUTDOWN_CLASS);
+        command.add("--shutdown");
     }
 
     @Override
