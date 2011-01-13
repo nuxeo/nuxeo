@@ -82,26 +82,29 @@ public class TomcatConfigurator extends ServerConfigurator {
     }
 
     @Override
-    public void checkPaths() {
-        // # Check Tomcat paths
-        // if [ "$tomcat" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/nxserver/data/vcsh2repo ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // die
-        // "Please rename 'vcsh2repo' directory from \"$NUXEO_HOME/nxserver/data/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
-        // exit 1
-        // fi
-        // if [ "$tomcat" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/nxserver/data/derby/nxsqldirectory ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // echo "ERROR: It is not possible to migrate derby data."
-        // die "Please remove 'nx*' directories from
-        // \"$NUXEO_HOME/nxserver/data/derby/\"
-        // or edit templates/default/conf/Catalina/localhost/nuxeo.xml
-        // following
-        // http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml"
-        // exit 1
-        // fi
+    public void checkPaths() throws ConfigurationException {
+        super.checkPaths();
+        File oldPath = new File(generator.getNuxeoHome(), "nxserver"
+                + File.separator + "data" + File.separator + "vcsh2repo");
+        String message = "Please rename 'vcsh2repo' directory from "
+                + oldPath
+                + "to "
+                + new File(generator.getDataDir(), "h2" + File.separator
+                        + "nuxeo");
+        checkPath(oldPath, message);
+
+        oldPath = new File(generator.getNuxeoHome(), "nxserver"
+                + File.separator + "data" + File.separator + "derby"
+                + File.separator + "nxsqldirectory");
+        message = "It is not possible to migrate Derby data."
+                + System.getProperty("line.separator")
+                + "Please remove 'nx*' directories from "
+                + oldPath.getParent()
+                + System.getProperty("line.separator")
+                + "or edit templates/default/conf/Catalina/localhost/nuxeo.xml"
+                + System.getProperty("line.separator")
+                + "following http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
+        checkPath(oldPath, message);
     }
 
     @Override

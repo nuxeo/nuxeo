@@ -575,9 +575,12 @@ public class ConfigurationGenerator {
      * If old paths have been found and they cannot be upgraded automatically,
      * then upgrading message is logged and error thrown.
      *
+     * @throws ConfigurationException If a deprecated directory has been
+     *             detected.
+     *
      * @since 5.4.1
      */
-    public void verifyInstallation() {
+    public void verifyInstallation() throws ConfigurationException {
         ifNotExistsAndIsDirectoryThenCreate(getLogDir());
         ifNotExistsAndIsDirectoryThenCreate(getPidDir());
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());

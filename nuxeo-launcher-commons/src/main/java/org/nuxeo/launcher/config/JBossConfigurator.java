@@ -109,30 +109,38 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     @Override
-    public void checkPaths() {
-        // # Check JBoss paths
-        // if [ "$jboss" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e
-        // "$NUXEO_HOME"/server/default/data/derby ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // die
-        // "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME/server/default/data/\" to \"$DATA_DIR\""
-        // exit 1
-        // fi
-        // if [ "$jboss" = "true" ] && [ -e
-        // "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
-        // echo "ERROR: Deprecated paths used (NXP-5460)."
-        // die
-        // "Please move 'binaries' directory from \"$NUXEO_HOME/server/default/data/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
-        // exit 1
-        // fi
-        // if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ];
-        // then
-        // echo "ERROR: Deprecated paths used (NXP-5460)."
-        // die
-        // "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
-        // exit 1
-        // fi
+    public void checkPaths() throws ConfigurationException {
+        super.checkPaths();
+        checkPaths(configuration);
+        if (!configuration.equals(DEFAULT_CONFIGURATION)) {
+            checkPaths(DEFAULT_CONFIGURATION);
+        }
+
+        File oldPath = new File(generator.getDataDir(), "NXRuntime"
+                + File.separator + "binaries");
+        String message = "Please move 'binaries' directory from"
+                + oldPath.getParent() + "to " + generator.getDataDir();
+        checkPath(oldPath, message);
+    }
+
+    private void checkPaths(String jbossConfig) throws ConfigurationException {
+        File oldPath = new File(generator.getNuxeoHome(), "server"
+                + File.separator + jbossConfig + File.separator + "data"
+                + File.separator + "h2");
+        String message = "Please move 'h2' and 'derby' directories from"
+                + oldPath.getParent() + "to " + generator.getDataDir();
+        checkPath(oldPath, message);
+
+        oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
+                + jbossConfig + File.separator + "data" + File.separator + "derby");
+        checkPath(oldPath, message);
+
+        oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
+                + jbossConfig + File.separator + "data" + File.separator
+                + "NXRuntime" + File.separator + "binaries");
+        message = "Please move 'binaries' directory from" + oldPath.getParent()
+                + "to " + generator.getDataDir();
+        checkPath(oldPath, message);
     }
 
     @Override
