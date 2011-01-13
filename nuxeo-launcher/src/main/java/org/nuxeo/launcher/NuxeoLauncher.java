@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,7 +63,7 @@ public abstract class NuxeoLauncher {
 
     public static final long DEFAULT_RETRY_INTERVAL = 250L;
 
-    private static final String JAVA_OPTS_PROPERTY = "java.launcher.opts";
+    private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
     private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
 
@@ -85,6 +86,8 @@ public abstract class NuxeoLauncher {
             "NuxeoProcessThread"));
 
     private boolean consoleLogs = false;
+
+    private ShutdownThread shutdownHook;
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
@@ -320,17 +323,22 @@ public abstract class NuxeoLauncher {
     protected boolean doStartAndWait() {
         boolean commandSucceeded = true;
         if (doStart()) {
-//            addShutdownHook();
+            addShutdownHook();
             if (!waitForEffectiveStart()) {
                 commandSucceeded = false;
                 stop();
             } else {
-//                removeShutdownHook();
+                removeShutdownHook();
             }
         } else {
             commandSucceeded = false;
         }
         return commandSucceeded;
+    }
+
+    protected void removeShutdownHook() {
+        log.debug("Remove shutdown hook");
+        Runtime.getRuntime().removeShutdownHook(shutdownHook);
     }
 
     protected boolean waitForEffectiveStart() {
@@ -407,6 +415,13 @@ public abstract class NuxeoLauncher {
             configure();
             start();
             serverStarted = isRunning();
+            if (pid != null) {
+                File pidFile = new File(configurationGenerator.getPidDir(),
+                        "nuxeo.pid");
+                FileWriter writer = new FileWriter(pidFile);
+                writer.write(pid);
+                writer.close();
+            }
         } catch (ConfigurationException e) {
             log.error("Could not run configuration", e);
         } catch (IOException e) {
@@ -439,7 +454,8 @@ public abstract class NuxeoLauncher {
 
     protected void addShutdownHook() {
         log.debug("Add shutdown hook");
-        Runtime.getRuntime().addShutdownHook(new ShutdownThread(this));
+        shutdownHook = new ShutdownThread(this);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     private void setConsoleLogs(boolean consoleLogs) {
@@ -531,6 +547,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected void configure() throws ConfigurationException {
+        configurationGenerator.verifyInstallation();
         configurationGenerator.run();
     }
 
