@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.config.JBossConfigurator;
 
 /**
@@ -72,9 +71,14 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected Collection<? extends String> getServerProperties() {
         ArrayList<String> serverProperties = new ArrayList<String>();
+        // serverProperties.add("-Dprogram.name=nuxeoctl");
+        serverProperties.add("-Djava.endorsed.dirs="
+                + new File(configurationGenerator.getNuxeoHome(), "lib"
+                        + File.separator + "endorsed"));
+        serverProperties.add("-Djboss.server.log.dir="
+                + configurationGenerator.getLogDir());
         serverProperties.add("-Djboss.server.temp.dir="
-                + configurationGenerator.getUserConfig().getProperty(
-                        Environment.NUXEO_TMP_DIR));
+                + configurationGenerator.getTmpDir());
         if (overrideJavaTmpDir) {
             serverProperties.add("-Djboss.server.temp.dir.overrideJavaTmpDir=true");
         }
