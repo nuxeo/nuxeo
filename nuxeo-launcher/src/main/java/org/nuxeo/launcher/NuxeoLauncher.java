@@ -67,10 +67,27 @@ public abstract class NuxeoLauncher {
 
     private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
 
+    private static final String START_MAX_WAIT_PARAM = "launcher.start.max.wait";
+
     /**
-     * Max time to wait for server startup summary in logs (in seconds).
+     * Default maximum time to wait for server startup summary in logs (in
+     * seconds).
      */
-    private static final int LOG_MAX_WAIT = 300;
+    private static final String START_MAX_WAIT_DEFAULT = "300";
+
+    /**
+     * Max time to wait for effective stop (in seconds)
+     */
+    private static final int STOP_MAX_WAIT = 10;
+
+    /**
+     * Number of try to cleanly stop server before killing process
+     */
+    private static final int STOP_NB_TRY = 5;
+
+    private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 5;
+
+    private int startMaxWait;
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -361,7 +378,7 @@ public abstract class NuxeoLauncher {
                 ;
             do {
                 // Wait for something to read
-                while (!in.ready() && count < LOG_MAX_WAIT && isRunning()) {
+                while (!in.ready() && count < startMaxWait && isRunning()) {
                     System.out.print(".");
                     count++;
                     synchronized (nuxeoProcess) {
@@ -381,7 +398,7 @@ public abstract class NuxeoLauncher {
                         startSummary.append(newLine + line);
                     }
                 }
-            } while (countStatus < 3 && count < LOG_MAX_WAIT && isRunning());
+            } while (countStatus < 3 && count < startMaxWait && isRunning());
             if (countStatus == 3) {
                 long duration = (new Date().getTime() - startTime) / 1000;
                 startSummary.append(newLine
@@ -498,8 +515,8 @@ public abstract class NuxeoLauncher {
                                 retry = false;
                             } else {
                                 // Failed to call for server stop
-                                retry = ++nbTry < 3;
-                                Thread.sleep(1000);
+                                retry = ++nbTry < STOP_NB_TRY;
+                                Thread.sleep(STOP_SECONDS_BEFORE_NEXT_TRY * 1000);
                             }
                             wait = false;
                         } catch (IllegalThreadStateException e) {
@@ -515,7 +532,8 @@ public abstract class NuxeoLauncher {
                         return;
                     }
                     // Wait a few seconds for effective stop
-                    for (int i = 0; !retry && getPid() != null && i < 10; i++) {
+                    for (int i = 0; !retry && getPid() != null
+                            && i < STOP_MAX_WAIT; i++) {
                         System.out.print(".");
                         Thread.sleep(1000);
                     }
@@ -549,6 +567,8 @@ public abstract class NuxeoLauncher {
     protected void configure() throws ConfigurationException {
         configurationGenerator.verifyInstallation();
         configurationGenerator.run();
+        startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
+                START_MAX_WAIT_PARAM, START_MAX_WAIT_DEFAULT));
     }
 
     public void status() {
