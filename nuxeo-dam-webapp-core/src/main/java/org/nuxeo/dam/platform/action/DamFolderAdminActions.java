@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.dam.Constants;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -104,9 +106,12 @@ public class DamFolderAdminActions implements Serializable {
     }
 
     public void deleteFolderNoRedirect(String folderId) throws ClientException {
-        documentManager.removeDocument(new IdRef(folderId));
+        DocumentRef folderRef = new IdRef(folderId);
+        documentManager.removeDocument(folderRef);
         documentManager.save();
         resetFolderList();
+
+        Events.instance().raiseEvent(DamEventNames.FOLDERLIST_CHANGED);
     }
 
     @Observer(DamEventNames.FOLDERLIST_CHANGED)
