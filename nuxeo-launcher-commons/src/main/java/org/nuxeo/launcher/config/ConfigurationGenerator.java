@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -581,6 +581,15 @@ public class ConfigurationGenerator {
      * @since 5.4.1
      */
     public void verifyInstallation() throws ConfigurationException {
+        if (!System.getProperty("java.version").startsWith("1.6")) {
+            String message = "Nuxeo requires Java 1.6 (detected "
+                    + System.getProperty("java.version") + ").";
+            if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
+                log.error(message);
+            } else {
+                throw new ConfigurationException(message);
+            }
+        }
         ifNotExistsAndIsDirectoryThenCreate(getLogDir());
         ifNotExistsAndIsDirectoryThenCreate(getPidDir());
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());
