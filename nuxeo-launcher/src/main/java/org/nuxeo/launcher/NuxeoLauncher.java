@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -51,6 +51,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
+import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 
 /**
  * @author jcarsique
@@ -110,6 +111,8 @@ public abstract class NuxeoLauncher {
 
     private ShutdownThread shutdownHook;
 
+    protected String[] params;
+
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
         this.configurationGenerator = configurationGenerator;
@@ -154,6 +157,9 @@ public abstract class NuxeoLauncher {
         command.addAll(getNuxeoProperties());
         command.addAll(getServerProperties());
         setServerStartCommand(command);
+        for (String param : params) {
+            command.add(param);
+        }
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(command));
         pb.directory(configurationGenerator.getNuxeoHome());
         log.debug("Server command: " + pb.command());
@@ -303,9 +309,11 @@ public abstract class NuxeoLauncher {
             return;
         }
         String command = args[0];
-        final NuxeoLauncher launcher = createLauncher();
+        final NuxeoLauncher launcher = createLauncher(args);
         boolean commandSucceeded = true;
-        if ("status".equalsIgnoreCase(command)) {
+        if ("help".equalsIgnoreCase(command)) {
+            printHelp();
+        } else if ("status".equalsIgnoreCase(command)) {
             launcher.status();
         } else if ("startbg".equalsIgnoreCase(command)) {
             commandSucceeded = launcher.doStart();
@@ -332,8 +340,16 @@ public abstract class NuxeoLauncher {
         } else if ("configure".equalsIgnoreCase(command)) {
             launcher.configure();
         } else if ("pack".equalsIgnoreCase(command)) {
+            // java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
+            // -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
+            // -Dnuxeo.log.dir="$LOG_DIR" -Dnuxeo.data.dir="$DATA_DIR"
+            // -Dnuxeo.tmp.dir="$TMP_DIR" \
+            // -Dlog4j.configuration="$LOG4J_CONF" \
+            // org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
             // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
             throw new UnsupportedOperationException();
+        } else if ("gui".equalsIgnoreCase(command)) {
+            new NuxeoLauncherGUI(launcher).execute();
         }
         if (!commandSucceeded) {
             System.exit(1);
@@ -347,7 +363,7 @@ public abstract class NuxeoLauncher {
      *
      * @return true if the server started successfully
      */
-    protected boolean doStartAndWait() {
+    public boolean doStartAndWait() {
         boolean commandSucceeded = true;
         if (doStart()) {
             addShutdownHook();
@@ -433,9 +449,11 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * Starts the server in background.
+     *
      * @return true if server successfully started
      */
-    protected boolean doStart() {
+    public boolean doStart() {
         boolean serverStarted = false;
         try {
             checkNoRunningServer();
@@ -489,6 +507,12 @@ public abstract class NuxeoLauncher {
         this.consoleLogs = consoleLogs;
     }
 
+    /**
+     * Stops the server.
+     * Will try to call specific class for a clean stop, retry
+     * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
+     * between each try, then kill the process if still running.
+     */
     public void stop() {
         try {
             if (!(processManager instanceof PureJavaProcessManager)
@@ -507,6 +531,9 @@ public abstract class NuxeoLauncher {
                 command.addAll(getNuxeoProperties());
                 command.addAll(getServerProperties());
                 setServerStopCommand(command);
+                for (String param : params) {
+                    command.add(param);
+                }
                 ProcessBuilder pb = new ProcessBuilder(command);
                 pb.directory(configurationGenerator.getNuxeoHome());
                 log.debug("Server command: " + pb.command());
@@ -574,7 +601,13 @@ public abstract class NuxeoLauncher {
         return pid;
     }
 
-    protected void configure() throws ConfigurationException {
+    /**
+     * Configure the server after checking installation
+     *
+     * @throws ConfigurationException If an installation error is detected or if
+     *             configuration fails
+     */
+    public void configure() throws ConfigurationException {
         configurationGenerator.verifyInstallation();
         configurationGenerator.run();
         startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
@@ -583,6 +616,10 @@ public abstract class NuxeoLauncher {
                 OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
     }
 
+    /**
+     * Log process status (running or not), depending on OS capability to manage
+     * processes.
+     */
     public void status() {
         if (processManager instanceof PureJavaProcessManager) {
             log.info("Can't check server status on your OS.");
@@ -601,11 +638,13 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * @param args Program arguments
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
      */
-    private static NuxeoLauncher createLauncher() throws ConfigurationException {
+    private static NuxeoLauncher createLauncher(String[] args)
+            throws ConfigurationException {
         NuxeoLauncher launcher;
         ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
         if (configurationGenerator.isJBoss) {
@@ -617,8 +656,17 @@ public abstract class NuxeoLauncher {
         } else {
             throw new ConfigurationException("Unknown server !");
         }
+        launcher.setArgs(args);
         configurationGenerator.init();
         return launcher;
+    }
+
+    /**
+     * @param args Program arguments; may be used by launcher implementation
+     */
+    private void setArgs(String[] args) {
+        // Ignore "gui" or command argument, keep only trailing arguments
+        this.params = Arrays.copyOfRange(args, 1, args.length);
     }
 
     /**
@@ -627,10 +675,39 @@ public abstract class NuxeoLauncher {
      * @throws URISyntaxException
      */
     public static void printHelp() throws URISyntaxException {
-        System.err.println("Usage: java -jar "
+        log.error("Usage: java [-D"
+                + JAVA_OPTS_PROPERTY
+                + "=\"JVM options\"] [-D"
+                + ConfigurationGenerator.NUXEO_HOME
+                + "=\"/path/to/nuxeo\"] [-D"
+                + ConfigurationGenerator.NUXEO_CONF
+                + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] \\ \n            -jar "
                 + new File(
                         NuxeoLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-                + " (help|start|stop|restart|configure|console|status|startbg|restartbg|pack)");
+                + " \\ \n            [gui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack)");
+        log.error("\n\t Options:");
+        log.error("\t\t " + JAVA_OPTS_PROPERTY
+                + "\tParameters for the server JVM (default are "
+                + JAVA_OPTS_DEFAULT + ").");
+        log.error("\t\t "
+                + ConfigurationGenerator.NUXEO_HOME
+                + "\t\tNuxeo server root path (default is parent of called script).");
+        log.error("\t\t "
+                + ConfigurationGenerator.NUXEO_CONF
+                + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
+        log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
+        log.error("\t\t gui\t\t\tNot yet available. Launcher with a graphical user interface (default is headless/console mode).");
+        log.error("\n\t Commands:");
+        log.error("\t\t help\t\tPrint this message.");
+        log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediatly available after the script returned.");
+        log.error("\t\t stop\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
+        log.error("\t\t restart\tRestart Nuxeo server.");
+        log.error("\t\t configure\tConfigure Nuxeo server with parameters from nuxeo.conf.");
+        log.error("\t\t console\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
+        log.error("\t\t status\t\tPrint server status (running or not).");
+        log.error("\t\t startbg\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
+        log.error("\t\t restartbg\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
+        log.error("\t\t pack\t\tNot implemented. Use \"pack\" Shell script.");
     }
 
     /**

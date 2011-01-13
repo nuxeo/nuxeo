@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 ##
-## (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+## (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
@@ -18,9 +18,7 @@
 MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
 NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0)/../nuxeo-distribution-tomcat/target/nuxeo-dm-5.4.1-SNAPSHOT-tomcat; pwd -P)}
-PARAM_NUXEO_HOME="-Dnuxeo.home=$NUXEO_HOME/"
 NUXEO_CONF=${NUXEO_CONF:-$NUXEO_HOME/bin/nuxeo.conf}
-PARAM_NUXEO_CONF="-Dnuxeo.conf=$NUXEO_CONF"
 
 ## OS detection
 cygwin=false
@@ -111,9 +109,9 @@ fi
 launcher() {
     echo JAVA_HOME=$JAVA_HOME
     echo JAVA_OPTS=$JAVA_OPTS
-    echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
     echo
-    $JAVA -Dlauncher.java.opts="$JAVA_OPTS" "$PARAM_NUXEO_HOME" "$PARAM_NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
+    $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_HOME/bin/nuxeo-launcher.jar $@
 }
 
 cp target/nuxeo-launcher-5.4.1-SNAPSHOT-jar-with-dependencies.jar $NUXEO_HOME/bin/nuxeo-launcher.jar
