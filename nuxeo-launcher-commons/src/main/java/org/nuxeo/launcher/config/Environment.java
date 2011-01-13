@@ -49,4 +49,6 @@ public interface Environment {
 
     public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
+    public static final String NUXEO_PID_DIR = "nuxeo.pid.dir";
+
 }

@@ -43,7 +43,7 @@ public abstract class ServerConfigurator {
 
     protected File logDir = null;
 
-    private File runDir = null;
+    private File pidDir = null;
 
     protected File libDir = null;
 
@@ -154,14 +154,24 @@ public abstract class ServerConfigurator {
     public abstract void initLogs();
 
     /**
-     * @return Run directory; Returns log directory if not set by configuration.
+     * @return Pid directory (usually known as "run directory"); Returns log
+     *         directory if not set by configuration.
      * @since 5.4.1
      */
-    public File getRunDir() {
-        if (runDir == null) {
-            runDir = getLogDir();
+    public File getPidDir() {
+        if (pidDir == null) {
+            pidDir = getLogDir();
         }
-        return runDir;
+        return pidDir;
+    }
+
+    /**
+     * @param pidDirStr Pid directory path to set
+     * @since 5.4.1
+     */
+    public void setPidDir(String pidDirStr) {
+        pidDir = new File(pidDirStr);
+        pidDir.mkdirs();
     }
 
 }
