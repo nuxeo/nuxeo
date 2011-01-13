@@ -271,7 +271,6 @@ elif [ "$tomcat" = "true" ]; then
   NUXEO_CLASSPATH="$CLASSPATH:$tomcatjar"
   NUXEO_BOOTJAR_PATH="$NUXEO_HOME/nxserver/bundles/*:$NUXEO_HOME/lib/*"
   NUXEO_CONFIG_CLASSPATH="$NUXEO_HOME/bin/nuxeo-launcher.jar:$CLASSPATH:$NUXEO_BOOTJAR_PATH"
-  TMP_DIR=${TMP_DIR:-$NUXEO_HOME/temp}
   LOG4J_CONF="$NUXEO_HOME/lib/log4j.xml"
 
 #

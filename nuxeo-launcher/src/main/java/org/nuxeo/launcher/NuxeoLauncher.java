@@ -67,6 +67,10 @@ public abstract class NuxeoLauncher {
 
     private static final String JAVA_OPTS_DEFAULT = "-Xms512m -Xmx1024m -XX:MaxPermSize=512m";
 
+    private static final String OVERRIDE_JAVA_TMPDIR_PARAM = "launcher.override.java.tmpdir";
+
+    protected boolean overrideJavaTmpDir;
+
     private static final String START_MAX_WAIT_PARAM = "launcher.start.max.wait";
 
     /**
@@ -87,7 +91,7 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 5;
 
-    private int startMaxWait;
+    protected int startMaxWait;
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -266,6 +270,12 @@ public abstract class NuxeoLauncher {
                 + configurationGenerator.getNuxeoConf().getPath());
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_DATA_DIR));
+        nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_TMP_DIR));
+        if (overrideJavaTmpDir) {
+            nuxeoProperties.add("-Djava.io.tmpdir="
+                    + configurationGenerator.getUserConfig().getProperty(
+                            Environment.NUXEO_TMP_DIR));
+        }
         return nuxeoProperties;
     }
 
@@ -569,6 +579,8 @@ public abstract class NuxeoLauncher {
         configurationGenerator.run();
         startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
                 START_MAX_WAIT_PARAM, START_MAX_WAIT_DEFAULT));
+        overrideJavaTmpDir = Boolean.parseBoolean(configurationGenerator.getUserConfig().getProperty(
+                OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
     }
 
     public void status() {

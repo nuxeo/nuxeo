@@ -20,10 +20,12 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.Environment;
 import org.nuxeo.launcher.config.JBossConfigurator;
 
 /**
@@ -63,9 +65,14 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
 
     @Override
     protected Collection<? extends String> getServerProperties() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        ArrayList<String> serverProperties = new ArrayList<String>();
+        serverProperties.add("-Djboss.server.temp.dir="
+                + configurationGenerator.getUserConfig().getProperty(
+                        Environment.NUXEO_TMP_DIR));
+        if (overrideJavaTmpDir) {
+            serverProperties.add("-Djboss.server.temp.dir.overrideJavaTmpDir=true");
+        }
+        return serverProperties;
     }
 
     @Override
