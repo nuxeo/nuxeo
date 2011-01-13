@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.dam.Constants;
 import org.nuxeo.dam.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.dam.webapp.helper.DamEventNames;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -262,7 +263,8 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
         resultsProvidersCache.invalidate(qm.getDescriptor().getName());
     }
 
-    @Observer(EventNames.DOCUMENT_CHILDREN_CHANGED)
+    @Observer({ EventNames.DOCUMENT_CHILDREN_CHANGED,
+            DamEventNames.FOLDERLIST_CHANGED })
     public void invalidateProvider() {
         resultsProvidersCache.invalidate(QUERY_MODEL_NAME);
     }
