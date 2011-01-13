@@ -80,9 +80,9 @@ public class JettyConfigurator extends ServerConfigurator {
     }
 
     @Override
-    public void checkPaths() {
-        // Currently no check because Jetty is not designed to be used in
-        // production
+    public void checkPaths() throws ConfigurationException {
+        super.checkPaths();
+        // Currently no check for Jetty.
     }
 
     @Override

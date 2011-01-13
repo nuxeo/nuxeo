@@ -177,11 +177,16 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Check server paths; warn if existing deprecated paths
+     * Check server paths; warn if existing deprecated paths.
+     * Override this method to perform server specific checks.
+     *
+     * @throws ConfigurationException If deprecated paths have been detected
      *
      * @since 5.4.1
      */
-    public abstract void checkPaths();
+    public void checkPaths() throws ConfigurationException {
+        // Check common paths
+    }
 
     /**
      * @return Temporary directory
@@ -265,6 +270,22 @@ public abstract class ServerConfigurator {
         } else {
             log.error("Unknown directory key: " + key);
             return null;
+        }
+    }
+
+    /**
+     * Check if oldPath exist; if so, then raise a ConfigurationException with
+     * information for fixing issue
+     *
+     * @param oldPath Path that must NOT exist
+     * @param message Error message thrown with exception
+     * @throws ConfigurationException If an old path has been discovered
+     */
+    protected void checkPath(File oldPath, String message)
+            throws ConfigurationException {
+        if (oldPath.exists()) {
+            log.error("Deprecated paths used (NXP-5370, NXP-5460).");
+            throw new ConfigurationException(message);
         }
     }
 
