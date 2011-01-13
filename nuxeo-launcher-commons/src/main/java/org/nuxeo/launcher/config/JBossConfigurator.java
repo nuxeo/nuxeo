@@ -108,4 +108,38 @@ public class JBossConfigurator extends ServerConfigurator {
         }
     }
 
+    @Override
+    public void checkPaths() {
+        // # Check JBoss paths
+        // if [ "$jboss" = "true" ] && \
+        // ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e
+        // "$NUXEO_HOME"/server/default/data/derby ] ); then
+        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
+        // die
+        // "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME/server/default/data/\" to \"$DATA_DIR\""
+        // exit 1
+        // fi
+        // if [ "$jboss" = "true" ] && [ -e
+        // "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
+        // echo "ERROR: Deprecated paths used (NXP-5460)."
+        // die
+        // "Please move 'binaries' directory from \"$NUXEO_HOME/server/default/data/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+        // exit 1
+        // fi
+        // if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ];
+        // then
+        // echo "ERROR: Deprecated paths used (NXP-5460)."
+        // die
+        // "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
+        // exit 1
+        // fi
+    }
+
+    @Override
+    public String getDefaultTmpDir() {
+        final String defaultTmpDir = "server" + File.separator
+                + getConfiguration() + File.separator + "tmp";
+        return defaultTmpDir;
+    }
+
 }

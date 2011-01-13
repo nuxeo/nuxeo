@@ -36,6 +36,11 @@ public class JettyConfigurator extends ServerConfigurator {
     /**
      * @since 5.4.1
      */
+    public static final String DEFAULT_TMP_DIR = "tmp";
+
+    /**
+     * @since 5.4.1
+     */
     public static final String STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
 
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
@@ -72,6 +77,17 @@ public class JettyConfigurator extends ServerConfigurator {
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
         }
+    }
+
+    @Override
+    public void checkPaths() {
+        // Currently no check because Jetty is not designed to be used in
+        // production
+    }
+
+    @Override
+    public String getDefaultTmpDir() {
+        return DEFAULT_TMP_DIR;
     }
 
 }

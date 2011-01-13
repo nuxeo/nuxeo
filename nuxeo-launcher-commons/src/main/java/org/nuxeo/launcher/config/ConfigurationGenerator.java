@@ -279,32 +279,11 @@ public class ConfigurationGenerator {
                     || Boolean.parseBoolean(userConfig.getProperty(
                             PARAM_FORCE_GENERATION, "false"));
 
-            // Add data and log system properties
-            String dataDir = userConfig.getProperty(Environment.NUXEO_DATA_DIR);
-            if (dataDir == null) {
-                userConfig.setProperty(Environment.NUXEO_DATA_DIR,
-                        serverConfigurator.getDataDir().getPath());
-            } else {
-                if (!new File(dataDir).isAbsolute()) {
-                    dataDir = new File(getNuxeoHome(), dataDir).getPath();
-                    userConfig.setProperty(Environment.NUXEO_DATA_DIR, dataDir);
-                }
-                serverConfigurator.setDataDir(dataDir);
-            }
-            String logDir = userConfig.getProperty(Environment.NUXEO_LOG_DIR);
-            if (logDir == null) {
-                userConfig.setProperty(Environment.NUXEO_LOG_DIR,
-                        serverConfigurator.getLogDir().getPath());
-            } else {
-                serverConfigurator.setLogDir(logDir);
-            }
-            String pidDir = userConfig.getProperty(Environment.NUXEO_PID_DIR);
-            if (pidDir == null) {
-                userConfig.setProperty(Environment.NUXEO_PID_DIR,
-                        serverConfigurator.getPidDir().getPath());
-            } else {
-                serverConfigurator.setLogDir(logDir);
-            }
+            // Manage directories set from (or set to) system properties
+            setDirectoryWithProperty(Environment.NUXEO_DATA_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_LOG_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_PID_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_TMP_DIR);
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -327,6 +306,21 @@ public class ConfigurationGenerator {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
+        }
+    }
+
+    /**
+     * @since 5.4.1
+     * @param key Directory system key
+     * @see Environment
+     */
+    public void setDirectoryWithProperty(String key) {
+        String directory = userConfig.getProperty(key);
+        if (directory == null) {
+            userConfig.setProperty(key,
+                    serverConfigurator.getDirectory(key).getPath());
+        } else {
+            serverConfigurator.setDirectory(key, directory);
         }
     }
 
@@ -584,63 +578,24 @@ public class ConfigurationGenerator {
      * @since 5.4.1
      */
     public void verifyInstallation() {
-        // TODO Auto-generated method stub
-        // if [ ! -d "$LOG_DIR" ]; then
-        // mkdir -p "$LOG_DIR"
-        // fi
-        // if [ ! -d "$PID_DIR" ]; then
-        // mkdir -p "$PID_DIR"
-        // fi
-        // if [ ! -z "$DATA_DIR" ] && [ ! -d "$DATA_DIR" ]; then
-        // mkdir -p "$DATA_DIR"
-        // fi
-        // if [ ! -z "$TMP_DIR" ] && [ ! -d "$TMP_DIR" ]; then
-        // mkdir -p "$TMP_DIR"
-        // fi
+        ifNotExistsAndIsDirectoryThenCreate(getLogDir());
+        ifNotExistsAndIsDirectoryThenCreate(getPidDir());
+        ifNotExistsAndIsDirectoryThenCreate(getDataDir());
+        ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
+        serverConfigurator.checkPaths();
+    }
 
-        // # Check JBoss paths
-        // if [ "$jboss" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/server/default/data/h2 ] || [ -e
-        // "$NUXEO_HOME"/server/default/data/derby ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // die
-        // "Please move 'h2' and 'derby' directories from \"$NUXEO_HOME/server/default/data/\" to \"$DATA_DIR\""
-        // exit 1
-        // fi
-        // if [ "$jboss" = "true" ] && [ -e
-        // "$NUXEO_HOME"/server/default/data/NXRuntime/binaries ]; then
-        // echo "ERROR: Deprecated paths used (NXP-5460)."
-        // die
-        // "Please move 'binaries' directory from \"$NUXEO_HOME/server/default/data/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
-        // exit 1
-        // fi
-        // if [ "$jboss" = "true" ] && [ -e "$DATA_DIR"/NXRuntime/binaries ];
-        // then
-        // echo "ERROR: Deprecated paths used (NXP-5460)."
-        // die
-        // "Please move 'binaries' directory from \"$DATA_DIR/NXRuntime/binaries\" to \"$DATA_DIR/binaries\""
-        // exit 1
-        // fi
-        // # Check Tomcat paths
-        // if [ "$tomcat" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/nxserver/data/vcsh2repo ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // die
-        // "Please rename 'vcsh2repo' directory from \"$NUXEO_HOME/nxserver/data/vcsh2repo\" to \"$DATA_DIR/h2/nuxeo\""
-        // exit 1
-        // fi
-        // if [ "$tomcat" = "true" ] && \
-        // ( [ -e "$NUXEO_HOME"/nxserver/data/derby/nxsqldirectory ] ); then
-        // echo "ERROR: Deprecated paths used (NXP-5370, NXP-5460)."
-        // echo "ERROR: It is not possible to migrate derby data."
-        // die "Please remove 'nx*' directories from
-        // \"$NUXEO_HOME/nxserver/data/derby/\"
-        // or edit templates/default/conf/Catalina/localhost/nuxeo.xml
-        // following
-        // http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml"
-        // exit 1
-        // fi
-        throw new UnsupportedOperationException();
+    /**
+     * @return Temporary directory
+     */
+    public File getTmpDir() {
+        return serverConfigurator.getTmpDir();
+    }
+
+    private void ifNotExistsAndIsDirectoryThenCreate(File directory) {
+        if (!directory.isDirectory()) {
+            directory.mkdirs();
+        }
     }
 
 }
