@@ -4,7 +4,7 @@
   <title>
     <@block name="title">Nuxeo Theme Bank</@block>
   </title>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 
   <link type="text/css" rel="stylesheet" href="${basePath}/theme-banks/skin/styles/ui.css" />
   <@block name="stylesheets" />

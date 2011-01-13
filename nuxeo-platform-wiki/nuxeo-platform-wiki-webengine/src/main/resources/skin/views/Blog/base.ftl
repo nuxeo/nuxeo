@@ -3,7 +3,7 @@
 <head>
   <title>${Root.document.title} :: ${This.document.title}</title>
 
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 
   <link rel="stylesheet" href="${skinPath}/css/webengine.css" type="text/css" media="screen" charset="utf-8">
   <link rel="stylesheet" href="${skinPath}/css/blog.css" type="text/css" media="screen" charset="utf-8">

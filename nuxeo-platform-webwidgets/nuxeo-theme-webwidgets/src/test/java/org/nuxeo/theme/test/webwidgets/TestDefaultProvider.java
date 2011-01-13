@@ -65,7 +65,7 @@ public class TestDefaultProvider extends TestCase {
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
 
-    public void testReorderWidgets() throws ProviderException {
+    public void testReorderWidget() throws ProviderException {
         Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -99,7 +99,7 @@ public class TestDefaultProvider extends TestCase {
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
     }
 
-    public void testRemoveWidgets() throws ProviderException {
+    public void testRemoveWidget() throws ProviderException {
         Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
@@ -123,7 +123,7 @@ public class TestDefaultProvider extends TestCase {
         assertTrue(provider.getWidgets("region A").isEmpty());
     }
 
-    public void testMoveWidgets() throws ProviderException {
+    public void testMoveWidget() throws ProviderException {
         Provider provider = new FakeDefaultProvider();
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");

@@ -27,7 +27,6 @@ import org.nuxeo.theme.webwidgets.Widget;
 import org.nuxeo.theme.webwidgets.WidgetData;
 import org.nuxeo.theme.webwidgets.WidgetState;
 import org.nuxeo.theme.webwidgets.providers.PersistentProviderPerUser;
-import org.nuxeo.theme.webwidgets.providers.WidgetEntity;
 
 public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
 
@@ -67,6 +66,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        provider.destroy();
         provider.deactivate();
         provider = null;
         super.tearDown();
@@ -109,7 +109,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
     }
 
-    public void disabledTestReorderWidgets() throws ProviderException {
+    public void testReorderWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");
@@ -117,53 +117,32 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         provider.addWidget(widget2, "region A", 1);
         provider.addWidget(widget3, "region A", 2);
 
-        widget1 = provider.getWidgetByUid("1");
-        widget2 = provider.getWidgetByUid("2");
-        widget3 = provider.getWidgetByUid("3");
-
         assertEquals(0, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
-        assertEquals(0, ((WidgetEntity) widget1).getOrder());
-        assertEquals(1, ((WidgetEntity) widget2).getOrder());
-        assertEquals(2, ((WidgetEntity) widget3).getOrder());
 
         provider.reorderWidget(widget2, 0);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
-        assertEquals(0, ((WidgetEntity) widget2).getOrder());
-        widget1 = provider.getWidgetByUid("1");
-        assertEquals(1, ((WidgetEntity) widget1).getOrder());
-        assertEquals(2, ((WidgetEntity) widget3).getOrder());
 
         provider.reorderWidget(widget3, 1);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget3));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget1));
-        assertEquals(0, ((WidgetEntity) widget2).getOrder());
-        assertEquals(1, ((WidgetEntity) widget3).getOrder());
-        widget1 = provider.getWidgetByUid("1");
-        assertEquals(2, ((WidgetEntity) widget1).getOrder());
 
         provider.reorderWidget(widget2, 2);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget3));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget2));
-        assertEquals(0, ((WidgetEntity) widget3).getOrder());
-        assertEquals(1, ((WidgetEntity) widget1).getOrder());
-        assertEquals(2, ((WidgetEntity) widget2).getOrder());
 
         provider.reorderWidget(widget3, 2);
         assertEquals(0, provider.getWidgets("region A").indexOf(widget1));
         assertEquals(1, provider.getWidgets("region A").indexOf(widget2));
         assertEquals(2, provider.getWidgets("region A").indexOf(widget3));
-        assertEquals(0, ((WidgetEntity) widget1).getOrder());
-        assertEquals(1, ((WidgetEntity) widget2).getOrder());
-        assertEquals(2, ((WidgetEntity) widget3).getOrder());
     }
 
-    public void testRemoveWidgets() throws ProviderException {
+    public void testRemoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("remove test widget");
         Widget widget2 = provider.createWidget("remove test widget");
         Widget widget3 = provider.createWidget("remove test widget");
@@ -186,7 +165,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         assertTrue(provider.getWidgets("remove region A").isEmpty());
     }
 
-    public void disabledTestMoveWidgets() throws ProviderException {
+    public void testMoveWidget() throws ProviderException {
         Widget widget1 = provider.createWidget("test widget");
         Widget widget2 = provider.createWidget("test widget");
         Widget widget3 = provider.createWidget("test widget");

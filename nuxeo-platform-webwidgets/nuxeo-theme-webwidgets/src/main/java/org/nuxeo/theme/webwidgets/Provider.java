@@ -32,6 +32,14 @@ public interface Provider {
     void deactivate();
 
     /**
+     * Destroy a provider. The implementation is responsible for destroying all
+     * the resources used by the service.
+     * 
+     * @throws ProviderException
+     */
+    void destroy() throws ProviderException;
+
+    /**
      * Create a new widget. The implementation is responsible for generating a
      * unique widget identifier.
      * 

@@ -33,4 +33,20 @@ public class DefaultWidget implements Widget {
         return name;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof DefaultWidget) {
+            return ((DefaultWidget) other).uid == uid;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.parseInt(uid);
+    }
+
 }

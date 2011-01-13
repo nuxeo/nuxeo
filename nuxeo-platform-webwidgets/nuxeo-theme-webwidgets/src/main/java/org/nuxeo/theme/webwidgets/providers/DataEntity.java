@@ -34,10 +34,8 @@ import org.nuxeo.theme.webwidgets.WidgetData;
 @Entity
 @Table(name = "NXP_WEBW_DATA")
 @NamedQueries( {
-        @NamedQuery(name = "Data.findByWidget",
-                query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
-        @NamedQuery(name = "Data.findByWidgetAndName",
-                query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid AND data.dataName=:dataName") })
+        @NamedQuery(name = "Data.findByWidget", query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid"),
+        @NamedQuery(name = "Data.findByWidgetAndName", query = "FROM DataEntity data WHERE data.widgetUid=:widgetUid AND data.dataName=:dataName") })
 public class DataEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -15,7 +15,6 @@
 package org.nuxeo.theme.webwidgets.providers;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +58,22 @@ public class PersistentProvider implements Provider {
         }
     }
 
+    @Override
+    public void destroy() throws ProviderException {
+        try {
+            getPersistenceProvider().run(true, new RunVoid() {
+                public void runWith(EntityManager em) {
+                    em.createQuery("DELETE FROM DataEntity data").executeUpdate();
+                    for (Object w : em.createQuery("FROM WidgetEntity widget").getResultList()) {
+                        em.remove(w);
+                    }
+                }
+            });
+        } catch (ClientException e) {
+            throw new ProviderException(e);
+        }
+    }
+
     public PersistenceProvider getPersistenceProvider() {
         if (persistenceProvider == null) {
             activate();
@@ -83,7 +98,7 @@ public class PersistentProvider implements Provider {
             throw new ProviderException("Region name is undefined");
         }
 
-        List<Widget> widgets = new ArrayList<Widget>(getWidgets(regionName));
+        List<Widget> widgets = getWidgets(regionName);
         widgets.add(order, widget);
         reorderWidgets(widgets);
 
@@ -169,7 +184,7 @@ public class PersistentProvider implements Provider {
                         public List<Widget> runWith(EntityManager em) {
                             Query query = em.createNamedQuery("Widget.findAll");
                             query.setParameter("region", regionName);
-                            return new ArrayList<Widget>(query.getResultList());
+                            return query.getResultList();
                         }
                     });
         } catch (ClientException e) {
@@ -188,16 +203,14 @@ public class PersistentProvider implements Provider {
         }
         WidgetEntity widgetEntity = (WidgetEntity) widget;
         final String srcRegionName = widgetEntity.getRegion();
-        List<Widget> srcWidgets = new ArrayList<Widget>(
-                getWidgets(srcRegionName));
-        srcWidgets.remove(widgetEntity.getOrder());
+        List<Widget> srcWidgets = getWidgets(srcRegionName);
+        srcWidgets.remove(widget);
         reorderWidgets(srcWidgets);
 
         // Set the region to null otherwise the widget may be listed twice
         widgetEntity.setRegion(null);
 
-        List<Widget> destWidgets = new ArrayList<Widget>(
-                getWidgets(destRegionName));
+        List<Widget> destWidgets = getWidgets(destRegionName);
         widgetEntity.setRegion(destRegionName);
         destWidgets.add(order, widgetEntity);
         reorderWidgets(destWidgets);
@@ -208,9 +221,7 @@ public class PersistentProvider implements Provider {
         if (widget == null) {
             throw new ProviderException("Widget is undefined");
         }
-
         WidgetEntity widgetEntity = (WidgetEntity) widget;
-
         final int id = widgetEntity.getId();
         try {
             getPersistenceProvider().run(true, new RunVoid() {
@@ -222,9 +233,7 @@ public class PersistentProvider implements Provider {
         } catch (ClientException e) {
             throw new ProviderException(e);
         }
-
-        List<Widget> widgets = new ArrayList<Widget>(
-                getWidgets(widgetEntity.getRegion()));
+        List<Widget> widgets = getWidgets(widgetEntity.getRegion());
         reorderWidgets(widgets);
     }
 
@@ -234,10 +243,9 @@ public class PersistentProvider implements Provider {
             throw new ProviderException("Widget is undefined");
         }
         WidgetEntity widgetEntity = (WidgetEntity) widget;
-        List<Widget> widgets = new ArrayList<Widget>(
-                getWidgets(widgetEntity.getRegion()));
-        widgets.remove(widgetEntity.getOrder());
-        widgets.add(order, widgetEntity);
+        List<Widget> widgets = getWidgets(widgetEntity.getRegion());
+        widgets.remove(widget);
+        widgets.add(order, widget);
         reorderWidgets(widgets);
     }
 
@@ -293,16 +301,20 @@ public class PersistentProvider implements Provider {
 
     }
 
-    protected synchronized void reorderWidgets(final List<Widget> widgets)
+    public synchronized void reorderWidgets(final List<Widget> widgets)
             throws ProviderException {
         try {
             getPersistenceProvider().run(true, new RunVoid() {
                 public void runWith(EntityManager em) {
                     int i = 0;
                     for (Widget w : widgets) {
-                        ((WidgetEntity) w).setOrder(i);
-                        em.merge(w);
-                        i++;
+                        WidgetEntity widget = ((WidgetEntity) w);
+                        int order = widget.getOrder();
+                        if (order != i) {
+                            ((WidgetEntity) w).setOrder(i);
+                            em.merge(w);
+                        }
+                        i = i + 1;
                     }
                 }
             });
