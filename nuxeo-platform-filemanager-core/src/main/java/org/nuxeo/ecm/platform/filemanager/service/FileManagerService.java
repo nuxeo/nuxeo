@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -58,7 +57,6 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
@@ -205,10 +203,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
             // check allowed sub types
             DocumentModel container = documentManager.getDocument(containerRef);
-            Type containerType = getTypeService().getType(container.getType());
-            List<String> sybTypes = new ArrayList<String>(
-                    containerType.getAllowedSubTypes().keySet());
-            if (checkAllowedSubTypes && !sybTypes.contains(containerTypeName)) {
+            if (checkAllowedSubTypes
+                    && typeService.isAllowedSubType(containerTypeName,
+                            container.getType())) {
                 // cannot create document file here
                 // TODO: we should better raise a dedicated exception to be
                 // catched by the FileManageActionsBean instead of returning

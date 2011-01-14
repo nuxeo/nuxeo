@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Types Web
+Bundle-SymbolicName: org.nuxeo.ecm.platform.types.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/ui-types-actions-contrib.xml,
+ OSGI-INF/ui-types-layouts-contrib.xml

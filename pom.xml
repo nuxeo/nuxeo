@@ -40,6 +40,7 @@
     <module>nuxeo-platform-mimetype-core</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
+    <module>nuxeo-platform-types-web</module>
     <module>nuxeo-platform-usermanager-core</module>
     <module>nuxeo-platform-usermanager-api</module>
     <module>nuxeo-platform-versioning-api</module>
@@ -447,6 +448,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-types-api</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-types-configuration</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

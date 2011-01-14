@@ -20,6 +20,10 @@
 package org.nuxeo.ecm.platform.types;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface TypeManager {
 
@@ -38,5 +42,45 @@ public interface TypeManager {
     boolean hasType(String typeName);
 
     Collection<Type> getAllowedSubTypes(String typeName);
+
+    /**
+     * @since 5.4.1
+     */
+    Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc);
+
+    /**
+     * @since 5.4.1
+     */
+    Collection<Type> findAllAllowedSubTypesFrom(String typeName);
+
+    /**
+     * @since 5.4.1
+     */
+    Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc);
+
+    /**
+     * @since 5.4.1
+     */
+    Map<String, List<Type>> getTypeMapForDocumentType(String type, DocumentModel currentDoc);
+
+    /**
+     * @since 5.4.1
+     */
+    boolean canCreate(String typeName, String containerTypeName);
+
+    /**
+     * @since 5.4.1
+     */
+    boolean canCreate(String typeName, String containerTypeName, DocumentModel currentDoc);
+
+    /**
+     * @since 5.4.1
+     */
+    boolean isAllowedSubType(String typeName, String containerTypeName);
+
+    /**
+     * @since 5.4.1
+     */
+    boolean isAllowedSubType(String typeName, String containerTypeName, DocumentModel currentDoc);
 
 }

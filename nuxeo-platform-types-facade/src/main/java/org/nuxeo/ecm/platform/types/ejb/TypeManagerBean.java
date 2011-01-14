@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.types.ejb;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
@@ -29,6 +31,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -71,6 +74,46 @@ public class TypeManagerBean implements TypeManagerLocal {
 
     public Collection<Type> getAllowedSubTypes(String typeName) {
         return getTypeService().getAllowedSubTypes(typeName);
+    }
+
+    @Override
+    public Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc) {
+        return typeService.getAllowedSubTypes(typeName, currentDoc);
+    }
+
+    @Override
+    public Collection<Type> findAllAllowedSubTypesFrom(String typeName) {
+        return typeService.findAllAllowedSubTypesFrom(typeName);
+    }
+
+    @Override
+    public Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc) {
+        return typeService.findAllAllowedSubTypesFrom(typeName, currentDoc);
+    }
+
+    @Override
+    public Map<String, List<Type>> getTypeMapForDocumentType(String type, DocumentModel currentDoc) {
+        return typeService.getTypeMapForDocumentType(type, currentDoc);
+    }
+
+    @Override
+    public boolean canCreate(String typeName, String containerTypeName) {
+        return typeService.canCreate(typeName, containerTypeName);
+    }
+
+    @Override
+    public boolean canCreate(String typeName, String containerTypeName, DocumentModel currentDoc) {
+        return typeService.canCreate(typeName, containerTypeName, currentDoc);
+    }
+
+    @Override
+    public boolean isAllowedSubType(String typeName, String containerTypeName) {
+        return typeService.isAllowedSubType(typeName, containerTypeName);
+    }
+
+    @Override
+    public boolean isAllowedSubType(String typeName, String containerTypeName, DocumentModel currentDoc) {
+        return typeService.isAllowedSubType(typeName, containerTypeName, currentDoc);
     }
 
     @Remove

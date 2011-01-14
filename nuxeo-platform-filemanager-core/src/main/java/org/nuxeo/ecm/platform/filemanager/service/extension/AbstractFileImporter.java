@@ -15,9 +15,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +31,9 @@ import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
 
 /**
  * File importer abstract class.
@@ -181,9 +181,8 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (containerType == null) {
             return;
         }
-        List<String> subTypes = new ArrayList<String>(
-                containerType.getAllowedSubTypes().keySet());
-        if (!subTypes.contains(typeName)) {
+
+        if (typeService.isAllowedSubType(typeName, container.getType())) {
             throw new ClientException(
                     String.format(
                             "Cannot create document of type %s in container with type %s",
