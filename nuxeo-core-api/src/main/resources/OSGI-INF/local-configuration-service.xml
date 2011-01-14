@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.LocalConfigurationService">
+
+  <implementation
+    class="org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService" />
+  </service>
+</component>
