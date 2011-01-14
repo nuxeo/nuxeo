@@ -24,7 +24,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +65,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -350,12 +348,6 @@ public class ClipboardActionsBean extends InputController implements
     public List<DocumentModel> moveDocumentsToNewParent(
             DocumentModel destFolder, List<DocumentModel> docs)
             throws ClientException {
-        Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
-        Collection<String> allowedList = new ArrayList<String>();
-        for (Type allowedType : allowed) {
-            allowedList.add(allowedType.getId());
-        }
-
         DocumentRef destFolderRef = destFolder.getRef();
         List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
         for (DocumentModel docModel : docs) {
@@ -363,7 +355,9 @@ public class ClipboardActionsBean extends InputController implements
             String sourceType = docModel.getType();
             boolean canRemoveDoc = documentManager.hasPermission(
                     sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
-            boolean canPasteInCurrentFolder = allowedList.contains(sourceType);
+            boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(
+                    sourceType, destFolder.getType(),
+                    navigationContext.getCurrentDocument());
             boolean sameFolder = sourceFolderRef.equals(destFolderRef);
             if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
                 DocumentModel newDoc = documentManager.move(docModel.getRef(),
@@ -459,13 +453,9 @@ public class ClipboardActionsBean extends InputController implements
         List<DocumentModel> documentsToPast = new LinkedList<DocumentModel>();
 
         // filter list on content type
-        Collection<Type> allowedTypes = typeManager.getAllowedSubTypes(parent.getType());
-        List<String> allowedTypesNames = new LinkedList<String>();
-        for (Type tip : allowedTypes) {
-            allowedTypesNames.add(tip.getId());
-        }
         for (DocumentModel doc : documents) {
-            if (allowedTypesNames.contains(doc.getType())) {
+            if (typeManager.isAllowedSubType(doc.getType(), parent.getType(),
+                    navigationContext.getCurrentDocument())) {
                 documentsToPast.add(doc);
             }
         }
@@ -697,9 +687,10 @@ public class ClipboardActionsBean extends InputController implements
             // see if at least one doc can be pasted
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
-            Collection<Type> allowed = typeManager.getAllowedSubTypes(pasteTarget.getType());
-            for (Type allowedType : allowed) {
-                if (pasteTypesName.contains(allowedType.getId())) {
+            for (String pasteTypeName : pasteTypesName) {
+                if (typeManager.isAllowedSubType(pasteTypeName,
+                        pasteTarget.getType(),
+                        navigationContext.getCurrentDocument())) {
                     return true;
                 }
             }
@@ -722,9 +713,10 @@ public class ClipboardActionsBean extends InputController implements
             // see if at least one doc can be pasted
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
-            Collection<Type> allowed = typeManager.getAllowedSubTypes(document.getType());
-            for (Type allowedType : allowed) {
-                if (pasteTypesName.contains(allowedType.getId())) {
+            for (String pasteTypeName : pasteTypesName) {
+                if (typeManager.isAllowedSubType(pasteTypeName,
+                        document.getType(),
+                        navigationContext.getCurrentDocument())) {
                     return true;
                 }
             }
@@ -757,17 +749,14 @@ public class ClipboardActionsBean extends InputController implements
         } else {
             // filter on allowed content types
             // see if at least one doc can be removed and pasted
-            Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
-            Collection<String> allowedList = new ArrayList<String>();
-            for (Type allowedType : allowed) {
-                allowedList.add(allowedType.getId());
-            }
             for (DocumentModel docModel : documentsListsManager.getWorkingList(listName)) {
                 DocumentRef sourceFolderRef = docModel.getParentRef();
                 String sourceType = docModel.getType();
                 boolean canRemoveDoc = documentManager.hasPermission(
                         sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
-                boolean canPasteInCurrentFolder = allowedList.contains(sourceType);
+                boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(
+                        sourceType, destFolder.getType(),
+                        navigationContext.getCurrentDocument());
                 boolean sameFolder = sourceFolderRef.equals(destFolderRef);
                 if (canRemoveDoc && canPasteInCurrentFolder && !sameFolder) {
                     return true;

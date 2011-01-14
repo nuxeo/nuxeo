@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +43,9 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 /**
  * Document type service for document type creation.
  *
@@ -63,8 +63,6 @@ public class TypesTool implements Serializable {
 
     private static final int COLUMN_SIZE = 4;
 
-    private static String DEFAULT_CATEGORY = "misc";
-
     @In
     protected transient TypeManager typeManager;
 
@@ -73,7 +71,7 @@ public class TypesTool implements Serializable {
     protected Type selectedType;
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_SELECTION_CHANGED,
@@ -104,41 +102,27 @@ public class TypesTool implements Serializable {
 
     public Map<String, List<List<Type>>> getOrganizedTypeMapForDocumentType(
             String type) {
-        Type docType = typeManager.getType(type);
-        if (docType != null) {
-            Map<String, List<List<Type>>> docTypesMap = new HashMap<String, List<List<Type>>>();
-            Map<String, SubType> allowedSubTypes = docType.getAllowedSubTypes();
-            allowedSubTypes = filterSubTypes(allowedSubTypes);
-            Set<String> allowedSubTypesKeySet = allowedSubTypes.keySet();
-            for (String currentKey : allowedSubTypesKeySet) {
-                SubType currentSubType = allowedSubTypes.get(currentKey);
-                boolean addElement = true;
-                List<String> subTypesHiddenInCreation = currentSubType.getHidden();
-                if (subTypesHiddenInCreation != null
-                        && subTypesHiddenInCreation.contains("create")) {
-                    addElement = false;
-                }
+        Map<String, List<Type>> docTypesMap = typeManager.getTypeMapForDocumentType(
+                type, getConfigurationDocument());
+        return organizeType(docTypesMap);
+    }
 
-                if (addElement) {
-                    Type subType = typeManager.getType(currentKey);
-                    if (subType != null) {
-                        String key = subType.getCategory();
-                        if (key == null) {
-                            key = DEFAULT_CATEGORY;
-                        }
-                        if (!docTypesMap.containsKey(key)) {
-                            docTypesMap.put(key, new ArrayList<List<Type>>());
-                            docTypesMap.get(key).add(new ArrayList<Type>());
-                        }
-                        docTypesMap.get(key).get(0).add(subType);
-                    }
-                }
-            }
-            docTypesMap = organizeType(docTypesMap);
-            return docTypesMap;
 
-        }
-        return new HashMap<String, List<List<Type>>>();
+    /**
+
+
+
+
+
+     * Returns the Configuration document to be used as the local configuration
+     * of the {@code TypeManager}.
+     * <p>
+     * This method can be overridden by Subclasses to define a specific
+     * Configuration document.
+     * @since 5.4.1
+     */
+    protected DocumentModel getConfigurationDocument() {
+        return navigationContext.getCurrentDocument();
     }
 
     protected Map<String, SubType> filterSubTypes(
@@ -146,23 +130,19 @@ public class TypesTool implements Serializable {
         return allowedSubTypes;
     }
 
-    protected Map<String, List<List<Type>>> organizeType() {
-        return organizeType(typesMap);
-    }
-
-    protected Map<String, List<List<Type>>> organizeType(
-            Map<String, List<List<Type>>> types) {
+    protected Map<String, List<List<Type>>> organizeType(Map<String, List<Type>> types) {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
-        Set<Entry<String, List<List<Type>>>> typeEntrySet = types.entrySet();
-        for (Entry<String, List<List<Type>>> set : typeEntrySet) {
-            List<List<Type>> typeList = set.getValue();
+        Set<Entry<String, List<Type>>> typeEntrySet = types.entrySet();
+        for (Entry<String, List<Type>> set : typeEntrySet) {
+            List<Type> typeList = set.getValue();
             List<List<Type>> newList = new ArrayList<List<Type>>();
             int index = 0;
             newList.add(index, new ArrayList<Type>());
-            for (Type type : typeList.get(0)) {
+            for (Type type : typeList) {
                 List<Type> currentList = newList.get(index);
                 if (currentList == null) {
-                    newList.add(index, new ArrayList<Type>());
+                    currentList = new ArrayList<Type>();
+                    newList.add(index, currentList);
                 }
                 currentList.add(type);
                 if (currentList.size() % COLUMN_SIZE == 0) {
