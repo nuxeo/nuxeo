@@ -38,5 +38,22 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+
+    <directory name="oauthServiceProviders" remove="true">
+    </directory>
+
+    <directory name="oauthServiceProviders">
+      <schema>oauthServiceProvider</schema>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthServiceProviders</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
   </extension>
 </component>

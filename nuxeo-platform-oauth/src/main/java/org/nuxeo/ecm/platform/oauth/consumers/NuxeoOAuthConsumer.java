@@ -55,7 +55,7 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
     protected boolean enabled = true;
 
-    protected static final String SCHEMA = "oauthConsumer";
+    public static final String SCHEMA = "oauthConsumer";
 
     protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
 

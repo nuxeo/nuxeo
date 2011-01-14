@@ -15,6 +15,18 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="oauthServiceProviders">
+      <schema>oauthServiceProvider</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthServiceProviders</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+
     <directory name="oauthTokens">
       <schema>oauthToken</schema>
       <dataSource>java:/nxsqldirectory</dataSource>

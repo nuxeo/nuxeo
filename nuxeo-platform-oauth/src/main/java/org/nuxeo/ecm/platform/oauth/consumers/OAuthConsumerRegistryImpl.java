@@ -45,7 +45,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
 
     protected static final Log log = LogFactory.getLog(OAuthConsumerRegistryImpl.class);
 
-    protected static final String DIRECTORY_NAME = "oauthConsumers";
+    public static final String DIRECTORY_NAME = "oauthConsumers";
 
     public NuxeoOAuthConsumer getConsumer(String consumerKey, String keyType) {
         try {
