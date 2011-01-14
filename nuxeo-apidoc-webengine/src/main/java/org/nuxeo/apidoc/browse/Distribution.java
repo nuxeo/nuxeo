@@ -90,6 +90,10 @@ public class Distribution extends ModuleRoot {
             navPoint = "viewContribution";
         } else if (currentUrl.contains("/viewBundle")) {
             navPoint = "viewBundle";
+        } else if (currentUrl.contains("/listOperations")) {
+            navPoint = "listOperations";
+        } else if (currentUrl.contains("/viewOperation")) {
+            navPoint = "viewOperation";
         } else if (currentUrl.contains("/doc")) {
             navPoint = "documentation";
         }

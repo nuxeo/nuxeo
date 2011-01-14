@@ -23,6 +23,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
@@ -80,6 +81,10 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     SeamComponentInfo getSeamComponent(String id);
 
     boolean containsSeamComponents();
+
+    OperationInfo getOperation(String id);
+
+    List<OperationInfo> getOperations();
 
     JavaDocHelper getJavaDocHelper();
 }

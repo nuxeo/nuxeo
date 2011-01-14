@@ -33,6 +33,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
@@ -136,14 +137,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements
             NuxeoArtifact nxItem) {
         List<String> versions = new ArrayList<String>();
 
-        Map<String, DistributionSnapshot> distribs = getPersistentSnapshots(session);
+        List<DistributionSnapshot> distribs = new ArrayList<DistributionSnapshot>();
+        distribs.addAll(getPersistentSnapshots(session).values());
+        distribs.add(getRuntimeSnapshot());
 
-        DistributionSnapshot runtime = getRuntimeSnapshot();
-        if (!distribs.containsKey(runtime.getKey())) {
-            distribs.put(runtime.getKey(), runtime);
-        }
-
-        for (DistributionSnapshot snap : distribs.values()) {
+        for (DistributionSnapshot snap : distribs) {
 
             String version = null;
             if (BundleGroup.TYPE_NAME.equals(nxItem.getArtifactType())) {
@@ -175,6 +173,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements
                 ServiceInfo si = snap.getService(nxItem.getId());
                 if (si != null) {
                     version = si.getVersion();
+                }
+            } else if (OperationInfo.TYPE_NAME.equals(nxItem.getArtifactType())) {
+                OperationInfo oi = snap.getOperation(nxItem.getId());
+                if (oi != null) {
+                    version = oi.getVersion();
                 }
             }
 

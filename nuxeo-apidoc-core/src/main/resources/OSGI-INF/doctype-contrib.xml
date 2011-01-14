@@ -96,6 +96,17 @@
       <facet name="Indexable" />
     </doctype>
 
+    <doctype name="NXOperation" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="file" />
+
+      <schema name="nxoperation" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+      <facet name="Indexable" />
+    </doctype>
+
     <doctype name="NXDocumentation" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />

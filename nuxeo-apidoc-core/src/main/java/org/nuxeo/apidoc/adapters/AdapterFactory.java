@@ -23,6 +23,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
@@ -99,6 +100,12 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
         }
 
+        if (adapterClassName.equals(OperationInfo.class.getSimpleName())) {
+            if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
+                return new OperationInfoDocAdapter(doc);
+            }
+        }
+
         if (adapterClassName.equals(NuxeoArtifact.class.getSimpleName())) {
             if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
                 return new ServiceInfoDocAdapter(doc);
@@ -120,6 +127,9 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
             if (doc.getType().equals(SeamComponentInfo.TYPE_NAME)) {
                 return new SeamComponentInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
+                return new OperationInfoDocAdapter(doc);
             }
         }
 

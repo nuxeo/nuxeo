@@ -45,6 +45,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationService;
@@ -543,6 +544,17 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
+    @Path(value = "viewOperation/{opId}")
+    public Resource viewOperation(@PathParam("opId") String opId) {
+        try {
+            NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
+                    "operation", opId);
+            return wo;
+        } catch (Exception e) {
+            throw new WebApplicationException(e);
+        }
+    }
+
     @Path(value = "viewService/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
         try {
@@ -667,6 +679,18 @@ public class ApiBrowser extends DefaultObject {
         return getView(view).arg("seamComponents", seamComponents).arg(
                 Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg(
                 "hideNav", Boolean.valueOf(hideNav));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path(value = "listOperations")
+    public Object listOperations() throws Exception {
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(
+                distributionId, ctx.getCoreSession());
+        List<OperationInfo> operations = snap.getOperations();
+        return getView("listOperations").arg("operations", operations).arg(
+                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg(
+                "hideNav", Boolean.valueOf(false));
     }
 
 }

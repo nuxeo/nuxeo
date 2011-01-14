@@ -32,11 +32,15 @@ import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.runtime.api.Framework;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         DistributionSnapshot {
@@ -66,6 +70,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
     protected boolean seamInitialized = false;
 
     protected List<SeamComponentInfo> seamComponents = new ArrayList<SeamComponentInfo>();
+
+    protected boolean opsInitialized = false;
+
+    protected List<OperationInfo> operations = new ArrayList<OperationInfo>();
 
     public final static String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
 
@@ -411,6 +419,22 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         seamInitialized = true;
     }
 
+    public void initOperations() {
+        if (opsInitialized) {
+            return;
+        }
+        List<OperationDocumentation> ops;
+        try {
+            ops = Framework.getService(AutomationService.class).getDocumentation();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        for (OperationDocumentation op : ops) {
+            operations.add(new OperationInfoImpl(op, getVersion()));
+        }
+        opsInitialized = true;
+    }
+
     @Override
     public SeamComponentInfo getSeamComponent(String id) {
         for (SeamComponentInfo sci : getSeamComponents()) {
@@ -438,6 +462,25 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
     @Override
     public boolean containsSeamComponents() {
         return seamInitialized && getSeamComponentIds().size() > 0;
+    }
+
+    @Override
+    public OperationInfo getOperation(String id) {
+        if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
+            id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
+        }
+        for (OperationInfo op : getOperations()) {
+            if (op.getName().equals(id)) {
+                return op;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<OperationInfo> getOperations() {
+        initOperations();
+        return operations;
     }
 
     @Override

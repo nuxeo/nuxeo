@@ -23,11 +23,11 @@ ${nxItem.documentationHtml}
 </#if>
 
 <h2>Maven artifact</h2>
-<table class="bundleInfo">
-  <tr><td> file: </td><td> ${nxItem.fileName} </td></tr>
-  <tr><td> groupId: </td><td> ${nxItem.artifactGroupId} </td></tr>
-  <tr><td> artifactId: </td><td> ${nxItem.artifactId} </td></tr>
-  <tr><td> version: </td><td> ${nxItem.artifactVersion} </td></tr>
+<table class="listTable">
+  <tr><th> file: </th><td> ${nxItem.fileName} </td></tr>
+  <tr><th> groupId: </th><td> ${nxItem.artifactGroupId} </td></tr>
+  <tr><th> artifactId: </th><td> ${nxItem.artifactId} </td></tr>
+  <tr><th> version: </th><td> ${nxItem.artifactVersion} </td></tr>
 </table>
 
 <h2>Manifest</h2>

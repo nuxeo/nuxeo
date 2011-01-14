@@ -22,6 +22,8 @@
       class="org.nuxeo.apidoc.api.DocumentationItem" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXSeamComponent"
       class="org.nuxeo.apidoc.api.SeamComponentInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXOperation"
+      class="org.nuxeo.apidoc.api.OperationInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 
     <adapter type="NXBundleGroup"
       class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
@@ -36,6 +38,8 @@
     <adapter type="NXService"
       class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXSeamComponent"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXOperation"
       class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 
   </extension>

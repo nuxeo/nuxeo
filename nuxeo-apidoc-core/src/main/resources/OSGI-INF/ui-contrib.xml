@@ -90,6 +90,17 @@
       </layouts>
     </type>
 
+    <type id="NXOperations">
+      <label>Nuxeo EP Operation</label>
+    <icon>/icons/file.gif</icon>
+        <bigIcon>/icons/file_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <category>Nuxeo EP</category>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
     <type id="NXDocumentation">
       <label>Nuxeo EP Documentation</label>
       <icon>/icons/file.gif</icon>

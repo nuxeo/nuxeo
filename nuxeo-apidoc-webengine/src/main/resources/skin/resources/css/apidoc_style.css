@@ -31,7 +31,7 @@ font-size: 100%;
 h2 {
 font:normal 1.7em "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
-border-bottom:1px dotted #ccc;
+border-bottom:1px dotted #CCCCCC;
 color:black;
 }
 
@@ -43,7 +43,7 @@ h3{
 font:normal 17px "Lucida Grande", Verdana, sans-serif;
 margin:10px 0 15px;
 color:black;
-border-bottom:1px dotted #ccc;
+border-bottom:1px dotted #CCCCCC;
 }
 
 p {
@@ -124,7 +124,7 @@ border-color:#92999e;
 /* Main Content style */
 
 .homeBox {
-border:1px solid #ccc;
+border:1px solid #CCCCCC;
 padding:5px 15px 10px;
 margin:10px 5px;
 height:300px;
@@ -271,14 +271,36 @@ color:#fff;
 }
 
 
-.bundleInfo {
+.listTable {
   border: 0 none;
   margin: 0px;
   padding: 0px;
   -webkit-border-horizontal-spacing: 0px;
 }
-.bundleInfo td {
-  padding-right: 5px;
+.listTable td {
+  padding-right: 10px;
+}
+.listTable th {
+  text-align: left;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+
+.topheaderTable {
+  border: 0 none;
+  margin: 0px;
+  padding: 0px;
+  -webkit-border-horizontal-spacing: 0px;
+}
+.topheaderTable th {
+  text-align: left;
+  font-weight: bold;
+  padding-right: 10px;
+  border-bottom: 1px dotted #CCCCCC;
+}
+.topheaderTable td {
+  padding-right: 10px;
 }
 
 
@@ -386,11 +408,14 @@ color:#fff;
   font-weight:bold;
  }
 
-.description {
-  background-color:#DDDDEE;
-  margin:5 0 0 10;
-  padding:2px;
- }
+.description pre {
+  white-space: pre;
+  font-family: monospace;
+  margin: 10px;
+  padding: 7px;
+  background-color: #F1F7FF;
+  border: 1px dotted #555555;
+}
 
 .quickEdit {
   border-style:solid;

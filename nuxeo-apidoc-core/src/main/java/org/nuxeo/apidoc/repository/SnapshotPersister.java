@@ -25,6 +25,7 @@ import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionPointInfoDocAdapter;
+import org.nuxeo.apidoc.adapters.OperationInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.SeamComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -32,6 +33,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -125,6 +127,8 @@ public class SnapshotPersister {
         }
         persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
                 label, distribContainer.getDoc());
+        persistOperations(snapshot, snapshot.getOperations(), session, label,
+                distribContainer.getDoc());
 
         return distribContainer;
     }
@@ -147,6 +151,26 @@ public class SnapshotPersister {
         } catch (Exception e) {
             throw new ClientException(
                     "Errors while persisting Seam Component as document", e);
+        }
+    }
+
+    public void persistOperations(DistributionSnapshot snapshot,
+            List<OperationInfo> operations, CoreSession session, String label,
+            DocumentModel parent) throws ClientException {
+        for (OperationInfo op : operations) {
+            persistOperation(snapshot, op, session, label, parent);
+        }
+    }
+
+    public void persistOperation(DistributionSnapshot snapshot,
+            OperationInfo op, CoreSession session, String label,
+            DocumentModel parent) throws ClientException {
+        try {
+            OperationInfoDocAdapter.create(op, session,
+                    parent.getPathAsString());
+        } catch (Exception e) {
+            throw new ClientException(
+                    "Errors while persisting Operation as document", e);
         }
     }
 

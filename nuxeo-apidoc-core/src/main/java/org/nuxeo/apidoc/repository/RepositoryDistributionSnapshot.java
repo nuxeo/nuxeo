@@ -27,6 +27,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
@@ -411,6 +412,40 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     @Override
     public boolean containsSeamComponents() {
         return getSeamComponentIds().size() > 0;
+    }
+
+    @Override
+    public OperationInfo getOperation(String id) {
+        if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
+            id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
+        }
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc())
+                + " AND " + OperationInfo.PROP_NAME + " = "
+                + QueryHelper.quoted(id);
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+            return docs.size() == 0 ? null : docs.get(0).getAdapter(
+                    OperationInfo.class);
+        } catch (Exception e) {
+            log.error("Unable to fetch Seam Component", e);
+            return null;
+        }
+    }
+
+    @Override
+    public List<OperationInfo> getOperations() {
+        List<OperationInfo> result = new ArrayList<OperationInfo>();
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc());
+        try {
+            DocumentModelList docs = getCoreSession().query(query);
+            for (DocumentModel doc : docs) {
+                result.add(doc.getAdapter(OperationInfo.class));
+            }
+        } catch (Exception e) {
+            log.error("Unable to query", e);
+        }
+        // TODO sort
+        return result;
     }
 
     @Override

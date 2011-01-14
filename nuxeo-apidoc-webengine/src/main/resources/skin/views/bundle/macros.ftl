@@ -38,7 +38,7 @@
 
 <#macro viewBundleArtifact bundleItem>
   <h2>Maven artifact</h2>
-  <table class="bundleInfo">
+  <table class="listTable">
     <tr> <td> file: </td> <td> ${bundleItem.fileName} </td> </tr>
     <tr> <td> groupId: </td> <td> ${bundleItem.artifactGroupId} </td> </tr>
     <tr> <td> artifactId: </td> <td> ${bundleItem.artifactId} </td> </tr>

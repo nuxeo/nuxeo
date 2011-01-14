@@ -19,6 +19,28 @@
 <table border=0 style="padding:0px;margin:0px">
 <tr>
     <td class="spacerTab"></td>
+    <td colspan="4" <#if navPoint=="listOperations"> class="currentNavPoint" </#if> >
+      <a href="${Root.path}/${distId}/listOperations">
+       Operations
+      </a>
+      <#if navPoint=="viewOperation">
+        <div class="currentNavPoint"> &nbsp;&nbsp; > view Operation </div>
+      </#if>
+    </td>
+</tr>
+<tr>
+    <td class="spacerTab"></td>
+    <td colspan="4" <#if navPoint=="listSeamComponents"> class="currentNavPoint" </#if> >
+      <a href="${Root.path}/${distId}/listSeamComponents">
+       Seam components
+      </a>
+      <#if navPoint=="viewSeamComponent">
+        <div class="currentNavPoint"> &nbsp;&nbsp; > view Seam component </div>
+      </#if>
+    </td>
+</tr>
+<tr>
+    <td class="spacerTab"></td>
     <td colspan="4" <#if navPoint=="listBundleGroups"> class="currentNavPoint" </#if> >
       <a href="${Root.path}/${distId}/listBundleGroups">
        Bundle groups
@@ -92,17 +114,6 @@
       </a>
       <#if navPoint=="viewContribution">
         <div class="currentNavPoint"> &nbsp;&nbsp; > view Contribution </div>
-      </#if>
-    </td>
-</tr>
-<tr>
-    <td class="spacerTab"></td>
-    <td colspan="4" <#if navPoint=="listSeamComponents"> class="currentNavPoint" </#if> >
-      <a href="${Root.path}/${distId}/listSeamComponents">
-       Seam components
-      </a>
-      <#if navPoint=="viewSeamComponent">
-        <div class="currentNavPoint"> &nbsp;&nbsp; > view Seam component </div>
       </#if>
     </td>
 </tr>
