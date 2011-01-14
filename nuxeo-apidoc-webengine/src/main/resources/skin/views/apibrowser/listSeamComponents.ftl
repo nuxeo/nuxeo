@@ -1,17 +1,15 @@
 <@extends src="base.ftl">
 <@block name="title">All Seam components</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
 <@block name="right">
+<#include "/docMacros.ftl">
 
-<#if searchFilter??>
-  <h1>All Seam components (with filter '${searchFilter}')</h1>
-<#else>
-  <h1>All Seam components</h1>
-</#if>
-
+<h1>All Seam components</h1>
+<@tableFilterArea/>
 <table id="seamComponentsTable" class="tablesorter">
   <thead>
   <tr>
@@ -51,11 +49,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#seamComponentsTable").tablesorter({sortList:[[1,0]], widgets:['zebra']} );
-    });
-</script>
+<@tableSortFilterScript "#seamComponentsTable" "[1,0]" />
 </@block>
 
 </@extends>

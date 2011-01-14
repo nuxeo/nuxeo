@@ -1,22 +1,15 @@
 <@extends src="base.ftl">
 <@block name="title">All extension points</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<@filterForm eps?size 'extension point'/>
-
-<#assign showDesc=false>
-<#if Context.request.getParameter("showDesc")??>
-  <#assign showDesc=true>
-</#if>
-<#if showDesc>
-   <#assign descriptions=This.getDescriptions("NXExtensionPoint")/>
-</#if>
-
+<h1>All extension points</h1>
+<@tableFilterArea/>
 <table id="extensionPointsTable" class="tablesorter">
 <thead>
   <tr>
@@ -55,11 +48,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#extensionPointsTable").tablesorter({sortList:[[0,0]], widgets:['zebra']} );
-    });
-</script>
+<@tableSortFilterScript "#extensionPointsTable" "[0,0]" />
 </@block>
 
 </@extends>

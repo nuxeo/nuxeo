@@ -105,22 +105,23 @@
 </#macro>
 
 
-<#macro filterForm resultSize artifactType>
-  <#if searchFilter??>
-    <h1> All ${artifactType}s with filter '${searchFilter}' (${resultSize}) </h1>
-  <#else>
-    <h1> All ${artifactType}s</h1>
-  </#if>
+<#macro tableFilterArea>
+<p>
+Filter:
+  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="text">
+  <input id="filter-clear-button" type="submit" value="Clear"/>
+</p>
+</#macro>
 
-  <#if !Root.currentDistribution.live>
-    <span style="float:right">
-    <form method="GET" action="${Root.path}/${distId}/filter${artifactType}s" >
-      <input type="text" name="fulltext" value="${searchFilter}">
-      <input type="submit" value="filter">
-    </form>
-    <#if searchFilter??>
-      <A href="${Root.path}/${distId}/list${artifactType}s"> [ Reset ] </A>
-    </#if>
-    </span>
-  </#if>
+
+<#macro tableSortFilterScript name sortList>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("${name}")
+        .tablesorter({sortList:[${sortList}], widgets:['zebra']})
+        .tablesorterFilter({filterContainer: "#filter-box",
+                            filterClearContainer: "#filter-clear-button",
+                            filterWaitTime: 100});
+    });
+</script>
 </#macro>

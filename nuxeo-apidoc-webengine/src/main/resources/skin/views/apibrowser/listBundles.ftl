@@ -1,15 +1,15 @@
 <@extends src="base.ftl">
 <@block name="title">All bundles</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
 <@block name="right">
-
 <#include "/docMacros.ftl">
 
-<@filterForm bundleIds?size 'bundle'/>
-
+<h1>All bundles</h1>
+<@tableFilterArea/>
 <table id="bundlesTable" class="tablesorter">
 <thead>
   <tr>
@@ -33,11 +33,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#bundlesTable").tablesorter({sortList:[[0,0]], widgets:['zebra']} );
-    });
-</script>
+<@tableSortFilterScript "#bundlesTable" "[0,0]" />
 </@block>
 
 </@extends>

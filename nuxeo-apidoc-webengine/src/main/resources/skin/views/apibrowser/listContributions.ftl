@@ -1,22 +1,15 @@
 <@extends src="base.ftl">
 <@block name="title">All contributions</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<@filterForm cIds?size 'contribution'/>
-
-<#assign showDesc=false>
-<#if Context.request.getParameter("showDesc")??>
-  <#assign showDesc=true>
-</#if>
-<#if showDesc>
-   <#assign descriptions=This.getDescriptions("NXContribution")/>
-</#if>
-
+<h1>All contributions</h1>
+<@tableFilterArea/>
 <table id="contributionsTable" class="tablesorter">
 <thead>
   <tr>
@@ -52,11 +45,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#contributionsTable").tablesorter({sortList:[[1,0]], widgets:['zebra']} );
-    });
-</script>
+<@tableSortFilterScript "#contributionsTable" "[1,0]" />
 </@block>
 
 </@extends>

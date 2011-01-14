@@ -1,14 +1,15 @@
 <@extends src="base.ftl">
 <@block name="title">All services</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
 </@block>
 
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<@filterForm services?size 'service'/>
-
+<h1>All services</h1>
+<@tableFilterArea/>
 <table id="servicesTable" class="tablesorter">
 <thead>
   <tr>
@@ -38,11 +39,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#servicesTable").tablesorter({sortList:[[0,0]], widgets:['zebra']} );
-    });
-</script>
+<@tableSortFilterScript "#servicesTable" "[0,0]" />
 </@block>
 
 </@extends>
