@@ -1,7 +1,7 @@
 <@extends src="base.ftl">
 <@block name="title">All operations</@block>
 <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.min.js"></script>
 </@block>
 
 <@block name="right">
