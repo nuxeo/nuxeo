@@ -868,18 +868,38 @@
       </selector>
       <selector path=".foldableBox h3.folded">
         <background preset="folded (Galaxy backgrounds)"/>
+        <height>18px</height>
+      </selector>
+      <selector path=".foldableBox h3.foldedDisabled">
+        <background>#d2d2d2 none</background>
+        <height>18px</height>
+        <color>#555</color>
+        <border-bottom>1px solid #d2d2d2</border-bottom>
       </selector>
       <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
         <color preset="foldablebox.titles (Galaxy colors)" />
+        <float>left</float>
+        <padding-right>10px</padding-right>
       </selector>
       <selector path=".foldableBox h3.unfolded">
         <background preset="unfolded (Galaxy backgrounds)"/>
+        <clear>both</clear>
+        <height>18px</height>
       </selector>
       <selector path=".foldableBox h3 a">
         <color preset="foldablebox.titles (Galaxy colors)" />
         <display>block</display>
       </selector>
+      <selector path=".foldableBox h3 a.action, .foldableBox h3 a.action:visited, .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover">
+        <background-color>#EFEFEF</background-color>
+        <border>1px solid #CECECE</border>
+        <color>#333333</color>
+        <float>right</float>
+        <font-weight>normal</font-weight>
+        <padding>1px 3px</padding>
+      </selector>
       <selector path=".foldableBox .boxBody">
+        <clear>both</clear>
         <padding>10px</padding>
       </selector>
       <selector path=".relationCreateFieldColumn, .fieldColumn, .workflowFieldColumn">

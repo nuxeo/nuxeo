@@ -584,6 +584,23 @@
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
+    <!-- Local Configuration -->
+    <action id="TAB_LOCAL_CONFIGURATION" link="/incl/tabs/local_configuration.xhtml" order="70"
+      label="action.view.local.configuration" icon="/icons/file.gif">
+      <category>TAB_MANAGE_sub_tab</category>
+      <filter id="has_local_configuration_available">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('LOCAL_CONFIGURATION').isEmpty()}
+          </condition>
+        </rule>
+        <rule grant="true">
+          <permission>Manage everything</permission>
+          <facet>SuperSpace</facet>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
