@@ -75,7 +75,8 @@ public class TypesTool implements Serializable {
 
     @Observer(value = { EventNames.CONTENT_ROOT_SELECTION_CHANGED,
             EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
+            EventNames.DOMAIN_SELECTION_CHANGED,
+            EventNames.LOCAL_CONFIGURATION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
@@ -107,18 +108,18 @@ public class TypesTool implements Serializable {
         return organizeType(docTypesMap);
     }
 
-
     /**
-
-
-
-
-
+     *
+     *
+     *
+     *
+     *
      * Returns the Configuration document to be used as the local configuration
      * of the {@code TypeManager}.
      * <p>
      * This method can be overridden by Subclasses to define a specific
      * Configuration document.
+     *
      * @since 5.4.1
      */
     protected DocumentModel getConfigurationDocument() {
@@ -130,7 +131,8 @@ public class TypesTool implements Serializable {
         return allowedSubTypes;
     }
 
-    protected Map<String, List<List<Type>>> organizeType(Map<String, List<Type>> types) {
+    protected Map<String, List<List<Type>>> organizeType(
+            Map<String, List<Type>> types) {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
         Set<Entry<String, List<Type>>> typeEntrySet = types.entrySet();
         for (Entry<String, List<Type>> set : typeEntrySet) {

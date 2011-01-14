@@ -22,11 +22,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -70,6 +72,10 @@ public class LocalConfigurationActions implements Serializable {
     public String saveLocalConfiguration() throws ClientException {
         // TODO do the save and add facet message
         documentActions.updateDocument();
+
+        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
+                navigationContext.getCurrentDocument());
+
         return null;
     }
 

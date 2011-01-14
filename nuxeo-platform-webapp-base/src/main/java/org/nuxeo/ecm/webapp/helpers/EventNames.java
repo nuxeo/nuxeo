@@ -156,6 +156,11 @@ public final class EventNames {
      */
     public static final String GO_PERSONAL_WORKSPACE = "personnalWorkspace";
 
+    /**
+     * Event raised when the local configuration of a document has changed
+     */
+    public static final String LOCAL_CONFIGURATION_CHANGED = "localConfigurationChanged";
+
     // Constant utility class.
     private EventNames() {
     }
