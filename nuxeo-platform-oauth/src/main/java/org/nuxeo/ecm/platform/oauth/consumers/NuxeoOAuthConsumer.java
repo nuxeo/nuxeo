@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.platform.oauth.consumers;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+import net.oauth.OAuth;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthServiceProvider;
 
@@ -40,11 +43,21 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
     public static final String ALLOW_SIGNEDFETCH = "allowSignedFetch";
 
-    public static final String DESCRIPTION = "description";
+    public static final String SIGNEDFETCH_NONE = "none";
+    public static final String SIGNEDFETCH_OPENSOCIAL_VIEWER = "opensocial:viewer";
+    public static final String SIGNEDFETCH_OPENSOCIAL_OWNER = "opensocial:owner";
+    public static final String SIGNEDFETCH_DEDICATED_USER = "nuxeo:user";
 
-    public static final String ENABLED = "enabled";
+    protected String publicKey = null;
+    protected String description = null;
+    protected String signedFetchSupport = SIGNEDFETCH_NONE;
+    protected String dedicatedLogin = null;
+
+    protected boolean enabled = true;
 
     protected static final String SCHEMA = "oauthConsumer";
+
+    protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
 
     public static NuxeoOAuthConsumer createFromDirectoryEntry(
             DocumentModel entry) throws ClientException {
@@ -52,9 +65,20 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         String consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         String consumerSecret = (String) entry.getProperty(SCHEMA,
                 "consumerSecret");
-        // XXX
-        return new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret,
-                null);
+
+        NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret,null);
+
+        consumer.publicKey = (String) entry.getProperty(SCHEMA, "publicKey");
+        consumer.description = (String) entry.getProperty(SCHEMA, "description");
+        consumer.signedFetchSupport = (String) entry.getProperty(SCHEMA, "signedFetchSupport");
+        consumer.dedicatedLogin = (String) entry.getProperty(SCHEMA, "dedicatedLogin");
+
+        Long enabledFlag = (Long) entry.getProperty(SCHEMA, "enabled");
+        if (enabledFlag==0) {
+            consumer.enabled=false;
+        }
+
+        return consumer;
     }
 
     public NuxeoOAuthConsumer(String callbackURL, String consumerKey,
@@ -67,26 +91,70 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         entry.setProperty(SCHEMA, "callbackURL", callbackURL);
         entry.setProperty(SCHEMA, "consumerKey", consumerKey);
         entry.setProperty(SCHEMA, "consumerSecret", consumerSecret);
-        // XXX
 
+        entry.setProperty(SCHEMA, "publicKey", publicKey);
+        entry.setProperty(SCHEMA, "description", description);
+        entry.setProperty(SCHEMA, "signedFetchSupport", signedFetchSupport);
+        entry.setProperty(SCHEMA, "dedicatedLogin", dedicatedLogin);
+        if (enabled) {
+            entry.setProperty(SCHEMA, "enabled", 1);
+        } else {
+            entry.setProperty(SCHEMA, "enabled", 0);
+        }
         return entry;
     }
 
+
+    public String getCallbackURL() {
+        return callbackURL;
+    }
+
+    public String getConsumerKey() {
+        return consumerKey;
+    }
+
+    public String getConsumerSecret() {
+        return consumerSecret;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
     public boolean allowSignedFetch() {
-        Object prop = getProperty(ALLOW_SIGNEDFETCH);
-        if (prop == null) {
+
+        if (signedFetchSupport==null || SIGNEDFETCH_NONE.equals(signedFetchSupport)) {
             return false;
+        }
+        if (SIGNEDFETCH_DEDICATED_USER.equals(signedFetchSupport) && dedicatedLogin==null) {
+            return false;
+        }
+        return true;
+    }
+
+    public String getSignedFetchUser() {
+        if (!allowSignedFetch()) {
+            return null;
+        }
+        if (signedFetchSupport.startsWith(SIGNEDFETCH_DEDICATED_USER)) {
+            return dedicatedLogin;
         } else {
-            return (Boolean) prop;
+            return signedFetchSupport;
         }
     }
 
     public String getDescription() {
-        Object prop = getProperty(DESCRIPTION);
-        if (prop == null) {
-            return null;
+        return description;
+    }
+
+    public String getSecret(String type) {
+        if (type==null || OAuth.HMAC_SHA1.equals(type)) {
+            return consumerSecret;
+        } else if (OAuth.RSA_SHA1.equals(type)) {
+            return "";
         } else {
-            return (String) prop;
+            log.error("Unknonw type of key :" + type);
+            return null;
         }
     }
 

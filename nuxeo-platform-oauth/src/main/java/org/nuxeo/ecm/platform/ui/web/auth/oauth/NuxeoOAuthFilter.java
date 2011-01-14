@@ -111,7 +111,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     processAccessToken(httpRequest, httpResponse);
 
                 } else {
-                    httpResponse.sendError(500, "OAuth call not supported");
+                    httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "OAuth call not supported");
                 }
                 return;
             }
@@ -214,6 +214,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey);
+        if (consumer==null) {
+            log.error("Consumer " + consumerKey + " is not registred");
+            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
+            httpResponse.sendError(errCode, "Unknown consumer key");
+            return;
+        }
         OAuthAccessor accessor = new OAuthAccessor(consumer);
 
         OAuthValidator validator = getValidator();
@@ -221,7 +227,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             validator.validateMessage(message, accessor);
         } catch (Exception e) {
             log.error("Error while validating OAuth signature", e);
-            httpResponse.sendError(500, "Can not validate signature");
+            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
+            httpResponse.sendError(errCode, "Can not validate signature");
             return;
         }
 
@@ -261,6 +268,14 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey);
+
+        if (consumer==null) {
+            log.error("Consumer " + consumerKey + " is not registred");
+            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
+            httpResponse.sendError(errCode, "Unknown consumer key");
+            return;
+        }
+
         OAuthAccessor accessor = new OAuthAccessor(consumer);
 
         OAuthToken rToken = getOAuthTokenStore().getRequestToken(token);
@@ -274,7 +289,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             validator.validateMessage(message, accessor);
         } catch (Exception e) {
             log.error("Error while validating OAuth signature", e);
-            httpResponse.sendError(500, "Can not validate signature");
+            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
+            httpResponse.sendError(errCode, "Can not validate signature");
             return;
         }
 
@@ -309,7 +325,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         } else {
             log.error("Verifier does not match : can not continue");
-            httpResponse.sendError(500, "Verifier is not correct");
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Verifier is not correct");
             return;
         }
     }
@@ -331,9 +347,10 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 consumerKey);
 
         if (consumer == null) {
+            int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             log.error("Consumer " + consumerKey
                     + " is unknow, can not authenticated");
-            httpResponse.sendError(500, "Consumer " + consumerKey
+            httpResponse.sendError(errCode, "Consumer " + consumerKey
                     + " is not registred");
             return null;
         } else {
@@ -341,8 +358,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             OAuthAccessor accessor = new OAuthAccessor(consumer);
             OAuthValidator validator = getValidator();
 
-            // Map<String, String> data =
-            // AccessTokenStore.instance().get(message.getToken());
             OAuthToken aToken = getOAuthTokenStore().getAccessToken(
                     message.getToken());
 
@@ -353,8 +368,18 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 accessor.tokenSecret = aToken.getTokenSecret();
                 targetLogin = aToken.getNuxeoLogin();
             } else {
-                // find login from consumer ?
-                // or find login from OpenSocial headers
+                // 2 legged OAuth
+                if (!consumer.allowSignedFetch()) {
+                    int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
+                    httpResponse.sendError(errCode, "Signed fetch is not allowed");
+                    return null;
+                }
+                targetLogin = consumer.getSignedFetchUser();
+                if (NuxeoOAuthConsumer.SIGNEDFETCH_OPENSOCIAL_VIEWER.equals(targetLogin)) {
+                    targetLogin = message.getParameter("opensocial_viewer_id");
+                } else if (NuxeoOAuthConsumer.SIGNEDFETCH_OPENSOCIAL_OWNER.equals(targetLogin)) {
+                    targetLogin = message.getParameter("opensocial_owner_id");
+                }
             }
 
             try {
@@ -363,12 +388,14 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     LoginContext loginContext = NuxeoAuthenticationFilter.loginAs(targetLogin);
                     return loginContext;
                 } else {
-                    // see about opensocial user id
-                    // XX
+                    int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.USER_REFUSED);
+                    httpResponse.sendError(errCode, "No configured login information");
+                    return null;
                 }
             } catch (Exception e) {
                 log.error("Error while validating OAuth signature", e);
-                httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
+                httpResponse.sendError(errCode,
                         "Can not validate signature");
             }
         }

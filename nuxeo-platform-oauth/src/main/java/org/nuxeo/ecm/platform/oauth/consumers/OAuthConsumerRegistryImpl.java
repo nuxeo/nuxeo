@@ -51,10 +51,6 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
     public NuxeoOAuthConsumer getConsumer(String consumerKey) {
         try {
             NuxeoOAuthConsumer consumer = getEntry(consumerKey);
-            if (consumer == null && consumerKey.equals("confluence")) {
-                consumer = new NuxeoOAuthConsumer(null, consumerKey,
-                        "testoauthsharedsecret", null);
-            }
             return consumer;
         } catch (Exception e) {
             log.error("Unable to read consumer " + consumerKey
