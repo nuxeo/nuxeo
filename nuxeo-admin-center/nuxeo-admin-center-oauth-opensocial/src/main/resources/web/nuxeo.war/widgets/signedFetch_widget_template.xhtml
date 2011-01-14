@@ -32,11 +32,20 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'view' }">
-    <h:outputText value="#{messages['label.signedfetch.none']}" rendered="#{field_0 == null or field_O =='none'}"/>
-    <h:outputText value="#{messages['label.signedfetch.openSocialViewer']}" rendered="#{field_O =='opensocial:viewer'}"/>
-    <h:outputText value="#{messages['label.signedfetch.openSocialOwner']}" rendered="#{field_O =='opensocial:owner'}"/>
-    <h:outputText value="#{messages['label.signedfetch.dedicatedUser']}" rendered="#{field_O =='nuxeo:user'}"/>
-    <h:outputText value="( #{field_1} )" rendered="#{field_O =='nuxeo:user'}"/>
+
+    <c:if test="#{field_0 == null or field_0 == 'none'}">
+       <h:outputText value="#{messages['label.signedfetch.none']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'opensocial:viewer'}">
+      <h:outputText value="#{messages['label.signedfetch.opensocialViewer']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'opensocial:owner'}">
+      <h:outputText value="#{messages['label.signedfetch.opensocialOwner']}"/>
+    </c:if>
+    <c:if test="#{field_0 == 'nuxeo:user'}">
+      <h:outputText value="#{messages['label.signedfetch.dedicatedUser']}"/>
+        <h:outputText value="( #{field_1} )"/>
+    </c:if>
   </c:if>
 
 </div>
