@@ -213,7 +213,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         String consumerKey = message.getConsumerKey();
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey);
+                consumerKey, message.getSignatureMethod());
         if (consumer==null) {
             log.error("Consumer " + consumerKey + " is not registred");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
@@ -267,7 +267,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         String token = message.getToken();
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey);
+                consumerKey, message.getSignatureMethod());
 
         if (consumer==null) {
             log.error("Consumer " + consumerKey + " is not registred");
@@ -344,7 +344,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                 + consumerKey + " and signature method " + signatureMethod);
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
-                consumerKey);
+                consumerKey, signatureMethod);
 
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);

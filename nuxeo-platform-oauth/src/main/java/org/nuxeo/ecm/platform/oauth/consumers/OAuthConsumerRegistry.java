@@ -37,6 +37,18 @@ public interface OAuthConsumerRegistry {
      */
     NuxeoOAuthConsumer getConsumer(String consumerKey);
 
+
+    /**
+     * Get a Consumer from it's consumerKey
+     * The keyType param indicate if we need HMAC or RSA secret
+     * This is needed because the default OAuthValidator implementation only uses 1 field for both Keys
+     * If keyType is OAUth.RSA_SHA1, the consumerSecret field will be polupated with the RSA public key rather than the HMAC secret.
+     *
+     * @param consumerKey
+     * @return
+     */
+    NuxeoOAuthConsumer getConsumer(String consumerKey, String keyType);
+
     /**
      * remove a Consumer
      * @param consumerKey

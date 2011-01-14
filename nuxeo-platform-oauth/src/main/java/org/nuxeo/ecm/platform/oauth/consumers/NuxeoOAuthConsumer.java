@@ -60,15 +60,22 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
 
     public static NuxeoOAuthConsumer createFromDirectoryEntry(
-            DocumentModel entry) throws ClientException {
+            DocumentModel entry, String keyType) throws ClientException {
         String callbackURL = (String) entry.getProperty(SCHEMA, "callbackURL");
         String consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         String consumerSecret = (String) entry.getProperty(SCHEMA,
                 "consumerSecret");
+        String rsaKey = (String) entry.getProperty(SCHEMA, "publicKey");
+
+        if (OAuth.RSA_SHA1.equals(keyType)) {
+            consumerSecret = rsaKey;
+        }
 
         NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret,null);
 
-        consumer.publicKey = (String) entry.getProperty(SCHEMA, "publicKey");
+        consumer.publicKey = rsaKey;
+
+
         consumer.description = (String) entry.getProperty(SCHEMA, "description");
         consumer.signedFetchSupport = (String) entry.getProperty(SCHEMA, "signedFetchSupport");
         consumer.dedicatedLogin = (String) entry.getProperty(SCHEMA, "dedicatedLogin");
