@@ -64,7 +64,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
 
         // check creator
         String creator = (String) uw.getProperty("dublincore", "creator");
-        assertEquals(SecurityConstants.SYSTEM_USERNAME, creator);
+        assertEquals(creator, "toto");
 
         // check write access
         uw.setProperty("dublibore", "description", "Toto's workspace");
