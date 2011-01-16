@@ -11,7 +11,7 @@
 
     <td valign="top" id="nxthemesWebWidgetFactoryPanel" style="display: none">
       <nxthemes:panel identifier="web widget factory"
-        url="#{contextPath}/site/nxthemes-webwidgets/webWidgetFactory"
+        url="%{contextPath}/site/nxthemes-webwidgets/webWidgetFactory"
         controlledBy="web widget perspectives,web widget inserter"
         visibleInPerspectives="default" />
     </td>
