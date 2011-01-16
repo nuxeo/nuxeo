@@ -12,6 +12,7 @@
         <class>org.nuxeo.theme.webwidgets.providers.DataEntity</class>
         <class>org.nuxeo.theme.webwidgets.providers.WidgetEntity</class>
         <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.jdbc.use_streams_for_binary">true</property>
       </properties>
     </hibernateConfiguration>
   </extension>
