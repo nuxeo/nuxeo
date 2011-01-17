@@ -162,6 +162,7 @@ public abstract class NuxeoLauncher {
         }
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(command));
         pb.directory(configurationGenerator.getNuxeoHome());
+        pb = pb.redirectErrorStream(true);
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
         if (consoleLogs) {
@@ -217,7 +218,6 @@ public abstract class NuxeoLauncher {
     }
 
     public Thread logProcessStreams(ProcessBuilder pb, Process process) {
-        pb = pb.redirectErrorStream(true);
         ThreadedStreamHandler streamHandler = new ThreadedStreamHandler(process);
         streamHandler.start();
         return streamHandler;
