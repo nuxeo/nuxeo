@@ -30,7 +30,9 @@ import org.apache.shindig.gadgets.http.HttpFetcher;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
 import org.apache.shindig.gadgets.oauth.OAuthModule;
 import org.apache.shindig.gadgets.oauth.OAuthRequest;
+import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.shindig.oauth.NXOAuthStoreProvider;
 import org.nuxeo.opensocial.shindig.oauth.NuxeoOAuthRequest;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,8 +88,10 @@ public class GuiceContextListener implements ServletContextListener {
         Injector injector = null;
         try {
             log.info("GuiceContextListener createInjector");
+            //modules.add(Modules.override(new OAuthModule()).with(
+            //        new NuxeoRequestOverrides()));
             modules.add(Modules.override(new OAuthModule()).with(
-                    new NuxeoRequestOverrides()));
+                    new NuxeoOAuthOverrides()));
 
             injector = Guice.createInjector(Stage.PRODUCTION, modules);
 
@@ -180,4 +184,15 @@ class NuxeoRequestOverrides implements Module {
         binder.bind(OAuthRequest.class).toProvider(
                 NuxeoOverridesRequestProvider.class);
     }
+}
+
+class NuxeoOAuthOverrides implements Module {
+
+    public void configure(Binder binder) {
+        binder.bind(OAuthRequest.class).toProvider(
+                NuxeoOverridesRequestProvider.class);
+        binder.bind(OAuthStore.class).toProvider(
+                NXOAuthStoreProvider.class);
+    }
+
 }

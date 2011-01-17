@@ -25,11 +25,13 @@ import java.util.concurrent.ThreadFactory;
 
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.InvalidationHandler;
+import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.gadgets.parse.ParseModule;
 import org.apache.shindig.gadgets.preload.PreloadModule;
 import org.apache.shindig.gadgets.render.RenderModule;
 import org.apache.shindig.gadgets.servlet.HttpRequestHandler;
 import org.apache.shindig.gadgets.templates.TemplateModule;
+import org.nuxeo.opensocial.shindig.oauth.NXOAuthStore;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.AbstractModule;

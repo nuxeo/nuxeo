@@ -104,4 +104,7 @@ public interface OpenSocialService {
      */
     void setupOpenSocial() throws Exception;
 
+
+    String getOAuthPrivateKeyContent();
+
 }

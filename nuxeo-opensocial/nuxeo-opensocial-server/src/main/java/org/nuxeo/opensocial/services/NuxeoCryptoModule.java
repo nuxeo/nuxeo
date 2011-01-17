@@ -27,10 +27,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.auth.SecurityToken;
 import org.apache.shindig.auth.SecurityTokenDecoder;
+import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.social.opensocial.oauth.OAuthDataStore;
 import org.apache.shindig.social.opensocial.oauth.OAuthEntry;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.shindig.crypto.NXBlobCrypterSecurityTokenDecoder;
+import org.nuxeo.opensocial.shindig.oauth.NXOAuthStore;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.AbstractModule;
@@ -46,6 +48,7 @@ public class NuxeoCryptoModule extends AbstractModule {
             bind(SecurityTokenDecoder.class).to(
                     NXBlobCrypterSecurityTokenDecoder.class);
             bind(OAuthDataStore.class).to(FakeNuxeoDataStore.class);
+
 
             OpenSocialService oss = Framework.getService(OpenSocialService.class);
 

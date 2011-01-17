@@ -222,6 +222,10 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return os.getPortalConfig();
     }
 
+    public String getOAuthPrivateKeyContent() {
+        return os.getExternalPrivateKey();
+    }
+
     public File getOAuthPrivateKeyFile() {
         return oauthPrivateKeyFile;
     }

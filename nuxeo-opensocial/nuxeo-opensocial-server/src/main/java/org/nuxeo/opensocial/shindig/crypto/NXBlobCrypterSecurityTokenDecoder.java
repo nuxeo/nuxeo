@@ -32,6 +32,7 @@ import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerIndex;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret;
 import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.apache.shindig.gadgets.oauth.BasicOAuthStoreConsumerKeyAndSecret.KeyType;
+import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -66,7 +67,13 @@ public class NXBlobCrypterSecurityTokenDecoder extends
                     log.warn("We expected to be able to use a BasicOAuthStore "
                             + "to configure OAuth services!");
                 } else {
+                    OAuthServiceProviderRegistry  spr =  Framework.getLocalService(OAuthServiceProviderRegistry.class);
+
                     for (OAuthServiceDescriptor descriptor : os.getOAuthServices()) {
+
+                        spr.addReadOnlyProvider(descriptor.gadgetUrl, descriptor.serviceName, descriptor.consumerKey, descriptor.consumerSecret, null);
+
+                        /**
                         BasicOAuthStore oauthStore = (BasicOAuthStore) store;
                         BasicOAuthStoreConsumerIndex index = new BasicOAuthStoreConsumerIndex();
                         index.setGadgetUri(descriptor.getGadgetUrl());
@@ -82,6 +89,7 @@ public class NXBlobCrypterSecurityTokenDecoder extends
                                 os.getOAuthPrivateKeyName(),
                                 os.getOAuthCallbackUrl());
                         oauthStore.setConsumerKeyAndSecret(index, keyAndSecret);
+                        **/
                     }
                 }
             }
