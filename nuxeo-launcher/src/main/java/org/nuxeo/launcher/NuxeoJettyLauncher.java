@@ -19,7 +19,7 @@
 
 package org.nuxeo.launcher;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,20 +39,23 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
      */
     public NuxeoJettyLauncher(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected String getClassPath() {
         String cp = ".";
-        cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
-        cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
+        cp = addToClassPath(cp, "lib");
+        cp = addToClassPath(cp, "nuxeo-runtime-launcher-*.jar");
+        cp = addToClassPath(cp, "bundles");
         return cp;
     }
 
     @Override
     protected void setServerStartCommand(List<String> command) {
         command.add(JettyConfigurator.STARTUP_CLASS);
-        command.add("start");
+        command.add("-home");
+        command.add(configurationGenerator.getNuxeoHome().getPath());
     }
 
     @Override
@@ -63,9 +66,8 @@ public class NuxeoJettyLauncher extends NuxeoLauncher {
 
     @Override
     protected Collection<? extends String> getServerProperties() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+        ArrayList<String> serverProperties = new ArrayList<String>();
+        return serverProperties;
     }
 
     @Override
