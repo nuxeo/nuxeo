@@ -41,6 +41,11 @@ public class JettyConfigurator extends ServerConfigurator {
     /**
      * @since 5.4.1
      */
+    public static final String LAUNCHER_CLASS = "org.nuxeo.runtime.launcher.Main";
+
+    /**
+     * @since 5.4.1
+     */
     public static final String STARTUP_CLASS = "org.nuxeo.osgi.application.Main";
 
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
