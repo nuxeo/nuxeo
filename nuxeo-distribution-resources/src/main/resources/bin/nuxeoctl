@@ -33,10 +33,13 @@ case "`uname`" in
 esac
 
 ## Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
-grep "^JAVA_HOME=" "$NUXEO_CONF" |
 while read line; do
-  eval JAVA_HOME=\"$(echo $line | cut -d= -f2-)\"
-done
+  case $line in
+    JAVA_HOME=*) JAVA_HOME="$(echo $line | cut -d= -f2-)" ;;
+  esac
+done << EOF
+`grep "^JAVA_HOME=" "$NUXEO_CONF"`
+EOF
 if [ -z "$JAVA" ]; then
   JAVA=java
 fi
@@ -57,10 +60,20 @@ fi
 PATH="$JAVA_HOME/bin:$PATH"
 
 ## Setup JAVA_OPTS
-grep "^JAVA_OPTS=" "$NUXEO_CONF" |
 while read line; do
-  eval JAVA_OPTS=\"$(echo $line | cut -d= -f2-)\"
-done
+  case $line in
+    JAVA_OPTS=*) 
+      line=$(echo $line | cut -d= -f2-)
+      # expand $JAVA_OPTS
+      case $line in
+        \$JAVA_OPTS*) JAVA_OPTS="$JAVA_OPTS $(echo $line | cut -c 12-)" ;;
+        *) JAVA_OPTS="$line" ;;
+      esac
+      ;;
+  esac
+done << EOF
+`grep "^JAVA_OPTS=" "$NUXEO_CONF"`
+EOF
 # Defaults
 : ${JAVA_OPTS:="-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"}
 # Force IPv4
