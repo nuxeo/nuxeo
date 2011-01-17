@@ -155,7 +155,7 @@ public class ExtensionImpl implements Extension {
     @Override
     public String toXML() {
         try {
-            return DOMSerializer.toString(element);
+            return DOMSerializer.toStringOmitXml(element);
         } catch (IOException e) {
             System.err.println("Failed to serialize extension " + e);
             return null;
