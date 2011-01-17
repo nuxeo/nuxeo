@@ -42,7 +42,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         this.gadgetUrl=gadgetUrl;
         this.serviceName = serviceName;
         this.consumerKey = consumerKey;
-        this.consumerSecret = consumerKey;
+        this.consumerSecret = consumerSecret;
         this.publicKey = publicKey;
         this.readOnly=true;
     }

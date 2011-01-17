@@ -3,113 +3,12 @@
 
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
     point="directories">
-    <directory name="oauthConsumers" layout="oauthConsumerLayout"
-      sortField="consumerKey" />
     <directory name="oauthTokens" layout="oauthTokenLayout"
       sortField="token" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
-
-    <layout name="oauthConsumerLayout">
-      <templates>
-        <template mode="any">
-          /directory/directory_layout_template.xhtml
-        </template>
-      </templates>
-      <rows>
-        <row>
-          <widget>consumerKey</widget>
-        </row>
-        <row>
-          <widget>consumerSecret</widget>
-        </row>
-        <row>
-          <widget>enabled</widget>
-        </row>
-        <row>
-          <widget>description</widget>
-        </row>
-        <row>
-          <widget>allowSignedFetch</widget>
-        </row>
-        <row>
-          <widget>callbackURL</widget>
-        </row>
-      </rows>
-
-      <widget name="consumerKey" type="text">
-        <labels>
-          <label mode="any">Consumer Key</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.consumerKey</field>
-        </fields>
-      </widget>
-      <widget name="consumerSecret" type="text">
-        <labels>
-          <label mode="any">Consumer Secret</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.consumerSecret</field>
-        </fields>
-      </widget>
-      <widget name="enabled" type="template">
-        <labels>
-          <label mode="any">Enabled</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.enabled</field>
-        </fields>
-        <properties mode="any">
-        <property name="template">
-          /widgets/integer_yes_no_widget_template.xhtml
-        </property>
-        </properties>
-      </widget>
-      <widget name="description" type="text">
-        <labels>
-          <label mode="any">Description</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.description</field>
-        </fields>
-      </widget>
-
-      <widget name="allowSignedFetch" type="template">
-        <labels>
-          <label mode="any">Allow 2 legged auth</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.allowSignedFetch</field>
-        </fields>
-        <properties mode="any">
-        <property name="template">
-          /widgets/integer_yes_no_widget_template.xhtml
-        </property>
-        </properties>
-      </widget>
-
-      <widget name="callbackURL" type="text">
-        <labels>
-          <label mode="any">Callback URL</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauthConsumer.callbackURL</field>
-        </fields>
-      </widget>
-
-    </layout>
-
-
-
 
 
 

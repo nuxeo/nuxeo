@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class NuxeoOAuthToken implements OAuthToken {
 
-    protected static final String SCHEMA = "oauthToken";
+    public static final String SCHEMA = "oauthToken";
 
     protected String appId;
 
@@ -54,6 +54,10 @@ public class NuxeoOAuthToken implements OAuthToken {
     protected String verifier;
 
     protected long durationInMinutes;
+
+    protected boolean clientToken = false;
+
+    protected String clientId = null;
 
     public NuxeoOAuthToken(String consumerKey, String callBack) {
         this.appId = consumerKey;
@@ -88,6 +92,12 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.durationInMinutes = (Long) entry.getProperty(SCHEMA,
                 "durationInMinutes");
         this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
+
+        Long clientTokenL = (Long) entry.getProperty(SCHEMA, "clientToken");
+        if (clientTokenL!=null && clientTokenL.equals(1)) {
+            this.clientToken = true;
+        }
+        this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
     }
 
     public void updateEntry(DocumentModel entry) throws ClientException {
@@ -99,6 +109,13 @@ public class NuxeoOAuthToken implements OAuthToken {
         entry.setProperty(SCHEMA, "verifier", this.verifier);
         entry.setProperty(SCHEMA, "durationInMinutes", this.durationInMinutes);
         entry.setProperty(SCHEMA, "creationDate", this.creationDate);
+
+        entry.setProperty(SCHEMA, "clientId", this.clientId);
+        if (this.clientToken) {
+            entry.setProperty(SCHEMA, "clientToken", 1);
+        } else {
+            entry.setProperty(SCHEMA, "clientToken", 0);
+        }
     }
 
     public String getAppId() {
@@ -149,10 +166,21 @@ public class NuxeoOAuthToken implements OAuthToken {
     }
 
     public boolean isExpired() {
+        // XXX
         return false;
     }
 
     public void setNuxeoLogin(String login) {
         nuxeoLogin = login;
     }
+
+    public boolean isClientToken() {
+        return clientToken;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+
 }

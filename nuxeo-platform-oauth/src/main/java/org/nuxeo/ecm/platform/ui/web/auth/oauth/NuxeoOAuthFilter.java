@@ -179,11 +179,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             log.info("OAuth authorize validate ");
 
             String nuxeo_login = httpRequest.getParameter("nuxeo_login");
+            String duration = httpRequest.getParameter("duration");
 
             // XXX get what user has granted !!!
 
             OAuthToken rToken = getOAuthTokenStore().addVerifierToRequestToken(
-                    token);
+                    token, Long.parseLong(duration));
             rToken.setNuxeoLogin(nuxeo_login);
 
             StringBuffer sb = new StringBuffer(rToken.getCallbackUrl());
@@ -370,7 +371,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             } else {
                 // 2 legged OAuth
                 if (!consumer.allowSignedFetch()) {
-                    int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
+                    //int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
+                    // We need to send a 403 to force client to ask for a new token in case the Access Token was deleted !!!
+                    int errCode = HttpServletResponse.SC_FORBIDDEN;
                     httpResponse.sendError(errCode, "Signed fetch is not allowed");
                     return null;
                 }

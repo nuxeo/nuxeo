@@ -52,16 +52,17 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     protected static final Log log = LogFactory.getLog(OAuthTokenStoreImpl.class);
 
-    protected static final String DIRECTORY_NAME = "oauthTokens";
+    public static final String DIRECTORY_NAME = "oauthTokens";
 
     protected Map<String, OAuthToken> requestTokenStore = new HashMap<String, OAuthToken>();
 
     @Override
-    public OAuthToken addVerifierToRequestToken(String token) {
+    public OAuthToken addVerifierToRequestToken(String token, Long duration) {
 
         NuxeoOAuthToken rToken = (NuxeoOAuthToken) getRequestToken(token);
         if (rToken != null) {
             rToken.verifier = "NX-VERIF-" + UUID.randomUUID().toString();
+            rToken.durationInMinutes=duration;
         }
         return rToken;
 
@@ -85,6 +86,70 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             log.error("Error during directory persistence", e);
             return null;
         }
+    }
+
+
+    public NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws Exception {
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        Session session = ds.open(DIRECTORY_NAME);
+        try {
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("appId", appId);
+            filter.put("clientId", owner);
+            filter.put("clientToken", 1);
+            DocumentModelList entries = session.query(filter);
+            if (entries.size()==0) {
+                return  null;
+            }
+            if (entries.size()>1) {
+                log.error("Found several tokens");
+            }
+            return getTokenFromDirectoryEntry(entries.get(0));
+        } finally {
+            session.close();
+        }
+    }
+
+    public void removeClientAccessToken(String appId, String owner) throws Exception {
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        Session session = ds.open(DIRECTORY_NAME);
+        try {
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("appId", appId);
+            filter.put("clientId", owner);
+            filter.put("clientToken", 1);
+            DocumentModelList entries = session.query(filter);
+            if (entries.size()==0) {
+                return;
+            }
+            if (entries.size()>1) {
+                log.error("Found several tokens");
+            }
+            session.deleteEntry(entries.get(0));
+        } finally {
+            session.close();
+        }
+
+    }
+
+
+
+    public void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId, String owner) {
+        NuxeoOAuthToken aToken= new NuxeoOAuthToken(consumerKey,callBack);
+        aToken.token = token;
+        aToken.tokenSecret = tokenSecret;
+        if (appId!=null) {
+            aToken.appId = appId;
+        }
+
+        aToken.clientToken=true;
+        aToken.clientId = owner;
+        try {
+            aToken = storeAccessTokenAsDirectoryEntry(aToken);
+        } catch (Exception e) {
+            log.error("Error during directory persistence", e);
+        }
+
     }
 
     protected NuxeoOAuthToken getTokenFromDirectory(String token)
@@ -170,6 +235,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             try {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put("consumerKey", consumerKey);
+                filter.put("clientToken", 0);
                 DocumentModelList entries = session.query(filter);
                 for (DocumentModel entry : entries) {
                     result.add(new NuxeoOAuthToken(entry));
@@ -195,6 +261,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             try {
                 Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put("nuxeoLogin", login);
+                filter.put("clientToken", 0);
                 DocumentModelList entries = session.query(filter);
                 for (DocumentModel entry : entries) {
                     result.add(new NuxeoOAuthToken(entry));

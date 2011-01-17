@@ -13,4 +13,7 @@
   <xs:element name="durationInMinutes" type="xs:integer"/>
   <xs:element name="creationDate" type="xs:date"/>
 
+  <xs:element name="clientToken" type="xs:integer"/>
+  <xs:element name="clientId" type="xs:string"/>
+
 </xs:schema>

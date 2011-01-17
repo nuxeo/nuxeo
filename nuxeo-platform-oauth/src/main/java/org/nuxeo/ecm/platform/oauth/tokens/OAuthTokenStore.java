@@ -22,8 +22,11 @@ package org.nuxeo.ecm.platform.oauth.tokens;
 import java.util.List;
 
 /**
- * Service interface for managing {@link OAuthToken} used in the Filter This
- * service provides a center access point for all Token related actions.
+ * Service interface for managing {@link OAuthToken} used both :
+ *  - in the OAuth the Filter (Server side Tokens) : where Nuxeo is the provider
+ *  - in Shindig (Client side Tokens) ; where Nuxeo is the consumer
+ *
+ * This service provides a center access point for all Token related actions.
  *
  * @author tiry
  *
@@ -43,7 +46,7 @@ public interface OAuthTokenStore {
      * @param token
      * @return
      */
-    OAuthToken addVerifierToRequestToken(String token);
+    OAuthToken addVerifierToRequestToken(String token,Long duration);
 
     /**
      * Retrieves a REQUEST Token given a Token string (extracted from the
@@ -101,5 +104,33 @@ public interface OAuthTokenStore {
      * @return
      */
     List<OAuthToken> listAccessTokenForConsumer(String consumerKey);
+
+    // Client Token
+
+    /**
+     * Stores a Access token generated fro Shindig client
+     *
+     */
+    void storeClientAccessToken(String consumerKey, String callBack, String token, String tokenSecret, String appId, String owner);
+
+    /**
+     * Get a Access token for the Shindig Client
+     *
+     * @param appId
+     * @param owner
+     * @return
+     * @throws Exception
+     */
+    NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws Exception;
+
+    /**
+     * Delete a Client side Access Token
+     *
+     * @param appId
+     * @param owner
+     * @throws Exception
+     */
+    public void removeClientAccessToken(String appId, String owner) throws Exception;
+
 
 }

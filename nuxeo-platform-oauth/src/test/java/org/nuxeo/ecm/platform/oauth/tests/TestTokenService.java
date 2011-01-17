@@ -32,7 +32,7 @@ public class TestTokenService extends NXRuntimeTestCase {
 
         assertNotNull(tokenStore.getRequestToken(rToken.getToken()));
 
-        rToken = tokenStore.addVerifierToRequestToken(rToken.getToken());
+        rToken = tokenStore.addVerifierToRequestToken(rToken.getToken(), new Long(0));
 
         assertNotNull(rToken.getVerifier());
 
