@@ -876,7 +876,7 @@
         <color>#555</color>
         <border-bottom>1px solid #d2d2d2</border-bottom>
       </selector>
-      <selector path=".foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
+      <selector path=".foldableBox h3 span, .foldableBox h3 a:link, .foldableBox h3 a:visited, .foldableBox h3 a:hover, .foldableBox h3 a:visited:hover">
         <color preset="foldablebox.titles (Galaxy colors)" />
         <float>left</float>
         <padding-right>10px</padding-right>
