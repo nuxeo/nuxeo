@@ -196,8 +196,8 @@ public abstract class NuxeoLauncher {
     protected class ThreadedStreamHandler extends Thread {
         private InputStream inputStream;
 
-        ThreadedStreamHandler(InputStream is) {
-            this.inputStream = is;
+        ThreadedStreamHandler(Process process) {
+            this.inputStream = process.getInputStream();
         }
 
         @Override
@@ -205,6 +205,7 @@ public abstract class NuxeoLauncher {
             InputStreamReader isr = new InputStreamReader(inputStream);
             BufferedReader br = new BufferedReader(isr);
             String line;
+
             try {
                 while ((line = br.readLine()) != null) {
                     log.info(line);
@@ -217,8 +218,7 @@ public abstract class NuxeoLauncher {
 
     public Thread logProcessStreams(ProcessBuilder pb, Process process) {
         pb = pb.redirectErrorStream(true);
-        ThreadedStreamHandler streamHandler = new ThreadedStreamHandler(
-                process.getInputStream());
+        ThreadedStreamHandler streamHandler = new ThreadedStreamHandler(process);
         streamHandler.start();
         return streamHandler;
     }
@@ -319,24 +319,14 @@ public abstract class NuxeoLauncher {
         } else if ("console".equalsIgnoreCase(command)) {
             launcher.setConsoleLogs(true);
             launcher.executor.execute(new Runnable() {
-//            class NuxeoConsole extends Thread {
                 public void run() {
                     launcher.addShutdownHook();
                     if (!launcher.doStart()) {
+                        launcher.removeShutdownHook();
                         System.exit(1);
                     }
                 }
             });
-//            NuxeoConsole nuxeoConsole = new NuxeoConsole();
-//            launcher.executor.execute(nuxeoConsole);
-//            nuxeoConsole.start();
-//            while (nuxeoConsole.isAlive()) {
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    log.error(e);
-//                }
-//            }
         } else if ("stop".equalsIgnoreCase(command)) {
             launcher.stop();
         } else if ("restartbg".equalsIgnoreCase(command)) {
@@ -547,10 +537,8 @@ public abstract class NuxeoLauncher {
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    Thread streamHandler = logProcessStreams(pb, stopProcess);
+                    logProcessStreams(pb, stopProcess);
                     stopProcess.waitFor();
-                    streamHandler.interrupt();
-                    streamHandler.join();
                     boolean wait = true;
                     while (wait) {
                         try {
