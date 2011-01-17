@@ -37,7 +37,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -105,6 +104,7 @@ public class TypesTool implements Serializable {
             String type) {
         Map<String, List<Type>> docTypesMap = typeManager.getTypeMapForDocumentType(
                 type, getConfigurationDocument());
+        docTypesMap = filterTypeMap(docTypesMap);
         return organizeType(docTypesMap);
     }
 
@@ -126,9 +126,14 @@ public class TypesTool implements Serializable {
         return navigationContext.getCurrentDocument();
     }
 
-    protected Map<String, SubType> filterSubTypes(
-            Map<String, SubType> allowedSubTypes) {
-        return allowedSubTypes;
+    /**
+     * Method to be overridden by subclasses to filter the type Map.
+     *
+     * @return 5.4.1
+     */
+    protected Map<String, List<Type>> filterTypeMap(
+            Map<String, List<Type>> docTypeMap) {
+        return docTypeMap;
     }
 
     protected Map<String, List<List<Type>>> organizeType(
@@ -155,18 +160,6 @@ public class TypesTool implements Serializable {
             newTypesMap.put(set.getKey(), newList);
         }
         return newTypesMap;
-    }
-
-    /**
-     * Retrieves the list of allowed sub types given a current type.
-     *
-     */
-    public List<String> getAllowedSubTypesFor(String docType) {
-        Type documentType = typeManager.getType(docType);
-        Map<String, SubType> subTypes = documentType.getAllowedSubTypes();
-        subTypes = filterSubTypes(subTypes);
-        List<String> allowedSubTypes = new ArrayList<String>(subTypes.keySet());
-        return allowedSubTypes;
     }
 
     public Type getSelectedType() {
