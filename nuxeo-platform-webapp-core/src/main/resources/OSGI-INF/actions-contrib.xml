@@ -621,6 +621,7 @@
         <type>Section</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
+        <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}</condition>
       </rule>
     </filter>
 
@@ -630,6 +631,7 @@
         <facet>Folderish</facet>
         <type>Workspace</type>
         <type>Folder</type>
+        <condition>#{typeManager.getAllowedSubTypes(document.getType(), document).size() > 0}</condition>
       </rule>
     </filter>
 
