@@ -226,7 +226,7 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <classifier>jar-with-dependencies</classifier>
