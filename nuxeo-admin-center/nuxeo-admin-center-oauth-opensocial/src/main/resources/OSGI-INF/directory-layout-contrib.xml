@@ -163,9 +163,9 @@
         <row>
           <widget>consumerSecret</widget>
         </row>
-        <row>
+        <!--<row>
           <widget>publicKey</widget>
-        </row>
+        </row>-->
         <row>
           <widget>description</widget>
         </row>
@@ -420,6 +420,301 @@
 
     </layout>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <layout name="oauthConsumerTokenLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>token</widget>
+        </row>
+        <row>
+          <widget>tokenSecret</widget>
+        </row>
+        <row>
+          <widget>nuxeoLogin</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <row>
+          <widget>duration</widget>
+        </row>
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="token" type="text">
+        <labels>
+          <label mode="any">OAUth Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.token</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.token
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="tokenSecret" type="text">
+        <labels>
+          <label mode="any">OAUth Token Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.tokenSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.tokenSecret
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="nuxeoLogin" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.nuxeoLogin</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.nuxeoLogin
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+
+
+
+
+
+  <layout name="oauthProviderTokenLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>consumerKey</widget>
+        </row>
+        <row>
+          <widget>token</widget>
+        </row>
+        <row>
+          <widget>tokenSecret</widget>
+        </row>
+        <row>
+          <widget>userId</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <!--<row>
+          <widget>duration</widget>
+        </row>-->
+      </rows>
+
+      <widget name="consumerKey" type="text">
+        <labels>
+          <label mode="any">Consumer Key</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.consumerKey</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.consumerKey
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="token" type="text">
+        <labels>
+          <label mode="any">OAUth Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.token</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.token
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="tokenSecret" type="text">
+        <labels>
+          <label mode="any">OAUth Token Secret</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.tokenSecret</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.tokenSecret
+          </property>
+        </properties>
+        <widgetModes>
+           <mode value="list">hidden</mode>
+        </widgetModes>
+      </widget>
+
+      <widget name="userId" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.clientId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.nuxeoLogin
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
 
   </extension>
 

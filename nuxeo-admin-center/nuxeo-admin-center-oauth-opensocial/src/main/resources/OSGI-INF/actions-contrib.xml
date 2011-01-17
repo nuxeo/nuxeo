@@ -23,14 +23,26 @@
           <filter-id>only_for_manager</filter-id>
         </action>
 
+        <action id="GrantedTokensToMe" link="/incl/oauth/providersTokens.xhtml"
+          label="tab.oauth.grantedTokenSP" order="25">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
         <action id="Consumers" link="/incl/oauth/consumers.xhtml"
           label="tab.oauth.consumers" order="30">
           <category>NUXEO_ADMIN_OAuthOpensocial</category>
           <filter-id>only_for_manager</filter-id>
         </action>
 
+        <action id="GrantedTokensByMe" link="/incl/oauth/consumersTokens.xhtml"
+          label="tab.oauth.grantedTokenConsumers" order="35">
+          <category>NUXEO_ADMIN_OAuthOpensocial</category>
+          <filter-id>only_for_manager</filter-id>
+        </action>
+
         <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
-          label="tab.oauth.externalGadgets" order="30">
+          label="tab.oauth.externalGadgets" order="40">
           <category>NUXEO_ADMIN_OAuthOpensocial</category>
           <filter-id>only_for_manager</filter-id>
         </action>

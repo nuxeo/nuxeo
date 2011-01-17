@@ -40,6 +40,10 @@ public abstract class DirectoryBasedEditor {
         return creationEntry;
     }
 
+    public void refresh() {
+        entries=null;
+    }
+
     public void createEntry() throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = ds.open(getDirectoryName());
@@ -68,14 +72,23 @@ public abstract class DirectoryBasedEditor {
         return editableEntry;
     }
 
+
+    protected Map<String, Serializable> getQueryFilter() {
+        return Collections.emptyMap();
+    }
+
+    protected Set<String> getOrderSet() {
+        return Collections.emptySet();
+    }
+
     public DocumentModelList getEntries() throws Exception {
         if (entries==null) {
 
             DirectoryService ds = Framework.getService(DirectoryService.class);
             Session session = ds.open(getDirectoryName());
             try {
-                Map<String, Serializable> emptyMap = Collections.emptyMap();
-                Set<String> emptySet = Collections.emptySet();
+                Map<String, Serializable> emptyMap = getQueryFilter();
+                Set<String> emptySet = getOrderSet();
 
                 entries = session.query(emptyMap, emptySet, null, true);
 

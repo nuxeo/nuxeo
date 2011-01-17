@@ -8,13 +8,12 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <h2><h:outputText
-  value="#{messages['adminsubtab.oauth.consumers']}" /></h2>
+  value="#{messages['adminsubtab.oauth.providersTokens']}" /></h2>
 
 <ui:include src="directoryBasedEditor.xhtml">
-  <ui:param name="bean" value="#{oauthConsumersActions}" />
-  <ui:param name="entryLayoutName" value="oauthConsumerLayoutAdmin" />
-  <ui:param name="showAddControl" value="true" />
-  <ui:param name="detailMode" value="edit"/>
+  <ui:param name="bean" value="#{oauthProvidersTokensActions}" />
+  <ui:param name="entryLayoutName" value="oauthProviderTokenLayoutAdmin" />
+  <ui:param name="detailMode" value="view"/>
 </ui:include>
 
 </div>

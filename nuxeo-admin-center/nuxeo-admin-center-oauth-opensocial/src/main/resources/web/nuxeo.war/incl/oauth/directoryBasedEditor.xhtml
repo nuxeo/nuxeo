@@ -9,12 +9,14 @@
 
  <script type="text/javascript">
       function confirmDeleteDirectoryEntry() {
-        return confirm("#{messages['label.consumer.entry.confirmDelete']}");
+        return confirm("#{messages['label.entry.confirmDelete']}");
       }
  </script>
-<h:outputText value="#{entryLayoutName}"/>
 
- <c:if test="#{bean.editableEntry == null}">
+<c:set value="command.#{detailMode}"
+          var="detailButtonLabel"/>
+
+ <c:if test="#{bean.editableEntry == null and showAddControl == 'true' }">
         <h:form id="showHideAddDirectoryEntry">
 
           <h4>
@@ -25,7 +27,7 @@
               <h:graphicImage url="/icons/toggle_minus.png"
                 rendered="#{bean.showAddForm}" />
               <h:outputText
-                value="#{messages['title.create.consumer.entry']}" />
+                value="#{messages['title.create.entry']}" />
             </h:commandLink>
           </h4>
         </h:form>
@@ -61,15 +63,14 @@
         <div class="vocabularyEntryContent">
           <h:form id="editDirectoryEntry">
 
-            <nxl:layout name="#{entryLayoutName}" mode="edit"
+            <nxl:layout name="#{entryLayoutName}" mode="#{detailMode}"
               value="#{bean.editableEntry}" />
-
             <div class="buttons">
               <h:commandButton value="#{messages['command.save']}"
                 id="editDirectoryEntryButton"
                 styleClass="button"
-                action="#{bean.saveEntry}" />
-              <h:commandButton value="#{messages['command.cancel']}"
+                action="#{bean.saveEntry}" rendered="#{detailMode == 'edit'}"/>
+              <h:commandButton value="#{messages['command.back']}"
                 id="cancelEditingDirectoryEntryButton"
                 styleClass="button"
                 action="#{bean.resetEditEntry}"
@@ -85,6 +86,13 @@
 <c:if test="#{bean.editableEntry == null}">
 
 <h:form id="entryList">
+
+<div style="float:right">
+<h:commandLink action="#{bean.refresh}">
+<h:outputText value="#{messages['command.refresh']}"/>
+</h:commandLink>
+</div>
+
 <table class="dataOutput">
   <tbody>
     <nxu:repeat var="entry"
