@@ -18,17 +18,20 @@ package org.nuxeo.ecm.webapp.localconfiguration;
 
 import java.io.Serializable;
 
+import javax.faces.application.FacesMessage;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -42,41 +45,40 @@ public class LocalConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String LOCAL_CONFIGURATION_CHANGED_LABEL = "label.local.configuration.modified";
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    @In(create = true)
-    protected transient DocumentActions documentActions;
 
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
-    protected void toggleConfiguration(String configurationFacet,
-            DocumentModel configurationDocument) throws ClientException {
-        if (configurationDocument.hasFacet(configurationFacet)) {
-            configurationDocument.removeFacet(configurationFacet);
+    @In(create = true, required = false)
+    protected transient FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
+
+    public void toggleConfigurationForCurrentDocument(String configurationFacet) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument.hasFacet(configurationFacet)) {
+            currentDocument.removeFacet(configurationFacet);
         } else {
-            configurationDocument.addFacet(configurationFacet);
+            currentDocument.addFacet(configurationFacet);
         }
-        documentManager.saveDocument(configurationDocument);
+        documentManager.saveDocument(currentDocument);
         navigationContext.invalidateCurrentDocument();
         documentManager.save();
     }
 
-    public void toggleConfiguration(String configurationFacet)
-            throws ClientException {
-        toggleConfiguration(configurationFacet,
-                navigationContext.getCurrentDocument());
-    }
-
-    public String saveLocalConfiguration() throws ClientException {
-        // TODO do the save and add facet message
-        documentActions.updateDocument();
+    public void saveLocalConfiguration() throws ClientException {
+        documentManager.saveDocument(navigationContext.getCurrentDocument());
+        navigationContext.invalidateCurrentDocument();
 
         Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
                 navigationContext.getCurrentDocument());
-
-        return null;
+        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                    resourcesAccessor.getMessages().get(LOCAL_CONFIGURATION_CHANGED_LABEL));
     }
 
 }
