@@ -14,76 +14,78 @@
 ##
 ## Contributors:
 ##     Julien Carsique
+##     Florent Guillaume
 ##
 ## Shell script calling a multi-OS Nuxeo Java launcher.
 ##
 
-NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0)/..; pwd -P)}
-NUXEO_CONF=${NUXEO_CONF:-$NUXEO_HOME/bin/nuxeo.conf}
+: ${NUXEO_HOME:=$(cd $(dirname $0)/..; pwd -P)}
+: ${NUXEO_CONF:="$NUXEO_HOME"/bin/nuxeo.conf}
 
 ## OS detection
 cygwin=false
 darwin=false
-linux=false
+#linux=false
 case "`uname`" in
   CYGWIN*) cygwin=true;;
   Darwin*) darwin=true;;
-  Linux) linux=true;;
+  #Linux) linux=true;;
 esac
 
 ## Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
 while read line; do
-  if [[ "$line" != \#* ]]; then
-    $line
-  fi
-done <<EOF
-`grep JAVA_HOME $NUXEO_CONF`
+  case $line in
+    JAVA_HOME=*) JAVA_HOME="$(echo $line | cut -d= -f2-)" ;;
+  esac
+done << EOF
+`grep "^JAVA_HOME=" "$NUXEO_CONF"`
 EOF
 if [ -z "$JAVA" ]; then
-  JAVA="java"
+  JAVA=java
 fi
 if [ -z "$JAVA_HOME" ]; then
   JAVA=`which $JAVA`
-
   # follow symlinks
   while [ -h "$JAVA" ]; do
     ls=`ls -ld "$JAVA"`
     link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-      JAVA="$link"
-    else
-      JAVA=`dirname "$JAVA"`/"$link"
-    fi
+    case "$link" in
+      /*) JAVA="$link" ;;
+      *)  JAVA=`dirname "$JAVA"`/"$link" ;;
+    esac
   done
   JAVA_HOME=`dirname "$JAVA"`
   JAVA_HOME=`dirname "$JAVA_HOME"`
 fi
 PATH="$JAVA_HOME/bin:$PATH"
 
+## Setup JAVA_OPTS
 while read line; do
-  if [[ "$line" != \#* ]]; then
-    JAVA_OPTS="$(echo $line|cut -d= -f2-)"
-  fi
-done <<EOF
-`grep JAVA_OPTS $NUXEO_CONF`
+  case $line in
+    JAVA_OPTS=*) 
+      line=$(echo $line | cut -d= -f2-)
+      # expand $JAVA_OPTS
+      case $line in
+        \$JAVA_OPTS*) JAVA_OPTS="$JAVA_OPTS $(echo $line | cut -c 12-)" ;;
+        *) JAVA_OPTS="$line" ;;
+      esac
+      ;;
+  esac
+done << EOF
+`grep "^JAVA_OPTS=" "$NUXEO_CONF"`
 EOF
-[ -z "$JAVA_OPTS" ] && JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"
+# Defaults
+: ${JAVA_OPTS:="-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"}
 # Force IPv4
 JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 # Set AWT headless
 JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
-
-# If -server not set in JAVA_OPTS, set it, if supported
-SERVER_SET=`echo $JAVA_OPTS | grep "\-server"`
-if [ "x$SERVER_SET" = "x" ]; then
-  # Check for SUN(tm) JVM w/ HotSpot support
-  if [ "x$HAS_HOTSPOT" = "x" ]; then
-    HAS_HOTSPOT=`"$JAVA" -version 2>&1 | grep -i HotSpot`
-  fi
-  # Enable -server if we have Hotspot, unless we can't
-  if [ "x$HAS_HOTSPOT" != "x" ]; then
+# Set -server if possible
+if ! [[ "x$JAVA_OPTS" =~ -server ]]; then
+  # Enable -server if we have HotSpot
+  if [[ x`"$JAVA" -version 2>&1` =~ HotSpot ]]; then
     # MacOS does not support -server flag
-    if [ "$darwin" != "true" ]; then
+    if [ $darwin = false ]; then
       JAVA_OPTS="-server $JAVA_OPTS"
     fi
   fi
@@ -91,10 +93,10 @@ fi
 
 ## OS specific checks
 # Check file descriptor limit is not too low
-if [ "$cygwin" = "false" ]; then
+if [ $cygwin = false ]; then
   MAX_FD_LIMIT=`ulimit -H -n`
   if [ $? -eq 0 ]; then
-    if [ "$darwin" = "true" ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
+    if [ $darwin = true ] && [ "$MAX_FD_LIMIT" = "unlimited" ]; then
       MAX_FD_LIMIT=`sysctl -n kern.maxfilesperproc`
       ulimit -n $MAX_FD_LIMIT
     fi
@@ -107,15 +109,12 @@ if [ "$cygwin" = "false" ]; then
   fi
 fi
 
-launcher() {
-    NUXEO_LAUNCHER=$NUXEO_HOME/bin/nuxeo-launcher.jar
-    if [ ! -e "$NUXEO_LAUNCHER" ]; then
-        echo Could not locate $NUXEO_LAUNCHER. 
-        # echo Please check that you are in the bin directory when running this script.
-        exit 1
-    fi
-    echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_LAUNCHER $@
-    $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_LAUNCHER $@
-}
-
-launcher $@
+## Launcher
+NUXEO_LAUNCHER="$NUXEO_HOME"/bin/nuxeo-launcher.jar
+if [ ! -e "$NUXEO_LAUNCHER" ]; then
+    echo Could not locate $NUXEO_LAUNCHER
+    # echo Please check that you are in the bin directory when running this script.
+    exit 1
+fi
+echo Launcher command: $JAVA -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar $NUXEO_LAUNCHER $@
+exec "$JAVA" -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -jar "$NUXEO_LAUNCHER" "$@"
