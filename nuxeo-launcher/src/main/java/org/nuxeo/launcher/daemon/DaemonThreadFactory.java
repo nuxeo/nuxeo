@@ -51,6 +51,7 @@ public class DaemonThreadFactory implements ThreadFactory {
      */
     public DaemonThreadFactory(String basename, boolean isDaemon) {
         this.basename = basename;
+        this.isDaemon = isDaemon;
     }
 
     /**

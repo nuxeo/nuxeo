@@ -90,7 +90,7 @@ public abstract class NuxeoLauncher {
      */
     private static final int STOP_NB_TRY = 5;
 
-    private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 5;
+    private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
     protected int startMaxWait;
 
@@ -105,7 +105,7 @@ public abstract class NuxeoLauncher {
     protected String pid;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory(
-            "NuxeoProcessThread"));
+            "NuxeoProcessThread", false));
 
     private boolean consoleLogs = false;
 
@@ -165,8 +165,7 @@ public abstract class NuxeoLauncher {
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
         if (consoleLogs) {
-            Thread streamHandler = logProcessStreams(pb);
-            streamHandler.start();
+            logProcessStreams(pb, nuxeoProcess);
         }
         Thread.sleep(1000);
         log.info("Server started"
@@ -216,10 +215,11 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    public Thread logProcessStreams(ProcessBuilder pb) {
+    public Thread logProcessStreams(ProcessBuilder pb, Process process) {
         pb = pb.redirectErrorStream(true);
         ThreadedStreamHandler streamHandler = new ThreadedStreamHandler(
-                nuxeoProcess.getInputStream());
+                process.getInputStream());
+        streamHandler.start();
         return streamHandler;
     }
 
@@ -241,10 +241,7 @@ public abstract class NuxeoLauncher {
             osCommand.add("/bin/sh");
             osCommand.add("-c");
             osCommand.add(linearizedCommand);
-            // Useless ?!
-            // if (background) {
             // osCommand.add("&");
-            // }
             return osCommand;
         } else if (PlatformUtils.isWindows()) {
             osCommand.add("cmd");
@@ -322,6 +319,7 @@ public abstract class NuxeoLauncher {
         } else if ("console".equalsIgnoreCase(command)) {
             launcher.setConsoleLogs(true);
             launcher.executor.execute(new Runnable() {
+//            class NuxeoConsole extends Thread {
                 public void run() {
                     launcher.addShutdownHook();
                     if (!launcher.doStart()) {
@@ -329,6 +327,16 @@ public abstract class NuxeoLauncher {
                     }
                 }
             });
+//            NuxeoConsole nuxeoConsole = new NuxeoConsole();
+//            launcher.executor.execute(nuxeoConsole);
+//            nuxeoConsole.start();
+//            while (nuxeoConsole.isAlive()) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    log.error(e);
+//                }
+//            }
         } else if ("stop".equalsIgnoreCase(command)) {
             launcher.stop();
         } else if ("restartbg".equalsIgnoreCase(command)) {
@@ -476,7 +484,7 @@ public abstract class NuxeoLauncher {
         } catch (IllegalStateException e) {
             log.error(e.getMessage());
         } catch (IllegalThreadStateException e) {
-            // Already running server
+            log.error(e.getMessage());
         }
         return serverStarted;
     }
@@ -538,21 +546,21 @@ public abstract class NuxeoLauncher {
                 pb.directory(configurationGenerator.getNuxeoHome());
                 log.debug("Server command: " + pb.command());
                 try {
-                    nuxeoProcess = pb.start();
-                    Thread streamHandler = logProcessStreams(pb);
-                    streamHandler.start();
-                    nuxeoProcess.waitFor();
+                    Process stopProcess = pb.start();
+                    Thread streamHandler = logProcessStreams(pb, stopProcess);
+                    stopProcess.waitFor();
                     streamHandler.interrupt();
                     streamHandler.join();
                     boolean wait = true;
                     while (wait) {
                         try {
-                            if (nuxeoProcess.exitValue() == 0) {
+                            if (stopProcess.exitValue() == 0) {
                                 // Successful call for server stop
                                 retry = false;
                             } else {
                                 // Failed to call for server stop
                                 retry = ++nbTry < STOP_NB_TRY;
+                                System.out.print(".");
                                 Thread.sleep(STOP_SECONDS_BEFORE_NEXT_TRY * 1000);
                             }
                             wait = false;
