@@ -7,7 +7,9 @@
 
 <#assign docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
+<#if Root.isEditor()>
 <p>[ <a href="${This.path}/createForm"> Add new documentation </a> ]</p>
+</#if>
 
 <#--
 <h2> Index </h2>
