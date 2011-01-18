@@ -169,3 +169,4 @@ Import-Package: com.noelios.restlet.ext.servlet;resolution:=optional,
  org.w3c.dom,
  org.xml.sax
 Bundle-SymbolicName: org.nuxeo.ecm.platform.ui;singleton:=true
+Bundle-Activator: org.nuxeo.ecm.platform.ui.web.UIWebActivator
