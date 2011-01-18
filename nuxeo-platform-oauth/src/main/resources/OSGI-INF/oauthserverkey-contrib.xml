@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.keys.defaultContrib">
+
+ <extension
+    target="org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManagerImpl"
+    point="serverKeyPair">
+
+    <documentation>
+
+      Default key contribution.
+      Since a key is needed for OAuth to work we have to provide a default value.
+      However, you should really create your own key pair since it will be used to
+      authenticate your Nuxeo server with the OAuth Service Providers.
+
+      To generate this key pair you can use openssl :
+
+      <code>
+
+      openssl req -newkey rsa:1024 -days 365 -nodes -x509 -keyout testkey.pem -out testkey.pem -subj '/CN=mytestkey'
+      openssl pkcs8 -in testkey.pem -out oauthkey.pem -topk8 -nocrypt -outform PEM
+
+      </code>
+
+    </documentation>
+
+  <serverKeyPair>
+
+    <privateKeyName>nuxeo</privateKeyName>
+    <privateKey>-----BEGIN PRIVATE KEY-----
+MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAM7wu+HCQuBfVyPM
+TgA9SZh8jcqY5ZF51N2GuwWcLLfhB7/wdj3iE8d564raH52FU2onnoOqry6u/A1t
+DzKy1riK7g6p3pubP0x9oAaPnkDCVUAPimAvGuZSWBSr3ryDP5GHgI/VYAOiXASM
+TISq5qxpmat54trYQJFN3iSh0spZAgMBAAECgYBzg8/s8opwQugalIYJ/iwh0Y04
+xWaIcVCQpA+rzwTrU9MGoozueE+ALx97b8zsGit4+0qxxsppLcaHHBS6wTe35ML8
+OggORPf0xEQAZpYRZeMX91sDNNVVooGTAOh5htH5E9eRqbvlsALO8/Ket8+virvk
+o6wcGo05Z9yjyT8ssQJBAO3izTwkXC+raqgV4TP7jchesgKTDvScBiZEtVqFston
+9U5A5M3eEbHOBgMVKji3BPyGCTFftC2LZl7VfzQWqi0CQQDesrLc1FONfMNpyEgX
+QcQSg9Au/xhLq+AKUupozRCin25VXH0Jqn6KMdANKZdLt2wuDTUUL0Nd+06Le6Lj
+pdhdAkEAx5ADwpdyKp9wG1A3m8dFWzlttlEuM7CMTCBJz4Xn07G/zYUNLVNFntcK
+Hh3sTKXk7f93yM7TtX2DRL1wN/9nhQJBAMnOjDF7o7+aqQbqPRH+Qe05T+XWuzCP
+r3YLj2qrMgD8kyJ9rr2cqBEZdN0IrJcrv7e3tjr1XYoEGzhhMMo01u0CQQC7Kky2
++IQgLJ2EwBNzqAgH9UglOwwPKp4sYGnr63Po660N8BvJKBPErFx8fHE6isxyrAAp
+CtChzksnyjXXLZUO
+-----END PRIVATE KEY-----</privateKey>
+
+    <publicCertificate>
+    -----BEGIN CERTIFICATE-----
+MIICMDCCAZmgAwIBAgIJAItBXRxS7f5QMA0GCSqGSIb3DQEBBQUAMBsxGTAXBgNV
+BAMTEG51eGVvLW9wZW5zb2NpYWwwHhcNMTAwMjI1MDkyNDQzWhcNMTEwMjI1MDky
+NDQzWjAbMRkwFwYDVQQDExBudXhlby1vcGVuc29jaWFsMIGfMA0GCSqGSIb3DQEB
+AQUAA4GNADCBiQKBgQDO8LvhwkLgX1cjzE4APUmYfI3KmOWRedTdhrsFnCy34Qe/
+8HY94hPHeeuK2h+dhVNqJ56Dqq8urvwNbQ8ysta4iu4Oqd6bmz9MfaAGj55AwlVA
+D4pgLxrmUlgUq968gz+Rh4CP1WADolwEjEyEquasaZmreeLa2ECRTd4kodLKWQID
+AQABo3wwejAdBgNVHQ4EFgQUV3pLOxhcSHqZ7J7X7EdzXGcQsx4wSwYDVR0jBEQw
+QoAUV3pLOxhcSHqZ7J7X7EdzXGcQsx6hH6QdMBsxGTAXBgNVBAMTEG51eGVvLW9w
+ZW5zb2NpYWyCCQCLQV0cUu3+UDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUA
+A4GBAE58p3e9ZJXRal2E1tD9sb041XhzMIyOu1jiDYuLPSg1rgKzpJFK9cDgvYmJ
+/SQnZXq6wilQrPDiK1EFyE3GOjoDgdgw9IA7zER1veEAWH1/nuT5FiLgiue+KVsr
+rs11LfViqxODsyQ7wedcLssNoE1Y4QMmUFIilPf+OzVv5efp
+-----END CERTIFICATE-----</publicCertificate>
+
+  </serverKeyPair>
+
+  </extension>
+
+</component>

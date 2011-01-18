@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManagerImpl">
+  <implementation
+          class="org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManagerImpl" />
+  <documentation>
+    Component and Service to manage Asymetric key pair (RSA) used in OAUth signing process
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+        <provide interface="org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager" />
+  </service>
+
+
+ <extension-point name="serverKeyPair">
+
+    <documentation>
+
+      Extension allowing to contribute a RSA Key pair
+
+      For instance :
+
+      <code>
+
+        <mimetype normalized="application/pdf" binary="true"
+          iconPath="pdf.png">
+          <mimetypes>
+            <mimetype>application/pdf</mimetype>
+          </mimetypes>
+          <extensions>
+            <extension>pdf</extension>
+          </extensions>
+        </mimetype>
+
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.oauth.keys.ServerKeyDescriptor" />
+
+  </extension-point>
+</component>
