@@ -141,7 +141,8 @@ public class FileManageActionsBean extends InputController implements
             throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(
+                        FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.nullUploadedFile"));
                 return navigationContext.getActionResult(
@@ -194,8 +195,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
-     *             avoid loading the content in memory
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
+     *             loading the content in memory
      */
     @Deprecated
     @WebRemote
@@ -334,13 +335,13 @@ public class FileManageActionsBean extends InputController implements
         DocumentModel container = documentManager.getDocument(containerRef);
 
         // check that we are not trying to move a folder inside itself
+
         if ((container.getPathAsString() + "/").startsWith(doc.getPathAsString()
                 + "/")) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
-
         if (!doc.isProxy() && container.getType().equals("Section")
                 && !doc.getType().equals("Section")) {
             // we try to do a publication check browse in sections
@@ -350,7 +351,8 @@ public class FileManageActionsBean extends InputController implements
                     SecurityConstants.ADD_CHILDREN)) {
                 // only publish via D&D if this can be done directly (no wf)
                 // => need to have write access
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "move_insuffisant_rights"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
@@ -360,7 +362,8 @@ public class FileManageActionsBean extends InputController implements
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
                 return MOVE_PUBLISH;
             } else {
-                facesMessages.add(FacesMessage.SEVERITY_WARN,
+                facesMessages.add(
+                        FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get(
                                 "publish_impossible"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
@@ -382,7 +385,8 @@ public class FileManageActionsBean extends InputController implements
         // check that we have the right to create the copy in the target
         if (!documentManager.hasPermission(containerRef,
                 SecurityConstants.ADD_CHILDREN)) {
-            facesMessages.add(FacesMessage.SEVERITY_WARN,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_WARN,
                     resourcesAccessor.getMessages().get(
                             "move_insuffisant_rights"));
             return MOVE_IMPOSSIBLE;
@@ -400,7 +404,8 @@ public class FileManageActionsBean extends InputController implements
             }
         } else {
             // check allowed content types constraints for non-proxy documents
-            if (!typeManager.isAllowedSubType(doc.getType(), container.getType())) {
+            if (!typeManager.isAllowedSubType(doc.getType(),
+                    container.getType(), container)) {
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
                         resourcesAccessor.getMessages().get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
@@ -463,7 +468,8 @@ public class FileManageActionsBean extends InputController implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     otherContainer);
 
-            facesMessages.add(FacesMessage.SEVERITY_INFO,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_INFO,
                     resourcesAccessor.getMessages().get(action),
                     resourcesAccessor.getMessages().get(
                             documentManager.getDocument(srcRef).getType()));
@@ -609,7 +615,8 @@ public class FileManageActionsBean extends InputController implements
             } catch (Exception e) {
                 // NXP-3570 : temporary solution before real fix
                 log.error(e, e);
-                facesMessages.add(FacesMessage.SEVERITY_ERROR,
+                facesMessages.add(
+                        FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.unsupportedFile"));
                 return null;
@@ -621,7 +628,8 @@ public class FileManageActionsBean extends InputController implements
                 }
             }
         } else {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR,
+            facesMessages.add(
+                    FacesMessage.SEVERITY_ERROR,
                     resourcesAccessor.getMessages().get(
                             "fileImporter.error.nullUploadedFile"));
             return null;
