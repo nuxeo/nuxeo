@@ -38,8 +38,8 @@ public class ReloadableComponent extends DefaultComponent implements Reloadable 
 
     @Override
     public void unregisterExtension(Extension extension) throws Exception {
-        super.unregisterExtension(extension);
         extensions.remove(extension);
+        super.unregisterExtension(extension);
     }
 
     public void reload(ComponentContext context) throws Exception {
