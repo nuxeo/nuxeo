@@ -129,7 +129,7 @@ public class TypesTool implements Serializable {
     /**
      * Method to be overridden by subclasses to filter the type Map.
      *
-     * @return 5.4.1
+     * @since 5.4.1
      */
     protected Map<String, List<Type>> filterTypeMap(
             Map<String, List<Type>> docTypeMap) {
