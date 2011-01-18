@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.impl.task;
 
 import java.io.File;
+import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -51,4 +52,10 @@ public class UninstallTask extends CommandsTask {
         service.setPackageState(pkg, PackageState.DOWNLOADED);
     }
 
+    @Override
+    protected void doRun(Map<String, String> params) throws PackageException {
+        super.doRun(params);
+        // reload components declared in 'reload' file
+        InstallTask.reloadComponents(getPackage());
+    }
 }
