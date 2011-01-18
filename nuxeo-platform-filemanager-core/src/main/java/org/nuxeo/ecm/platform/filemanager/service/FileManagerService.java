@@ -204,8 +204,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             // check allowed sub types
             DocumentModel container = documentManager.getDocument(containerRef);
             if (checkAllowedSubTypes
-                    && typeService.isAllowedSubType(containerTypeName,
-                            container.getType())) {
+                    && !typeService.isAllowedSubType(containerTypeName,
+                            container.getType(), container)) {
                 // cannot create document file here
                 // TODO: we should better raise a dedicated exception to be
                 // catched by the FileManageActionsBean instead of returning

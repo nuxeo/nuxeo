@@ -158,8 +158,9 @@ public abstract class AbstractFileImporter implements FileImporter {
         return path;
     }
 
-    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager,
-            DocumentModel doc) throws ClientException {
+    protected DocumentModel overwriteAndIncrementversion(
+            CoreSession documentManager, DocumentModel doc)
+            throws ClientException {
         doc.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.MINOR);
         return documentManager.saveDocument(doc);
@@ -182,7 +183,8 @@ public abstract class AbstractFileImporter implements FileImporter {
             return;
         }
 
-        if (typeService.isAllowedSubType(typeName, container.getType())) {
+        if (!typeService.isAllowedSubType(typeName, container.getType(),
+                container)) {
             throw new ClientException(
                     String.format(
                             "Cannot create document of type %s in container with type %s",
