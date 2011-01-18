@@ -77,7 +77,8 @@ public class TypeManagerBean implements TypeManagerLocal {
     }
 
     @Override
-    public Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc) {
+    public Collection<Type> getAllowedSubTypes(String typeName,
+            DocumentModel currentDoc) {
         return typeService.getAllowedSubTypes(typeName, currentDoc);
     }
 
@@ -87,12 +88,14 @@ public class TypeManagerBean implements TypeManagerLocal {
     }
 
     @Override
-    public Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc) {
+    public Collection<Type> findAllAllowedSubTypesFrom(String typeName,
+            DocumentModel currentDoc) {
         return typeService.findAllAllowedSubTypesFrom(typeName, currentDoc);
     }
 
     @Override
-    public Map<String, List<Type>> getTypeMapForDocumentType(String type, DocumentModel currentDoc) {
+    public Map<String, List<Type>> getTypeMapForDocumentType(String type,
+            DocumentModel currentDoc) {
         return typeService.getTypeMapForDocumentType(type, currentDoc);
     }
 
@@ -102,7 +105,8 @@ public class TypeManagerBean implements TypeManagerLocal {
     }
 
     @Override
-    public boolean canCreate(String typeName, String containerTypeName, DocumentModel currentDoc) {
+    public boolean canCreate(String typeName, String containerTypeName,
+            DocumentModel currentDoc) {
         return typeService.canCreate(typeName, containerTypeName, currentDoc);
     }
 
@@ -112,8 +116,10 @@ public class TypeManagerBean implements TypeManagerLocal {
     }
 
     @Override
-    public boolean isAllowedSubType(String typeName, String containerTypeName, DocumentModel currentDoc) {
-        return typeService.isAllowedSubType(typeName, containerTypeName, currentDoc);
+    public boolean isAllowedSubType(String typeName, String containerTypeName,
+            DocumentModel currentDoc) {
+        return typeService.isAllowedSubType(typeName, containerTypeName,
+                currentDoc);
     }
 
     @Remove
