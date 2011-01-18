@@ -92,6 +92,8 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
+    private static final int MAX_WAIT_LOGFILE = 5;
+
     protected int startMaxWait;
 
     protected ConfigurationGenerator configurationGenerator;
@@ -392,7 +394,19 @@ public abstract class NuxeoLauncher {
         final String newLine = System.getProperty("line.separator");
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader(logFile));
+            // Wait for logfile creation
+            int notfound = 0;
+            do {
+                try {
+                    in = new BufferedReader(new FileReader(logFile));
+                } catch (FileNotFoundException e) {
+                    if (notfound++ == MAX_WAIT_LOGFILE) {
+                        throw e;
+                    }
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                }
+            } while (in == null);
             int count = 0;
             int countStatus = 0;
             boolean countActive = false;
