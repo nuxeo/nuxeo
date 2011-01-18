@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ##
 ## (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
 ##
@@ -17,6 +17,7 @@
 ##     Florent Guillaume
 ##
 ## Shell script calling a multi-OS Nuxeo Java launcher.
+## Using explicitely bash to avoid dash which is not POSIX.
 ##
 
 : ${NUXEO_HOME:=$(cd $(dirname $0)/..; pwd -P)}
