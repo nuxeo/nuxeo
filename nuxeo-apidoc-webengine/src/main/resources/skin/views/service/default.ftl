@@ -18,11 +18,26 @@ ${nxItem.documentationHtml}
 <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
 <h2>Implementation</h2>
+<p><b>${nxItem.id}</b></p>
+<p><div id="shortjavadoc" class="description"></div></p>
 <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.id)}"/>
-<#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}.html"/>
-<p>Javadoc: <a href="${javaDocUrl}" target="_new">${nxItem.id}</a></p>
+<#assign urlBase="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}"/>
+<p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
 
 <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </@block>
+
+<@block name="footer_scripts">
+<script type="text/javascript">
+  $(document).ready(function() {
+    $.ajax({
+      url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
+      dataType: "text",
+      success: function(data) { $("#shortjavadoc").html(data) }
+    });
+  });
+</script>
+</@block>
+
 </@extends>

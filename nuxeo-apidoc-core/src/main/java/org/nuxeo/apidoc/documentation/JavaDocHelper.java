@@ -22,7 +22,7 @@ public class JavaDocHelper {
 
     protected String docVersion;
 
-    public static final String BASE_URL = "http://www.nuxeo.org/api/";
+    public static final String BASE_URL = "http://community.nuxeo.com/api/";
 
     public static final String CM_BASE = "nuxeo-case-management";
 
