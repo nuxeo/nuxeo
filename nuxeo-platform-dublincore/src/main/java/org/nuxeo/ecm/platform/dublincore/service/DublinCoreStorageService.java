@@ -87,8 +87,6 @@ public class DublinCoreStorageService extends DefaultComponent {
                     && nxp.getOriginatingUser() != null) {
                 principalName = nxp.getOriginatingUser();
             }
-        } else {
-            log.warn(principal + " is not an instance of Nuxeo Principal");
         }
 
         String[] contributorsArray;
