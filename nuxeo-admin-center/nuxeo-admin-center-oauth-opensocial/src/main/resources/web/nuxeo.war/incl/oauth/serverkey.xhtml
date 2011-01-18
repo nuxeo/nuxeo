@@ -7,6 +7,26 @@
 
 <h2><h:outputText value="#{messages['adminsubtab.oauth.serverKey']}" /></h2>
 
-<br/>
+
+<table>
+  <tr>
+    <td>
+    <h:outputText value="#{messages['label.oauth.keyName']}" />
+    </td>
+    <td>
+    <h:outputText value="#{oauthServerKeyActions.keyName}" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <h:outputText value="#{messages['label.oauth.certificate']}" />
+    </td>
+    <td>
+    <div style="border-width:1px;border-style:solid;border-color:grey;padding:5px"><pre>
+    <h:outputText value="#{oauthServerKeyActions.publicCertificate}" /></pre>
+    </div>
+    </td>
+  </tr>
+</table>
 
 </div>
