@@ -69,6 +69,9 @@ public class LocalConfigurationActions implements Serializable {
         documentManager.saveDocument(currentDocument);
         navigationContext.invalidateCurrentDocument();
         documentManager.save();
+
+        Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED,
+                navigationContext.getCurrentDocument());
     }
 
     public void saveLocalConfiguration() throws ClientException {
