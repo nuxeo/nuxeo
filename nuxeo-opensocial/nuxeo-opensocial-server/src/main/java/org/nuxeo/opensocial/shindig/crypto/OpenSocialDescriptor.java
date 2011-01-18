@@ -69,50 +69,6 @@ public class OpenSocialDescriptor {
     protected PortalConfig[] portal;
 
     /**
-     * This is the key that is used by a particular instance of nuxeo (running
-     * shindig) for signing requests to external OAuth providers. This key is
-     * the "consumer private key" in the language of OAuth. It must be of type
-     * RSA because we currently do not have support for the HMAC style keys. The
-     * generation of this private key can be done like this on unix:
-     *
-     * <PRE>
-     * openssl req -newkey rsa:1024 -days 365 -nodes -x509 -keyout testkey.pem -out testkey.pem -subj '/CN=mytestkey'
-     * openssl pkcs8 -in testkey.pem -out oauthkey.pem -topk8 -nocrypt -outform PEM
-     * </PRE>
-     *
-     * The result is in oauth and should be pasted into the configuration file
-     * as the externalPrivateKey value.
-     *
-     */
-    @XNode("externalPrivateKey")
-    protected String externalPrivateKey;
-
-    /**
-     * Most folks should not need to change this from the default value of
-     * nuxeo. It's unclear that there are many service providers that actually
-     * use this value.
-     */
-    @XNode("externalPrivateKeyName")
-    protected String externalPrivateKeyName;
-
-    /**
-     * This is here just for convenience of keeping everything together. This is
-     * the public key (really a certificate) that you need to give to external
-     * oauth provider to indicate that you have the private key above. Assuming
-     * you generated the key with the lines above, you should be able to simply
-     * paste the "certificate" portion of the testkey.pem file into this field.
-     * It is not used by nuxeo in any way, but <b>will</b> be needed when you
-     * configure an external provider.
-     * <p>
-     * Note that many providers accept the certificate then run a computation to
-     * extract the public key from it. This means that the value displayed when
-     * you look at the provider configuration may be different than the one you
-     * provided.
-     */
-    @XNode("externalPublicCertificate")
-    protected String externalPublicCertificate;
-
-    /**
      * This a list of nuxeo trusted hosts. Such a host will be passed the
      * browsers jsession id to avoid the need to constantly re-authenticate to
      * retrieve nuxeo data when the user is already logged into a nuxeo server
@@ -123,10 +79,6 @@ public class OpenSocialDescriptor {
 
     public String getSigningKey() {
         return signingKey;
-    }
-
-    public String getExternalPrivateKeyName() {
-        return externalPrivateKeyName;
     }
 
     /**
@@ -142,11 +94,6 @@ public class OpenSocialDescriptor {
 
     public void setSigningKey(String keyAsBase64) {
         signingKey = keyAsBase64;
-    }
-
-    public String getExternalPrivateKey() {
-        return externalPrivateKey;
-
     }
 
     public String[] getTrustedHosts() {

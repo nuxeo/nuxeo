@@ -67,8 +67,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     private final Map<String, String> keys = new HashMap<String, String>();
 
-    protected File oauthPrivateKeyFile;
-
     protected String signingStateKeyBytes;
 
     public Injector getInjector() {
@@ -83,10 +81,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        // if (XP_CRYPTO.equals(extensionPoint)) {
-        // KeyDescriptor kd = (KeyDescriptor) contribution;
-        // keys.put(kd.getContainer(), kd.getKey());
-        // }
         if (XP_OPENSOCIAL.equals(extensionPoint)) {
             os = (OpenSocialDescriptor) contribution;
         }
@@ -95,12 +89,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        // if (XP_CRYPTO.equals(extensionPoint)) {
-        // KeyDescriptor kd = (KeyDescriptor) contribution;
-        // if (keys.containsKey(kd.getContainer())) {
-        // keys.remove(kd.getContainer());
-        // }
-        // }
     }
 
     @Override
@@ -170,23 +158,6 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
                     + " because we cannot write temp file!", e);
         }
 
-        // private key
-        if (!StringUtils.isBlank(os.getExternalPrivateKey())) {
-            String name = os.getExternalPrivateKeyName();
-            if (StringUtils.isBlank(name)) {
-                log.warn("no key name provided for oauth external private key "
-                        + " so we are using default name of 'nuxeo'");
-                name = "nuxeo";
-            }
-            oauthPrivateKeyFile = createTempFileForAKey(os.getExternalPrivateKey());
-            System.setProperty("shindig.signing.key-file",
-                    oauthPrivateKeyFile.getPath());
-            System.setProperty("shindig.signing.key-name", name);
-        } else {
-            log.warn("OAuth is not likely to work properly for dashboard "
-                    + "because no external private key was found");
-        }
-
         // callback URL
         if (!StringUtils.isBlank(os.getCallbackUrl())) {
             // shindig doesn't make it's constants visible to us
@@ -222,24 +193,12 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return os.getPortalConfig();
     }
 
-    public String getOAuthPrivateKeyContent() {
-        return os.getExternalPrivateKey();
-    }
-
-    public File getOAuthPrivateKeyFile() {
-        return oauthPrivateKeyFile;
-    }
-
     public OAuthServiceDescriptor[] getOAuthServices() {
         return os.getOAuthServices();
     }
 
     public String getOAuthCallbackUrl() {
         return os.getCallbackUrl();
-    }
-
-    public String getOAuthPrivateKeyName() {
-        return os.getExternalPrivateKeyName();
     }
 
     public String[] getTrustedHosts() {

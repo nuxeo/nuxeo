@@ -38,6 +38,12 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Singleton;
 
+/**
+ * Forwards calls for OAuth Token storage to Nuxeo OAuth Services
+ *
+ * @author tiry
+ *
+ */
 @Singleton
 public class NXOAuthStore extends BasicOAuthStore {
 
@@ -98,7 +104,7 @@ public class NXOAuthStore extends BasicOAuthStore {
               } else {
                 consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.HMAC_SHA1);
             }
-            // Can not transmis the provider because urls may be not set ...
+            // Can not transmit the provider because urls may be not set ...
             //OAuthConsumer consumer = new OAuthConsumer(callBack, consumerKey, secret, sp);
             return new ConsumerInfo(consumer, serviceName, callBack);
         }

@@ -39,13 +39,6 @@ public interface OpenSocialService {
     void setInjector(Injector injector);
 
     /**
-     * Get the symetric key for the given container
-     *
-     * @param defaultContainer the container name
-     */
-    String getKeyForContainer(String defaultContainer);
-
-    /**
      * Returns the proxy settings if set
      */
     ProxySelector getProxySelector();
@@ -62,12 +55,6 @@ public interface OpenSocialService {
     byte[] getSigningStateKeyBytes();
 
     /**
-     * Returns a file handle to the default private key for communicating with
-     * external resources.
-     */
-    File getOAuthPrivateKeyFile();
-
-    /**
      * Get a list of the configured external service providers that we want to
      * communicate with.
      */
@@ -78,12 +65,6 @@ public interface OpenSocialService {
      * opensocial xp. This is normally null.
      */
     PortalConfig[] getPortalConfig();
-
-    /**
-     * Returns the name of the private key. Most service providers don't use
-     * this.
-     */
-    String getOAuthPrivateKeyName();
 
     /**
      * Where the Oauth "return callback" should go. This has to be configured to
@@ -103,8 +84,5 @@ public interface OpenSocialService {
      * guice initialization of shindig happens.
      */
     void setupOpenSocial() throws Exception;
-
-
-    String getOAuthPrivateKeyContent();
 
 }

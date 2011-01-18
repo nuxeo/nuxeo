@@ -57,27 +57,27 @@ public class NuxeoCryptoModule extends AbstractModule {
             // a contribution to an extension point.
 
             File signingKeyFile = oss.getSigningStateKeyFile();
-            File privateKeyFile = oss.getOAuthPrivateKeyFile();
+            //File privateKeyFile = oss.getOAuthPrivateKeyFile();
 
-            if (signingKeyFile==null || privateKeyFile==null) {
+            if (signingKeyFile==null) {
                 LOG.warn("OAuth keys not properly configured, existing NuxeoCryptoModule");
                 return;
             }
 
-            String privateKeyName = oss.getOAuthPrivateKeyName();
+            //String privateKeyName = oss.getOAuthPrivateKeyName();
             String callbackUrl = oss.getOAuthCallbackUrl();
             String signingKeyPath = signingKeyFile.getPath();
-            String privateKeyPath = privateKeyFile.getPath();
+            //String privateKeyPath = privateKeyFile.getPath();
 
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.state-key")).toInstance(
                     signingKeyPath);
-            bind(String.class).annotatedWith(
+            /*bind(String.class).annotatedWith(
                     Names.named("shindig.signing.key-file")).toInstance(
                     privateKeyPath);
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.key-name")).toInstance(
-                    privateKeyName);
+                    privateKeyName);*/
             bind(String.class).annotatedWith(
                     Names.named("shindig.signing.global-callback-url")).toInstance(
                     callbackUrl);
