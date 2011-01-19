@@ -60,6 +60,4 @@ public class TestConsumerService extends NXRuntimeTestCase {
         assertNotNull(consumerRegistry.getConsumer("foo2"));
 
     }
-
-
 }

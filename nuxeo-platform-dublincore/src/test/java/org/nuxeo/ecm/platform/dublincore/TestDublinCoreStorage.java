@@ -24,8 +24,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -51,7 +53,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         super.setUp();
 
         deployContrib("org.nuxeo.ecm.platform.dublincore",
-        "OSGI-INF/nxdublincore-service.xml");
+                "OSGI-INF/nxdublincore-service.xml");
         deployBundle("org.nuxeo.ecm.core.event");
         openSession();
 
@@ -136,11 +138,11 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-        "contributors");
+                "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
-        assertEquals("Administrator", childFile3.getProperty("dublincore",
-        "creator"));
+        assertEquals("Administrator",
+                childFile3.getProperty("dublincore", "creator"));
         closeSession();
     }
 
@@ -178,12 +180,12 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-        "contributors");
+                "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Jacky"));
         assertEquals(1, contributorsList.indexOf("Jacky"));
-        assertEquals("Jacky", childFile3.getProperty("dublincore",
-        "lastContributor"));
+        assertEquals("Jacky",
+                childFile3.getProperty("dublincore", "lastContributor"));
         session.save();
         closeSession();
 
@@ -196,11 +198,11 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-        "contributors");
+                "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Fredo"));
-        assertEquals("Fredo", childFile3.getProperty("dublincore",
-        "lastContributor"));
+        assertEquals("Fredo",
+                childFile3.getProperty("dublincore", "lastContributor"));
         session.save();
         closeSession();
 
@@ -213,17 +215,17 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile3 = session.saveDocument(childFile3);
 
         contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData(
-        "contributors");
+                "contributors");
         contributorsList = Arrays.asList(contributorsArray);
         assertTrue(contributorsList.contains("Administrator"));
-        assertEquals("Administrator", childFile3.getProperty("dublincore",
-        "lastContributor"));
+        assertEquals("Administrator",
+                childFile3.getProperty("dublincore", "lastContributor"));
         closeSession();
     }
 
     public void testIssuedDate() throws ClientException {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
-        "Folder");
+                "Folder");
         folder1 = session.createDocument(folder1);
         DocumentModel file1 = new DocumentModelImpl("/testfolder1",
                 "testfile1", "File");
@@ -234,7 +236,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
                 new DocumentEventContext(session, session.getPrincipal(),
                         proxyDoc).newEvent("documentPublished"));
 
-        DocumentModel version =  session.getSourceDocument(proxyDoc.getRef());
+        DocumentModel version = session.getSourceDocument(proxyDoc.getRef());
         Calendar issued = (Calendar) version.getPropertyValue("dc:issued");
         assertNotNull(issued);
     }
@@ -247,4 +249,33 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         }
     }
 
+    public void testCreatorForUnrestrictedSessionCreatedDoc() throws Exception {
+        session = openSessionAs("Jacky");
+        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session);
+        runner.runUnrestricted();
+        DocumentModel doc = runner.getFolder();
+        String creator = (String) doc.getPropertyValue("dc:creator");
+        assertEquals(creator, "Jacky");
+    }
+
+    public class CreateDocumentUnrestricted extends UnrestrictedSessionRunner {
+
+        private DocumentModel folder;
+
+        public CreateDocumentUnrestricted(CoreSession session) {
+            super(session);
+        }
+
+        @Override
+        public void run() throws ClientException {
+            folder = new DocumentModelImpl("/", "testfolder1", "Folder");
+            folder = session.createDocument(folder);
+            session.saveDocument(folder);
+        }
+
+        public DocumentModel getFolder() {
+            return folder;
+        }
+
+    }
 }

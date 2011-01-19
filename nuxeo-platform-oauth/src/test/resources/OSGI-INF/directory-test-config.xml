@@ -54,6 +54,7 @@
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <substringMatchType>subfinal</substringMatchType>
     </directory>
   </extension>
 </component>

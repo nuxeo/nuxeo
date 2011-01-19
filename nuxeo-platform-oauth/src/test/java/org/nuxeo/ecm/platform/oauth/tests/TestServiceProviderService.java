@@ -52,29 +52,81 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
         Session session = ds.open(OAuthServiceProviderRegistryImpl.DIRECTORY_NAME);
         Map<String, Object> init = new HashMap<String, Object>();
 
-        init.put("gadgetUrl", "url");
-        init.put("serviceName", "name");
-        init.put("consumerKey", "key");
+        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget1");
+        init.put("serviceName", "");
+        init.put("consumerKey", "key1");
         init.put("consumerSecret", "secret");
         init.put("publicKey", "pk");
-
         DocumentModel entry = session.createEntry(init);
         session.updateEntry(entry);
+
+        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget2");
+        init.put("serviceName", "");
+        init.put("consumerKey", "key2");
+        init.put("consumerSecret", "secret");
+        init.put("publicKey", "pk");
+        entry = session.createEntry(init);
+        session.updateEntry(entry);
+
+        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget3");
+        init.put("serviceName", "sn1");
+        init.put("consumerKey", "key3");
+        init.put("consumerSecret", "secret");
+        init.put("publicKey", "pk");
+        entry = session.createEntry(init);
+        session.updateEntry(entry);
+
+        init.put("gadgetUrl", "");
+        init.put("serviceName", "sn2");
+        init.put("consumerKey", "key4");
+        init.put("consumerSecret", "secret");
+        init.put("publicKey", "pk");
+        entry = session.createEntry(init);
+        session.updateEntry(entry);
+
         session.commit();
         session.close();
 
-        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider("url",null);
-        assertNull(p3);
+        assertEquals(5, providerRegistry.listProviders().size());
 
-        p3 = providerRegistry.getProvider(null,"name");
-        assertNull(p3);
-
-        p3 = providerRegistry.getProvider("url","name");
+        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1",null);
         assertNotNull(p3);
+        assertEquals("key1", p3.getConsumerKey());
+
+        p3 = providerRegistry.getProvider("http://localhost:8080/nuxeo/gadget1",null);
+        assertNotNull(p3);
+        assertEquals("key1", p3.getConsumerKey());
+
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1","undeclaredservice");
+        assertNotNull(p3);
+        assertEquals("key1", p3.getConsumerKey());
 
 
-        assertEquals(2, providerRegistry.listProviders().size());
 
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget2",null);
+        assertNotNull(p3);
+        assertEquals("key2", p3.getConsumerKey());
+
+
+
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3",null);
+        assertNull(p3);
+
+        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3","sn1");
+        assertNotNull(p3);
+        assertEquals("key3", p3.getConsumerKey());
+
+        p3 = providerRegistry.getProvider(null,"sn1");
+        assertNull(p3);
+
+
+        p3 = providerRegistry.getProvider(null,"sn2");
+        assertNotNull(p3);
+        assertEquals("key4", p3.getConsumerKey());
+
+        p3 = providerRegistry.getProvider("undeclared gadget","sn2");
+        assertNotNull(p3);
+        assertEquals("key4", p3.getConsumerKey());
 
     }
 
