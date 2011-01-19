@@ -75,6 +75,8 @@ import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.AuditQuery;
 import org.nuxeo.ecm.automation.core.operations.services.CreateRelation;
 import org.nuxeo.ecm.automation.core.operations.services.GetRelations;
+import org.nuxeo.ecm.automation.core.operations.services.RenderDocument;
+import org.nuxeo.ecm.automation.core.operations.services.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PopBlobList;
 import org.nuxeo.ecm.automation.core.operations.stack.PopDocument;
@@ -195,6 +197,9 @@ public class AutomationComponent extends DefaultComponent {
 
         // provider
         service.putOperation(PageProviderOperation.class);
+
+        service.putOperation(RenderDocument.class);
+        service.putOperation(RenderDocumentFeed.class);
 
         // disabled operations
         service.putOperation(FireEvent.class);
