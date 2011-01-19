@@ -448,21 +448,23 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public synchronized void initPreFilters() {
 
-        List<AuthPreFilterDescriptor> sortableDesc = new ArrayList<AuthPreFilterDescriptor>();
+        if (preFilters!=null) {
+            List<AuthPreFilterDescriptor> sortableDesc = new ArrayList<AuthPreFilterDescriptor>();
 
-        sortableDesc.addAll(preFiltersDesc.values());
+            sortableDesc.addAll(preFiltersDesc.values());
 
-        Collections.sort(sortableDesc);
+            Collections.sort(sortableDesc);
 
-        preFilters = new ArrayList<NuxeoAuthPreFilter>();
+            preFilters = new ArrayList<NuxeoAuthPreFilter>();
 
-        for (AuthPreFilterDescriptor desc : sortableDesc) {
-            try {
-                NuxeoAuthPreFilter preFilter = (NuxeoAuthPreFilter) desc.getClassName().newInstance();
-                preFilters.add(preFilter);
-            }
-            catch (Exception e) {
-                log.error("Unable to create preFilter " + desc.getName() + " and class" + desc.getClassName(), e);
+            for (AuthPreFilterDescriptor desc : sortableDesc) {
+                try {
+                    NuxeoAuthPreFilter preFilter = (NuxeoAuthPreFilter) desc.getClassName().newInstance();
+                    preFilters.add(preFilter);
+                }
+                catch (Exception e) {
+                    log.error("Unable to create preFilter " + desc.getName() + " and class" + desc.getClassName(), e);
+                }
             }
         }
     }
