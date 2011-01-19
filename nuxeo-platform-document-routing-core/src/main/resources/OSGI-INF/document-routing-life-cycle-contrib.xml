@@ -62,6 +62,7 @@
             <transition>toDraft</transition>
           </transitions>
         </state>
+        <state name="canceled"></state>
       </states>
     </lifecycle>
   </extension>
