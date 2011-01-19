@@ -23,7 +23,8 @@ import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ import java.util.zip.ZipOutputStream;
 import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,7 +72,10 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -566,13 +570,13 @@ public class ClipboardActionsBean extends InputController implements
         return exportWorklistAsZip();
     }
 
-    public String exportMainBlobFromWorkingListAsZip() throws ClientException {
-        return exportWorklistAsZip();
+    public String  exportMainBlobFromWorkingListAsZip() throws ClientException {
+       return exportWorklistAsZip();
     }
 
     public String exportWorklistAsZip(List<DocumentModel> documents)
             throws ClientException {
-        return exportWorklistAsZip(documents, true);
+       return exportWorklistAsZip(documents, true);
     }
 
     public String exportWorklistAsZip(List<DocumentModel> documents,
@@ -586,11 +590,12 @@ public class ClipboardActionsBean extends InputController implements
             summary.put(new IdRef("0").toString(), summaryRoot);
 
             FacesContext context = FacesContext.getCurrentInstance();
-            HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
 
-            BufferedOutputStream buff = new BufferedOutputStream(
-                    response.getOutputStream());
-            ZipOutputStream out = new ZipOutputStream(buff);
+            File tmpFile = File.createTempFile("NX-BigZipFile-", ".zip");
+            tmpFile.deleteOnExit();
+            Framework.trackFile(tmpFile, this);
+            FileOutputStream fout = new FileOutputStream(tmpFile);
+            ZipOutputStream out = new ZipOutputStream(fout);
             out.setMethod(ZipOutputStream.DEFLATED);
             out.setLevel(9);
             byte[] data = new byte[BUFFER];
@@ -633,19 +638,33 @@ public class ClipboardActionsBean extends InputController implements
             }
             try {
                 out.close();
+                fout.close();
             } catch (ZipException e) {
                 // empty zip file, do nothing
                 setFacesMessage("label.clipboard.emptyDocuments");
                 return null;
             }
-            response.setHeader("Content-Disposition", "attachment; filename=\"clipboard.zip\";");
-            response.setContentType("application/zip");
-            response.flushBuffer();
-            context.responseComplete();
-            return null;
+            if (tmpFile.length() > ComponentUtils.BIG_FILE_SIZE_LIMIT) {
+                HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+                request.setAttribute(
+                        NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+                String zipDownloadURL = BaseURL.getBaseURL(request);
+                zipDownloadURL += "nxbigzipfile" + "/";
+                zipDownloadURL += tmpFile.getName();
+                try {
+                    context.getExternalContext().redirect(zipDownloadURL);
+                } catch (IOException e) {
+                    log.error(
+                            "Error while redirecting for big file downloader",
+                            e);
+                }
+            } else {
+                ComponentUtils.downloadFile(context, "clipboard.zip", tmpFile);
+            }
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
+        return "";
     }
 
     /**
@@ -924,9 +943,10 @@ public class ClipboardActionsBean extends InputController implements
                     if (tryCount == 0) {
                         entry = new ZipEntry(path + fileName);
                     } else {
-                        entry = new ZipEntry(path
-                                + formatFileName(fileName, "(" + tryCount
-                                        + ")"));
+                        entry = new ZipEntry(
+                                path
+                                        + formatFileName(fileName, "("
+                                                + tryCount + ")"));
                     }
                     out.putNextEntry(entry);
                     break;

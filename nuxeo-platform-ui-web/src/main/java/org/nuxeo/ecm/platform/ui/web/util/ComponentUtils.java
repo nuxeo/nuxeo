@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 
 /**
@@ -52,6 +54,8 @@ import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class ComponentUtils {
+
+    public static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     public static final String WHITE_SPACE_CHARACTER = "&#x0020;";
 
@@ -216,11 +220,18 @@ public final class ComponentUtils {
         return null;
     }
 
+
+    public static String downloadFile(FacesContext faces,
+            String filename, File file) {
+        FileBlob fileBlob = new FileBlob(file);
+        return download(faces, fileBlob, filename);
+    }
+
     /*
      * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers See http://support.microsoft.com/kb/323308/ What
-     * is not mentioned in the above Knowledge Base is that "Pragma: no-cache"
-     * also breaks download in MSIE over SSL
+     * cache control headers See http://support.microsoft.com/kb/323308/ What is
+     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
+     * breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -301,8 +312,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter
-     * from the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter from
+     * the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
