@@ -92,7 +92,7 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
-    private static final int MAX_WAIT_LOGFILE = 5;
+    private static final int MAX_WAIT_LOGFILE = 10;
 
     protected int startMaxWait;
 
@@ -396,17 +396,16 @@ public abstract class NuxeoLauncher {
         try {
             // Wait for logfile creation
             int notfound = 0;
-            do {
-                try {
-                    in = new BufferedReader(new FileReader(logFile));
-                } catch (FileNotFoundException e) {
-                    if (notfound++ == MAX_WAIT_LOGFILE) {
-                        throw e;
-                    }
-                    System.out.print(".");
-                    Thread.sleep(1000);
-                }
-            } while (in == null);
+            while (notfound++ < MAX_WAIT_LOGFILE && !logFile.exists()) {
+                System.out.print(".");
+                Thread.sleep(1000);
+            }
+            try {
+                in = new BufferedReader(new FileReader(logFile));
+            } catch (FileNotFoundException e) {
+                log.error(e.getMessage());
+                return false;
+            }
             int count = 0;
             int countStatus = 0;
             boolean countActive = false;
@@ -721,13 +720,19 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Works only on current nuxeoProcess
+     * Work best with current nuxeoProcess. If nuxeoProcess is null, will try to
+     * get process ID (so, result in that case depends on OS capabilities).
      *
-     * @return true if current process is running
+     * @return true if current process is running or if a running PID is found
      */
-    protected boolean isRunning() {
+    public boolean isRunning() {
         if (nuxeoProcess == null) {
-            return false;
+            try {
+                return (getPid() != null);
+            } catch (IOException e) {
+                log.error(e);
+                return false;
+            }
         }
         try {
             nuxeoProcess.exitValue();
