@@ -23,5 +23,9 @@
             <pattern>http://doc.nuxeo.org/.*</pattern>
         </proxyableURL>
 
+        <proxyableURL name="community.nuxeo.com/api" >
+            <pattern>http://community.nuxeo.com/api/.*</pattern>
+        </proxyableURL>
+
     </extension>
 </component>
