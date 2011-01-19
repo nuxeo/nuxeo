@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.download;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
@@ -55,6 +57,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DownloadServlet extends HttpServlet {
 
     protected static final int BUFFER_SIZE = 1024 * 512;
+
+    protected static final int MIN_BUFFER_SIZE = 1024 * 64;
 
     private static final long serialVersionUID = 986876871L;
 
@@ -80,6 +84,20 @@ public class DownloadServlet extends HttpServlet {
         } catch (URISyntaxException e1) {
             requestURI = req.getRequestURI();
         }
+
+        if (requestURI.contains("/nxbigfile/")) {
+            handleDownloadSingleDocument(req, resp, requestURI);
+        }
+        if (requestURI.contains("/nxbigzipfile/")) {
+            // handle the download for a big zip created in the tmp directory;
+            // the name of this zip is sent in the request
+            handleDownloadTemporaryZip(req, resp, requestURI);
+        }
+    }
+
+    private void handleDownloadSingleDocument(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI) throws
+            ServletException {
         String filePath = requestURI.replace(
                 VirtualHostHelper.getContextPath(req) + "/nxbigfile/", "");
         String[] pathParts = filePath.split("/");
@@ -97,7 +115,6 @@ public class DownloadServlet extends HttpServlet {
         }
 
         CoreSession session = null;
-        InputStream in = null;
         try {
             session = getCoreSession(repoName);
 
@@ -131,6 +148,20 @@ public class DownloadServlet extends HttpServlet {
             } else {
                 return;
             }
+            downloadBlob(req, resp, blob, fileName);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        } finally {
+            if (session != null) {
+                CoreInstance.getInstance().close(session);
+            }
+        }
+    }
+
+    private void downloadBlob(HttpServletRequest req, HttpServletResponse resp,
+            Blob blob, String fileName) throws IOException, ServletException {
+        InputStream in = null;
+        try {
 
             if (fileName == null || fileName.length() == 0) {
                 if (blob.getFilename() != null
@@ -172,9 +203,6 @@ public class DownloadServlet extends HttpServlet {
                     handleClientDisconnect(ioe);
                 }
             }
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
             if (in != null) {
                 in.close();
             }
@@ -195,6 +223,23 @@ public class DownloadServlet extends HttpServlet {
             // this is a real unexpected problem, let the traditional error
             // management handle this case
             throw ioe;
+        }
+    }
+
+    private void handleDownloadTemporaryZip(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI) throws IOException,
+            ServletException {
+        String filePath = requestURI.replace(
+                VirtualHostHelper.getContextPath(req) + "/nxbigzipfile/", "");
+        String[] pathParts = filePath.split("/");
+        String tmpFileName = pathParts[0];
+        File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/"
+                + tmpFileName);
+        try {
+            FileBlob zipBlob = new FileBlob(tmpZip);
+            downloadBlob(req, resp, zipBlob, "clipboard.zip");
+        } catch (Exception e) {
+            throw new ServletException(e);
         }
     }
 }
