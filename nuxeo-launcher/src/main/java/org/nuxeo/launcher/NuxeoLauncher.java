@@ -80,6 +80,8 @@ public abstract class NuxeoLauncher {
      */
     private static final String START_MAX_WAIT_DEFAULT = "300";
 
+    private static final String START_MAX_WAIT_JBOSS_DEFAULT = "900";
+
     /**
      * Max time to wait for effective stop (in seconds)
      */
@@ -620,9 +622,18 @@ public abstract class NuxeoLauncher {
         configurationGenerator.verifyInstallation();
         configurationGenerator.run();
         startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                START_MAX_WAIT_PARAM, START_MAX_WAIT_DEFAULT));
+                START_MAX_WAIT_PARAM, getDefaultMaxWait()));
         overrideJavaTmpDir = Boolean.parseBoolean(configurationGenerator.getUserConfig().getProperty(
                 OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
+    }
+
+    /**
+     * @return Default max wait depending on server (ie JBoss takes much more
+     *         time than Tomcat)
+     */
+    private String getDefaultMaxWait() {
+        return configurationGenerator.isJBoss ? START_MAX_WAIT_JBOSS_DEFAULT
+                : START_MAX_WAIT_DEFAULT;
     }
 
     /**
