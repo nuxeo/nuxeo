@@ -220,6 +220,7 @@ public class NXRuntimeTestCase extends MockObjectTestCase implements
         deployContrib(bundleFile, "OSGI-INF/LoginComponent.xml");
         deployContrib(bundleFile, "OSGI-INF/ServiceManagement.xml");
         deployContrib(bundleFile, "OSGI-INF/EventService.xml");
+        deployContrib(bundleFile, "OSGI-INF/ResourceService.xml");
         deployContrib(bundleFile, "OSGI-INF/DefaultJBossBindings.xml");
         deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
