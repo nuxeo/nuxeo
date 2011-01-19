@@ -19,16 +19,30 @@
 
 package org.nuxeo.launcher.gui;
 
+import java.awt.Dimension;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.NuxeoLauncher;
 
 /**
+ * Launcher controller for graphical user interface
+ *
  * @author jcarsique
  * @since 5.4.1
  * @see NuxeoLauncher
  */
 public class NuxeoLauncherGUI {
+    static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
 
     private NuxeoLauncher launcher;
+
+    protected JFrame nuxeoFrame;
 
     /**
      * @param launcher Launcher being used in background
@@ -37,12 +51,37 @@ public class NuxeoLauncherGUI {
         this.launcher = launcher;
     }
 
+    private void initFrame(final NuxeoLauncherGUI controller) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    nuxeoFrame = new NuxeoFrame(controller);
+                    nuxeoFrame.pack();
+                    // Center frame
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    nuxeoFrame.setLocation(
+                            screenSize.width / 2 - (nuxeoFrame.getWidth() / 2),
+                            screenSize.height / 2
+                                    - (nuxeoFrame.getHeight() / 2));
+                    nuxeoFrame.setVisible(true);
+                } catch (HeadlessException e) {
+                    log.error(e);
+                }
+            }
+        });
+    }
+
     /**
      */
     public void execute() {
-        // TODO Auto-generated method stub
-        //
-        throw new UnsupportedOperationException();
+        initFrame(this);
+    }
+
+    /**
+     * @return True if the server is running.
+     */
+    public boolean isRunning() {
+        return launcher.isRunning();
     }
 
 }
