@@ -18,6 +18,7 @@
     <module>nuxeo-connect-client-wrapper</module>
     <module>nuxeo-admin-center</module>
     <module>nuxeo-admin-center-monitoring</module>
+    <module>nuxeo-admin-center-oauth-opensocial</module>
   </modules>
 
 </project>

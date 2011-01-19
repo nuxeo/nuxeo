@@ -165,16 +165,16 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:creator</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
           </properties>
-          <widget>listing_author</widget>
+          <widget>listing_last_contributor</widget>
         </column>
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:lastContributor</property>
+            <property name="sortPropertyName">dc:creator</property>
           </properties>
-          <widget>listing_last_contributor</widget>
+          <widget>listing_author</widget>
         </column>
         <column>
           <properties mode="any">

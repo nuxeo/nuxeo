@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -75,6 +76,7 @@ public class DocResource {
     }
 
     @GET
+    @Produces("text/html")
     public Object doGet(@QueryParam("id")
     String id) {
         if (id == null) {
@@ -99,6 +101,7 @@ public class DocResource {
 
     @GET
     @Path("wiki")
+    @Produces("text/html")
     public Object doGetWiki() {
         return getTemplate("wiki.ftl");
     }

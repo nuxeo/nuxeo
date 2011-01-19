@@ -23,7 +23,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -90,8 +89,7 @@ public class DataEntity implements Serializable {
     /*
      * See http://opensource.atlassian.com/projects/hibernate/browse/HHH-2614
      */
-    @Lob
-    @Column(name = "CONTENT", length = Integer.MAX_VALUE - 1)
+    @Column(name = "CONTENT_DATA", length = Integer.MAX_VALUE - 1)
     @Basic(fetch = FetchType.LAZY)
     public byte[] getContent() {
         return content;

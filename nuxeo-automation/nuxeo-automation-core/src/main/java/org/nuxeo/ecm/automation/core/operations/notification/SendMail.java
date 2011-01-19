@@ -67,7 +67,7 @@ public class SendMail {
     @Param(name = "to")
     protected StringList to; // a comma separated list of emails
 
-    @Param(name = "asHTML", required = false, values="false")
+    @Param(name = "HTML", required = false, values="false")
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)

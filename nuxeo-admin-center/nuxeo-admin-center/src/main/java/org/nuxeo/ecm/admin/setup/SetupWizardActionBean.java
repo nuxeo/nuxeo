@@ -43,8 +43,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationException;
-import org.nuxeo.runtime.deployment.preprocessor.ConfigurationGenerator;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 @Scope(ScopeType.SESSION)
 @Name("setupWizardAction")
