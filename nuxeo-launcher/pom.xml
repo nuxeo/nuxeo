@@ -14,6 +14,7 @@
 
   <properties>
     <nuxeo.runtime.version>5.4.1-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.shell.version>1.0-SNAPSHOT</nuxeo.shell.version>
   </properties>
 
   <dependencyManagement>
@@ -22,6 +23,11 @@
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-launcher-commons</artifactId>
         <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell-core</artifactId>
+        <version>${nuxeo.shell.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -47,6 +53,10 @@
       <groupId>org.artofsolving.jodconverter</groupId>
       <artifactId>jodconverter-core</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.shell</groupId>
+      <artifactId>nuxeo-shell-core</artifactId>
     </dependency>
   </dependencies>
 

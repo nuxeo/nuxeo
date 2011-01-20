@@ -315,7 +315,7 @@ public abstract class NuxeoLauncher {
         if ("help".equalsIgnoreCase(command)) {
             printHelp();
         } else if ("status".equalsIgnoreCase(command)) {
-            launcher.status();
+            log.info(launcher.status());
         } else if ("startbg".equalsIgnoreCase(command)) {
             commandSucceeded = launcher.doStart();
         } else if ("start".equalsIgnoreCase(command)) {
@@ -637,23 +637,21 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Log process status (running or not), depending on OS capability to manage
-     * processes.
+     * Return process status (running or not) as String, depending on OS
+     * capability to manage processes.
      */
-    public void status() {
+    public String status() {
         if (processManager instanceof PureJavaProcessManager) {
-            log.info("Can't check server status on your OS.");
-            return;
+            return "Can't check server status on your OS.";
         }
         try {
             if (getPid() == null) {
-                log.info("Server is not running.");
+                return "Server is not running.";
             } else {
-                log.info("Server is running with process ID " + getPid() + ".");
+                return "Server is running with process ID " + getPid() + ".";
             }
         } catch (IOException e) {
-            log.warn("Could not check existing process (" + e.getMessage()
-                    + ").");
+            return "Could not check existing process (" + e.getMessage() + ").";
         }
     }
 

@@ -22,13 +22,17 @@ package org.nuxeo.launcher.gui;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.NuxeoLauncher;
+import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 
 /**
  * Launcher controller for graphical user interface
@@ -40,9 +44,14 @@ import org.nuxeo.launcher.NuxeoLauncher;
 public class NuxeoLauncherGUI {
     static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
 
-    private NuxeoLauncher launcher;
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory(
+            "NuxeoLauncherGUITask", false));
 
-    protected JFrame nuxeoFrame;
+    protected NuxeoLauncher launcher;
+
+    protected NuxeoFrame nuxeoFrame;
+
+    private FileObserver logsObserver;
 
     /**
      * @param launcher Launcher being used in background
@@ -78,10 +87,65 @@ public class NuxeoLauncherGUI {
     }
 
     /**
-     * @return True if the server is running.
+     * @see NuxeoLauncher#stop()
+     */
+    public void stop() {
+        executor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                launcher.stop();
+                nuxeoFrame.updateMainButton();
+            }
+        });
+    }
+
+    /**
+     * @see NuxeoLauncher#doStart() NuxeoLauncher#doStartAndWait()
+     */
+    public void start() {
+        executor.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                launcher.doStartAndWait();
+                nuxeoFrame.updateMainButton();
+            }
+        });
+    }
+
+    /**
+     * @return true if server is running, false otherwise
+     * @see NuxeoLauncher#isRunning()
      */
     public boolean isRunning() {
         return launcher.isRunning();
+    }
+
+    /**
+     * @return Server status message
+     * @see NuxeoLauncher#status()
+     */
+    public String getStatus() {
+        return launcher.status();
+    }
+
+    /**
+     * @param textArea
+     * @param logsPanel
+     */
+    public void setLogsContainer(JTextArea textArea, JScrollPane logsPanel) {
+        if (logsObserver==null) {
+            logsObserver = new FileObserver(textArea,logsPanel);
+            logsObserver.start();
+        }
+    }
+
+    /**
+     * @param logsShown
+     */
+    public void notifyLogsObserver(boolean logsShown) {
+        logsObserver.read(logsShown);
     }
 
 }
