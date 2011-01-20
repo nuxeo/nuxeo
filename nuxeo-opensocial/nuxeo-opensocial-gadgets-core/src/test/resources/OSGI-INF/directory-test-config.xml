@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.directory.test.contrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+      point="directories">
+
+    <directory name="external gadget list" remove="true">
+    </directory>
+
+    <directory name="external gadget list">
+      <schema>externalgadget</schema>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>sa</dbUser>
+      <dbPassword></dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>externalGadgets</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+</component>

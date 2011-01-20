@@ -24,7 +24,9 @@ import java.net.URL;
 
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 
-public class ExternalGadgetDescriptor implements GadgetDeclaration {
+public class ExternalGadgetDescriptor extends BaseGadgetDescriptor implements GadgetDeclaration {
+
+    private static final long serialVersionUID = 1L;
 
     protected String category;
 
@@ -69,6 +71,16 @@ public class ExternalGadgetDescriptor implements GadgetDeclaration {
             throws IOException {
         URL result = new URL(getGadgetDefinition(), resourcePath);
         return result.openStream();
+    }
+
+    @Override
+    public String getDescription() {
+        return getDescriptionFromSpec();
+    }
+
+    @Override
+    public boolean isExternal() {
+        return true;
     }
 
 }

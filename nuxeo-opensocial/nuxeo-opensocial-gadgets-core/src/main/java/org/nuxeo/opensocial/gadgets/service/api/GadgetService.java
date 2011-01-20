@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.shindig.gadgets.spec.GadgetSpec;
+
 public interface GadgetService {
 
     /**
@@ -78,5 +80,22 @@ public interface GadgetService {
      * @param gadgetName the gadget symbolic name
      */
     String getIconUrl(String gadgetName);
+
+    /**
+     * Return the parsed Gadget Spec (may require an http fetch)
+     *
+     * @param gadgetName the gadget symbolic name
+     * @return
+     * @throws Exception
+     */
+    GadgetSpec getGadgetSpec(String gadgetName) throws Exception;
+
+    /**
+     * Return the parsed Gadget Spec (may require an http fetch)
+     * @param declaration
+     * @return
+     * @throws Exception
+     */
+    GadgetSpec getGadgetSpec(GadgetDeclaration declaration) throws Exception;
 
 }

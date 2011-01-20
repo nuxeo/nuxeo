@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.shindig.common.uri.Uri;
+import org.apache.shindig.gadgets.spec.GadgetSpec;
+
 /**
  * This is how code outside of the gadget implementation sees the gadget. The
  * implementation can be an internal or external gadget. Callers should not
@@ -44,4 +47,19 @@ public interface GadgetDeclaration {
     InputStream getResourceAsStream(String resourcePath) throws IOException;
 
     URL getGadgetDefinition() throws MalformedURLException;
+
+    boolean isExternal();
+
+    String getDescription();
+
+    GadgetSpec getGadgetSpec();
+
+    String getTite();
+
+    String getAuthor();
+
+    Uri getScreenshot();
+
+    Uri getThumbnail();
+
 }

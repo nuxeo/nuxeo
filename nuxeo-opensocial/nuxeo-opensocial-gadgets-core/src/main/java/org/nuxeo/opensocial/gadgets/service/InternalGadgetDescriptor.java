@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shindig.common.uri.Uri;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -32,7 +33,9 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.osgi.framework.Bundle;
 
 @XObject("internalGadget")
-public class InternalGadgetDescriptor implements GadgetDeclaration {
+public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements GadgetDeclaration {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String GADGETS_PORT = "gadgets.port";
 
@@ -66,6 +69,9 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
 
     @XNode("category")
     protected String category;
+
+    @XNode("description")
+    protected String description;
 
     @XNode("icon")
     protected String icon;
@@ -149,10 +155,10 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
     public StringBuilder getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(HTTP);
-        sb.append(Framework.getProperty(GADGETS_HOST));
+        sb.append(Framework.getProperty(GADGETS_HOST, "127.0.0.1"));
         sb.append(HTTP_SEPARATOR);
-        sb.append(Framework.getProperty(GADGETS_PORT));
-        sb.append(Framework.getProperty(GADGETS_PATH));
+        sb.append(Framework.getProperty(GADGETS_PORT,"8080"));
+        sb.append(Framework.getProperty(GADGETS_PATH,"/nuxeo/site/gadgets"));
         return sb;
     }
 
@@ -167,7 +173,6 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
         } else {
             return null;
         }
-
     }
 
     public URL getGadgetDefinition() throws MalformedURLException {
@@ -176,5 +181,27 @@ public class InternalGadgetDescriptor implements GadgetDeclaration {
         sb.append(URL_SEPARATOR);
         sb.append(getEntryPoint());
         return new URL(sb.toString());
+    }
+
+    @Override
+    public String getDescription() {
+        if (description!=null) {
+            return description;
+        }
+        return getDescriptionFromSpec();
+    }
+
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
+
+    @Override
+    public Uri getThumbnail() {
+        Uri thumb = super.getThumbnail();
+        if (thumb==null && getIconUrl()!=null) {
+            return Uri.parse(getIconUrl());
+        }
+        return null;
     }
 }

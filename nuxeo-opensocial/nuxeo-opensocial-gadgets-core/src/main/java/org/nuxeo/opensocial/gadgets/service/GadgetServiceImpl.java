@@ -20,6 +20,7 @@ package org.nuxeo.opensocial.gadgets.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,11 +29,33 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.shindig.common.cache.Cache;
+import org.apache.shindig.common.cache.CacheProvider;
+import org.apache.shindig.common.cache.LruCacheProvider;
+import org.apache.shindig.common.cache.NullCache;
+import org.apache.shindig.common.uri.Uri;
+import org.apache.shindig.gadgets.DefaultGadgetSpecFactory;
+import org.apache.shindig.gadgets.GadgetContext;
+import org.apache.shindig.gadgets.GadgetException;
+import org.apache.shindig.gadgets.GadgetSpecFactory;
+import org.apache.shindig.gadgets.http.BasicHttpFetcher;
+import org.apache.shindig.gadgets.http.DefaultHttpCache;
+import org.apache.shindig.gadgets.http.DefaultRequestPipeline;
+import org.apache.shindig.gadgets.http.HttpCache;
+import org.apache.shindig.gadgets.http.HttpFetcher;
+import org.apache.shindig.gadgets.http.HttpRequest;
+import org.apache.shindig.gadgets.http.HttpResponse;
+import org.apache.shindig.gadgets.http.NoOpInvalidationService;
+import org.apache.shindig.gadgets.http.RequestPipeline;
+import org.apache.shindig.gadgets.spec.GadgetSpec;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
+import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -40,21 +63,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class GadgetServiceImpl extends DefaultComponent implements
         GadgetService {
 
-    private static final String URL_SEPARATOR = "/";
-
-    private static final String GWTGADGETS_PORT = "gwtgadgets.port";
-
-    private static final String GWTGADGETS_HOST = "gwtgadgets.host";
-
-    private static final String GWTGADGETS_PATH = "gwtgadgets.path";
-
     private static final String GADGET_XP = "gadget";
 
     private static final HashMap<String, GadgetDeclaration> internalGadgets = new HashMap<String, GadgetDeclaration>();
 
-    private static final String GADGET_DIRECTORY = "external gadget list";
+    public static final String GADGET_DIRECTORY = "external gadget list";
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(GadgetServiceImpl.class);
 
     private static final String GADGET_DIR_SCHEMA = "externalgadget";
@@ -124,6 +138,51 @@ public class GadgetServiceImpl extends DefaultComponent implements
             throws IOException {
         return getGadget(gadgetName).getResourceAsStream(resourcePath);
 
+    }
+
+    public GadgetSpec getGadgetSpec(String name) throws Exception  {
+        GadgetDeclaration dec = getGadget(name);
+        return getGadgetSpec(dec);
+    }
+
+    public GadgetSpec getGadgetSpec(GadgetDeclaration declaration) throws Exception  {
+        if (declaration==null) {
+            return null;
+        }
+        GadgetSpecFactory gadgetSpecFactory=null;
+        if (Framework.isTestModeSet()) {
+            HttpCache dummyCache = new DefaultHttpCache(new LruCacheProvider(0));
+            RequestPipeline pipe = new DefaultRequestPipeline(new BasicHttpFetcher(), dummyCache, null, null, new NoOpInvalidationService());
+            CacheProvider cacheProvider = new CacheProvider() {
+                @Override
+                public <K, V> Cache<K, V> createCache(String name) {
+                    return new NullCache<K, V>();
+                }
+            };
+            gadgetSpecFactory = new DefaultGadgetSpecFactory(null, pipe, cacheProvider, 0);
+        }
+        else {
+            OpenSocialService service = Framework.getService(OpenSocialService.class);
+            gadgetSpecFactory = service.getGadgetSpecFactory();
+        }
+
+        NXGadgetContext context=null;
+        if (declaration instanceof InternalGadgetDescriptor) {
+            InternalGadgetDescriptor internal = (InternalGadgetDescriptor) declaration;
+            InputStream is = internal.getResourceAsStream(internal.entryPoint);
+            if (is==null) {
+                String resourcePath = internal.getMountPoint() + "/" + internal.getEntryPoint();
+                resourcePath  = resourcePath.replaceFirst("/", "");
+                is = GadgetServiceImpl.class.getClassLoader().getResourceAsStream(resourcePath);
+            }
+            String xmlDef = FileUtils.read(is);
+            context = new NXGadgetContext(declaration.getGadgetDefinition(), xmlDef);
+        } else {
+            context = new NXGadgetContext(declaration.getGadgetDefinition());
+        }
+
+        GadgetSpec gadgetSpec = gadgetSpecFactory.getGadgetSpec(context);
+        return gadgetSpec;
     }
 
     public List<GadgetDeclaration> getGadgetList() {
@@ -231,5 +290,54 @@ public class GadgetServiceImpl extends DefaultComponent implements
 
         }
         return result;
+    }
+}
+
+
+class NXGadgetContext extends GadgetContext {
+
+    private static final Log log = LogFactory.getLog(NXGadgetContext.class);
+
+    protected URL url;
+
+    protected String xml;
+
+    public NXGadgetContext(URL url) {
+        super();
+        this.url = url;
+    }
+
+    public NXGadgetContext(URL url, String xml) {
+        super();
+        this.url = url;
+        this.xml = xml;
+    }
+
+    @Override
+    public String getParameter(String name) {
+        if ("rawxml".equals(name)) {
+            return xml;
+        }
+        return super.getParameter(name);
+    }
+
+    @Override
+    public Uri getUrl() {
+        try {
+            return Uri.fromJavaUri(url.toURI());
+        } catch (URISyntaxException e) {
+            log.error("Unale to parse URL", e);
+           return null;
+        }
+    }
+
+    @Override
+    public boolean getIgnoreCache() {
+        return false;
+    }
+
+    @Override
+    public String getContainer() {
+        return "default";
     }
 }
