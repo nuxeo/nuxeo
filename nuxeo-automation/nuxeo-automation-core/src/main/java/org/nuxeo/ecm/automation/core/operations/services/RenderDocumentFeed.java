@@ -31,7 +31,7 @@ import org.nuxeo.runtime.services.resource.ResourceService;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = RenderDocumentFeed.ID, category = Constants.CAT_SERVICES, label = "Render Document Feed", description = "Get a list of documents as input and outputs a single blob containing the rendering of the document list. The template attribute may contain either the template content either a template URI. Template URis are strings in the form 'resource:template_name' and will be located using the runtime resource service. Return the rendered blob")
+@Operation(id = RenderDocumentFeed.ID, category = Constants.CAT_SERVICES, label = "Render Document Feed", description = "Get a list of documents as input and outputs a single blob containing the rendering of the document list. The template attribute may contain either the template content either a template URI. Template URis are strings in the form 'template:template_name' and will be located using the runtime resource service. Return the rendered blob")
 public class RenderDocumentFeed {
 
     public static final String ID = "Render.DocumentFeed";

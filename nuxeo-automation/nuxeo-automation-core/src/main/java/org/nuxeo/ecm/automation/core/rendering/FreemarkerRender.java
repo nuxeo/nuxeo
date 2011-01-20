@@ -41,9 +41,9 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
         setResourceLocator(new ResourceLocator() {
             public URL getResourceURL(String key) {
                 try {
-                    if (key.startsWith("resource:")) {
+                    if (key.startsWith(Renderer.TEMPLATE_PREFIX)) {
                         return Framework.getService(ResourceService.class).getResource(
-                                key.substring("resource:".length()));
+                                key.substring(Renderer.TEMPLATE_PREFIX.length()));
                     } else {
                         return new URL(key);
                     }
@@ -74,7 +74,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
             root.put("Document", root.get("This"));
         }
         StringWriter result = new StringWriter();
-        if (uriOrContent.startsWith("resource:")) {
+        if (uriOrContent.startsWith(Renderer.TEMPLATE_PREFIX)) {
             render(uriOrContent, root, result);
         } else {
             renderContent(uriOrContent, root, result);

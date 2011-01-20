@@ -24,5 +24,7 @@ import java.util.Map;
  */
 public interface Renderer {
 
+    public final static String TEMPLATE_PREFIX = "template:";
+
     public String render(String uriOrContent, Map<String, Object> root) throws Exception;
 }
