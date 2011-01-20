@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.platform.io.selectionReader.DocumentModelListReader;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 
@@ -81,8 +81,7 @@ public class ImportExportActionBean implements Serializable {
         ServletResponse response = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
-            response = (ServletResponse) facesContext.getExternalContext()
-                    .getResponse();
+            response = (ServletResponse) facesContext.getExternalContext().getResponse();
         }
 
         if (response != null && response instanceof HttpServletResponse) {
@@ -95,8 +94,7 @@ public class ImportExportActionBean implements Serializable {
         ServletRequest request = null;
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
-            request = (ServletRequest) facesContext.getExternalContext()
-                    .getRequest();
+            request = (ServletRequest) facesContext.getExternalContext().getRequest();
         }
 
         if (request != null && request instanceof HttpServletRequest) {
@@ -111,7 +109,7 @@ public class ImportExportActionBean implements Serializable {
         response.sendRedirect(url);
         response.flushBuffer();
         getHttpServletRequest().setAttribute(
-                URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, true);
+                NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
         FacesContext.getCurrentInstance().responseComplete();
     }
 
@@ -137,8 +135,7 @@ public class ImportExportActionBean implements Serializable {
      * @return export restlet URL
      */
     public String getDocumentExportURL() {
-        StringBuffer urlb = getRestletBaseURL(
-                navigationContext.getCurrentDocument());
+        StringBuffer urlb = getRestletBaseURL(navigationContext.getCurrentDocument());
         urlb.append("exportTree?format=XML");
         return urlb.toString();
     }
@@ -149,8 +146,7 @@ public class ImportExportActionBean implements Serializable {
      * @return export restlet URL
      */
     public String getFolderExportURL() {
-        StringBuffer urlb = getRestletBaseURL(
-                navigationContext.getCurrentDocument());
+        StringBuffer urlb = getRestletBaseURL(navigationContext.getCurrentDocument());
         urlb.append("exportTree?format=ZIP");
         return urlb.toString();
     }
@@ -183,8 +179,8 @@ public class ImportExportActionBean implements Serializable {
             pipe.run();
 
             String filename = "export.zip";
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=\"" + filename + "\";");
+            response.setHeader("Content-Disposition", "attachment; filename=\""
+                    + filename + "\";");
             response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
         } catch (ClientException e) {
