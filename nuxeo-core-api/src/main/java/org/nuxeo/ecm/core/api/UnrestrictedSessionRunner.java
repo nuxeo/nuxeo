@@ -129,13 +129,23 @@ public abstract class UnrestrictedSessionRunner {
             try {
                 CoreSession baseSession = session;
                 try {
-                    Repository repository = Framework.getService(RepositoryManager.class).getRepository(
+                    Repository repository = Framework.getService(
+                            RepositoryManager.class).getRepository(
                             repositoryName);
                     if (repository == null) {
                         throw new ClientException("Cannot get repository: "
                                 + repositoryName);
                     }
                     session = repository.open();
+                    if (loginContext == null && Framework.isTestModeSet()) {
+                        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                        if(principal.getOriginatingUser() == null) {
+                            // we are in a test that is not using authentication =>
+                            // we're not stacking the originating user in the authentication stack
+                            // so we're setting manually now
+                            principal.setOriginatingUser(originatingUsername);
+                        }
+                    }
                 } catch (ClientException e) {
                     throw e;
                 } catch (Exception e) {
@@ -177,8 +187,8 @@ public abstract class UnrestrictedSessionRunner {
      * {@link #session} available as an unrestricted session.
      * <p>
      * It can also be called directly in which case the {@link #session}
-     * available will be the one passed to {@code
-     * #UnrestrictedSessionRunner(CoreSession)}.
+     * available will be the one passed to
+     * {@code #UnrestrictedSessionRunner(CoreSession)}.
      */
     public abstract void run() throws ClientException;
 

@@ -57,6 +57,8 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     protected DocumentModel model;
 
+    protected String originatingUser;
+
     /**
      * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
      */
@@ -253,11 +255,12 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     @Override
     public String getOriginatingUser() {
-        return null;
+        return originatingUser;
     }
 
     @Override
     public void setOriginatingUser(String originatingUser) {
+        this.originatingUser = originatingUser;
     }
 
 }
