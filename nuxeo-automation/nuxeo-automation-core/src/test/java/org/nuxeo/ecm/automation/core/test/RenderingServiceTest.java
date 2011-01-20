@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.services.RenderDocument;
 import org.nuxeo.ecm.automation.core.operations.services.RenderDocumentFeed;
+import org.nuxeo.ecm.automation.core.rendering.Renderer;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -138,7 +139,7 @@ public class RenderingServiceTest {
         list.add(dst);
         ctx.setInput(list);
         OperationChain chain = new OperationChain("testRenderingFeed");
-        chain.add(RenderDocumentFeed.ID).set("template", "resource:render.mvel").set("type", "mvel");
+        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX+"render.mvel").set("type", "mvel");
         Blob blob = (Blob)service.run(ctx, chain);
         String r = blob.getString();
         r = r.replaceAll("\\s+", "");
@@ -147,7 +148,7 @@ public class RenderingServiceTest {
         ctx = new OperationContext(session);
         ctx.setInput(list);
         chain = new OperationChain("testRenderingFeed2");
-        chain.add(RenderDocumentFeed.ID).set("template", "resource:render.ftl");
+        chain.add(RenderDocumentFeed.ID).set("template", Renderer.TEMPLATE_PREFIX+"render.ftl");
         blob = (Blob)service.run(ctx, chain);
         r = blob.getString();
         r = r.replaceAll("\\s+", "");
