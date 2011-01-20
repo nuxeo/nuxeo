@@ -64,6 +64,7 @@
         <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
 
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
