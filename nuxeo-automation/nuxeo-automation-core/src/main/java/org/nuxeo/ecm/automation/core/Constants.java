@@ -98,6 +98,8 @@ public class Constants {
 
     public static final String CAT_SERVICES = "Services";
 
+    public static final String CAT_CONVERSION = "Conversion";
+
     public static final String CAT_USERS_GROUPS = "Users & Groups";
 
     public static final String CAT_UI = "User Interface";
