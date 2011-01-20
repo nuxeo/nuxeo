@@ -198,25 +198,23 @@ public class NuxeoFrame extends JFrame {
         constraints.gridx = 0;
         constraints.weightx = 1.0;
         constraints.weighty = 0.1;
-        // constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.PAGE_START;
-        topPanel.add(buildHeader(), constraints);
+        JComponent header = buildHeader();
+        header.setLayout(new GridBagLayout());
+        topPanel.add(header, constraints);
         add(topPanel,constraints);
 
         // Main button (start/stop)
-        // constraints.gridy = 1;
         constraints.fill = GridBagConstraints.NONE;
         constraints.weightx = 0;
         constraints.anchor = GridBagConstraints.PAGE_START;
-        topPanel.add(buildMainButton(), constraints);
+        header.add(buildMainButton(), constraints);
 
         // Logs button (show/hide)
-        // constraints.gridy = 2;
         constraints.anchor = GridBagConstraints.FIRST_LINE_START;
         topPanel.add(buildLogsButton(), constraints);
 
         // Logs panel
-        // constraints.gridy = 3;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.PAGE_START;
         constraints.ipady = 100;
@@ -224,19 +222,11 @@ public class NuxeoFrame extends JFrame {
         constraints.weighty = 1.0;
         add(buildLogsPanel(), constraints);
 
-        // Vertical transparent glue
-//        constraints.weighty = 0.2;
-//        constraints.ipady = 0;
-//        add(new JPanel(),constraints);
-
-
         // Footer
-        // constraints.gridy = 4;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.PAGE_END;
         constraints.ipady = 0;
         constraints.weightx = 0;
-//        constraints.weighty = 0;
         constraints.weighty = 0.1;
         constraints.insets = new Insets(10,0,0,0);
         add(buildFooter(), constraints);
@@ -244,70 +234,47 @@ public class NuxeoFrame extends JFrame {
     }
 
     private void debug() {
-        // this.getContentPane().setMaximumSize(getMaximumSize());
         for (Component comp : this.getContentPane().getComponents()) {
             if (comp instanceof JComponent) {
                 ((JComponent) comp).setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.red),
                         ((JComponent) comp).getBorder()));
-                // comp.setMaximumSize(getMaximumSize());
                 // log.info(comp.getClass() + " size: "
                 // + ((JComponent) comp).getMaximumSize());
             }
         }
     }
 
-    private Component buildLogsButton() {
-        // JPanel buttonPanel = new JPanel();
-        // buttonPanel.setLayout(new FlowLayout());
+    private JComponent buildLogsButton() {
         logsButton = createButton(new LogsButtonAction(), null);
         updateLogsButton();
-        // buttonPanel.add(logsButton);
-        // return buttonPanel;
         return logsButton;
     }
 
-    private Component buildFooter() {
-        // JPanel footer = new JPanel();
-        // footer.setLayout(new FlowLayout());
+    private JComponent buildFooter() {
         JLabel label = new JLabel(getMessage("footer.label"));
-        // footer.add(label);
-        // return footer;
         return label;
     }
 
-    private Component buildLogsPanel() {
-        // JPanel logsPanel = new JPanel();
-        // logsPanel.setLayout(new FlowLayout());
+    private JComponent buildLogsPanel() {
         textArea = new JTextArea();
-        // textArea.setRows(150);
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
         textArea.setVisible(false);
-        // logsPanel.add(textArea);
-        // return logsPanel;
         return textArea;
     }
 
-    private Component buildMainButton() {
+    private JComponent buildMainButton() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(getMainButton());
         return buttonPanel;
     }
 
-    private Component buildHeader() {
-//        JPanel headerPanel = new JPanel();
-//        headerPanel.setLayout(new FlowLayout());
-
-        // JLabel ctlBg = new JLabel(
-        // getImageIcon("img/nuxeo_control_panel_bg.png"));
-        // headerPanel.add(ctlBg);
+    private JComponent buildHeader() {
         ImagePanel headerLogo = new ImagePanel(
                 getImageIcon("img/nuxeo_control_panel_logo.png"),
                 getImageIcon("img/nuxeo_control_panel_bg.png"));
-//        headerPanel.add(ctlLogo);
-//        return headerPanel;
         return headerLogo;
     }
 
@@ -317,13 +284,8 @@ public class NuxeoFrame extends JFrame {
         setBackground(new Color(50, 50, 50));
         // setSize(700, 500);
         // setLocationRelativeTo(null);
-
-        // JPanel mainPanel = new JPanel();
-        // setLayout(new GridLayout(5, 1));
-        // mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
         setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
-        // setContentPane(mainPanel);
     }
 
     protected ImageIcon getImageIcon(String resourcePath) {
