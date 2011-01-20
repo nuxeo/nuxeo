@@ -32,7 +32,7 @@ import org.nuxeo.runtime.services.resource.ResourceService;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = RenderDocument.ID, category = Constants.CAT_SERVICES, label = "Render Document", description = "Get a document or a list of document in input and outputs one or more blobs that contain a rendered view for each input document given a rendering template. The template attribute may contain either the template content either a template URI. Template URis are strings in the form 'template:template_name' and will be located using the runtime resource service. Return the rendered file(s) as blob(s)")
+@Operation(id = RenderDocument.ID, category = Constants.CAT_CONVERSION, label = "Render Document", description = "Get a document or a list of document in input and outputs one or more blobs that contain a rendered view for each input document given a rendering template. The template attribute may contain either the template content either a template URI. Template URis are strings in the form 'template:template_name' and will be located using the runtime resource service. Return the rendered file(s) as blob(s)")
 public class RenderDocument {
 
     public static final String ID = "Render.Document";
