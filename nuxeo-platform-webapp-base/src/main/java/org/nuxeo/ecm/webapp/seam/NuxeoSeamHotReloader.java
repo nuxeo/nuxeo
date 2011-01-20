@@ -34,14 +34,13 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 
 /**
  * Simple Seam bean to control the Reload Action
  *
  * @author tiry
- *
  */
 @Name("seamReload")
 @Scope(EVENT)
@@ -53,13 +52,9 @@ public class NuxeoSeamHotReloader implements Serializable {
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    private static final Log log = LogFactory
-            .getLog(NuxeoSeamHotReloader.class);
+    private static final Log log = LogFactory.getLog(NuxeoSeamHotReloader.class);
 
-
-
-
-    @Factory(value="seamHotReloadIsEnabled", scope=ScopeType.APPLICATION)
+    @Factory(value = "seamHotReloadIsEnabled", scope = ScopeType.APPLICATION)
     public boolean isHotReloadEnabled() {
         return SeamHotReloadHelper.isHotReloadEnabled();
     }
@@ -71,10 +66,8 @@ public class NuxeoSeamHotReloader implements Serializable {
             return null;
         }
 
-        HttpServletResponse response = (HttpServletResponse) facesContext
-                .getExternalContext().getResponse();
-        HttpServletRequest request = (HttpServletRequest) facesContext
-                .getExternalContext().getRequest();
+        HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
         String bigDownloadURL = BaseURL.getBaseURL(request);
         bigDownloadURL += "restAPI/seamReload";
@@ -83,7 +76,8 @@ public class NuxeoSeamHotReloader implements Serializable {
             response.resetBuffer();
             response.sendRedirect(bigDownloadURL);
             response.flushBuffer();
-            request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY, true);
+            request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                    true);
             facesContext.responseComplete();
         } catch (Exception e) {
             log.error("Error during redirect", e);

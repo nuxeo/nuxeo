@@ -39,7 +39,7 @@ import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
 /**
@@ -102,7 +102,8 @@ public class NuxeoErrorInterceptor implements Serializable {
             }
 
             ClientException cException = new ClientException(t);
-            // redirect is not allowed during render response phase => throw the
+            // redirect is not allowed during render response phase => throw
+            // the
             // error without redirecting
             if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
                 if (facesContext != null) {
@@ -137,12 +138,14 @@ public class NuxeoErrorInterceptor implements Serializable {
 
             String redirectToViewId = null;
             try {
-                log.error("Exception caught, redirecting to the error page...", cException);
+                log.error("Exception caught, redirecting to the error page...",
+                        cException);
                 final Context sessionContext = Contexts.getSessionContext();
                 // set applicationException in session hoping
                 // ErrorPageActionListener will inject it
                 sessionContext.set("applicationException", cException);
-                if (ExceptionHelper.isSecurityError(t) || cException.getCause() instanceof DocumentSecurityException) {
+                if (ExceptionHelper.isSecurityError(t)
+                        || cException.getCause() instanceof DocumentSecurityException) {
                     redirectToViewId = LOGIN_VIEW_ID;
                 } else {
                     redirectToViewId = GENERIC_ERROR_VIEW_ID;
@@ -178,8 +181,7 @@ public class NuxeoErrorInterceptor implements Serializable {
 
         HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
         // avoid further redirection
-        request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
-                true);
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
 
         Redirect.instance().setViewId(viewId);
         Redirect.instance().execute();
