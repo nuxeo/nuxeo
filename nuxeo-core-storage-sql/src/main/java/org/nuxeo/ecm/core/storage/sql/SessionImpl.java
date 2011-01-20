@@ -205,7 +205,9 @@ public class SessionImpl implements Session {
 
     protected void flush() throws StorageException {
         checkThread();
-        context.updateFulltext(this);
+        if (!repository.getRepositoryDescriptor().fulltextDisabled) {
+          context.updateFulltext(this);
+        }
         context.save();
     }
 

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,6 +37,7 @@ import java.util.Set;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -86,6 +88,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
+    public void testDescriptor() throws Exception {
+        URL xmlFile = getClass().getResource("/repository.xml");
+        XMap xmap = new XMap();
+        xmap.register(RepositoryDescriptor.class);
+        RepositoryDescriptor desc = (RepositoryDescriptor)xmap.load(xmlFile);
+        assertTrue(desc.fulltextDisabled);
+    }
+    
     public void testBasics() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel child = new DocumentModelImpl("/", "domain", "MyDocType");

@@ -17,32 +17,25 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.*;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.resource.ResourceException;
+import javax.resource.cci.ConnectionFactory;
+import javax.resource.spi.*;
+import javax.security.auth.Subject;
+import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionFactory;
-import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ConnectionRequestInfo;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ResourceAdapter;
-import javax.resource.spi.ResourceAdapterAssociation;
-import javax.security.auth.Subject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
-import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
-import org.nuxeo.ecm.core.storage.sql.SessionImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * The managed connection factory receives requests from the application server
@@ -60,8 +53,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private static final long serialVersionUID = 1L;
 
     private final RepositoryDescriptor repositoryDescriptor;
-
-    private String name;
 
     private transient ResourceAdapter resourceAdapter;
 
@@ -82,11 +73,11 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      */
 
     public void setName(String name) {
-        this.name = name;
+        this.repositoryDescriptor.name = name;
     }
 
     public String getName() {
-        return name;
+        return repositoryDescriptor.name;
     }
 
     public void setXaDataSource(String xaDataSourceName) {
@@ -200,7 +191,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     @Override
     public int hashCode() {
-        return name == null ? 0 : name.hashCode();
+        return repositoryDescriptor.name == null ? 0 : repositoryDescriptor.name.hashCode();
     }
 
     @Override
@@ -215,7 +206,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     }
 
     private boolean equals(ManagedConnectionFactoryImpl other) {
-        return name == null ? false : name.equals(other.name);
+        return repositoryDescriptor.name == null ? false : repositoryDescriptor.name.equals(other.repositoryDescriptor.name);
     }
 
     /*
@@ -243,6 +234,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private void initializeRepository() throws StorageException {
         synchronized (this) {
             if (repository == null) {
+                repositoryDescriptor.mergeFrom(getRepositoryDescriptor(repositoryDescriptor.name));
+
                 // XXX TODO
                 SchemaManager schemaManager;
                 try {
@@ -256,6 +249,23 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         }
     }
 
+   /**
+     * Gets the repository descriptor provided by the repository extension
+     * point. It's where clustering, indexing, etc. are configured.
+     */
+    protected static RepositoryDescriptor getRepositoryDescriptor(String name)
+            throws StorageException {
+        org.nuxeo.ecm.core.repository.RepositoryDescriptor d = NXCore.getRepositoryService().getRepositoryManager().getDescriptor(
+                name);
+        try {
+            XMap xmap = new XMap();
+            xmap.register(RepositoryDescriptor.class);
+            return (RepositoryDescriptor) xmap.load(new FileInputStream(
+                    d.getConfigurationFile()));
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+    }
     /**
      * Called by the {@link ManagedConnectionImpl} constructor to get a new
      * physical connection.

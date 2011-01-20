@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+ <repository name="default">
+        <indexing>
+          <!-- for H2 (Lucene Analyzer): -->
+          <fulltext disabled="true" analyzer="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
+          <!-- for PostgreSQL (Text Search Configuration):
+          <fulltext analyzer="english"/>
+          -->
+        </indexing>
+ </repository>

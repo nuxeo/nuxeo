@@ -39,6 +39,9 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("indexing/fulltext@disabled")
+    public boolean fulltextDisabled;
+
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
 
@@ -113,5 +116,12 @@ public class RepositoryDescriptor {
      * Having it <em>not</em> separate improves performance.
      */
     public boolean separateMainTable = false;
+
+    public void mergeFrom(RepositoryDescriptor other) {
+        fulltextDisabled = other.fulltextDisabled;
+        fulltextAnalyzer = other.fulltextAnalyzer;
+        fulltextCatalog = other.fulltextCatalog;
+    }
+
 
 }

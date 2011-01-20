@@ -4,9 +4,8 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.5.0-RC1</version>
+    <version>1.5.0-RC1-SP2</version>
   </parent>
-  <version>1.5.0-RC1-SP1</version>
 
   <artifactId>nuxeo-core-storage-sql</artifactId>
   <name>Nuxeo Core SQL Storage</name>

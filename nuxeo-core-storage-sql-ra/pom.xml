@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.5.0-RC1</version>
+    <version>1.5.0-RC1-SP2</version>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql-ra${artifactSuffix}</artifactId>
@@ -52,6 +52,10 @@
       <artifactId>nuxeo-core-storage-sql</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core</artifactId>
     </dependency>
 
     <!-- TODO: Use the dep from the central repo -->
