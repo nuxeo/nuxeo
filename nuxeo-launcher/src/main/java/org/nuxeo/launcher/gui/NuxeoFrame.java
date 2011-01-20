@@ -125,7 +125,7 @@ public class NuxeoFrame extends JFrame {
                 filler.setVisible(false);
                 logsShown = true;
             }
-            controller.notifyLogsObserver(logsShown);
+            //controller.notifyLogsObserver(logsShown);
             updateLogsButton();
             logsButton.setEnabled(true);
         }
