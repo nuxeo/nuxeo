@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,11 +13,14 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Laurent Doguin
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,15 +43,23 @@ public class VersioningComponent extends DefaultComponent implements
 
     public static final String XP = "versioningService";
 
+    public static final String VERSIONING_RULE_XP = "versioningRules";
+
     public VersioningService service;
 
     protected LinkedList<Class<? extends VersioningService>> contribs;
+
+    protected Map<String, VersioningRuleDescriptor> versioningRules;
+
+    protected LinkedList<DefaultVersioningRuleDescriptor> defaultVersioningRuleList;
 
     protected boolean recompute;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         contribs = new LinkedList<Class<? extends VersioningService>>();
+        versioningRules = new HashMap<String, VersioningRuleDescriptor>();
+        defaultVersioningRuleList = new LinkedList<DefaultVersioningRuleDescriptor>();
         recompute = true;
         service = null;
     }
@@ -56,6 +67,8 @@ public class VersioningComponent extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         contribs.clear();
+        versioningRules.clear();
+        defaultVersioningRuleList.clear();
         service = null;
     }
 
@@ -63,53 +76,78 @@ public class VersioningComponent extends DefaultComponent implements
     @SuppressWarnings("unchecked")
     public void registerContribution(Object contrib, String xp,
             ComponentInstance contributor) throws Exception {
-        if (!XP.equals(xp)) {
+        if (XP.equals(xp)) {
+            if (!(contrib instanceof VersioningServiceDescriptor)) {
+                log.error("Invalid contribution: "
+                        + contrib.getClass().getName());
+                return;
+            }
+            VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
+            Class<?> klass;
+            try {
+                klass = Class.forName(desc.className);
+            } catch (ClassNotFoundException e) {
+                log.error("Invalid contribution class: " + desc.className);
+                return;
+            }
+            if (!(VersioningService.class.isAssignableFrom(klass))) {
+                log.error("Invalid contribution class: " + desc.className);
+                return;
+            }
+            contribs.add((Class<VersioningService>) klass);
+            log.info("Registered versioning service: " + desc.className);
+            recompute = true;
+        } else if (VERSIONING_RULE_XP.equals(xp)) {
+            if (contrib instanceof VersioningRuleDescriptor) {
+                VersioningRuleDescriptor typeSaveOptDescriptor = (VersioningRuleDescriptor) contrib;
+                if (typeSaveOptDescriptor.isEnabled()) {
+                    versioningRules.put(typeSaveOptDescriptor.getTypeName(),
+                            typeSaveOptDescriptor);
+                } else {
+                    versioningRules.remove(typeSaveOptDescriptor.getTypeName());
+                }
+                recompute = true;
+            } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
+                defaultVersioningRuleList.add((DefaultVersioningRuleDescriptor) contrib);
+                recompute = true;
+            }
+        } else {
             log.error("Unknown extension point " + xp);
-            return;
         }
-        if (!(contrib instanceof VersioningServiceDescriptor)) {
-            log.error("Invalid contribution: " + contrib.getClass().getName());
-            return;
-        }
-        VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
-        Class<?> klass;
-        try {
-            klass = Class.forName(desc.className);
-        } catch (ClassNotFoundException e) {
-            log.error("Invalid contribution class: " + desc.className);
-            return;
-        }
-        if (!(VersioningService.class.isAssignableFrom(klass))) {
-            log.error("Invalid contribution class: " + desc.className);
-            return;
-        }
-        contribs.add((Class<VersioningService>) klass);
-        log.info("Registered versioning service: " + desc.className);
-        recompute = true;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void unregisterContribution(Object contrib, String xp,
             ComponentInstance contributor) throws Exception {
-        if (!XP.equals(xp)) {
-            return;
+        if (XP.equals(xp)) {
+            if (!(contrib instanceof VersioningServiceDescriptor)) {
+                return;
+            }
+            VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
+            Class<?> klass;
+            try {
+                klass = Class.forName(desc.className);
+            } catch (ClassNotFoundException e) {
+                return;
+            }
+            if (!(klass.isAssignableFrom(VersioningService.class))) {
+                return;
+            }
+            contribs.remove((Class<VersioningService>) klass);
+            log.info("Unregistered versioning service: " + desc.className);
+        } else if (VERSIONING_RULE_XP.equals(xp)) {
+            if (contrib instanceof VersioningRuleDescriptor) {
+                VersioningRuleDescriptor typeSaveOptDescriptor = (VersioningRuleDescriptor) contrib;
+                String typeName = typeSaveOptDescriptor.getTypeName();
+                if (versioningRules.containsKey(typeName)) {
+                    versioningRules.remove(typeName);
+                }
+            } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
+                defaultVersioningRuleList.remove((DefaultVersioningRuleDescriptor) contrib);
+            }
+            log.info("Unregistered versioning rule: " + contributor.getName());
         }
-        if (!(contrib instanceof VersioningServiceDescriptor)) {
-            return;
-        }
-        VersioningServiceDescriptor desc = (VersioningServiceDescriptor) contrib;
-        Class<?> klass;
-        try {
-            klass = Class.forName(desc.className);
-        } catch (ClassNotFoundException e) {
-            return;
-        }
-        if (!(klass.isAssignableFrom(VersioningService.class))) {
-            return;
-        }
-        contribs.remove((Class<VersioningService>) klass);
-        log.info("Unregistered versioning service: " + desc.className);
         recompute = true;
     }
 
@@ -127,6 +165,14 @@ public class VersioningComponent extends DefaultComponent implements
                 throw new RuntimeException(e);
             }
         } // else keep old service instance
+
+        if (service != null && service instanceof ExtendableVersioningService) {
+            ExtendableVersioningService extendableService = (ExtendableVersioningService) service;
+            extendableService.setVersioningRules(versioningRules);
+            if (!defaultVersioningRuleList.isEmpty()) {
+                extendableService.setDefaultVersioningRule(defaultVersioningRuleList.getLast());
+            }
+        }
     }
 
     public VersioningService getService() {
@@ -176,5 +222,4 @@ public class VersioningComponent extends DefaultComponent implements
     public void doCheckOut(Document doc) throws DocumentException {
         getService().doCheckOut(doc);
     }
-
 }
