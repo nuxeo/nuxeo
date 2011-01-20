@@ -24,7 +24,7 @@
 #
 # List each feature you want to support here
 
-#features/analytics/feature.xml
+features/analytics/feature.xml
 features/auth-refresh/feature.xml
 #Replace with our own (Nuxeo) that doesn't have the valija.co.js problem
 #features/caja/feature.xml

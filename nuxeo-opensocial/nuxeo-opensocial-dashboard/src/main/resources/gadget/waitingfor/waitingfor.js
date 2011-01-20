@@ -67,7 +67,7 @@ function tableEnd() {
 
 function displayTaskList(data) {
   var htmlContent = tableStart(data);
-  
+
   for (var directive in data.data) {
       for (i = 0; i <  data.data[directive].length; i++) {
           htmlContent += mkRow(data.data[directive][i], i);
@@ -211,12 +211,13 @@ function getWebappName() {
 }
 
 function getRestletUrl() {
-  var url = getNuxeoServerSideUrl();
+  var url ; //= getNuxeoServerSideUrl();
   if (testMode) {
-    url = 'http://localhost:8080/';
+    url = 'http://localhost:8080/nuxeo/';
+  } else {
+    url = requestBaseUrl ;
   }
-    url += getWebappName();
-  url += "/restAPI/workflowTasks/default?mytasks=false&format=JSON";
+  url += "restAPI/workflowTasks/default?mytasks=false&format=JSON";
   var ts = new Date().getTime() + "" + Math.random() * 11
   url += "&ts=" + ts;
 

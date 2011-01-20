@@ -34,7 +34,7 @@ function requestTasks() {
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
     var name = "Name";
-    var title = "Title";    
+    var title = "Title";
     var directive = "Directive";
     var comment = "Comment";
     var duedate = "Due Date";
@@ -215,12 +215,13 @@ function getWebappName() {
 }
 
 function getRestletUrl() {
-    var url = getNuxeoServerSideUrl();
+    var url ; //= getNuxeoServerSideUrl();
     if (testMode) {
-        url = 'http://localhost:8080/';
+        url = 'http://localhost:8080/nuxeo/';
+    } else {
+        url = requestBaseUrl;
     }
-    url += getWebappName();
-    url += "/restAPI/workflowTasks/default?mytasks=true&format=JSON";
+    url += "restAPI/workflowTasks/default?mytasks=true&format=JSON";
     var ts = new Date().getTime() + "" + Math.random() * 11
     url += "&ts=" + ts;
 
@@ -244,7 +245,7 @@ function getRestletUrl() {
     url += "label.title,";
     url += "label.review.user.comment,";
     url += "label.workflow.task.startdate";
-    
+
     return url;
 }
 

@@ -6,17 +6,19 @@
     height="420">
     <Locale lang="fr" country="fr" />
     <Require feature="dynamic-height" />
+    <#if !insideNuxeo>
     <Require feature="oauthpopup" />
      <OAuth>
       <Service name="nuxeo">
-        <Access url="http://127.0.0.1:8080/nuxeo/oauth/access-token"
+        <Access url="${serverSideBaseUrl}oauth/access-token"
           method="POST" />
-        <Request url="http://127.0.0.1:8080/nuxeo/oauth/request-token"
+        <Request url="${serverSideBaseUrl}oauth/request-token"
           method="POST" />
         <Authorization
-          url="http://127.0.0.1:8080/nuxeo/oauth/authorize" />
+          url="${serverSideBaseUrl}oauth/authorize" />
       </Service>
     </OAuth>
+    </#if>
   </ModulePrefs>
   <Content type="html">
 
@@ -166,21 +168,24 @@
 
         var ts = new Date().getTime() + "" + Math.random()*11
         //var url="http://127.0.0.1:8080/nuxeo/site/admin/repository/default-domain/workspaces/@views/content_page";
-        var url ="http://127.0.0.1:8080/nuxeo/restAPI/dashboard/USER_WORKSPACES"
+        var url ="${serverSideBaseUrl}restAPI/dashboard/USER_WORKSPACES"
         url += "?format=JSON&lang=en&page="+ currentPage;
 
         var params = {};
-        //params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+        <#if insideNuxeo>
         params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
-        //params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
+        <#else>
+        params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
         params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";
         params[gadgets.io.RequestParameters.OAUTH_USE_TOKEN]="always";
+        </#if>
+        //params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.GET;
 
         gadgets.io.makeRequest(url, requestCompleted, params);
     }
 
     function getImageBaseUrl() {
-      return "http://127.0.0.1:8080/nuxeo/";
+      return "${baseUrl}";
     }
 
   // insert the whole table, as stupid IE can't do a tbody.innerHtml
@@ -241,7 +246,7 @@
   }
 
   function getBaseUrl() {
-     return "http://127.0.0.1:8080/nuxeo/";
+     return "${baseUrl}";
   }
 
   function getDateForDisplay(datestr) {
@@ -326,14 +331,14 @@
       <div id="targetDiv"> Contacting Nuxeo Server ...</div>
       <div id="nxDocumentList">
         <div class="pageNavigationControls">
-        <input type="image" src="http://127.0.0.1:8080/nuxeo/icons/action_page_rewind.gif" onclick="firstPage()"/>
-        <input type="image" src="http://127.0.0.1:8080/nuxeo/icons/action_page_previous.gif" onclick="prevPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_previous.gif" onclick="prevPage()"/>
         <span class="currentPageStatus" id="nxDocumentListPage"></span>
-        <input type="image" src="http://127.0.0.1:8080/nuxeo/icons/action_page_next.gif" onclick="nextPage()"/>
-        <input type="image" src="http://127.0.0.1:8080/nuxeo/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"onclick="lastPage()"/>
         </div>
         <div id="nxDocumentListData">
-          <img src="http://127.0.0.1:8080/nuxeo/img/standart_waiter.gif">
+          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
         </div>
     </div>
 

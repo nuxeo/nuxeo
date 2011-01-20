@@ -53,6 +53,11 @@
       <artifactId>nuxeo-opensocial-container</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-webengine-apt</artifactId>
       <scope>compile</scope>

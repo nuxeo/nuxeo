@@ -22,7 +22,9 @@ import java.io.InputStream;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
+import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 
 public class GadgetResource extends InputStreamResource {
@@ -37,7 +39,19 @@ public class GadgetResource extends InputStreamResource {
     @Path("{filename:.*}")
     public Object getGadgetFile(@PathParam("filename") String fileName)
             throws Exception {
-        InputStream in = gadget.getResourceAsStream(fileName);
+
+        if (gadget.isExternal()) {
+            return Response.seeOther(gadget.getGadgetDefinition().toURI()).build();
+        }
+
+        InternalGadgetDescriptor iGadget = (InternalGadgetDescriptor) gadget;
+        InputStream in=null;
+        if (iGadget.getEntryPoint().equals(fileName)) {
+            in = GadgetSpecView.render(iGadget, null);
+        } else {
+            in = gadget.getResourceAsStream(fileName);
+        }
+
         return getObject(in, fileName);
     }
 }

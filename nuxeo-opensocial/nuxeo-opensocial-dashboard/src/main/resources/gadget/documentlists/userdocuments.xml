@@ -13,19 +13,20 @@
     <script>
        var QM_Name="RELEVANT_DOCUMENTS";
        var testMode=false;
+       var requestBaseUrl='${serverSideBaseUrl}';
     </script>
     <script type="text/javascript" language="javascript" src="documentlists.js"></script>
     <link rel="stylesheet" type="text/css" href="documentlists.css"/>
     <div id="nxDocumentList">
         <div class="pageNavigationControls">
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_rewind.gif" onclick="firstPage()"/>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_previous.gif" onclick="prevPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_rewind.gif" onclick="firstPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_previous.gif" onclick="prevPage()"/>
         <span class="currentPageStatus" id="nxDocumentListPage"></span>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_next.gif" onclick="nextPage()"/>
-        <input type="image" src="${org.nuxeo.ecm.contextPath}/icons/action_page_fastforward.gif"onclick="lastPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_next.gif" onclick="nextPage()"/>
+        <input type="image" src="${clientSideBaseUrl}icons/action_page_fastforward.gif"onclick="lastPage()"/>
         </div>
         <div id="nxDocumentListData">
-          <img src="${org.nuxeo.ecm.contextPath}/img/standart_waiter.gif">
+          <img src="${clientSideBaseUrl}img/standart_waiter.gif">
         </div>
     </div>
      ]]>

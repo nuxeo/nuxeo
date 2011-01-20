@@ -29,7 +29,7 @@ function getRestletUrl() {
     if (testMode) {
         url= "http://127.0.0.1:8080/nuxeo/restAPI/dashboard/";
     } else {
-        url= getNuxeoServerSideUrl() + getWebappName() + "/restAPI/dashboard/";
+        url= requestBaseUrl + "restAPI/dashboard/";
     }
     url+=QM_Name + "?format=JSON&page="+ currentPage;
     if (getCurrentDomain()!=null && getCurrentDomain()!="") {
