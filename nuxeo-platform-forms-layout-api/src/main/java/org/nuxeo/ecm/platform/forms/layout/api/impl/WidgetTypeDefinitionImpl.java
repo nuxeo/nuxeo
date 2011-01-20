@@ -17,7 +17,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
  * Model for a widget type definition on client side.
  *
  * @author Anahide Tchertchian
- * @since 1.6
+ * @since 5.4
  */
 public class WidgetTypeDefinitionImpl implements WidgetTypeDefinition {
 
