@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
@@ -38,13 +42,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.base.InputController;
-
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
-import static org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY;
 
 /**
  * Logs the user in/out.
@@ -64,8 +63,8 @@ public class LogoutAction extends InputController implements Serializable {
     }
 
     /**
-     * Logs the user out. Invalidates the HTTP session so that it cannot be used
-     * anymore.
+     * Logs the user out. Invalidates the HTTP session so that it cannot be
+     * used anymore.
      *
      * @return the next page that is going to be displayed
      */
@@ -92,8 +91,7 @@ public class LogoutAction extends InputController implements Serializable {
         }
         if (response != null && request != null
                 && !context.getResponseComplete()) {
-            String baseURL = BaseURL.getBaseURL(request)
-                    + NXAuthConstants.LOGOUT_PAGE;
+            String baseURL = BaseURL.getBaseURL(request) + LOGOUT_PAGE;
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, parameters);
             response.sendRedirect(baseURL);
