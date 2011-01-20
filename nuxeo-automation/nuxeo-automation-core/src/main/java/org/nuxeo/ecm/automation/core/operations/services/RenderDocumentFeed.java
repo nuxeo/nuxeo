@@ -42,7 +42,7 @@ public class RenderDocumentFeed {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "template", widget = Constants.W_MULTILINE_TEXT)
+    @Param(name = "template", widget = Constants.W_TEMPLATE_RESOURCE)
     protected String template;
 
     @Param(name = "type", widget = Constants.W_OPTION, required = false, values = {"ftl", "mvel"})
