@@ -179,7 +179,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     public void testComplexType() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        DocumentModel doc = new DocumentModelImpl("/", "complex-doc",
+                "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
@@ -203,12 +204,20 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(attachedFile.get("vignettes"),
                 doc.getProperty("cmpf:attachedFile/vignettes").getValue());
 
+        // test fulltext indexing of complex property at level one
+        DocumentModelList results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'some name'", 1);
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("complex-doc", results.get(0).getTitle());
+
         // test setting and reading a list of maps without a complex type in the
         // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
         vignette.put("content", null);
+        vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
@@ -229,6 +238,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                         "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
+
+        // test fulltext indexing of complex property at level 3
+        results = session.query("SELECT * FROM Document"
+                + " WHERE ecm:fulltext = 'vignettelabel'", 1);
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("complex-doc", results.get(0).getTitle());
 
         // test setting and reading a list of maps with a blob inside the map
         byte[] binaryContent = "01AB".getBytes();

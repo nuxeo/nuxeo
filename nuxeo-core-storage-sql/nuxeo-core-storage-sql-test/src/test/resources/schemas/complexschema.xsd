@@ -26,6 +26,7 @@
       <xs:element name="width" type="xs:integer" />
       <xs:element name="height" type="xs:integer" />
       <xs:element name="content" type="nxs:content"/>
+      <xs:element name="label" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 
