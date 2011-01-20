@@ -48,10 +48,18 @@ public class RenderDocumentFeed {
     @Param(name = "type", widget = Constants.W_OPTION, required = false, values = {"ftl", "mvel"})
     protected String type = "ftl";
 
+    @Param(name = "filename", required = false, values="output.ftl")
+    protected String name = "output.ftl";
+
+    @Param(name = "mimetype", required = false, values="text/xml")
+    protected String mimeType = "text/xml";
+
     @OperationMethod
     public Blob run(DocumentModelList docs) throws Exception {
         String content = RenderingService.getInstance().render(type, template, ctx);
         StringBlob blob = new StringBlob(content);
+        blob.setFilename(name);
+        blob.setMimeType(mimeType);
         return blob;
     }
 
