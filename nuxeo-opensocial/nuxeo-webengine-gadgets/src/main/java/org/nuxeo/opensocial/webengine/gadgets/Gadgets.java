@@ -89,6 +89,12 @@ public class Gadgets extends ModuleRoot {
     }
 
 
+    @GET
+    @Path("sample")
+    public Object getSample() {
+        return getView("sample-popup");
+    }
+
     @Path("{name}")
     public Object getGadget(@PathParam("name") String gadgetName)
             throws Exception {
