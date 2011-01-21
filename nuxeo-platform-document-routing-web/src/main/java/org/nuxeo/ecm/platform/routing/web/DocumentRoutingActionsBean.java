@@ -122,6 +122,9 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(required = true, create = false)
     protected NuxeoPrincipal currentUser;
 
+    @In(create = true)
+    protected List<DocumentModel> relatedRoutes;
+
     @RequestParameter("stepId")
     protected String stepId;
 
@@ -176,12 +179,6 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         // else we must be in a document attached to a route
         String relatedRouteModelDocumentId;
-        List<DocumentModel> relatedRoutes;
-        try {
-            relatedRoutes = findRelatedRouteDocument();
-        } catch (ClientException e) {
-            return null;
-        }
         if (relatedRoutes.size() <= 0) {
             return null;
         }
@@ -197,7 +194,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public String cancelRoute() throws ClientException {
-        DocumentModel doc = findRelatedRouteDocument().get(0);
+        DocumentModel doc = relatedRoutes.get(0);
         DocumentRoute route = doc.getAdapter(DocumentRoute.class);
         route.cancel(documentManager);
         webActions.resetTabList();
@@ -250,12 +247,11 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     protected List<DocumentRouteTableElement> computeRelatedRouteElements()
             throws ClientException {
-        List<DocumentModel> routes = findRelatedRouteDocument();
-        if (routes == null || routes.isEmpty()) {
+        if (relatedRoutes.isEmpty()) {
             return new ArrayList<DocumentRouteTableElement>();
         }
         DocumentModel relatedRouteDocumentModel = documentManager.getDocument(new IdRef(
-                routes.get(0).getId()));
+                relatedRoutes.get(0).getId()));
         DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
         return getElements(currentRoute);
     }
@@ -280,17 +276,6 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRelatedRouteElements(), null);
     }
 
-    public List<DocumentModel> findRelatedRouteDocument()
-            throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getDocumentRoutesForAttachedDocument(
-                documentManager, navigationContext.getCurrentDocument().getId());
-        for (DocumentRoute documentRoute : relatedRoutes) {
-            docs.add(documentRoute.getDocument());
-        }
-        return docs;
-    }
-
     /**
      * Check if the related route to this case is started (ready or running) or
      * no
@@ -298,7 +283,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @param doc the mail to remove
      */
     public boolean hasRelatedRoute() throws ClientException {
-        return !findRelatedRouteDocument().isEmpty();
+        return !relatedRoutes.isEmpty();
     }
 
     public String startRouteRelatedToCurrentDocument() throws ClientException {

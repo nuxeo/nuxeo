@@ -23,8 +23,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.io.Serializable;
 import java.util.List;
 
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
