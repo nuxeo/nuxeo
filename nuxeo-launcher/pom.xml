@@ -14,7 +14,7 @@
 
   <properties>
     <nuxeo.runtime.version>5.4.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.shell.version>1.0-SNAPSHOT</nuxeo.shell.version>
+    <nuxeo.shell.version>5.4.1-SNAPSHOT</nuxeo.shell.version>
   </properties>
 
   <dependencyManagement>
