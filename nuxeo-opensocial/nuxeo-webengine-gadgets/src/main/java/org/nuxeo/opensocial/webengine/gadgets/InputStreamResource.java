@@ -22,8 +22,9 @@ import java.io.InputStream;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-public class InputStreamResource {
+public class InputStreamResource extends DefaultObject {
 
     protected Response getObject(InputStream gadgetResource, String path) {
         if (gadgetResource == null) {

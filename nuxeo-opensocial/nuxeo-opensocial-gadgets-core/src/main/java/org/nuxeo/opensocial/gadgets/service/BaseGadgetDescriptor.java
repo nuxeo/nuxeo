@@ -25,7 +25,7 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
         try {
             return Framework.getLocalService(GadgetService.class).getGadgetSpec(this);
         } catch (Exception e) {
-            log.error("Error while getting gagget spec", e);
+            log.error("Error while getting gagget spec for gadget " + getName(), e);
             return null;
         }
     }
@@ -37,7 +37,7 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
         return getGadgetSpec().getModulePrefs().getDescription();
     }
 
-    public String getTite() {
+    public String getTitle() {
         if (getGadgetSpec()==null) {
             return getName();
         }
@@ -54,18 +54,28 @@ public abstract class BaseGadgetDescriptor implements Serializable, GadgetDeclar
         return getGadgetSpec().getModulePrefs().getAuthor();
     }
 
-    public Uri getScreenshot() {
+    public String getScreenshot() {
         if (getGadgetSpec()==null) {
             return null;
         }
-        return getGadgetSpec().getModulePrefs().getScreenshot();
+        Uri uri = getGadgetSpec().getModulePrefs().getScreenshot();
+        if (uri==null) {
+            return getThumbnail();
+        } else {
+            return uri.toString();
+        }
     }
 
-    public Uri getThumbnail() {
+    public String getThumbnail() {
         if (getGadgetSpec()==null) {
             return null;
         }
-        return getGadgetSpec().getModulePrefs().getThumbnail();
+        Uri uri =  getGadgetSpec().getModulePrefs().getThumbnail();
+        if (uri==null) {
+            return null;
+        } else {
+            return uri.toString();
+        }
     }
 
 

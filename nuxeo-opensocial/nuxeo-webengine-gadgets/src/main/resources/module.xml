@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
-<module name="Gadgets" root-type="Gadgets" path="/gadgets">
+<module name="gadgets" root-type="gadgets" path="/gadgets" extends="base">
 
 </module>

@@ -22,17 +22,28 @@ import java.io.InputStream;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 
+@WebObject(type = "gadget")
 public class GadgetResource extends InputStreamResource {
 
-    GadgetDeclaration gadget;
+    protected GadgetDeclaration gadget;
+
+    public GadgetResource() {
+    }
 
     public GadgetResource(GadgetDeclaration gadget) {
         this.gadget = gadget;
+    }
+
+    @Override
+    protected void initialize(Object... args) {
+        gadget = (GadgetDeclaration) args[0];
     }
 
     @GET
@@ -54,4 +65,12 @@ public class GadgetResource extends InputStreamResource {
 
         return getObject(in, fileName);
     }
+
+    @GET
+    @Path("getDetails")
+    @Produces("text/html; charset=UTF-8")
+    public Object getDetails() {
+        return getView("details").arg("gadget", gadget);
+    }
+
 }

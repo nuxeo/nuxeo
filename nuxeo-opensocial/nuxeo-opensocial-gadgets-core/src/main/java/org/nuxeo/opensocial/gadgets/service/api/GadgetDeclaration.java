@@ -54,12 +54,12 @@ public interface GadgetDeclaration {
 
     GadgetSpec getGadgetSpec();
 
-    String getTite();
+    String getTitle();
 
     String getAuthor();
 
-    Uri getScreenshot();
+    String getScreenshot();
 
-    Uri getThumbnail();
+    String getThumbnail();
 
 }

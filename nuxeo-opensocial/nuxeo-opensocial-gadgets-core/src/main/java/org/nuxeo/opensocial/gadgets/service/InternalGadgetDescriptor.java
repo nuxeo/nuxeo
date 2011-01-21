@@ -197,10 +197,10 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements Ga
     }
 
     @Override
-    public Uri getThumbnail() {
-        Uri thumb = super.getThumbnail();
-        if (thumb==null && getIconUrl()!=null) {
-            return Uri.parse(getIconUrl());
+    public String getThumbnail() {
+        String thumb = super.getThumbnail();
+        if (thumb==null || "".equals(thumb.trim())) {
+            return getIconUrl();
         }
         return null;
     }

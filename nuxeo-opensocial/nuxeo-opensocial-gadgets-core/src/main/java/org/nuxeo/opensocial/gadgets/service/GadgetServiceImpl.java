@@ -176,7 +176,11 @@ public class GadgetServiceImpl extends DefaultComponent implements
                 is = GadgetServiceImpl.class.getClassLoader().getResourceAsStream(resourcePath);
             }
             String xmlDef = FileUtils.read(is);
-            context = new NXGadgetContext(declaration.getGadgetDefinition(), xmlDef);
+            if (xmlDef.contains("<#")) {
+                context = new NXGadgetContext(declaration.getGadgetDefinition());
+            } else {
+                context = new NXGadgetContext(declaration.getGadgetDefinition(), xmlDef);
+            }
         } else {
             context = new NXGadgetContext(declaration.getGadgetDefinition());
         }
@@ -195,7 +199,18 @@ public class GadgetServiceImpl extends DefaultComponent implements
     }
 
     public List<GadgetDeclaration> getGadgetList(String category) {
-        return getGadgetList();
+        List<GadgetDeclaration> all = getGadgetList();
+        if (category==null) {
+            return all;
+        }
+        List<GadgetDeclaration> result = new ArrayList<GadgetDeclaration>();
+
+        for (GadgetDeclaration gd : all) {
+            if (category.equals(gd.getCategory())) {
+                result.add(gd);
+            }
+        }
+        return result;
     }
 
     public HashMap<String, ArrayList<String>> getGadgetNameByCategory() {

@@ -23,18 +23,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetService;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "Gadgets")
+@WebObject(type = "gadgets")
 @Produces("text/html; charset=UTF-8")
-@Path("/gadgets")
 public class Gadgets extends ModuleRoot {
 
     private final GadgetService gm;
@@ -44,11 +43,51 @@ public class Gadgets extends ModuleRoot {
     }
 
     @GET
-    public Object getGadgetList() {
-        List<GadgetDeclaration> gadgetList = gm.getGadgetList();
-        return new TemplateView(this, "gadgetslist.tpl").arg("gadgets",
+    public Object getGallery(@QueryParam("cat") String category, @QueryParam("mode") String mode) {
+
+        List<GadgetDeclaration> gadgetList;
+        String ftlName = null;
+        if (mode==null) {
+            mode = "gallery";
+        }
+        if (mode.equalsIgnoreCase("gallery")) {
+            ftlName = "gallery";
+        }else if (mode.equalsIgnoreCase("popup")) {
+            ftlName = "chooser-body";
+        }else {
+            return Response.serverError().build();
+        }
+
+        if (category==null) {
+            gadgetList = gm.getGadgetList();
+            category="all";
+        } else {
+            gadgetList = gm.getGadgetList(category);
+        }
+
+        List<String> categories = gm.getGadgetCategory();
+        categories.add(0, "all");
+
+        return getView(ftlName).arg("gadgets",
+                gadgetList).arg("categories", categories).arg("category", category);
+    }
+
+    @GET
+    @Path("listGadgets")
+    public Object getGadgetList(@QueryParam("cat") String category) {
+
+        List<GadgetDeclaration> gadgetList;
+
+        if (category==null) {
+            gadgetList = gm.getGadgetList();
+            category="all";
+        } else {
+            gadgetList = gm.getGadgetList(category);
+        }
+        return getView("list").arg("gadgets",
                 gadgetList);
     }
+
 
     @Path("{name}")
     public Object getGadget(@PathParam("name") String gadgetName)
@@ -59,12 +98,28 @@ public class Gadgets extends ModuleRoot {
 
         GadgetDeclaration gadget = gm.getGadget(gadgetName);
         if (gadget != null) {
-            return new GadgetResource(gadget);
+            return ctx.newObject("gadget", gadget);
+            //return new GadgetResource(gadget);
         } else {
             return Response.ok(404).build();
         }
     }
-    
-    
+
+    public String getCategoryLabel(String categoryKey) {
+
+        if (categoryKey==null) {
+            return "";
+        }
+        if (!categoryKey.startsWith("gadget.category")) {
+            categoryKey = "gadget.category." + categoryKey;
+        }
+
+        String label = getContext().getMessage(categoryKey);
+        if (label.startsWith("!")) {
+            label = categoryKey.replace("gadget.category.", "");
+            label = label.substring(0, 1).toUpperCase() + label.substring(1);
+        }
+        return label;
+    }
 
 }
