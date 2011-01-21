@@ -33,6 +33,7 @@ import javax.faces.convert.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -427,6 +428,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return stepElement.isModifiable();
     }
 
+    @Factory(value = "currentRouteLockedByCurrentUser", scope = ScopeType.EVENT)
     public boolean isCurrentRouteLockedByCurrentUser() throws ClientException {
         return getDocumentRoutingService().isLockedByCurrentUser(
                 getRelatedRoute(), documentManager);
