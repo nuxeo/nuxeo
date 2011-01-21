@@ -53,7 +53,7 @@ public class HierarchyContext extends Context {
      */
     private final Set<Serializable> modifiedParentsInvalidations;
 
-    HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
+    public HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
         // these cannot be ReferenceMaps because we can't get rid of Children
         // when they have not been flushed

@@ -53,6 +53,9 @@ public class Context {
 
     private final String tableName;
 
+    /** Number of columns in table. */
+    private final int tableSize;
+ 
     // also accessed by Fragment
     protected final Mapper mapper;
 
@@ -108,7 +111,7 @@ public class Context {
     protected final boolean isCollection;
 
     @SuppressWarnings("unchecked")
-    Context(String tableName, Mapper mapper,
+    public Context(String tableName, Mapper mapper, 
             PersistenceContext persistenceContext) {
         this.tableName = tableName;
         this.mapper = mapper;
@@ -123,6 +126,8 @@ public class Context {
         deletedInvalidations = new HashSet<Serializable>();
 
         isCollection = model.isCollectionFragment(tableName);
+        tableSize = mapper.getTableSize(tableName);
+
     }
 
     @Override
@@ -132,6 +137,10 @@ public class Context {
 
     public String getTableName() {
         return tableName;
+    }
+
+    public int getTableSize() {
+        return tableSize;
     }
 
     /**

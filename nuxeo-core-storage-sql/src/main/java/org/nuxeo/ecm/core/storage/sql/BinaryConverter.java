@@ -77,7 +77,12 @@ public class BinaryConverter {
             if (blob == null) {
                 return null;
             }
-            return new String(blob.getByteArray(), "UTF-8");
+            String string = new String(blob.getByteArray(), "UTF-8");
+            // strip '\0 chars from text
+            if (string.indexOf('\0') >= 0) {
+                string = string.replace("\0", " ");
+            }
+            return string;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return null;

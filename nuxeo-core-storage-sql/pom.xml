@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.5.0-RC1-SP2</version>
+    <version>1.5.0-RC1-SP3</version>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql</artifactId>
@@ -27,7 +27,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query</artifactId>
-      <version>1.5.0-RC1-NXP-4462</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
