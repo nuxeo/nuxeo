@@ -9,7 +9,7 @@
   <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(field_0)}">
   <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(field_0)}">
 
-  <c:if test="#{routingActions.isCurrentRouteLockedByCurrentUser() and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
+   <c:if test="#{currentRouteLockedByCurrentUser and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
     <img id="#{field_1}_imgref" class="#{field_1}_popupTarget cellActionIcon"
       src="icons/action_plus.png"
       alt="#{messages['label.widget.document_routing_route_content.dr_listing_step_actions']}"
