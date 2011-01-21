@@ -4,6 +4,11 @@
 .gadget { margin: 2px; border:1px #AAAAAA solid;cursor:pointer;padding:2px}
 .currentGadget {background-color:#CCCCCC;}
 .gadgetTitle {}
+<#if mode=="popup">
+.addButton {float:right;}
+<#else>
+.addButton {float:right;display:none}
+</#if>
 </style>
 
 <script>

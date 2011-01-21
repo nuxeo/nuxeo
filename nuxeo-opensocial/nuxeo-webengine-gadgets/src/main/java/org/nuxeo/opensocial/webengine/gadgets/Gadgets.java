@@ -69,7 +69,7 @@ public class Gadgets extends ModuleRoot {
         categories.add(0, "all");
 
         return getView(ftlName).arg("gadgets",
-                gadgetList).arg("categories", categories).arg("category", category);
+                gadgetList).arg("categories", categories).arg("category", category).arg("mode", mode);
     }
 
     @GET

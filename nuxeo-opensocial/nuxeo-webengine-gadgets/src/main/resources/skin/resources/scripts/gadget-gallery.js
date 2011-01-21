@@ -27,3 +27,7 @@ function selectCategory(idx, name) {
   jqw("#cat"+idx).toggleClass('currentCategory');
   refreshList(name);
 }
+
+//function addGadget(name, url) {
+//  alert(name + ":" + url);
+//}
