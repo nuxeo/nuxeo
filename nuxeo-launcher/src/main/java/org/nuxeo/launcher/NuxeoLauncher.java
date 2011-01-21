@@ -96,8 +96,6 @@ public abstract class NuxeoLauncher {
 
     private static final int MAX_WAIT_LOGFILE = 10;
 
-    protected int startMaxWait;
-
     protected ConfigurationGenerator configurationGenerator;
 
     protected ProcessManager processManager;
@@ -415,6 +413,10 @@ public abstract class NuxeoLauncher {
             // Go to end of file
             while (in.readLine() != null)
                 ;
+            int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
+                    START_MAX_WAIT_PARAM, getDefaultMaxWait()));
+            log.debug("Will wait for effective start during " + startMaxWait
+                    + " seconds.");
             do {
                 // Wait for something to read
                 while (!in.ready() && count < startMaxWait && isRunning()) {
@@ -621,8 +623,6 @@ public abstract class NuxeoLauncher {
     public void configure() throws ConfigurationException {
         configurationGenerator.verifyInstallation();
         configurationGenerator.run();
-        startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                START_MAX_WAIT_PARAM, getDefaultMaxWait()));
         overrideJavaTmpDir = Boolean.parseBoolean(configurationGenerator.getUserConfig().getProperty(
                 OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
     }
@@ -749,6 +749,13 @@ public abstract class NuxeoLauncher {
         } catch (IllegalThreadStateException exception) {
             return true;
         }
+    }
+
+    /**
+     * @return Server log file
+     */
+    public File getLogFile() {
+        return new File(configurationGenerator.getLogDir(), "server.log");
     }
 
 }
