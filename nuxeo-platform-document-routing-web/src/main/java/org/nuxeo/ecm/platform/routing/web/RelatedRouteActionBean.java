@@ -50,8 +50,12 @@ public class RelatedRouteActionBean {
     @Factory(value = "relatedRoutes")
     public List<DocumentModel> findRelatedRoute() throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if(currentDocument == null) {
+            return docs;
+        }
         List<DocumentRoute> relatedRoutes = getDocumentRoutingService().getDocumentRoutesForAttachedDocument(
-                documentManager, navigationContext.getCurrentDocument().getId());
+                documentManager, currentDocument.getId());
         for (DocumentRoute documentRoute : relatedRoutes) {
             docs.add(documentRoute.getDocument());
         }
