@@ -31,6 +31,7 @@
     <action id="related_route_to_pdf" link="#{routeToPdfActionBean.doRenderView('view_pdf_related_route.faces')}" order="20"
       label="action.pdf.route" icon="/icons/pdf.png">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>isRoutable</filter-id> 
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
@@ -38,6 +39,7 @@
       link="/incl/tabs/related_document_route_preview.xhtml"
       order="250" label="label.document.routing.related.route">
       <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoutable</filter-id>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
@@ -120,6 +122,12 @@
         <permission>AddChildren</permission>
         <type>DocumentRoute</type>
         <type>StepFolder</type>
+      </rule>
+    </filter>
+
+    <filter id="isRoutable">
+      <rule grant="true">
+        <facet>Routable</facet>
       </rule>
     </filter>
 

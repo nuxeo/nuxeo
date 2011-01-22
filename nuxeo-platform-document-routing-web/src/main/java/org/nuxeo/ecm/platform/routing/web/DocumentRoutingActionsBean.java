@@ -119,7 +119,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     @In(create = true)
     protected EventManager eventManager;
 
-    @In(required = true, create = false)
+    @In(required = true, create = true)
     protected NuxeoPrincipal currentUser;
 
     @In(create = true)
