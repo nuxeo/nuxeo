@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.collections.ScopedMap;
@@ -197,7 +198,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         DocumentModel doc = relatedRoutes.get(0);
         DocumentRoute route = doc.getAdapter(DocumentRoute.class);
         route.cancel(documentManager);
+        // force computing of tabs
         webActions.resetTabList();
+        Contexts.removeFromAllContexts("relatedRoutes");
+
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
