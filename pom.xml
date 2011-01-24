@@ -743,6 +743,21 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-pdf</artifactId>
+        <version>2.1.0.SP1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-rss</artifactId>
+        <version>2.1.0.SP1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-excel</artifactId>
+        <version>2.1.0.SP1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-debug</artifactId>
         <version>2.1.0.SP1</version>
         <scope>provided</scope>
