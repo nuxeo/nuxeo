@@ -123,8 +123,8 @@
             <field schema="advanced_search" name="language" />
           </predicate>
 
-          <predicate parameter="ecm:currentLifeCycleState" operator="IN">
-            <field schema="advanced_search" name="currentLifeCycleStates" />
+          <predicate parameter="ecm:currentLifeCycleState" operator="!=">
+            <field schema="advanced_search" name="currentLifeCycleState" />
           </predicate>
           <fixedPart>
             ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0
