@@ -31,8 +31,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.MissingResourceException;
@@ -42,6 +40,7 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,11 +49,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.shell.Shell;
+import org.nuxeo.shell.cmds.Interactive;
+import org.nuxeo.shell.cmds.InteractiveShellHandler;
+import org.nuxeo.shell.swing.ConsolePanel;
 
 /**
  * Launcher view for graphical user interface
@@ -83,13 +88,19 @@ public class NuxeoFrame extends JFrame {
 
     protected JButton logsButton;
 
-    protected JScrollPane logsPanel;
+    protected JScrollPane logsScroller;
 
     private GridBagConstraints constraints;
 
     protected NuxeoFrame contentPane;
 
     protected Component filler;
+
+    private JTabbedPane tabbedPanel;
+
+    protected ConsolePanel consolePanel;
+
+    private JLabel summaryStatus;
 
     protected final class ImagePanel extends JPanel {
         private static final long serialVersionUID = 1L;
@@ -117,15 +128,15 @@ public class NuxeoFrame extends JFrame {
             log.debug("showlogs" + e);
             logsButton.setEnabled(false);
             if (logsShown) {
-                logsPanel.setVisible(false);
+                logsScroller.setVisible(false);
                 filler.setVisible(true);
                 logsShown = false;
             } else {
-                logsPanel.setVisible(true);
+                logsScroller.setVisible(true);
                 filler.setVisible(false);
                 logsShown = true;
             }
-            //controller.notifyLogsObserver(logsShown);
+            controller.notifyLogsObserver(logsShown);
             updateLogsButton();
             logsButton.setEnabled(true);
         }
@@ -175,18 +186,18 @@ public class NuxeoFrame extends JFrame {
             mainButton.setIcon(startIcon);
         }
         mainButton.setEnabled(true);
-        this.validate();
+        mainButton.validate();
     }
 
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
         this.controller = controller;
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent event) {
-                debug();
-            }
-        });
+        // this.addComponentListener(new ComponentAdapter() {
+        // @Override
+        // public void componentResized(ComponentEvent event) {
+        // debug();
+        // }
+        // });
 
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -204,24 +215,12 @@ public class NuxeoFrame extends JFrame {
         header.setPreferredSize(new Dimension(480, 110));
         getContentPane().add(header, constraints);
 
-        // Logs button (show/hide)
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        getContentPane().add(buildLogsButton(), constraints);
-
-        // Logs panel
+        // Tabs
         constraints.fill = GridBagConstraints.BOTH;
         constraints.ipady = 100;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
-        getContentPane().add(buildLogsPanel(), constraints);
-
-        // Transparent component filling available space when logsPanel is
-        // hidden
-        constraints.ipady = 100;
-        filler = Box.createGlue();
-        filler.setPreferredSize(new Dimension(480, 160));
-        getContentPane().add(filler, constraints);
+        getContentPane().add(buildTabbedPanel(), constraints);
 
         // Footer
         constraints.fill = GridBagConstraints.NONE;
@@ -231,6 +230,125 @@ public class NuxeoFrame extends JFrame {
         constraints.weighty = 0;
         constraints.insets = new Insets(10, 0, 0, 0);
         getContentPane().add(buildFooter(), constraints);
+    }
+
+    /**
+     * @return
+     */
+    private JComponent buildTabbedPanel() {
+        tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
+        // tabbedPanel.setPreferredSize(new Dimension(500, 200));
+        tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
+        tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
+        tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
+        return tabbedPanel;
+    }
+
+    private Component buildConsolePanel() {
+        // JPanel shellPanel = new JPanel();
+        try {
+            consolePanel = new ConsolePanel();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        // console = panel.getConsole();
+        // console.requestFocus();
+        Interactive.setConsoleReaderFactory(consolePanel.getConsole());
+        Interactive.setHandler(new InteractiveShellHandler() {
+
+            @Override
+            public boolean exitInteractiveMode(int code) {
+                if (code == 1) {
+                    Interactive.reset();
+                    Shell.reset();
+                    return true;
+                } else {
+                    consolePanel.getConsole().reset();
+                    return false;
+                }
+            }
+
+            @Override
+            public void enterInteractiveMode() {
+                Interactive.reset();
+            }
+        });
+        new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    Shell.get().main(new String[0]);
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+
+        }.start();
+        return consolePanel;
+    }
+
+    private Component buildLogsTab() {
+        JPanel logsTab = new JPanel();
+        logsTab.setBackground(new Color(55, 55, 55));
+        logsTab.setLayout(new GridBagLayout());
+        GridBagConstraints logsConstraints = new GridBagConstraints();
+
+        // Logs button (show/hide)
+        logsButton = createButton(new LogsButtonAction(), null);
+        logsButton.setForeground(Color.WHITE);
+        logsButton.setOpaque(false);
+        logsButton.setBackground(new Color(55, 55, 55));
+        logsButton.setIconTextGap(0);
+        logsButton.setPreferredSize(new Dimension(200, 45));
+        logsButton.setHorizontalTextPosition(SwingConstants.RIGHT);
+        updateLogsButton();
+        logsConstraints.fill = GridBagConstraints.NONE;
+        logsConstraints.gridx = 0;
+        logsConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        logsTab.add(logsButton, logsConstraints);
+
+        // Logs panel
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        textArea.setAutoscrolls(true);
+        textArea.setBackground(new Color(64, 64, 64));
+        textArea.setForeground(Color.WHITE);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(false);
+        // textArea.setPreferredSize(new Dimension(450, 160));
+        logsScroller = new JScrollPane(textArea);
+        logsScroller.setVisible(false);
+        logsScroller.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        logsScroller.setAutoscrolls(true);
+        logsScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        logsScroller.setWheelScrollingEnabled(true);
+        logsScroller.setPreferredSize(new Dimension(450, 160));
+        controller.setLogsContainer(textArea, logsScroller);
+        logsConstraints.fill = GridBagConstraints.BOTH;
+        logsConstraints.ipady = 100;
+        logsConstraints.weightx = 1.0;
+        logsConstraints.weighty = 1.0;
+        logsTab.add(logsScroller, logsConstraints);
+
+        // Transparent component filling available space when logsPanel is
+        // hidden
+        logsConstraints.ipady = 100;
+        filler = Box.createGlue();
+        filler.setPreferredSize(new Dimension(480, 160));
+        logsTab.add(filler, logsConstraints);
+        return logsTab;
+    }
+
+    private Component buildSummaryPanel() {
+        JPanel summaryTab = new JPanel();
+        summaryTab.setLayout(new BoxLayout(summaryTab, BoxLayout.PAGE_AXIS));
+        summaryTab.setBackground(new Color(55, 55, 55));
+        summaryTab.setForeground(Color.WHITE);
+        summaryStatus = new JLabel(controller.getStatus());
+        summaryStatus.setForeground(Color.WHITE);
+        summaryTab.add(summaryStatus);
+        return summaryTab;
     }
 
     public void debug() {
@@ -245,18 +363,6 @@ public class NuxeoFrame extends JFrame {
         }
     }
 
-    private JButton buildLogsButton() {
-        logsButton = createButton(new LogsButtonAction(), null);
-        logsButton.setForeground(Color.WHITE);
-        logsButton.setOpaque(false);
-        logsButton.setBackground(new Color(55, 55, 55));
-        logsButton.setIconTextGap(0);
-        logsButton.setPreferredSize(new Dimension(200, 45));
-        logsButton.setHorizontalTextPosition(SwingConstants.RIGHT);
-        updateLogsButton();
-        return logsButton;
-    }
-
     private JComponent buildFooter() {
         JLabel label = new JLabel(getMessage("footer.label"));
         label.setForeground(Color.WHITE);
@@ -265,26 +371,6 @@ public class NuxeoFrame extends JFrame {
                 label.getFont().getStyle(), 9));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         return label;
-    }
-
-    private JComponent buildLogsPanel() {
-        JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setAutoscrolls(true);
-//        textArea.setPreferredSize(new Dimension(450, 160));
-//        textArea.setVisible(false);
-//        textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        textArea.setBackground(new Color(64, 64, 64));
-        textArea.setText(controller.getStatus());
-        textArea.setForeground(Color.WHITE);
-        textArea.setLineWrap(true);
-//        controller.setLogsContainer(textArea,logsPanel);
-        logsPanel = new JScrollPane(logsPanel);
-        logsPanel.setPreferredSize(new Dimension(450, 160));
-        logsPanel.setVisible(false);
-        logsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//        logsPanel.setBackground(new Color(64, 64, 64));
-        return logsPanel;
     }
 
     private JComponent buildMainButton() {
@@ -339,6 +425,13 @@ public class NuxeoFrame extends JFrame {
         button.addActionListener(action);
         button.setIcon(icon);
         return button;
+    }
+
+    /**
+     * Update information displayed in summary tab
+     */
+    public void updateSummary() {
+        summaryStatus.setText(controller.getStatus());
     }
 
 }

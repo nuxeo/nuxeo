@@ -33,6 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
+import org.nuxeo.launcher.gui.logs.LogsHandler;
+import org.nuxeo.launcher.gui.logs.LogsSource;
 
 /**
  * Launcher controller for graphical user interface
@@ -44,14 +46,20 @@ import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 public class NuxeoLauncherGUI {
     static final Log log = LogFactory.getLog(NuxeoLauncherGUI.class);
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory(
-            "NuxeoLauncherGUITask", false));
+    private final ExecutorService executor = Executors.newFixedThreadPool(5,
+            new DaemonThreadFactory("NuxeoLauncherGUITask"));
 
     protected NuxeoLauncher launcher;
 
     protected NuxeoFrame nuxeoFrame;
 
-    private FileObserver logsObserver;
+    private Thread logsSourceThread;
+
+    private LogsHandler logsHandler;
+
+    private JTextArea textArea;
+
+    private JScrollPane logsPanel;
 
     /**
      * @param launcher Launcher being used in background
@@ -84,6 +92,14 @@ public class NuxeoLauncherGUI {
      */
     public void execute() {
         initFrame(this);
+        initLogsManagement();
+    }
+
+    private void initLogsManagement() {
+        LogsSource logsSource = new LogsSource(launcher.getLogFile());
+        logsSourceThread = new Thread(logsSource);
+        logsHandler = new LogsHandler(this);
+        logsSource.addObserver(logsHandler);
     }
 
     /**
@@ -95,9 +111,14 @@ public class NuxeoLauncherGUI {
             @Override
             public void run() {
                 launcher.stop();
-                nuxeoFrame.updateMainButton();
+                updateServerStatus();
             }
         });
+    }
+
+    protected void updateServerStatus() {
+        nuxeoFrame.updateMainButton();
+        nuxeoFrame.updateSummary();
     }
 
     /**
@@ -108,8 +129,10 @@ public class NuxeoLauncherGUI {
 
             @Override
             public void run() {
+                launcher.setConsoleLogs(true);
                 launcher.doStartAndWait();
-                nuxeoFrame.updateMainButton();
+                // launcher.doStart();
+                updateServerStatus();
             }
         });
     }
@@ -135,17 +158,40 @@ public class NuxeoLauncherGUI {
      * @param logsPanel
      */
     public void setLogsContainer(JTextArea textArea, JScrollPane logsPanel) {
-        if (logsObserver==null) {
-            logsObserver = new FileObserver(textArea,logsPanel);
-            logsObserver.start();
+        this.textArea = textArea;
+        this.logsPanel = logsPanel;
+    }
+
+    /**
+     * @param logsShown Set logs reader active or not
+     */
+    public void notifyLogsObserver(boolean logsShown) {
+        synchronized (logsSourceThread) {
+            if (!logsShown) {
+                if (logsSourceThread.isAlive()) {
+                    // try {
+                    // logsSourceThread.wait();
+                    // } catch (InterruptedException e) {
+                    // log.error(e);
+                    // }
+                }
+            } else {
+                if (!logsSourceThread.isAlive()) {
+                    // executor.execute(logsSourceThread);
+                    executor.execute(logsSourceThread);
+                    // logsSourceThread.start();
+                }
+                logsSourceThread.notify();
+            }
         }
     }
 
     /**
-     * @param logsShown
+     * @param logLine Line read from log file being sent to view
      */
-    public void notifyLogsObserver(boolean logsShown) {
-        logsObserver.read(logsShown);
+    public void notifyLogsView(String logLine) {
+        textArea.append(logLine + System.getProperty("line.separator"));
+        textArea.setCaretPosition(textArea.getDocument().getLength());
+        // Something to do with logsPanel ?
     }
-
 }

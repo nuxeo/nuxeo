@@ -164,7 +164,9 @@ public abstract class NuxeoLauncher {
         }
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(command));
         pb.directory(configurationGenerator.getNuxeoHome());
-        pb = pb.redirectErrorStream(true);
+        if (consoleLogs) {
+            pb = pb.redirectErrorStream(true);
+        }
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
         if (consoleLogs) {
@@ -381,7 +383,11 @@ public abstract class NuxeoLauncher {
 
     protected void removeShutdownHook() {
         log.debug("Remove shutdown hook");
-        Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        try {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        } catch (IllegalStateException e) {
+            // the virtual machine is already in the process of shutting down
+        }
     }
 
     protected boolean waitForEffectiveStart() {
@@ -422,9 +428,7 @@ public abstract class NuxeoLauncher {
                 while (!in.ready() && count < startMaxWait && isRunning()) {
                     System.out.print(".");
                     count++;
-                    synchronized (nuxeoProcess) {
-                        nuxeoProcess.wait(1000);
-                    }
+                        Thread.sleep(1000);
                 }
                 line = in.readLine();
                 if (line != null && nuxeoStartedPattern.matcher(line).matches()) {
@@ -518,7 +522,7 @@ public abstract class NuxeoLauncher {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
-    private void setConsoleLogs(boolean consoleLogs) {
+    public void setConsoleLogs(boolean consoleLogs) {
         this.consoleLogs = consoleLogs;
     }
 
@@ -551,10 +555,15 @@ public abstract class NuxeoLauncher {
                 }
                 ProcessBuilder pb = new ProcessBuilder(command);
                 pb.directory(configurationGenerator.getNuxeoHome());
+                if (consoleLogs) {
+                    pb = pb.redirectErrorStream(true);
+                }
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    logProcessStreams(pb, stopProcess);
+                    if (consoleLogs) {
+                        logProcessStreams(pb, stopProcess);
+                    }
                     stopProcess.waitFor();
                     boolean wait = true;
                     while (wait) {
@@ -684,7 +693,9 @@ public abstract class NuxeoLauncher {
      */
     private void setArgs(String[] args) {
         // Ignore "gui" or command argument, keep only trailing arguments
-        this.params = Arrays.copyOfRange(args, 1, args.length);
+        int firstArgumentToKeep = (args.length > 1 && "gui".equalsIgnoreCase(args[0])) ? 2
+                : 1;
+        this.params = Arrays.copyOfRange(args, firstArgumentToKeep, args.length);
     }
 
     /**
