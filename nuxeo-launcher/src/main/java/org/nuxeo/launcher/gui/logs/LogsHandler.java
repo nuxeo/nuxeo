@@ -14,36 +14,35 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
-package org.nuxeo.launcher.gui;
+package org.nuxeo.launcher.gui.logs;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import java.util.Observable;
+import java.util.Observer;
+
+import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 
 /**
  * @author jcarsique
  * @since 5.4.1
  */
-public class FileObserver extends Thread {
+public class LogsHandler implements Observer {
+
+    private NuxeoLauncherGUI controller;
 
     /**
-     * @param textArea
-     * @param logsPanel
+     * @param nuxeoLauncherGUI
      */
-    public FileObserver(JTextArea textArea, JScrollPane logsPanel) {
-        // TODO Auto-generated constructor stub
-        throw new UnsupportedOperationException();
+    public LogsHandler(NuxeoLauncherGUI controller) {
+        this.controller = controller;
     }
 
-    /**
-     * @param logsShown
-     */
-    public void read(boolean logsShown) {
-        // TODO Auto-generated method stub
-        //
-        throw new UnsupportedOperationException();
+    @Override
+    public void update(Observable obj, Object arg) {
+        if (arg instanceof String) {
+            controller.notifyLogsView((String) arg);
+        }
     }
 
 }
