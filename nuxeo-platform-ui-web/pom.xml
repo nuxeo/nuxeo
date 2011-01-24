@@ -102,6 +102,18 @@
       <artifactId>jboss-seam-ui</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-pdf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-rss</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-excel</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>

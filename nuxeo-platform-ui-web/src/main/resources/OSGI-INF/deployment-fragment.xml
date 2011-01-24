@@ -203,7 +203,8 @@
       <param-value>
         /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
-        /WEB-INF/nxweb-ajax4jsf.taglib.xml;
+        /WEB-INF/nxweb-ajax4jsf.taglib.xml; /WEB-INF/nx-seam-excel.taglib.xml;
+        /WEB-INF/nx-seam-rss.taglib.xml;
       </param-value>
     </context-param>
 
@@ -468,6 +469,19 @@
         org.nuxeo.ecm.platform.ui.web.component.DisabledComponent
       </component-class>
     </component>
+
+    <!-- override of buggy seam libraries -->
+    <component>
+      <component-type>org.nuxeo.ecm.platform.jsf.UIFeed</component-type>
+      <component-class>org.nuxeo.ecm.platform.jsf.UIFeed</component-class>
+    </component>
+
+    <component>
+      <component-type>org.nuxeo.ecm.platform.jsf.UIColumn</component-type>
+      <component-class>org.nuxeo.ecm.platform.jsf.UIColumn</component-class>
+    </component>
+    <!-- end of override of buggy seam libraries -->
+
   </extension>
 
   <extension target="faces-config#RENDERER">
