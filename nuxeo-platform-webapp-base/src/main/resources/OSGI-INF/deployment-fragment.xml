@@ -85,6 +85,7 @@
 
   <extension target="faces-config#CONVERTER">
 
+    <!-- This converter is now deprecated, see NXP-6249 -->
     <converter>
       <converter-id>org.nuxeo.SearchDeletedDocumentsConverter</converter-id>
       <converter-class>
