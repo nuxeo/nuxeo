@@ -4,16 +4,16 @@
 
   <c:if test="#{widget.mode == 'view'}">
     <h:outputText id="#{widget.id}" value="#{messages['label.no']}"
-      rendered="#{field == 'deleted'}">
+      rendered="#{field == 'deleted'}" />
     <h:outputText id="#{widget.id}" value="#{messages['label.yes']}"
-      rendered="#{field != 'deleted'}">
+      rendered="#{field != 'deleted'}" />
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
     <h:selectOneMenu value="#{field}" id="#{widget.id}"
       required="#{widget.required}">
       <f:selectItem itemValue="deleted" itemLabel="#{messages['label.no']}" />
-      <f:selectItem itemValue="" itemLabel="#{messages['label.yes']}" />
+      <f:selectItem itemValue=" " itemLabel="#{messages['label.yes']}" />
     </h:selectOneMenu>
     <h:message styleClass="errorMessage" for="#{widget.id}"
       id="#{widget.id}_message" />
