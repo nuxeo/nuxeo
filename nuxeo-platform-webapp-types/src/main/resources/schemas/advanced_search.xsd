@@ -32,6 +32,7 @@
   <xs:element name="contributors" type="nxs:contributorList"/>
    -->
 
+  <xs:element name="currentLifeCycleState" type="xs:string" />
   <xs:element name="currentLifeCycleStates" type="nxs:stringList" />
 
   <xs:element name="fulltext_none" type="xs:string" />
