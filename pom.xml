@@ -10,7 +10,7 @@
     <version>5.4.1-I20101203_0116</version>
   </parent>
 
-  <version>5.4.1-I20101203_0116-CP02</version>
+  <version>5.4.1-I20101203_0116-CP03</version>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-document-routing</artifactId>
   <name>Nuxeo Platform Document Routing Addon</name>
@@ -42,12 +42,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
-        <version>${routing.version}-CP01</version>
+        <version>${routing.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
-        <version>${routing.version}-CP02</version>
+        <version>${routing.version}-CP03</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
