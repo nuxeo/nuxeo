@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
@@ -112,7 +113,9 @@
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
     <version.org.jboss.cache.pojo>3.0.0.GA</version.org.jboss.cache.pojo>
-    <version.org.jboss.microcontainer>2.0.6.GA</version.org.jboss.microcontainer>
+    <version.org.jboss.microcontainer>
+      2.0.6.GA
+    </version.org.jboss.microcontainer>
     <version.org.jboss.integration>5.1.0.GA</version.org.jboss.integration>
     <!-- should use same property name as JBoss to ease upgrades -->
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
@@ -2024,8 +2027,7 @@
 
       <!-- runtime test dependencies -->
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-htmlunit</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
@@ -2043,36 +2045,31 @@
       </dependency>
 
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-ie</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-firefox</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-chrome</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-support</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.seleniumhq.webdriver
-        </groupId>
+        <groupId>org.seleniumhq.webdriver</groupId>
         <artifactId>webdriver-common</artifactId>
         <version>${webdriver.version}</version>
       </dependency>
@@ -2343,7 +2340,9 @@
           <executions>
             <execution>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m</extraJvmArgs>
+                <extraJvmArgs>
+                  -Xmx512M -Xms128M -XX:MaxPermSize=384m
+                </extraJvmArgs>
               </configuration>
               <goals>
                 <goal>compile</goal>
@@ -2620,10 +2619,14 @@
             <version>2.9-NXP-4</version>
             <configuration>
               <additionalProjectnatures>
-                <projectnature>org.nuxeo.ide.builders.BundleNature</projectnature>
+                <projectnature>
+                  org.nuxeo.ide.builders.BundleNature
+                </projectnature>
               </additionalProjectnatures>
               <additionalBuildcommands>
-                <buildcommand>org.nuxeo.ide.builders.BundleBuilder</buildcommand>
+                <buildcommand>
+                  org.nuxeo.ide.builders.BundleBuilder
+                </buildcommand>
               </additionalBuildcommands>
               <downloadSources>false</downloadSources>
               <pde>true</pde>
@@ -2687,18 +2690,18 @@
               <updateReleaseInfo>true</updateReleaseInfo>
             </configuration>
           </plugin>
-	  <plugin>
-	    <groupId>org.apache.maven.plugins</groupId>
-	    <artifactId>maven-source-plugin</artifactId>
-	    <executions>
-	      <execution>
-		<id>attach-sources</id>
-		<goals>
-		  <goal>jar</goal>
-		</goals>
-	      </execution>
-	    </executions>
-	  </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
