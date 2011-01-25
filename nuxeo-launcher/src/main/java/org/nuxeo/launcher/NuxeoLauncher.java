@@ -97,7 +97,13 @@ public abstract class NuxeoLauncher {
 
     private static final int MAX_WAIT_LOGFILE = 10;
 
+    private static final String PARAM_NUXEO_URL = "nuxeo.url";
+
     protected ConfigurationGenerator configurationGenerator;
+
+    public final ConfigurationGenerator getConfigurationGenerator() {
+        return configurationGenerator;
+    }
 
     protected ProcessManager processManager;
 
@@ -798,6 +804,14 @@ public abstract class NuxeoLauncher {
      */
     public File getLogFile() {
         return new File(configurationGenerator.getLogDir(), "server.log");
+    }
+
+    /**
+     * @return Server URL
+     */
+    public String getURL() {
+        return configurationGenerator.getUserConfig().getProperty(
+                PARAM_NUXEO_URL);
     }
 
 }

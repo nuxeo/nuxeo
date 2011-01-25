@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.launcher.NuxeoLauncher;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.logs.LogsHandler;
 import org.nuxeo.launcher.gui.logs.LogsSource;
@@ -137,22 +138,6 @@ public class NuxeoLauncherGUI {
     }
 
     /**
-     * @return true if server is running, false otherwise
-     * @see NuxeoLauncher#isRunning()
-     */
-    public boolean isRunning() {
-        return launcher.isRunning();
-    }
-
-    /**
-     * @return Server status message
-     * @see NuxeoLauncher#status()
-     */
-    public String getStatus() {
-        return launcher.status();
-    }
-
-    /**
      * @param textArea
      * @param logsPanel
      */
@@ -187,4 +172,12 @@ public class NuxeoLauncherGUI {
         textArea.setCaretPosition(textArea.getDocument().getLength());
         // Something to do with logsPanel ?
     }
+
+    /**
+     * @return Configuration generator used by {@link #launcher}
+     */
+    public ConfigurationGenerator getConfigurationGenerator() {
+        return launcher.getConfigurationGenerator();
+    }
+
 }
