@@ -53,13 +53,15 @@ public class NuxeoLauncherGUI {
 
     protected NuxeoFrame nuxeoFrame;
 
-    private Thread logsSourceThread;
+    private Thread logsSourceThread = null;
 
     private LogsHandler logsHandler;
 
     private JTextArea textArea;
 
     private JScrollPane logsPanel;
+
+    private LogsSource logsSource;
 
     /**
      * @param launcher Launcher being used in background
@@ -96,8 +98,7 @@ public class NuxeoLauncherGUI {
     }
 
     private void initLogsManagement() {
-        LogsSource logsSource = new LogsSource(launcher.getLogFile());
-        logsSourceThread = new Thread(logsSource);
+        logsSource = new LogsSource(launcher.getLogFile());
         logsHandler = new LogsHandler(this);
         logsSource.addObserver(logsHandler);
     }
@@ -130,7 +131,6 @@ public class NuxeoLauncherGUI {
             @Override
             public void run() {
                 launcher.doStartAndWait(true);
-                // launcher.doStart();
                 updateServerStatus();
             }
         });
@@ -165,23 +165,17 @@ public class NuxeoLauncherGUI {
      * @param logsShown Set logs reader active or not
      */
     public void notifyLogsObserver(boolean logsShown) {
-        synchronized (logsSourceThread) {
-            if (!logsShown) {
-                if (logsSourceThread.isAlive()) {
-                    // try {
-                    // logsSourceThread.wait();
-                    // } catch (InterruptedException e) {
-                    // log.error(e);
-                    // }
-                }
-            } else {
-                if (!logsSourceThread.isAlive()) {
-                    // executor.execute(logsSourceThread);
-                    executor.execute(logsSourceThread);
-                    // logsSourceThread.start();
-                }
-                logsSourceThread.notify();
+        if (!logsShown) {
+            if (logsSourceThread != null) {
+                logsSource.pause();
             }
+        } else {
+            if (logsSourceThread == null) {
+                logsSourceThread = new Thread(logsSource);
+                logsSourceThread.setDaemon(true);
+                executor.execute(logsSourceThread);
+            }
+            logsSource.resume();
         }
     }
 

@@ -635,12 +635,11 @@ public abstract class NuxeoLauncher {
             if (getPid() == null) {
                 log.info("Server stopped.");
             } else {
-                log.info("No answer from server, try to kill it...");
-                if (pid != null) {
-                    processManager.kill(nuxeoProcess, pid);
-                    if (getPid() == null) {
-                        log.info("Server forcibly stopped.");
-                    }
+                log.info("No answer from server, try to kill process " + pid
+                        + "...");
+                processManager.kill(nuxeoProcess, pid);
+                if (getPid() == null) {
+                    log.info("Server forcibly stopped.");
                 }
             }
         } catch (IOException e) {
