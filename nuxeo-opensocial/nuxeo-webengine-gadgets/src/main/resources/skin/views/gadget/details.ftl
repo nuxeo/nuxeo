@@ -1,6 +1,6 @@
 <div>
 <span class="gadgetTitle">${gadget.getTitle()}</span>
-<div class="addButton"><input type="button" value="add" onclick="addGadget('${gadget.name}','${gadget.getGadgetDefinition().toString()}')"/></div>
+<div class="addButton"><input type="button" value="add" onclick="doAddGadget('${gadget.name}','${gadget.getGadgetDefinition().toString()}')"/></div>
 <table>
   <tr>
       <td colspan="2">

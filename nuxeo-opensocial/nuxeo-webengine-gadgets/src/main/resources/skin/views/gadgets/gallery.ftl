@@ -10,9 +10,6 @@ html, body {
 }
 </style>
 <script type="text/javascript" src="${skinPath}/script/jquery/jquery.js"></script>
-<script>
-var jqw=$;
-</script>
 </head>
 <body>
 

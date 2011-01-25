@@ -1,8 +1,8 @@
 
 function getDetails(name) {
   var targetUrl = galleryBaseUrl + "/" + name + "/getDetails";
-  jqw.get(targetUrl, function(data) {
-    jqw('#gadgetDetails').html(data);
+  jQuery.get(targetUrl, function(data) {
+    jQuery('#gadgetDetails').html(data);
   });
 }
 
@@ -11,23 +11,33 @@ function refreshList(name) {
   if (name!='all') {
      targetUrl+="?cat=" + name;
   }
-  jqw.get(targetUrl, function(data) {
-    jqw('#gadgetListContainer').html(data);
+  jQuery.get(targetUrl, function(data) {
+    jQuery('#gadgetListContainer').html(data);
   });
 }
 
 function selectGadget(idx, name) {
-  jqw(".currentGadget").toggleClass('currentGadget');
-  jqw("#gadget"+idx).toggleClass('currentGadget');
+  jQuery(".currentGadget").toggleClass('currentGadget');
+  jQuery("#gadget"+idx).toggleClass('currentGadget');
   getDetails(name);
 }
 
 function selectCategory(idx, name) {
-  jqw(".currentCategory").toggleClass('currentCategory');
-  jqw("#cat"+idx).toggleClass('currentCategory');
+  jQuery(".currentCategory").toggleClass('currentCategory');
+  jQuery("#cat"+idx).toggleClass('currentCategory');
   refreshList(name);
 }
 
-//function addGadget(name, url) {
-//  alert(name + ":" + url);
-//}
+function doAddGadget(name,url) {
+
+  if (typeof(addGadgetHook)=='function') {
+    addGadgetHook(name,url);
+  }
+
+  if (typeof(addGadget)=='function') {
+    addGadget(name,url);
+  }
+  else {
+    alert("adding Gadget with name=" + name + " and url=" + url + "\n you should define the addGadget(name,url) function !");
+  }
+}

@@ -1,13 +1,14 @@
 var popupStatus = 0;
+var cssLoaded=0;
 
 function loadPopup() {
   // loads popup only if it is disabled
   if (popupStatus == 0) {
-    jqw("#backgroundPopup").css( {
+    jQuery("#backgroundPopup").css( {
       "opacity" : "0.7"
     });
-    jqw("#backgroundPopup").fadeIn("slow");
-    jqw("#popupChooser").fadeIn("slow");
+    jQuery("#backgroundPopup").fadeIn("slow");
+    jQuery("#popupChooser").fadeIn("slow");
     popupStatus = 1;
   }
 }
@@ -16,8 +17,8 @@ function loadPopup() {
 function disablePopup() {
   // disables popup only if it is enabled
   if (popupStatus == 1) {
-    jqw("#backgroundPopup").fadeOut("slow");
-    jqw("#popupChooser").fadeOut("slow");
+    jQuery("#backgroundPopup").fadeOut("slow");
+    jQuery("#popupChooser").fadeOut("slow");
     popupStatus = 0;
   }
 }
@@ -25,42 +26,66 @@ function disablePopup() {
 function centerPopup() {
   var windowWidth = document.documentElement.clientWidth;
   var windowHeight = document.documentElement.clientHeight;
-  var popupHeight = jqw("#popupChooser").height();
-  var popupWidth = jqw("#popupChooser").width();
+  var popupHeight = jQuery("#popupChooser").height();
+  var popupWidth = jQuery("#popupChooser").width();
   var topPos = windowHeight / 2 - popupHeight / 2;
   if (topPos<0) {
     topPos=100;
   }
-  jqw("#popupChooser").css( {
+  jQuery("#popupChooser").css( {
     "position" : "absolute",
     "top" : topPos,
     "left" : windowWidth / 2 - popupWidth / 2
   });
-  jqw("#backgroundPopup").css( {
+  jQuery("#backgroundPopup").css( {
     "height" : windowHeight
   });
+}
 
+
+function appendCSSData(cssData) {
+  if (jQuery("head").children("style").length==0) {
+  // add the style tag
+    jQuery("head").append("<style>" + cssData + "</style>");
+  } else {
+  // append style content
+    jQuery("head").children("style").append(cssData);
+  }
 }
 
 function showPopup(targetUrl) {
+  if (cssLoaded==0) {
+      // load the css stuff
+      jQuery.get("/nuxeo/site/skin/gadgets/css/gadget-popup-style.css", function(data) {appendCSSData(data); doShowPopup(targetUrl);});
+      cssLoaded=1;
+  }
+  else {
+    doShowPopup(targetUrl);
+  }
+}
+
+function doShowPopup(targetUrl) {
   centerPopup();
   loadPopup();
-
-  jqw.get(targetUrl, function(data) {
-    jqw('#popupContent').html(data);
+  jQuery.get(targetUrl, function(data) {
+    jQuery('#popupContent').html(data);
   });
   // Click out event!
-  jqw("#backgroundPopup").click(function() {
+  jQuery("#backgroundPopup").click(function() {
     disablePopup();
   });
   // Press Escape event!
-  jqw(document).keypress(function(e) {
+  jQuery(document).keypress(function(e) {
     if (e.keyCode == 27 && popupStatus == 1) {
       disablePopup();
     }
   });
-  jqw("#popupChooserClose").click(function() {
+  jQuery("#popupChooserClose").click(function() {
     disablePopup();
   });
 
+}
+
+function addGadgetHook(name,url) {
+  disablePopup();
 }
