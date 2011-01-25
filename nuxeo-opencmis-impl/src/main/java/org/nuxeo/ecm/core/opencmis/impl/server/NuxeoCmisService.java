@@ -1464,8 +1464,18 @@ public class NuxeoCmisService extends AbstractCmisService {
                         + objectId);
             }
             pathSegment = doc.getName();
-            DocumentModel parent = coreSession.getParentDocument(docRef);
-            if (parent == null || isFilteredOut(parent)) {
+            if (pathSegment == null) { // root
+                return Collections.emptyList();
+            }
+            DocumentRef parentRef = doc.getParentRef();
+            if (parentRef == null) { // placeless
+                return Collections.emptyList();
+            }
+            if (!coreSession.exists(parentRef)) { // non-accessible
+                return Collections.emptyList();
+            }
+            DocumentModel parent = coreSession.getDocument(parentRef);
+            if (isFilteredOut(parent)) { // filtered out
                 return Collections.emptyList();
             }
             parentId = parent.getId();

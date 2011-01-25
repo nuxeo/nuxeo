@@ -253,7 +253,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Folder root = session.getRootFolder();
         ContentStream cs = new ContentStreamImpl(null, "text/plain",
                 Helper.FILE1_CONTENT);
-                OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
+        OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
         VersioningState versioningState = null;
         List<Policy> policies = null;
         List<Ace> addAces = null;
@@ -261,8 +261,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "myfile");
-        Document doc = root.createDocument(properties, cs,
-                versioningState, policies, addAces, removeAces, context);
+        Document doc = root.createDocument(properties, cs, versioningState,
+                policies, addAces, removeAces, context);
         cs = doc.getContentStream();
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
@@ -648,11 +648,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
     }
 
-
-
     public void testUserWorkspace() throws ClientException {
-        String wsPath = Helper.createUserWorkspace(getCoreSession(), isAtomPub ? USERNAME : "Administrator");
-        Folder ws = (Folder)session.getObjectByPath(wsPath);
+        String wsPath = Helper.createUserWorkspace(getCoreSession(),
+                isAtomPub ? USERNAME : "Administrator");
+        Folder ws = (Folder) session.getObjectByPath(wsPath);
         assertNotNull(ws);
     }
 
