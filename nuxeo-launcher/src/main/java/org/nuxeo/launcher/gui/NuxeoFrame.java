@@ -49,13 +49,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.shell.Shell;
 import org.nuxeo.shell.cmds.Interactive;
 import org.nuxeo.shell.cmds.InteractiveShellHandler;
@@ -114,7 +118,7 @@ public class NuxeoFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            if (controller.isRunning()) {
+            if (controller.launcher.isRunning()) {
                 mainButton.setText(getMessage("mainbutton.stop.inprogress"));
                 controller.stop();
             } else {
@@ -135,6 +139,8 @@ public class NuxeoFrame extends JFrame {
     protected final ImageIcon startIcon = getImageIcon("icons/start.png");
 
     protected final ImageIcon stopIcon = getImageIcon("icons/stop.png");
+
+    protected final ImageIcon appIcon = getImageIcon("icons/control_panel_icon_32.png");
 
     protected JButton mainButton = null;
 
@@ -158,18 +164,15 @@ public class NuxeoFrame extends JFrame {
 
     private JLabel summaryStatus;
 
+    private JLabel summaryURL;
+
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
         this.controller = controller;
-        // this.addComponentListener(new ComponentAdapter() {
-        // @Override
-        // public void componentResized(ComponentEvent event) {
-        // debug();
-        // }
-        // });
 
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setIconImage(appIcon.getImage());
         getContentPane().setBackground(new Color(55, 55, 55));
         getContentPane().setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
@@ -197,6 +200,8 @@ public class NuxeoFrame extends JFrame {
         constraints.weighty = 0;
         constraints.insets = new Insets(10, 0, 0, 0);
         getContentPane().add(buildFooter(), constraints);
+
+        // debug((JComponent) this.getContentPane());
     }
 
     private Component buildConsolePanel() {
@@ -261,9 +266,9 @@ public class NuxeoFrame extends JFrame {
     }
 
     private Component buildLogsTab() {
-        JPanel logsTab = new JPanel();
-        logsTab.setBackground(new Color(55, 55, 55));
-        logsTab.setLayout(new GridBagLayout());
+        JPanel logsPanel = new JPanel();
+        logsPanel.setBackground(new Color(55, 55, 55));
+        logsPanel.setLayout(new GridBagLayout());
         GridBagConstraints logsConstraints = new GridBagConstraints();
 
         // Logs button (show/hide)
@@ -278,7 +283,7 @@ public class NuxeoFrame extends JFrame {
         logsConstraints.fill = GridBagConstraints.NONE;
         logsConstraints.gridx = 0;
         logsConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        logsTab.add(logsButton, logsConstraints);
+        logsPanel.add(logsButton, logsConstraints);
 
         // Logs panel
         JTextArea textArea = new JTextArea();
@@ -301,15 +306,15 @@ public class NuxeoFrame extends JFrame {
         logsConstraints.ipady = 100;
         logsConstraints.weightx = 1.0;
         logsConstraints.weighty = 1.0;
-        logsTab.add(logsScroller, logsConstraints);
+        logsPanel.add(logsScroller, logsConstraints);
 
         // Transparent component filling available space when logsPanel is
         // hidden
         logsConstraints.ipady = 100;
         filler = Box.createGlue();
         filler.setPreferredSize(new Dimension(480, 160));
-        logsTab.add(filler, logsConstraints);
-        return logsTab;
+        logsPanel.add(filler, logsConstraints);
+        return logsPanel;
     }
 
     private JComponent buildMainButton() {
@@ -319,25 +324,53 @@ public class NuxeoFrame extends JFrame {
     }
 
     private Component buildSummaryPanel() {
-        JPanel summaryTab = new JPanel();
-        summaryTab.setLayout(new BoxLayout(summaryTab, BoxLayout.PAGE_AXIS));
-        summaryTab.setBackground(new Color(55, 55, 55));
-        summaryTab.setForeground(Color.WHITE);
-        summaryStatus = new JLabel(controller.getStatus());
+        JPanel summaryPanel = new JPanel();
+        summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.PAGE_AXIS));
+        summaryPanel.setBackground(new Color(55, 55, 55));
+        summaryPanel.setForeground(Color.WHITE);
+
+        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
+                + getMessage("summary.status.label")));
+        summaryStatus = new JLabel(controller.launcher.status());
         summaryStatus.setForeground(Color.WHITE);
-        summaryTab.add(summaryStatus);
-        return summaryTab;
+        summaryPanel.add(summaryStatus);
+        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
+                + getMessage("summary.url.label")));
+        summaryURL = new JLabel(controller.launcher.getURL());
+        summaryURL.setForeground(Color.WHITE);
+        summaryPanel.add(summaryURL);
+
+        summaryPanel.add(new JSeparator());
+        ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
+        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
+                + getMessage("summary.homedir.label")));
+        summaryPanel.add(new JLabel("<html><font color=white>"
+                + config.getNuxeoHome().getPath()));
+        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
+                + getMessage("summary.nuxeoconf.label")));
+        summaryPanel.add(new JLabel("<html><font color=white>"
+                + config.getNuxeoConf().getPath()));
+        summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
+                + getMessage("summary.datadir.label")));
+        summaryPanel.add(new JLabel("<html><font color=white>"
+                + config.getDataDir().getPath()));
+        return summaryPanel;
     }
 
-    /**
-     * @return
-     */
     private JComponent buildTabbedPanel() {
         tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
-        // tabbedPanel.setPreferredSize(new Dimension(500, 200));
         tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
         tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
         tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
+        tabbedPanel.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JTabbedPane pane = (JTabbedPane) e.getSource();
+                if (pane.getSelectedIndex() == 2) {
+                    consolePanel.getConsole().requestFocusInWindow();
+                }
+            }
+        });
         return tabbedPanel;
     }
 
@@ -348,8 +381,8 @@ public class NuxeoFrame extends JFrame {
         return button;
     }
 
-    public void debug() {
-        for (Component comp : this.getContentPane().getComponents()) {
+    public void debug(JComponent parent) {
+        for (Component comp : parent.getComponents()) {
             if (comp instanceof JComponent) {
                 ((JComponent) comp).setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.red),
@@ -401,7 +434,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected void updateMainButton() {
-        if (controller.isRunning()) {
+        if (controller.launcher.isRunning()) {
             mainButton.setText(getMessage("mainbutton.stop.text"));
             mainButton.setToolTipText(getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
@@ -418,7 +451,8 @@ public class NuxeoFrame extends JFrame {
      * Update information displayed in summary tab
      */
     public void updateSummary() {
-        summaryStatus.setText(controller.getStatus());
+        summaryStatus.setText(controller.launcher.status());
+        summaryURL.setText(controller.launcher.getURL());
     }
 
 }
