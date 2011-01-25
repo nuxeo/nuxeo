@@ -125,7 +125,6 @@ public class NuxeoFrame extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            log.debug("showlogs" + e);
             logsButton.setEnabled(false);
             if (logsShown) {
                 logsScroller.setVisible(false);

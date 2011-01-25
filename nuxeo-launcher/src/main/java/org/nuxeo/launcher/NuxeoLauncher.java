@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
@@ -109,8 +110,6 @@ public abstract class NuxeoLauncher {
     private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory(
             "NuxeoProcessThread", false));
 
-    private boolean consoleLogs = false;
-
     private ShutdownThread shutdownHook;
 
     protected String[] params;
@@ -149,7 +148,8 @@ public abstract class NuxeoLauncher {
      * @throws InterruptedException If any thread has interrupted the current
      *             thread.
      */
-    protected void start() throws IOException, InterruptedException {
+    protected void start(boolean logProcessOutput) throws IOException,
+            InterruptedException {
         List<String> command = new ArrayList<String>();
         command.add(getJavaExecutable().getPath());
         command.addAll(Arrays.asList(System.getProperty(JAVA_OPTS_PROPERTY,
@@ -164,14 +164,10 @@ public abstract class NuxeoLauncher {
         }
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(command));
         pb.directory(configurationGenerator.getNuxeoHome());
-        if (consoleLogs) {
-            pb = pb.redirectErrorStream(true);
-        }
+        // pb = pb.redirectErrorStream(true);
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
-        if (consoleLogs) {
-            logProcessStreams(pb, nuxeoProcess);
-        }
+        logProcessStreams(pb, nuxeoProcess, logProcessOutput);
         Thread.sleep(1000);
         log.info("Server started"
                 + (getPid() != null ? " with process ID " + pid : "") + ".");
@@ -198,33 +194,52 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected class ThreadedStreamHandler extends Thread {
-        private InputStream inputStream;
+    protected class ThreadedStreamGobbler extends Thread {
+        private InputStream is;
 
-        ThreadedStreamHandler(Process process) {
-            this.inputStream = process.getInputStream();
+        private int logLevel;
+
+        ThreadedStreamGobbler(InputStream is, int logLevel) {
+            this.is = is;
+            this.logLevel = logLevel;
+            this.setDaemon(true);
         }
 
         @Override
         public void run() {
-            InputStreamReader isr = new InputStreamReader(inputStream);
-            BufferedReader br = new BufferedReader(isr);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
 
             try {
                 while ((line = br.readLine()) != null) {
-                    log.info(line);
+                    switch (logLevel) {
+                    case SimpleLog.LOG_LEVEL_INFO:
+                        log.info(line);
+                        break;
+                    case SimpleLog.LOG_LEVEL_ERROR:
+                        log.error(line);
+                        break;
+                    case SimpleLog.LOG_LEVEL_OFF:
+                    default:
+                        break;
+                    }
                 }
             } catch (IOException e) {
                 log.error(e);
+            } finally {
+                IOUtils.closeQuietly(br);
             }
         }
     }
 
-    public Thread logProcessStreams(ProcessBuilder pb, Process process) {
-        ThreadedStreamHandler streamHandler = new ThreadedStreamHandler(process);
-        streamHandler.start();
-        return streamHandler;
+    public void logProcessStreams(ProcessBuilder pb, Process process,
+            boolean logProcessOutput) {
+        new ThreadedStreamGobbler(process.getInputStream(),
+                logProcessOutput ? SimpleLog.LOG_LEVEL_INFO
+                        : SimpleLog.LOG_LEVEL_OFF).start();
+        new ThreadedStreamGobbler(process.getErrorStream(),
+                logProcessOutput ? SimpleLog.LOG_LEVEL_ERROR
+                        : SimpleLog.LOG_LEVEL_OFF).start();
     }
 
     protected abstract String getServerPrint();
@@ -321,11 +336,10 @@ public abstract class NuxeoLauncher {
         } else if ("start".equalsIgnoreCase(command)) {
             commandSucceeded = launcher.doStartAndWait();
         } else if ("console".equalsIgnoreCase(command)) {
-            launcher.setConsoleLogs(true);
             launcher.executor.execute(new Runnable() {
                 public void run() {
                     launcher.addShutdownHook();
-                    if (!launcher.doStart()) {
+                    if (!launcher.doStart(true)) {
                         launcher.removeShutdownHook();
                         System.exit(1);
                     }
@@ -359,19 +373,45 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * @see #doStartAndWait(boolean)
+     */
+    public boolean doStartAndWait() {
+        return doStartAndWait(false);
+    }
+
+    /**
+     * @see #stop(boolean)
+     */
+    public void stop() {
+        stop(false);
+    }
+
+    /**
+     * Call {@link #doStart(boolean)} with false as parameter.
+     *
+     * @see #doStart(boolean)
+     * @return true if the server started successfully
+     */
+    public boolean doStart() {
+        return doStart(false);
+    }
+
+    /**
      * Whereas {@link #doStart()} considers the server as started when the
      * process is running, {@link #doStartAndWait()} waits for effective start
      * by watching the logs
      *
+     * @param logProcessOutput Must process output stream must be logged or not.
+     *
      * @return true if the server started successfully
      */
-    public boolean doStartAndWait() {
+    public boolean doStartAndWait(boolean logProcessOutput) {
         boolean commandSucceeded = true;
-        if (doStart()) {
+        if (doStart(logProcessOutput)) {
             addShutdownHook();
             if (!waitForEffectiveStart()) {
                 commandSucceeded = false;
-                stop();
+                stop(logProcessOutput);
             } else {
                 removeShutdownHook();
             }
@@ -428,7 +468,7 @@ public abstract class NuxeoLauncher {
                 while (!in.ready() && count < startMaxWait && isRunning()) {
                     System.out.print(".");
                     count++;
-                        Thread.sleep(1000);
+                    Thread.sleep(1000);
                 }
                 line = in.readLine();
                 if (line != null && nuxeoStartedPattern.matcher(line).matches()) {
@@ -472,12 +512,12 @@ public abstract class NuxeoLauncher {
      *
      * @return true if server successfully started
      */
-    public boolean doStart() {
+    public boolean doStart(boolean logProcessOutput) {
         boolean serverStarted = false;
         try {
             checkNoRunningServer();
             configure();
-            start();
+            start(logProcessOutput);
             serverStarted = isRunning();
             if (pid != null) {
                 File pidFile = new File(configurationGenerator.getPidDir(),
@@ -522,17 +562,13 @@ public abstract class NuxeoLauncher {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
-    public void setConsoleLogs(boolean consoleLogs) {
-        this.consoleLogs = consoleLogs;
-    }
-
     /**
      * Stops the server.
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
      */
-    public void stop() {
+    public void stop(boolean logProcessOutput) {
         try {
             if (!(processManager instanceof PureJavaProcessManager)
                     && getPid() == null) {
@@ -555,15 +591,11 @@ public abstract class NuxeoLauncher {
                 }
                 ProcessBuilder pb = new ProcessBuilder(command);
                 pb.directory(configurationGenerator.getNuxeoHome());
-                if (consoleLogs) {
-                    pb = pb.redirectErrorStream(true);
-                }
+                // pb = pb.redirectErrorStream(true);
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    if (consoleLogs) {
-                        logProcessStreams(pb, stopProcess);
-                    }
+                    logProcessStreams(pb, stopProcess, logProcessOutput);
                     stopProcess.waitFor();
                     boolean wait = true;
                     while (wait) {
