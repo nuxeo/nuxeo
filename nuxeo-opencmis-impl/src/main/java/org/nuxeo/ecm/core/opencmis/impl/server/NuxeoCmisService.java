@@ -351,6 +351,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             nuxeoTypeId = NuxeoTypeHelper.NUXEO_FILE;
         } else if (BaseTypeId.CMIS_FOLDER.value().equals(typeId)) {
             nuxeoTypeId = NuxeoTypeHelper.NUXEO_FOLDER;
+        } else if (BaseTypeId.CMIS_RELATIONSHIP.value().equals(typeId)) {
+            nuxeoTypeId = NuxeoTypeHelper.NUXEO_RELATION;
         }
         try {
             doc = coreSession.createDocumentModel(nuxeoTypeId);
@@ -443,8 +445,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             // set path segment from title
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
             String pathSegment = pss.generatePathSegment(doc);
-            doc.setPathInfo(doc.getPath().removeLastSegments(1).toString(),
-                    pathSegment);
+            Path path = doc.getPath();
+            doc.setPathInfo(path == null ? null
+                    : path.removeLastSegments(1).toString(), pathSegment);
             data.doc = coreSession.createDocument(doc);
             coreSession.save();
         } catch (IOException e) {
@@ -598,7 +601,9 @@ public class NuxeoCmisService extends AbstractCmisService {
     public String createRelationship(String repositoryId,
             Properties properties, List<String> policies, Acl addAces,
             Acl removeAces, ExtensionsData extension) {
-        throw new CmisNotSupportedException();
+        NuxeoObjectData object = createObject(properties, null,
+                BaseTypeId.CMIS_RELATIONSHIP, null);
+        return object.getId();
     }
 
     @Override

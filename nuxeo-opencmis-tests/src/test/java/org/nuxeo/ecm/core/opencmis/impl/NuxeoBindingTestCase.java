@@ -74,6 +74,10 @@ public class NuxeoBindingTestCase {
         nuxeotc.deployBundle("org.nuxeo.ecm.platform.audit");
         nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 "OSGI-INF/audit-persistence-config.xml");
+        // these deployments needed for NuxeoAuthenticationFilter.loginAs
+        nuxeotc.deployBundle("org.nuxeo.ecm.directory.types.contrib");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.login");
+        nuxeotc.deployBundle("org.nuxeo.ecm.platform.web.common");
 
         nuxeotc.openSession();
 

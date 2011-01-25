@@ -124,6 +124,14 @@ public class Helper {
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1 = session.createDocument(file1);
 
+        ACPImpl acp;
+        ACL acl;
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", SecurityConstants.BROWSE, true));
+        acp = new ACPImpl();
+        acp.addACL(acl);
+        file1.setACP(acp, true);
+
         DocumentModel file2 = new DocumentModelImpl("/testfolder1",
                 "testfile2", "File");
         file2.setPropertyValue("dc:title", "testfile2_Title");
@@ -136,6 +144,12 @@ public class Helper {
         file2.setPropertyValue("dc:lastContributor", "bob");
         file2.setPropertyValue("dc:coverage", "football");
         file2 = session.createDocument(file2);
+
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", SecurityConstants.BROWSE, true));
+        acp = new ACPImpl();
+        acp.addACL(acl);
+        file2.setACP(acp, true);
 
         DocumentModel file3 = new DocumentModelImpl("/testfolder1",
                 "testfile3", "Note");

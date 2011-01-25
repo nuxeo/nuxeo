@@ -55,13 +55,13 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.MapMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -94,6 +94,12 @@ public class CMISQLQueryMaker implements QueryMaker {
     public static final String DC_MODIFIED_KEY = "modified";
 
     public static final String DC_LAST_CONTRIBUTOR_KEY = "lastContributor";
+
+    public static final String REL_FRAGMENT_NAME = "relation";
+
+    public static final String REL_SOURCE_KEY = "source";
+
+    public static final String REL_TARGET_KEY = "target";
 
     protected Database database;
 
@@ -195,10 +201,11 @@ public class CMISQLQueryMaker implements QueryMaker {
                 msg = "Line " + e.line + ":" + e.charPositionInLine + " "
                         + walker.getErrorMessage(e, walker.getTokenNames());
             }
-            throw new QueryMakerException("Cannot parse query: " + msg);
+            throw new QueryParseException(msg, e);
+        } catch (QueryParseException e) {
+            throw e;
         } catch (Exception e) {
-            throw new QueryMakerException("Cannot parse query: "
-                    + e.getMessage(), e);
+            throw new QueryParseException(e.getMessage(), e);
         }
 
         // now resolve column selectors to actual database columns
@@ -270,7 +277,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     }
                 }
                 if (table == null) {
-                    throw new StorageException(
+                    throw new QueryParseException(
                             "Bad query, qualifier not found: " + qual);
                 }
                 // do requested join
@@ -280,6 +287,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 from.append(" JOIN ");
             }
+            boolean isRelation = table.getKey().equals(REL_FRAGMENT_NAME);
 
             // join requested table
 
@@ -372,7 +380,10 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // security check
 
-            if (queryFilter != null && queryFilter.getPrincipals() != null) {
+            boolean checkSecurity = !isRelation //
+                    && queryFilter != null
+                    && queryFilter.getPrincipals() != null;
+            if (checkSecurity) {
                 Serializable principals;
                 Serializable permissions;
                 if (dialect.supportsArrays()) {
@@ -541,12 +552,12 @@ public class CMISQLQueryMaker implements QueryMaker {
         } else {
             if (!addedSystemColumns.isEmpty()) {
                 if (!virtualColumnNames.isEmpty()) {
-                    throw new QueryMakerException(
+                    throw new QueryParseException(
                             "Cannot use DISTINCT with virtual columns: "
                                     + StringUtils.join(virtualColumnNames, ", "));
                 }
                 if (addSystemColumns) {
-                    throw new QueryMakerException(
+                    throw new QueryParseException(
                             "Cannot use DISTINCT without explicit "
                                     + PropertyIds.OBJECT_ID);
                 }
@@ -646,12 +657,12 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (sel instanceof FunctionReference) {
             FunctionReference fr = (FunctionReference) sel;
             if (clauseType != ORDER_BY) { // == ok
-                throw new QueryMakerException("Cannot use function in "
+                throw new QueryParseException("Cannot use function in "
                         + clauseType + " clause: " + fr.getFunction());
             }
             // ORDER BY SCORE, nothing further to record
             if (fulltextMatchInfo == null) {
-                throw new QueryMakerException(
+                throw new QueryParseException(
                         "Cannot use ORDER BY SCORE without CONTAINS");
             }
             return;
@@ -663,7 +674,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         // fetch column and associate it to the selector
         Column column = getColumn(col);
         if (column == null) {
-            throw new QueryMakerException("Cannot use column in " + clauseType
+            throw new QueryParseException("Cannot use column in " + clauseType
                     + " clause: " + col.getPropertyQueryName());
         }
         col.setInfo(column);
@@ -751,6 +762,14 @@ public class CMISQLQueryMaker implements QueryMaker {
         if (id.equals(PropertyIds.LAST_MODIFIED_BY)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(
                     DC_LAST_CONTRIBUTOR_KEY);
+        }
+        if (id.equals(PropertyIds.SOURCE_ID)) {
+            return database.getTable(REL_FRAGMENT_NAME).getColumn(
+                    REL_SOURCE_KEY);
+        }
+        if (id.equals(PropertyIds.TARGET_ID)) {
+            return database.getTable(REL_FRAGMENT_NAME).getColumn(
+                    REL_TARGET_KEY);
         }
         return null;
     }
@@ -903,7 +922,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         @Override
         public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
             if (hasContains) {
-                throw new QueryMakerException(
+                throw new QueryParseException(
                         "At most one CONTAINS() is allowed");
             }
             hasContains = true;
@@ -920,7 +939,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 int firstColumnIdx = statement.indexOf(':');
                 if (firstColumnIdx > 0
                         && firstColumnIdx < statement.length() - 1) {
-                    String requestedIndexName = statement.substring(0, firstColumnIdx);
+                    String requestedIndexName = statement.substring(0,
+                            firstColumnIdx);
                     statement = statement.substring(firstColumnIdx + 1);
                     if (model.fulltextInfo.indexNames.contains(requestedIndexName)) {
                         indexName = requestedIndexName;
@@ -1072,7 +1092,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             if (pd.getCardinality() != Cardinality.MULTI) {
-                throw new QueryMakerException("Cannot use " + op
+                throw new QueryParseException("Cannot use " + op
                         + " ANY with single-valued property: "
                         + col.getPropertyQueryName());
             }
@@ -1216,7 +1236,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column column = (Column) sel.getInfo();
                 whereBuf.append(column.getFullQuotedName());
             } else {
-                throw new QueryMakerException(
+                throw new QueryParseException(
                         "Cannot use column in WHERE clause: " + sel.getName());
             }
             return null;

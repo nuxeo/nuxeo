@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <chemistry.opencmis.version>0.2.0-incubating-SNAPSHOT</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.2.0-incubating</chemistry.opencmis.version>
     <nuxeo.version>${version}</nuxeo.version>
   </properties>
 

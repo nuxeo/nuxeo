@@ -1426,10 +1426,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         init();
 
         String statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
-            + " FROM cmis:folder A" //
-            + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
-            + " WHERE A.cmis:name = 'testfolder2_Title'" //
-            + " ORDER BY B.dc:title";
+                + " FROM cmis:folder A" //
+                + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
+                + " WHERE A.cmis:name = 'testfolder2_Title'" //
+                + " ORDER BY B.dc:title";
         ObjectList res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
     }
@@ -1764,6 +1764,62 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(changeType, cei.getChangeType());
         assertEquals(type,
                 properties.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue());
+    }
+
+    @Test
+    public void testRelationship() throws Exception {
+        String id1 = getObjectByPath("/testfolder1/testfile1").getId();
+        String id2 = getObjectByPath("/testfolder1/testfile2").getId();
+
+        // create relationship
+        String statement;
+        ObjectList res;
+        BindingsObjectFactory factory = binding.getObjectFactory();
+        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        props.add(factory.createPropertyIdData(PropertyIds.NAME, "rel"));
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID,
+                "Relation"));
+        props.add(factory.createPropertyIdData(PropertyIds.SOURCE_ID, id1));
+        props.add(factory.createPropertyIdData(PropertyIds.TARGET_ID, id2));
+        Properties properties = factory.createPropertiesData(props);
+        String relid = objService.createRelationship(repositoryId, properties,
+                null, null, null, null);
+
+        // query relationship
+        statement = "SELECT cmis:objectId, cmis:name, cmis:sourceId, cmis:targetId FROM Relation";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        ObjectData od = res.getObjects().get(0);
+        assertEquals(relid, getValue(od, PropertyIds.OBJECT_ID));
+        assertEquals("rel", getValue(od, PropertyIds.NAME));
+        assertEquals(id1, getValue(od, PropertyIds.SOURCE_ID));
+        assertEquals(id2, getValue(od, PropertyIds.TARGET_ID));
+
+        // normal user has security applied to its queries
+        nuxeotc.closeSession();
+        nuxeotc.session = nuxeotc.openSessionAs("john");
+        init();
+
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
+                + " FROM cmis:document A"
+                + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
+                + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
+        res = query(statement);
+        // no access to testfile1 or testfile2 by john
+        assertEquals(0, res.getNumItems().intValue());
+
+        // bob has Browse on testfile1 and testfile2
+        nuxeotc.closeSession();
+        nuxeotc.session = nuxeotc.openSessionAs("bob");
+        init();
+
+        // no security check on relationship itself
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
+                + " FROM cmis:document A"
+                + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
+                + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
     }
 
 }
