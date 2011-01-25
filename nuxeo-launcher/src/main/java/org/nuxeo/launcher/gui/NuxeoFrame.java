@@ -70,6 +70,62 @@ import org.nuxeo.shell.swing.ConsolePanel;
  */
 public class NuxeoFrame extends JFrame {
 
+    protected final class ImagePanel extends JPanel {
+        private static final long serialVersionUID = 1L;
+
+        private Image backgroundImage;
+
+        ImagePanel(Icon image, ImageIcon backgroundImage) {
+            this.backgroundImage = backgroundImage.getImage();
+            setOpaque(false);
+            add(new JLabel(image));
+        }
+
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, this);
+        }
+    }
+
+    protected class LogsButtonAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            logsButton.setEnabled(false);
+            if (logsShown) {
+                logsScroller.setVisible(false);
+                filler.setVisible(true);
+                logsShown = false;
+            } else {
+                logsScroller.setVisible(true);
+                filler.setVisible(false);
+                logsShown = true;
+            }
+            controller.notifyLogsObserver(logsShown);
+            updateLogsButton();
+            logsButton.setEnabled(true);
+        }
+    }
+
+    protected class StartStopAction extends AbstractAction {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            mainButton.setEnabled(false);
+            if (controller.isRunning()) {
+                mainButton.setText(getMessage("mainbutton.stop.inprogress"));
+                controller.stop();
+            } else {
+                mainButton.setText(getMessage("mainbutton.start.inprogress"));
+                controller.start();
+            }
+        }
+    }
+
+    protected static final Log log = LogFactory.getLog(NuxeoFrame.class);
+
     private static final long serialVersionUID = 1L;
 
     protected final ImageIcon showLogsIcon = getImageIcon("icons/show_logs.png");
@@ -102,92 +158,6 @@ public class NuxeoFrame extends JFrame {
 
     private JLabel summaryStatus;
 
-    protected final class ImagePanel extends JPanel {
-        private static final long serialVersionUID = 1L;
-
-        private Image backgroundImage;
-
-        ImagePanel(Icon image, ImageIcon backgroundImage) {
-            this.backgroundImage = backgroundImage.getImage();
-            setOpaque(false);
-            add(new JLabel(image));
-        }
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(backgroundImage, 0, 0, this);
-        }
-    }
-
-    protected class LogsButtonAction extends AbstractAction {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            logsButton.setEnabled(false);
-            if (logsShown) {
-                logsScroller.setVisible(false);
-                filler.setVisible(true);
-                logsShown = false;
-            } else {
-                logsScroller.setVisible(true);
-                filler.setVisible(false);
-                logsShown = true;
-            }
-            controller.notifyLogsObserver(logsShown);
-            updateLogsButton();
-            logsButton.setEnabled(true);
-        }
-
-    }
-
-    protected void updateLogsButton() {
-        if (logsShown) {
-            logsButton.setText(getMessage("logsbutton.hide.text"));
-            logsButton.setToolTipText(getMessage("logsbutton.hide.tooltip"));
-            logsButton.setIcon(hideLogsIcon);
-        } else {
-            logsButton.setText(getMessage("logsbutton.show.text"));
-            logsButton.setToolTipText(getMessage("logsbutton.show.tooltip"));
-            logsButton.setIcon(showLogsIcon);
-        }
-    }
-
-    static final Log log = LogFactory.getLog(NuxeoFrame.class);
-
-    protected class StartStopAction extends AbstractAction {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            mainButton.setEnabled(false);
-            if (controller.isRunning()) {
-                mainButton.setText(getMessage("mainbutton.stop.inprogress"));
-                controller.stop();
-            } else {
-                mainButton.setText(getMessage("mainbutton.start.inprogress"));
-                controller.start();
-            }
-        }
-
-    }
-
-    protected void updateMainButton() {
-        if (controller.isRunning()) {
-            mainButton.setText(getMessage("mainbutton.stop.text"));
-            mainButton.setToolTipText(getMessage("mainbutton.stop.tooltip"));
-            mainButton.setIcon(stopIcon);
-        } else {
-            mainButton.setText(getMessage("mainbutton.start.text"));
-            mainButton.setToolTipText(getMessage("mainbutton.start.tooltip"));
-            mainButton.setIcon(startIcon);
-        }
-        mainButton.setEnabled(true);
-        mainButton.validate();
-    }
-
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
         this.controller = controller;
@@ -201,13 +171,11 @@ public class NuxeoFrame extends JFrame {
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setBackground(new Color(55, 55, 55));
-        // setLocationRelativeTo(null);
         getContentPane().setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
 
         // Header (with main button inside)
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        // constraints.gridwidth = GridBagConstraints.REMAINDER;
         constraints.gridx = 0;
         constraints.anchor = GridBagConstraints.PAGE_START;
         JComponent header = buildHeader();
@@ -231,29 +199,18 @@ public class NuxeoFrame extends JFrame {
         getContentPane().add(buildFooter(), constraints);
     }
 
-    /**
-     * @return
-     */
-    private JComponent buildTabbedPanel() {
-        tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
-        // tabbedPanel.setPreferredSize(new Dimension(500, 200));
-        tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
-        tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
-        tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
-        return tabbedPanel;
-    }
-
     private Component buildConsolePanel() {
-        // JPanel shellPanel = new JPanel();
         try {
             consolePanel = new ConsolePanel();
         } catch (Exception e) {
             log.error(e);
         }
-        // console = panel.getConsole();
-        // console.requestFocus();
         Interactive.setConsoleReaderFactory(consolePanel.getConsole());
         Interactive.setHandler(new InteractiveShellHandler() {
+            @Override
+            public void enterInteractiveMode() {
+                Interactive.reset();
+            }
 
             @Override
             public boolean exitInteractiveMode(int code) {
@@ -266,14 +223,8 @@ public class NuxeoFrame extends JFrame {
                     return false;
                 }
             }
-
-            @Override
-            public void enterInteractiveMode() {
-                Interactive.reset();
-            }
         });
         new Thread() {
-
             @Override
             public void run() {
                 try {
@@ -282,9 +233,31 @@ public class NuxeoFrame extends JFrame {
                     log.error(e);
                 }
             }
-
         }.start();
         return consolePanel;
+    }
+
+    private JComponent buildFooter() {
+        JLabel label = new JLabel(getMessage("footer.label"));
+        label.setForeground(Color.WHITE);
+        label.setPreferredSize(new Dimension(470, 16));
+        label.setFont(new Font(label.getFont().getName(),
+                label.getFont().getStyle(), 9));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        return label;
+    }
+
+    private JComponent buildHeader() {
+        ImagePanel headerLogo = new ImagePanel(
+                getImageIcon("img/nuxeo_control_panel_logo.png"),
+                getImageIcon("img/nuxeo_control_panel_bg.png"));
+        headerLogo.setLayout(new GridBagLayout());
+        // Main button (start/stop) (added to header)
+
+        GridBagConstraints headerConstraints = new GridBagConstraints();
+        headerConstraints.gridx = 0;
+        headerLogo.add(buildMainButton(), headerConstraints);
+        return headerLogo;
     }
 
     private Component buildLogsTab() {
@@ -339,6 +312,12 @@ public class NuxeoFrame extends JFrame {
         return logsTab;
     }
 
+    private JComponent buildMainButton() {
+        mainButton = createButton(new StartStopAction(), null);
+        updateMainButton();
+        return mainButton;
+    }
+
     private Component buildSummaryPanel() {
         JPanel summaryTab = new JPanel();
         summaryTab.setLayout(new BoxLayout(summaryTab, BoxLayout.PAGE_AXIS));
@@ -348,6 +327,25 @@ public class NuxeoFrame extends JFrame {
         summaryStatus.setForeground(Color.WHITE);
         summaryTab.add(summaryStatus);
         return summaryTab;
+    }
+
+    /**
+     * @return
+     */
+    private JComponent buildTabbedPanel() {
+        tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
+        // tabbedPanel.setPreferredSize(new Dimension(500, 200));
+        tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
+        tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
+        tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
+        return tabbedPanel;
+    }
+
+    private JButton createButton(ActionListener action, ImageIcon icon) {
+        JButton button = new JButton();
+        button.addActionListener(action);
+        button.setIcon(icon);
+        return button;
     }
 
     public void debug() {
@@ -360,35 +358,6 @@ public class NuxeoFrame extends JFrame {
                         + ((JComponent) comp).getSize());
             }
         }
-    }
-
-    private JComponent buildFooter() {
-        JLabel label = new JLabel(getMessage("footer.label"));
-        label.setForeground(Color.WHITE);
-        label.setPreferredSize(new Dimension(470, 16));
-        label.setFont(new Font(label.getFont().getName(),
-                label.getFont().getStyle(), 9));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        return label;
-    }
-
-    private JComponent buildMainButton() {
-        mainButton = createButton(new StartStopAction(), null);
-        updateMainButton();
-        return mainButton;
-    }
-
-    private JComponent buildHeader() {
-        ImagePanel headerLogo = new ImagePanel(
-                getImageIcon("img/nuxeo_control_panel_logo.png"),
-                getImageIcon("img/nuxeo_control_panel_bg.png"));
-        headerLogo.setLayout(new GridBagLayout());
-        // Main button (start/stop) (added to header)
-
-        GridBagConstraints headerConstraints = new GridBagConstraints();
-        headerConstraints.gridx = 0;
-        headerLogo.add(buildMainButton(), headerConstraints);
-        return headerLogo;
     }
 
     protected ImageIcon getImageIcon(String resourcePath) {
@@ -419,11 +388,30 @@ public class NuxeoFrame extends JFrame {
         return message;
     }
 
-    private JButton createButton(ActionListener action, ImageIcon icon) {
-        JButton button = new JButton();
-        button.addActionListener(action);
-        button.setIcon(icon);
-        return button;
+    protected void updateLogsButton() {
+        if (logsShown) {
+            logsButton.setText(getMessage("logsbutton.hide.text"));
+            logsButton.setToolTipText(getMessage("logsbutton.hide.tooltip"));
+            logsButton.setIcon(hideLogsIcon);
+        } else {
+            logsButton.setText(getMessage("logsbutton.show.text"));
+            logsButton.setToolTipText(getMessage("logsbutton.show.tooltip"));
+            logsButton.setIcon(showLogsIcon);
+        }
+    }
+
+    protected void updateMainButton() {
+        if (controller.isRunning()) {
+            mainButton.setText(getMessage("mainbutton.stop.text"));
+            mainButton.setToolTipText(getMessage("mainbutton.stop.tooltip"));
+            mainButton.setIcon(stopIcon);
+        } else {
+            mainButton.setText(getMessage("mainbutton.start.text"));
+            mainButton.setToolTipText(getMessage("mainbutton.start.tooltip"));
+            mainButton.setIcon(startIcon);
+        }
+        mainButton.setEnabled(true);
+        mainButton.validate();
     }
 
     /**
