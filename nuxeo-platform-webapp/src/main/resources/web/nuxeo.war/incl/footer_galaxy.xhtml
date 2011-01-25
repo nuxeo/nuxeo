@@ -4,7 +4,7 @@
      xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:insert name="footer">
-  Copyright <f:verbatim> &amp;copy; </f:verbatim> 2006-2010 Nuxeo. 
+ <h:outputText value="#{messages['label.login.copyright']}" />  
   <h:outputLink onclick="window.open(this.href); return false;" value="http://nuxeo.com/subscription/connect?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products">
   <h:outputText value="#{messages['label.login.getSupport']}" />
     </h:outputLink> | <!-- &nbsp; -->
