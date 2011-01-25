@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Observable;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,12 +38,14 @@ public class LogsSource extends Observable implements Runnable {
 
     private static final long WAIT_FOR_FILE_EXISTS = 2000;
 
-    private static final long WAIT_FOR_READING_CONTENT = 2000;
+    private static final long WAIT_FOR_READING_CONTENT = 1000;
 
     private File logFile;
 
+    private boolean pause = false;
+
     /**
-     * @param logFile
+     * @param logFile Log file to manage
      */
     public LogsSource(File logFile) {
         this.logFile = logFile;
@@ -50,8 +53,8 @@ public class LogsSource extends Observable implements Runnable {
 
     @Override
     public void run() {
+        BufferedReader in = null;
         try {
-            BufferedReader in = null;
             while (!logFile.exists()) {
                 Thread.sleep(WAIT_FOR_FILE_EXISTS);
             }
@@ -71,11 +74,35 @@ public class LogsSource extends Observable implements Runnable {
                         wait(WAIT_FOR_READING_CONTENT);
                     }
                 }
+                if (pause) {
+                    synchronized (this) {
+                        wait();
+                    }
+                }
             }
         } catch (InterruptedException e) {
             log.error(e);
         } catch (IOException e) {
             log.error(e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+    }
+
+    /**
+     * Ask thread to pause until {@link #resume()}
+     */
+    public synchronized void pause() {
+        this.pause = true;
+    }
+
+    /**
+     * Resume thread after call to {@link #pause()}
+     */
+    public void resume() {
+        this.pause = false;
+        synchronized (this) {
+            notify();
         }
     }
 
