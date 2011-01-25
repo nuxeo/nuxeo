@@ -233,7 +233,9 @@ public class NuxeoFrame extends JFrame {
             @Override
             public void run() {
                 try {
-                    Shell.get().main(new String[0]);
+                    Shell.get().main(
+                            new String[] { controller.launcher.getURL()
+                                    + "/site/automation" });
                 } catch (Exception e) {
                     log.error(e);
                 }
