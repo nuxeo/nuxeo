@@ -595,6 +595,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue(PropertyIds.CHECKIN_COMMENT, null, co);
     }
 
+
+
+    public void testUserWorkspace() throws ClientException {
+        String wsPath = Helper.createUserWorkspace(getCoreSession(), isAtomPub ? USERNAME : "Administrator");
+        Folder ws = (Folder)session.getObjectByPath(wsPath);
+        assertNotNull(ws);
+    }
+
     protected void checkValue(String prop, Object expected, CmisObject ob) {
         Object value = ob.getPropertyValue(prop);
         if (expected == NOT_NULL) {

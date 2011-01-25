@@ -25,10 +25,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -178,4 +185,30 @@ public class Helper {
         return info;
     }
 
+    public static String createUserWorkspace(CoreSession repo, String username) throws ClientException {
+
+        DocumentModel container = new DocumentModelImpl("/", "UserWorkspaceRoot", "UserWorkspaceRoot");
+        container = repo.createDocument(container);
+        {
+            ACP acp = new ACPImpl();
+            ACL acl = new ACLImpl();
+            acl.setACEs(new ACE[]{new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false)});
+            acp.addACL(acl);
+            container.setACP(acp, true);
+        }
+
+        DocumentModel ws = new DocumentModelImpl(container.getPathAsString(), username, "Workspace");
+        ws = repo.createDocument(ws);
+        ACP acp = new ACPImpl();
+        {
+            ACL acl = new ACLImpl();
+            acl.setACEs(new ACE[]{new ACE(username, SecurityConstants.EVERYTHING, true)});
+            acp.addACL(acl);
+            ws.setACP(acp, true);
+        }
+
+        repo.save();
+        return ws.getPathAsString();
+    }
 }

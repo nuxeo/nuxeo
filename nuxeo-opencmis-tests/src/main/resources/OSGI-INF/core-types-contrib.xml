@@ -11,6 +11,10 @@
       <schema name="dublincore" />
       <schema name="myschema" />
     </doctype>
+    <doctype name="UserWorkspaceRoot" extends="Folder">
+      <facet name="SuperSpace"/>
+      <facet name="HiddenInNavigation"/>
+    </doctype>
   </extension>
 
 </component>
