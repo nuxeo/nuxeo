@@ -79,14 +79,14 @@ public class NXOAuthStore extends BasicOAuthStore {
         NuxeoOAuthServiceProvider sp = spr.getProvider(securityToken.getAppUrl(), serviceName);
 
         if (sp==null) {
+            
             return super.getConsumerKeyAndSecret(securityToken, serviceName, provider);
         } else {
             String consumerKey = sp.getConsumerKey();
             String secret = sp.getConsumerSecret();
-            secret=null; // Tmp Hack
             KeyType kt = KeyType.HMAC_SYMMETRIC;
             String name = serviceName;
-            if (secret==null) {
+            if (secret==null || "".equals(secret.trim())) {
                 // should be moved to OAuth service
                 secret = nxDefaultKey.getConsumerSecret();
                 kt = KeyType.RSA_PRIVATE;

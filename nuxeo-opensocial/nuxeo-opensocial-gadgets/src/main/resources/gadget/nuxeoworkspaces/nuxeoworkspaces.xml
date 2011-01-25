@@ -167,13 +167,14 @@
     function doRequest() {
 
         var ts = new Date().getTime() + "" + Math.random()*11
-        //var url="http://127.0.0.1:8080/nuxeo/site/admin/repository/default-domain/workspaces/@views/content_page";
         var url ="${serverSideBaseUrl}restAPI/dashboard/USER_WORKSPACES"
         url += "?format=JSON&lang=en&page="+ currentPage;
+        url += "&ts=" + ts;
 
         var params = {};
         <#if insideNuxeo>
         params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+        params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo4shindig";
         <#else>
         params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.OAUTH;
         params[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo";

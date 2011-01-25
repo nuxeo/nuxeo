@@ -82,8 +82,7 @@ function getDocumentLists() {
     var params = {};
     var headers = {};
 
-    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
-    //params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
     params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
@@ -92,7 +91,7 @@ function getDocumentLists() {
     headers["Expires", "Fri, 01 Jan 1990 00:00:00 GMT"];
     headers["Pragma", "no-cache"];
     headers["Cache-control"] = "no-cache, must-revalidate";
-    headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
+    //headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
 
     params[gadgets.io.RequestParameters.HEADERS] = headers;
 

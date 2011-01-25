@@ -222,4 +222,9 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
             return null;
         }
     }
+
+    public boolean propagateJSESSIONIDToTrustedHosts() {
+        return os.propagateJSESSIONIDToTrustedHosts();
+    }
+
 }

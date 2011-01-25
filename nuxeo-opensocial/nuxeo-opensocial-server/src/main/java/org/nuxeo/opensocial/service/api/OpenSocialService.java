@@ -73,8 +73,8 @@ public interface OpenSocialService {
     String getOAuthCallbackUrl();
 
     /**
-     * Return a list of hosts to whom we *should* pass the users current
-     * JSESSIONID.
+     * Return a list of hosts that can be considered as trusted :
+     * i.e : we can use internal sign fetch or propagate JSESSIONID
      */
     String[] getTrustedHosts();
 
@@ -84,5 +84,18 @@ public interface OpenSocialService {
      * guice initialization of shindig happens.
      */
     void setupOpenSocial() throws Exception;
+
+
+    /**
+     * For communication between Shindig and Nuxeo we have 2 options :
+     *  - use Signed Fetch based on a dynamically generated shared key
+     *  - propagate the JSESSIONID
+     *
+     * Since propagating JSESSIONID is a "hack" and requires specific code
+     * in the gadget JS, the default is false.
+     *
+     * @return
+     */
+    boolean propagateJSESSIONIDToTrustedHosts();
 
 }

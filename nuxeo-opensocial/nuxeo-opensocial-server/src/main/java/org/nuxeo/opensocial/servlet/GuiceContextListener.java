@@ -27,11 +27,13 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.gadgets.http.HttpFetcher;
+import org.apache.shindig.gadgets.oauth.GadgetOAuthTokenStore;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
 import org.apache.shindig.gadgets.oauth.OAuthModule;
 import org.apache.shindig.gadgets.oauth.OAuthRequest;
 import org.apache.shindig.gadgets.oauth.OAuthStore;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.opensocial.shindig.oauth.NXGadgetOAuthTokenStore;
 import org.nuxeo.opensocial.shindig.oauth.NXOAuthStoreProvider;
 import org.nuxeo.opensocial.shindig.oauth.NuxeoOAuthRequest;
 import org.nuxeo.runtime.api.Framework;
@@ -193,6 +195,7 @@ class NuxeoOAuthOverrides implements Module {
                 NuxeoOverridesRequestProvider.class);
         binder.bind(OAuthStore.class).toProvider(
                 NXOAuthStoreProvider.class);
+        binder.bind(GadgetOAuthTokenStore.class).to(NXGadgetOAuthTokenStore.class);
     }
 
 }

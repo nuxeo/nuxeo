@@ -47,6 +47,7 @@ import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.HttpResponseBuilder;
 import org.apache.shindig.gadgets.oauth.AccessorInfo;
+import org.apache.shindig.gadgets.oauth.OAuthArguments;
 import org.apache.shindig.gadgets.oauth.OAuthClientState;
 import org.apache.shindig.gadgets.oauth.OAuthError;
 import org.apache.shindig.gadgets.oauth.OAuthFetcherConfig;
@@ -57,6 +58,8 @@ import org.apache.shindig.gadgets.oauth.AccessorInfo.OAuthParamLocation;
 import org.apache.shindig.gadgets.oauth.OAuthResponseParams.OAuthRequestException;
 import org.apache.shindig.gadgets.oauth.OAuthStore.TokenInfo;
 import org.json.JSONObject;
+import org.nuxeo.opensocial.service.api.OpenSocialService;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -72,6 +75,8 @@ import com.google.common.collect.Maps;
  *
  */
 public class NuxeoOAuthRequest extends OAuthRequest {
+
+    public static final String NUXEO_INTERNAL_REQUEST = "Nuxeo-Internal-Request";
 
     // Maximum number of attempts at the protocol before giving up.
     private static final int MAX_ATTEMPTS = 2;
@@ -192,6 +197,19 @@ public class NuxeoOAuthRequest extends OAuthRequest {
         }
     }
 
+
+    protected boolean isInternalRequest() {
+        String requestedURI = realRequest.getUri().toString();
+
+        OpenSocialService os = Framework.getLocalService(OpenSocialService.class);
+        for (String trustedHost : os.getTrustedHosts()) {
+            if (requestedURI.startsWith("http://" + trustedHost)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Fetch data and build a response to return to the client. We try to always
      * return something reasonable to the calling app no matter what kind of
@@ -201,9 +219,15 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     private HttpResponse fetchNoThrow() {
         HttpResponseBuilder response = null;
         try {
+
+            OAuthArguments  oauthArgs = realRequest.getOAuthArguments();
+            if (isInternalRequest()) {
+                oauthArgs.setRequestOption(NUXEO_INTERNAL_REQUEST, "true");
+            }
+
             accessorInfo = fetcherConfig.getTokenStore().getOAuthAccessor(
                     realRequest.getSecurityToken(),
-                    realRequest.getOAuthArguments(), clientState,
+                    oauthArgs, clientState,
                     responseParams, fetcherConfig);
             response = fetchWithRetry();
         } catch (OAuthRequestException e) {
@@ -249,7 +273,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
             ++attempts;
             try {
                 response = attemptFetch();
-            } catch (HorribleHackExceptionBecauseStupidClassIsPackagePrivate pe) {
+            } catch (NXOAuthProtocolException pe) {
                 retry = handleProtocolException(pe, attempts);
                 if (!retry) {
                     if (pe.getProblemCode() != null) {
@@ -268,7 +292,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     }
 
     private boolean handleProtocolException(
-            HorribleHackExceptionBecauseStupidClassIsPackagePrivate pe,
+            NXOAuthProtocolException pe,
             int attempts) throws OAuthRequestException {
         if (pe.canExtend()) {
             accessorInfo.setTokenExpireMillis(ACCESS_TOKEN_FORCE_EXPIRE);
@@ -292,7 +316,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      * service provider. 3) Asks for data from the service provider.
      */
     private HttpResponseBuilder attemptFetch()
-            throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate,
+            throws NXOAuthProtocolException,
             OAuthResponseParams.OAuthRequestException {
         if (needApproval()) {
             // This is section 6.1 of the OAuth spec.
@@ -352,7 +376,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
 
     private void fetchRequestToken()
             throws OAuthResponseParams.OAuthRequestException,
-            HorribleHackExceptionBecauseStupidClassIsPackagePrivate {
+            NXOAuthProtocolException {
         OAuthAccessor accessor = accessorInfo.getAccessor();
         HttpRequest request = createRequestTokenRequest(accessor);
 
@@ -628,7 +652,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      */
     private OAuthMessage sendOAuthMessage(HttpRequest request)
             throws OAuthResponseParams.OAuthRequestException,
-            HorribleHackExceptionBecauseStupidClassIsPackagePrivate {
+            NXOAuthProtocolException {
         HttpResponse response = fetchFromServer(request);
         checkForProtocolProblem(response);
         OAuthMessage reply = new OAuthMessage(null, null, null);
@@ -727,7 +751,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      */
     private void exchangeRequestToken()
             throws OAuthResponseParams.OAuthRequestException,
-            HorribleHackExceptionBecauseStupidClassIsPackagePrivate {
+            NXOAuthProtocolException {
         if (accessorInfo.getAccessor().accessToken != null) {
             // session extension per
             // http://oauth.googlecode.com/svn/spec/ext/session/1.0/drafts/1/spec.html
@@ -856,13 +880,13 @@ public class NuxeoOAuthRequest extends OAuthRequest {
     /**
      * Get honest-to-goodness user data.
      *
-     * @throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate if the
+     * @throws NXOAuthProtocolException if the
      *             service provider returns an OAuth related error instead of
      *             user data.
      */
     private HttpResponseBuilder fetchData()
             throws OAuthResponseParams.OAuthRequestException,
-            HorribleHackExceptionBecauseStupidClassIsPackagePrivate {
+            NXOAuthProtocolException {
         HttpResponseBuilder builder = null;
         if (accessTokenData != null) {
             // This is a request for access token data, return it.
@@ -919,22 +943,22 @@ public class NuxeoOAuthRequest extends OAuthRequest {
      * play
      *
      * @param response
-     * @throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate
+     * @throws NXOAuthProtocolException
      */
     private void checkForProtocolProblem(HttpResponse response)
-            throws HorribleHackExceptionBecauseStupidClassIsPackagePrivate {
+            throws NXOAuthProtocolException {
         if (couldBeFullOAuthError(response)) {
             // OK, might be OAuth related.
             OAuthMessage message = parseAuthHeader(null, response);
             if (OAuthUtil.getParameter(message,
                     OAuthProblemException.OAUTH_PROBLEM) != null) {
                 // SP reported extended error information
-                throw new HorribleHackExceptionBecauseStupidClassIsPackagePrivate(
+                throw new NXOAuthProtocolException(
                         response.getHttpStatusCode(), message);
             }
             // No extended information, guess based on HTTP response code.
             if (response.getHttpStatusCode() == HttpResponse.SC_UNAUTHORIZED) {
-                throw new HorribleHackExceptionBecauseStupidClassIsPackagePrivate(
+                throw new NXOAuthProtocolException(
                         response.getHttpStatusCode());
             }
         }
@@ -1005,7 +1029,7 @@ public class NuxeoOAuthRequest extends OAuthRequest {
 }
 
 // should be OAuthProtocolException...
-class HorribleHackExceptionBecauseStupidClassIsPackagePrivate extends Exception {
+class NXOAuthProtocolException extends Exception {
 
     /**
      * Problems that should force us to abort the protocol right away, and next
@@ -1035,7 +1059,7 @@ class HorribleHackExceptionBecauseStupidClassIsPackagePrivate extends Exception 
 
     private final String problemCode;
 
-    public HorribleHackExceptionBecauseStupidClassIsPackagePrivate(int status,
+    public NXOAuthProtocolException(int status,
             OAuthMessage reply) {
         String problem = OAuthUtil.getParameter(reply,
                 OAuthProblemException.OAUTH_PROBLEM);
@@ -1076,7 +1100,7 @@ class HorribleHackExceptionBecauseStupidClassIsPackagePrivate extends Exception 
      * @param status HTTP status code, assumed to be between 400 and 499
      *            inclusive
      */
-    public HorribleHackExceptionBecauseStupidClassIsPackagePrivate(int status) {
+    public NXOAuthProtocolException(int status) {
         if (status == HttpResponse.SC_UNAUTHORIZED) {
             startFromScratch = true;
             canRetry = true;

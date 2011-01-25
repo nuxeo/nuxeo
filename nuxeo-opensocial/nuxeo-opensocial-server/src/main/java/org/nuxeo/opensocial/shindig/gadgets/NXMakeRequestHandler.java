@@ -120,6 +120,11 @@ public class NXMakeRequestHandler extends MakeRequestHandler {
     protected HttpRequest buildHttpRequest(HttpServletRequest request)
             throws GadgetException {
         HttpRequest req = super.buildHttpRequest(request);
+
+        if (!svc.propagateJSESSIONIDToTrustedHosts()) {
+            return req;
+        }
+
         String auth = req.getUri().getAuthority();
         boolean done = false;
         if (auth != null) {
