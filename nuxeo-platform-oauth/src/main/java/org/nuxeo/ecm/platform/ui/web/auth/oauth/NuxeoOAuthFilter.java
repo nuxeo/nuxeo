@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
+import org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthToken;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
@@ -88,6 +89,20 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         return Framework.getLocalService(OAuthTokenStore.class);
     }
 
+    protected boolean isOAuthSignedRequest(HttpServletRequest httpRequest) {
+
+        String authHeader = httpRequest.getHeader("Authorization");
+        if (authHeader != null && authHeader.contains("OAuth")) {
+            return true;
+        }
+
+        if ("GET".equals(httpRequest.getMethod()) && httpRequest.getParameter("oauth_signature")!=null) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
@@ -97,7 +112,6 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
 
             String uri = httpRequest.getRequestURI();
-            String authHeader = httpRequest.getHeader("Authorization");
 
             // process OAuth 3 legged calls
             if (uri.contains("/oauth/")) {
@@ -117,7 +131,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             }
             // Signed request (simple 2 legged OAuth call or signed request
             // after a 3 ledged nego)
-            else if (authHeader != null && authHeader.contains("OAuth")) {
+            else if (isOAuthSignedRequest(httpRequest)) {
 
                 LoginContext loginContext = processSignedRequest(httpRequest,
                         httpResponse);
@@ -346,6 +360,13 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, signatureMethod);
+
+        if (consumer==null && consumerKey!=null) {
+            OAuthServerKeyManager okm = Framework.getLocalService(OAuthServerKeyManager.class);
+            if (consumerKey.equals(okm.getInternalKey())) {
+                consumer = okm.getInternalConsumer();
+            }
+        }
 
         if (consumer == null) {
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);

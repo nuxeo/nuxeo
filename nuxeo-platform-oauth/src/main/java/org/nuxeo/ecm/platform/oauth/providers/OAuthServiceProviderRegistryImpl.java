@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ */
+
 package org.nuxeo.ecm.platform.oauth.providers;
 
 import java.io.Serializable;
@@ -20,6 +37,14 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * Implementation of the {@link OAuthServiceProviderRegistry}.
+ * The main storage backend is a SQL Directory.
+ * Readonly providers (contributed directly at OpenSocialService level) are managed in memory.
+ *
+ * @author tiry
+ *
+ */
 public class OAuthServiceProviderRegistryImpl extends DefaultComponent implements OAuthServiceProviderRegistry {
 
     protected static final Log log = LogFactory.getLog(OAuthServiceProviderRegistryImpl.class);
@@ -114,14 +139,15 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
                     return getEntry(bareGadgetUrl, serviceName,urlfilter);
                 }
                 if (serviceName!=null) {
-                     provider = getEntry(bareGadgetUrl, null,ftFilter);
-                     if (provider!=null) {
-                         return provider;
-                     }else {
-                         if (gadgetUri!=null) {
-                             return getEntry(null, serviceName,ftFilter);
+                    if (bareGadgetUrl!=null) {
+                        provider = getEntry(bareGadgetUrl, null,ftFilter);
+                         if (provider!=null) {
+                             return provider;
                          }
-                     }
+                    }
+                    if (gadgetUri!=null) {
+                        return getEntry(null, serviceName,ftFilter);
+                    }
                 }
                 return null;
             }

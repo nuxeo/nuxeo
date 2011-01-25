@@ -20,19 +20,22 @@
       Extension allowing to contribute a RSA Key pair
 
       For instance :
-
       <code>
 
-        <mimetype normalized="application/pdf" binary="true"
-          iconPath="pdf.png">
-          <mimetypes>
-            <mimetype>application/pdf</mimetype>
-          </mimetypes>
-          <extensions>
-            <extension>pdf</extension>
-          </extensions>
-        </mimetype>
+         <serverKeyPair>
+            <privateKeyName>nuxeo</privateKeyName>
+            <privateKey>-----BEGIN PRIVATE KEY-----YOUR_KEY_HERE-----END PRIVATE KEY-----</privateKey>
+            <publicCertificate>-----BEGIN CERTIFICATE-----YOUR_KEY_HERE-----END CERTIFICATE-----</publicCertificate>
+        </serverKeyPair>
 
+      </code>
+
+      You should contribute your own key pair for your Nuxeo server.
+      You can use OpenSSL to generate this key pair :
+
+      <code>
+        openssl req -newkey rsa:1024 -days 365 -nodes -x509 -keyout testkey.pem -out testkey.pem -subj '/CN=mytestkey'
+        openssl pkcs8 -in testkey.pem -out oauthkey.pem -topk8 -nocrypt -outform PEM
       </code>
 
     </documentation>

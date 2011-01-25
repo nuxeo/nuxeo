@@ -448,7 +448,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public synchronized void initPreFilters() {
 
-        if (preFilters!=null) {
+        if (preFiltersDesc!=null) {
             List<AuthPreFilterDescriptor> sortableDesc = new ArrayList<AuthPreFilterDescriptor>();
 
             sortableDesc.addAll(preFiltersDesc.values());
