@@ -100,9 +100,7 @@
     <copy todir="${tomcat}/lib">
       <artifact:resolveFile key="org.nuxeo.runtime:nuxeo-runtime-tomcat-adapter:${nuxeo.runtime.version}:jar" />
       <!-- copy jdbc drivers -->
-      <artifact:resolveFile key="postgresql:postgresql:9.0-801.jdbc4" />
       <artifact:resolveFile key="mysql:mysql-connector-java:5.1.6" />
-      <artifact:file groupId="org.apache.derby" artifactId="derby" />
     </copy>
   </target>
 
