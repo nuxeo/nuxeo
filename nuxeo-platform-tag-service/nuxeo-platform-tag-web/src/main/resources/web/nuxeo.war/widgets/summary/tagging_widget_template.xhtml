@@ -12,58 +12,61 @@
     <h:outputText value="#{messages['action.view.tagging']}" />
   </h3>
 
-  <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
+  <a4j:region id="#{widget.id}_taggingRegion">
+  <a4j:outputPanel id="#{widget.id}_taggingPanel" ajaxRendered="false">
 
-    <ui:include src="/incl/message_banner.xhtml"/>
+    <f:subview id="#{widget.id}_message_banner">
+      <ui:include src="/incl/message_banner.xhtml"/>
+    </f:subview>
 
-    <nxu:dataTable id="tagsTable"
+    <nxu:dataTable id="#{widget.id}_tagsTable"
       value="#{currentDocumentTags}" var="tag"
       rendered="#{not empty currentDocumentTags}">
-  
+
       <nxu:column>
         <h:commandLink action="#{tagActions.listDocumentsForTag(tag.label)}">
-          <h:graphicImage id="tagIcon" url="/icons/tag_blue.png"/>
+          <h:graphicImage id="#{widget.id}_tagIcon" url="/icons/tag_blue.png"/>
         </h:commandLink>
       </nxu:column>
-  
+
       <nxu:column>
         <h:commandLink value="#{tag.label}"
           action="#{tagActions.listDocumentsForTag(tag.label)}" />
       </nxu:column>
-  
+
       <nxu:column>
-         <a4j:commandLink id="removeTag"
+         <a4j:commandLink id="#{widget.id}_removeTag"
           action="#{tagActions.removeTagging(tag.label)}"
           immediate="true"
-          reRender="documentViewPanel, MultiTreeView"
+          reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
           rendered="#{tagActions.canModifyTag(tag)}">
           <h:graphicImage value="/icons/action_delete_mini.gif" />
          </a4j:commandLink>
       </nxu:column>
-  
+
     </nxu:dataTable>
-  
-    <a4j:commandLink id="addTagLink"
+
+    <a4j:commandLink id="#{widget.id}_addTagLink"
       ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
-      reRender="documentViewPanel, MultiTreeView">
-      <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
+      reRender="#{widget.id}_taggingPanel">
+      <h:graphicImage id="#{widget.id}_toggle_plus" url="/icons/action_add.gif" />
       <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
     </a4j:commandLink>
 
     <c:if test="#{tagActions.addTag}">
 
       <div>
-        <span id="tag_suggestDiv">
-          <h:inputText id="tagLabel" value="#{tagActions.tagLabel}"
+        <span id="#{widget.id}_tag_suggestDiv">
+          <h:inputText id="#{widget.id}_tagLabel" value="#{tagActions.tagLabel}"
             styleClass="dataInputText"
             onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}">
           </h:inputText>
         </span>
-      
+
         <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
-          id="tagLabelAddButton"
+          id="#{widget.id}_tagLabelAddButton"
           action="#{tagActions.addTagging}" styleClass="button"
-          reRender="documentViewPanel, MultiTreeView" />
+          reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView" />
 
         <a4j:status>
           <f:facet name="start">
@@ -71,17 +74,16 @@
           </f:facet>
         </a4j:status>
       </div>
-    
-      <h:panelGroup id="tag_suggestGroup">
-        <rich:suggestionbox id="tag_suggestBox"
-          for="tagLabel" tokens=""
+
+      <h:panelGroup id="#{widget.id}_tag_suggestGroup">
+        <rich:suggestionbox id="#{widget.id}_tag_suggestBox"
+          for="#{widget.id}_tagLabel" tokens=""
           suggestionAction="#{tagActions.getSuggestions}"
           var="sugtag"
           fetchValue="#{sugtag.label}"
           nothingLabel="#{messages['label.suggestion.noSearchResults']}"
           minChars="3" frequency="0" requestDelay="100">
           <a4j:support event="onselect"
-            oncomplete="javascript:$('document_view:tagLabelAddButton').click();"
             bypassUpdates="true">
           </a4j:support>
             <h:column>
@@ -90,12 +92,13 @@
                 <h:outputText value="${sugtag.label}" />
               </f:subview>
             </h:column>
-        </rich:suggestionbox>      
+        </rich:suggestionbox>
       </h:panelGroup>
 
     </c:if>
 
   </a4j:outputPanel>
+  </a4j:region>
 
 </c:if>
 

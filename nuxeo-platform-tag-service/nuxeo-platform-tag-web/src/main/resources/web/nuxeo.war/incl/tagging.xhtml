@@ -6,9 +6,14 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
 
-  <c:if test="#{tagServiceEnabled}">
+<c:if test="#{tagServiceEnabled}">
+  <a4j:region id="taggingRegion">
     <a4j:outputPanel id="taggingPanel" ajaxRendered="false">
-      <ui:include src="/incl/message_banner.xhtml"/>
+
+      <f:subview id="tag_message_banner">
+        <ui:include src="/incl/message_banner.xhtml"/>
+      </f:subview>
+
       <nxu:dataTable id="tagsTable"
         value="#{currentDocumentTags}" var="tag"
         rendered="#{not empty currentDocumentTags}">
@@ -26,7 +31,8 @@
 
         <nxu:column>
            <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.label)}" immediate="true"
-             reRender="documentViewPanel, MultiTreeView" rendered="#{tagActions.canModifyTag(tag)}">
+             reRender="tag_message_banner, taggingPanel, MultiTreeView"
+             rendered="#{tagActions.canModifyTag(tag)}">
              <h:graphicImage value="/icons/action_delete_mini.gif" />
            </a4j:commandLink>
         </nxu:column>
@@ -35,7 +41,7 @@
 
       <a4j:commandLink id="addTagLink"
         ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
-        reRender="documentViewPanel, MultiTreeView">
+        reRender="tag_message_banner, taggingPanel">
         <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
         <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
       </a4j:commandLink>
@@ -52,7 +58,7 @@
           <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
             id="tagLabelAddButton"
             action="#{tagActions.addTagging}" styleClass="button"
-            reRender="documentViewPanel, MultiTreeView" />
+            reRender="tag_message_banner, taggingPanel, MultiTreeView" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />
@@ -75,7 +81,7 @@
             <h:column>
               <f:subview>
                 <h:graphicImage value="/icons/tag_blue.png" alt="(tag)" />
-                <h:outputText value="${sugtag.id}" />
+                <h:outputText value="${sugtag.label}" />
               </f:subview>
             </h:column>
           </rich:suggestionbox>
@@ -83,6 +89,7 @@
         </h:panelGroup>
       </c:if>
     </a4j:outputPanel>
-  </c:if>
+  </a4j:region>
+</c:if>
 
 </div>
