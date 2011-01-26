@@ -126,15 +126,15 @@ public class AliasVariableMapper extends VariableMapper {
             mappers = new HashMap<String, AliasVariableMapper>();
         }
         if (mappers.containsKey(id)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
                         "Overriding alias variable mapper with id '%s'", id));
             }
         }
         mappers.put(id, vm);
         ec.getRequestMap().put(AliasVariableMapper.REQUEST_MARKER, mappers);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
                     "Expose alias variable mapper with id '%s' to request: %s",
                     id, vm.getVariables()));
         }
@@ -143,8 +143,8 @@ public class AliasVariableMapper extends VariableMapper {
     @SuppressWarnings("unchecked")
     public static void removeAliasesExposedToRequest(FacesContext facesContext,
             String id) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
                     "Remove alias variable mapper with id '%s' from request",
                     id));
         }
