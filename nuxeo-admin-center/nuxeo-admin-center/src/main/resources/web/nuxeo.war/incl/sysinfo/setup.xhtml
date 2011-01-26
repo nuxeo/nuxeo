@@ -16,8 +16,6 @@
         value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" /></span>
     <br /> -->
 
-    <ui:include src="/incl/message_banner.xhtml" />
-
     <h:panelGroup rendered="#{setupRequiresRestart}">
         <div class="warningFeedback"><h:outputText
             value="#{messages['label.setup.restartNeeded']}" /></div>
