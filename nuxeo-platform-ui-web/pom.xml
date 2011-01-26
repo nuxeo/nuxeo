@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -114,6 +113,10 @@
       <artifactId>jboss-seam-excel</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
@@ -214,7 +217,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-          <!--  artifacts in WEB-INF/lib, not needed in any classpath -->
+          <!-- artifacts in WEB-INF/lib, not needed in any classpath -->
           <execution>
             <id>copy-installed-webinflib</id>
             <phase>process-resources</phase>
