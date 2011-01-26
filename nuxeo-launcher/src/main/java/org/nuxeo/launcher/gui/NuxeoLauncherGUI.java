@@ -131,7 +131,7 @@ public class NuxeoLauncherGUI {
 
             @Override
             public void run() {
-                launcher.doStartAndWait(true);
+                launcher.doStartAndWait();
                 updateServerStatus();
             }
         });
