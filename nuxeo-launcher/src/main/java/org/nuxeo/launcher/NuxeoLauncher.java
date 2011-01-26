@@ -762,7 +762,7 @@ public abstract class NuxeoLauncher {
                 + ConfigurationGenerator.NUXEO_CONF
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
-        log.error("\t\t gui\t\t\tNot yet available. Launcher with a graphical user interface (default is headless/console mode).");
+        log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode).");
         log.error("\n\t Commands:");
         log.error("\t\t help\t\tPrint this message.");
         log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediatly available after the script returned.");
