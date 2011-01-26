@@ -377,6 +377,8 @@
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
+        <include name="postgresql-*" />
+        <include name="derby-*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />
