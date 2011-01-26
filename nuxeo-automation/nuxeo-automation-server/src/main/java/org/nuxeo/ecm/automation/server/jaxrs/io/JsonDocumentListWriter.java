@@ -47,6 +47,8 @@ import org.nuxeo.ecm.webengine.WebException;
 public class JsonDocumentListWriter implements
         MessageBodyWriter<DocumentModelList> {
 
+    public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
+
     @Context
     protected HttpHeaders headers;
 
@@ -67,7 +69,7 @@ public class JsonDocumentListWriter implements
         try {
             JSONObject json = new JSONObject();
             JSONArray ar = new JSONArray();
-            List<String> props = headers.getRequestHeader("X-NXDocumentProperties");
+            List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
             String[] schemas = null;
             if (props != null && !props.isEmpty()) {
                 schemas = StringUtils.split(props.get(0), ',', true);

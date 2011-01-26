@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
+import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,6 +56,7 @@ public class AutomationModule extends Application {
         result.add(new JsonDocumentListWriter());
         result.add(new BlobsWriter());
         result.add(new JsonLoginInfoWriter());
+        result.add(new UrlEncodedFormRequestReader());
         return result;
     }
 

@@ -86,7 +86,7 @@ public class MultiPartFormRequestReader implements
                         in, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
                 InputStream pin = part.getInputStream();
-                req = JsonRequestReader.readRequest(pin);
+                req = JsonRequestReader.readRequest(pin, headers);
                 int cnt = mp.getCount();
                 if (cnt == 2) { // a blob
                     req.setInput(readBlob(request, mp.getBodyPart(1)));

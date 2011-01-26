@@ -47,27 +47,39 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 @Consumes("application/json+nxrequest")
 public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
+    public static final MediaType targetMediaType = new MediaType("application", "json+nxrequest");
+
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        // TODO check media type too
-        return ExecutionRequest.class.isAssignableFrom(arg0);
+        return (targetMediaType.equals(arg3) && ExecutionRequest.class.isAssignableFrom(arg0));
     }
 
     public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
             Annotation[] arg2, MediaType arg3,
-            MultivaluedMap<String, String> arg4, InputStream in)
+            MultivaluedMap<String, String> headers, InputStream in)
             throws IOException, WebApplicationException {
-        return readRequest(in);
+        return readRequest(in,headers);
     }
 
     @SuppressWarnings("unchecked")
-    public static ExecutionRequest readRequest(InputStream in)
+    public static ExecutionRequest readRequest(InputStream in, MultivaluedMap<String, String> headers)
             throws IOException {
         String content = FileUtils.read(in);
+        return readRequest(content, headers);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static ExecutionRequest readRequest(String content, MultivaluedMap<String, String> headers)
+            throws IOException {
         JSONObject json = JSONObject.fromObject(content);
         String input = json.optString("input", null);
         JSONObject jsonParams = json.optJSONObject("params");
         JSONObject jsonContext = json.optJSONObject("context");
+
+        String documentProperties = json.optString("documentProperties", null);
+        if (documentProperties!=null) {
+            headers.putSingle(JsonDocumentListWriter.DOCUMENT_PROPERTIES_HEADER, documentProperties);
+        }
 
         Object inObj = null;
         if (input != null) {
