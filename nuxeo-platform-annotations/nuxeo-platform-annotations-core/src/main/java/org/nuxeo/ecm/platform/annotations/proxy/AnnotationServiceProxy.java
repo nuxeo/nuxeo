@@ -120,7 +120,11 @@ public class AnnotationServiceProxy implements AnnotationsService {
 
     private void checkUrl(Annotation annotation) throws AnnotationException {
         try {
-            String url = annotation.getAnnotates().toURL().toString();
+            URI uri = annotation.getAnnotates();
+            if (uri.toASCIIString().startsWith("urn:")) {
+                return;
+            }
+            String url = uri.toURL().toString();
             if (!filter.allow(url)) {
                 throw new AnnotationException("Not allowed to annoates: " + url);
             }
