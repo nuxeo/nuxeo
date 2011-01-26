@@ -1,0 +1,1 @@
+DEPRECATED: replaced by nuxeo-launcher which is multi-OS compliant.

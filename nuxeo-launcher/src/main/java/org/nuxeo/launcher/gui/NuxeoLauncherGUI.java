@@ -92,10 +92,25 @@ public class NuxeoLauncherGUI {
     }
 
     /**
+     * Starts GUI, automatically running command passed in parameter after "gui"
+     * option.
+     *
+     * @return Either null or a command delegated by GUI launcher to console
+     *         launcher.
      */
-    public void execute() {
+    public String execute() {
         initFrame(this);
         initLogsManagement();
+        String command = launcher.getCommand();
+        if (command != null) {
+            if ("start".equalsIgnoreCase(command)) {
+                start();
+            } else if ("stop".equalsIgnoreCase(command)) {
+                stop();
+            } else
+                return command;
+        }
+        return null;
     }
 
     private void initLogsManagement() {
@@ -118,7 +133,13 @@ public class NuxeoLauncherGUI {
         });
     }
 
-    protected void updateServerStatus() {
+    /**
+     * Update interface information with current server status.
+     *
+     * @see {@link NuxeoFrame#updateMainButton()}
+     *      {@link NuxeoFrame#updateSummary()}
+     */
+    public void updateServerStatus() {
         nuxeoFrame.updateMainButton();
         nuxeoFrame.updateSummary();
     }

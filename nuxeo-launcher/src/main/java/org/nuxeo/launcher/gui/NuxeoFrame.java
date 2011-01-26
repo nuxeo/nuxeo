@@ -32,6 +32,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -267,6 +268,19 @@ public class NuxeoFrame extends JFrame {
         return headerLogo;
     }
 
+    private JComponent buildNewLogsTab() {
+        JTabbedPane logsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        File[] logFiles = getLogFiles();
+//        logsTabbedPane.addTab(logFile, buildLogPanel(logFile));
+        return logsTabbedPane;
+    }
+
+    private File[] getLogFiles() {
+        // TODO Auto-generated method stub
+        // return null;
+        throw new UnsupportedOperationException();
+    }
+
     private Component buildLogsTab() {
         JPanel logsPanel = new JPanel();
         logsPanel.setBackground(new Color(55, 55, 55));
@@ -363,6 +377,7 @@ public class NuxeoFrame extends JFrame {
         tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
         tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
         tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
+//        tabbedPanel.addTab(getMessage("tab.logs.title"), buildNewLogsTab());
         tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
         tabbedPanel.addChangeListener(new ChangeListener() {
             @Override
