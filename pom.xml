@@ -18,7 +18,7 @@
   <description>The parent module for Nuxeo Platform Document Routing Addon</description>
 
   <properties>
-    <routing.version>5.4.1-I20101203_0116</routing.version>
+    <routing.version>5.4.1-I20101203_0116-CP03</routing.version>
   </properties>
   <modules>
     <module>nuxeo-platform-document-routing-api</module>
@@ -42,12 +42,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-core</artifactId>
-        <version>${routing.version}-CP03</version>
+        <version>${routing.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-web</artifactId>
-        <version>${routing.version}-CP03</version>
+        <version>${routing.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
