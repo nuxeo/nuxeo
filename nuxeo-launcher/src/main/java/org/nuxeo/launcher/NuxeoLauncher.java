@@ -120,6 +120,14 @@ public abstract class NuxeoLauncher {
 
     protected String[] params;
 
+    protected String command;
+
+    public String getCommand() {
+        return command;
+    }
+
+    private boolean useGui = false;
+
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
         this.configurationGenerator = configurationGenerator;
@@ -156,19 +164,19 @@ public abstract class NuxeoLauncher {
      */
     protected void start(boolean logProcessOutput) throws IOException,
             InterruptedException {
-        List<String> command = new ArrayList<String>();
-        command.add(getJavaExecutable().getPath());
-        command.addAll(Arrays.asList(System.getProperty(JAVA_OPTS_PROPERTY,
-                JAVA_OPTS_DEFAULT).split(" ")));
-        command.add("-cp");
-        command.add(getClassPath());
-        command.addAll(getNuxeoProperties());
-        command.addAll(getServerProperties());
-        setServerStartCommand(command);
+        List<String> startCommand = new ArrayList<String>();
+        startCommand.add(getJavaExecutable().getPath());
+        startCommand.addAll(Arrays.asList(System.getProperty(
+                JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT).split(" ")));
+        startCommand.add("-cp");
+        startCommand.add(getClassPath());
+        startCommand.addAll(getNuxeoProperties());
+        startCommand.addAll(getServerProperties());
+        setServerStartCommand(startCommand);
         for (String param : params) {
-            command.add(param);
+            startCommand.add(param);
         }
-        ProcessBuilder pb = new ProcessBuilder(getOSCommand(command));
+        ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
         pb.directory(configurationGenerator.getNuxeoHome());
         // pb = pb.redirectErrorStream(true);
         log.debug("Server command: " + pb.command());
@@ -253,12 +261,12 @@ public abstract class NuxeoLauncher {
     /**
      * Will wrap, if necessary, the command within a Shell command
      *
-     * @param command Java command which will be ran
+     * @param roughCommand Java command which will be run
      * @return wrapped command depending on the OS
      */
-    private List<String> getOSCommand(List<String> command) {
+    private List<String> getOSCommand(List<String> roughCommand) {
         String linearizedCommand = new String();
-        for (Iterator<String> iterator = command.iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = roughCommand.iterator(); iterator.hasNext();) {
             linearizedCommand += " " + iterator.next();
         }
         ArrayList<String> osCommand = new ArrayList<String>();
@@ -272,9 +280,9 @@ public abstract class NuxeoLauncher {
             osCommand.add("cmd");
             osCommand.add("/C");
             osCommand.add(linearizedCommand);
-            return command;
+            return osCommand;
         } else {
-            return command;
+            return roughCommand;
         }
     }
 
@@ -320,20 +328,26 @@ public abstract class NuxeoLauncher {
                     "Tried to add inexistant classpath entry: "
                             + classPathEntry);
         }
-        cp += ":" + classPathEntry.getPath();
+        cp += System.getProperty("path.separator") + classPathEntry.getPath();
         return cp;
     }
 
-    public static void main(String[] args) throws ConfigurationException,
-            URISyntaxException {
+    public static void main(String[] args) throws ConfigurationException {
         if (args.length == 0) {
             printHelp();
             return;
         }
-        String command = args[0];
         final NuxeoLauncher launcher = createLauncher(args);
+        NuxeoLauncherGUI launcherGUI = null;
+        String command = launcher.command;
         boolean commandSucceeded = true;
-        if ("help".equalsIgnoreCase(command)) {
+        if (launcher.useGui) {
+            launcherGUI = new NuxeoLauncherGUI(launcher);
+            command = launcherGUI.execute();
+        }
+        if (command == null) {
+            return;
+        } else if ("help".equalsIgnoreCase(command)) {
             printHelp();
         } else if ("status".equalsIgnoreCase(command)) {
             log.info(launcher.status());
@@ -360,7 +374,12 @@ public abstract class NuxeoLauncher {
             launcher.stop();
             commandSucceeded = launcher.doStartAndWait();
         } else if ("configure".equalsIgnoreCase(command)) {
-            launcher.configure();
+            try {
+                launcher.configure();
+            } catch (ConfigurationException e) {
+                log.error(e);
+                commandSucceeded = false;
+            }
         } else if ("pack".equalsIgnoreCase(command)) {
             // java $JAVA_OPTS -classpath "$NUXEO_CONFIG_CLASSPATH" \
             // -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" \
@@ -370,8 +389,12 @@ public abstract class NuxeoLauncher {
             // org.nuxeo.runtime.deployment.preprocessor.PackZip $1 $2
             // PackZip.main(Arrays.copyOfRange(params, 1, params.length));
             throw new UnsupportedOperationException();
-        } else if ("gui".equalsIgnoreCase(command)) {
-            new NuxeoLauncherGUI(launcher).execute();
+        } else {
+            printHelp();
+            commandSucceeded = false;
+        }
+        if (launcher.useGui) {
+            launcherGUI.updateServerStatus();
         }
         if (!commandSucceeded) {
             System.exit(1);
@@ -585,17 +608,18 @@ public abstract class NuxeoLauncher {
             int nbTry = 0;
             boolean retry = false;
             do {
-                List<String> command = new ArrayList<String>();
-                command.add(getJavaExecutable().getPath());
-                command.add("-cp");
-                command.add(getClassPath());
-                command.addAll(getNuxeoProperties());
-                command.addAll(getServerProperties());
-                setServerStopCommand(command);
+                List<String> stopCommand = new ArrayList<String>();
+                stopCommand.add(getJavaExecutable().getPath());
+                stopCommand.add("-cp");
+                stopCommand.add(getClassPath());
+                stopCommand.addAll(getNuxeoProperties());
+                stopCommand.addAll(getServerProperties());
+                setServerStopCommand(stopCommand);
                 for (String param : params) {
-                    command.add(param);
+                    stopCommand.add(param);
                 }
-                ProcessBuilder pb = new ProcessBuilder(command);
+                ProcessBuilder pb = new ProcessBuilder(
+                        getOSCommand(stopCommand));
                 pb.directory(configurationGenerator.getNuxeoHome());
                 // pb = pb.redirectErrorStream(true);
                 log.debug("Server command: " + pb.command());
@@ -726,13 +750,22 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param args Program arguments; may be used by launcher implementation
+     * Sets from program arguments the launcher command and additional
+     * parameters.
+     *
+     * @param args Program arguments; may be used by launcher implementation.
+     *            Must not be null or empty.
      */
     private void setArgs(String[] args) {
-        // Ignore "gui" or command argument, keep only trailing arguments
-        int firstArgumentToKeep = (args.length > 1 && "gui".equalsIgnoreCase(args[0])) ? 2
-                : 1;
-        this.params = Arrays.copyOfRange(args, firstArgumentToKeep, args.length);
+        command = args[0];
+        int firstParamToKeep = 1;
+        if ("gui".equalsIgnoreCase(command)) {
+            useGui = true;
+            command = args.length > 1 ? args[1] : null;
+            firstParamToKeep = 2;
+        }
+        params = firstParamToKeep > args.length ? new String[0]
+                : Arrays.copyOfRange(args, firstParamToKeep, args.length);
     }
 
     /**
@@ -740,7 +773,15 @@ public abstract class NuxeoLauncher {
      *
      * @throws URISyntaxException
      */
-    public static void printHelp() throws URISyntaxException {
+    public static void printHelp() {
+        File launcherJar;
+        try {
+            launcherJar = new File(
+                    NuxeoLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            log.error(e);
+            launcherJar = new File("nuxeo-launcher.jar");
+        }
         log.error("Usage: java [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
@@ -748,8 +789,7 @@ public abstract class NuxeoLauncher {
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] \\ \n            -jar "
-                + new File(
-                        NuxeoLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                + launcherJar
                 + " \\ \n            [gui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack)");
         log.error("\n\t Options:");
         log.error("\t\t " + JAVA_OPTS_PROPERTY
