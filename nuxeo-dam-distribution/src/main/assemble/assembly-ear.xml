@@ -70,7 +70,6 @@
 
         <!-- OpenSocial libs -->
         <exclude name="**/lib/shindig*" />
-        <exclude name="**/lib/oauth*" />
         <exclude name="**/lib/caja*" />
 
         <exclude name="**/templates/common/config/nxmail-scheduler-config.xml" />

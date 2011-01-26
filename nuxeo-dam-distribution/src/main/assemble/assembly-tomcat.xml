@@ -81,7 +81,6 @@
 
         <!-- OpenSocial libs -->
         <exclude name="**/nxserver/lib/shindig*" />
-        <exclude name="**/nxserver/lib/oauth*" />
         <exclude name="**/nxserver/lib/caja*" />
 
         <!-- Not needed, conflict with poi-3.5-beta6 -->
