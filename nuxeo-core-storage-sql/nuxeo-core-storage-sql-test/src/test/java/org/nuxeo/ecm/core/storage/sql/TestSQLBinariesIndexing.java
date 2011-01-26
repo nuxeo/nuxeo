@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Stephane Lacoin
+ */
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.List;
@@ -9,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -31,13 +46,16 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
     protected static DocumentModel doc;
 
-    Object originalPoolSize;
-    Object originalMaxPoolSize;
+    protected Object originalPoolSize;
+
+    protected Object originalMaxPoolSize;
 
     protected void setEventAsyncPoolSizes() {
         Properties properties = System.getProperties();
-        originalPoolSize = properties.setProperty("org.nuxeo.ecm.core.event.async.poolSize", "1");
-        originalMaxPoolSize = properties.setProperty("org.nuxeo.ecm.core.event.async.maxPoolSize", "1");
+        originalPoolSize = properties.setProperty(
+                "org.nuxeo.ecm.core.event.async.poolSize", "1");
+        originalMaxPoolSize = properties.setProperty(
+                "org.nuxeo.ecm.core.event.async.maxPoolSize", "1");
     }
 
     protected void restoreEventAsyncPoolSizes() {
@@ -45,12 +63,14 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         if (originalPoolSize == null) {
             properties.remove("org.nuxeo.ecm.core.event.async.poolSize");
         } else {
-            properties.put("org.nuxeo.ecm.core.event.async.poolSize", originalPoolSize);
+            properties.put("org.nuxeo.ecm.core.event.async.poolSize",
+                    originalPoolSize);
         }
         if (originalMaxPoolSize == null) {
             properties.remove("org.nuxeo.ecm.core.event.async.maxPoolSize");
         } else {
-            properties.put("org.nuxeo.ecm.core.event.async.maxPoolSize", originalMaxPoolSize);
+            properties.put("org.nuxeo.ecm.core.event.async.maxPoolSize",
+                    originalMaxPoolSize);
         }
     }
 
@@ -75,7 +95,8 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         super.deployRepositoryContrib();
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-asynch-binaries-indexing-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-asynch-binaries-indexing-contrib.xml");
     }
 
     public void populate(CoreSession repo) throws ClientException {
@@ -100,7 +121,6 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
                 }
             }
         }
-
     }
 
     protected void flushAndCommit() throws ClientException {
@@ -123,8 +143,8 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     protected List<DocumentModel> requestedDocs() throws ClientException {
-        String request =
-            String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
+        String request = String.format(
+                "SELECT * from Document where ecm:fulltextJobId = '%s'",
                 doc.getId());
         return session.query(request);
     }
@@ -140,15 +160,11 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         startIndexation = new CountDownLatch(1);
 
         recycleSession();
-
     }
 
     protected void docsAreNotIndexed() throws Exception {
-
         recycleSession();
-
         assertEquals(0, indexedDocs().size());
-
     }
 
     public void testBinariesAreIndexed() throws Exception {
@@ -162,32 +178,33 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     public void testCopiesAreIndexed() throws Exception {
-            assertEquals(1, requestedDocs().size());
-            assertEquals(0, indexedDocs().size());
+        assertEquals(1, requestedDocs().size());
+        assertEquals(0, indexedDocs().size());
 
-            session.copy(doc.getRef(), session.getRootDocument().getRef(), "copy").getRef();
+        session.copy(doc.getRef(), session.getRootDocument().getRef(), "copy").getRef();
 
-            recycleSession();
+        recycleSession();
 
-            // check copy is part of requested
-            assertEquals(2, requestedDocs().size());
+        // check copy is part of requested
+        assertEquals(2, requestedDocs().size());
 
-            waitForIndexing();
+        waitForIndexing();
 
-            // check other doc is indexed also
-            assertEquals(0, requestedDocs().size());
-            assertEquals(2, indexedDocs().size());
+        // check other doc is indexed also
+        assertEquals(0, requestedDocs().size());
+        assertEquals(2, indexedDocs().size());
 
-            // check other doc is not indexed twice
-            DocumentModel rehydratedDoc = session.getDocument(doc.getRef());
-            rehydratedDoc.getAdapter(BlobHolder.class).setBlob(new StringBlob("other"));
-            session.saveDocument(rehydratedDoc);
+        // check other doc is not indexed twice
+        DocumentModel rehydratedDoc = session.getDocument(doc.getRef());
+        rehydratedDoc.getAdapter(BlobHolder.class).setBlob(
+                new StringBlob("other"));
+        session.saveDocument(rehydratedDoc);
 
-            recycleSession();
+        recycleSession();
 
-            waitForIndexing();
+        waitForIndexing();
 
-            assertEquals(1, indexedDocs().size());
+        assertEquals(1, indexedDocs().size());
     }
 
     public void testVersionsAreIndexed() throws Exception {
@@ -199,5 +216,6 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         waitForIndexing();
 
         assertEquals(2, indexedDocs().size());
-   }
+    }
+
 }
