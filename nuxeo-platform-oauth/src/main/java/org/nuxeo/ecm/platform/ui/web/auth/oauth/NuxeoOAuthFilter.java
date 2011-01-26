@@ -96,7 +96,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             return true;
         }
 
-        if ("GET".equals(httpRequest.getMethod()) && httpRequest.getParameter("oauth_signature")!=null) {
+        if ("GET".equals(httpRequest.getMethod())
+                && httpRequest.getParameter("oauth_signature") != null) {
+            return true;
+        } else if ("POST".equals(httpRequest.getMethod())
+                && "application/x-www-form-urlencoded".equals(httpRequest.getContentType())
+                && httpRequest.getParameter("oauth_signature") != null) {
             return true;
         }
 
@@ -125,7 +130,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     processAccessToken(httpRequest, httpResponse);
 
                 } else {
-                    httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "OAuth call not supported");
+                    httpResponse.sendError(
+                            HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+                            "OAuth call not supported");
                 }
                 return;
             }
@@ -229,7 +236,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, message.getSignatureMethod());
-        if (consumer==null) {
+        if (consumer == null) {
             log.error("Consumer " + consumerKey + " is not registred");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
@@ -284,7 +291,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, message.getSignatureMethod());
 
-        if (consumer==null) {
+        if (consumer == null) {
             log.error("Consumer " + consumerKey + " is not registred");
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.CONSUMER_KEY_UNKNOWN);
             httpResponse.sendError(errCode, "Unknown consumer key");
@@ -340,7 +347,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         } else {
             log.error("Verifier does not match : can not continue");
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Verifier is not correct");
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Verifier is not correct");
             return;
         }
     }
@@ -361,7 +369,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(
                 consumerKey, signatureMethod);
 
-        if (consumer==null && consumerKey!=null) {
+        if (consumer == null && consumerKey != null) {
             OAuthServerKeyManager okm = Framework.getLocalService(OAuthServerKeyManager.class);
             if (consumerKey.equals(okm.getInternalKey())) {
                 consumer = okm.getInternalConsumer();
@@ -392,10 +400,13 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             } else {
                 // 2 legged OAuth
                 if (!consumer.allowSignedFetch()) {
-                    //int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
-                    // We need to send a 403 to force client to ask for a new token in case the Access Token was deleted !!!
+                    // int errCode =
+                    // OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_METHOD_REJECTED);
+                    // We need to send a 403 to force client to ask for a new
+                    // token in case the Access Token was deleted !!!
                     int errCode = HttpServletResponse.SC_FORBIDDEN;
-                    httpResponse.sendError(errCode, "Signed fetch is not allowed");
+                    httpResponse.sendError(errCode,
+                            "Signed fetch is not allowed");
                     return null;
                 }
                 targetLogin = consumer.getSignedFetchUser();
@@ -413,14 +424,14 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     return loginContext;
                 } else {
                     int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.USER_REFUSED);
-                    httpResponse.sendError(errCode, "No configured login information");
+                    httpResponse.sendError(errCode,
+                            "No configured login information");
                     return null;
                 }
             } catch (Exception e) {
                 log.error("Error while validating OAuth signature", e);
                 int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
-                httpResponse.sendError(errCode,
-                        "Can not validate signature");
+                httpResponse.sendError(errCode, "Can not validate signature");
             }
         }
         return null;
