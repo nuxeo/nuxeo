@@ -29,11 +29,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-windows-startup</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo</groupId>
       <artifactId>nuxeo-launcher</artifactId>
       <classifier>jar-with-dependencies</classifier>
