@@ -140,6 +140,14 @@ public class NuxeoLauncherGUI {
      *      {@link NuxeoFrame#updateSummary()}
      */
     public void updateServerStatus() {
+        // Wait for Frame being initialized
+        while (nuxeoFrame == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+        }
         nuxeoFrame.updateMainButton();
         nuxeoFrame.updateSummary();
     }
