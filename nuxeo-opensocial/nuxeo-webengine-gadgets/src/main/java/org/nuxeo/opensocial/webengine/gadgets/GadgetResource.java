@@ -60,10 +60,25 @@ public class GadgetResource extends InputStreamResource {
         if (iGadget.getEntryPoint().equals(fileName)) {
             in = GadgetSpecView.render(iGadget, null);
         } else {
-            in = gadget.getResourceAsStream(fileName);
+            in = getResourceAsStream(fileName);
         }
 
         return getObject(in, fileName);
+    }
+
+    protected InputStream getResourceAsStream(String fileName) throws Exception {
+        InputStream is = gadget.getResourceAsStream(fileName);
+        if (is==null) {
+            String suffix="/img/";
+            if (fileName.endsWith(".css")) {
+                suffix="/css/";
+            }
+            else if (fileName.endsWith(".js")) {
+                suffix="/scripts/";
+            }
+            is = this.getClass().getClassLoader().getResourceAsStream("skin/resources" + suffix + fileName);
+        }
+        return is;
     }
 
     @GET
