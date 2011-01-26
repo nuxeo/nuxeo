@@ -112,8 +112,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
 /**
  * Abstract implementation of the client interface.
  * <p>
- * This handles all the aspects that are independent on the final
- * implementation (like running inside a J2EE platform or not).
+ * This handles all the aspects that are independent on the final implementation
+ * (like running inside a J2EE platform or not).
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
@@ -121,8 +121,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public abstract class AbstractSession implements CoreSession,
-        OperationHandler, Serializable {
+public abstract class AbstractSession implements CoreSession, OperationHandler,
+        Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
             "anonymous");
@@ -182,8 +182,7 @@ public abstract class AbstractSession implements CoreSession,
     private String sessionId;
 
     /**
-     * Internal method: Gets the current session based on the client session
-     * id.
+     * Internal method: Gets the current session based on the client session id.
      *
      * @return the repository session
      */
@@ -265,12 +264,12 @@ public abstract class AbstractSession implements CoreSession,
      * <p>
      * The ID has the following format:
      * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid
-     * name clashes with sessions on different machines (the repository name
-     * should be unique in the system)
+     * an unique ID on a running JVM and repository-name is a used to avoid name
+     * clashes with sessions on different machines (the repository name should
+     * be unique in the system)
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -286,8 +285,8 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Utility method to generate VersionModel labels.
      *
-     * @return the String representation of an auto-incremented counter that
-     *         not used in any label of docRef
+     * @return the String representation of an auto-incremented counter that not
+     *         used in any label of docRef
      */
     @Override
     public String generateVersionLabelFor(DocumentRef docRef)
@@ -2462,8 +2461,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Update the proxy for doc in the given section to point to the new
-     * target. Do nothing if there are several proxies.
+     * Update the proxy for doc in the given section to point to the new target.
+     * Do nothing if there are several proxies.
      *
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
