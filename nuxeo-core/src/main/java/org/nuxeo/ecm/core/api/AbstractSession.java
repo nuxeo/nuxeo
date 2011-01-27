@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -39,11 +39,15 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -564,11 +568,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     null, null, true, true);
 
             Document doc = getSession().copy(srcDoc, dstDoc, name);
-            if (doc.isLocked()) { // if we copy a locked document - the new
-                // document will be locked too! - fixing
-                // this
-                doc.unlock();
-            }
+            // no need to clear lock, locks table is not copied
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -2817,8 +2817,63 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         return getDataModelsField(allRefs, schema, field);
     }
 
+    protected String oldLockKey(Lock lock) {
+        if (lock == null) {
+            return null;
+        }
+        // return deprecated format, like "someuser:Nov 29, 2010"
+        return lock.getOwner()
+                + ':'
+                + DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                        new Date(lock.getCreated().getTimeInMillis()));
+    }
+
     @Override
+    @Deprecated
     public String getLock(DocumentRef docRef) throws ClientException {
+        Lock lock = getLockInfo(docRef);
+        return oldLockKey(lock);
+    }
+
+    @Override
+    @Deprecated
+    public void setLock(DocumentRef docRef, String key) throws ClientException {
+        setLock(docRef);
+    }
+
+    @Override
+    @Deprecated
+    public String unlock(DocumentRef docRef) throws ClientException {
+        Lock lock = removeLock(docRef);
+        return oldLockKey(lock);
+    }
+
+    @Override
+    public Lock setLock(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            // TODO: add a new permission named LOCK and use it instead of
+            // WRITE_PROPERTIES
+            checkPermission(doc, WRITE_PROPERTIES);
+            Lock lock = doc.getLock();
+            if (lock != null) {
+                throw new ClientException("Lock already set on " + docRef);
+            }
+            lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
+            doc.setLock(lock);
+            DocumentModel docModel = readModel(doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put("lock", lock);
+            notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
+                    null, null, true, false);
+            return lock;
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to set lock on " + docRef, e);
+        }
+    }
+
+    @Override
+    public Lock getLockInfo(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
@@ -2829,46 +2884,30 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public void setLock(DocumentRef docRef, String key) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            // TODO: add a new permission named LOCK and use it instead of
-            // WRITE_PROPERTIES
-            checkPermission(doc, WRITE_PROPERTIES);
-            doc.setLock(key);
-            DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options,
-                    null, null, true, false);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to set lock on " + docRef, e);
+    public Lock removeLock(DocumentRef docRef) throws ClientException {
+        if (!hasPermission(docRef, UNLOCK)) {
+            throw new ClientException(
+                    "The caller has no privilege to unlock the document");
         }
-    }
-
-    @Override
-    public String unlock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            if (!doc.isLocked()) {
-                return null;
-            }
-            String[] lockDetails = doc.getLock().split(":");
-            if (lockDetails == null) {
+            Lock lock = doc.getLock();
+            if (lock == null) {
                 return null;
             }
             String username = getPrincipal().getName();
-
-            if (hasPermission(docRef, UNLOCK)
-                    || lockDetails[0].equals(username)) {
-                String lockKey = doc.unlock();
-                DocumentModel docModel = readModel(doc);
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
-                notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
-                        options, null, null, true, false);
-                return lockKey;
+            if (!lock.getOwner().equals(username)) {
+                throw new ClientException(
+                        "The caller has no privilege to unlock the document");
             }
-            throw new ClientException(
-                    "The caller has no privileges to unlock the document");
+            lock = doc.getLock();
+            doc.setLock(null);
+            DocumentModel docModel = readModel(doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put("lock", lock);
+            notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel,
+                    options, null, null, true, false);
+            return lock;
         } catch (DocumentException e) {
             throw new ClientException("Failed to set lock on " + docRef, e);
         }

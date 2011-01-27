@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api;
@@ -327,14 +326,16 @@ public interface DocumentModel extends Serializable {
      * {@link CoreSession#getLock(DocumentRef)}.
      *
      * @return the lock key if the document is locked or null otherwise
+     *
+     * @deprecated since 5.4.1, use {@link #getLockInfo} instead
      */
+    @Deprecated
     String getLock();
 
     /**
      * Tests if the document is locked.
      * <p>
-     * This is using the cached lock information and doesn't connect to the
-     * server
+     * This uses the cached lock information and doesn't connect to the server.
      * <p>
      * To get fresh information from the server use
      * {@link CoreSession#getLock(DocumentRef)}.
@@ -351,7 +352,10 @@ public interface DocumentModel extends Serializable {
      * @param key the key to use when locking
      * @throws ClientException if the document is already locked or other error
      *             occurs
+     *
+     * @deprecated since 5.4.1, use {@link #setLock} instead
      */
+    @Deprecated
     void setLock(String key) throws ClientException;
 
     /**
@@ -361,8 +365,49 @@ public interface DocumentModel extends Serializable {
      *
      * @throws ClientException if the document is already locked or other error
      *             occurs
+     *
+     * @deprecated since 5.4.1, use {@link #removeLock} instead
      */
+    @Deprecated
     void unlock() throws ClientException;
+
+    /**
+     * Sets a lock on the document.
+     *
+     * @return the lock info that was set
+     * @throws ClientException if a lock was already set
+     *
+     * @since 5.4.1
+     */
+    Lock setLock() throws ClientException;
+
+    /**
+     * Gets the lock info on the document.
+     * <p>
+     * This uses the cached lock information and doesn't connect to the server.
+     *
+     * @return the lock info if the document is locked, or {@code null}
+     *         otherwise
+     *
+     * @since 5.4.1
+     */
+    Lock getLockInfo() throws ClientException;
+
+    /**
+     * Removes the lock on the document.
+     * <p>
+     * The caller principal should be the same as the one who set the lock or to
+     * belongs to the administrator group, otherwise an exception will be throw.
+     * <p>
+     * If the document was not locked, does nothing.
+     * <p>
+     * Returns the previous lock info.
+     *
+     * @return the removed lock info, or {@code null} if there was no lock
+     *
+     * @since 5.4.1
+     */
+    Lock removeLock() throws ClientException;
 
     /**
      * Tests if the document is checked out.
@@ -845,7 +890,7 @@ public interface DocumentModel extends Serializable {
     /** Info fetched internally during a refresh. */
     public static class DocumentModelRefresh {
 
-        public String lock;
+        public Lock lock;
 
         public String lifeCycleState;
 

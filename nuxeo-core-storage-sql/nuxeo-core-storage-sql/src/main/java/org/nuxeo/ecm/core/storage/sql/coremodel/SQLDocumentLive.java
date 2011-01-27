@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -31,9 +31,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Constants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
@@ -58,9 +57,6 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotMod
 public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     private static final Log log = LogFactory.getLog(SQLDocumentLive.class);
-
-    // cache of the lock state, for efficiency
-    protected String lock;
 
     /** Mixin types, updated when facets change. */
     protected final List<CompositeType> mixinTypes;
@@ -340,37 +336,28 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public boolean isLocked() throws DocumentException {
-        return getLock() != null;
+        return getPropertyValue(Model.LOCK_OWNER_PROP) != null;
     }
 
     @Override
-    public String getLock() throws DocumentException {
-        if (lock != null) {
-            return lock == Constants.EMPTY_STRING ? null : lock;
+    public Lock getLock() throws DocumentException {
+        String owner = getString(Model.LOCK_OWNER_PROP);
+        if (owner == null) {
+            return null;
         }
-        String l = getString(Model.LOCK_PROP);
-        lock = l == null ? Constants.EMPTY_STRING : l;
-        return l;
+        Calendar created = (Calendar) getPropertyValue(Model.LOCK_CREATED_PROP);
+        return new Lock(owner, created);
     }
 
     @Override
-    public void setLock(String key) throws DocumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("Lock key cannot be null");
+    public void setLock(Lock lock) throws DocumentException {
+        if (lock == null) {
+            setPropertyValue(Model.LOCK_OWNER_PROP, null);
+            setPropertyValue(Model.LOCK_CREATED_PROP, null);
+        } else {
+            setPropertyValue(Model.LOCK_OWNER_PROP, lock.getOwner());
+            setPropertyValue(Model.LOCK_CREATED_PROP, lock.getCreated());
         }
-        if (isLocked()) {
-            throw new DocumentException("Document already locked");
-        }
-        setString(Model.LOCK_PROP, key);
-        lock = key;
-    }
-
-    @Override
-    public String unlock() throws DocumentException {
-        String l = getLock();
-        setString(Model.LOCK_PROP, null);
-        lock = Constants.EMPTY_STRING;
-        return l;
     }
 
     /*
@@ -654,7 +641,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     public boolean removeFacet(String facet) throws DocumentException {
         boolean removed = getNode().removeMixinType(facet);
         if (removed) {
-            for (Iterator<CompositeType> it = mixinTypes.iterator(); it.hasNext(); ) {
+            for (Iterator<CompositeType> it = mixinTypes.iterator(); it.hasNext();) {
                 if (it.next().getName().equals(facet)) {
                     it.remove();
                     break;

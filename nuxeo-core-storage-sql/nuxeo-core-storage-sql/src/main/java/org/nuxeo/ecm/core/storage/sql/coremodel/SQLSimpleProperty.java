@@ -43,6 +43,8 @@ public class SQLSimpleProperty extends SQLBaseProperty {
                     Model.FULLTEXT_JOBID_PROP,
                     Model.FULLTEXT_BINARYTEXT_PROP, //
                     Model.MISC_LIFECYCLE_STATE_PROP, //
+                    Model.LOCK_OWNER_PROP, //
+                    Model.LOCK_CREATED_PROP, //
                     DC_ISSUED //
             ));
 

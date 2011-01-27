@@ -202,8 +202,21 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (SESSION_ID(), CURRENT_TIMEST
 
 DELETE FROM cluster_nodes WHERE nodeid = SESSION_ID();
 
+
 ############################################################
+
 
 #CATEGORY: upgradeLastContributor
 
 CALL NX_UPGRADE_LASTCONTRIBUTOR();
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+UPDATE locks SET
+  owner = SUBSTRING(lock, 1, POSITION(':', lock) - 1),
+  created = PARSEDATETIME(SUBSTRING(lock, POSITION(':', lock) + 1), 'MMM d, yyyy')
+  WHERE lock IS NOT NULL AND owner IS NULL;

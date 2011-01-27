@@ -236,6 +236,7 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_
 
 DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
 
+
 ############################################################
 
 
@@ -252,4 +253,12 @@ WHERE tmp.id = dublincore.id AND tmp.id = dc_contributors.id and dc_contributors
 DROP TABLE tmp;
 
 
+############################################################
 
+
+#CATEGORY: upgradeLocks
+
+UPDATE locks SET
+  owner = SUBSTRING(`lock` FROM 1 FOR POSITION(':' in `lock`) - 1),
+  created = STR_TO_DATE(SUBSTRING(`lock` FROM POSITION(':' in `lock`) + 1), '%M %d, %Y')
+  WHERE `lock` IS NOT NULL AND owner IS NULL;

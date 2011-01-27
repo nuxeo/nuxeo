@@ -776,7 +776,9 @@ INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TI
 
 DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
 
+
 ############################################################
+
 
 #CATEGORY: upgradeLastContributor
 
@@ -785,3 +787,14 @@ UPDATE dublincore SET lastContributor = dc_c.item
     JOIN (SELECT id, max(pos) AS pos FROM dc_contributors GROUP BY id) AS tmp ON (dc.id = tmp.id)
     JOIN dc_contributors dc_c ON (tmp.id = dc_c.id AND tmp.pos = dc_c.pos)
   WHERE dc.lastContributor IS NULL AND dublincore.id=dc_c.id;
+
+
+############################################################
+
+
+#CATEGORY: upgradeLocks
+
+UPDATE locks SET
+  owner = SUBSTRING(lock FROM 1 FOR POSITION(':' in lock) - 1),
+  created = SUBSTRING(lock FROM POSITION(':' in lock) + 1)::timestamp
+  WHERE lock IS NOT NULL AND owner IS NULL;

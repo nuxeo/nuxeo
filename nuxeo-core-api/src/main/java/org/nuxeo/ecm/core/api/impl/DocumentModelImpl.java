@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,11 +19,13 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
@@ -135,7 +138,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected boolean isStateLoaded;
 
     // loaded if isStateLoaded
-    protected String lock;
+    protected Lock lock;
 
     // loaded if isStateLoaded
     protected String currentLifeCycleState;
@@ -257,7 +260,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @param facets the per-instance facets
      */
     public DocumentModelImpl(String sid, String type, String id, Path path,
-            String lock, DocumentRef docRef, DocumentRef parentRef,
+            Lock lock, DocumentRef docRef, DocumentRef parentRef,
             String[] schemas, Set<String> facets, String sourceId,
             String repositoryName) {
         this(type);
@@ -725,9 +728,21 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         ref = new PathRef(parentPath, name);
     }
 
+    protected String oldLockKey(Lock lock) {
+        if (lock == null) {
+            return null;
+        }
+        // return deprecated format, like "someuser:Nov 29, 2010"
+        return lock.getOwner()
+                + ':'
+                + DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                        new Date(lock.getCreated().getTimeInMillis()));
+    }
+
     @Override
+    @Deprecated
     public String getLock() {
-        return lock;
+        return oldLockKey(lock);
     }
 
     @Override
@@ -736,28 +751,45 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public void setLock(final String key) throws ClientException {
-        new RunWithCoreSession<Object>() {
-            @Override
-            public Object run() throws ClientException {
-                session.setLock(ref, key);
-                return null;
-            }
-        }.execute();
-        lock = key;
+    @Deprecated
+    public void setLock(String key) throws ClientException {
+        setLock();
     }
 
     @Override
     public void unlock() throws ClientException {
-        String removedLock = new RunWithCoreSession<String>() {
+        removeLock();
+    }
+
+    @Override
+    public Lock setLock() throws ClientException {
+        new RunWithCoreSession<Object>() {
             @Override
-            public String run() throws ClientException {
-                return session.unlock(ref);
+            public Object run() throws ClientException {
+                lock = session.setLock(ref);
+                return null;
+            }
+        }.execute();
+        return lock;
+    }
+
+    @Override
+    public Lock getLockInfo() throws ClientException {
+        return lock;
+    }
+
+    @Override
+    public Lock removeLock() throws ClientException {
+        Lock removedLock = new RunWithCoreSession<Lock>() {
+            @Override
+            public Lock run() throws ClientException {
+                return session.removeLock(ref);
             }
         }.execute();
         if (removedLock != null) {
             lock = null;
         }
+        return removedLock;
     }
 
     @Override

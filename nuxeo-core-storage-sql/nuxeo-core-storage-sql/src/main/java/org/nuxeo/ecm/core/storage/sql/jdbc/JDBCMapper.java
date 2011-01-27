@@ -86,6 +86,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public static final String TEST_UPGRADE_LAST_CONTRIBUTOR = "testUpgradeLastContributor";
 
+    public static final String TEST_UPGRADE_LOCKS = "testUpgradeLocks";
+
     protected TableUpgrader tableUpgrader;
 
     private final QueryMakerService queryMakerService;
@@ -119,6 +121,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 TEST_UPGRADE_VERSIONS);
         tableUpgrader.add("dublincore", "lastContributor",
                 "upgradeLastContributor", TEST_UPGRADE_LAST_CONTRIBUTOR);
+        tableUpgrader.add(model.LOCK_TABLE_NAME, model.LOCK_OWNER_KEY,
+                "upgradeLocks", TEST_UPGRADE_LOCKS);
     }
 
     @Override

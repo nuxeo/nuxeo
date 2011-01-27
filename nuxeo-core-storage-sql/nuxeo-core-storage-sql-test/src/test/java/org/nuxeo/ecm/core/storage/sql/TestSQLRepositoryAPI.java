@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
@@ -2432,18 +2433,22 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "folder1", "Folder");
 
         folder1 = createChildDocument(folder1);
-        assertNull(folder1.getLock());
+        assertNull(folder1.getLock()); // old
+        assertNull(folder1.getLockInfo());
         assertFalse(folder1.isLocked());
-        folder1.setLock("bstefanescu");
-        assertEquals("bstefanescu", folder1.getLock());
+        folder1.setLock();
+        assertEquals(SecurityConstants.ADMINISTRATOR, folder1.getLockInfo().getOwner());
+        assertNotNull(folder1.getLockInfo().getCreated());
+        assertTrue(folder1.getLock().startsWith(
+                SecurityConstants.ADMINISTRATOR + ':')); // old
         assertTrue(folder1.isLocked());
 
         folder1 = session.getChild(root.getRef(), "folder1");
-        assertEquals("bstefanescu", folder1.getLock());
+        assertEquals(SecurityConstants.ADMINISTRATOR, folder1.getLockInfo().getOwner());
         assertTrue(folder1.isLocked());
 
-        folder1.unlock();
-        assertNull(folder1.getLock());
+        folder1.removeLock();
+        assertNull(folder1.getLockInfo());
         assertFalse(folder1.isLocked());
     }
 
@@ -3226,7 +3231,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 new Path(name), null, null, parentRef, null, null, null, null);
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
-        doc.putContextData(CoreSession.IMPORT_LOCK, "somelock");
+        Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1,
+                5, 5, 5);
+        doc.putContextData(CoreSession.IMPORT_LOCK_OWNER, "bob");
+        doc.putContextData(CoreSession.IMPORT_LOCK_CREATED, lockCreated);
         doc.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
         doc.putContextData(CoreSession.IMPORT_BASE_VERSION_ID, vid);
         doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(8));
@@ -3246,7 +3254,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Long.valueOf(8), doc.getProperty("uid", "major_version"));
         assertEquals(Long.valueOf(1), doc.getProperty("uid", "minor_version"));
         assertTrue(doc.isLocked());
-        assertEquals("somelock", doc.getLock());
+        assertEquals("bob", doc.getLockInfo().getOwner());
+        assertEquals(lockCreated, doc.getLockInfo().getCreated());
         assertFalse(doc.isVersion());
         assertFalse(doc.isProxy());
     }

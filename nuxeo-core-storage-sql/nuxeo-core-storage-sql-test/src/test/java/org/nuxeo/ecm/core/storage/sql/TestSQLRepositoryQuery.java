@@ -1051,7 +1051,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 "/testfolder1/testfile3"));
         DocumentModel file4 = session.getDocument(new PathRef(
                 "/testfolder2/testfolder3/testfile4"));
-        file1.setLock("Administrator:somedate");
+        file1.setLock();
         session.save();
 
         /*
@@ -1149,12 +1149,26 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, version.getId());
 
         /*
-         * ecm:lock
+         * ecm:lock (deprecated, uses ecm:lockOwner actually)
          */
-        // don't use a '' here for Oracle, for which '' IS NULL
         dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
         assertIdSet(dml, file1.getId());
         dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
+        assertEquals(9, dml.size());
+
+        /*
+         * ecm:lockOwner
+         */
+        // don't use a '' here for Oracle, for which '' IS NULL
+        dml = session.query("SELECT * FROM Document WHERE ecm:lockOwner <> '_'");
+        assertIdSet(dml, file1.getId());
+        dml = session.query("SELECT * FROM Document ORDER BY ecm:lockOwner");
+        assertEquals(9, dml.size());
+
+        /*
+         * ecm:lockCreated
+         */
+        dml = session.query("SELECT * FROM Document ORDER BY ecm:lockCreated");
         assertEquals(9, dml.size());
 
         // ecm:fulltext tested below

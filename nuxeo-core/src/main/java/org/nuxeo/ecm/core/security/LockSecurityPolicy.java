@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -47,9 +48,9 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
         Access access = Access.UNKNOWN;
         try {
             String username = principal.getName();
-            String lock = doc.getLock();
+            Lock lock = doc.getLock();
             if (lock != null
-                    && !lock.startsWith(username + ':')
+                    && !username.equals(lock.getOwner())
                     && resolvedPermissions != null
                     && Arrays.asList(resolvedPermissions).contains(
                             SecurityConstants.WRITE)) {

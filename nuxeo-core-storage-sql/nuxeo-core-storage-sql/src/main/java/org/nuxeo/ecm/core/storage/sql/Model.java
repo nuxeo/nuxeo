@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -210,9 +210,13 @@ public class Model {
 
     public static final String LOCK_TABLE_NAME = "locks";
 
-    public static final String LOCK_PROP = "ecm:lock";
+    public static final String LOCK_OWNER_PROP = "ecm:lockOwner";
 
-    public static final String LOCK_KEY = "lock";
+    public static final String LOCK_OWNER_KEY = "owner";
+
+    public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
+
+    public static final String LOCK_CREATED_KEY = "created";
 
     public static final String FULLTEXT_DEFAULT_INDEX = "default"; // not config
 
@@ -1100,12 +1104,12 @@ public class Model {
 
             // record doc type and facets, super type, sub types
             Set<String> mixins = documentType.getFacets();
-            documentTypesFacets.put(typeName,
-                    new HashSet<String>(mixins));
+            documentTypesFacets.put(typeName, new HashSet<String>(mixins));
             for (String mixin : mixins) {
                 Set<String> mixinTypes = mixinsDocumentTypes.get(mixin);
                 if (mixinTypes == null) {
-                    mixinsDocumentTypes.put(mixin, mixinTypes = new HashSet<String>());
+                    mixinsDocumentTypes.put(mixin,
+                            mixinTypes = new HashSet<String>());
                 }
                 mixinTypes.add(typeName);
             }
@@ -1254,8 +1258,12 @@ public class Model {
      * Special model for the locks table.
      */
     private void initLocksModel() {
-        addPropertyInfo(null, LOCK_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
-                LOCK_KEY, false, StringType.INSTANCE, ColumnType.SYSNAME);
+        addPropertyInfo(null, LOCK_OWNER_PROP, PropertyType.STRING,
+                LOCK_TABLE_NAME, LOCK_OWNER_KEY, false, StringType.INSTANCE,
+                ColumnType.SYSNAME);
+        addPropertyInfo(null, LOCK_CREATED_PROP, PropertyType.DATETIME,
+                LOCK_TABLE_NAME, LOCK_CREATED_KEY, false, DateType.INSTANCE,
+                ColumnType.TIMESTAMP);
     }
 
     /**
@@ -1263,7 +1271,8 @@ public class Model {
      */
     private void initFullTextModel() {
         addPropertyInfo(null, FULLTEXT_JOBID_PROP, PropertyType.STRING,
-                FULLTEXT_TABLE_NAME, FULLTEXT_JOBID_KEY, false, StringType.INSTANCE, ColumnType.SYSNAME);
+                FULLTEXT_TABLE_NAME, FULLTEXT_JOBID_KEY, false,
+                StringType.INSTANCE, ColumnType.SYSNAME);
         for (String indexName : fulltextInfo.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
             if (materializeFulltextSyntheticColumn) {

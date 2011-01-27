@@ -46,9 +46,8 @@ CREATE TABLE nxp_tagging (
 
 # create old table dublincore schema
 
-CREATE TABLE dublincore
-(
-  id VARCHAR(255) NOT NULL,
+CREATE TABLE dublincore (
+  id ${idType} NOT NULL,
   creator VARCHAR(255),
   nature VARCHAR(255),
   source VARCHAR(255),
@@ -62,6 +61,15 @@ CREATE TABLE dublincore
   expired TIMESTAMP,
   title VARCHAR(255)
 );
+
+# create old table locks
+
+CREATE TABLE locks (
+  id ${idType} NOT NULL,
+  lock VARCHAR(255)
+);
+
+
 ############################################################
 
 
@@ -174,3 +182,8 @@ INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000
 #IF: testUpgradeLastContributor
 INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 0, 'Administrator');
 INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 1, 'FakeOne');
+
+# lock doc
+#IF: testUpgradeLocks
+INSERT INTO locks (id, lock)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011');

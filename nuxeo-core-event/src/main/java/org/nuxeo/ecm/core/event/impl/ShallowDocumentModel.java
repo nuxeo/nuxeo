@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -420,6 +421,21 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void setLock(String key) throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Lock setLock() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Lock getLockInfo() throws ClientException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Lock removeLock() throws ClientException {
         throw new UnsupportedOperationException();
     }
 
