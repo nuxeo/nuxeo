@@ -26,6 +26,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.NamingManager;
 
 
 /**
@@ -129,6 +131,26 @@ public class NamingContextFactory implements InitialContextFactory {
 
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, NamingContextFactory.class.getName());
         System.setProperty(Context.URL_PKG_PREFIXES, "org.nuxeo.common.jndi");
+    }
+
+    /**
+     * Same as {@link #setAsInitial()} but it use strong types (avoiding reflection)
+     * to install the naming context factory.
+     * <p>
+     * This is preferable in frameworks that doesn't work well
+     * with the current thread context class loader like OSGi.
+     * @throws NamingException
+     */
+    public static void install() throws NamingException {
+        InitialContextFactoryBuilder b = new InitialContextFactoryBuilder() {
+            @Override
+            public InitialContextFactory createInitialContextFactory(
+                    Hashtable<?, ?> environment) throws NamingException {
+                NamingContextFactory factory = new NamingContextFactory();
+                return factory;
+            }
+        };
+        NamingManager.setInitialContextFactoryBuilder(b);
     }
 
     /**
