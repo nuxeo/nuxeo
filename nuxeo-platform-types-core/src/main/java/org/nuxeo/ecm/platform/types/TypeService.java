@@ -156,14 +156,15 @@ public class TypeService extends DefaultComponent implements TypeManager {
         return getAllowedSubTypes(typeName, null);
     }
 
-    public Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc) {
+    public Collection<Type> getAllowedSubTypes(String typeName,
+            DocumentModel currentDoc) {
         Collection<Type> allowed = new ArrayList<Type>();
         Type type = getType(typeName);
         if (type != null) {
             Map<String, SubType> allowedSubTypes = type.getAllowedSubTypes();
             if (currentDoc != null) {
-                allowedSubTypes = filterSubTypesFromConfiguration(allowedSubTypes,
-                        currentDoc);
+                allowedSubTypes = filterSubTypesFromConfiguration(
+                        allowedSubTypes, currentDoc);
             }
             for (String subTypeName : allowedSubTypes.keySet()) {
                 Type subType = getType(subTypeName);
@@ -181,44 +182,47 @@ public class TypeService extends DefaultComponent implements TypeManager {
     }
 
     @Override
-    public Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc) {
+    public Collection<Type> findAllAllowedSubTypesFrom(String typeName,
+            DocumentModel currentDoc) {
         return findAllAllowedSubTypesFrom(typeName, currentDoc, null);
     }
 
-    protected Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc, List<String> alreadyProcessedTypes) {
+    protected Collection<Type> findAllAllowedSubTypesFrom(String typeName,
+            DocumentModel currentDoc, List<String> alreadyProcessedTypes) {
         if (alreadyProcessedTypes == null) {
             alreadyProcessedTypes = new ArrayList<String>();
         }
         Set<Type> allAllowedSubTypes = new HashSet<Type>();
 
-        Collection<Type> allowedSubTypes = getAllowedSubTypes(typeName, currentDoc);
+        Collection<Type> allowedSubTypes = getAllowedSubTypes(typeName,
+                currentDoc);
         allAllowedSubTypes.addAll(allowedSubTypes);
         alreadyProcessedTypes.add(typeName);
         for (Type subType : allowedSubTypes) {
             if (!alreadyProcessedTypes.contains(subType.getId())) {
-                allAllowedSubTypes.addAll(findAllAllowedSubTypesFrom(subType.getId(), currentDoc, alreadyProcessedTypes));
+                allAllowedSubTypes.addAll(findAllAllowedSubTypesFrom(
+                        subType.getId(), currentDoc, alreadyProcessedTypes));
             }
         }
 
         return allAllowedSubTypes;
     }
 
-    protected UITypesConfiguration getConfiguration(
-            DocumentModel currentDoc) {
+    protected UITypesConfiguration getConfiguration(DocumentModel currentDoc) {
         UITypesConfiguration configuration = null;
         try {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
             configuration = localConfigurationService.getConfiguration(
-                    UITypesConfiguration.class,
-                    UI_TYPES_CONFIGURATION_FACET, currentDoc);
+                    UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
+                    currentDoc);
         } catch (Exception e) {
             log.error(e, e);
         }
         return configuration;
     }
 
-    public Map<String, List<Type>> getTypeMapForDocumentType(
-            String typeName, DocumentModel currentDoc) {
+    public Map<String, List<Type>> getTypeMapForDocumentType(String typeName,
+            DocumentModel currentDoc) {
         Type type = getType(typeName);
         if (type != null) {
             Map<String, List<Type>> docTypesMap = new HashMap<String, List<Type>>();
