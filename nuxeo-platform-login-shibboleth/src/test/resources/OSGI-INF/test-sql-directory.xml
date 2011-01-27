@@ -63,7 +63,7 @@
       <dbUser>sa</dbUser>
       <dbPassword></dbPassword>
 
-      <table>shibbGroups</table>
+      <table>shibbGroup</table>
       <idField>groupName</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>
