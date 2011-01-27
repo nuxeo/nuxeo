@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.types.SubType;
 
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY;
@@ -33,11 +34,13 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY;
 
 /**
+ * Default implementation of {@code UITypesConfiguration}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class UITypesConfigurationAdapter implements UITypesConfiguration {
 
-    protected DocumentModel doc;
+    protected DocumentRef documentRef;
 
     protected List<String> allowedTypes;
 
@@ -45,9 +48,10 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
 
     protected boolean denyAllTypes;
 
-    protected boolean readapt = true;
+    protected boolean canMerge = true;
 
     public UITypesConfigurationAdapter(DocumentModel doc) {
+        documentRef = doc.getRef();
         allowedTypes = getTypesList(doc,
                 UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY);
         deniedTypes = getTypesList(doc,
@@ -55,7 +59,7 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
 
         denyAllTypes = getDenyAllTypesProperty(doc);
         if (denyAllTypes) {
-            readapt = false;
+            canMerge = false;
         }
     }
 
@@ -97,8 +101,13 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
     }
 
     @Override
-    public boolean readapt() {
-        return readapt;
+    public DocumentRef getDocumentRef() {
+        return documentRef;
+    }
+
+    @Override
+    public boolean canMerge() {
+        return canMerge;
     }
 
     @Override
@@ -107,13 +116,17 @@ public class UITypesConfigurationAdapter implements UITypesConfiguration {
             return this;
         }
 
+        // set the documentRef to the other UITypesConfiguration to continue
+        // merging, if needed
+        documentRef = other.getDocumentRef();
+
         List<String> deniedTypes = new ArrayList<String>(this.deniedTypes);
         deniedTypes.addAll(other.getDeniedTypes());
         this.deniedTypes = Collections.unmodifiableList(deniedTypes);
 
         denyAllTypes = other.denyAllTypes();
         if (denyAllTypes) {
-            readapt = false;
+            canMerge = false;
         }
 
         return this;

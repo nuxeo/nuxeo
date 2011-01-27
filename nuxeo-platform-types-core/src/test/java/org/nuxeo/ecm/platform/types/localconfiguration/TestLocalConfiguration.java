@@ -388,26 +388,4 @@ public class TestLocalConfiguration {
         assertFalse(typesNames.contains(SECTION_TYPE));
     }
 
-
-    @Test
-    public void testFacets() throws ClientException {
-        DocumentModel doc = session.createDocumentModel("PARENT_WORKSPACE_REF", "folder",
-                "Folder");
-        doc.setProperty("dublincore", "title", "test folder");
-                doc = session.createDocument(doc);
-                session.saveDocument(doc);
-                session.save();
-
-
-        for(int i=0; i<1000; i++) {
-            doc.addFacet("UITypesLocalConfiguration");
-            doc = session.saveDocument(doc);
-            session.save();
-
-            doc.removeFacet("UITypesLocalConfiguration");
-            doc = session.saveDocument(doc);
-            session.save();
-        }
-    }
-
 }

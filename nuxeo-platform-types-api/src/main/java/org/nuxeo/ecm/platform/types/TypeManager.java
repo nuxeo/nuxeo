@@ -25,6 +25,11 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+/**
+ * Service handling registered UI Types.
+ *
+ * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ */
 public interface TypeManager {
 
     /**
@@ -35,52 +40,98 @@ public interface TypeManager {
      */
     String[] getSuperTypes(String typeName);
 
+    /**
+     * Returns all the registered {@code Type}s.
+     */
     Collection<Type> getTypes();
 
+    /**
+     * Returns the {@code Type} instance for the given {@code typeName}.
+     */
     Type getType(String typeName);
 
+    /**
+     * Returns {@code true} if {@code typeName} is a registered Type, {@code false} otherwise.
+     */
     boolean hasType(String typeName);
 
     Collection<Type> getAllowedSubTypes(String typeName);
 
     /**
+     * Returns the allowed sub types of the given {@code typeName}, filtered by
+     * a local UI types configuration retrieved from the {@code currentDoc}, if
+     * any.
+     *
      * @since 5.4.1
      */
-    Collection<Type> getAllowedSubTypes(String typeName, DocumentModel currentDoc);
+    Collection<Type> getAllowedSubTypes(String typeName,
+            DocumentModel currentDoc);
 
     /**
+     * Returns recursively all the allowed sub types from the given
+     * {@code typeName}.
+     *
      * @since 5.4.1
      */
     Collection<Type> findAllAllowedSubTypesFrom(String typeName);
 
     /**
+     * Returns recursively all the allowed sub types from the given
+     * {@code typeName}, filtered by a local UI types configuration retrieved
+     * from the {@code currentDoc}, if any.
+     *
      * @since 5.4.1
      */
-    Collection<Type> findAllAllowedSubTypesFrom(String typeName, DocumentModel currentDoc);
+    Collection<Type> findAllAllowedSubTypesFrom(String typeName,
+            DocumentModel currentDoc);
 
     /**
+     * Returns the sub type of the given {@code typeName}, filtered by a local
+     * UI types configuration retrieved from the {@code currentDoc}, if any, and
+     * organized by type categories.
+     *
      * @since 5.4.1
      */
-    Map<String, List<Type>> getTypeMapForDocumentType(String type, DocumentModel currentDoc);
+    Map<String, List<Type>> getTypeMapForDocumentType(String typeName,
+            DocumentModel currentDoc);
 
     /**
+     * Returns {@code true} if {@code typeName} is a sub type, allowed in
+     * creation mode, of {@code containerTypeName}, {@code false} otherwise.
+     *
      * @since 5.4.1
      */
     boolean canCreate(String typeName, String containerTypeName);
 
     /**
+     * Returns {@code true} if {@code typeName} is a sub type, allowed in
+     * creation, of {@code containerTypeName}, {@code false} otherwise.
+     * <p>
+     * It takes care of a local UI types configuration retrieved from the
+     * {@code currentDoc} to filter the sub types of {@code typeName} before
+     * checking the creation mode.
+     *
      * @since 5.4.1
      */
-    boolean canCreate(String typeName, String containerTypeName, DocumentModel currentDoc);
+    boolean canCreate(String typeName, String containerTypeName,
+            DocumentModel currentDoc);
 
     /**
+     * Returns {@code true} if {@code typeName} is an allowed sub type of
+     * {@code containerTypeName}, {@code false} otherwise.
+     *
      * @since 5.4.1
      */
     boolean isAllowedSubType(String typeName, String containerTypeName);
 
     /**
+     * Returns {@code true} if {@code typeName} is an allowed sub type of
+     * {@code containerTypeName}, filtered by a local UI types configuration
+     * retrieved from the {@code currentDoc}, if any, {@code false} otherwise.
+     *
      * @since 5.4.1
      */
-    boolean isAllowedSubType(String typeName, String containerTypeName, DocumentModel currentDoc);
+    boolean isAllowedSubType(String typeName, String containerTypeName,
+            DocumentModel currentDoc);
 
 }

@@ -49,7 +49,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     private static final Log log = LogFactory.getLog(TypeService.class);
 
-    private static String DEFAULT_CATEGORY = "misc";
+    public static String DEFAULT_CATEGORY = "misc";
 
     public static final String HIDDEN_IN_CREATION = "create";
 
