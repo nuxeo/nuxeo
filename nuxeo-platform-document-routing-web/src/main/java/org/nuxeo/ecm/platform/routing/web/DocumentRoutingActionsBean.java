@@ -437,7 +437,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return lockActions.getCanLockDoc(getRelatedRoute().getDocument());
     }
 
-    public Map<String, String> getCurrentRouteLockDetails() throws ClientException {
+    public Map<String, Serializable> getCurrentRouteLockDetails() throws ClientException {
         return lockActions.getLockDetails(getRelatedRoute().getDocument());
     }
 

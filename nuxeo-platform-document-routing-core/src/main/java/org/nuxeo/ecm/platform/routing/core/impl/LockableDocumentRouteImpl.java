@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,7 +39,7 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
 
     @Override
     public boolean isLocked(CoreSession session) throws ClientException {
-        return session.getDocument(doc.getRef()).isLocked();
+        return session.getLockInfo(doc.getRef()) != null;
     }
 
     @Override
@@ -51,24 +48,21 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
         if (!isLocked(session)) {
             return false;
         }
-        String lockOwner = session.getLock(doc.getRef()).split(":")[0];
+        String lockOwner = session.getLockInfo(doc.getRef()).getOwner();
         NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
         return userName.getName().equals(lockOwner);
     }
 
     @Override
     public void lockDocument(CoreSession session) throws ClientException {
-        StringBuilder lockKey = new StringBuilder();
-        lockKey.append(getLockOwner(session)).append(':').append(
-                DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
-        session.setLock(doc.getRef(), lockKey.toString());
+        session.setLock(doc.getRef());
         session.save();
     }
 
     @Override
     public void unlockDocument(CoreSession session) throws ClientException {
         DocumentRef ref = doc.getRef();
-        session.unlock(ref);
+        session.removeLock(ref);
         session.save();
     }
 
