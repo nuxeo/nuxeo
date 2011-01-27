@@ -25,9 +25,21 @@ import org.nuxeo.ecm.platform.annotations.api.Annotation;
 
 /**
  * @author Alexandre Russel
- *
+ * 
  */
 public interface AnnotatedDocumentEventListener {
+
+    public static final String ANNOTATION_CREATED = "annotationCreated";
+
+    public static final String ANNOTATION_UPDATED = "annotationUpdated";
+
+    public static final String ANNOTATION_DELETED = "annotationDeleted";
+
+    public static final String ANNOTATION_ID = "annotationId";
+
+    public static final String ANNOTATION_SUBJECT = "annotationSubject";
+
+    public static final String ANNOTATION_BODY = "annotationBody";
 
     void beforeAnnotationCreated(NuxeoPrincipal principal,
             DocumentLocation documentLoc, Annotation annotation);
