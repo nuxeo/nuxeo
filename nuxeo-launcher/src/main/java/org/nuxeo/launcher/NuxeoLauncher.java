@@ -277,10 +277,11 @@ public abstract class NuxeoLauncher {
             // osCommand.add("&");
             return osCommand;
         } else if (PlatformUtils.isWindows()) {
-            osCommand.add("cmd");
-            osCommand.add("/C");
-            osCommand.add(linearizedCommand);
-            return osCommand;
+            // osCommand.add("cmd");
+            // osCommand.add("/C");
+            // osCommand.add(linearizedCommand);
+            // return osCommand;
+            return roughCommand;
         } else {
             return roughCommand;
         }
