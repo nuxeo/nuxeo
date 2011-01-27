@@ -42,7 +42,7 @@ import org.jboss.seam.excel.ui.command.Command;
  */
 public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
-    public static final String COMPONENT_TYPE = "org.nuxeo.ecm.platform.jsf.UIColumn";
+    public static final String COMPONENT_TYPE = UIColumn.class.getName();
 
     public static final String FOOTER_FACET_NAME = "footer";
 

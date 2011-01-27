@@ -343,11 +343,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             WidgetDefinition wDef, String layoutMode) {
         String wMode = getStringValue(context, wDef.getMode(layoutMode));
         if (wMode == null) {
-            if (BuiltinModes.isBoundToEditMode(layoutMode)) {
-                wMode = BuiltinWidgetModes.EDIT;
-            } else {
-                wMode = BuiltinWidgetModes.VIEW;
-            }
+            wMode = BuiltinModes.getWidgetModeFromLayoutMode(layoutMode);
         }
         return wMode;
     }

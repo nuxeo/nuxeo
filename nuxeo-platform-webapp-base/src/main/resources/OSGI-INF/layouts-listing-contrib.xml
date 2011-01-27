@@ -607,7 +607,9 @@
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      <property name="template">/widgets/author_widget_template.xhtml</property>
+      <property name="template">
+        /widgets/single_user_widget_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="listing_last_contributor">
@@ -641,7 +643,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/lastContributor_widget_template.xhtml
+        /widgets/single_user_widget_template.xhtml
       </property>
 
     </widgetType>
@@ -1075,6 +1077,9 @@
     <layout name="document_listing">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>
@@ -1088,6 +1093,9 @@
             </property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_selection_box_with_current_document</widget>
         </column>
@@ -1109,6 +1117,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_lock_icon</widget>
         </column>
         <column>
@@ -1154,6 +1165,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_livedit_link</widget>
         </column>
       </columns>
@@ -1163,6 +1177,9 @@
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
         </template>
       </templates>
       <properties mode="any">
@@ -1177,6 +1194,9 @@
             </property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
@@ -1198,6 +1218,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_lock_icon</widget>
         </column>
         <column>
@@ -1242,6 +1265,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_livedit_link</widget>
         </column>
       </columns>
@@ -1250,6 +1276,9 @@
     <layout name="document_virtual_navigation_listing">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <properties mode="any">
         <property name="showListingHeader">true</property>
@@ -1261,6 +1290,9 @@
             <property name="isListingSelectionBox">true</property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_selection_box</widget>
         </column>
@@ -1281,6 +1313,9 @@
         <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_lock_icon</widget>
         </column>
@@ -1325,6 +1360,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_livedit_link</widget>
         </column>
       </columns>
@@ -1334,6 +1372,9 @@
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
         </template>
       </templates>
       <properties mode="any">
@@ -1346,6 +1387,9 @@
             <property name="isListingSelectionBox">true</property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
@@ -1366,6 +1410,9 @@
         <column>
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_lock_icon</widget>
         </column>
@@ -1403,6 +1450,9 @@
               ecm:currentLifeCycleState
             </property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_lifecycle</widget>
         </column>
         <column>
@@ -1417,11 +1467,17 @@
     <layout name="document_listing_compact_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_selection_box_with_current_document</widget>
         </column>
@@ -1446,11 +1502,17 @@
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
         </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
@@ -1475,11 +1537,17 @@
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
         </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
@@ -1502,9 +1570,15 @@
     <layout name="document_listing_icon_2_columns">
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_selection_box_with_current_document</widget>
         </column>
         <column alwaysSelected="true">
@@ -1521,9 +1595,15 @@
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
         </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
         <column alwaysSelected="true">
@@ -1540,9 +1620,15 @@
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
         </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
       </templates>
       <columns>
         <column alwaysSelected="true">
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
         <column alwaysSelected="true">
@@ -1558,6 +1644,9 @@
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="plain_csv">
+          /layouts/layout_listing_csv_template.xhtml
         </template>
         <template mode="edit_columns">
           /layouts/layout_column_selection_template.xhtml
@@ -1604,6 +1693,9 @@
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
+          </properties>
           <widget>listing_ajax_selection_box</widget>
         </column>
         <column name="icon_type">
@@ -1632,6 +1724,9 @@
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
             <property name="label">label.selection.column.lock</property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_lock_icon</widget>
         </column>
@@ -1716,6 +1811,9 @@
             <property name="label">
               label.selection.column.livedit_link
             </property>
+          </properties>
+          <properties mode="plain_csv">
+            <property name="isHidden">true</property>
           </properties>
           <widget>listing_livedit_link</widget>
         </column>

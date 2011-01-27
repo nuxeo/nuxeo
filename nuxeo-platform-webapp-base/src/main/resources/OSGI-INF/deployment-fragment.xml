@@ -81,6 +81,12 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>content_view_csv</from-outcome>
+      <to-view-id>/incl/content_view_csv.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
   </extension>
 
   <extension target="faces-config#CONVERTER">

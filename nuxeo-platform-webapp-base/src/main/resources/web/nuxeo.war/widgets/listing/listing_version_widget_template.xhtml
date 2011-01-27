@@ -1,6 +1,10 @@
-<c:if test="#{field.hasFacet('Versionable')}"
+<f:subview
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html">
-  <h:outputText value="#{versioningManager.getVersionLabel(field)}"
+<c:if test="#{widget.mode == 'plain'}">#{field.versionLabel}</c:if>
+<c:if test="#{widget.mode != 'plain'}">
+  <h:outputText value="#{field.versionLabel}"
     id="#{widget.id}" />
 </c:if>
+</f:subview>

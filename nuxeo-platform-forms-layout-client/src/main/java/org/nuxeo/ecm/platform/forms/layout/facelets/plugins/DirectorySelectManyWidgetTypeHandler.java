@@ -70,7 +70,13 @@ public class DirectorySelectManyWidgetTypeHandler extends
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+        TagAttributes attributes;
+        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+            // use attributes without id
+            attributes = helper.getTagAttributes(widget);
+        } else {
+            attributes = helper.getTagAttributes(widgetId, widget);
+        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,
                     leaf, SelectManyListboxComponent.COMPONENT_TYPE, null);
@@ -80,6 +86,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
+            // TODO: need to handle PLAIN mode
             Map<String, Serializable> properties = widget.getProperties();
             // get value attribute
             TagAttribute valueAttr = null;

@@ -8,7 +8,9 @@
   <tag>
     <tag-name>column</tag-name>
     <component>
-      <component-type>org.nuxeo.ecm.platform.jsf.UIColumn</component-type>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn
+      </component-type>
     </component>
   </tag>
 </facelet-taglib>

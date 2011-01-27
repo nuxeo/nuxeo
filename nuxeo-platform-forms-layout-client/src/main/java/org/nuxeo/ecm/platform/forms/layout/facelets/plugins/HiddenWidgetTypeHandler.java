@@ -51,7 +51,13 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+        TagAttributes attributes;
+        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+            // use attributes without id
+            attributes = helper.getTagAttributes(widget);
+        } else {
+            attributes = helper.getTagAttributes(widgetId, widget);
+        }
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,

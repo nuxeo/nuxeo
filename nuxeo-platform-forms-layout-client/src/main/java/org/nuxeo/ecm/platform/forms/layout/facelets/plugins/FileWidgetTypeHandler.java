@@ -54,7 +54,13 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+        TagAttributes attributes;
+        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+            // use attributes without id
+            attributes = helper.getTagAttributes(widget);
+        } else {
+            attributes = helper.getTagAttributes(widgetId, widget);
+        }
         // add filename from field definition
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 1) {
@@ -75,6 +81,7 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
+            // TODO: handle PLAIN mode better?
             ComponentHandler output = helper.getHtmlComponentHandler(
                     attributes, leaf, UIOutputFile.COMPONENT_TYPE, null);
             return output;

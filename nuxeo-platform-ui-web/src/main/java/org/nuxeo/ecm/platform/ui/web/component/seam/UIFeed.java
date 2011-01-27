@@ -40,7 +40,7 @@ import yarfraw.io.FeedWriter;
  */
 public class UIFeed extends org.jboss.seam.rss.ui.UIFeed {
 
-    public static final String COMPONENT_TYPE = "org.nuxeo.ecm.platform.jsf.UIFeed";
+    public static final String COMPONENT_TYPE = UIFeed.class.getName();
 
     private static final String MIMETYPE = "text/xml";
 
