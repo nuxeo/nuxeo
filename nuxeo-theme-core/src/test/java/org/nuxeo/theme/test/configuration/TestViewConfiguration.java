@@ -44,8 +44,22 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         assertEquals("widget", view1.getFormatType().getTypeName());
         assertEquals("menu item", view1.getModelType().getTypeName());
         assertEquals("nxthemes/jsf/widgets/page-frame.xml", view1.getTemplate());
-        assertEquals("css/style.css", view1.getResources()[0]);
-        assertEquals("script/script.js", view1.getResources()[1]);
+        assertEquals("style.css", view1.getResources().get(0));
+        assertEquals("script.js", view1.getResources().get(1));
+        assertEquals("jsf-facelets", view1.getTemplateEngine());
+    }
+
+    public void testRegisterViewMerge() {
+        TypeRegistry typeRegistry = Manager.getTypeRegistry();
+
+        ViewType view1 = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
+                "widget/*/menu/*/default/*/jsf-facelets");
+        assertNotNull(view1);
+
+        assertEquals("widget", view1.getFormatType().getTypeName());
+        assertEquals("nxthemes/jsf/widgets/menu.xml", view1.getTemplate());
+        assertEquals("style.css", view1.getResources().get(0));
+        assertEquals("style-addon.css", view1.getResources().get(1));
         assertEquals("jsf-facelets", view1.getTemplateEngine());
     }
 

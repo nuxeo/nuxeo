@@ -14,6 +14,9 @@
 
 package org.nuxeo.theme.test.html;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.html.HTMLView;
@@ -41,7 +44,7 @@ public class TestHTMLView extends NXRuntimeTestCase {
         view = new HTMLView();
         viewType = new ViewType();
 
-        String[] resources = {};
+        List<String> resources = new ArrayList<String>();
         viewType.setResources(resources);
         view.setViewType(viewType);
     }

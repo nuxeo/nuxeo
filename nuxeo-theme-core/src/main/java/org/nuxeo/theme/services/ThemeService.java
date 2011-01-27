@@ -515,17 +515,38 @@ public class ThemeService extends DefaultComponent implements Reloadable {
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         for (Object contrib : contribs) {
             ViewType viewType = (ViewType) contrib;
-            String templateEngineAttr = viewType.getTemplateEngine();
+            String templateEngineName = viewType.getTemplateEngine();
             final String viewName = viewType.getViewName();
-            if (templateEngineAttr == null) {
+            final String viewTypeName = viewType.getTypeName();
+            if (templateEngineName == null) {
                 final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
-                templateEngineAttr = defaultTemplateEngineName;
+                templateEngineName = defaultTemplateEngineName;
                 log.warn(String.format(
                         "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> (using default '%s')",
                         viewName, defaultTemplateEngineName));
             } else {
-                for (String templateEngineName : templateEngineAttr.split(",")) {
-                    viewType.setTemplateEngine(templateEngineName);
+                if (templateEngineName.contains(",")) {
+                    log.warn(String.format(
+                            "The 'template-engine' attribute in <view name=\"%s\" template-engine=\"...\"> may only contain a single template-engine name",
+                            viewName, templateEngineName));
+                    templateEngineName = templateEngineName.split(",")[0];
+                }
+
+                if (viewType.isMerge()) {
+                    final ViewType oldViewType = (ViewType) typeRegistry.lookup(
+                            TypeFamily.VIEW, viewTypeName);
+                    if (oldViewType != null) {
+                        // merge resource properties
+                        List<String> newResources = viewType.getResources();
+                        if (!newResources.isEmpty()) {
+                            log.debug("Added resources " + newResources
+                                    + " to THEME view: " + viewTypeName);
+                            for (String resource : newResources) {
+                                oldViewType.addResource(resource);
+                            }
+                        }
+                    }
+                } else {
                     typeRegistry.register(viewType);
                 }
             }

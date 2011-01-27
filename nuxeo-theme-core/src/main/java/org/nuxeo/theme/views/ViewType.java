@@ -14,6 +14,9 @@
 
 package org.nuxeo.theme.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -41,6 +44,9 @@ public final class ViewType implements Type {
     @XNode("@template-engine")
     private String templateEngine;
 
+    @XNode("@merge")
+    private boolean merge = false;
+
     @XNode("mode")
     public String mode = "*";
 
@@ -62,8 +68,8 @@ public final class ViewType implements Type {
     @XNode("template")
     public String template;
 
-    @XNodeList(value = "resource", type = String[].class, componentType = String.class)
-    public String[] resources;
+    @XNodeList(value = "resource", type = ArrayList.class, componentType = String.class)
+    public List<String> resources = new ArrayList<String>();
 
     private View view;
 
@@ -74,7 +80,7 @@ public final class ViewType implements Type {
             final String engineName, final String templateEngine,
             final String mode, final String elementTypeName,
             final String modelTypeName, final String formatTypeName,
-            final String template, final String[] resources) {
+            final String template, final List<String> resources) {
         this.viewName = viewName;
         this.elementTypeName = elementTypeName;
         this.modelTypeName = modelTypeName;
@@ -151,11 +157,11 @@ public final class ViewType implements Type {
         this.template = template;
     }
 
-    public String[] getResources() {
+    public List<String> getResources() {
         return resources;
     }
 
-    public void setResources(final String[] resources) {
+    public void setResources(final List<String> resources) {
         this.resources = resources;
     }
 
@@ -181,5 +187,19 @@ public final class ViewType implements Type {
 
     public void setTemplateEngine(String templateEngine) {
         this.templateEngine = templateEngine;
+    }
+
+    public boolean isMerge() {
+        return merge;
+    }
+
+    public void setMerge(boolean merge) {
+        this.merge = merge;
+    }
+
+    public void addResource(String resource) {
+        if (!resources.contains(resource)) {
+            resources.add(resource);
+        }
     }
 }
