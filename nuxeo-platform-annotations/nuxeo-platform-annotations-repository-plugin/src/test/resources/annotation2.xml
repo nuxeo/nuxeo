@@ -18,15 +18,7 @@
     <h:ContentType>text/html</h:ContentType>
     <h:ContentLength>289</h:ContentLength>
     <h:Body r:parseType="Literal">
-     <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-       <title>Ralph's Annotation</title>
-      </head>
-      <body>
-       <p>This is an <em>important</em> concept; see
-       <a href="http://serv1.example.com/other/page.html">other page</a>.</p>
-      </body>
-     </html>
+      This is a pure textual annotation by Ralph Swick.
     </h:Body>
    </r:Description>
   </a:body>

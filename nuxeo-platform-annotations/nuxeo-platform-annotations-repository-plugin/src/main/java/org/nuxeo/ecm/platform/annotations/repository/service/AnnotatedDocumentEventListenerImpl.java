@@ -28,6 +28,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.runtime.api.Framework;
@@ -54,8 +54,6 @@ public class AnnotatedDocumentEventListenerImpl implements
 
     private static final String ANNOTATION_DELETED = "annotationDeleted";
 
-    private transient EventService eventService;
-
     public void beforeAnnotationCreated(NuxeoPrincipal principal,
             DocumentLocation documentLoc, Annotation annotation) {
         // NOP
@@ -66,7 +64,8 @@ public class AnnotatedDocumentEventListenerImpl implements
         // NOP
     }
 
-    public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
+    public void beforeAnnotationRead(NuxeoPrincipal principal,
+            String annotationId) {
         // NOP
     }
 
@@ -97,36 +96,39 @@ public class AnnotatedDocumentEventListenerImpl implements
 
     protected void notifyEvent(String eventId, Annotation annotation,
             DocumentLocation documentLocation, NuxeoPrincipal principal) {
+        LoginContext loginContext = null;
+        CoreSession session = null;
+        String title = null;
         try {
-            DocumentModel dm = getDocument(documentLocation);
+            loginContext = Framework.login();
+            session = getSession(documentLocation.getServerName());
+            DocumentModel doc = session.getDocument(documentLocation.getDocRef());
+            title = doc.getTitle();
+
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
 
             DocumentEventContext ctx = new DocumentEventContext(null,
-                    principal, dm);
-            ctx.setRepositoryName(dm.getRepositoryName());
+                    principal, doc);
+            ctx.setRepositoryName(doc.getRepositoryName());
             ctx.setProperties(properties);
             ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
             Event event = ctx.newEvent(eventId);
-            EventProducer evtProducer;
-            evtProducer = Framework.getService(EventProducer.class);
-            evtProducer.fireEvent(event);
+            Framework.getService(EventProducer.class).fireEvent(event);
         } catch (Exception e) {
             log.error("Unable to send the " + eventId + " event", e);
-        }
-    }
-
-    protected DocumentModel getDocument(DocumentLocation docLoc)
-            throws Exception {
-        LoginContext loginContext = null;
-        DocumentModel doc = null;
-
-        try {
-            loginContext = Framework.login();
-            CoreSession session = getSession(docLoc.getServerName());
-            doc = session.getDocument(docLoc.getDocRef());
-            CoreInstance.getInstance().close(session);
         } finally {
+            if (session != null) {
+                try {
+                    session.save();
+                } catch (ClientException e) {
+                    log.error(String.format(
+                            "error saving core session for annotation"
+                                    + " event %d on document '%s'", eventId,
+                            title), e);
+                }
+                CoreInstance.getInstance().close(session);
+            }
             if (loginContext != null) {
                 try {
                     loginContext.logout();
@@ -135,7 +137,6 @@ public class AnnotatedDocumentEventListenerImpl implements
                 }
             }
         }
-        return doc;
     }
 
     protected CoreSession getSession(String repoName) throws Exception {
