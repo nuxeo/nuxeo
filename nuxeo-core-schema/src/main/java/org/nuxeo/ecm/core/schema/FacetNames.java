@@ -43,6 +43,8 @@ public final class FacetNames {
 
     public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";
 
+    public static final String HAS_RELATED_TEXT = "HasRelatedText";
+
     private FacetNames() {
     }
 

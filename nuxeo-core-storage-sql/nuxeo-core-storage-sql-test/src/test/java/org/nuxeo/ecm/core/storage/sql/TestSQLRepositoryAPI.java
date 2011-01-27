@@ -1812,7 +1812,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
         Set<String> baseFacets = new HashSet<String>(Arrays.asList(
                 FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
-                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE));
+                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE,
+                FacetNames.HAS_RELATED_TEXT));
         assertEquals(baseFacets, doc.getFacets());
         try {
             doc.setPropertyValue("age:age", "123");
