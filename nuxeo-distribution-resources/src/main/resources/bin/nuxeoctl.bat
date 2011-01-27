@@ -42,10 +42,10 @@ goto END
 
 :FOUND_NUXEO_LAUNCHER
 
-set NUXEO_CONF="%NUXEO_HOME%\bin\nuxeo.conf"
-set JAVA_OPTS="-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"
+set NUXEO_CONF=%NUXEO_HOME%\bin\nuxeo.conf
+set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 
-echo Launcher command: java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %GUI_OPTION% %*
-java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar %NUXEO_LAUNCHER% %GUI_OPTION% %*
+echo Launcher command: java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %*
+java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %*
 
 :END
