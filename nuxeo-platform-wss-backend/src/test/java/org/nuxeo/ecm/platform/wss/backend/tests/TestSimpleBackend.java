@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -203,15 +204,15 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         item.checkOut("titi");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
-        String lock = session.getLock(new PathRef(
+        Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertTrue(lock.startsWith("titi:"));
+        assertEquals("titi", lock.getOwner());
 
         item.uncheckOut("titi");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
-        lock = session.getLock(new PathRef(
+        lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNull(lock);
 
@@ -338,15 +339,15 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         item.checkOut("titi");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
-        String lock = session.getLock(new PathRef(
+        Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertTrue(lock.startsWith("titi:"));
+        assertEquals("titi", lock.getOwner());
 
         item.uncheckOut("titi");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
-        lock = session.getLock(new PathRef(
+        lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNull(lock);
 

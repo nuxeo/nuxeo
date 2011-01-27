@@ -34,7 +34,7 @@ public class TestHelper extends NXRuntimeTestCase {
 
     public void testPreviewURLDefault() {
         DocumentModel doc = new DocumentModelImpl(
-                "", "File", uuid, new Path("/"), "", null, null, null, null, null, "default");
+                "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
 
         String previewURL = PreviewHelper.getPreviewURL(doc);
         assertNotNull(previewURL);
@@ -43,7 +43,7 @@ public class TestHelper extends NXRuntimeTestCase {
 
     public void testPreviewURL() {
         DocumentModel doc = new DocumentModelImpl(
-                "", "File", uuid, new Path("/"), "", null, null, null, null, null, "default");
+                "", "File", uuid, new Path("/"), null, null, null, null, null, null, "default");
 
         String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
         assertNotNull(previewURL);

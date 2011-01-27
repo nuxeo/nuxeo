@@ -38,13 +38,13 @@ public class UnlockDocument {
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) throws Exception {
-        session.unlock(doc);
+        session.removeLock(doc);
         return session.getDocument(doc);
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        session.unlock(doc.getRef());
+        session.removeLock(doc.getRef());
         return session.getDocument(doc.getRef());
     }
 
