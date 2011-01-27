@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.shibboleth;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -30,18 +31,24 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.shibboleth.computedgroups.ELGroupComputerHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
 public class ShibbolethGroupHelper {
 
-    private static final Log log = LogFactory.getLog(ShibbolethGroupHelper.class);
+    private static final Log log = LogFactory.getLog(
+            ShibbolethGroupHelper.class);
 
     protected static DirectoryService directory;
+
+    protected static UserManager userManager;
 
     private ShibbolethGroupHelper() {
         // Helper class
@@ -58,6 +65,17 @@ public class ShibbolethGroupHelper {
         return directory;
     }
 
+    protected static UserManager getUserManager() {
+        if (userManager == null) {
+            try {
+                userManager = Framework.getService(UserManager.class);
+            } catch (Exception e) {
+                log.error("Cannot access the userManager Service");
+            }
+        }
+        return userManager;
+    }
+
     public static DocumentModel getBareGroupModel(CoreSession core)
             throws ClientException {
         return core.createDocumentModel(ShibbolethConstants.SHIBBOLETH_SCHEMA);
@@ -72,7 +90,8 @@ public class ShibbolethGroupHelper {
 
             if (session.hasEntry(group.getPropertyValue(
                     ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
-                            + ShibbolethConstants.GROUP_ID_PROPERTY).toString())) {
+                            + ShibbolethConstants.GROUP_ID_PROPERTY)
+                    .toString())) {
                 throw new GroupAlreadyExistsException();
             }
 
@@ -133,6 +152,24 @@ public class ShibbolethGroupHelper {
         }
     }
 
+    /**
+     * Query the group directory to find if shibbGroupName is used in a subGroup
+     * field.
+     *
+     * @param shibbGroupName name of the desired groupe
+     * @return a DocumentList representing the groups matching the query
+     */
+    public static List<String> getParentsGroups(String shibbGroupName)
+            throws ClientException {
+        Directory dir = getDirectoryService().getDirectory(
+                getUserManager().getGroupDirectoryName());
+
+        Reference subGroups = dir.getReference(
+                getUserManager().getGroupSubGroupsField());
+        List<String> ret = subGroups.getSourceIdsForTarget(shibbGroupName);
+        return ret;
+    }
+
     public static DocumentModelList getGroups() throws ClientException {
         Session session = null;
         try {
@@ -155,15 +192,15 @@ public class ShibbolethGroupHelper {
                     ShibbolethConstants.SHIBBOLETH_DIRECTORY);
 
             Map<String, Serializable> filters = new HashMap<String, Serializable>();
-            if (fullText != null && fullText != "") {
+            if (fullText != null && !"".equals(fullText)) {
                 filters.put(ShibbolethConstants.GROUP_ID_PROPERTY, fullText);
             }
 
             Map<String, String> orderBy = new HashMap<String, String>();
             orderBy.put(ShibbolethConstants.GROUP_ID_PROPERTY,
                     DocumentModelComparator.ORDER_ASC);
-            return session.query(filters,
-                    new HashSet<String>(filters.keySet()), orderBy);
+            return session.query(filters, new HashSet<String>(filters.keySet()),
+                    orderBy);
         } finally {
             if (session != null) {
                 session.close();
@@ -173,8 +210,9 @@ public class ShibbolethGroupHelper {
 
     protected static void checkExpressionLanguageValidity(DocumentModel group)
             throws ClientException {
-        String expressionLanguage = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA
-                + ":" + ShibbolethConstants.GROUP_EL_PROPERTY);
+        String expressionLanguage = (String) group.getPropertyValue(
+                ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
+                        + ShibbolethConstants.GROUP_EL_PROPERTY);
         if (!ELGroupComputerHelper.isValidEL(expressionLanguage)) {
             throw new InvalidPropertyValueException(expressionLanguage
                     + " : is not a valid expression language");

@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -26,7 +29,12 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.sql.SQLSession;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -34,17 +42,18 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.login.shibboleth" })
-@LocalDeploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
+@RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class,
+        user = "Administrator", cleanup = Granularity.METHOD)
+@Deploy({"org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.login.shibboleth"})
+@LocalDeploy(
+        "org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
     protected static final String CORRECT_EL = "empty currentUser";
@@ -52,14 +61,19 @@ public class TestShibbolethGroupHelper {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected UserManager userManager;
+
+    @Inject
+    protected DirectoryService directoryService;
+
     @Test
     public void testCreateGroup() throws Exception {
         assertSame(0, ShibbolethGroupHelper.getGroups().size());
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
 
         group.setPropertyValue("shibbGroup:groupName", "group1");
-        group.setPropertyValue("shibbGroup:expressionLanguage",
-                CORRECT_EL);
+        group.setPropertyValue("shibbGroup:expressionLanguage", CORRECT_EL);
         ShibbolethGroupHelper.createGroup(group);
 
         assertSame(1, ShibbolethGroupHelper.getGroups().size());
@@ -67,11 +81,11 @@ public class TestShibbolethGroupHelper {
 
     @Test
     public void testSearchGroup() throws Exception {
-        getGroup("group2", true);
-        getGroup("group3", true);
-        getGroup("group4", true);
-        getGroup("test", true);
-        getGroup("group6", true);
+        createShibbGroup("group2");
+        createShibbGroup("group3");
+        createShibbGroup("group4");
+        createShibbGroup("test");
+        createShibbGroup("group6");
 
         assertSame(1, ShibbolethGroupHelper.searchGroup("test").size());
         assertSame(6, ShibbolethGroupHelper.searchGroup("").size());
@@ -79,15 +93,112 @@ public class TestShibbolethGroupHelper {
         assertSame(5, ShibbolethGroupHelper.searchGroup("group").size());
     }
 
-    protected DocumentModel getGroup(String name, boolean createIt)
-            throws Exception {
+    @Test
+    public void testGetReference() throws Exception {
+        DocumentModel group = userManager.getBareGroupModel();
+        group.setPropertyValue("group:groupname", "testRef");
+        group = userManager.createGroup(group);
+
+        assertEquals("testRef", group.getId());
+
+        DocumentModel shibbGroup = createShibbGroup("refShib");
+        List<String> ref = new ArrayList<String>();
+        assertEquals("refShib", shibbGroup.getId());
+        ref.add(shibbGroup.getId());
+
+        group.setProperty(userManager.getGroupSchemaName(),
+                userManager.getGroupSubGroupsField(), ref);
+        userManager.updateGroup(group);
+        session.save();
+
+        Directory dir = directoryService.getDirectory(
+                userManager.getGroupDirectoryName());
+        assertNotNull(dir.getReference(userManager.getGroupSubGroupsField()));
+
+        SQLSession ses = (SQLSession) directoryService.open(
+                userManager.getGroupDirectoryName());
+        DocumentModel tmp = ses.getEntry("testRef");
+        List<String> subs = (List<String>) tmp.getProperty(
+                userManager.getGroupSchemaName(),
+                userManager.getGroupSubGroupsField());
+        assertNotNull(subs);
+        assertEquals(1, subs.size());
+
+        Reference dirRef = dir.getReference(
+                userManager.getGroupSubGroupsField());
+
+        assertTrue(dirRef.getTargetIdsForSource("testRef").size() > 0);
+        assertTrue(dirRef.getSourceIdsForTarget("refShib").size() > 0);
+        assertSame("testRef", dirRef.getSourceIdsForTarget("refShib").get(0));
+    }
+
+    @Test
+    public void testSubGroups() throws Exception {
+        DocumentModel group = userManager.getBareGroupModel();
+        group.setPropertyValue("group:groupname", "trueGroup1");
+        group = userManager.createGroup(group);
+        assertEquals("trueGroup1", group.getId());
+
+        DocumentModel group2 = userManager.getBareGroupModel();
+        group2.setPropertyValue("group:groupname", "trueGroup2");
+        group2 = userManager.createGroup(group2);
+
+        DocumentModel group3 = userManager.getBareGroupModel();
+        group3.setPropertyValue("group:groupname", "trueGroup3");
+        group3 = userManager.createGroup(group3);
+
+        List<String> subGroup = new ArrayList<String>();
+        List<String> subGroup2 = new ArrayList<String>();
+
+        DocumentModel shibGroup = createShibbGroup("members");
+        subGroup.add(shibGroup.getId());
+        subGroup2.add(shibGroup.getId());
+
+        assertNotNull(shibGroup.getId());
+
+        shibGroup = createShibbGroup("shibbou");
+        subGroup.add(shibGroup.getId());
+
+        shibGroup = createShibbGroup("group7");
+        subGroup.add(shibGroup.getId());
+        subGroup2.add(shibGroup.getId());
+
+        shibGroup = createShibbGroup("group73");
+        subGroup.add(shibGroup.getId());
+
+        shibGroup = createShibbGroup("participant");
+        subGroup.add(shibGroup.getId());
+        subGroup2.add(shibGroup.getId());
+
+        group.setProperty(userManager.getGroupSchemaName(),
+                userManager.getGroupSubGroupsField(), subGroup);
+        group2.setProperty(userManager.getGroupSchemaName(),
+                userManager.getGroupSubGroupsField(), subGroup2);
+
+        userManager.updateGroup(group);
+        userManager.updateGroup(group2);
+
+        session.save();
+
+        List<String> parent = ShibbolethGroupHelper.getParentsGroups("shibbou");
+
+        assertNotNull(parent);
+        assertEquals(1, parent.size());
+        assertEquals("trueGroup1", parent.get(0));
+
+        parent = ShibbolethGroupHelper.getParentsGroups("group7");
+
+        assertNotNull(parent);
+        assertEquals(2, parent.size());
+    }
+
+    protected DocumentModel createShibbGroup(String name) throws Exception {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
         group.setPropertyValue("shibbGroup:groupName", name);
         group.setPropertyValue("shibbGroup:expressionLanguage", CORRECT_EL);
 
-        if (createIt) {
-            group = ShibbolethGroupHelper.createGroup(group);
-        }
+        group = ShibbolethGroupHelper.createGroup(group);
+        session.save();
         return group;
     }
 }

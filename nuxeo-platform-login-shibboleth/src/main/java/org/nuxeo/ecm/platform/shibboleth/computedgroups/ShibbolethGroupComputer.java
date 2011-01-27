@@ -26,6 +26,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethConstants;
+import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
@@ -67,7 +68,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
 
     @Override
     public List<String> getParentsGroupNames(String arg0) throws Exception {
-        return null;
+        return ShibbolethGroupHelper.getParentsGroups(arg0);
     }
 
     @Override
