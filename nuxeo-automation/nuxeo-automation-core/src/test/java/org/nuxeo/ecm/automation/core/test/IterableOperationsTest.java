@@ -173,6 +173,7 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
+        chain.add(LockDocument.ID);
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
 
