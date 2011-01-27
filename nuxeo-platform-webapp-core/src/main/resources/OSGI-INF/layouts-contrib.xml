@@ -184,7 +184,7 @@
       </widgetModes>
       <properties mode="any">
         <property name="template">
-          /widgets/author_widget_template.xhtml
+          /widgets/single_user_widget_template.xhtml
         </property>
       </properties>
     </widget>
@@ -222,7 +222,7 @@
       </widgetModes>
       <properties mode="any">
         <property name="template">
-          /widgets/lastContributor_widget_template.xhtml
+          /widgets/single_user_widget_template.xhtml
         </property>
       </properties>
     </widget>

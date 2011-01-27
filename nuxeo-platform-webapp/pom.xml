@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-webapp</artifactId>
-  <name>Nuxeo WebApp Core</name>
+  <name>Nuxeo WebApp</name>
   <description>Nuxeo Enterprise Platform: The WebUI for Nuxeo EP.
     </description>
 
