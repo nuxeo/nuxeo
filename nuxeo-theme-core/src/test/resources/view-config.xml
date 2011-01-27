@@ -46,10 +46,24 @@
       <resource>style.css</resource>
     </view>
 
+    <!-- override -->
+    <view name="menu" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>nxthemes/jsf/widgets/new-menu.xml</template>
+      <resource>new-style.css</resource>
+      <resource>script.js</resource>
+    </view>
+
     <!-- add resource -->
     <view name="menu" template-engine="jsf-facelets" merge="true">
       <format-type>widget</format-type>
       <resource>style-addon.css</resource>
+    </view>
+
+    <view name="menu" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>script-addon.js</resource>
+      <resource>other-script-addon.js</resource>
     </view>
 
   </extension>

@@ -57,9 +57,12 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         assertNotNull(view1);
 
         assertEquals("widget", view1.getFormatType().getTypeName());
-        assertEquals("nxthemes/jsf/widgets/menu.xml", view1.getTemplate());
-        assertEquals("style.css", view1.getResources().get(0));
-        assertEquals("style-addon.css", view1.getResources().get(1));
+        assertEquals("nxthemes/jsf/widgets/new-menu.xml", view1.getTemplate());
+        assertEquals("new-style.css", view1.getResources().get(0));
+        assertEquals("script.js", view1.getResources().get(1));
+        assertEquals("style-addon.css", view1.getResources().get(2));
+        assertEquals("script-addon.js", view1.getResources().get(3));
+        assertEquals("other-script-addon.js", view1.getResources().get(4));
         assertEquals("jsf-facelets", view1.getTemplateEngine());
     }
 
