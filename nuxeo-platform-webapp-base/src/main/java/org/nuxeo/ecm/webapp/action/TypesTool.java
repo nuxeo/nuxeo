@@ -109,11 +109,6 @@ public class TypesTool implements Serializable {
     }
 
     /**
-     *
-     *
-     *
-     *
-     *
      * Returns the Configuration document to be used as the local configuration
      * of the {@code TypeManager}.
      * <p>
@@ -136,6 +131,11 @@ public class TypesTool implements Serializable {
         return docTypeMap;
     }
 
+    /**
+     * Split each @{code List} of {@code Type} in one or more new {@code List},
+     * with maximum 4 {@code Type}s in each new {@code List} and returns the new
+     * computed {@code Map}.
+     */
     protected Map<String, List<List<Type>>> organizeType(
             Map<String, List<Type>> types) {
         Map<String, List<List<Type>>> newTypesMap = new HashMap<String, List<List<Type>>>();
