@@ -6,6 +6,20 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   id="local_configuration_#{layout.id}">
 
+<c:if test="false">
+  Layout template to be used for local configuration layouts. It wraps the layout
+  template given as parameter into a foldable box. The local configuration
+  can be enabled or disabled through a button on the foldable box.
+
+  Properties to define on the layout:
+  - layoutTemplateToInclude: the layout to use inside the foldable box.
+  - localConfigurationFacet: the facet related to the local configuration this
+    layout handles.
+  - foldableBoxLabel: the label displayed as the title of the foldable box,
+  - helpLabel: the help label for the local configuration handled by this layout,
+    displayed as a tooltip
+</c:if>
+
   <c:set var="layoutTemplateToInclude"
     value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
 
