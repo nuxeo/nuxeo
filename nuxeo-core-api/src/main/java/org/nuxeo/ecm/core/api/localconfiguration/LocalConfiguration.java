@@ -16,16 +16,33 @@
 
 package org.nuxeo.ecm.core.api.localconfiguration;
 
+import org.nuxeo.ecm.core.api.DocumentRef;
+
 /**
- * Interface
+ * Interface that must be implemented by
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
 public interface LocalConfiguration<T> {
 
-    boolean readapt();
+    /**
+     * Returns the related {@code DocumentRef} of this local configuration.
+     */
+    DocumentRef getDocumentRef();
 
+    /**
+     * Returns {@code true} if this {@code LocalConfiguration} accepted to be
+     * merged with a parent configuration, {@code false}
+     * otherwise.
+     */
+    boolean canMerge();
+
+    /**
+     * Merge this {@code LocalConfiguration} with another one.
+     */
     T merge(T other);
+
+
 
 }

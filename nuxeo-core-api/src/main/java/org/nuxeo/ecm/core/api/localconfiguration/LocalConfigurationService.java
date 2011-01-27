@@ -19,17 +19,20 @@ package org.nuxeo.ecm.core.api.localconfiguration;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
+ * Service handling {@code LocalConfiguration} classes.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.1
  */
 public interface LocalConfigurationService {
 
     /**
-     *
-     * @param configurationClass
-     * @param configurationFacet
-     * @param currentDoc
-     * @param <T>
-     * @return
+     * Returns the first {@code LocalConfiguration} accessible from the
+     * {@code currentDoc}, {@code null} otherwise.
+     * <p>
+     * Find the first parent of the {@code currentDoc} having the given
+     * {@code configurationFacet}, if any, and adapt it on the
+     * {@code configurationClass}.
      */
     public <T extends LocalConfiguration> T getConfiguration(
             Class<T> configurationClass, String configurationFacet,
