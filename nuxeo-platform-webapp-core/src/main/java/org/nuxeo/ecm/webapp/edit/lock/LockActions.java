@@ -141,7 +141,7 @@ public interface LockActions extends Serializable {
      *         map
      * @throws ClientException
      */
-    Map<String, String> getLockDetails(DocumentModel document)
+    Map<String, Serializable> getLockDetails(DocumentModel document)
             throws ClientException;
 
     /**
@@ -152,7 +152,7 @@ public interface LockActions extends Serializable {
      *         map
      * @throws ClientException
      */
-    Map<String, String> getCurrentDocLockDetails() throws ClientException;
+    Map<String, Serializable> getCurrentDocLockDetails() throws ClientException;
 
     /**
      * This method is used to test whether the live-edit link should appear on a

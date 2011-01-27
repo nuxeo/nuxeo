@@ -23,6 +23,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -97,7 +98,7 @@ public class LockActionsBean implements LockActions {
     protected transient CoreSession documentManager;
 
     // cache lock details states to reduce costly core session remote calls
-    private Map<String, String> lockDetails;
+    private Map<String, Serializable> lockDetails;
 
     private Boolean canLock;
 
@@ -154,7 +155,7 @@ public class LockActionsBean implements LockActions {
             } else {
                 try {
                     NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    Map<String, String> lockDetails = getLockDetails(document);
+                    Map<String, Serializable> lockDetails = getLockDetails(document);
                     if (lockDetails.isEmpty() || document.isProxy()) {
                         canUnlock = false;
                     } else {
@@ -233,7 +234,7 @@ public class LockActionsBean implements LockActions {
         log.debug("Unlock a document ...");
         resetEventContext();
         String message;
-        Map<String, String> lockDetails = getLockDetails(document);
+        Map<String, Serializable> lockDetails = getLockDetails(document);
         if (lockDetails == null) {
             message = "document.unlock.done";
         } else {
@@ -294,28 +295,25 @@ public class LockActionsBean implements LockActions {
     }
 
     @Factory(value="currentDocumentLockDetails", scope = ScopeType.EVENT)
-    public Map<String, String> getCurrentDocLockDetails()
+    public Map<String, Serializable> getCurrentDocLockDetails()
             throws ClientException {
-        Map<String, String> details = null;
+        Map<String, Serializable> details = null;
         if (navigationContext.getCurrentDocument() != null) {
             details = getLockDetails(navigationContext.getCurrentDocument());
         }
         return details;
     }
 
-    public Map<String, String> getLockDetails(DocumentModel document)
+    public Map<String, Serializable> getLockDetails(DocumentModel document)
             throws ClientException {
         if (lockDetails == null) {
-            lockDetails = new HashMap<String, String>();
+            lockDetails = new HashMap<String, Serializable>();
             Lock lock = documentManager.getLockInfo(document.getRef());
             if (lock == null) {
                 return lockDetails;
             }
             lockDetails.put(LOCKER, lock.getOwner());
-            lockDetails.put(
-                    LOCK_CREATED,
-                    ISODateTimeFormat.dateTime().print(
-                            new DateTime(lock.getCreated())));
+            lockDetails.put(LOCK_CREATED, lock.getCreated());
             lockDetails.put(
                     LOCK_TIME,
                     lock.getOwner()
