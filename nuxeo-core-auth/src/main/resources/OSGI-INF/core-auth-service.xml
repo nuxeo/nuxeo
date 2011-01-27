@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!-- 
+This is an example on how to configure the login module stack.
+This file is not deployed in Nuxeo - you should put it into config directory
+and replace the default login config. 
+-->
+<component name="org.nuxeo.ecm.platform.login.LoginConfig" version="1.0">
+  <documentation>
+  Login modules used on JBoss
+  @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+
+  <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
+
+    <domain name="nuxeo-client-login">
+      <login-module code="org.nuxeo.ecm.core.auth.SimpleLoginModule"
+          flag="required">
+      </login-module>
+      <login-module code="org.nuxeo.ecm.core.api.local.ClientLoginModule" flag="required">
+        <option name="password-stacking">true</option>
+        <option name="restore-login-identity">true</option>
+        <option name="multi-threaded">true</option>
+      </login-module>
+      </domain>
+
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="filter">
+    <filter context="/nuxeo" path="/*" class="org.nuxeo.ecm.core.auth.AuthenticationFilter" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.server" point="servlet">
+    <servlet context="/nuxeo" path="/test" class="org.nuxeo.ecm.core.auth.TestServlet" />
+  </extension>  
+  
+</component>
+
