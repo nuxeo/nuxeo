@@ -147,7 +147,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected String lifeCyclePolicy;
 
     // loaded if isStateLoaded
-    protected boolean isCheckedOut;
+    protected boolean isCheckedOut = true;
 
     // loaded if isStateLoaded
     protected String versionSeriesId;
@@ -1563,6 +1563,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void refresh(int refreshFlags, String[] schemas)
             throws ClientException {
+        if (id == null) {
+            // not yet saved
+            return;
+        }
         if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
             refreshFlags |= REFRESH_ACP;
             // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used
