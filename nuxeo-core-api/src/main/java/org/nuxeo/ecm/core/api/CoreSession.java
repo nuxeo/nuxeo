@@ -91,6 +91,7 @@ public interface CoreSession {
 
     String IMPORT_LOCK_OWNER = "ecm:lockOwner";
 
+    /** Lock creation time as a Calendar object. */
     String IMPORT_LOCK_CREATED = "ecm:lockCreated";
 
     String IMPORT_CHECKED_IN = "ecm:isCheckedIn";
