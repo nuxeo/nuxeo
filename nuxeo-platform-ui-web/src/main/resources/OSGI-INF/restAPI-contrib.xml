@@ -84,6 +84,7 @@
       GET /nuxeo/restAPI/{repoId}/{docId}/Locking/lock
       GET /nuxeo/restAPI/{repoId}/{docId}/Locking/unlock
       GET /nuxeo/restAPI/{repoId}/{docId}/Locking/status
+      GET /nuxeo/restAPI/{repoId}/{docId}/Locking/state
       LOCK /nuxeo/restAPI/{repoId}/{docId}/Locking
       UNLOCK /nuxeo/restAPI/{repoId}/{docId}/Locking
     </documentation>
