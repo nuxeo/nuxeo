@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +57,7 @@ import org.osgi.framework.FrameworkListener;
 
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
- * 
+ *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -92,9 +91,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private final Map<String, RuntimeContext> contexts;
 
+    private boolean appStarted = false;
+
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name. This
-     * table is used to map symbolic names to bundles
+     * table is used to map symbolic names to bundles. This map is not handling bundle versions.
      */
     final Map<String, Bundle> bundles;
 
@@ -108,7 +109,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             BundleContext context) {
         super(runtimeContext);
         bundleContext = context;
-        bundles = new Hashtable<String, Bundle>();
+        bundles = new ConcurrentHashMap<String, Bundle>();
         contexts = new ConcurrentHashMap<String, RuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
@@ -418,7 +419,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
     }
 
-    protected void fireApplicationStarted() {
+    public void fireApplicationStarted() {
+        if (appStarted) {
+            return;
+        }
         try {
             persistence.loadPersistedComponents();
         } catch (Exception e) {
@@ -436,6 +440,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
         // print the startup message
         printStatusMessage();
+        appStarted = true;
     }
 
     /* --------------- FrameworkListener API ------------------ */

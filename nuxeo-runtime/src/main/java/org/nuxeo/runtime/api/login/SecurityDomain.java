@@ -38,6 +38,7 @@ import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.LoginModuleWrapper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -92,7 +93,8 @@ public class SecurityDomain implements Serializable {
             } else if ("requisite".equals(descriptor.flag)) {
                 flag = LoginModuleControlFlag.REQUISITE;
             }
-            entries[i++] = new AppConfigurationEntry(descriptor.code, flag,
+            descriptor.options.put(LoginModuleWrapper.DELEGATE_CLASS_KEY, descriptor.code);
+            entries[i++] = new AppConfigurationEntry(LoginModuleWrapper.class.getName(), flag,
                     descriptor.options);
         }
     }

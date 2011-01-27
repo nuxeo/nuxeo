@@ -20,8 +20,6 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
@@ -31,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -40,6 +37,8 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.StreamRef;
 import org.nuxeo.runtime.model.URLStreamRef;
+import org.nuxeo.runtime.osgi.OSGiRuntimeActivator;
+import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
@@ -110,6 +109,14 @@ public class DefaultRuntimeContext implements RuntimeContext {
         RegistrationInfoImpl ri = createRegistrationInfo(ref);
         ri.context = this;
         ri.xmlFileUrl = ref.asURL();
+        if (ri.getBundle() != null) {
+            // this is an external component XML.
+            // should use the real owner bundle as the context.
+            Bundle bundle = OSGiRuntimeActivator.getInstance().getBundle(ri.getBundle());
+            if (bundle != null) {
+                ri.context = new OSGiRuntimeContext(bundle);
+            }
+        }
         runtime.getComponentManager().register(ri);
         deployedFiles.put(name, ri.getName());
         return ri;

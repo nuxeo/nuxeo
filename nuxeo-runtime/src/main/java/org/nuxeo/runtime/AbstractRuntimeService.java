@@ -322,4 +322,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public File getBundleFile(Bundle bundle) {
         return null;
     }
+
+    @Override
+    public Bundle getBundle(String symbolicName) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }

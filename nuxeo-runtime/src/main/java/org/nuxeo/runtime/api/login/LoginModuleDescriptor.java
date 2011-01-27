@@ -33,12 +33,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class LoginModuleDescriptor {
 
     @XNode("@code")
-    public String code;
+    public Class<?> code;
 
     @XNode("@flag")
     public String flag;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> options;
+    public Map<String, Object> options;
 
 }

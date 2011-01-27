@@ -45,7 +45,8 @@ Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ContributionPersistence.xml
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Bundle-ManifestVersion: 2
-Import-Package: javax.management,
+Import-Package: org.osgi.service.packageadmin,
+ javax.management,
  javax.naming,
  javax.naming.spi,
  javax.security.auth,
@@ -53,7 +54,7 @@ Import-Package: javax.management,
  javax.security.auth.login,
  javax.security.auth.spi,
  javax.sql,
- javax.transaction;version="1.1",
+ javax.transaction;version="1.1.1",
  javax.xml.parsers,
  org.apache.commons.io,
  org.apache.commons.jexl,

@@ -19,13 +19,18 @@
 
 package org.nuxeo.runtime.osgi;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * The default BundleActivator for NXRuntime over an OSGi comp. platform.
@@ -37,13 +42,30 @@ public class OSGiRuntimeActivator implements BundleActivator {
 
     private static final Log log = LogFactory.getLog(OSGiRuntimeActivator.class);
 
+    private static OSGiRuntimeActivator instance;
+
     protected OSGiRuntimeService runtime;
     protected OSGiComponentLoader componentLoader;
 
+    protected ServiceReference pkgAdmin;
+
+    protected BundleContext context;
+
+    public static OSGiRuntimeActivator getInstance() {
+        return instance;
+    }
 
     @Override
     public void start(BundleContext context) throws Exception {
         log.info("Starting Runtime Activator");
+        instance = this;
+        this.context = context;
+
+        pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
+
+        // if no environment was setup create it now.
+        initEnvironment();
+
         // create the runtime
         runtime = new OSGiRuntimeService(context);
 
@@ -64,6 +86,8 @@ public class OSGiRuntimeActivator implements BundleActivator {
     @Override
     public void stop(BundleContext context) throws Exception {
         log.info("Stopping Runtime Activator");
+        instance = null;
+        pkgAdmin = null;
         // remove component loader
         componentLoader.uninstall();
         componentLoader = null;
@@ -71,6 +95,30 @@ public class OSGiRuntimeActivator implements BundleActivator {
         Framework.shutdown();
         uninitialize(runtime);
         runtime = null;
+        context = null;
+    }
+
+
+    public Bundle getBundle(String name) {
+        if (pkgAdmin == null) {
+            return null;
+        }
+        PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
+        Bundle[] bundles = pa.getBundles(name, null);
+        context.ungetService(pkgAdmin);
+        return bundles[0];
+    }
+
+    protected void initEnvironment() {
+        if (Environment.getDefault() == null) {
+            String homeDir = System.getProperty("nuxeo.home");
+            if (homeDir != null) {
+                File home = new File(homeDir);
+                if (home.isDirectory()) {
+                    Environment.setDefault(new Environment(home));
+                }
+            }
+        }
     }
 
     /**

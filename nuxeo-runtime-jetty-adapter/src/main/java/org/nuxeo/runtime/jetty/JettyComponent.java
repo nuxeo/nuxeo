@@ -67,11 +67,13 @@ public class JettyComponent extends DefaultComponent {
 
     public static final String XP_WEB_APP = "webapp";
 
-    public static final String XP_DATA_SOURCE = "datasource";
+    public static final String XP_SERVLET = "servlet";
+    public static final String XP_FILTER = "filter";
 
     public static final String P_SCAN_WEBDIR = "org.nuxeo.runtime.jetty.scanWebDir";
 
     protected Server server;
+    protected ContextManager ctxMgr;
 
     // here we are putting all regular war contexts
     // the root context will be appended after this context collection to be
@@ -161,6 +163,8 @@ public class JettyComponent extends DefaultComponent {
             scanForWars(web);
         }
 
+        ctxMgr = new ContextManager(server);
+
         // start the server
         // server.start(); -> server will be start after frameworks starts to be
         // sure that all services
@@ -169,6 +173,7 @@ public class JettyComponent extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        ctxMgr = null;
         server.stop();
         server = null;
     }
@@ -222,9 +227,15 @@ public class JettyComponent extends DefaultComponent {
                 logger.error("Error in war deployment");
             }
 
-        } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
-
+        } else if (XP_FILTER.equals(extensionPoint)) {
+            ctxMgr.addFilter((FilterDescriptor)contribution);
+        } else if (XP_SERVLET.equals(extensionPoint)) {
+            ctxMgr.addServlet((ServletDescriptor)contribution);
         }
+    }
+
+    public ContextManager getContextManager() {
+        return ctxMgr;
     }
 
     @Override
@@ -233,8 +244,10 @@ public class JettyComponent extends DefaultComponent {
             throws Exception {
         if (XP_WEB_APP.equals(extensionPoint)) {
 
-        } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
-
+        } else if (XP_FILTER.equals(extensionPoint)) {
+            ctxMgr.removeFilter((FilterDescriptor)contribution);
+        } else if (XP_SERVLET.equals(extensionPoint)) {
+            ctxMgr.removeServlet((ServletDescriptor)contribution);
         }
     }
 
@@ -250,7 +263,14 @@ public class JettyComponent extends DefaultComponent {
     public void applicationStarted(ComponentContext context) throws Exception {
         if (server != null) {
             try {
-                server.start();
+                Thread t = Thread.currentThread();
+                ClassLoader oldcl = t.getContextClassLoader();
+                t.setContextClassLoader(getClass().getClassLoader());
+                try {
+                    server.start();
+                } finally {
+                    t.setContextClassLoader(oldcl);
+                }
             } catch (Exception e) {
                 logger.error("Failed to start Jetty server", e);
             }

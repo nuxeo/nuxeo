@@ -221,4 +221,11 @@ public interface RuntimeService {
      */
     File getBundleFile(Bundle bundle);
 
+    /**
+     * Get an installed  bundle given its symbolic name. This method is not handling versions.
+     * @param symbolicName
+     * @return
+     */
+    Bundle getBundle(String symbolicName);
+
 }

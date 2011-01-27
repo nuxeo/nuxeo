@@ -22,10 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.osgi.services.PackageAdminImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
@@ -36,9 +38,11 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 
 /**
+ *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
@@ -70,11 +74,16 @@ public class OSGiAdapter {
     }
 
     public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
+        services = new ConcurrentHashMap<String, ServiceRegistration>();
         this.workingDir = workingDir;
         this.dataDir = dataDir;
         this.dataDir.mkdirs();
         this.workingDir.mkdirs();
         initialize(properties);
+    }
+
+    public void removeService(String  clazz) {
+        services.remove(clazz);
     }
 
     protected void initialize(Properties properties) {
@@ -98,6 +107,8 @@ public class OSGiAdapter {
         install(systemBundle);
         registry.addBundleAlias("system.bundle", systemBundle.getSymbolicName());
         this.systemBundle = systemBundle;
+
+        systemBundle.getBundleContext().registerService(PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
     }
 
     public BundleRegistry getRegistry() {
@@ -149,6 +160,10 @@ public class OSGiAdapter {
 
     public File getDataDir() {
         return dataDir;
+    }
+
+    public BundleImpl getBundle(String symbolicName) {
+        return registry.getBundle(symbolicName);
     }
 
     public BundleImpl[] getInstalledBundles() {

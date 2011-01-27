@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Dictionary;
 
+import org.nuxeo.osgi.services.ServiceReferenceImpl;
+import org.nuxeo.osgi.services.ServiceRegistrationImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -112,21 +114,20 @@ public class OSGiBundleContext implements BundleContext {
 
     @Override
     public Object getService(ServiceReference reference) {
-        // TODO Auto-generated method stub
-        return null;
+        return ((ServiceReferenceImpl)reference).getService();
     }
 
     @Override
     public ServiceReference getServiceReference(String clazz) {
-        // TODO Auto-generated method stub
-        return null;
+        ServiceRegistration reg = bundle.osgi.services.get(clazz);
+        return reg != null ? reg.getReference() : null;
     }
 
     @Override
     public ServiceReference[] getServiceReferences(String clazz, String filter)
             throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
-        return null;
+        ServiceRegistration reg = bundle.osgi.services.get(clazz);
+        return reg != null ? new ServiceReference[] {reg.getReference()} : null;
     }
 
     @Override
@@ -151,18 +152,26 @@ public class OSGiBundleContext implements BundleContext {
         return null;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public ServiceRegistration registerService(String[] clazzes,
             Object service, Dictionary properties) {
-        // TODO Auto-generated method stub
-        return null;
+        ServiceRegistrationImpl reg = new ServiceRegistrationImpl(bundle.osgi, bundle, clazzes, service);
+        if (properties != null) {
+            reg.setProperties(properties);
+            return reg;
+        }
+        for (String c : clazzes) {
+            bundle.osgi.services.put(c, reg);
+        }
+        return reg;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public ServiceRegistration registerService(String clazz, Object service,
             Dictionary properties) {
-        // TODO Auto-generated method stub
-        return null;
+        return registerService(new String[] {clazz}, service, properties);
     }
 
     @Override
@@ -182,7 +191,7 @@ public class OSGiBundleContext implements BundleContext {
 
     @Override
     public boolean ungetService(ServiceReference reference) {
-        // TODO Auto-generated method stub
+        // not impl.
         return false;
     }
 

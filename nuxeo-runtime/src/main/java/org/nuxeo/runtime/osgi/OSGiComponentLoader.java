@@ -40,8 +40,6 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
 
     private static final Log log = LogFactory.getLog(OSGiComponentLoader.class);
 
-    private static final Log componentDebugLog = LogFactory.getLog("nuxeo.bundle.debug");
-
     private final OSGiRuntimeService runtime;
 
     public OSGiComponentLoader(OSGiRuntimeService runtime) {
@@ -196,24 +194,6 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
         }
     }
 
-    public static boolean isNuxeoBundle(String symbolicName) {
-        if (symbolicName.startsWith("org.nuxeo")) {
-            return true;
-        }
-        if (symbolicName.equals("osgi.core")) {
-            return true;
-        }
-        // oh, how I hate all the stupid logging crap we have to do... couldn't
-        // sun have just gotten this right in version 1.0 and prevented a lot
-        // of problems? there are now 2 (TWO!) apache meta-logging frameworks!
-        if (symbolicName.startsWith("slf4j")) {
-            return true;
-        }
-
-        // everything else is not nuxeo
-        return false;
-    }
-
     /**
      * Prints out a debug message for debugging bundles.
      *
@@ -222,15 +202,13 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
      * @param name the component name
      */
     public static void bundleDebug(String msg, String name) {
-        try {
-            msg = String.format(msg, name);
-        } catch (IllegalFormatException e) {
-            // don't fail for this
-        }
-        if (isNuxeoBundle(name)) {
-            componentDebugLog.debug(msg);
-        } else {
-            componentDebugLog.debug(msg); // was info
+        if (log.isDebugEnabled()) {
+            try {
+                msg = String.format(msg, name);
+            } catch (IllegalFormatException e) {
+                // don't fail for this
+            }
+            log.debug(msg);
         }
     }
 
