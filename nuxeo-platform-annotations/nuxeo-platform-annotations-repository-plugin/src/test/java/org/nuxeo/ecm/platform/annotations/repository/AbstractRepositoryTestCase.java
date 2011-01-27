@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.annotations.repository;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +30,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameAlreadyBoundException;
 
+import org.h2.util.IOUtils;
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -49,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Alexandre Russel
- *
+ * 
  */
 public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
     protected final AnnotationManager manager = new AnnotationManager();
@@ -175,16 +173,10 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
 
         InputStream is = getClass().getResourceAsStream(
                 "/annotation" + x + ".xml");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        String s;
-        StringBuilder builder = new StringBuilder();
-        while ((s = br.readLine()) != null) {
-            builder.append(s);
-        }
-        s = builder.toString();
-        s = s.replaceAll("docUrl", url);
-        is = new ByteArrayInputStream(s.getBytes("UTF-8"));
+        String template = IOUtils.readStringAndClose(new InputStreamReader(is),
+                -1);
+        template = template.replaceAll("docUrl", url);
+        is = new ByteArrayInputStream(template.getBytes("UTF-8"));
         return manager.getAnnotation(is);
     }
 
