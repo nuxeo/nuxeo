@@ -316,11 +316,8 @@ public class LockActionsBean implements LockActions {
             lockDetails.put(LOCK_CREATED, lock.getCreated());
             lockDetails.put(
                     LOCK_TIME,
-                    lock.getOwner()
-                            + ':'
-                            + DateFormat.getDateInstance(DateFormat.MEDIUM).format(
-                                    new Date(
-                                            lock.getCreated().getTimeInMillis())));
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                            new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
     }
