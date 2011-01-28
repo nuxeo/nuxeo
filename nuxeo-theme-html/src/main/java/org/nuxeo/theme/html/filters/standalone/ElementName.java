@@ -29,7 +29,7 @@ public class ElementName extends StandaloneFilter {
         if (name != null) {
             String markup = CSSUtils.insertCssClass(
                     info.getMarkup(),
-                    CSSUtils.toCamelCase(String.format("%s %s", typeName, name)));
+                    CSSUtils.toCamelCase(String.format("%s %s", name, typeName)));
             info.setMarkup(markup);
         }
         return info;
