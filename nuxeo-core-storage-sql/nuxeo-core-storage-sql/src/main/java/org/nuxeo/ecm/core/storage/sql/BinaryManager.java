@@ -36,6 +36,8 @@ public interface BinaryManager {
      * <p>
      * Returns a {@link Binary} representing the stream. The {@link Binary}
      * includes a digest that is a sufficient representation to persist it.
+     * <p>
+     * The stream is closed after use.
      *
      * @param in the input stream
      * @return the corresponding binary
