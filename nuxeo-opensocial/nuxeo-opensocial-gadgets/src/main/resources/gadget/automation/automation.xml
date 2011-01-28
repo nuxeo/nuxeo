@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Nuxeo Automation"
+    description="Simple gadget that uses Nuxeo REST Automation API "
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    height="420">
+    <Locale lang="fr" country="fr" />
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
+  <script>
+    var NXGadgetContext={ serverSideBaseUrl : '${serverSideBaseUrl}',
+      insideNuxeo : '${insideNuxeo}',
+      clientSideBaseUrl : '${clientSideBaseUrl}'
+    };
+  </script>
+  <script src="${specDirectoryUrl}default-automation-request.js"></script>
+  <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
+
+  <script>
+   var prefs = new _IG_Prefs(__MODULE_ID__);
+
+   // define Automation API call config
+   var NXRequestParams={ operationId : 'Document.Query',
+     operationParams : { query : "Select * from Document"},
+   //operationInput : ''
+   operationContext : {},
+   operationDocumentProperties : "common,dublincore",
+   entityType : 'documents',
+   displayMethod : displayDocumentList,
+   displayColumns : [ 'icon', 'titleWithLink', ['modified','dc:modified','date'],['author','dc:creator'] ]
+   };
+
+   // trigger loading
+   gadgets.util.registerOnLoadHandler(function() {doAutomationRequest(NXRequestParams);} );
+
+  </script>
+  </head>
+   <body>
+
+   <#include "default-documentlist-layout.ftl"/>
+   <#include "default-request-controls.ftl"/>
+
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

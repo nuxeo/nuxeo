@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Leroy Merlin (http://www.leroymerlin.fr/) - initial implementation
+ *     Nuxeo
  */
 
 package org.nuxeo.opensocial.webengine.gadgets;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
+import org.nuxeo.opensocial.webengine.gadgets.render.GadgetSpecView;
 
 @WebObject(type = "gadget")
 public class GadgetResource extends InputStreamResource {
@@ -63,20 +65,30 @@ public class GadgetResource extends InputStreamResource {
             in = getResourceAsStream(fileName);
         }
 
+        if (in==null) {
+            return Response.status(404).build();
+        }
         return getObject(in, fileName);
     }
 
     protected InputStream getResourceAsStream(String fileName) throws Exception {
+        // lookup in gadget directory (gadget specific resource)
         InputStream is = gadget.getResourceAsStream(fileName);
         if (is==null) {
-            String suffix="/img/";
+            String suffix="img/";
             if (fileName.endsWith(".css")) {
-                suffix="/css/";
+                suffix="css/";
             }
             else if (fileName.endsWith(".js")) {
-                suffix="/scripts/";
+                suffix="scripts/";
             }
-            is = this.getClass().getClassLoader().getResourceAsStream("skin/resources" + suffix + fileName);
+            // lookup in gadget bundle resources (bundle level shared resource)
+            is = gadget.getResourceAsStream( suffix + fileName);
+
+            if (is==null) {
+                // lookup in root bundle (global shared resource)
+                is = this.getClass().getClassLoader().getResourceAsStream("skin/resources/" + suffix + fileName);
+            }
         }
         return is;
     }

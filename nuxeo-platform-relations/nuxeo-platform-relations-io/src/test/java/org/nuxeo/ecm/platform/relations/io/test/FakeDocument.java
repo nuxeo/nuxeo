@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
@@ -384,7 +385,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public String getLock() throws DocumentException {
+    public Lock getLock() throws DocumentException {
         return null;
     }
 
@@ -394,12 +395,7 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public void setLock(String key) throws DocumentException {
-    }
-
-    @Override
-    public String unlock() throws DocumentException {
-        return null;
+    public void setLock(Lock lock) throws DocumentException {
     }
 
     @Override

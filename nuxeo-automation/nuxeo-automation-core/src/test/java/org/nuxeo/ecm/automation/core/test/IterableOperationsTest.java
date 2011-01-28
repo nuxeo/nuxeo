@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -172,13 +173,15 @@ public class IterableOperationsTest {
         ctx.setInput(docs);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(LockDocument.ID).set("owner", "test");
+        chain.add(LockDocument.ID);
 
         DocumentModelList out = (DocumentModelList) service.run(ctx, chain);
 
         assertEquals(2, out.size());
-        assertTrue(out.get(0).getLock().contains("test"));
-        assertTrue(out.get(1).getLock().contains("test"));
+        assertEquals(SecurityConstants.ADMINISTRATOR,
+                out.get(0).getLockInfo().getOwner());
+        assertEquals(SecurityConstants.ADMINISTRATOR,
+                out.get(1).getLockInfo().getOwner());
 
         remove(root);
     }

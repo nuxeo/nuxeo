@@ -305,7 +305,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public boolean canPublishTo(PublicationNode publicationNode)
             throws ClientException {
         DocumentModel doc = navigationContext.getCurrentDocument();
-        if (doc==null || documentManager.getLock(doc.getRef())!=null) {
+        if (doc == null || documentManager.getLockInfo(doc.getRef()) != null) {
             return false;
         }
         PublicationTree tree = getCurrentPublicationTreeForPublishing();

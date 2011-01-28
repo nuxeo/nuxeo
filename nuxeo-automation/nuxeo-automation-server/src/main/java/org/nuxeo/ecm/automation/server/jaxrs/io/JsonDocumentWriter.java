@@ -37,9 +37,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
@@ -96,7 +99,15 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         json.element("path", doc.getPathAsString());
         json.element("type", doc.getType());
         json.element("state", doc.getCurrentLifeCycleState());
-        json.element("lock", doc.getLock());
+        json.element("lock", doc.getLock()); // old
+        Lock lock = doc.getLockInfo();
+        if (lock != null) {
+            json.element("lockOwner", lock.getOwner());
+            json.element(
+                    "lockCreated",
+                    ISODateTimeFormat.dateTime().print(
+                            new DateTime(lock.getCreated())));
+        }
         json.element("title", doc.getTitle());
         Calendar cal = (Calendar) doc.getPart("dublincore").getValue("modified");
         if (cal != null) {
