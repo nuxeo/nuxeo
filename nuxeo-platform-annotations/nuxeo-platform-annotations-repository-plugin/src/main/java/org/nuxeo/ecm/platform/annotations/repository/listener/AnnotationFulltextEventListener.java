@@ -43,6 +43,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnnotationFulltextEventListener implements EventListener {
 
+    public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
+
     @Override
     public void handleEvent(Event event) throws ClientException {
         if (!(event.getContext() instanceof DocumentEventContext)) {
@@ -55,8 +57,13 @@ public class AnnotationFulltextEventListener implements EventListener {
             // no full-text indexing of annotation for this document type
             return;
         }
+        if (doc.isVersion() || doc.isProxy()) {
+            // cannot edit the document...
+            return;
+        }
         String annotationId = (String) context.getProperty(AnnotatedDocumentEventListener.ANNOTATION_ID);
         String annotationBody = (String) context.getProperty(AnnotatedDocumentEventListener.ANNOTATION_BODY);
+
         if (AnnotatedDocumentEventListener.ANNOTATION_CREATED.equals(event.getName())) {
             setAnnotationText(doc, annotationId, annotationBody);
         } else if (AnnotatedDocumentEventListener.ANNOTATION_DELETED.equals(event.getName())) {
@@ -70,19 +77,39 @@ public class AnnotationFulltextEventListener implements EventListener {
         session.saveDocument(doc);
     }
 
-    protected void removeAnnotationText(DocumentModel doc, String annotationId) {
-        // TODO implement me!
-
+    protected void removeAnnotationText(DocumentModel doc, String annotationId)
+            throws ClientException {
+        @SuppressWarnings("unchecked")
+        List<Map<String, String>> relatedResources = doc.getProperty(
+                "relatedtext:related").getValue(List.class);
+        String resourceId = makeResourceId(annotationId);
+        Map<String, String> resourceToRemove = null;
+        for (Map<String, String> resource : relatedResources) {
+            if (resourceId.equals(resource.get("resourceid"))) {
+                resourceToRemove = resource;
+                break;
+            }
+        }
+        if (resourceToRemove != null) {
+            relatedResources.remove(resourceToRemove);
+            doc.setPropertyValue("relatedtext:related",
+                    (Serializable) relatedResources);
+        }
     }
 
     protected void setAnnotationText(DocumentModel doc, String annotationId,
             String annotationBody) throws ClientException {
+        if (annotationBody == null) {
+            return;
+        }
         try {
             // strip HTML markup if any
             BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody,
                     "text/html"));
             ConversionService service = Framework.getService(ConversionService.class);
-            annotationBody = service.convert("html2text", bh, null).getBlob().getString();
+            if (service != null) {
+                annotationBody = service.convert("html2text", bh, null).getBlob().getString();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,10 +117,14 @@ public class AnnotationFulltextEventListener implements EventListener {
         List<Map<String, String>> relatedResources = doc.getProperty(
                 "relatedtext:related").getValue(List.class);
         HashMap<String, String> resource = new HashMap<String, String>();
-        resource.put("resourceid", "annotation_" + annotationId);
+        resource.put("resourceid", makeResourceId(annotationId));
         resource.put("text", annotationBody);
         relatedResources.add(resource);
         doc.setPropertyValue("relatedtext:related",
                 (Serializable) relatedResources);
+    }
+
+    public static String makeResourceId(String annotationId) {
+        return ANNOTATION_RESOURCE_ID_PREFIX + annotationId;
     }
 }

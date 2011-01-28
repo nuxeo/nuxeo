@@ -98,6 +98,18 @@ public class AnnotationImpl implements Annotation, Serializable {
         return null;
     }
 
+    @Override
+    public void setBodyText(String text) {
+        QueryResult result = graph.query("SELECT ?s WHERE {?s <"
+                + AnnotationsConstants.A_BODY + "> ?o}", "sparql", null);
+        Node s = result.getResults().get(0).get("s");
+        Resource p = new ResourceImpl(AnnotationsConstants.A_BODY);
+        graph.remove(graph.getStatements(new StatementImpl(s, p, null)));
+        Literal o = new LiteralImpl(text);
+        Statement newStatement = new StatementImpl(s, p, o);
+        graph.add(Collections.singletonList(newStatement));
+    }
+
     public String getContext() throws AnnotationException {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <"
                 + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql", null);

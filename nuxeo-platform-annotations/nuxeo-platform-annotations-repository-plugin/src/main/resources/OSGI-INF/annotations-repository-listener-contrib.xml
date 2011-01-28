@@ -12,7 +12,7 @@
       <event>documentRestored</event>
     </listener>
 
-    <listener name="annotationFulltextIndexing" async="true" postCommit="false"
+    <listener name="annotationFulltextIndexing" async="false" postCommit="false"
               class="org.nuxeo.ecm.platform.annotations.repository.listener.AnnotationFulltextEventListener">
       <event>annotationCreated</event>
       <event>annotationUpdated</event>

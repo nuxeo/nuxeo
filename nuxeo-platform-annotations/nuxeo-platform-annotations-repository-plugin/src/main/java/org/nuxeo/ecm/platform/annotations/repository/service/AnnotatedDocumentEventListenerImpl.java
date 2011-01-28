@@ -107,7 +107,7 @@ public class AnnotatedDocumentEventListenerImpl implements
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY,
                     annotation.getBodyAsText());
 
-            DocumentEventContext ctx = new DocumentEventContext(null,
+            DocumentEventContext ctx = new DocumentEventContext(session,
                     principal, doc);
             ctx.setRepositoryName(doc.getRepositoryName());
             ctx.setProperties(properties);

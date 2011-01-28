@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -64,13 +65,36 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
                 session.getRootDocument().getPathAsString(), "999", "File");
         DocumentModel myfile = session.createDocument(myfileModel);
         assertNotNull(myfile);
+
+        session.save();
+        closeSession();
+        openSession();
+
+        // the text 'zombie' is not found in the document
+        DocumentModelList results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        assertEquals(0, results.size());
+
         String u1 = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(myfile), true, SERVER1);
         assertNotNull(u1);
         String u2 = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(myfile), true, SERVER2);
         assertNotNull(u2);
-        service.addAnnotation(getAnnotation(u1, 1), user, SERVER1);
+        Annotation annotation = getAnnotation(u1, 1);
+        annotation.setBodyText("This is a Zombie annotation text");
+        service.addAnnotation(annotation, user, SERVER1);
+
+        session.save();
+        closeSession();
+        openSession();
+
+        // the body of the text is annotated on the document
+        results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        assertEquals(1, results.size());
+        assertEquals(myfile.getRef(), results.get(0).getRef());
+
         sameDocumentFrom2Servers(u1, u2);
         createVersion(session, myfile, "some comment");
         newVersionSameAnnotations(session, myfile, u1);

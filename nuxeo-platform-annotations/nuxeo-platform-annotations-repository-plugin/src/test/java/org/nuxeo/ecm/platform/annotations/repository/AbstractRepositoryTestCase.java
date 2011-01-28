@@ -90,8 +90,8 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
                 "org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty(
                 "org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations.contrib");
         deployBundle("org.nuxeo.ecm.annotations");
@@ -101,7 +101,7 @@ public abstract class AbstractRepositoryTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.types.core");
         deployBundle("org.nuxeo.ecm.platform.types.api");
         deployBundle("org.nuxeo.ecm.relations.jena");
-        deployBundle("org.nuxeo.ecm.annotations.repository.test");
+
         service = Framework.getService(AnnotationsService.class);
         viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         assertNotNull(viewCodecManager);
