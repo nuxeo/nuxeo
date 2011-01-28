@@ -1141,6 +1141,15 @@
         <version>4.1</version>
         <scope>provided</scope>
       </dependency>
+      <!-- OSGI compendium - do not change to org.osgi group
+      since it is not containing all needed classes
+      -->
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+		<artifactId>org.osgi.compendium</artifactId>
+		<version>1.4.0</version>
+		<scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
