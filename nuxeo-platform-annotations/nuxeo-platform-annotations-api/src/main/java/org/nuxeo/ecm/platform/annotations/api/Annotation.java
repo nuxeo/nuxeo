@@ -59,4 +59,6 @@ public interface Annotation {
 
     void addMetadata(String predicate, String value);
 
+    void setBodyText(String string);
+
 }

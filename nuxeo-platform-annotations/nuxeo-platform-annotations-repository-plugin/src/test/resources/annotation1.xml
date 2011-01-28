@@ -20,7 +20,7 @@
     <h:Body r:parseType="Literal">
      <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-       <title>Ralph's Annotation</title>
+       <title>Ralph's HTML Annotation</title>
       </head>
       <body>
        <p>This is an <em>important</em> concept; see
