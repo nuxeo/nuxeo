@@ -43,6 +43,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnnotationFulltextEventListener implements EventListener {
 
+    public static final String RELATEDTEXT_PROPERTY = "relatedtext:relatedtextresources";
+
     public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
 
     @Override
@@ -55,10 +57,6 @@ public class AnnotationFulltextEventListener implements EventListener {
         DocumentModel doc = context.getSourceDocument();
         if (!doc.hasFacet(FacetNames.HAS_RELATED_TEXT)) {
             // no full-text indexing of annotation for this document type
-            return;
-        }
-        if (doc.isVersion() || doc.isProxy()) {
-            // cannot edit the document...
             return;
         }
         String annotationId = (String) context.getProperty(AnnotatedDocumentEventListener.ANNOTATION_ID);
@@ -81,7 +79,7 @@ public class AnnotationFulltextEventListener implements EventListener {
             throws ClientException {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(
-                "relatedtext:related").getValue(List.class);
+                RELATEDTEXT_PROPERTY).getValue(List.class);
         String resourceId = makeResourceId(annotationId);
         Map<String, String> resourceToRemove = null;
         for (Map<String, String> resource : relatedResources) {
@@ -92,7 +90,7 @@ public class AnnotationFulltextEventListener implements EventListener {
         }
         if (resourceToRemove != null) {
             relatedResources.remove(resourceToRemove);
-            doc.setPropertyValue("relatedtext:related",
+            doc.setPropertyValue(RELATEDTEXT_PROPERTY,
                     (Serializable) relatedResources);
         }
     }
@@ -115,12 +113,12 @@ public class AnnotationFulltextEventListener implements EventListener {
         }
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(
-                "relatedtext:related").getValue(List.class);
+                RELATEDTEXT_PROPERTY).getValue(List.class);
         HashMap<String, String> resource = new HashMap<String, String>();
         resource.put("resourceid", makeResourceId(annotationId));
         resource.put("text", annotationBody);
         relatedResources.add(resource);
-        doc.setPropertyValue("relatedtext:related",
+        doc.setPropertyValue(RELATEDTEXT_PROPERTY,
                 (Serializable) relatedResources);
     }
 
