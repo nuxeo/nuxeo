@@ -20,10 +20,7 @@
 package org.nuxeo.launcher.config;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Properties;
-
-import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @author jcarsique
@@ -100,17 +97,10 @@ public class JBossConfigurator extends ServerConfigurator {
     }
 
     @Override
-    public void initLogs() {
-        File logFile = new File(generator.getNuxeoHome(), "server"
-                + File.separator + getConfiguration() + File.separator + "conf"
-                + File.separator + "jboss-log4j.xml");
-        try {
-            System.out.println("Try to configure logs with " + logFile);
-            DOMConfigurator.configure(logFile.toURI().toURL());
-            log.info("Logs succesfully configured.");
-        } catch (MalformedURLException e) {
-            log.error("Could not initialize logs with " + logFile, e);
-        }
+    public File getLogConfFile() {
+        return new File(generator.getNuxeoHome(), "server" + File.separator
+                + getConfiguration() + File.separator + "conf" + File.separator
+                + "jboss-log4j.xml");
     }
 
     @Override

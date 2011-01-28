@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+import org.nuxeo.log4j.Log4JHelper;
 
 /**
  * Builder for server configuration and datasource files from templates and
@@ -595,6 +596,7 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
         serverConfigurator.checkPaths();
+        serverConfigurator.removeExistingLocks();
     }
 
     /**
@@ -608,6 +610,17 @@ public class ConfigurationGenerator {
         if (!directory.isDirectory()) {
             directory.mkdirs();
         }
+    }
+
+    /**
+     * @return Log files produced by Log4J configuration without loading this
+     *         configuration instead of current active one.
+     * @since 5.4.1
+     */
+    public ArrayList<String> getLogFiles() {
+        File log4jConfFile = serverConfigurator.getLogConfFile();
+        System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+        return Log4JHelper.getFileAppendersFiles(log4jConfFile);
     }
 
 }
