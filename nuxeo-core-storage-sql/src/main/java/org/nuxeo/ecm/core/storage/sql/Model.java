@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.dialect.Dialect;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -255,6 +256,8 @@ public class Model {
 
     private final BinaryManager binaryManager;
 
+    private final Dialect dialect;
+
     /** The id generation policy. */
     public final IdGenPolicy idGenPolicy;
 
@@ -315,11 +318,13 @@ public class Model {
     /** Map of doc type to its subtypes (including itself), for search. */
     protected final Map<String, Set<String>> documentSubTypes;
 
-    public Model(RepositoryImpl repository, SchemaManager schemaManager) {
+    public Model(RepositoryImpl repository, SchemaManager schemaManager,
+            Dialect dialect) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
+        this.dialect = dialect;
         temporaryIdCounter = new AtomicLong(0);
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
@@ -356,6 +361,13 @@ public class Model {
         initModels(schemaManager);
 
         inferFulltextInfo();
+    }
+
+    /**
+     * Gets the dialect used for this model.
+     */
+    public Dialect getDialect() {
+        return dialect;
     }
 
     /**

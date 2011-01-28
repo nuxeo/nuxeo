@@ -17,8 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.test.QueryTestCase;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
 /**
  * @author Florent Guillaume
@@ -51,4 +51,17 @@ public class TestSQLRepositoryQuery extends QueryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
         super.testSQLFulltextBlob();
     }
+
+    @Override
+    public void testQueryBasic() throws Exception {
+        super.testQueryBasic();
+        DocumentModelList dml;
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'test%'");
+        assertEquals(5, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:title ILIKE 'Test%'");
+        assertEquals(5, dml.size());
+    }
+
 }

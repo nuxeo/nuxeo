@@ -169,6 +169,14 @@ public abstract class Operator implements ASTNode {
         }
     };
 
+    public static final Operator ILIKE = new Operator(sym.ILIKE) {
+        private static final long serialVersionUID = 1L;
+        @Override
+        public String toString() {
+            return "ILIKE";
+        }
+    };
+
     public static final Operator IN = new Operator(sym.IN) {
         private static final long serialVersionUID = 3202420273042048804L;
         @Override

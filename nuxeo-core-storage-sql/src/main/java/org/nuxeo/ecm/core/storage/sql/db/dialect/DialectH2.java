@@ -57,12 +57,10 @@ public class DialectH2 extends Dialect {
     @Override
     public String[] getFulltextMatch(Column ftColumn, Column mainColumn,
             String fulltextQuery) {
-        String queryTable = String.format("NXFT_SEARCH('%s', '%s', ?)",
-                "PUBLIC", ftColumn.getTable().getName());
-        String whereExpr = String.format("%%s.KEY = %s",
-                mainColumn.getFullQuotedName());
-        return new String[] { (queryTable + " %s"), fulltextQuery, whereExpr,
-                null };
+        String queryTable = String.format(
+                "NXFT_SEARCH('%s', '%s', ?) %%s ON %s = %%<s.KEY", "PUBLIC",
+                ftColumn.getTable().getName(), mainColumn.getFullQuotedName());
+        return new String[] { queryTable, fulltextQuery, null, null };
     }
 
     @Override

@@ -119,9 +119,13 @@ Exponent = [eE] [+-]? [0-9]+
 	"Or"				{ return symbol(sym.OR); }
 	"or"				{ return symbol(sym.OR); }
 
-	"LIKE"				{ return symbol(sym.LIKE); }
-	"Like"				{ return symbol(sym.LIKE); }
-	"like"				{ return symbol(sym.LIKE); }
+  "LIKE"        { return symbol(sym.LIKE); }
+  "Like"        { return symbol(sym.LIKE); }
+  "like"        { return symbol(sym.LIKE); }
+
+  "ILIKE"        { return symbol(sym.ILIKE); }
+  "ILike"        { return symbol(sym.ILIKE); }
+  "ilike"        { return symbol(sym.ILIKE); }
 
 	"DISTINCT"			{ return symbol(sym.DISTINCT); }
 	"Distinct"			{ return symbol(sym.DISTINCT); }

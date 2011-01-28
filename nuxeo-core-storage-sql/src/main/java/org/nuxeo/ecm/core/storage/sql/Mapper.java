@@ -155,6 +155,10 @@ public class Mapper {
         return model;
     }
 
+    protected int getTableSize(String tableName) {
+        return sqlInfo.getDatabase().getTable(tableName).getColumns().size();
+    }
+    
     // for debug
     private static boolean isLogEnabled() {
         return log.isTraceEnabled();

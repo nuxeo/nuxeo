@@ -21,12 +21,18 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.StorageException;
+
 /**
  * The transactional session is an {@link XAResource} for this session.
  *
  * @author Florent Guillaume
  */
 public class TransactionalSession implements XAResource {
+
+    private static final Log log = LogFactory.getLog(TransactionalSession.class);
 
     private final SessionImpl session;
 
@@ -36,7 +42,8 @@ public class TransactionalSession implements XAResource {
 
     private boolean inTransaction;
 
-    TransactionalSession(SessionImpl session, Mapper mapper, PersistenceContext context) {
+    TransactionalSession(SessionImpl session, Mapper mapper,
+            PersistenceContext context) {
         this.session = session;
         this.mapper = mapper;
         this.context = context;
@@ -60,19 +67,30 @@ public class TransactionalSession implements XAResource {
         }
         mapper.start(xid, flags);
         inTransaction = true;
+        session.checkThread();
     }
 
     public void end(Xid xid, int flags) throws XAException {
+        boolean failed = true;
         try {
             if (flags != TMFAIL) {
                 try {
                     session.flush();
-                } catch (Exception e) {
+                } catch (StorageException e) {
+                    log.error("Could not end transaction", e);
                     throw new XAException(e.toString());
                 }
             }
-        } finally {
+            failed = false;
             mapper.end(xid, flags);
+        } finally {
+            if (failed) {
+                try {
+                    mapper.end(xid, TMFAIL);
+                } finally {
+                    rollback(xid);
+                }
+            }
         }
     }
 
@@ -85,17 +103,28 @@ public class TransactionalSession implements XAResource {
             mapper.commit(xid, onePhase);
         } finally {
             inTransaction = false;
-            context.notifyInvalidations();
+            try {
+                context.notifyInvalidations();
+            } finally {
+                session.clearThread();
+            }
         }
     }
 
     public void rollback(Xid xid) throws XAException {
         try {
-            mapper.rollback(xid);
-            context.rollback();
+            try {
+                mapper.rollback(xid);
+            } finally {
+                context.rollback();
+            }
         } finally {
             inTransaction = false;
-            context.notifyInvalidations();
+            try {
+                context.notifyInvalidations();
+            } finally {
+                session.clearThread();
+            }
         }
     }
 

@@ -274,7 +274,7 @@ public class RepositoryImpl implements Repository {
         } catch (SQLException e) {
             throw new StorageException("Cannot get XAConnection", e);
         }
-        model = new Model(this, schemaManager);
+        model = new Model(this, schemaManager, dialect);
         sqlInfo = new SQLInfo(model, dialect);
     }
 
