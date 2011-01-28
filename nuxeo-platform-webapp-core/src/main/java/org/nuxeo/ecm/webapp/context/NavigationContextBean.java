@@ -231,6 +231,10 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     protected boolean isCreationEntered = false;
 
+    public boolean isCreationEntered() {
+        return isCreationEntered;
+    }
+
     /**
      * Changeable doc reset is needed when we're leaving from the document creation form
      * for navigating the parent document itself.
