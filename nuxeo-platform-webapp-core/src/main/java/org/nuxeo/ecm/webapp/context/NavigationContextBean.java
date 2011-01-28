@@ -231,8 +231,8 @@ public class NavigationContextBean implements NavigationContextLocal,
 
     protected boolean isCreationEntered = false;
 
-    public boolean isCreationEntered() {
-        return isCreationEntered;
+    public void resetCreationEntered() {
+        isCreationEntered = false;
     }
 
     /**

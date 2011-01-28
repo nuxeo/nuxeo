@@ -23,7 +23,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 import javax.faces.application.FacesMessage;
 
@@ -35,13 +34,9 @@ public class LocaleSelector extends org.jboss.seam.international.LocaleSelector 
 
     @In(required=false) protected NavigationContext navigationContext;
 
-    @In(required=false) protected ResourcesAccessor resourcesAccessor;
-
     @Override public void select() {
-        if (navigationContext.isCreationEntered()) {
-            facesMessages.add(FacesMessage.SEVERITY_ERROR, "Cannot select language, creation flow entered, NXP-XXXX");
-            return;
-        }
+        navigationContext.resetCreationEntered();
         super.select();
     }
+
 }
