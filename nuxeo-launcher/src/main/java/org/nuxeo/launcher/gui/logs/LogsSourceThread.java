@@ -18,39 +18,25 @@
 
 package org.nuxeo.launcher.gui.logs;
 
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.JTextArea;
-
 /**
+ * Thread wrapping {@link LogsSource}
+ *
  * @author jcarsique
- * @since 5.4.1
+ *
  */
-public class LogsHandler implements Observer {
+public class LogsSourceThread extends Thread {
+    private LogsSource source;
 
-    private JTextArea textArea;
-
-    /**
-     * @param nuxeoLauncherGUI
-     */
-    public LogsHandler(JTextArea textArea) {
-        this.textArea = textArea;
-    }
-
-    @Override
-    public void update(Observable obj, Object arg) {
-        if (arg instanceof String) {
-            notifyLogsView((String) arg);
-        }
+    public LogsSource getSource() {
+        return source;
     }
 
     /**
-     * @param logLine Line read from log file being sent to view
+     * @param logsSource {@link LogsSource} wrapped by this class
      */
-    public void notifyLogsView(String logLine) {
-        textArea.append(logLine + System.getProperty("line.separator"));
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+    public LogsSourceThread(LogsSource logsSource) {
+        super(logsSource);
+        this.source = logsSource;
     }
 
 }

@@ -22,10 +22,11 @@ package org.nuxeo.launcher.gui;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.io.File;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -36,6 +37,7 @@ import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.logs.LogsHandler;
 import org.nuxeo.launcher.gui.logs.LogsSource;
+import org.nuxeo.launcher.gui.logs.LogsSourceThread;
 
 /**
  * Launcher controller for graphical user interface
@@ -54,15 +56,7 @@ public class NuxeoLauncherGUI {
 
     protected NuxeoFrame nuxeoFrame;
 
-    private Thread logsSourceThread = null;
-
-    private LogsHandler logsHandler;
-
-    private JTextArea textArea;
-
-    private JScrollPane logsPanel;
-
-    private LogsSource logsSource;
+    private HashMap<String, LogsSourceThread> logsMap = new HashMap<String, LogsSourceThread>();
 
     /**
      * @param launcher Launcher being used in background
@@ -100,7 +94,6 @@ public class NuxeoLauncherGUI {
      */
     public String execute() {
         initFrame(this);
-        initLogsManagement();
         String command = launcher.getCommand();
         if (command != null) {
             if ("start".equalsIgnoreCase(command)) {
@@ -113,10 +106,13 @@ public class NuxeoLauncherGUI {
         return null;
     }
 
-    private void initLogsManagement() {
-        logsSource = new LogsSource(launcher.getLogFile());
-        logsHandler = new LogsHandler(this);
-        logsSource.addObserver(logsHandler);
+    public void initLogsManagement(String logFile, JTextArea textArea) {
+        LogsSource logsSource = new LogsSource(new File(logFile));
+        logsSource.addObserver(new LogsHandler(textArea));
+        LogsSourceThread logsSourceThread = new LogsSourceThread(logsSource);
+        logsSourceThread.setDaemon(true);
+        executor.execute(logsSourceThread);
+        logsMap.put(logFile, logsSourceThread);
     }
 
     /**
@@ -167,39 +163,16 @@ public class NuxeoLauncherGUI {
     }
 
     /**
-     * @param textArea
-     * @param logsPanel
+     * @param logFile LogFile managed by the involved reader
+     * @param isActive Set logs reader active or not
      */
-    public void setLogsContainer(JTextArea textArea, JScrollPane logsPanel) {
-        this.textArea = textArea;
-        this.logsPanel = logsPanel;
-    }
-
-    /**
-     * @param logsShown Set logs reader active or not
-     */
-    public void notifyLogsObserver(boolean logsShown) {
-        if (!logsShown) {
-            if (logsSourceThread != null) {
-                logsSource.pause();
-            }
+    public void notifyLogsObserver(String logFile, boolean isActive) {
+        LogsSourceThread logsSourceThread = logsMap.get(logFile);
+        if (isActive) {
+            logsSourceThread.getSource().resume();
         } else {
-            if (logsSourceThread == null) {
-                logsSourceThread = new Thread(logsSource);
-                logsSourceThread.setDaemon(true);
-                executor.execute(logsSourceThread);
-            }
-            logsSource.resume();
+            logsSourceThread.getSource().pause();
         }
-    }
-
-    /**
-     * @param logLine Line read from log file being sent to view
-     */
-    public void notifyLogsView(String logLine) {
-        textArea.append(logLine + System.getProperty("line.separator"));
-        textArea.setCaretPosition(textArea.getDocument().getLength());
-        // Something to do with logsPanel ?
     }
 
     /**
