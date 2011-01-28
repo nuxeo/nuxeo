@@ -284,11 +284,8 @@ public class ThemeParser {
         themeManager.registerTheme(theme);
     }
 
-    public static void checkElementName(String name) throws ThemeIOException {
-        if (!name.matches("[a-z0-9_\\-]+")) {
-            throw new ThemeIOException(
-                    "Element names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
-        }
+    public static boolean checkElementName(String name) throws ThemeIOException {
+        return name.matches("[a-z][a-z0-9_\\-\\s]+");
     }
 
     public static void registerThemePages(final Element parent, Node node)
@@ -303,8 +300,12 @@ public class ThemeParser {
                 Node nameAttr = attributes.getNamedItem("name");
                 if (nameAttr != null) {
                     String elementName = nameAttr.getNodeValue();
-                    checkElementName(elementName);
-                    elem.setName(elementName);
+                    if (checkElementName(elementName)) {
+                        elem.setName(elementName);
+                    } else {
+                        throw new ThemeIOException("Page name not allowed: "
+                                + elementName);
+                    }
                 }
 
                 try {
@@ -377,11 +378,12 @@ public class ThemeParser {
             Node nameAttr = attributes.getNamedItem("name");
             if (nameAttr != null) {
                 String elementName = nameAttr.getNodeValue();
-                if (!elementName.matches("[a-z0-9_\\-]+")) {
-                    throw new ThemeIOException(
-                            "Element names may only contain lower-case alpha-numeric characters, digits, underscores and dashes.");
+                if (checkElementName(elementName)) {
+                    elem.setName(elementName);
+                } else {
+                    log.warn("Element names may only contain lower-case alpha-numeric characters, digits, underscores, spaces and dashes: "
+                            + elementName);
                 }
-                elem.setName(elementName);
             }
 
             String description = getCommentAssociatedTo(n);

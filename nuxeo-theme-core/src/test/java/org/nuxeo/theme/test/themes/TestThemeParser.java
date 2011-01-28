@@ -16,9 +16,11 @@ package org.nuxeo.theme.test.themes;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
+import org.nuxeo.theme.elements.SectionElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
@@ -94,6 +96,12 @@ public class TestThemeParser extends NXRuntimeTestCase {
         assertTrue(theme1.getChildren().contains(page1));
 
         assertEquals(7, theme1.getDescendants().size());
+
+        SectionElement section1 = (SectionElement) page1.getChildren().get(0);
+        assertEquals("header", section1.getName());
+
+        CellElement cell2 = (CellElement) section1.getChildren().get(1);
+        assertEquals("right column", cell2.getName());
     }
 
     public void testStyles() {

@@ -24,10 +24,12 @@ public class ElementName extends StandaloneFilter {
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         final Element element = info.getElement();
-        String elementName = element.getName();
-        if (elementName != null) {
-            String markup = CSSUtils.insertCssClass(info.getMarkup(),
-                    elementName);
+        String name = element.getName();
+        String typeName = element.getElementType().getTypeName();
+        if (name != null) {
+            String markup = CSSUtils.insertCssClass(
+                    info.getMarkup(),
+                    CSSUtils.toCamelCase(String.format("%s %s", typeName, name)));
             info.setMarkup(markup);
         }
         return info;

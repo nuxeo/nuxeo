@@ -3,12 +3,12 @@
   <layout>
     <!-- Page 1 -->
     <page name="page1">
-      <section>
+      <section name="header">
         <cell>
           <!--  The first fragment -->
           <fragment type="dummy fragment" />
         </cell>
-        <cell>
+        <cell name="right column">
           <fragment type="dummy fragment"
             perspectives="default" />
           <!-- this fragment is visible in the view perspective only -->
@@ -76,7 +76,7 @@
         <color>green</color>
       </selector>
     </style>
-    
+
     <!-- style for the fragment -->
     <style element="page[1]/section[1]/cell[2]/fragment[2]"
       inherit="default fonts">
@@ -105,7 +105,7 @@
         <border-color>orange</border-color>
       </selector>
     </style>
-    
+
     <style name="default colors">
       <selector path="div">
         <color>brown</color>
