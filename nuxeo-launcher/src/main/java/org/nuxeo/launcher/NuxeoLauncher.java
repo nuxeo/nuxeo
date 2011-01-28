@@ -128,6 +128,8 @@ public abstract class NuxeoLauncher {
 
     private boolean useGui = false;
 
+    private boolean reloadConfiguration = false;
+
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         // super("Nuxeo");
         this.configurationGenerator = configurationGenerator;
@@ -545,6 +547,13 @@ public abstract class NuxeoLauncher {
     public boolean doStart(boolean logProcessOutput) {
         boolean serverStarted = false;
         try {
+            if (reloadConfiguration) {
+                configurationGenerator = new ConfigurationGenerator();
+                configurationGenerator.init();
+            } else {
+                // Ensure reload on next start
+                reloadConfiguration = true;
+            }
             checkNoRunningServer();
             configure();
             start(logProcessOutput);
