@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.shindig.common.uri.Uri;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -168,6 +167,9 @@ public class InternalGadgetDescriptor extends BaseGadgetDescriptor implements Ga
         ComponentInstance component = Framework.getRuntime().getComponentInstance(componentName);
         Bundle bundle = component.getRuntimeContext().getBundle();
         URL gadgetURL = bundle.getEntry("gadget/" + getDirectory() + "/" + resourcePath);
+        if (gadgetURL==null) {
+            gadgetURL = bundle.getEntry("gadget/resources/" + resourcePath);
+        }
         if (gadgetURL != null) {
             return gadgetURL.openStream();
         } else {

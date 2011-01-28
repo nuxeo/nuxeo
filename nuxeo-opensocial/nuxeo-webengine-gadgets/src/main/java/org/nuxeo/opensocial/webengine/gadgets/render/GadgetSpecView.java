@@ -15,7 +15,7 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.opensocial.webengine.gadgets;
+package org.nuxeo.opensocial.webengine.gadgets.render;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -36,8 +36,6 @@ import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.runtime.api.Framework;
 
-import freemarker.cache.StringTemplateLoader;
-
 /**
  * Helper to render the GadgetSpec via FreeMarker
  *
@@ -52,7 +50,7 @@ import freemarker.cache.StringTemplateLoader;
  */
 public class GadgetSpecView{
 
-    protected static StringTemplateLoader specLoader = new StringTemplateLoader();
+    protected static GadgetTemplateLoader specLoader = new GadgetTemplateLoader();
 
     protected static GadgetSpecRenderingEngine engine;
 
@@ -113,6 +111,7 @@ public class GadgetSpecView{
 
         String key = "fs://" + gadget.getMountPoint() + "/" + gadget.getEntryPoint();
         synchronized (specLoader) {
+            // dynamically load the gadget spec templates as needed
             if (specLoader.findTemplateSource(key)==null) {
                 String specData = FileUtils.read(gadget.getResourceAsStream(gadget.getEntryPoint()));
                 specLoader.putTemplate(key, specData);
@@ -131,11 +130,13 @@ public class GadgetSpecView{
             // we are called by local Nuxeo-Shindig
             // so we don't know the client URL, but a relative URL is ok
             input.put("clientSideBaseUrl", VirtualHostHelper.getContextPathProperty() + "/");
+            input.put("specDirectoryUrl", VirtualHostHelper.getContextPathProperty() + "/site/gadgets/" + gadget.getDirectory() + "/");
             input.put("insideNuxeo", true);
         } else {
             // we are called by an external gadget container
             // => we use the same url as the one used to fetch the gadget spec
             input.put("clientSideBaseUrl", specAccessUrl);
+            input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/" + gadget.getDirectory() + "/");
             input.put("insideNuxeo", false);
         }
 

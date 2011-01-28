@@ -86,5 +86,12 @@
       <icon>Nuxeo.png</icon>
     </internalGadget>
 
+    <internalGadget name="automation" disabled="false">
+      <mountPoint>/automation</mountPoint>
+      <entryPoint>automation.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>Nuxeo.png</icon>
+    </internalGadget>
+
   </extension>
 </component>
