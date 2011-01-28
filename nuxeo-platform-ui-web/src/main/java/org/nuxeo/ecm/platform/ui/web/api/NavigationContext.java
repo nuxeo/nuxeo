@@ -428,4 +428,10 @@ public interface NavigationContext extends ResultsProviderFarm {
      */
     void invalidateCurrentDocument() throws ClientException;
 
+    /**
+     * Returns true if creation flow is entered
+     * @return
+     */
+    boolean isCreationEntered();
+
 }
