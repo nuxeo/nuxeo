@@ -81,7 +81,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends
     protected List<DocumentModel> getGroups() throws ClientException {
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put(userManager.getGroupIdField(), "%");
             filter.put("__virtualGroup", false);
 
             // parameters must be serializable so copy keySet to HashSet
