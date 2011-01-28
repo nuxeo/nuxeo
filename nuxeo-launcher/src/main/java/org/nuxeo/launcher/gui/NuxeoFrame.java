@@ -31,16 +31,18 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -60,7 +62,9 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.shell.Shell;
 import org.nuxeo.shell.cmds.Interactive;
 import org.nuxeo.shell.cmds.InteractiveShellHandler;
@@ -74,6 +78,25 @@ import org.nuxeo.shell.swing.ConsolePanel;
  * @see NuxeoLauncherGUI
  */
 public class NuxeoFrame extends JFrame {
+
+    private class LogsPanelListener extends ComponentAdapter {
+        private String logFile;
+
+        public LogsPanelListener(String logFile) {
+            this.logFile = logFile;
+        }
+
+        @Override
+        public void componentHidden(ComponentEvent e) {
+            controller.notifyLogsObserver(logFile, false);
+        }
+
+        @Override
+        public void componentShown(ComponentEvent e) {
+            controller.notifyLogsObserver(logFile, true);
+        }
+
+    }
 
     protected final class ImagePanel extends JPanel {
         private static final long serialVersionUID = 1L;
@@ -89,27 +112,6 @@ public class NuxeoFrame extends JFrame {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(backgroundImage, 0, 0, this);
-        }
-    }
-
-    protected class LogsButtonAction extends AbstractAction {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            logsButton.setEnabled(false);
-            if (logsShown) {
-                logsScroller.setVisible(false);
-                filler.setVisible(true);
-                logsShown = false;
-            } else {
-                logsScroller.setVisible(true);
-                filler.setVisible(false);
-                logsShown = true;
-            }
-            controller.notifyLogsObserver(logsShown);
-            updateLogsButton();
-            logsButton.setEnabled(true);
         }
     }
 
@@ -150,8 +152,6 @@ public class NuxeoFrame extends JFrame {
     protected boolean logsShown = false;
 
     protected JButton logsButton;
-
-    protected JScrollPane logsScroller;
 
     private GridBagConstraints constraints;
 
@@ -268,40 +268,29 @@ public class NuxeoFrame extends JFrame {
         return headerLogo;
     }
 
-    private JComponent buildNewLogsTab() {
+    private JComponent buildLogsTab() {
         JTabbedPane logsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        File[] logFiles = getLogFiles();
-//        logsTabbedPane.addTab(logFile, buildLogPanel(logFile));
+        // Get Launcher log file(s)
+        ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
+        // Get server log file(s)
+        logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
+        for (String logFile : logFiles) {
+            logsTabbedPane.addTab(new File(logFile).getName(),
+                    buildLogPanel(logFile));
+        }
         return logsTabbedPane;
     }
 
-    private File[] getLogFiles() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * @param logFile
+     * @return
+     */
+    private JComponent buildLogPanel(String logFile) {
+        // JPanel logsPanel = new JPanel();
+        // logsPanel.setBackground(new Color(55, 55, 55));
+        // logsPanel.setLayout(new GridBagLayout());
+        // GridBagConstraints logsConstraints = new GridBagConstraints();
 
-    private Component buildLogsTab() {
-        JPanel logsPanel = new JPanel();
-        logsPanel.setBackground(new Color(55, 55, 55));
-        logsPanel.setLayout(new GridBagLayout());
-        GridBagConstraints logsConstraints = new GridBagConstraints();
-
-        // Logs button (show/hide)
-        logsButton = createButton(new LogsButtonAction(), null);
-        logsButton.setForeground(Color.WHITE);
-        logsButton.setOpaque(false);
-        logsButton.setBackground(new Color(55, 55, 55));
-        logsButton.setIconTextGap(0);
-        logsButton.setPreferredSize(new Dimension(200, 45));
-        logsButton.setHorizontalTextPosition(SwingConstants.RIGHT);
-        updateLogsButton();
-        logsConstraints.fill = GridBagConstraints.NONE;
-        logsConstraints.gridx = 0;
-        logsConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        logsPanel.add(logsButton, logsConstraints);
-
-        // Logs panel
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
@@ -310,27 +299,23 @@ public class NuxeoFrame extends JFrame {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(false);
         // textArea.setPreferredSize(new Dimension(450, 160));
-        logsScroller = new JScrollPane(textArea);
-        logsScroller.setVisible(false);
+        JScrollPane logsScroller = new JScrollPane(textArea);
+        logsScroller.setVisible(true);
         logsScroller.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         logsScroller.setAutoscrolls(true);
         logsScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         logsScroller.setWheelScrollingEnabled(true);
         logsScroller.setPreferredSize(new Dimension(450, 160));
-        controller.setLogsContainer(textArea, logsScroller);
-        logsConstraints.fill = GridBagConstraints.BOTH;
-        logsConstraints.ipady = 100;
-        logsConstraints.weightx = 1.0;
-        logsConstraints.weighty = 1.0;
-        logsPanel.add(logsScroller, logsConstraints);
+        // logsConstraints.fill = GridBagConstraints.BOTH;
+        // logsConstraints.ipady = 100;
+        // logsConstraints.weightx = 1.0;
+        // logsConstraints.weighty = 1.0;
+        // logsPanel.add(logsScroller, logsConstraints);
 
-        // Transparent component filling available space when logsPanel is
-        // hidden
-        logsConstraints.ipady = 100;
-        filler = Box.createGlue();
-        filler.setPreferredSize(new Dimension(480, 160));
-        logsPanel.add(filler, logsConstraints);
-        return logsPanel;
+        controller.initLogsManagement(logFile, textArea);
+        // logsPanel.addComponentListener(new LogsPanelListener(logFile));
+        logsScroller.addComponentListener(new LogsPanelListener(logFile));
+        return logsScroller;
     }
 
     private JComponent buildMainButton() {
@@ -377,7 +362,6 @@ public class NuxeoFrame extends JFrame {
         tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
         tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
         tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
-//        tabbedPanel.addTab(getMessage("tab.logs.title"), buildNewLogsTab());
         tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
         tabbedPanel.addChangeListener(new ChangeListener() {
             @Override
@@ -436,18 +420,6 @@ public class NuxeoFrame extends JFrame {
             message = getMessage("missing.translation") + key;
         }
         return message;
-    }
-
-    protected void updateLogsButton() {
-        if (logsShown) {
-            logsButton.setText(getMessage("logsbutton.hide.text"));
-            logsButton.setToolTipText(getMessage("logsbutton.hide.tooltip"));
-            logsButton.setIcon(hideLogsIcon);
-        } else {
-            logsButton.setText(getMessage("logsbutton.show.text"));
-            logsButton.setToolTipText(getMessage("logsbutton.show.tooltip"));
-            logsButton.setIcon(showLogsIcon);
-        }
     }
 
     protected void updateMainButton() {

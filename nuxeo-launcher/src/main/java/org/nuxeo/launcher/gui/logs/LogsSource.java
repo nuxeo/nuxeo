@@ -42,7 +42,7 @@ public class LogsSource extends Observable implements Runnable {
 
     private File logFile;
 
-    private boolean pause = false;
+    private boolean pause = true;
 
     /**
      * @param logFile Log file to manage
