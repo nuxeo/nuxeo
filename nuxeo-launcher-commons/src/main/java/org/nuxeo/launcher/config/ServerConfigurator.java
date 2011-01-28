@@ -22,10 +22,12 @@ package org.nuxeo.launcher.config;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
 /**
@@ -153,7 +155,17 @@ public abstract class ServerConfigurator {
      *
      * @since 5.4.1
      */
-    public abstract void initLogs();
+    public void initLogs() {
+        File logFile = getLogConfFile();
+        try {
+            System.out.println("Try to configure logs with " + logFile);
+            System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+            DOMConfigurator.configure(logFile.toURI().toURL());
+            log.info("Logs succesfully configured.");
+        } catch (MalformedURLException e) {
+            log.error("Could not initialize logs with " + logFile, e);
+        }
+    }
 
     /**
      * @return Pid directory (usually known as "run directory"); Returns log
@@ -286,6 +298,26 @@ public abstract class ServerConfigurator {
         if (oldPath.exists()) {
             log.error("Deprecated paths used (NXP-5370, NXP-5460).");
             throw new ConfigurationException(message);
+        }
+    }
+
+    /**
+     * @return Log4J configuration file
+     * @since 5.4.1
+     */
+    public abstract File getLogConfFile();
+
+    /**
+     * Remove locks on file system (dedicated to Lucene locks)
+     *
+     * @since 5.4.1
+     */
+    public void removeExistingLocks() {
+        File lockFile = new File(getDataDir(), "h2" + File.separator
+                + "nuxeo.lucene" + File.separator + "write.lock");
+        if (lockFile.exists()) {
+            log.info("Removing lock file " + lockFile);
+            lockFile.delete();
         }
     }
 
