@@ -38,6 +38,10 @@ public class SQLSimpleProperty extends SQLBaseProperty {
 
     public static final String DC_ISSUED = "dc:issued";
 
+    // authorize update of aggregated text from related resources (comments,
+    // annotations, tags, ...)
+    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
+
     protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
             Arrays.asList( //
                     Model.FULLTEXT_JOBID_PROP,
@@ -45,7 +49,8 @@ public class SQLSimpleProperty extends SQLBaseProperty {
                     Model.MISC_LIFECYCLE_STATE_PROP, //
                     Model.LOCK_OWNER_PROP, //
                     Model.LOCK_CREATED_PROP, //
-                    DC_ISSUED //
+                    DC_ISSUED, //
+                    RELATED_TEXT_RESOURCES //
             ));
 
     private final SimpleProperty property;

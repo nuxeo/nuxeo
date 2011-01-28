@@ -6,7 +6,7 @@
   <!-- schema to be used for full-text indexing of related annotations, tags
     and comments -->
 
-  <xs:element name="related" type="nxs:resources" />
+  <xs:element name="relatedtextresources" type="nxs:resources" />
 
   <xs:complexType name="resources">
     <xs:sequence>
