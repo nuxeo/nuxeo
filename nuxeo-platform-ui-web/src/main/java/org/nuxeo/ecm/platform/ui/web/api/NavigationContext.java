@@ -432,6 +432,6 @@ public interface NavigationContext extends ResultsProviderFarm {
      * Returns true if creation flow is entered
      * @return
      */
-    boolean isCreationEntered();
+    void resetCreationEntered();
 
 }

@@ -14,7 +14,7 @@
   <name>Nuxeo JSF Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo JSF: Parent.</description>
-  <version>5.3.1-CP10</version>
+  <version>5.3.1-CP11</version>
 
   <properties>
     <nuxeo.common.version>1.6.1</nuxeo.common.version>
@@ -154,7 +154,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-web</artifactId>
-        <version>${nuxeo.jsf.version}-CP10</version>
+        <version>${nuxeo.jsf.version}-CP11</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
