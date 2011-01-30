@@ -21,10 +21,10 @@
         <ui:include src="/incl/document_versioning.xhtml" />
       </c:if>
       <h:commandButton value="#{messages['command.save']}"
-        action="#{routingActions.updateRouteElement}" />
+        action="#{routingActions.updateRouteElement}" id="update_step" />
      <h:outputText value=" "/>
      <h:commandButton value="#{messages['command.cancel']}"
-        action="#{routingActions.goBackToRoute}" />
+        action="#{routingActions.goBackToRoute}" id="cacncel_update_step"/>
     </h:form>
     </div>
   </ui:define>

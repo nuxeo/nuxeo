@@ -28,7 +28,7 @@
           <c:if test="#{routingActions.canUnlockRoute()}">
             <h:outputText value=" | " />
             <h:commandLink value="#{messages['command.unlock']}"
-              action="#{routingActions.unlockCurrentRoute()}"/>
+              action="#{routingActions.unlockCurrentRoute()}" id="unlock_route"/>
           </c:if>
           <div class="lockDetail">
             <h:outputText value="#{messages['label.summary.by']} #{routingActions.getCurrentRouteLockDetails()['document.locker']}, "/>
@@ -42,7 +42,7 @@
           <c:if test="#{routingActions.canLockRoute()}" >
             <h:outputText value=" | " />
             <h:commandLink value="#{messages['command.lock']}"
-              action="#{routingActions.lockCurrentRoute()}"/>
+              action="#{routingActions.lockCurrentRoute()}" id="lock_route"/>
           </c:if>
         </c:if>
       </div>

@@ -14,7 +14,7 @@
     value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
 
 
-    <a4j:region renderRegionOnly="true">
+    <a4j:region renderRegionOnly="true" id ="a4j_route_region">
      <h:panelGrid id="#{widget.id}_route_panel" columns="1">
       <h:panelGroup>
         <span id="#{widget.id}_route_suggestDiv">
@@ -37,7 +37,7 @@
             value="#{widget.properties['mailboxSuggestionSearchType']}" />
           <a4j:support event="onselect"
             focus="#{widget.id}_route_suggest" bypassUpdates="true"
-            reRender="#{widget.id}_route_region">
+            reRender="#{widget.id}_route_region" id="#{widget.id}_a4jSupport">
             <f:param name="mailboxSuggestionSearchType"
               value="#{widget.properties['mailboxSuggestionSearchType']}" />
             <f:setPropertyActionListener value="#{result.id}"
