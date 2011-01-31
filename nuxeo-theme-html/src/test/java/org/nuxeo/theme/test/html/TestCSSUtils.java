@@ -129,6 +129,23 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
     }
 
+    public void testCollectionStyleToCss() {
+        Style style = new StyleFormat();
+        style.setCollection("some collection");
+        style.setUid(1);
+        Properties properties = new Properties();
+        properties.setProperty("color", "red");
+        properties.setProperty("font", "12px Arial");
+        style.setPropertiesFor("vertical menu", "a", properties);
+
+        assertEquals(
+                ".someCollection1VerticalMenu a {color:red;font:12px Arial;}\n",
+                CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
+                        false, // ignoreClassName
+                        false // indent
+                ));
+    }
+
     public void testStyleToCssWithCommaSeparatedPaths() {
         Style style = new StyleFormat();
         style.setUid(1);

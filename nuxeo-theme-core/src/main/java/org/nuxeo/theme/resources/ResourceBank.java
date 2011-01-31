@@ -259,6 +259,7 @@ public class ResourceBank implements Type {
             String resourceId = styleInfo.getResource();
             String cssSource = ResourceManager.getBankResource(name,
                     collectionName, "style", resourceId);
+            style.setCollection(collectionName);
             Utils.loadCss(style, cssSource, "*");
         }
     }

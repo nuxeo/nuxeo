@@ -39,4 +39,8 @@ public interface Style extends Format {
 
     Properties getAllProperties();
 
+    void setCollection(String collectionName);
+
+    String getCollection();
+
 }

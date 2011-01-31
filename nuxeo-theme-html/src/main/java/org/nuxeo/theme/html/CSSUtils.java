@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ThemeElement;
-import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.properties.OrderedProperties;
@@ -290,8 +289,13 @@ public final class CSSUtils {
 
     }
 
-    public static String computeCssClassName(final Format style) {
-        return String.format("%s%s", CLASS_ATTR_PREFIX, style.getUid());
+    public static String computeCssClassName(final Style style) {
+        String collectionName = style.getCollection();
+        String prefix = CLASS_ATTR_PREFIX;
+        if (collectionName != null) {
+            prefix = toCamelCase(collectionName);
+        }
+        return String.format("%s%s", prefix, style.getUid());
     }
 
     public static String replaceColor(String text, String before, String after) {

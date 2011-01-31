@@ -31,6 +31,8 @@ public class StyleFormat extends DefaultFormat implements Style {
 
     private final Map<String, String> selectorDescriptions = new HashMap<String, String>();
 
+    private String collectionName;
+
     public Properties getPropertiesFor(String viewName, String path) {
         Map<String, Properties> propertiesMap = styleProperties.get(viewName);
         if (propertiesMap != null) {
@@ -124,8 +126,8 @@ public class StyleFormat extends DefaultFormat implements Style {
         Style sourceStyle = (Style) source;
         for (String viewName : sourceStyle.getSelectorViewNames()) {
             for (String path : sourceStyle.getPathsForView(viewName)) {
-                setPropertiesFor(viewName, path,
-                        sourceStyle.getPropertiesFor(viewName, path));
+                setPropertiesFor(viewName, path, sourceStyle.getPropertiesFor(
+                        viewName, path));
             }
         }
     }
@@ -133,6 +135,16 @@ public class StyleFormat extends DefaultFormat implements Style {
     @Override
     public boolean isNamed() {
         return getName() != null;
+    }
+
+    @Override
+    public String getCollection() {
+        return collectionName;
+    }
+
+    @Override
+    public void setCollection(String collectionName) {
+        this.collectionName = collectionName;
     }
 
 }
