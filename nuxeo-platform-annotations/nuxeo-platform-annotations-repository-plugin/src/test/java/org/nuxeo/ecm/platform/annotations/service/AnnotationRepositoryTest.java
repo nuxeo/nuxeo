@@ -24,19 +24,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.repository.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -46,13 +46,10 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     private static final Log log = LogFactory.getLog(AnnotationRepositoryTest.class);
 
     private static final String SERVER1 = "http://server1.com/nuxeo/";
+
     private static final String SERVER2 = "http://server2.com/nuxeo/";
 
     private DocumentModel version1;
-
-    private VersionModel versionModel;
-
-    private DocumentModel section;
 
     private final NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
 
@@ -60,30 +57,52 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
         setUpRepository();
-        createSection();
     }
 
-    public void testTest() throws Exception {
+    public void testAnnotateDocuments() throws Exception {
         assertNotNull(session);
         DocumentModel myfileModel = session.createDocumentModel(
                 session.getRootDocument().getPathAsString(), "999", "File");
         DocumentModel myfile = session.createDocument(myfileModel);
         assertNotNull(myfile);
+
+        session.save();
+        closeSession();
+        openSession();
+
+        // the text 'zombie' is not found in the document
+        DocumentModelList results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        assertEquals(0, results.size());
+
         String u1 = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(myfile), true, SERVER1);
         assertNotNull(u1);
         String u2 = viewCodecManager.getUrlFromDocumentView(
                 new DocumentViewImpl(myfile), true, SERVER2);
         assertNotNull(u2);
-        service.addAnnotation(getAnnotation(u1, 1), user, SERVER1);
+        Annotation annotation = getAnnotation(u1, 1);
+        annotation.setBodyText("This is a Zombie annotation text");
+        service.addAnnotation(annotation, user, SERVER1);
+
+        session.save();
+        closeSession();
+        openSession();
+
+        // the body of the text is annotated on the document
+        results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
+        assertEquals(1, results.size());
+        assertEquals(myfile.getRef(), results.get(0).getRef());
+
         sameDocumentFrom2Servers(u1, u2);
-        createVersion(session, myfile, "v1");
+        createVersion(session, myfile, "some comment");
         newVersionSameAnnotations(session, myfile, u1);
         annotationOnNewVersion(u1);
     }
 
-    private void annotationOnNewVersion(String u1) throws AnnotationException,
-            IOException, URISyntaxException {
+    protected void annotationOnNewVersion(String u1)
+            throws AnnotationException, IOException, URISyntaxException {
         annotation = service.addAnnotation(getAnnotation(u1, 2), user, SERVER1);
         assertNotNull(annotation);
         List<Annotation> annotations = service.queryAnnotations(new URI(u1),
@@ -95,7 +114,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
     }
 
-    private void newVersionSameAnnotations(CoreSession session,
+    protected void newVersionSameAnnotations(CoreSession session,
             DocumentModel myfile, String u1) throws AnnotationException,
             URISyntaxException, ClientException {
         List<Annotation> annotations = service.queryAnnotations(new URI(u1),
@@ -113,26 +132,15 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
     }
 
-    private void createVersion(CoreSession session, DocumentModel myfile,
-            String version) throws ClientException {
-        log.debug("Creating version for: " + myfile.getId() + " with label: " + version);
-        versionModel = new VersionModelImpl();
-        versionModel.setLabel(version);
-        session.checkIn(myfile.getRef(), versionModel);
+    protected void createVersion(CoreSession session, DocumentModel myfile,
+            String comment) throws ClientException {
+        session.checkIn(myfile.getRef(), VersioningOption.MAJOR, comment);
         session.checkOut(myfile.getRef());
         session.save();
         waitForAsyncExec();
     }
 
-    private void createSection() throws ClientException {
-        DocumentModel sectionModel = session.createDocumentModel(
-                session.getRootDocument().getPathAsString(), "2",
-                "Section");
-        assertNotNull(sectionModel);
-        section = session.createDocument(sectionModel);
-    }
-
-    private void sameDocumentFrom2Servers(String u1, String u2)
+    protected void sameDocumentFrom2Servers(String u1, String u2)
             throws AnnotationException, URISyntaxException {
         List<Annotation> annotations = service.queryAnnotations(new URI(u1),
                 null, user);

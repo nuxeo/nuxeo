@@ -48,12 +48,6 @@ public class AnnotatedDocumentEventListenerImpl implements
 
     private static final Log log = LogFactory.getLog(AnnotatedDocumentEventListenerImpl.class);
 
-    private static final String ANNOTATION_CREATED = "annotationCreated";
-
-    private static final String ANNOTATION_UPDATED = "annotationUpdated";
-
-    private static final String ANNOTATION_DELETED = "annotationDeleted";
-
     public void beforeAnnotationCreated(NuxeoPrincipal principal,
             DocumentLocation documentLoc, Annotation annotation) {
         // NOP
@@ -106,8 +100,14 @@ public class AnnotatedDocumentEventListenerImpl implements
             title = doc.getTitle();
 
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_ID,
+                    annotation.getId());
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_SUBJECT,
+                    annotation.getSubject());
+            properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY,
+                    annotation.getBodyAsText());
 
-            DocumentEventContext ctx = new DocumentEventContext(null,
+            DocumentEventContext ctx = new DocumentEventContext(session,
                     principal, doc);
             ctx.setRepositoryName(doc.getRepositoryName());
             ctx.setProperties(properties);
