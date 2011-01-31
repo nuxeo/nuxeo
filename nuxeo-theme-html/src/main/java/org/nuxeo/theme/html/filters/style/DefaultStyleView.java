@@ -37,8 +37,8 @@ public class DefaultStyleView extends AbstractView {
         // add inherited styles first
         final List<Format> ancestors = ThemeManager.listAncestorFormatsOf(style);
         for (Format ancestor : ancestors) {
-            sb.append(CSSUtils.computeCssClassName((Style) ancestor)).append(
-                    ' ');
+            sb.insert(0, String.format("%s ",
+                    CSSUtils.computeCssClassName((Style) ancestor)));
         }
         sb.append(CSSUtils.computeCssClassName(style));
 

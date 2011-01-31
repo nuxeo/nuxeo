@@ -18,6 +18,7 @@ import java.net.URL;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.formats.Format;
@@ -25,6 +26,7 @@ import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatFilter;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.services.ThemeService;
+import org.nuxeo.theme.themes.ThemeException;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 
@@ -33,7 +35,9 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
 
     FormatFilter filter;
 
-    Format format;
+    Format format1;
+
+    Format format2;
 
     FormatType formatType;
 
@@ -65,12 +69,12 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
 
         info = new DummyRenderingInfo(page, themeUrl);
 
-        // set the format
-        format = FormatFactory.create("style");
-        format.setUid(1);
-        format.setProperty("dummy", "property");
+        // set the formats
+        format1 = FormatFactory.create("style");
+        format1.setUid(1);
+        format1.setProperty("dummy", "property");
 
-        info.setFormat(format);
+        info.setFormat(format1);
 
         // set the filter
         filter = new FormatFilter();
@@ -149,6 +153,21 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
         info.setMarkup("<br />");
         filter.process(info, false);
         assertEquals("<br class=\"nxStyle1\" />", info.getMarkup());
+    }
+
+    public void testStyleInheritance() throws ThemeException {
+        format2 = FormatFactory.create("style");
+        format2.setUid(2);
+        format2.setProperty("dummy", "property");
+
+        Manager.getThemeManager().makeFormatInherit(format1, format2);
+
+        info.setFormat(format1);
+
+        info.setMarkup("<div></div>");
+        filter.process(info, false);
+        assertEquals("<div class=\"nxStyle2 nxStyle1\"></div>",
+                info.getMarkup());
     }
 
 }
