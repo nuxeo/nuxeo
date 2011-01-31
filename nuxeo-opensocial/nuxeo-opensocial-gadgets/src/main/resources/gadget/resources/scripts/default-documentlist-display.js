@@ -24,15 +24,16 @@ function tableStart(jsonObject,nxParams) {
 
 function mkColHeader(colDef) {
    var html="";
-   if (colDef instanceof Array)  {
-     html="<th>" + colDef[0] + "</th>";
-   } else {
-     if (colDef=="icon") {
+   if (colDef.type=='builtin') {
+     if (colDef.field=="icon") {
        html="<th/>";
      }
-     if (colDef=="titleWithLink") {
-       html="<th> Title </th>";
+     else if (colDef.field=="titleWithLink") {
+       html="<th> " + colDef.label + " </th>";
      }
+   }
+   else {
+     html="<th>" + colDef.label + "</th>";
    }
    return html;
 }
@@ -87,36 +88,35 @@ function mkRow(dashBoardItem, i,nxParams) {
 
 function mkCell(colDef, dashBoardItem) {
    var html="";
-   if (colDef instanceof Array)  {
-      html="<td>";
-      if (colDef.length==3 && colDef[2]=='date') {
-        html += getDateForDisplay(dashBoardItem.properties[colDef[1]]);
+   if (colDef.type=='builtin') {
+     if (colDef.field=="icon") {
+         html += "<td class=\"iconColumn\">"
+         html += "<img alt=\"File\" src=\""
+         html += NXGadgetContext.clientSideBaseUrl;
+         html += dashBoardItem.properties["common:icon"];
+         html += "\"/>";
+        }
+     else if (colDef.field=="titleWithLink") {
+          html += "<td><a target = \"_top\" title=\"";
+          html += dashBoardItem.title;
+          html += "\" href=\"";
+          html += NXGadgetContext.clientSideBaseUrl;
+          html += "nxpath/default";
+          html += dashBoardItem.path;
+          html += "@view_documents";
+          html += "\" />";
+          html += dashBoardItem.title;
+          html += "</a></td>";
+        }
+    } else {
+      html += "<td>";
+      if (colDef.type=='date') {
+        html += getDateForDisplay(dashBoardItem.properties[colDef.field]);
       } else {
-        html += dashBoardItem.properties[colDef[1]];
+        html += dashBoardItem.properties[colDef.field];
       }
-      html+="</td>";
-   } else {
-     if (colDef=="icon") {
-      html += "<td class=\"iconColumn\">"
-      html += "<img alt=\"File\" src=\""
-      html += NXGadgetContext.clientSideBaseUrl;
-      html += dashBoardItem.properties["common:icon"];
-      html += "\"/>";
-     }
-     if (colDef=="titleWithLink") {
-       html += "<td><a target = \"_top\" title=\"";
-       html += dashBoardItem.title;
-       html += "\" href=\"";
-       html += NXGadgetContext.clientSideBaseUrl;
-       html += "nxpath/default";
-       html += dashBoardItem.path;
-       html += "@view_documents";
-       html += "\" />";
-       html += dashBoardItem.title;
-       html += "</a></td>";
-     }
-
-   }
+      html += "</td>";
+    }
    return html;
 }
 

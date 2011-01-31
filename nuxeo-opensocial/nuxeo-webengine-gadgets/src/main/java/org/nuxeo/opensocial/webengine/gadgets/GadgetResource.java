@@ -61,10 +61,12 @@ public class GadgetResource extends InputStreamResource {
         InputStream in=null;
         if (iGadget.getEntryPoint().equals(fileName)) {
             in = GadgetSpecView.render(iGadget, null);
-        } else {
+        } else if (fileName.startsWith("messages_")) {
+            in = GadgetSpecView.i18n.getTranslationFile(iGadget, fileName);
+        }
+        else {
             in = getResourceAsStream(fileName);
         }
-
         if (in==null) {
             return Response.status(404).build();
         }

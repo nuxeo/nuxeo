@@ -56,6 +56,8 @@ public class GadgetSpecView{
 
     protected static List<String> trustedHosts;
 
+    public static Gadgeti18n i18n = new Gadgeti18n();
+
     protected static List<String> getTrustedHosts() {
         if (trustedHosts==null) {
             trustedHosts = new ArrayList<String>();
@@ -107,6 +109,38 @@ public class GadgetSpecView{
         return false;
     }
 
+    protected static String getJSContext(Map<String, Object> input) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("<script>\n");
+        sb.append("var NXGadgetContext= {");
+
+        for (String name : input.keySet()) {
+            Object value = input.get(name);
+            if (value instanceof String) {
+                sb.append(name);
+                sb.append(" : '");
+                sb.append(value);
+                sb.append("',\n");
+            } else if (value instanceof Boolean) {
+                sb.append(name);
+                sb.append(" : ");
+                sb.append(value.toString());
+                sb.append(",\n");
+            }
+        }
+        sb.append("ts");
+        sb.append(" : '");
+        sb.append(System.currentTimeMillis());
+        sb.append("'\n");
+
+        sb.append("};\n");
+        sb.append("</script>\n");
+
+        return sb.toString();
+    }
+
     public static InputStream render(InternalGadgetDescriptor gadget, Map<String, Object> params) throws Exception {
 
         String key = "fs://" + gadget.getMountPoint() + "/" + gadget.getEntryPoint();
@@ -139,6 +173,9 @@ public class GadgetSpecView{
             input.put("specDirectoryUrl", specAccessUrl + "site/gadgets/" + gadget.getDirectory() + "/");
             input.put("insideNuxeo", false);
         }
+
+        input.put("jsContext", getJSContext(input));
+        input.put("i18n", i18n);
 
         if (params!=null) {
             input.putAll(params);
