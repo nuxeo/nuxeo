@@ -95,6 +95,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             throws Exception {
         JSONObject json = new JSONObject();
         json.element("entity-type", "document");
+        json.element("repository", doc.getRepositoryName());
         json.element("uid", doc.getId());
         json.element("path", doc.getPathAsString());
         json.element("type", doc.getType());
@@ -138,6 +139,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     protected static void addSchema(JSONObject json, DocumentModel doc,
             String schema) throws Exception {
         DocumentPart part = doc.getPart(schema);
+        if (part==null) {
+            return;
+        }
         String prefix = part.getSchema().getNamespace().prefix;
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
