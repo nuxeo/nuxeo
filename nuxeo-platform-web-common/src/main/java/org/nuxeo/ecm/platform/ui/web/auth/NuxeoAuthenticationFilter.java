@@ -320,16 +320,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
 
-        // NXP-5555: set encoding to UTF-8 in case this method is called before
-        // encoding is set to UTF-8 on the request
-        if (request.getCharacterEncoding() == null) {
-            try {
-                request.setCharacterEncoding("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e, e);
-            }
-        }
-
         if (preFilters == null) {
             doFilterInternal(request, response, chain);
         } else {
