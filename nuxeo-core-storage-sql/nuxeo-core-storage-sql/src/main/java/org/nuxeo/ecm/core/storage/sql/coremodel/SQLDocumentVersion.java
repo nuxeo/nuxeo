@@ -254,8 +254,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
-        if (readonly
-                && !SQLSimpleProperty.VERSION_WRITABLE_PROPS.contains(name)) {
+        if (readonly && !VERSION_WRITABLE_PROPS.contains(name)) {
             throw new VersionNotModifiableException(String.format(
                     "Cannot set property on a version: %s = %s", name, value));
         }

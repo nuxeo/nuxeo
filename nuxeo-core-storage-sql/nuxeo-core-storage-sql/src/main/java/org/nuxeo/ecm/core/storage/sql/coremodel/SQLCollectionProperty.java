@@ -48,7 +48,7 @@ public class SQLCollectionProperty extends SQLBaseProperty {
      */
     public SQLCollectionProperty(SQLSession session,
             CollectionProperty property, ListType type, boolean readonly) {
-        super(type, readonly);
+        super(type, property != null ? property.getName() : null, readonly);
         this.session = session;
         this.property = property;
         this.isArray = type == null || type.isArray();

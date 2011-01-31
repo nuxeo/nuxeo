@@ -18,14 +18,10 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 
 /**
@@ -36,23 +32,6 @@ import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
  */
 public class SQLSimpleProperty extends SQLBaseProperty {
 
-    public static final String DC_ISSUED = "dc:issued";
-
-    // authorize update of aggregated text from related resources (comments,
-    // annotations, tags, ...)
-    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
-
-    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
-            Arrays.asList( //
-                    Model.FULLTEXT_JOBID_PROP,
-                    Model.FULLTEXT_BINARYTEXT_PROP, //
-                    Model.MISC_LIFECYCLE_STATE_PROP, //
-                    Model.LOCK_OWNER_PROP, //
-                    Model.LOCK_CREATED_PROP, //
-                    DC_ISSUED, //
-                    RELATED_TEXT_RESOURCES //
-            ));
-
     private final SimpleProperty property;
 
     /**
@@ -60,7 +39,7 @@ public class SQLSimpleProperty extends SQLBaseProperty {
      */
     public SQLSimpleProperty(SimpleProperty property, Type type,
             boolean readonly) {
-        super(type, readonly);
+        super(type, property.getName(), readonly);
         this.property = property;
     }
 
