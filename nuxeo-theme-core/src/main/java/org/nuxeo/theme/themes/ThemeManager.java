@@ -744,7 +744,6 @@ public final class ThemeManager implements Registrable {
             String resourceId = resourceNameMatcher.group(1) + ".css";
             String cssSource = ResourceManager.getBankResource(
                     resourceBankName, collectionName, "style", resourceId);
-            log.error(collectionName);
             style.setCollection(collectionName);
             Utils.loadCss(style, cssSource, "*");
         } else {
