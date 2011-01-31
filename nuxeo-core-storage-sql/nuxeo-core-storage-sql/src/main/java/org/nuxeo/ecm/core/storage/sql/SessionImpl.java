@@ -345,18 +345,23 @@ public class SessionImpl implements Session, XAResource {
         updateFulltextBinaries(dirtyBinaries);
     }
 
-    protected void updateFulltextBinaries(final Set<Serializable> dirtyBinaries) throws StorageException {
+    protected void updateFulltextBinaries(final Set<Serializable> dirtyBinaries)
+            throws StorageException {
         if (dirtyBinaries.isEmpty()) {
             return;
         }
 
         // mark indexation in progress
-        for (Node node:getNodesByIds(new ArrayList<Serializable>(dirtyBinaries))) {
-            node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(node.getId());
+        for (Node node : getNodesByIds(new ArrayList<Serializable>(
+                dirtyBinaries))) {
+            node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
+                    node.getId());
         }
 
-        log.debug("Queued documents for asynchronous fulltext extraction: " + dirtyBinaries.size());
-        EventContext eventContext = new EventContextImpl(dirtyBinaries, model.getFulltextInfo());
+        log.debug("Queued documents for asynchronous fulltext extraction: "
+                + dirtyBinaries.size());
+        EventContext eventContext = new EventContextImpl(dirtyBinaries,
+                model.getFulltextInfo());
         eventContext.setRepositoryName(getRepositoryName());
         Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
         try {

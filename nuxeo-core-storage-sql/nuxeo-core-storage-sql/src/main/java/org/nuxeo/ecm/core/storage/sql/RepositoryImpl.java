@@ -60,6 +60,8 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
+    public static final String RUNTIME_SERVER_HOST = "org.nuxeo.runtime.server.host";
+
     public static final String SERVER_PATH_VCS = "vcs";
 
     public static final String SERVER_PATH_BINARY = "binary";
@@ -254,9 +256,10 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public String getServerURL() {
-        String host = Framework.getProperty("org.nuxeo.runtime.server.host", "localhost:");
-        return String.format("http://%s:%d/%s",
-                host, repositoryDescriptor.listen.port, repositoryDescriptor.listen.path);
+        String host = Framework.getProperty(RUNTIME_SERVER_HOST, "localhost");
+        return String.format("http://%s:%d/%s", host,
+                repositoryDescriptor.listen.port,
+                repositoryDescriptor.listen.path);
     }
 
     @Override
@@ -276,9 +279,12 @@ public class RepositoryImpl implements Repository {
         if (!serverStarted) {
             return Collections.emptyList();
         }
-        MapperServlet servlet = (MapperServlet)NetServer.get(repositoryDescriptor.listen, MapperServlet.getName(repositoryDescriptor.name));
+        MapperServlet servlet = (MapperServlet) NetServer.get(
+                repositoryDescriptor.listen,
+                MapperServlet.getName(repositoryDescriptor.name));
         return servlet.getClientInfos();
     }
+
     public RepositoryDescriptor getRepositoryDescriptor() {
         return repositoryDescriptor;
     }
@@ -332,7 +338,8 @@ public class RepositoryImpl implements Repository {
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver, credentials, create);
+        Mapper mapper = backend.newMapper(model, pathResolver, credentials,
+                create);
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);
