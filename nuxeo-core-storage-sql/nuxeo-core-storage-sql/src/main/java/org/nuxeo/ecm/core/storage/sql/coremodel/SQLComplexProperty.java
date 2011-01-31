@@ -56,7 +56,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      */
     public SQLComplexProperty(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
-        super(type, node != null ? node.getName() : null, readonly);
+        super(type, node == null ? null : node.getName(), readonly);
         this.node = node;
         this.session = session;
     }
