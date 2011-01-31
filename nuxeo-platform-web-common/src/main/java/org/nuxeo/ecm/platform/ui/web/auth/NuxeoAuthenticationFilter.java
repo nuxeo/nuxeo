@@ -224,7 +224,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
+            log.info("Login failed for "
+                    + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             return null;
         }
@@ -319,16 +320,18 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
 
-        if (preFilters==null) {
+        if (preFilters == null) {
             doFilterInternal(request, response, chain);
         } else {
-            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(preFilters, chain, this);
+            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
+                    preFilters, chain, this);
             chainWithPreFilters.doFilter(request, response);
         }
     }
 
-    public void doFilterInternal(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilterInternal(ServletRequest request,
+            ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         // NXP-5555: set encoding to UTF-8 in case this method is called before
         // encoding is set to UTF-8 on the request
@@ -570,9 +573,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         return anonymous;
     }
 
-
     protected void doInitIfNeeded() throws ServletException {
-        if (service==null && Framework.getRuntime()!=null) {
+        if (service == null && Framework.getRuntime() != null) {
             service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
             // init preFilters
