@@ -83,14 +83,20 @@ public interface CoreSession {
     String IMPORT_LIFECYCLE_STATE = "ecm:lifeCycleState";
 
     /**
-     * @deprecated use {@link #IMPORT_LOCK_OWNER} and {@link #IMPORT_LOCK_CREATED}
-     *             instead
+     * @deprecated since 5.4.1, use {@link #IMPORT_LOCK_OWNER} and
+     *             {@link #IMPORT_LOCK_CREATED} instead
      */
     @Deprecated
     String IMPORT_LOCK = "ecm:lock";
 
+    /** @since 5.4.1 */
     String IMPORT_LOCK_OWNER = "ecm:lockOwner";
 
+    /**
+     * Lock creation time as a Calendar object.
+     *
+     * @since 5.4.1
+     */
     String IMPORT_LOCK_CREATED = "ecm:lockCreated";
 
     String IMPORT_CHECKED_IN = "ecm:isCheckedIn";

@@ -143,7 +143,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
 
         // set lock
         folder = session.getDocument(docRef);
-        folder.setLock("anonymous:");
+        folder.setLock();
         folder = session.saveDocument(folder);
 
         // write still granted

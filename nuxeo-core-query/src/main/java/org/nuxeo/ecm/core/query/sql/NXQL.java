@@ -56,16 +56,14 @@ public class NXQL {
 
     public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
-    /**
-     * Old lock info.
-     *
-     * @deprecated use {@link #ECM_LOCK_OWNER} instead.
-     */
+    /** @deprecated since 5.4.1, use {@link #ECM_LOCK_OWNER} instead */
     @Deprecated
     public static final String ECM_LOCK = "ecm:lock";
 
+    /** @since 5.4.1 */
     public static final String ECM_LOCK_OWNER = "ecm:lockOwner";
 
+    /** @since 5.4.1 */
     public static final String ECM_LOCK_CREATED = "ecm:lockCreated";
 
 }

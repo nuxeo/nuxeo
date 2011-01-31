@@ -465,12 +465,15 @@ END;
 
 
 # build the read acls if empty, this takes care of the upgrade
+#IF: aclOptimizationsEnabled
 #TEST:
 SELECT 1 FROM read_acls WHERE ROWNUM = 1
 
+#IF: aclOptimizationsEnabled
 #IF: emptyResult
 LOG.INFO Upgrading to optimized acls
 
+#IF: aclOptimizationsEnabled
 #IF: emptyResult
 {CALL nx_rebuild_read_acls}
 

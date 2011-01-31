@@ -33,7 +33,7 @@ public class UnlockOperation extends  Operation<String> {
 
     @Override
     public String doRun(ProgressMonitor montior) throws Exception {
-       session.unlock(ref);
+       session.removeLock(ref);
        addModification(new Modification(ref, Modification.STATE));
        return ref + " is unlocked";
     }

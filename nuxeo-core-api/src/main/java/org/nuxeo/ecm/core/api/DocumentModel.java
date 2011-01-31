@@ -360,8 +360,6 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Unlocks the given document.
-     * <p>
-     * This is a wrapper for {@link CoreSession#unlock(DocumentRef)}
      *
      * @throws ClientException if the document is already locked or other error
      *             occurs

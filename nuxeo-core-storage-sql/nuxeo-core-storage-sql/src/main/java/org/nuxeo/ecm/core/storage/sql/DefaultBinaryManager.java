@@ -162,6 +162,7 @@ public class DefaultBinaryManager implements BinaryManager {
         try {
             digest = storeAndDigest(in, out);
         } finally {
+            in.close();
             out.close();
         }
         /*

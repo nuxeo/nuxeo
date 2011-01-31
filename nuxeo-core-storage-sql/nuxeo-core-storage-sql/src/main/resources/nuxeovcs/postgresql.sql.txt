@@ -637,6 +637,10 @@ SELECT 1 FROM read_acls LIMIT 1;
 
 #IF: aclOptimizationsEnabled
 #IF: emptyResult
+LOG.INFO Upgrading to optimized acls
+
+#IF: aclOptimizationsEnabled
+#IF: emptyResult
 SELECT * FROM nx_rebuild_read_acls();
 
 # Vacuum the read acls table if needed

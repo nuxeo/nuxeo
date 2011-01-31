@@ -2885,10 +2885,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     @Override
     public Lock removeLock(DocumentRef docRef) throws ClientException {
-        if (!hasPermission(docRef, UNLOCK)) {
-            throw new ClientException(
-                    "The caller has no privilege to unlock the document");
-        }
         try {
             Document doc = resolveReference(docRef);
             Lock lock = doc.getLock();
@@ -2896,7 +2892,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 return null;
             }
             String username = getPrincipal().getName();
-            if (!lock.getOwner().equals(username)) {
+            if (!lock.getOwner().equals(username)
+                    && !hasPermission(docRef, UNLOCK)) {
                 throw new ClientException(
                         "The caller has no privilege to unlock the document");
             }

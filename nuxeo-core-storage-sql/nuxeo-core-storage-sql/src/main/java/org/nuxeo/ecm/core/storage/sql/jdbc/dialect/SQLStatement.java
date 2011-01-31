@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.core.storage.sql.Activator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 
 /**
@@ -129,8 +130,7 @@ public class SQLStatement {
      */
     public static Map<String, List<SQLStatement>> read(String filename,
             Map<String, List<SQLStatement>> statements) throws IOException {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-                filename);
+        InputStream is = Activator.getResourceAsStream(filename);
         if (is == null) {
             throw new IOException("Cannot open: " + filename);
         }
@@ -139,57 +139,61 @@ public class SQLStatement {
         String line;
         String category = null;
         List<Tag> tags = null;
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith(SQLStatement.CATEGORY)) {
-                category = line.substring(SQLStatement.CATEGORY.length()).trim();
-                continue;
-            } else if (line.startsWith(Tag.TAG_TEST)
-                    || line.startsWith(Tag.TAG_IF)) {
-                String key = line.substring(0, line.indexOf(':') + 1);
-                String value = line.substring(key.length()).trim();
-                if (value.length() == 0) {
-                    value = null;
-                }
-                if (tags == null) {
-                    tags = new LinkedList<Tag>();
-                }
-                tags.add(new Tag(key, value));
-                continue;
-            } else if (line.startsWith("#")) {
-                continue;
-            }
-            StringBuilder buf = new StringBuilder();
-            boolean read = false;
-            while (true) {
-                if (read) {
-                    line = reader.readLine();
-                } else {
-                    read = true;
-                }
-                if (line == null || line.trim().equals("")) {
-                    if (buf.length() == 0) {
-                        break;
+        try {
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(SQLStatement.CATEGORY)) {
+                    category = line.substring(SQLStatement.CATEGORY.length()).trim();
+                    continue;
+                } else if (line.startsWith(Tag.TAG_TEST)
+                        || line.startsWith(Tag.TAG_IF)) {
+                    String key = line.substring(0, line.indexOf(':') + 1);
+                    String value = line.substring(key.length()).trim();
+                    if (value.length() == 0) {
+                        value = null;
                     }
-                    String sql = buf.toString().trim();
-                    SQLStatement statement = new SQLStatement(sql, tags);
-                    List<SQLStatement> catStatements = statements.get(category);
-                    if (catStatements == null) {
-                        statements.put(category,
-                                catStatements = new LinkedList<SQLStatement>());
+                    if (tags == null) {
+                        tags = new LinkedList<Tag>();
                     }
-                    catStatements.add(statement);
-                    break;
+                    tags.add(new Tag(key, value));
+                    continue;
                 } else if (line.startsWith("#")) {
                     continue;
-                } else {
-                    buf.append(line);
-                    buf.append('\n');
+                }
+                StringBuilder buf = new StringBuilder();
+                boolean read = false;
+                while (true) {
+                    if (read) {
+                        line = reader.readLine();
+                    } else {
+                        read = true;
+                    }
+                    if (line == null || line.trim().equals("")) {
+                        if (buf.length() == 0) {
+                            break;
+                        }
+                        String sql = buf.toString().trim();
+                        SQLStatement statement = new SQLStatement(sql, tags);
+                        List<SQLStatement> catStatements = statements.get(category);
+                        if (catStatements == null) {
+                            statements.put(category,
+                                    catStatements = new LinkedList<SQLStatement>());
+                        }
+                        catStatements.add(statement);
+                        break;
+                    } else if (line.startsWith("#")) {
+                        continue;
+                    } else {
+                        buf.append(line);
+                        buf.append('\n');
+                    }
+                }
+                tags = null;
+                if (line == null) {
+                    break;
                 }
             }
-            tags = null;
-            if (line == null) {
-                break;
-            }
+        } finally {
+            reader.close();
         }
         return statements;
     }
