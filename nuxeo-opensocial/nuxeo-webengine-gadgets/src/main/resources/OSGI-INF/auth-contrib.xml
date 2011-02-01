@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.webengine.gadget.auth.contrib">
+
+     <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+       <openUrl name="GadgetIMG">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/gadgets/img/.*</grantPattern>
+       </openUrl>
+       <openUrl name="GadgetCSS">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/gadgets/css/.*</grantPattern>
+       </openUrl>
+       <openUrl name="GadgetScripts">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/gadgets/scripts/.*</grantPattern>
+       </openUrl>
+     </extension>
+
+</component>

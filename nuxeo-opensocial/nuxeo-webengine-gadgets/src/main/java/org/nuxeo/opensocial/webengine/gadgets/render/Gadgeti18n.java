@@ -41,11 +41,11 @@ import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
  *
  * 2 modes are supported :
  *
- *  Static mode
+ *  Static mode :
  *
  *  gadget has to statically include the Local headers and associated files
  *
- *  Dynamic model :
+ *  Dynamic mode :
  *  gadget only includes a dynamic_messages.properties
  *  This file is used to know what labels are used by the gadget (and provide default valude)
  *  The Headers in Gadgets specs and associated XML files will be dynamically generated using

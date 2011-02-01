@@ -1,5 +1,3 @@
-var currentPage = 0;
-var maxPage = 0;
 
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject,nxParams) {
@@ -18,6 +16,13 @@ function tableStart(jsonObject,nxParams) {
   _gel('navPrevPage').onclick = function(e) {prevPage(nxParams)};
   _gel('navNextPage').onclick = function(e) {nextPage(nxParams)};
   _gel('navLastPage').onclick = function(e) {lastPage(nxParams)};
+
+  if (nxParams.usePagination) {
+    _gel('nxDocumentListPage').innerHTML = (currentPage+1) + "/" + maxPage;
+  } else {
+    console.log("hide nav controls");
+    _gel('pageNavigationControls').style.display='none';
+  }
 
   return html;
 }

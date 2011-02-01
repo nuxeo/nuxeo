@@ -23,21 +23,21 @@
   <script>
    var prefs = new _IG_Prefs(__MODULE_ID__);
 
-   // define Automation API call config
-   var NXRequestParams={ operationId : 'Document.Query',
-     operationParams : { query : "Select * from Document"},
-   //operationInput : ''
-   operationContext : {},
-   operationDocumentProperties : "common,dublincore",
-   entityType : 'documents',
-   displayMethod : displayDocumentList,
-   displayColumns : [ { type: 'builtin', field: 'icon'},
+   // configure Automation REST call
+   var NXRequestParams={ operationId : 'Document.PageProvider',            // id of operation or chain to execute
+     operationParams : { query : "Select * from Document", pageSize : 5},  // parameters for the chain or operation
+     operationContext : {},                                                // context
+     operationDocumentProperties : "common,dublincore",                    // schema that must be fetched from resulting documents
+     entityType : 'documents',                                             // result type : only document is supported for now
+     usePagination : true,                                                 // manage pagination or not
+     displayMethod : displayDocumentList,                                  // js method used to display the result
+     displayColumns : [ { type: 'builtin', field: 'icon'},                 // minimalist layout listing
                       { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
                       { type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
                       { type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'} ]
    };
 
-   // trigger loading
+   // execute automation request onload
    gadgets.util.registerOnLoadHandler(function() {doAutomationRequest(NXRequestParams);} );
 
   </script>

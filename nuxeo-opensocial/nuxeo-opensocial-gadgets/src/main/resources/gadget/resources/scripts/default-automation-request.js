@@ -1,4 +1,7 @@
- function showErrorMessage(message) {
+var currentPage = 0;
+var maxPage = 0;
+
+      function showErrorMessage(message) {
         _gel("errorMessage").innerHTML=message;
         _gel("errorMessage").style.display='block';
       }
@@ -16,14 +19,18 @@
         _gel("oAuthPromptMessage").style.display='block';
         _gel('nxauth').onclick = openCallback;
         _gel('approvaldone').onclick = doneCallback;
+        hideWaitMessage();
+      }
+      function hideOAuthPrompt(openCallback, doneCallback) {
+          _gel("oAuthPromptMessage").style.display='none';
       }
       function showOAuthInProgress() {
         _gel("oAuthWaitMessage").style.display='block';
+        hideOAuthPrompt();
       }
       function hideOAuthInProgress() {
         _gel("oAuthWaitMessage").style.display='none';
       }
-
 
       function doAutomationRequest(nxParams) {
 
@@ -47,6 +54,10 @@
 
         rParams[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
+        if (nxParams.usePagination) {
+          nxParams.operationParams.page=currentPage;
+        }
+
         // Build automation body
         var automationParams = {};
         automationParams.input=nxParams.operationInput;
@@ -64,6 +75,9 @@
         hideWaitMessage();
         hideOAuthInProgress();
         if (response.data['entity-type']==nxParams.entityType) {
+          if (nxParams.usePagination) {
+            maxPage = response.data['pageCount'];
+          }
           nxParams.displayMethod(response.data.entries,nxParams);
         }
         else {
