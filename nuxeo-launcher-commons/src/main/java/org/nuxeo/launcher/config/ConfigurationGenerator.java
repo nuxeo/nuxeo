@@ -155,16 +155,6 @@ public class ConfigurationGenerator {
         }
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
-        // File confCheck = new File(System.getProperty("user.home"),
-        // ".nuxeoconf");
-        // if (confCheck.exists()) {
-        // BufferedReader in = new BufferedReader(new FileReader(confCheck));
-        // String previousNuxeoConfPath=in.readLine();
-        // ...
-        // } else {
-        // log.info("This is the first time Nuxeo is started by user "
-        // + System.getProperty("user.name"));
-        // }
 
         // detect server type based on System properties
         isJBoss = System.getProperty("jboss.home.dir") != null;
@@ -302,7 +292,6 @@ public class ConfigurationGenerator {
             }
             extractDatabaseTemplateName();
             includeTemplates(templates);
-            log.debug("Loaded configuration: " + userConfig);
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
