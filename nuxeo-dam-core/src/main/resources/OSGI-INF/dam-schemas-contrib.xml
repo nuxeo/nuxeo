@@ -41,6 +41,7 @@
       <facet name="Versionable" />
       <facet name="Publishable"/>
       <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
       <facet name="Asset"/>
     </doctype>
 
@@ -57,6 +58,7 @@
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
       <facet name="Asset"/>
     </doctype>
 
@@ -76,6 +78,7 @@
       <facet name="Downloadable" />
       <facet name="HasStoryboard" />
       <facet name="HasVideoPreview" />
+      <facet name="HasRelatedText"/>
       <facet name="Asset" />
     </doctype>
 
@@ -91,6 +94,7 @@
       <facet name="Publishable"/>
       <facet name="Commentable"/>
       <facet name="Downloadable" />
+      <facet name="HasRelatedText"/>
       <facet name="Asset" />
     </doctype>
 
