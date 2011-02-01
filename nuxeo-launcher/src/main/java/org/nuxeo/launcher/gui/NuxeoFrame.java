@@ -52,7 +52,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -278,19 +277,11 @@ public class NuxeoFrame extends JFrame {
      * @return
      */
     private JComponent buildLogPanel(String logFile) {
-        // JPanel logsPanel = new JPanel();
-        // logsPanel.setBackground(new Color(55, 55, 55));
-        // logsPanel.setLayout(new GridBagLayout());
-        // GridBagConstraints logsConstraints = new GridBagConstraints();
-
-        JTextArea textArea = new JTextArea();
+        ColoredTextPane textArea = new ColoredTextPane();
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
         textArea.setBackground(new Color(64, 64, 64));
-        textArea.setForeground(Color.WHITE);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(false);
-        // textArea.setPreferredSize(new Dimension(450, 160));
+
         JScrollPane logsScroller = new JScrollPane(textArea);
         logsScroller.setVisible(true);
         logsScroller.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -298,14 +289,8 @@ public class NuxeoFrame extends JFrame {
         logsScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         logsScroller.setWheelScrollingEnabled(true);
         logsScroller.setPreferredSize(new Dimension(450, 160));
-        // logsConstraints.fill = GridBagConstraints.BOTH;
-        // logsConstraints.ipady = 100;
-        // logsConstraints.weightx = 1.0;
-        // logsConstraints.weighty = 1.0;
-        // logsPanel.add(logsScroller, logsConstraints);
 
         controller.initLogsManagement(logFile, textArea);
-        // logsPanel.addComponentListener(new LogsPanelListener(logFile));
         logsScroller.addComponentListener(new LogsPanelListener(logFile));
         return logsScroller;
     }
