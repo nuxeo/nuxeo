@@ -11,6 +11,7 @@
       <repository sendInvalidationEvents="true">
         <schema>
           <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
         </schema>
         <indexing>
           <fulltext analyzer="french">

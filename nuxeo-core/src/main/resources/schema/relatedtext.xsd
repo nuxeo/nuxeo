@@ -17,9 +17,9 @@
 
   <xs:complexType name="resource">
     <xs:sequence>
-      <xs:element name="resourceid" type="xs:string" minOccurs="0"
+      <xs:element name="relatedtextid" type="xs:string" minOccurs="0"
         maxOccurs="unbounded" />
-      <xs:element name="text" type="xs:string" minOccurs="0"
+      <xs:element name="relatedtext" type="xs:string" minOccurs="0"
         maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
