@@ -1,0 +1,33 @@
+<component name="org.nuxeo.ecm.core.automation.test-provider" version="1.0">
+
+ <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="simpleProviderTest1">
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+   <coreQueryPageProvider name="simpleProviderTest2">
+      <pattern>
+        SELECT * FROM Document where dc:title=?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+   <coreQueryPageProvider name="simpleProviderTest3">
+      <pattern>
+        SELECT * FROM Document where dc:title=? or dc:title=?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </coreQueryPageProvider>
+
+ </extension>
+
+
+</component>

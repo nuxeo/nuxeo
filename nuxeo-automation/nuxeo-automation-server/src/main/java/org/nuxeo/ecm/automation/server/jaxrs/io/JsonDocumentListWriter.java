@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     Thierry Delprat
  */
 package org.nuxeo.ecm.automation.server.jaxrs.io;
 
@@ -35,6 +36,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.automation.core.impl.adapters.PageProviderAsDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.WebException;
@@ -77,7 +79,16 @@ public class JsonDocumentListWriter implements
             for (DocumentModel doc : docs) {
                 ar.add(JsonDocumentWriter.getJSON(doc, schemas));
             }
+
             json.element("entity-type", "documents");
+
+            if (docs instanceof PageProviderAsDocumentModelList) {
+                PageProviderAsDocumentModelList provider = (PageProviderAsDocumentModelList) docs;
+                json.element("pageIndex", provider.getCurrentPageIndex());
+                json.element("pageSize", provider.getPageSize());
+                json.element("pageCount", provider.getNumberOfPages());
+            }
+
             json.element("entries", ar);
 
             arg6.write(json.toString(2).getBytes("UTF-8"));
