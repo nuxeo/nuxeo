@@ -18,10 +18,11 @@
 
 package org.nuxeo.launcher.gui.logs;
 
+import java.awt.Color;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JTextArea;
+import org.nuxeo.launcher.gui.ColoredTextPane;
 
 /**
  * @author jcarsique
@@ -29,12 +30,12 @@ import javax.swing.JTextArea;
  */
 public class LogsHandler implements Observer {
 
-    private JTextArea textArea;
+    private ColoredTextPane textArea;
 
     /**
      * @param nuxeoLauncherGUI
      */
-    public LogsHandler(JTextArea textArea) {
+    public LogsHandler(ColoredTextPane textArea) {
         this.textArea = textArea;
     }
 
@@ -49,8 +50,22 @@ public class LogsHandler implements Observer {
      * @param logLine Line read from log file being sent to view
      */
     public void notifyLogsView(String logLine) {
-        textArea.append(logLine + System.getProperty("line.separator"));
+        Color color;
+        String[] split = logLine.split(" ", 4);
+        if (split.length < 3) {
+            color = new Color(234, 234, 234);
+        } else if ("INFO".equals(split[2])) {
+            color = new Color(234, 234, 234);
+        } else if ("DEBUG".equals(split[2])) {
+            color = new Color(108, 183, 242);
+        } else if ("WARN".equals(split[2])) {
+            color = new Color(234, 138, 2);
+        } else if ("ERROR".equals(split[2])) {
+            color = new Color(245, 0, 63);
+        } else {
+            color = new Color(234, 234, 234);
+        }
+        textArea.append(logLine, color);
         textArea.setCaretPosition(textArea.getDocument().getLength());
     }
-
 }

@@ -29,7 +29,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
@@ -108,7 +107,7 @@ public class NuxeoLauncherGUI {
         return null;
     }
 
-    public void initLogsManagement(String logFile, JTextArea textArea) {
+    public void initLogsManagement(String logFile, ColoredTextPane textArea) {
         LogsSource logsSource = new LogsSource(new File(logFile));
         logsSource.addObserver(new LogsHandler(textArea));
         LogsSourceThread logsSourceThread = new LogsSourceThread(logsSource);
