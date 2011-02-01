@@ -63,11 +63,14 @@ public class TestBulkEditHelper {
         List<DocumentModel> docs = createTestDocuments();
         List<String> commonSchemas = BulkEditHelper.getCommonSchemas(docs);
         assertFalse(commonSchemas.isEmpty());
-        assertEquals(4, commonSchemas.size());
+        assertEquals(5, commonSchemas.size());
+
         assertTrue(commonSchemas.contains("uid"));
         assertTrue(commonSchemas.contains("dublincore"));
         assertTrue(commonSchemas.contains("common"));
         assertTrue(commonSchemas.contains("files"));
+        assertTrue(commonSchemas.contains("relatedtext"));
+
         assertFalse(commonSchemas.contains("note"));
         assertFalse(commonSchemas.contains("file"));
     }
