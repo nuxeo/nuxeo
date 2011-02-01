@@ -38,12 +38,16 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEv
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Extract the text of the body of the annotation to register it as a
- * relatedtext resource on the document for fulltext indexing by the repository.
+ * Extract the text of the body of the annotation to register it as a related
+ * text resource on the document for full-text indexing by the repository.
  */
 public class AnnotationFulltextEventListener implements EventListener {
 
-    public static final String RELATEDTEXT_PROPERTY = "relatedtext:relatedtextresources";
+    public static final String RELATED_TEXT_PROPERTY = "relatedtext";
+
+    public static final String RELATED_TEXT_ID_PROPERTY = "relatedtextid";
+
+    public static final String RELATED_TEXT_LIST_PROPERTY = "relatedtext:relatedtextresources";
 
     public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
 
@@ -79,18 +83,18 @@ public class AnnotationFulltextEventListener implements EventListener {
             throws ClientException {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATEDTEXT_PROPERTY).getValue(List.class);
+                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
         String resourceId = makeResourceId(annotationId);
         Map<String, String> resourceToRemove = null;
         for (Map<String, String> resource : relatedResources) {
-            if (resourceId.equals(resource.get("resourceid"))) {
+            if (resourceId.equals(resource.get(RELATED_TEXT_ID_PROPERTY))) {
                 resourceToRemove = resource;
                 break;
             }
         }
         if (resourceToRemove != null) {
             relatedResources.remove(resourceToRemove);
-            doc.setPropertyValue(RELATEDTEXT_PROPERTY,
+            doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
                     (Serializable) relatedResources);
         }
     }
@@ -113,12 +117,12 @@ public class AnnotationFulltextEventListener implements EventListener {
         }
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(
-                RELATEDTEXT_PROPERTY).getValue(List.class);
+                RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
         HashMap<String, String> resource = new HashMap<String, String>();
-        resource.put("resourceid", makeResourceId(annotationId));
-        resource.put("text", annotationBody);
+        resource.put(RELATED_TEXT_ID_PROPERTY, makeResourceId(annotationId));
+        resource.put(RELATED_TEXT_PROPERTY, annotationBody);
         relatedResources.add(resource);
-        doc.setPropertyValue(RELATEDTEXT_PROPERTY,
+        doc.setPropertyValue(RELATED_TEXT_LIST_PROPERTY,
                 (Serializable) relatedResources);
     }
 
