@@ -70,7 +70,9 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.validateThemeName("default-1.2"));
         assertFalse(ThemeManager.validateThemeName("default-"));
         assertFalse(ThemeManager.validateThemeName("default_"));
-        assertFalse(ThemeManager.validateThemeName("Default"));
+        assertTrue(ThemeManager.validateThemeName("Default"));
+        assertTrue(ThemeManager.validateThemeName("nuxeo-DM"));
+        assertTrue(ThemeManager.validateThemeName("Nuxeo-DAM"));
         assertFalse(ThemeManager.validateThemeName("-_"));
         assertFalse(ThemeManager.validateThemeName("-"));
         assertFalse(ThemeManager.validateThemeName("-."));

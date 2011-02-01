@@ -160,7 +160,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public static boolean validateThemeName(String themeName) {
-        return (themeName.matches("^([a-z]|[a-z][a-z0-9_\\-]*?[a-z0-9])$"));
+        return (themeName.matches("^([a-zA-Z]|[a-zA-Z][a-zA-Z0-9_\\-]*?[a-zA-Z0-9])$"));
     }
 
     public static String getCustomThemePath(String themeName)

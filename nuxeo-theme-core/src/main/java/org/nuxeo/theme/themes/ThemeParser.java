@@ -166,7 +166,7 @@ public class ThemeParser {
         themeName = docElem.getAttributes().getNamedItem("name").getNodeValue();
         if (!ThemeManager.validateThemeName(themeName)) {
             throw new ThemeIOException(
-                    "Theme names may only contain lower-case alpha-numeric characters, underscores and hyphens: "
+                    "Theme names may only contain alpha-numeric characters, underscores and hyphens: "
                             + themeName);
         }
         themeDescriptor.setName(themeName);
