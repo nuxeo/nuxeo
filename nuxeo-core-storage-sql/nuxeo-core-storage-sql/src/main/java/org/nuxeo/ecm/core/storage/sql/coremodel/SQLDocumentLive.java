@@ -335,29 +335,18 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      */
 
     @Override
-    public boolean isLocked() throws DocumentException {
-        return getPropertyValue(Model.LOCK_OWNER_PROP) != null;
-    }
-
-    @Override
     public Lock getLock() throws DocumentException {
-        String owner = getString(Model.LOCK_OWNER_PROP);
-        if (owner == null) {
-            return null;
-        }
-        Calendar created = (Calendar) getPropertyValue(Model.LOCK_CREATED_PROP);
-        return new Lock(owner, created);
+        return session.getLock(getNode());
     }
 
     @Override
-    public void setLock(Lock lock) throws DocumentException {
-        if (lock == null) {
-            setPropertyValue(Model.LOCK_OWNER_PROP, null);
-            setPropertyValue(Model.LOCK_CREATED_PROP, null);
-        } else {
-            setPropertyValue(Model.LOCK_OWNER_PROP, lock.getOwner());
-            setPropertyValue(Model.LOCK_CREATED_PROP, lock.getCreated());
-        }
+    public Lock setLock(Lock lock) throws DocumentException {
+        return session.setLock(getNode(), lock);
+    }
+
+    @Override
+    public Lock removeLock(String owner) throws DocumentException {
+        return session.removeLock(getNode(), owner);
     }
 
     /*

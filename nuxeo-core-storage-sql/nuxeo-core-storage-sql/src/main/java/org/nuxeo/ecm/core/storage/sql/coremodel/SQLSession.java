@@ -39,6 +39,7 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -866,6 +867,30 @@ public class SQLSession implements Session {
     protected Node getNodeById(Serializable id) throws DocumentException {
         try {
             return session.getNodeById(id);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock getLock(Node node) throws DocumentException {
+        try {
+            return session.getLock(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock setLock(Node node, Lock lock) throws DocumentException {
+        try {
+            return session.setLock(node, lock);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock removeLock(Node node, String owner) throws DocumentException {
+        try {
+            return session.removeLock(node, owner);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

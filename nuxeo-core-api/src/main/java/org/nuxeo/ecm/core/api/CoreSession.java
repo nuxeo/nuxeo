@@ -1465,6 +1465,10 @@ public interface CoreSession {
 
     /**
      * Gets the lock info on the given document.
+     * <p>
+     * Lock info is never cached, and needs to use a separate transaction in a
+     * separate thread, so care should be taken to not call this method
+     * needlessly.
      *
      * @param doc the document reference
      * @return the lock info if the document is locked, or {@code null}

@@ -29,18 +29,21 @@ import org.nuxeo.ecm.core.api.Lock;
 public interface Lockable {
 
     /**
-     * Sets or removes a lock on the current document.
+     * Sets a lock on the current document.
      *
-     * @param lock the lock to set, or {@code null} to remove the lock
+     * @param lock the lock to set
+     * @return the existing lock if locking couldn't be done
      */
-    void setLock(Lock lock) throws DocumentException;
+    Lock setLock(Lock lock) throws DocumentException;
 
     /**
-     * Tests if the current object is locked.
+     * Removes a lock on the current document.
      *
-     * @return true if locked false otherwise
+     * @param the owner to check, or {@code null} for no check
+     * @return {@code null} if there was no lock or if removal succeeded, or a
+     *         lock if it blocks removal due to owner mismatch
      */
-    boolean isLocked() throws DocumentException;
+    Lock removeLock(String owner) throws DocumentException;
 
     /**
      * Gets the lock key if a lock exists on the current object.

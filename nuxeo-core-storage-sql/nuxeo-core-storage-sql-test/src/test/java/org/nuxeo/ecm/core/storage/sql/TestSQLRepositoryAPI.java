@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
@@ -2426,31 +2425,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("file ##", fieldValuesBis[0]);
         assertEquals("folder #2", fieldValuesBis[1]);
         assertEquals("folder #1", fieldValuesBis[2]);
-    }
-
-    public void testLock() throws Exception {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
-
-        folder1 = createChildDocument(folder1);
-        assertNull(folder1.getLock()); // old
-        assertNull(folder1.getLockInfo());
-        assertFalse(folder1.isLocked());
-        folder1.setLock();
-        assertEquals(SecurityConstants.ADMINISTRATOR, folder1.getLockInfo().getOwner());
-        assertNotNull(folder1.getLockInfo().getCreated());
-        assertTrue(folder1.getLock().startsWith(
-                SecurityConstants.ADMINISTRATOR + ':')); // old
-        assertTrue(folder1.isLocked());
-
-        folder1 = session.getChild(root.getRef(), "folder1");
-        assertEquals(SecurityConstants.ADMINISTRATOR, folder1.getLockInfo().getOwner());
-        assertTrue(folder1.isLocked());
-
-        folder1.removeLock();
-        assertNull(folder1.getLockInfo());
-        assertFalse(folder1.isLocked());
     }
 
     // TODO: fix and reenable.

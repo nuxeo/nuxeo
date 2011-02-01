@@ -184,9 +184,10 @@ public class DocumentModelFactory {
         Path path = p == null ? null : new Path(p);
 
         // create the document model
+        // lock is unused
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
-                doc.getUUID(), path, doc.getLock(), docRef, parentRef, null,
-                facets, sourceId, repositoryName);
+                doc.getUUID(), path, null, docRef, parentRef, null, facets,
+                sourceId, repositoryName);
 
         if (doc.isVersion()) {
             docModel.setIsVersion(true);
@@ -410,7 +411,6 @@ public class DocumentModelFactory {
         }
 
         if ((flags & DocumentModel.REFRESH_STATE) != 0) {
-            refresh.lock = doc.getLock();
             refresh.lifeCycleState = doc.getLifeCycleState();
             refresh.lifeCyclePolicy = doc.getLifeCyclePolicy();
             refresh.isCheckedOut = doc.isCheckedOut();
