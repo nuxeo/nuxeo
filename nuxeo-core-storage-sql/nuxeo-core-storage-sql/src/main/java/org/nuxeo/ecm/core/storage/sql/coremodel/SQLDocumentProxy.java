@@ -235,18 +235,18 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
      */
 
     @Override
-    public boolean isLocked() throws DocumentException {
-        return target.isLocked();
-    }
-
-    @Override
     public Lock getLock() throws DocumentException {
         return target.getLock();
     }
 
     @Override
-    public void setLock(Lock lock) throws DocumentException {
-        target.setLock(lock);
+    public Lock setLock(Lock lock) throws DocumentException {
+        return target.setLock(lock);
+    }
+
+    @Override
+    public Lock removeLock(String owner) throws DocumentException {
+        return target.removeLock(owner);
     }
 
     /*

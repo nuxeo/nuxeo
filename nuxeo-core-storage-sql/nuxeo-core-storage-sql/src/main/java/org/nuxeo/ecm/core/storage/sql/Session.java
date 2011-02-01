@@ -24,6 +24,7 @@ import java.util.List;
 import javax.resource.cci.Connection;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -350,7 +351,8 @@ public interface Session extends Connection {
      * @return the list of versions
      * @throws StorageException
      */
-    List<Node> getVersions(Serializable versionSeriesId) throws StorageException;
+    List<Node> getVersions(Serializable versionSeriesId)
+            throws StorageException;
 
     /**
      * Gets the last version for a given version series id.
@@ -416,6 +418,47 @@ public interface Session extends Connection {
      */
     IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException;
+
+    /**
+     * Gets the lock state of document.
+     * <p>
+     * If document does not exist, {@code null} is returned.
+     *
+     * @param document the document
+     * @return the existing lock, or {@code null} when there is no lock
+     */
+    Lock getLock(Node document) throws StorageException;
+
+    /**
+     * Sets a lock on a document.
+     * <p>
+     * If the document is already locked, returns its existing lock status
+     * (there is no re-locking, {@link #removeLock} must be called first).
+     *
+     * @param document the document
+     * @param lock the lock object to set
+     * @return {@code null} if locking succeeded, or the existing lock if
+     *         locking failed, or a
+     */
+    Lock setLock(Node document, Lock lock) throws StorageException;
+
+    /**
+     * Removes a lock from a document.
+     * <p>
+     * The previous lock is returned.
+     * <p>
+     * If {@code owner} is {@code null} then the lock is unconditionally
+     * removed.
+     * <p>
+     * If {@code owner} is not {@code null}, it must match the existing lock
+     * owner for the lock to be removed. If it doesn't match, the returned lock
+     * will return {@code true} for {@link Lock#getFailed}.
+     *
+     * @param document the document
+     * @param the owner to check, or {@code null} for no check
+     * @return the previous lock
+     */
+    Lock removeLock(Node document, String owner) throws StorageException;
 
     /**
      * Read ACLs are optimized ACLs for the read permission, they need to be

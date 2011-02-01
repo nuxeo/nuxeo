@@ -134,11 +134,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected DocumentRef parentRef;
 
-    /** state is lock, lifecycle, version stuff. */
+    /** state is lifecycle, version stuff. */
     protected boolean isStateLoaded;
-
-    // loaded if isStateLoaded
-    protected Lock lock;
 
     // loaded if isStateLoaded
     protected String currentLifeCycleState;
@@ -256,6 +253,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor.
+     * <p>
+     * The lock parameter is unused since 5.4.1.
      *
      * @param facets the per-instance facets
      */
@@ -282,7 +281,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             this.schemas = new HashSet<String>(Arrays.asList(schemas));
         }
         schemasOrig = new HashSet<String>(this.schemas);
-        this.lock = lock;
         this.repositoryName = repositoryName;
         this.sourceId = sourceId;
     }
@@ -742,12 +740,20 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     @Deprecated
     public String getLock() {
-        return oldLockKey(lock);
+        try {
+            return oldLockKey(getLockInfo());
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
     public boolean isLocked() {
-        return lock != null;
+        try {
+            return getLockInfo() != null;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
@@ -763,33 +769,29 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Lock setLock() throws ClientException {
-        new RunWithCoreSession<Object>() {
+        return new RunWithCoreSession<Lock>() {
             @Override
-            public Object run() throws ClientException {
-                lock = session.setLock(ref);
-                return null;
+            public Lock run() throws ClientException {
+                return session.setLock(ref);
             }
         }.execute();
-        return lock;
     }
 
     @Override
     public Lock getLockInfo() throws ClientException {
-        return lock;
+        // no lock if not tied to a session
+        CoreSession session = getCoreSession();
+        return session == null ? null : session.getLockInfo(ref);
     }
 
     @Override
     public Lock removeLock() throws ClientException {
-        Lock removedLock = new RunWithCoreSession<Lock>() {
+        return new RunWithCoreSession<Lock>() {
             @Override
             public Lock run() throws ClientException {
                 return session.removeLock(ref);
             }
         }.execute();
-        if (removedLock != null) {
-            lock = null;
-        }
-        return removedLock;
     }
 
     @Override
@@ -1586,7 +1588,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             prefetch = refresh.prefetch;
         }
         if ((refreshFlags & REFRESH_STATE) != 0) {
-            lock = refresh.lock;
             currentLifeCycleState = refresh.lifeCycleState;
             lifeCyclePolicy = refresh.lifeCyclePolicy;
             isCheckedOut = refresh.isCheckedOut;
@@ -1596,7 +1597,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isVersionSeriesCheckedOut = refresh.isVersionSeriesCheckedOut;
             versionSeriesId = refresh.versionSeriesId;
             checkinComment = refresh.checkinComment;
-
         }
         acp = null;
         isACPLoaded = false;

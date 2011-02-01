@@ -393,13 +393,16 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public boolean isLocked() throws DocumentException {
-        return lock != null;
+    public Lock setLock(Lock lock) throws DocumentException {
+        this.lock = lock;
+        return null;
     }
 
     @Override
-    public void setLock(Lock lock) throws DocumentException {
-        this.lock = lock;
+    public Lock removeLock(String owner) throws DocumentException {
+        Lock l = lock;
+        lock = null;
+        return l;
     }
 
     @Override

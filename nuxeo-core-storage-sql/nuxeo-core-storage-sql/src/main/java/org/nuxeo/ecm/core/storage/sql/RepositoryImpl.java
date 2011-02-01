@@ -82,6 +82,8 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
+    private LockManager lockManager;
+
     /** Propagator of invalidations to all local mappers' caches. */
     private final InvalidationsPropagator cachePropagator;
 
@@ -293,6 +295,10 @@ public class RepositoryImpl implements Repository {
         return binaryManager;
     }
 
+    public LockManager getLockManager() {
+        return lockManager;
+    }
+
     /*
      * ----- javax.resource.cci.ConnectionFactory -----
      */
@@ -342,6 +348,11 @@ public class RepositoryImpl implements Repository {
                 create);
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
+        if (create) {
+            lockManager = new LockManager(session,
+                    repositoryDescriptor.clusteringEnabled);
+            session = getConnection();
+        }
         sessions.add(session);
         return session;
     }
@@ -404,13 +415,8 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public synchronized void close() throws StorageException {
-        for (SessionImpl session : sessions) {
-            if (!session.isLive()) {
-                continue;
-            }
-            session.closeSession();
-        }
-        sessions.clear();
+        closeAllSessions();
+
         model = null;
 
         deactivateServletMapper();
@@ -428,6 +434,9 @@ public class RepositoryImpl implements Repository {
             session.closeSession();
         }
         sessions.clear();
+        if (lockManager != null) {
+            lockManager.shutdown();
+        }
     }
 
     /*

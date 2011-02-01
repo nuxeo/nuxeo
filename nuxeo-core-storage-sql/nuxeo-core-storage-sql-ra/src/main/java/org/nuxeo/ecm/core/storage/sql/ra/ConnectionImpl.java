@@ -31,6 +31,7 @@ import javax.resource.cci.ResultSetInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -325,6 +326,21 @@ public class ConnectionImpl implements Session {
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return getSession().queryAndFetch(query, queryType, queryFilter, params);
+    }
+
+    @Override
+    public Lock getLock(Node document) throws StorageException {
+        return getSession().getLock(document);
+    }
+
+    @Override
+    public Lock setLock(Node document, Lock lock) throws StorageException {
+        return getSession().setLock(document, lock);
+    }
+
+    @Override
+    public Lock removeLock(Node document, String owner) throws StorageException {
+        return getSession().removeLock(document, owner);
     }
 
     @Override

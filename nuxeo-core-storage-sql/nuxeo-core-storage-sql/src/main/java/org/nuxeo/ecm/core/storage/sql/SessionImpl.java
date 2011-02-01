@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -272,23 +274,28 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    // also called by TransactionalSession#end
     protected void flush() throws StorageException {
         checkThread();
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
             updateFulltext();
         }
-        log.debug("Saving session");
-        RowBatch batch = context.getSaveBatch();
-        if (!batch.isEmpty()) {
-            // execute the batch
-            mapper.write(batch);
-        }
-        log.debug("End of save");
-        if (readAclsChanged) {
-            updateReadAcls();
-        }
+        flushWithoutFulltext();
         checkInvalidationsConflict();
+    }
+
+    protected void flushWithoutFulltext() throws StorageException {
+        RowBatch batch = context.getSaveBatch();
+        if (!batch.isEmpty() || readAclsChanged) {
+            log.debug("Saving session");
+            if (!batch.isEmpty()) {
+                // execute the batch
+                mapper.write(batch);
+            }
+            if (readAclsChanged) {
+                updateReadAcls();
+            }
+            log.debug("End of save");
+        }
     }
 
     protected Serializable getContainingDocument(Serializable id)
@@ -568,6 +575,16 @@ public class SessionImpl implements Session, XAResource {
      * -------------------------------------------------------------
      */
 
+    protected Node getNodeById(Serializable id, boolean prefetch)
+            throws StorageException {
+        if (context.isDeleted(id)) {
+            return null;
+        }
+        List<Node> nodes = getNodesByIds(Collections.singletonList(id),
+                prefetch);
+        return nodes.get(0);
+    }
+
     @Override
     public Node getNodeById(Serializable id) throws StorageException {
         checkThread();
@@ -575,19 +592,11 @@ public class SessionImpl implements Session, XAResource {
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
         }
-        if (context.isDeleted(id)) {
-            return null;
-        }
-        List<Node> nodes = getNodesByIds(Collections.singletonList(id));
-        return nodes.get(0);
+        return getNodeById(id, true);
     }
 
-    @Override
-    public List<Node> getNodesByIds(List<Serializable> ids)
+    public List<Node> getNodesByIds(List<Serializable> ids, boolean prefetch)
             throws StorageException {
-        checkThread();
-        checkLive();
-
         // get main fragments
         // TODO ctx: order of fragments
         List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
@@ -608,6 +617,10 @@ public class SessionImpl implements Session, XAResource {
             // prepare fragment groups
             groups.put(id, new FragmentGroup((SimpleFragment) fragment,
                     new FragmentsMap()));
+
+            if (!prefetch) {
+                continue;
+            }
 
             // find type and table names
             SimpleFragment hierFragment = (SimpleFragment) fragment;
@@ -653,6 +666,14 @@ public class SessionImpl implements Session, XAResource {
         }
 
         return nodes;
+    }
+
+    @Override
+    public List<Node> getNodesByIds(List<Serializable> ids)
+            throws StorageException {
+        checkThread();
+        checkLive();
+        return getNodesByIds(ids, true);
     }
 
     @Override
@@ -985,6 +1006,92 @@ public class SessionImpl implements Session, XAResource {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
+    protected boolean isLockManagerSession() {
+        return repository.getLockManager().session == this;
+    }
+
+    @Override
+    public Lock getLock(Node node) throws StorageException {
+        if (node == null) {
+            // doc not yet committed
+            return null; // no lock
+        }
+        if (!isLockManagerSession()) {
+            return repository.getLockManager().getLock(node.getId());
+        }
+        return getLockInternal(node);
+    }
+
+    protected Lock getLockInternal(Node node) throws StorageException {
+        String owner = (String) node.getSimpleProperty(Model.LOCK_OWNER_PROP).getValue();
+        if (owner == null) {
+            return null;
+        }
+        Calendar created = (Calendar) node.getSimpleProperty(
+                Model.LOCK_CREATED_PROP).getValue();
+        return new Lock(owner, created);
+    }
+
+    // used to flag attempt to lock/unlock a document that doesn't exist
+    protected static final Lock UNSAVED = new Lock(null, null);
+
+    @Override
+    public Lock setLock(Node node, Lock lock) throws StorageException {
+        if (node == null) {
+            // doc not yet committed in this thread
+            return UNSAVED;
+        }
+        if (lock == null) {
+            throw new NullPointerException("Attempt to use null lock on: "
+                    + node);
+        }
+        if (!isLockManagerSession()) {
+            Lock res = repository.getLockManager().setLock(node.getId(), lock);
+            if (res != UNSAVED) {
+                return res;
+            }
+            // else do a setLock in this session, for later save
+        }
+
+        Lock oldLock = getLockInternal(node);
+        if (oldLock == null) {
+            node.setSimpleProperty(Model.LOCK_OWNER_PROP, lock.getOwner());
+            node.setSimpleProperty(Model.LOCK_CREATED_PROP, lock.getCreated());
+        }
+        return oldLock;
+    }
+
+    @Override
+    public Lock removeLock(Node node, String owner) throws StorageException {
+        if (node == null) {
+            // doc not yet committed in this thread
+            return UNSAVED;
+        }
+        if (!isLockManagerSession()) {
+            Lock res = repository.getLockManager().removeLock(node.getId(),
+                    owner);
+            if (res != UNSAVED) {
+                return res;
+            }
+            // else do a removeLock in this session, for later save
+        }
+
+        Lock oldLock = getLockInternal(node);
+        if (owner != null) {
+            if (oldLock == null) {
+                // not locked, nothing to do
+                return oldLock;
+            }
+            if (!owner.equals(oldLock.getOwner())) {
+                // existing mismatched lock, flag failure
+                return new Lock(oldLock, true);
+            }
+        }
+        node.setSimpleProperty(Model.LOCK_OWNER_PROP, null);
+        node.setSimpleProperty(Model.LOCK_CREATED_PROP, null);
+        return oldLock;
+    }
+
     @Override
     public void requireReadAclsUpdate() {
         readAclsChanged = true;
@@ -1013,7 +1120,7 @@ public class SessionImpl implements Session, XAResource {
             // record information about the root id
             mapper.setRootId(repositoryId, rootNode.getId());
         } else {
-            rootNode = getNodeById(rootId);
+            rootNode = getNodeById(rootId, false);
         }
     }
 

@@ -320,10 +320,9 @@ public interface DocumentModel extends Serializable {
     /**
      * Gets the lock key if the document is locked.
      * <p>
-     * This uses the cached lock information and doesn't connect to the server.
-     * <p>
-     * To get fresh information from the server, use
-     * {@link CoreSession#getLock(DocumentRef)}.
+     * Lock info is never cached, and needs to use a separate transaction in a
+     * separate thread, so care should be taken to not call this method
+     * needlessly.
      *
      * @return the lock key if the document is locked or null otherwise
      *
@@ -335,10 +334,9 @@ public interface DocumentModel extends Serializable {
     /**
      * Tests if the document is locked.
      * <p>
-     * This uses the cached lock information and doesn't connect to the server.
-     * <p>
-     * To get fresh information from the server use
-     * {@link CoreSession#getLock(DocumentRef)}.
+     * Lock info is never cached, and needs to use a separate transaction in a
+     * separate thread, so care should be taken to not call this method
+     * needlessly.
      *
      * @return the lock key if the document is locked or null otherwise
      */
@@ -382,7 +380,9 @@ public interface DocumentModel extends Serializable {
     /**
      * Gets the lock info on the document.
      * <p>
-     * This uses the cached lock information and doesn't connect to the server.
+     * Lock info is never cached, and needs to use a separate transaction in a
+     * separate thread, so care should be taken to not call this method
+     * needlessly.
      *
      * @return the lock info if the document is locked, or {@code null}
      *         otherwise
@@ -887,8 +887,6 @@ public interface DocumentModel extends Serializable {
 
     /** Info fetched internally during a refresh. */
     public static class DocumentModelRefresh {
-
-        public Lock lock;
 
         public String lifeCycleState;
 

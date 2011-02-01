@@ -33,9 +33,18 @@ public class Lock implements Serializable {
 
     private final Calendar created;
 
+    private final boolean failed;
+
     public Lock(String owner, Calendar created) {
         this.owner = owner;
         this.created = created;
+        this.failed = false;
+    }
+
+    public Lock(Lock lock, boolean failed) {
+        this.owner = lock.owner;
+        this.created = lock.created;
+        this.failed = failed;
     }
 
     /**
@@ -55,5 +64,15 @@ public class Lock implements Serializable {
     public Calendar getCreated() {
         return created;
     }
+
+    /**
+     * The failure state, used for removal results.
+     *
+     * @return the failure state
+     */
+    public boolean getFailed() {
+        return failed;
+    }
+
 
 }

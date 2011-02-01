@@ -2855,12 +2855,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // TODO: add a new permission named LOCK and use it instead of
             // WRITE_PROPERTIES
             checkPermission(doc, WRITE_PROPERTIES);
-            Lock lock = doc.getLock();
-            if (lock != null) {
-                throw new ClientException("Lock already set on " + docRef);
+            Lock lock = new Lock(getPrincipal().getName(),
+                    new GregorianCalendar());
+            Lock oldLock = doc.setLock(lock);
+            if (oldLock != null) {
+                throw new ClientException("Document already locked by "
+                        + oldLock.getOwner() + ": " + docRef);
             }
-            lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
-            doc.setLock(lock);
             DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put("lock", lock);
@@ -2887,18 +2888,23 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     public Lock removeLock(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            Lock lock = doc.getLock();
+            String owner;
+            if (hasPermission(docRef, UNLOCK)) {
+                // always unlock
+                owner = null;
+            } else {
+                owner = getPrincipal().getName();
+            }
+            Lock lock = doc.removeLock(owner);
             if (lock == null) {
+                // there was no lock, we're done
                 return null;
             }
-            String username = getPrincipal().getName();
-            if (!lock.getOwner().equals(username)
-                    && !hasPermission(docRef, UNLOCK)) {
-                throw new ClientException(
-                        "The caller has no privilege to unlock the document");
+            if (lock.getFailed()) {
+                // lock removal failed due to owner check
+                throw new ClientException("Document already locked by "
+                        + lock.getOwner() + ": " + docRef);
             }
-            lock = doc.getLock();
-            doc.setLock(null);
             DocumentModel docModel = readModel(doc);
             Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put("lock", lock);
