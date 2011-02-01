@@ -36,8 +36,9 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
 import org.nuxeo.ecm.platform.signature.api.user.CNField;
 import org.nuxeo.ecm.platform.signature.api.user.RootService;
 import org.nuxeo.ecm.platform.signature.api.user.UserInfo;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -63,10 +65,10 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@Features(PlatformFeature.class)
+@RepositoryConfig(type = BackendType.H2, user = "Administrator",  init = DefaultRepositoryInit.class, cleanup=Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory","org.nuxeo.common",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class TypeTest {

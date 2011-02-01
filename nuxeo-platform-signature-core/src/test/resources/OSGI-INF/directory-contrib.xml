@@ -64,14 +64,12 @@
 
   <directory name="certificate">
       <schema>cert</schema>
-
       <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
       <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
       <dbUser>SA</dbUser>
       <dbPassword></dbPassword>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-
       <table>cert</table>
       <idField>userid</idField>
       <autoincrementIdField>false</autoincrementIdField>

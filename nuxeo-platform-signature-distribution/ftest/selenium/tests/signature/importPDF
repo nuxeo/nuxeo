@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="selenium.base" href="" />
-<title>createUsers</title>
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/login.jsp" />
+<title>importPDF</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">createUsers</td></tr>
+<tr><td rowspan="1" colspan="3">importPDF</td></tr>
 </thead><tbody>
 <!--@Test groups:CreateUsers,introduction|depends:CreateStructure-->
 <tr>
@@ -30,12 +30,12 @@
 <tr>
 	<td>type</td>
 	<td>username</td>
-	<td>Administrator</td>
+	<td>jdoe</td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>password</td>
-	<td>Administrator</td>
+	<td>password</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
@@ -44,7 +44,7 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>You are logged as Administrator</td>
+	<td>You are logged as jdoe</td>
 	<td></td>
 </tr>
 <tr>
@@ -53,27 +53,30 @@
 	<td></td>
 </tr>
 <tr>
+	<td>click</td>
+	<td>j_id54:j_id59</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAndWait</td>
-	<td>link=Create a new workspace</td>
+	<td>link=TestWorkspace</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Import a file</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//input[@id='document_create:nxl_heading:nxw_title']</td>
-	<td>My Test Workspace in Digital Signature</td>
-</tr>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Create']</td>
-	<td></td>
+	<td>importFileRichUploadForm:upload:file</td>
+	<td>/tmp/original.pdf</td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Log out</td>
+	<td>importFileRichUploadForm:j_id219</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

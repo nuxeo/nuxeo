@@ -9,59 +9,54 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"><a4j:outputPanel
+  id="signPanel">
 
- <a4j:outputPanel id="signPanel">
 
-
-      <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
-      globalOnly="true" infoClass="infoFeedback"
-      warnClass="warningFeedback" errorClass="errorFeedback" /></div>
+  <div id="facesStatusMessage" class="facesStatusMessage"><h:messages
+    globalOnly="true" infoClass="infoFeedback"
+    warnClass="warningFeedback" errorClass="errorFeedback" /></div>
 
   <c:if test="#{signActions.isPDFSigned()}">
-
-  <table class="dataInput">
-    <tbody>
-      <tr>
-        <td class="labelColumn"><h:outputText
-          value="#{messages['label.sign.document.signed']}" /></td>
-      </tr>
-      <tr>
-      <td class="fieldColumn"><h:outputText
-        value="#{signActions.getPDFCertificateInfo()}" /></td>
-      </tr>
-    </tbody>
-  </table>
-
-</c:if>
-
-
-
-<c:if test="#{!signActions.isPDFSigned()}">
-
-  <c:if test="#{certActions.hasCertificate()}">
 
     <table class="dataInput">
       <tbody>
         <tr>
           <td class="labelColumn"><h:outputText
-            value="#{messages['label.sign.prompt']}" /></td>
-          <td class="fieldColumn"><nxh:outputLink class="boldLabel"
-            value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
-            <nxh:graphicImage
-              value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
-              rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-            <h:outputText
-              value="#{currentDocumentAsBlobHolder.blob.filename}" />
-            <nxh:graphicImage value="/icons/download.png"
-              title="#{label.root.certificate.download}" />
-          </nxh:outputLink></td>
+            value="#{messages['label.sign.document.signed']}" /></td>
+        </tr>
+        <tr>
+          <td class="fieldColumn"><h:outputText
+            value="#{signActions.getPDFCertificateInfo()}" /></td>
         </tr>
       </tbody>
     </table>
 
+  </c:if>
 
+  <c:if test="#{!signActions.isPDFSigned()}">
 
+    <c:if test="#{certActions.hasCertificate()}">
+
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="labelColumn"><h:outputText
+              value="#{messages['label.sign.prompt']}" /></td>
+            <td class="fieldColumn"><nxh:outputLink
+              class="boldLabel"
+              value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}">
+              <nxh:graphicImage
+                value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
+                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
+              <h:outputText
+                value="#{currentDocumentAsBlobHolder.blob.filename}" />
+              <nxh:graphicImage value="/icons/download.png"
+                title="#{label.root.certificate.download}" />
+            </nxh:outputLink></td>
+          </tr>
+        </tbody>
+      </table>
 
       <a4j:form id="sign_form" ajaxSingle="true"
         enctype="multipart/form-data"
@@ -97,11 +92,14 @@
           </tbody>
         </table>
       </a4j:form>
+    </c:if>
+
+  </c:if>
+  <c:if test="#{!certActions.hasCertificate()}">
+    <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
+    <h:outputLink value="#{baseURL}@edit_certificate">
+      <h:outputText value="Create your certificate" />
+    </h:outputLink>
   </c:if>
 
-</c:if> <c:if test="#{!certActions.hasCertificate()}">
-  <h:outputText value="#{messages['label.sign.certificate.prompt']}" />
-</c:if>
-
-</a4j:outputPanel>
-</div>
+</a4j:outputPanel></div>

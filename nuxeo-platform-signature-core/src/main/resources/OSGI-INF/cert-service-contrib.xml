@@ -4,7 +4,7 @@
  <documentation>
     The Cert Service offers Certificate Authority functionalities
     like signing CSRs (Certificate Signing Requests), revoking certificates,
-    and also certificate generation capabilities and access to the certificate.
+    and also certificate generation capabilities and access to the CA-certificate.
     @version 1.0
     @author ws@nuxeo.com
   </documentation>

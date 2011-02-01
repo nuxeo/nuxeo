@@ -6,14 +6,13 @@
 
     <directory name="certificate">
       <schema>cert</schema>
-
-      <dbDriver>org.postgresql.Driver</dbDriver>
-      <dbUrl>jdbc:postgresql://localhost:5432/nuxeo</dbUrl>
-      <dbUser>nuxeo</dbUser>
+      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
+      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
+      <dbUser>SA</dbUser>
+      <dbPassword></dbPassword>
       <dbPassword>password</dbPassword>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-
       <table>cert</table>
       <idField>userid</idField>
       <autoincrementIdField>false</autoincrementIdField>

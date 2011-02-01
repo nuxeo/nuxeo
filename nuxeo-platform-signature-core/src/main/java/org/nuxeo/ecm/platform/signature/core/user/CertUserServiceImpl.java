@@ -83,10 +83,9 @@ public class CertUserServiceImpl implements CertUserService {
     }
 
     @Override
-    public KeyStore getUserKeystore(String userID, String userKeyPassword)
+    public KeyStore getUserKeystore(String userID, String userKeystorePassword)
             throws CertException, ClientException {
         KeyStore keystore = null;
-        String userKeystorePassword = userKeyPassword;
         Session sqlSession = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
         try {

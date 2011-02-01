@@ -23,7 +23,7 @@ import javax.security.auth.x500.X500Principal;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
- * Provides user information encoded inside an x509Name.
+ * Carries user information encoded inside an x509Name.
  *<p>
  * This class is a DTO which exposes an X500 Principal view. It is used to pass
  * user information between application layers.
@@ -52,7 +52,7 @@ public class UserInfo {
      * Must be a full set of all the fields as present in the
      * CNField enum.
      *
-     * @param userFields
+     * @param userDNFields
      * @throws CertException
      */
     public UserInfo(Map<CNField, String> userDNFields) throws CertException {

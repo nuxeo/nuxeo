@@ -17,8 +17,9 @@ PREREQUISITES:
 To do initial testing you can use the following keystore: 
 ./nuxeo-platform-signature-core/src/test/resources/test-files/keystore.jks
 
-using the location and password specified in:
+using the location, aliases and password specified in:
 ./nuxeo-platform-signature-core/src/main/resources/OSGI-INF/cert-contrib.xml
+
 
 2) Install libraries (TODO: these will be provided in the distribution)
 
