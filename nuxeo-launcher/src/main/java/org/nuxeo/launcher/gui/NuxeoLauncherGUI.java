@@ -24,6 +24,8 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.HashMap;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -127,6 +129,8 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
             }
         });
+        waitForFrameLoaded();
+        nuxeoFrame.mainButton.setText(getMessage("mainbutton.stop.inprogress"));
     }
 
     /**
@@ -136,6 +140,16 @@ public class NuxeoLauncherGUI {
      *      {@link NuxeoFrame#updateSummary()}
      */
     public void updateServerStatus() {
+        waitForFrameLoaded();
+        nuxeoFrame.updateMainButton();
+        nuxeoFrame.updateSummary();
+    }
+
+    /**
+     * Waits for the Launcher GUI frame being initialized. Should be called
+     * before any access to {@link NuxeoFrame} from this controller.
+     */
+    public void waitForFrameLoaded() {
         // Wait for Frame being initialized
         while (nuxeoFrame == null) {
             try {
@@ -144,8 +158,6 @@ public class NuxeoLauncherGUI {
                 log.error(e);
             }
         }
-        nuxeoFrame.updateMainButton();
-        nuxeoFrame.updateSummary();
     }
 
     /**
@@ -160,6 +172,8 @@ public class NuxeoLauncherGUI {
                 updateServerStatus();
             }
         });
+        waitForFrameLoaded();
+        nuxeoFrame.mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.inprogress"));
     }
 
     /**
@@ -180,6 +194,23 @@ public class NuxeoLauncherGUI {
      */
     public ConfigurationGenerator getConfigurationGenerator() {
         return launcher.getConfigurationGenerator();
+    }
+
+    /**
+     * Get internationalized message
+     *
+     * @param key Message key
+     * @return Localized message value
+     */
+    public static String getMessage(String key) {
+        String message;
+        try {
+            message = ResourceBundle.getBundle("i18n/messages").getString(key);
+        } catch (MissingResourceException e) {
+            log.error(e);
+            message = getMessage("missing.translation") + key;
+        }
+        return message;
     }
 
 }

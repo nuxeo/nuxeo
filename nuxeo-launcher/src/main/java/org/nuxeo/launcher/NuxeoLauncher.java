@@ -185,8 +185,11 @@ public abstract class NuxeoLauncher {
         nuxeoProcess = pb.start();
         logProcessStreams(pb, nuxeoProcess, logProcessOutput);
         Thread.sleep(1000);
-        log.info("Server started"
-                + (getPid() != null ? " with process ID " + pid : "") + ".");
+        if (getPid() != null) {
+            log.info("Server started with process ID " + pid + ".");
+        } else {
+            log.info("Sent server start command but could not get process ID.");
+        }
     }
 
     /**
@@ -268,17 +271,31 @@ public abstract class NuxeoLauncher {
      */
     private List<String> getOSCommand(List<String> roughCommand) {
         String linearizedCommand = new String();
-        for (Iterator<String> iterator = roughCommand.iterator(); iterator.hasNext();) {
-            linearizedCommand += " " + iterator.next();
-        }
         ArrayList<String> osCommand = new ArrayList<String>();
         if (PlatformUtils.isLinux() || PlatformUtils.isMac()) {
+            for (Iterator<String> iterator = roughCommand.iterator(); iterator.hasNext();) {
+                String commandToken = iterator.next();
+                if (commandToken.contains(" ")) {
+                    commandToken = commandToken.replaceAll(" ", "\\\\ ");
+                }
+                linearizedCommand += " " + commandToken;
+            }
             osCommand.add("/bin/sh");
             osCommand.add("-c");
             osCommand.add(linearizedCommand);
             // osCommand.add("&");
             return osCommand;
         } else if (PlatformUtils.isWindows()) {
+            // for (Iterator<String> iterator = roughCommand.iterator();
+            // iterator.hasNext();) {
+            // String commandToken = iterator.next();
+            // if (commandToken.endsWith("java")) {
+            // commandToken = "^\"" + commandToken + "^\"";
+            // } else if (commandToken.contains(" ")) {
+            // commandToken = commandToken.replaceAll(" ", "^ ");
+            // }
+            // linearizedCommand += " " + commandToken;
+            // }
             // osCommand.add("cmd");
             // osCommand.add("/C");
             // osCommand.add(linearizedCommand);
@@ -784,23 +801,15 @@ public abstract class NuxeoLauncher {
      * @throws URISyntaxException
      */
     public static void printHelp() {
-        File launcherJar;
-        try {
-            launcherJar = new File(
-                    NuxeoLauncher.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            log.error(e);
-            launcherJar = new File("nuxeo-launcher.jar");
-        }
-        log.error("Usage: java [-D"
+        log.error("\nnuxeoctl usage:\n\tnuxeoctl [gui|nogui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack) [additional parameters]");
+        log.error("\njava usage:\n\tjava [-D"
                 + JAVA_OPTS_PROPERTY
                 + "=\"JVM options\"] [-D"
                 + ConfigurationGenerator.NUXEO_HOME
                 + "=\"/path/to/nuxeo\"] [-D"
                 + ConfigurationGenerator.NUXEO_CONF
-                + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] \\ \n            -jar "
-                + launcherJar
-                + " \\ \n            [gui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack)");
+                + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
+                + " \\ \n\t\t[gui] (help|start|stop|restart|configure|console|status|startbg|restartbg|pack) [additional parameters]");
         log.error("\n\t Options:");
         log.error("\t\t " + JAVA_OPTS_PROPERTY
                 + "\tParameters for the server JVM (default are "
@@ -813,6 +822,7 @@ public abstract class NuxeoLauncher {
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\t\t jvmcheck\t\tWill continue execution if equals to \"nofail\", else will exit.");
         log.error("\t\t gui\t\t\tLauncher with a graphical user interface (default is headless/console mode).");
+        log.error("\t\t nogui\t\t\tWindows only. Deactivate gui option which is set by default under Windows.");
         log.error("\n\t Commands:");
         log.error("\t\t help\t\tPrint this message.");
         log.error("\t\t start\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediatly available after the script returned.");
@@ -824,6 +834,7 @@ public abstract class NuxeoLauncher {
         log.error("\t\t startbg\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
         log.error("\t\t restartbg\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\t\t pack\t\tNot implemented. Use \"pack\" Shell script.");
+        log.error("\n\t Additional parameters: All parameters following a command are passed to the java process when executing the command.");
     }
 
     /**
