@@ -15,10 +15,6 @@
   border-left:none!important;
 }
 
-/* Temporary Nuxeo World Bar */
-.yellowribbon {border:none;overflow: hidden;}
-div.blogRollBar {background-color:#ffd800;font-size:9px;height:19px;margin-bottom:0px;padding-top:1px;border-bottom:1px solid #333;padding-left:10px;}
-
 /* HEADER */
 
 div.header {
