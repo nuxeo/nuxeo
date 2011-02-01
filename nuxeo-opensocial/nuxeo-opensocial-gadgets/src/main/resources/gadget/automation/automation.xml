@@ -4,7 +4,7 @@
     description="Simple gadget that uses Nuxeo REST Automation API "
     author="tdeprat" author_email="tdelprat@nuxeo.com"
     height="420">
-    <Locale lang="fr" country="fr" />
+    <#include "dynamic-translations.ftl"/>
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
@@ -14,12 +14,9 @@
 <html>
   <head>
   <link rel="stylesheet" type="text/css" href="${specDirectoryUrl}documentlists.css"/>
-  <script>
-    var NXGadgetContext={ serverSideBaseUrl : '${serverSideBaseUrl}',
-      insideNuxeo : '${insideNuxeo}',
-      clientSideBaseUrl : '${clientSideBaseUrl}'
-    };
-  </script>
+  <!-- insert JS Context -->
+  ${jsContext}
+
   <script src="${specDirectoryUrl}default-automation-request.js"></script>
   <script src="${specDirectoryUrl}default-documentlist-display.js"></script>
 
@@ -34,7 +31,10 @@
    operationDocumentProperties : "common,dublincore",
    entityType : 'documents',
    displayMethod : displayDocumentList,
-   displayColumns : [ 'icon', 'titleWithLink', ['modified','dc:modified','date'],['author','dc:creator'] ]
+   displayColumns : [ { type: 'builtin', field: 'icon'},
+                      { type: 'builtin', field: 'titleWithLink', label: '__MSG_label.dublincore.title__'},
+                      { type: 'date', field: 'dc:modified', label: '__MSG_label.dublincore.modified__'},
+                      { type: 'text', field: 'dc:creator', label: '__MSG_label.dublincore.creator__'} ]
    };
 
    // trigger loading
