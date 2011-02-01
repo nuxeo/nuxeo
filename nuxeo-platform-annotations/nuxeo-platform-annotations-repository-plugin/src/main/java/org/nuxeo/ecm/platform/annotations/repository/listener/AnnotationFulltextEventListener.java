@@ -59,6 +59,10 @@ public class AnnotationFulltextEventListener implements EventListener {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
         CoreSession session = context.getCoreSession();
         DocumentModel doc = context.getSourceDocument();
+        if (doc == null) {
+            // no need to update a deleted document
+            return;
+        }
         if (!doc.hasFacet(FacetNames.HAS_RELATED_TEXT)) {
             // no full-text indexing of annotation for this document type
             return;

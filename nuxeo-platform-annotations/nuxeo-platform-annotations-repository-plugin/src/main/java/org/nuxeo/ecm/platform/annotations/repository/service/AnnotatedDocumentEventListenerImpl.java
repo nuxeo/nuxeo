@@ -38,8 +38,10 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -93,11 +95,14 @@ public class AnnotatedDocumentEventListenerImpl implements
         LoginContext loginContext = null;
         CoreSession session = null;
         String title = null;
+        DocumentModel doc = null;
         try {
             loginContext = Framework.login();
             session = getSession(documentLocation.getServerName());
-            DocumentModel doc = session.getDocument(documentLocation.getDocRef());
-            title = doc.getTitle();
+            if (session.exists(documentLocation.getDocRef())) {
+                doc = session.getDocument(documentLocation.getDocRef());
+                title = doc.getTitle();
+            }
 
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_ID,
@@ -107,11 +112,17 @@ public class AnnotatedDocumentEventListenerImpl implements
             properties.put(AnnotatedDocumentEventListener.ANNOTATION_BODY,
                     annotation.getBodyAsText());
 
-            DocumentEventContext ctx = new DocumentEventContext(session,
-                    principal, doc);
-            ctx.setRepositoryName(doc.getRepositoryName());
+            EventContext ctx = null;
+            if (doc != null) {
+                DocumentEventContext docCtx = new DocumentEventContext(session,
+                        principal, doc);
+                docCtx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+                ctx = docCtx;
+            } else {
+                ctx = new EventContextImpl(session, principal);
+            }
+            ctx.setRepositoryName(documentLocation.getServerName());
             ctx.setProperties(properties);
-            ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
             Event event = ctx.newEvent(eventId);
             Framework.getService(EventProducer.class).fireEvent(event);
