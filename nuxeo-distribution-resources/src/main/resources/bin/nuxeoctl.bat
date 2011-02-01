@@ -17,6 +17,7 @@ rem ##     Julien Carsique
 rem ##
 rem ## DOS script calling a multi-OS Nuxeo Java launcher
 rem ##
+
 @if "%OS%" == "Windows_NT" setlocal
 
 set DIRNAME=.\
@@ -27,16 +28,21 @@ set NUXEO_HOME=%CD%
 popd
 
 if "%1" == "nogui" (
-  shift
+  goto NO_GUI
+) else if "%1" == "gui" (
   goto NEXT_GUI_OPTION
-) else if "%1" == "gui" shift
+) else goto ADD_GUI
+:NO_GUI
+SHIFT
+echo %1
+goto NEXT_GUI_OPTION
+:ADD_GUI
 set GUI_OPTION=gui
-
 :NEXT_GUI_OPTION
 
 set NUXEO_LAUNCHER=%NUXEO_HOME%\bin\nuxeo-launcher.jar
 if exist "%NUXEO_LAUNCHER%" goto FOUND_NUXEO_LAUNCHER
-echo Could not locate %NUXEO_LAUNCHER%. 
+echo Could not locate %NUXEO_LAUNCHER%.
 echo Please check that you are in the bin directory when running this script.
 goto END
 
@@ -45,7 +51,7 @@ goto END
 set NUXEO_CONF=%NUXEO_HOME%\bin\nuxeo.conf
 set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 
-echo Launcher command: java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %*
-java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %*
+echo Launcher command: java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+java -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 :END

@@ -37,8 +37,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -122,10 +120,8 @@ public class NuxeoFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
             if (controller.launcher.isRunning()) {
-                mainButton.setText(getMessage("mainbutton.stop.inprogress"));
                 controller.stop();
             } else {
-                mainButton.setText(getMessage("mainbutton.start.inprogress"));
                 controller.start();
             }
         }
@@ -134,10 +130,6 @@ public class NuxeoFrame extends JFrame {
     protected static final Log log = LogFactory.getLog(NuxeoFrame.class);
 
     private static final long serialVersionUID = 1L;
-
-    protected final ImageIcon showLogsIcon = getImageIcon("icons/show_logs.png");
-
-    protected final ImageIcon hideLogsIcon = getImageIcon("icons/hide_logs.png");
 
     protected final ImageIcon startIcon = getImageIcon("icons/start.png");
 
@@ -246,7 +238,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     private JComponent buildFooter() {
-        JLabel label = new JLabel(getMessage("footer.label"));
+        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label"));
         label.setForeground(Color.WHITE);
         label.setPreferredSize(new Dimension(470, 16));
         label.setFont(new Font(label.getFont().getName(),
@@ -331,12 +323,12 @@ public class NuxeoFrame extends JFrame {
         summaryPanel.setForeground(Color.WHITE);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + getMessage("summary.status.label")));
+                + NuxeoLauncherGUI.getMessage("summary.status.label")));
         summaryStatus = new JLabel(controller.launcher.status());
         summaryStatus.setForeground(Color.WHITE);
         summaryPanel.add(summaryStatus);
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + getMessage("summary.url.label")));
+                + NuxeoLauncherGUI.getMessage("summary.url.label")));
         summaryURL = new JLabel(controller.launcher.getURL());
         summaryURL.setForeground(Color.WHITE);
         summaryPanel.add(summaryURL);
@@ -344,15 +336,15 @@ public class NuxeoFrame extends JFrame {
         summaryPanel.add(new JSeparator());
         ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + getMessage("summary.homedir.label")));
+                + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>"
                 + config.getNuxeoHome().getPath()));
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + getMessage("summary.nuxeoconf.label")));
+                + NuxeoLauncherGUI.getMessage("summary.nuxeoconf.label")));
         summaryPanel.add(new JLabel("<html><font color=white>"
                 + config.getNuxeoConf().getPath()));
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
-                + getMessage("summary.datadir.label")));
+                + NuxeoLauncherGUI.getMessage("summary.datadir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>"
                 + config.getDataDir().getPath()));
         return summaryPanel;
@@ -360,9 +352,12 @@ public class NuxeoFrame extends JFrame {
 
     private JComponent buildTabbedPanel() {
         tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPanel.addTab(getMessage("tab.summary.title"), buildSummaryPanel());
-        tabbedPanel.addTab(getMessage("tab.logs.title"), buildLogsTab());
-        tabbedPanel.addTab(getMessage("tab.shell.title"), buildConsolePanel());
+        tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.summary.title"),
+                buildSummaryPanel());
+        tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.logs.title"),
+                buildLogsTab());
+        tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.shell.title"),
+                buildConsolePanel());
         tabbedPanel.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -405,31 +400,14 @@ public class NuxeoFrame extends JFrame {
         return new ImageIcon(image);
     }
 
-    /**
-     * Get internationalized message
-     *
-     * @param key Message key
-     * @return Localized message value
-     */
-    public String getMessage(String key) {
-        String message;
-        try {
-            message = ResourceBundle.getBundle("i18n/messages").getString(key);
-        } catch (MissingResourceException e) {
-            log.error(e);
-            message = getMessage("missing.translation") + key;
-        }
-        return message;
-    }
-
     protected void updateMainButton() {
         if (controller.launcher.isRunning()) {
-            mainButton.setText(getMessage("mainbutton.stop.text"));
-            mainButton.setToolTipText(getMessage("mainbutton.stop.tooltip"));
+            mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.text"));
+            mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
         } else {
-            mainButton.setText(getMessage("mainbutton.start.text"));
-            mainButton.setToolTipText(getMessage("mainbutton.start.tooltip"));
+            mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.start.text"));
+            mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.start.tooltip"));
             mainButton.setIcon(startIcon);
         }
         mainButton.setEnabled(true);

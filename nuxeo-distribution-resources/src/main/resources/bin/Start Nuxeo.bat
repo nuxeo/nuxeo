@@ -7,4 +7,4 @@ rem #####
 set DIRNAME=.\
 if "%OS%" == "Windows_NT" set DIRNAME=%~dp0%
 
-%DIRNAME%\bin\nuxeoctl.bat start
+"%DIRNAME%\nuxeoctl.bat" start

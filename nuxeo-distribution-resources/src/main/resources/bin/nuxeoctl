@@ -20,7 +20,7 @@
 ## Using explicitely bash to avoid dash which is not POSIX.
 ##
 
-: ${NUXEO_HOME:=$(cd $(dirname $0)/..; pwd -P)}
+: ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
 : ${NUXEO_CONF:="$NUXEO_HOME"/bin/nuxeo.conf}
 
 ## OS detection
@@ -63,7 +63,7 @@ PATH="$JAVA_HOME/bin:$PATH"
 ## Setup JAVA_OPTS
 while read line; do
   case $line in
-    JAVA_OPTS=*) 
+    JAVA_OPTS=*)
       line=$(echo $line | cut -d= -f2-)
       # expand $JAVA_OPTS
       case $line in
