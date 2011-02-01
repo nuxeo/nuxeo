@@ -52,6 +52,7 @@ import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument;
+import org.nuxeo.ecm.automation.core.operations.document.PageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.document.PublishDocument;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.ReloadDocument;
@@ -192,10 +193,16 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(AuditLog.class);
         service.putOperation(AuditQuery.class);
 
+        // provider
+        service.putOperation(PageProviderOperation.class);
+
         // disabled operations
         service.putOperation(FireEvent.class);
         service.putOperation(RunInputScript.class);
         // service.putOperation(RunScriptFile.class);
+
+
+
 
         handlers = new EventHandlerRegistry(service);
     }
