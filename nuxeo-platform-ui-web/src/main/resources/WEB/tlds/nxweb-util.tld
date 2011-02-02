@@ -553,6 +553,13 @@
         A ValueExpression that evaluates to an instance of the validator.
       </description>
     </attribute>
+    <attribute>
+      <name>hidden</name>
+      <description>
+        Boolean indicating if the list of extensions is displayed.
+        Defaults to false.
+      </description>
+    </attribute>
     <example>
       <![CDATA[
 <nxu:inputFile value="#{document.file.content"
