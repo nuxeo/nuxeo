@@ -18,24 +18,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
@@ -63,6 +45,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -101,6 +84,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
@@ -109,11 +94,29 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+
 /**
  * Abstract implementation of the client interface.
  * <p>
- * This handles all the aspects that are independent on the final
- * implementation (like running inside a J2EE platform or not).
+ * This handles all the aspects that are independent on the final implementation
+ * (like running inside a J2EE platform or not).
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
@@ -121,8 +124,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public abstract class AbstractSession implements CoreSession,
-        OperationHandler, Serializable {
+public abstract class AbstractSession implements CoreSession, OperationHandler,
+        Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
             "anonymous");
@@ -182,8 +185,7 @@ public abstract class AbstractSession implements CoreSession,
     private String sessionId;
 
     /**
-     * Internal method: Gets the current session based on the client session
-     * id.
+     * Internal method: Gets the current session based on the client session id.
      *
      * @return the repository session
      */
@@ -265,12 +267,12 @@ public abstract class AbstractSession implements CoreSession,
      * <p>
      * The ID has the following format:
      * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid
-     * name clashes with sessions on different machines (the repository name
-     * should be unique in the system)
+     * an unique ID on a running JVM and repository-name is a used to avoid name
+     * clashes with sessions on different machines (the repository name should
+     * be unique in the system)
      * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository
-     * in the system)
+     * <li>A is the repository name (which uniquely identifies the repository in
+     * the system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>
      */
@@ -286,8 +288,8 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Utility method to generate VersionModel labels.
      *
-     * @return the String representation of an auto-incremented counter that
-     *         not used in any label of docRef
+     * @return the String representation of an auto-incremented counter that not
+     *         used in any label of docRef
      */
     @Override
     public String generateVersionLabelFor(DocumentRef docRef)
@@ -2462,8 +2464,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Update the proxy for doc in the given section to point to the new
-     * target. Do nothing if there are several proxies.
+     * Update the proxy for doc in the given section to point to the new target.
+     * Do nothing if there are several proxies.
      *
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
@@ -3247,6 +3249,75 @@ public abstract class AbstractSession implements CoreSession,
     @Override
     public String[] getPermissionsToCheck(String permission) {
         return getSecurityService().getPermissionsToCheck(permission);
+    }
+
+    @Override
+    public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(
+            DocumentRef docRef, String facet, Class<T> adapterClass)
+            throws ClientException {
+        Document doc = getFirstParentDocumentWithFacet(docRef, facet);
+        if (doc != null) {
+            DocumentModel docModel = readModel(doc);
+            loadDataModelsForFacet(docModel, doc, facet);
+            // detach the DocumentModel
+            ((DocumentModelImpl) docModel).detach(false);
+            return docModel.getAdapter(adapterClass);
+        }
+        return null;
+    }
+
+    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName) {
+        // Load all the data related to facet's schemas
+        SchemaManager schemaManager = NXSchema.getSchemaManager();
+        CompositeType facet = schemaManager.getFacet(facetName);
+        if (facet == null) {
+            return;
+        }
+
+        String[] facetSchemas = facet.getSchemaNames();
+        for (String schema : facetSchemas) {
+            try {
+                DataModel dm = DocumentModelFactory.createDataModel(doc,
+                        schemaManager.getSchema(schema));
+                docModel.getDataModels().put(schema, dm);
+            } catch (DocumentException e) {
+                log.error(e, e);
+            }
+        }
+    }
+
+    protected Document getFirstParentDocumentWithFacet(DocumentRef docRef,
+            String facet) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            if (doc.hasFacet(facet)) {
+                return doc;
+            }
+            Document parentDoc = doc.getParent();
+            if (parentDoc != null) {
+                return getFirstParentDocumentWithFacet(
+                        new PathRef(parentDoc.getPath()), facet);
+            }
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException {
+        try {
+            final Document doc = resolveReference(docRef);
+            Document parentDoc = doc.getParent();
+            if (parentDoc != null) {
+                return new IdRef(parentDoc.getUUID());
+            }
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get parent document ref for: "
+                    + docRef, e);
+        }
+        return null;
     }
 
 }

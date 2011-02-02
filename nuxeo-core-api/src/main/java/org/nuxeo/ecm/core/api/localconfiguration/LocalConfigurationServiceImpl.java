@@ -16,17 +16,24 @@
 
 package org.nuxeo.ecm.core.api.localconfiguration;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
+ * Default implementation of {@code LocalConfigurationService}.
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
+ * @since 5.4.1
  */
 public class LocalConfigurationServiceImpl extends DefaultComponent implements
         LocalConfigurationService {
+
+    private static final Log log = LogFactory.getLog(LocalConfigurationServiceImpl.class);
 
     @Override
     public <T extends LocalConfiguration> T getConfiguration(
@@ -36,72 +43,29 @@ public class LocalConfigurationServiceImpl extends DefaultComponent implements
             return null;
         }
 
-        ConfigurationFinder configurationFinder = new ConfigurationFinder(
-                currentDoc, configurationFacet);
-        return configurationFinder.find(configurationClass);
-    }
-
-    protected static class ConfigurationFinder extends
-            UnrestrictedSessionRunner {
-
-        protected DocumentRef documentRef;
-
-        protected String facetName;
-
-        protected Class<?> configurationClass;
-
-        protected Object configuration;
-
-        public ConfigurationFinder(DocumentModel doc, String facetName) {
-            super(doc.getCoreSession());
-            this.documentRef = doc.getRef();
-            this.facetName = facetName;
-        }
-
-        public <T extends LocalConfiguration> T find(Class<T> configurationClass) {
-            this.configurationClass = configurationClass;
-            try {
-                runUnrestricted();
-            } catch (ClientException e) {
-                return null;
-            }
-
-            return configuration != null ? configurationClass.cast(configuration)
-                    : null;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel doc = session.getDocument(documentRef);
-            DocumentModel parent = getFirstParentWithFacet(doc, facetName);
-            if (parent != null) {
-                LocalConfiguration localConfiguration = LocalConfiguration.class.cast(parent.getAdapter(configurationClass));
-                while (localConfiguration.readapt()) {
-                    doc = session.getParentDocument(parent.getRef());
-                    parent = getFirstParentWithFacet(doc, facetName);
-                    if (parent == null) {
-                        // stop merging
-                        break;
-                    }
-                    localConfiguration.merge(parent.getAdapter(configurationClass));
+        try {
+            CoreSession session = currentDoc.getCoreSession();
+            T localConfiguration = session.adaptFirstMatchingDocumentWithFacet(
+                    currentDoc.getRef(), configurationFacet, configurationClass);
+            while (localConfiguration.canMerge()) {
+                DocumentRef parentRef = session.getParentDocumentRef(localConfiguration.getDocumentRef());
+                T parentConfiguration = session.adaptFirstMatchingDocumentWithFacet(
+                        parentRef, configurationFacet, configurationClass);
+                if (parentConfiguration == null) {
+                    // stop merging
+                    break;
                 }
-                configuration = localConfiguration;
+                localConfiguration.merge(parentConfiguration);
             }
+            return localConfiguration;
+        } catch (ClientException e) {
+            String message = String.format(
+                    "Unable to retrieve local configuration for '%s' and '%s' facet: %s",
+                    currentDoc, configurationFacet, e.getMessage());
+            log.warn(message);
+            log.debug(e, e);
         }
-
-        protected DocumentModel getFirstParentWithFacet(DocumentModel doc,
-                String facetName) throws ClientException {
-            if (doc.hasFacet(facetName)) {
-                return doc;
-            } else {
-                DocumentModel parent = session.getDocument(doc.getParentRef());
-                if (parent == null || "/".equals(parent.getPathAsString())) {
-                    return null;
-                }
-                return getFirstParentWithFacet(parent, facetName);
-            }
-        }
-
+        return null;
     }
 
 }

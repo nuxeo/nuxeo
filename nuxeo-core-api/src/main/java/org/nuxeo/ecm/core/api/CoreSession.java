@@ -132,9 +132,8 @@ public interface CoreSession {
      * Connects to the repository given its URI. This opens a new session on the
      * specified repository.
      * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly
-     * called from {@link CoreInstance#open(String, Map)} when creating the
-     * client.
+     * This method <b>must</b> never be called by users. Is is indirectly called
+     * from {@link CoreInstance#open(String, Map)} when creating the client.
      *
      * @param repositoryUri the repository URI (unique in the platform)
      * @param context a map of properties used to initialize the session. Can be
@@ -148,9 +147,8 @@ public interface CoreSession {
     /**
      * Closes the current session and disconnects from the repository.
      * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly
-     * called from {@link CoreInstance#close(CoreSession)} when closing the
-     * client
+     * This method <b>must</b> never be called by users. Is is indirectly called
+     * from {@link CoreInstance#close(CoreSession)} when closing the client
      * <p>
      * All pending change made on the repository through this session are saved.
      *
@@ -816,15 +814,15 @@ public interface CoreSession {
      * If the <code>overwrite</code> argument is false, the ACP is merged with
      * the existing one if any. The merge is done as follow:
      * <ul>
-     * <li>If any ACL is that already exists on the document ACp is redefined
-     * by the new ACO then it will be replaced by the new one. So if you want to
+     * <li>If any ACL is that already exists on the document ACp is redefined by
+     * the new ACO then it will be replaced by the new one. So if you want to
      * remove an ACl in this mode you need to specify an empty ACL.
-     * <li>If the new ACP contains an ACl that is not defined by the old one
-     * the it will be added to the merged ACP.
-     * <li>If the <code>owners</code> are specified then they will replace
-     * the existing ones if any. Otherwise the old owners are preserved if any.
-     * As for the ACL if you want to remove existing owners you need to specify
-     * an empty owner array (and not a null one)
+     * <li>If the new ACP contains an ACl that is not defined by the old one the
+     * it will be added to the merged ACP.
+     * <li>If the <code>owners</code> are specified then they will replace the
+     * existing ones if any. Otherwise the old owners are preserved if any. As
+     * for the ACL if you want to remove existing owners you need to specify an
+     * empty owner array (and not a null one)
      * </ul>
      * If the <code>overwrite</code> argument is true, the old ACP will be
      * replaced by the new one.
@@ -832,8 +830,7 @@ public interface CoreSession {
      * This way if you can remove the existing ACP by specifying a null ACP and
      * <code>overwrite</code> argument set to true.
      * <p>
-     * Setting a null ACP when <code>overwrite</code> is false will do
-     * nothing.
+     * Setting a null ACP when <code>overwrite</code> is false will do nothing.
      *
      * @param docRef
      * @param acp
@@ -980,8 +977,8 @@ public interface CoreSession {
      * Retrieves all the versions for a specified document.
      *
      * @param docRef the reference to the document
-     * @return the list of {@link VersionModel} representing versions, empty list
-     *         if none is found.
+     * @return the list of {@link VersionModel} representing versions, empty
+     *         list if none is found.
      */
     List<VersionModel> getVersionsForDocument(DocumentRef docRef)
             throws ClientException;
@@ -1036,7 +1033,8 @@ public interface CoreSession {
      * @since 5.4
      */
     DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef,
-            boolean skipSnapshotCreation, boolean skipCheckout) throws ClientException;
+            boolean skipSnapshotCreation, boolean skipCheckout)
+            throws ClientException;
 
     /**
      * Restores the given document to the specified version permitting to skip
@@ -1133,8 +1131,8 @@ public interface CoreSession {
     /**
      * Gets the version series id for a document.
      * <p>
-     * All documents and versions derived by a check in or checkout from the same
-     * original document share the same version series id.
+     * All documents and versions derived by a check in or checkout from the
+     * same original document share the same version series id.
      *
      * @param docRef the document reference
      * @return the version series id
@@ -1156,6 +1154,7 @@ public interface CoreSession {
      * <p>
      * The document may be a version, or a working copy (live document) in which
      * case the proxy will be a "shortcut".
+     *
      * @since 1.6.1 (5.3.1)
      */
     DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef)
@@ -1262,8 +1261,8 @@ public interface CoreSession {
     /**
      * Executes a specific FULLTEXT enabled query for the given keywords.
      *
-     * @deprecated use SearchService instead. See
-     *             {@link http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@link http
+     *             ://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords) throws ClientException;
@@ -1272,24 +1271,24 @@ public interface CoreSession {
      * Executes a specific FULLTEXT enabled query for the given keywords,
      * returning only results that match the specified filter.
      *
-     * @deprecated use SearchService instead. See
-     *             {@link http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@link http
+     *             ://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelList querySimpleFts(String keywords, Filter filter)
             throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@link http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@link http
+     *             ://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, Filter filter,
             int pageSize) throws ClientException;
 
     /**
-     * @deprecated use SearchService instead. See
-     *             {@link http://doc.nuxeo.org/reference/html/search-service.html}
+     * @deprecated use SearchService instead. See {@link http
+     *             ://doc.nuxeo.org/reference/html/search-service.html}
      */
     @Deprecated
     DocumentModelIterator querySimpleFtsIt(String query, String startingPath,
@@ -1595,8 +1594,8 @@ public interface CoreSession {
      * Given a parent document, order the source child before the destination
      * child. The source and destination must be name of child documents of the
      * given parent document. (a document name can be retrieved using
-     * <code>docModel.getName()</code>) To place the source document at the
-     * end of the children list use a null destination node.
+     * <code>docModel.getName()</code>) To place the source document at the end
+     * of the children list use a null destination node.
      *
      * @param parent the parent document
      * @param src the document to be moved (ordered)
@@ -1652,8 +1651,8 @@ public interface CoreSession {
      *
      * @throws ClientException
      */
-    DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
-            throws ClientException;
+    DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags,
+            String[] schemas) throws ClientException;
 
     /**
      * Provides the full list of all permissions or groups of permissions that
@@ -1683,5 +1682,35 @@ public interface CoreSession {
      * @throws ClientException
      */
     boolean supportsTags() throws ClientException;
+
+    /**
+     * Find the first parent with the given {@code facet} and adapt it on the
+     * {@code adapterClass}.
+     * <p>
+     * This method does not check the permissions on the document to be adapted of this
+     * {@code CoreSession}'s {@code Principal}, and so the adapter must not need
+     * other schemas from the {@code DocumentModel} except the schemas related
+     * to the given facet.
+     *
+     *
+     * @return the first parent with the given {@code facet} adapted, or
+     *         {@code null} if no parent found or the document does not support
+     *         the given {@code adapterClass}.
+     * @since 5.4.1
+     */
+    public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
+            Class<T> adapterClass) throws ClientException;
+
+    /**
+     * Returns the parent ref of the document referenced by {@code docRef} or
+     * {@code null} if this is the root document.
+     * <p>
+     * This method does not check the permissions on the parent document of this
+     * {@code CoreSession}'s {@code Principal}.
+     *
+     * @since 5.4.1
+     */
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException;
 
 }
