@@ -334,8 +334,9 @@ public class PersistenceContext {
      * <p>
      * Called pre-transaction by start or transactionless save;
      */
-    protected void processReceivedInvalidations() throws StorageException {
-        InvalidationsPair invals = mapper.receiveInvalidations();
+    protected void processReceivedInvalidations(boolean synchronous)
+            throws StorageException {
+        InvalidationsPair invals = mapper.receiveInvalidations(synchronous);
         if (invals == null) {
             return;
         }

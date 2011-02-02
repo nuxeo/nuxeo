@@ -94,6 +94,8 @@ public class SessionImpl implements Session, XAResource {
 
     private String threadName;
 
+    private boolean synchronousInvalidations;
+
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -112,6 +114,13 @@ public class SessionImpl implements Session, XAResource {
         }
 
         computeRootNode();
+    }
+
+    /** Sets invalidations to be synchronous. Used for the LockManager session. */
+    // doesn't really work yet, as the cluster node handler runs in
+    // a different connection from the session that needs it
+    protected void setSynchronousInvalidations() {
+        synchronousInvalidations = true;
     }
 
     private void checkLive() {
@@ -466,9 +475,7 @@ public class SessionImpl implements Session, XAResource {
      * Called pre-transaction by start or transactionless save;
      */
     protected void processReceivedInvalidations() throws StorageException {
-        // repository.receiveClusterInvalidations(this); // XXX check mapper
-        // // updated
-        context.processReceivedInvalidations();
+        context.processReceivedInvalidations(synchronousInvalidations);
     }
 
     /**

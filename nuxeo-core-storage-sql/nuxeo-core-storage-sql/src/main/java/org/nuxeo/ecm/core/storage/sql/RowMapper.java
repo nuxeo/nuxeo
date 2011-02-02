@@ -289,10 +289,13 @@ public interface RowMapper {
      * <p>
      * Called pre-transaction by session start or transactionless save;
      *
+     * @param synchronous {@code true} if the invalidation must be received
+     *            without delay
      * @return the invalidations (both for the mapper and the events), or
      *         {@code null}
      */
-    InvalidationsPair receiveInvalidations() throws StorageException;
+    InvalidationsPair receiveInvalidations(boolean synchronous)
+            throws StorageException;
 
     /**
      * Post-transaction invalidations notification.

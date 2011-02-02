@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.BufferedInputStream;
@@ -36,10 +35,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -49,6 +52,8 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescript
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 public class TestSQLBackend extends SQLBackendTestCase {
+
+    private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
     @Override
     public void setUp() throws Exception {
@@ -1888,6 +1893,144 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         lock = session.removeLock(node, null);
         assertNull(lock);
+    }
+
+    public void testLockingParallel() throws Throwable {
+        Serializable nodeId = createNode();
+        runParallelLocking(nodeId, repository, repository);
+    }
+
+    // TODO disabled as there still are problems in cluster mode
+    // due to invalidations not really being synchronous
+    public void XXXtestLockingParallelClustered() throws Throwable {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        if (!DatabaseHelper.DATABASE.supportsClustering()) {
+            System.out.println("Skipping clustered locking test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+
+        Serializable nodeId = createNode();
+
+        // get two clustered repositories
+        repository.close();
+        long DELAY = 50; // ms
+        repository = newRepository(DELAY, false);
+        repository2 = newRepository(DELAY, false);
+
+        runParallelLocking(nodeId, repository, repository2);
+    }
+
+    protected Serializable createNode() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.save();
+        Serializable nodeId = node.getId();
+        session.close();
+        return nodeId;
+    }
+
+    protected static void runParallelLocking(Serializable nodeId,
+            Repository repository1, Repository repository2) throws Throwable {
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        CountDownLatch firstReady = new CountDownLatch(1);
+        long TIME = 1000; // ms
+        LockingJob r1 = new LockingJob(repository1, "t1-", nodeId, TIME,
+                firstReady, barrier);
+        LockingJob r2 = new LockingJob(repository2, "t2-", nodeId, TIME,
+                null, barrier);
+        Thread t1 = new Thread(r1, "t1");
+        Thread t2 = new Thread(r2, "t2");
+        t1.start();
+        firstReady.await();
+        t2.start();
+
+        t1.join();
+        t2.join();
+        if (r1.throwable != null) {
+            throw r1.throwable;
+        }
+        if (r2.throwable != null) {
+            throw r2.throwable;
+        }
+        int count = r1.count + r2.count;
+        log.warn("Parallel locks per second: " + count);
+    }
+
+    protected static class LockingJob implements Runnable {
+
+        protected final Repository repository;
+
+        protected final String namePrefix;
+
+        protected final Serializable nodeId;
+
+        protected final long waitMillis;
+
+        public final CountDownLatch ready;
+
+        public final CyclicBarrier barrier;
+
+        public Throwable throwable;
+
+        public int count;
+
+        public LockingJob(Repository repository, String namePrefix,
+                Serializable nodeId, long waitMillis, CountDownLatch ready,
+                CyclicBarrier barrier) {
+            this.repository = repository;
+            this.namePrefix = namePrefix;
+            this.nodeId = nodeId;
+            this.waitMillis = waitMillis;
+            this.ready = ready;
+            this.barrier = barrier;
+        }
+
+        @Override
+        public void run() {
+            try {
+                doHeavyLockingJob();
+            } catch (Throwable t) {
+                t.printStackTrace();
+                throwable = t;
+            }
+        }
+
+        protected void doHeavyLockingJob() throws Exception {
+            Session session = repository.getConnection();
+            Node node = session.getNodeById(nodeId);
+            if (ready != null) {
+                ready.countDown();
+            }
+            barrier.await();
+            // System.err.println(namePrefix + " starting");
+            long start = System.currentTimeMillis();
+            do {
+                String name = namePrefix + count++;
+
+                // lock
+                while (true) {
+                    Lock lock = session.setLock(node, new Lock(name, null));
+                    if (lock == null) {
+                        break;
+                    }
+                    // System.err.println(name + " waiting, already locked by "
+                    // + lock.getOwner());
+                }
+                // System.err.println(name + " locked");
+
+                // unlock
+                Lock lock = session.removeLock(node, null);
+                assertNotNull("got no lock, expected " + name, lock);
+                assertEquals(name, lock.getOwner());
+                // System.err.println(name + " unlocked");
+            } while (System.currentTimeMillis() - start < waitMillis);
+            session.close();
+        }
     }
 
     public void testLocksUpgrade() throws Exception {

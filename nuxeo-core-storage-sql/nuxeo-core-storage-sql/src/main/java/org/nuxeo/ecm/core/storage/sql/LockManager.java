@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -71,6 +72,7 @@ public class LockManager {
      */
     public LockManager(SessionImpl session, boolean clusteringEnabled) {
         this.session = session;
+        session.setSynchronousInvalidations();
         this.clusteringEnabled = clusteringEnabled;
         sessionLock = new ReentrantLock(true); // fair
     }
@@ -99,6 +101,44 @@ public class LockManager {
      * Locks a document.
      */
     public Lock setLock(final Serializable id, final Lock lock)
+            throws StorageException {
+        try {
+            return setLockInternal(id, lock);
+        } catch (StorageException e) {
+            Throwable c = e.getCause();
+            if (c != null && c instanceof SQLException) {
+                boolean duplicateKey = isDuplicateKeyException((SQLException) c);
+                if (duplicateKey) {
+                    // cluster: got duplicate key (two simultaneous inserts)
+                    // retry once, after the first insert is committed we'll get
+                    // an invalidation and can just update
+                    return setLockInternal(id, lock);
+                }
+            }
+            throw e;
+        }
+    }
+
+    protected boolean isDuplicateKeyException(SQLException e) {
+        String sqlState = e.getSQLState();
+        if ("23000".equals(sqlState)) {
+            // MySQL: Duplicate entry ... for key ...
+            // Oracle: unique constraint ... violated
+            // SQL Server: Violation of PRIMARY KEY constraint
+            return true;
+        }
+        if ("23001".equals(sqlState)) {
+            // H2: Unique index or primary key violation
+            return true;
+        }
+        if ("23505".equals(sqlState)) {
+            // PostgreSQL: duplicate key value violates unique constraint
+            return true;
+        }
+        return false;
+    }
+
+    protected Lock setLockInternal(final Serializable id, final Lock lock)
             throws StorageException {
         return call(true, new Callable<Lock>() {
             @Override

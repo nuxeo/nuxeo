@@ -74,9 +74,11 @@ public class ClusterNodeHandler {
     /**
      * Receives cluster invalidations from other cluster nodes.
      */
-    public Invalidations receiveClusterInvalidations() throws StorageException {
+    public Invalidations receiveClusterInvalidations(boolean synchronous)
+            throws StorageException {
         synchronized (clusterNodeMapper) {
-            if (clusterNodeLastInvalidationTimeMillis + clusteringDelay > System.currentTimeMillis()) {
+            if (!synchronous
+                    && clusterNodeLastInvalidationTimeMillis + clusteringDelay > System.currentTimeMillis()) {
                 // delay hasn't expired
                 return null;
             }
