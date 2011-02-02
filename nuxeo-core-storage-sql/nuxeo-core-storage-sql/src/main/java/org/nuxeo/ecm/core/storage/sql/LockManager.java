@@ -17,8 +17,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -29,50 +29,19 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * Manager of locks that does its work in a single thread where all operations
- * are serialized
+ * Manager of locks that serializes access to them.
  * <p>
  * The public methods called by the session are {@link #setLock},
  * {@link #removeLock} and {@link #getLock}. Method {@link #shutdown} must be
  * called when done with the lock manager.
  * <p>
- * In cluster mode, changes are executed in their own transaction so that
- * test/update can be atomic.
+ * In cluster mode, changes are executed in a begin/commit so that tests/updates
+ * can be atomic.
  * <p>
- * Transaction management is done by hand because we're dealing with a low-level
- * {@link SessionImpl} and not something wrapped by a JCA pool.
+ * Transaction management can be done by hand because we're dealing with a
+ * low-level {@link SessionImpl} and not something wrapped by a JCA pool.
  */
-public class LockManager extends Thread {
-
-    protected static enum Method {
-        GETLOCK, SETLOCK, REMOVELOCK
-    }
-
-    protected static final class MethodCall {
-        public final Method method;
-
-        public final Object[] args;
-
-        protected final CountDownLatch resultReady;
-
-        protected Object result;
-
-        public MethodCall(Method method, Object... args) {
-            this.method = method;
-            this.args = args;
-            this.resultReady = new CountDownLatch(1);
-        }
-
-        public void setResult(Object result) {
-            this.result = result;
-            resultReady.countDown();
-        }
-
-        public Object getResult() throws InterruptedException {
-            resultReady.await();
-            return result;
-        }
-    }
+public class LockManager {
 
     /**
      * The session to use. In this session we only ever touch the lock table, so
@@ -87,8 +56,10 @@ public class LockManager extends Thread {
      */
     public final boolean clusteringEnabled;
 
-    protected final SynchronousQueue<MethodCall> calls = new SynchronousQueue<MethodCall>(
-            true);
+    /**
+     * Lock serializing access to the session.
+     */
+    protected final ReentrantLock sessionLock;
 
     /**
      * Creates a lock manager using the given session.
@@ -99,159 +70,119 @@ public class LockManager extends Thread {
      * {@link #shutdown} must be called when done with the lock manager.
      */
     public LockManager(SessionImpl session, boolean clusteringEnabled) {
-        super("Nuxeo LockManager (" + session.getRepositoryName() + ')');
         this.session = session;
         this.clusteringEnabled = clusteringEnabled;
-        start();
+        sessionLock = new ReentrantLock(true); // fair
     }
 
     /**
      * Shuts down the lock manager.
      */
     public void shutdown() throws StorageException {
-        try {
-            interrupt();
-            try {
-                join();
-            } catch (InterruptedException e) {
-                // ignored
-            }
-        } finally {
-            session.closeSession();
-        }
+        session.closeSession();
     }
 
     /**
      * Gets the lock on a document.
      */
-    public Lock getLock(Serializable id) throws StorageException {
-        return (Lock) call(Method.GETLOCK, id);
+    public Lock getLock(final Serializable id) throws StorageException {
+        return call(false, new Callable<Lock>() {
+            @Override
+            public Lock call() throws Exception {
+                Node node = session.getNodeById(id, false);
+                return session.getLock(node);
+            }
+        });
     }
 
     /**
      * Locks a document.
      */
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
-        return (Lock) call(Method.SETLOCK, id, lock);
+    public Lock setLock(final Serializable id, final Lock lock)
+            throws StorageException {
+        return call(true, new Callable<Lock>() {
+            @Override
+            public Lock call() throws Exception {
+                Node node = session.getNodeById(id, false);
+                Lock oldLock = session.setLock(node, lock);
+                session.flushWithoutFulltext();
+                return oldLock;
+            }
+        });
     }
 
     /**
      * Unlocks a document.
      */
-    public Lock removeLock(Serializable id, String owner)
+    public Lock removeLock(final Serializable id, final String owner)
             throws StorageException {
-        return (Lock) call(Method.REMOVELOCK, id, owner);
+        return call(true, new Callable<Lock>() {
+            @Override
+            public Lock call() throws Exception {
+                Node node = session.getNodeById(id, false);
+                Lock oldLock = session.removeLock(node, owner);
+                session.flushWithoutFulltext();
+                return oldLock;
+            }
+        });
     }
 
     /**
-     * Passes a call from the local thread to the lock manager thread.
-     * <p>
-     * Exceptions in the lock manager thread are propagated to the local thread.
+     * Calls the callable, under a begin/commit if in cluster mode.
      */
-    protected Object call(Method method, Object... args)
+    protected Lock call(boolean hasWrites, Callable<Lock> callable)
             throws StorageException {
-        Object result;
+        sessionLock.lock();
         try {
-            MethodCall call = new MethodCall(method, args);
-            calls.put(call);
-            result = call.getResult();
-        } catch (InterruptedException e) {
-            throw new StorageException(e);
-        }
-        if (result instanceof StorageException) {
-            throw (StorageException) result;
-        }
-        return result;
-    }
-
-    @Override
-    public void run() {
-        try {
-            while (true) {
-                MethodCall call = calls.take();
-                Object res;
-                try {
-                    res = callWithTX(call.method, call.args);
-                } catch (StorageException e) {
-                    res = e;
+            Xid xid = null;
+            boolean txStarted = false;
+            boolean txSuccess = false;
+            try {
+                if (hasWrites && clusteringEnabled) {
+                    xid = new XidImpl("nuxeolockmanager"
+                            + System.currentTimeMillis());
+                    try {
+                        session.start(xid, XAResource.TMNOFLAGS);
+                    } catch (XAException e) {
+                        throw new StorageException(e);
+                    }
+                    txStarted = true;
+                } else {
+                    // must still process received invalidations, as locks may
+                    // be written from a normal session on document creation
+                    session.processReceivedInvalidations();
                 }
-                call.setResult(res);
-            }
-        } catch (InterruptedException e) {
-            // end
-        }
-    }
 
-    // called in the LockManager thread
-    protected Object callWithTX(Method method, Object[] args)
-            throws StorageException {
-        boolean tx = method != Method.GETLOCK && clusteringEnabled;
-        Xid xid = null;
-        boolean started = false;
-        boolean success = false;
-        try {
-            if (tx) {
-                xid = new XidImpl("nuxeolockmanagertx"
-                        + System.currentTimeMillis());
+                // actual call
+                Lock result;
                 try {
-                    session.start(xid, XAResource.TMNOFLAGS);
-                } catch (XAException e) {
+                    result = callable.call();
+                } catch (StorageException e) {
+                    throw e;
+                } catch (Exception e) {
                     throw new StorageException(e);
                 }
-                started = true;
-            } else {
-                // must still process received invalidations, as locks may be
-                // written from a normal session on document creation
-                session.processReceivedInvalidations();
-            }
 
-            // actual work
-            Object res = callInternal(method, args);
-
-            success = true;
-            return res;
-        } finally {
-            if (started) {
-                try {
-                    if (success) {
-                        session.end(xid, XAResource.TMSUCCESS);
-                        session.commit(xid, true);
-                    } else {
-                        session.end(xid, XAResource.TMFAIL);
-                        session.rollback(xid);
+                txSuccess = true;
+                return result;
+            } finally {
+                if (txStarted) {
+                    try {
+                        if (txSuccess) {
+                            session.end(xid, XAResource.TMSUCCESS);
+                            session.commit(xid, true);
+                        } else {
+                            session.end(xid, XAResource.TMFAIL);
+                            session.rollback(xid);
+                        }
+                    } catch (XAException e) {
+                        throw new StorageException(e);
                     }
-                } catch (XAException e) {
-                    throw new RuntimeException(e);
                 }
             }
+        } finally {
+            sessionLock.unlock();
         }
-    }
-
-    // called in the LockManager thread
-    protected Object callInternal(Method method, Object[] args)
-            throws StorageException {
-        Node node;
-        Lock oldLock;
-        switch (method) {
-        case GETLOCK:
-            node = session.getNodeById((Serializable) args[0], false);
-            return session.getLock(node);
-        case SETLOCK:
-            // node may be null if doc save not yet committed
-            node = session.getNodeById((Serializable) args[0], false);
-            Lock lock = (Lock) args[1];
-            oldLock = session.setLock(node, lock);
-            session.flushWithoutFulltext();
-            return oldLock;
-        case REMOVELOCK:
-            // node may be null if doc save not yet committed
-            node = session.getNodeById((Serializable) args[0], false);
-            String owner = (String) args[1];
-            oldLock = session.removeLock(node, owner);
-            session.flushWithoutFulltext();
-            return oldLock;
-        }
-        throw new AssertionError();
     }
 
 }
