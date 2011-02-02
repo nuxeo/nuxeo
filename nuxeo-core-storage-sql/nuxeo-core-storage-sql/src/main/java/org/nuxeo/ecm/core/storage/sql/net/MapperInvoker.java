@@ -20,8 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.SynchronousQueue;
 
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -52,17 +52,24 @@ public class MapperInvoker extends Thread {
 
         public final Object[] args;
 
+        protected final CountDownLatch resultReady;
+
+        protected Object result;
+
         public MethodCall(String methodName, Object[] args) {
             this.methodName = methodName;
             this.args = args;
+            this.resultReady = new CountDownLatch(1);
         }
-    }
 
-    protected static final class MethodResult {
-        public final Object result;
-
-        public MethodResult(Object result) {
+        public void setResult(Object result) {
             this.result = result;
+            resultReady.countDown();
+        }
+
+        public Object getResult() throws InterruptedException {
+            resultReady.await();
+            return result;
         }
     }
 
@@ -76,17 +83,15 @@ public class MapperInvoker extends Thread {
 
     protected MapperClientInfo clientInfo;
 
-    protected final BlockingQueue<MethodCall> methodCalls;
-
-    protected final BlockingQueue<MethodResult> methodResults;
+    protected final SynchronousQueue<MethodCall> methodCalls;
 
     public MapperInvoker(Repository repository, String name,
-            InvalidationsQueue eventQueue, MapperClientInfo info) throws Throwable {
+            InvalidationsQueue eventQueue, MapperClientInfo info)
+            throws Throwable {
         super(name);
         this.repository = repository;
         this.eventQueue = eventQueue;
-        this.methodCalls = new LinkedBlockingQueue<MethodCall>(1);
-        this.methodResults = new LinkedBlockingQueue<MethodResult>(1);
+        this.methodCalls = new SynchronousQueue<MethodCall>();
         this.clientInfo = info;
         start();
         init();
@@ -109,8 +114,9 @@ public class MapperInvoker extends Thread {
 
     // called in the main thread
     public Object call(String methodName, Object... args) throws Throwable {
-        methodCalls.put(new MethodCall(methodName, args));
-        return methodResults.take().result;
+        MethodCall call = new MethodCall(methodName, args);
+        methodCalls.put(call);
+        return call.getResult();
     }
 
     @Override
@@ -129,7 +135,7 @@ public class MapperInvoker extends Thread {
                     // (javax.resource.ResourceException)
                     res = WrappedException.wrap(e);
                 }
-                methodResults.put(new MethodResult(res));
+                call.setResult(res);
             }
         } catch (InterruptedException e) {
             // end
