@@ -390,12 +390,13 @@ public class FakeDocument implements Document {
     }
 
     @Override
-    public boolean isLocked() throws DocumentException {
-        return false;
+    public Lock setLock(Lock lock) throws DocumentException {
+        return null;
     }
 
     @Override
-    public void setLock(Lock lock) throws DocumentException {
+    public Lock removeLock(String owner) throws DocumentException {
+        return null;
     }
 
     @Override
