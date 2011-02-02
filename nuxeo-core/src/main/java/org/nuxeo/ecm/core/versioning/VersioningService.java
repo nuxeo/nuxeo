@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -79,8 +81,10 @@ public interface VersioningService {
      * Applies versioning after document creation.
      *
      * @param doc the document
+     * @param context map event info
      */
-    void doPostCreate(Document doc) throws DocumentException;
+    void doPostCreate(Document doc, Map<String, Serializable> options)
+            throws DocumentException;
 
     /**
      * Applies versioning options before document save.
@@ -89,10 +93,12 @@ public interface VersioningService {
      * @param isDirty {@code true} if there is actual data to save
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
+     * @param context map event info
      * @return the validated option (to use in doPostSave)
      */
-    VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option,
-            String checkinComment) throws DocumentException;
+    VersioningOption doPreSave(Document doc, boolean isDirty,
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException;
 
     /**
      * Applies versioning options after document save.
@@ -100,8 +106,10 @@ public interface VersioningService {
      * @param doc the document
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
+     * @param context map event info
      */
-    void doPostSave(Document doc, VersioningOption option, String checkinComment)
+    void doPostSave(Document doc, VersioningOption option,
+            String checkinComment, Map<String, Serializable> options)
             throws DocumentException;
 
     /**

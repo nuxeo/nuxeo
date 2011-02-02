@@ -42,7 +42,6 @@ import java.security.Principal;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -865,7 +864,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     VersioningService.SKIP_VERSIONING))) {
                 // during remote publishing we want to skip versioning
                 // to avoid overwriting the version number
-                getVersioningService().doPostCreate(doc);
+                getVersioningService().doPostCreate(doc, options);
                 docModel = readModel(doc);
             }
 
@@ -1861,7 +1860,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (!docModel.isImmutable()) {
                 // pre-save versioning
                 versioningOption = getVersioningService().doPreSave(doc, dirty,
-                        versioningOption, checkinComment);
+                        versioningOption, checkinComment, options);
             }
 
             // actual save
@@ -1870,7 +1869,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (!docModel.isImmutable()) {
                 // post-save versioning
                 getVersioningService().doPostSave(doc, versioningOption,
-                        checkinComment);
+                        checkinComment, options);
             }
 
             // post-save event

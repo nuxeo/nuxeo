@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -189,8 +190,9 @@ public class VersioningComponent extends DefaultComponent implements
     }
 
     @Override
-    public void doPostCreate(Document doc) throws DocumentException {
-        getService().doPostCreate(doc);
+    public void doPostCreate(Document doc, Map<String, Serializable> options)
+            throws DocumentException {
+        getService().doPostCreate(doc, options);
     }
 
     @Override
@@ -201,15 +203,17 @@ public class VersioningComponent extends DefaultComponent implements
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment)
-            throws DocumentException {
-        return getService().doPreSave(doc, isDirty, option, checkinComment);
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
+        return getService().doPreSave(doc, isDirty, option, checkinComment,
+                options);
     }
 
     @Override
     public void doPostSave(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
-        getService().doPostSave(doc, option, checkinComment);
+            String checkinComment, Map<String, Serializable> options)
+            throws DocumentException {
+        getService().doPostSave(doc, option, checkinComment, options);
     }
 
     @Override

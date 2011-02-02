@@ -21,6 +21,7 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public void doPostCreate(Document doc) throws DocumentException {
+    public void doPostCreate(Document doc, Map<String, Serializable> options)
+            throws DocumentException {
         if (doc.isVersion() || doc.isProxy()) {
             return;
         }
@@ -257,8 +259,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment)
-            throws DocumentException {
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         if (!doc.isCheckedOut() && isDirty) {
             doc.checkOut();
@@ -283,7 +285,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public void doPostSave(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+            String checkinComment, Map<String, Serializable> options)
+            throws DocumentException {
         // option = validateOption(doc, option); // validated before
         boolean increment = option != NONE;
         if (doc.isCheckedOut() && increment) {
@@ -322,12 +325,12 @@ public class StandardVersioningService implements ExtendableVersioningService {
     public void setVersioningRules(
             Map<String, VersioningRuleDescriptor> versioningRules) {
         this.versioningRules = versioningRules;
-        
+
     }
 
     @Override
     public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
-        this.defaultVersioningRule = defaultVersioningRule;        
+        this.defaultVersioningRule = defaultVersioningRule;
     }
 
 }
