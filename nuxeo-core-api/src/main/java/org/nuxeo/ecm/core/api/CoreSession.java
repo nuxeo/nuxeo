@@ -487,6 +487,18 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Returns the parent ref of the document referenced by {@code docRef} or
+     * {@code null} if this is the root document.
+     * <p>
+     * This method does not check the permissions on the parent document of this
+     * {@code CoreSession}'s {@code Principal}.
+     *
+     * @since 5.4.1
+     */
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException;
+
+    /**
      * Gets the parent document or null if this is the root document.
      *
      * @return the parent document or null if this is the root document
@@ -1700,17 +1712,5 @@ public interface CoreSession {
      */
     public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
             Class<T> adapterClass) throws ClientException;
-
-    /**
-     * Returns the parent ref of the document referenced by {@code docRef} or
-     * {@code null} if this is the root document.
-     * <p>
-     * This method does not check the permissions on the parent document of this
-     * {@code CoreSession}'s {@code Principal}.
-     *
-     * @since 5.4.1
-     */
-    public DocumentRef getParentDocumentRef(DocumentRef docRef)
-            throws ClientException;
 
 }

@@ -1346,6 +1346,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException {
+        try {
+            final Document doc = resolveReference(docRef);
+            Document parentDoc = doc.getParent();
+            return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get parent document ref for: "
+                    + docRef, e);
+        }
+    }
+
+    @Override
     public DocumentModel getParentDocument(DocumentRef docRef)
             throws ClientException {
         try {
@@ -3266,7 +3279,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         return null;
     }
 
-    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName) {
+    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc,
+            String facetName) throws ClientException {
         // Load all the data related to facet's schemas
         SchemaManager schemaManager = NXSchema.getSchemaManager();
         CompositeType facet = schemaManager.getFacet(facetName);
@@ -3281,11 +3295,18 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                         schemaManager.getSchema(schema));
                 docModel.getDataModels().put(schema, dm);
             } catch (DocumentException e) {
-                log.error(e, e);
+                throw new ClientException(e);
             }
         }
     }
 
+    /**
+     * Returns the first {@code Document} with the given {@code facet},
+     * recursively going up the parent hierarchy. Returns {@code null} if there
+     * is no more parent.
+     * <p>
+     * This method does not check security rights.
+     */
     protected Document getFirstParentDocumentWithFacet(DocumentRef docRef,
             String facet) throws ClientException {
         try {
@@ -3294,30 +3315,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 return doc;
             }
             Document parentDoc = doc.getParent();
-            if (parentDoc != null) {
-                return getFirstParentDocumentWithFacet(
-                        new PathRef(parentDoc.getPath()), facet);
-            }
+            return parentDoc != null ? getFirstParentDocumentWithFacet(
+                    new IdRef(parentDoc.getUUID()), facet) : null;
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
-        return null;
-    }
-
-    @Override
-    public DocumentRef getParentDocumentRef(DocumentRef docRef)
-            throws ClientException {
-        try {
-            final Document doc = resolveReference(docRef);
-            Document parentDoc = doc.getParent();
-            if (parentDoc != null) {
-                return new IdRef(parentDoc.getUUID());
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent document ref for: "
-                    + docRef, e);
-        }
-        return null;
     }
 
 }
