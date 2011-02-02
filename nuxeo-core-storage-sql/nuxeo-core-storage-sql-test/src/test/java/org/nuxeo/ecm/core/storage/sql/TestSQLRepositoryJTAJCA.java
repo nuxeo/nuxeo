@@ -45,7 +45,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         }
 
         Repository repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(REPOSITORY_NAME);
-        // 2 low level sessions, one normal and one for locking manager
+        // 2 low level sessions, one normal and one for the LockManager
         assertEquals(2, repo.getActiveSessionsCount());
 
         CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);

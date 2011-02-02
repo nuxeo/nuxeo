@@ -17,8 +17,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.SynchronousQueue;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -53,17 +53,24 @@ public class LockManager extends Thread {
 
         public final Object[] args;
 
+        protected final CountDownLatch resultReady;
+
+        protected Object result;
+
         public MethodCall(Method method, Object... args) {
             this.method = method;
             this.args = args;
+            this.resultReady = new CountDownLatch(1);
         }
-    }
 
-    protected static final class MethodResult {
-        public final Object result;
-
-        public MethodResult(Object result) {
+        public void setResult(Object result) {
             this.result = result;
+            resultReady.countDown();
+        }
+
+        public Object getResult() throws InterruptedException {
+            resultReady.await();
+            return result;
         }
     }
 
@@ -80,9 +87,8 @@ public class LockManager extends Thread {
      */
     public final boolean clusteringEnabled;
 
-    protected final BlockingQueue<MethodCall> methodCalls;
-
-    protected final BlockingQueue<MethodResult> methodResults;
+    protected final SynchronousQueue<MethodCall> calls = new SynchronousQueue<MethodCall>(
+            true);
 
     /**
      * Creates a lock manager using the given session.
@@ -96,8 +102,6 @@ public class LockManager extends Thread {
         super("Nuxeo LockManager (" + session.getRepositoryName() + ')');
         this.session = session;
         this.clusteringEnabled = clusteringEnabled;
-        this.methodCalls = new LinkedBlockingQueue<MethodCall>(1);
-        this.methodResults = new LinkedBlockingQueue<MethodResult>(1);
         start();
     }
 
@@ -148,8 +152,9 @@ public class LockManager extends Thread {
             throws StorageException {
         Object result;
         try {
-            methodCalls.put(new MethodCall(method, args));
-            result = methodResults.take().result;
+            MethodCall call = new MethodCall(method, args);
+            calls.put(call);
+            result = call.getResult();
         } catch (InterruptedException e) {
             throw new StorageException(e);
         }
@@ -163,14 +168,14 @@ public class LockManager extends Thread {
     public void run() {
         try {
             while (true) {
-                MethodCall call = methodCalls.take();
+                MethodCall call = calls.take();
                 Object res;
                 try {
                     res = callWithTX(call.method, call.args);
                 } catch (StorageException e) {
                     res = e;
                 }
-                methodResults.put(new MethodResult(res));
+                call.setResult(res);
             }
         } catch (InterruptedException e) {
             // end
