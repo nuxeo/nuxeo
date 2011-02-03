@@ -34,6 +34,7 @@ import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DWord;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -50,7 +52,14 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  */
 public class NuxeoArchiveWriter extends AbstractDocumentWriter {
 
+    public static final String ZIP_ENTRY_ENCODING_PROPERTY = "zip.entry.encoding";
+
+    public enum  ZIP_ENTRY_ENCODING_OPTIONS {
+        ascii
+    }
+
     protected ZipOutputStream out;
+
 
     public NuxeoArchiveWriter(File destination) throws IOException {
         this(new BufferedOutputStream(new FileOutputStream(destination)),
@@ -125,6 +134,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         if (path.equals("/") || path.length() == 0) {
             path = "";
         } else { // avoid adding a root entry
+            path = escapeEntryPath(path);
             path += '/';
             ZipEntry entry = new ZipEntry(path);
             // store the number of child as an extra info on the entry
@@ -160,6 +170,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         Map<String, Blob> blobs = doc.getBlobs();
         for (Map.Entry<String, Blob> blobEntry : blobs.entrySet()) {
             String fileName = blobEntry.getKey();
+            fileName = escapeEntryPath(fileName);
             entry = new ZipEntry(path + fileName);
             out.putNextEntry(entry);
             InputStream in = null;
@@ -186,6 +197,15 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         ZipEntry entry = new ZipEntry(ExportConstants.MARKER_FILE);
         out.putNextEntry(entry);
         out.closeEntry();
+    }
+
+    protected String escapeEntryPath(String path) {
+        String zipEntryEncoding = Framework.getProperty(ZIP_ENTRY_ENCODING_PROPERTY);
+        if (zipEntryEncoding != null
+                && zipEntryEncoding.equals(ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString())) {
+            return StringUtils.toAscii(path);
+        }
+        return path;
     }
 
 }
