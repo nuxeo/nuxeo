@@ -52,10 +52,10 @@ public class TestUtils extends TestCase {
         assertEquals("none", props2.getProperty("text-decoration"));
 
         Properties props3 = style.getPropertiesFor(viewName, "ul a");
-        assertEquals("#FFFFFF", props3.getProperty("color"));
+        assertEquals("rgb(255 , 255 , 255)", props3.getProperty("color"));
 
         Properties props4 = style.getPropertiesFor(viewName, "ul");
-        assertEquals(null, props4.getProperty("color"));
+        assertNull(props4);
 
         // make sure that old properties are removed
         cssSource = "a {color: blue;}";
