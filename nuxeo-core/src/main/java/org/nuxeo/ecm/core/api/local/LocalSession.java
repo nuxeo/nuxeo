@@ -81,6 +81,7 @@ public class LocalSession extends AbstractSession {
                         principal = new UserPrincipal(
                                 SecurityConstants.SYSTEM_USERNAME, null, false,
                                 true);
+                        principal.setOriginatingUser(p.getName());
                     } else {
                         throw new Error("Unsupported principal: "
                                 + p.getClass());

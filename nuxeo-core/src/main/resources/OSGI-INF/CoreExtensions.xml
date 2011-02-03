@@ -30,6 +30,7 @@
     <schema name="files" src="schema/files.xsd"/>
     <schema name="note" src="schema/note.xsd"/>
     <schema name="domain" src="schema/domain.xsd"/>
+    <schema name="relatedtext" src="schema/relatedtext.xsd"/>
 
     <schema name="publishing" prefix="publish" src="schema/publishing.xsd" />
     <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
@@ -59,6 +60,12 @@
     <facet name="WebView" />
     <facet name="SuperSpace" />
     <facet name="HiddenInNavigation" />
+
+    <!-- facet to be used for full-text indexing of related text content
+      (e.g. comments, annotations, tags...) -->
+    <facet name="HasRelatedText">
+      <schema name="relatedtext" />
+    </facet>
 
     <doctype name="Folder" extends="Document">
       <schema name="common"/>
@@ -153,6 +160,7 @@
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
     </doctype>
 
     <doctype name="Note" extends="Document">
@@ -164,6 +172,7 @@
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
     </doctype>
 
   </extension>

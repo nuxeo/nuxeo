@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,8 +59,8 @@ public class CompatVersioningService extends StandardVersioningService {
      */
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment)
-            throws DocumentException {
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
         if (increment) {
@@ -73,7 +76,8 @@ public class CompatVersioningService extends StandardVersioningService {
 
     @Override
     public void doPostSave(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+            String checkinComment, Map<String, Serializable> options)
+            throws DocumentException {
         if (!doc.isCheckedOut()) {
             return;
         }

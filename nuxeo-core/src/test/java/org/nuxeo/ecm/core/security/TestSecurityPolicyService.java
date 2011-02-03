@@ -18,14 +18,6 @@
 
 package org.nuxeo.ecm.core.security;
 
-import java.security.Principal;
-
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.MockDocument;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
 import static org.nuxeo.ecm.core.CoreUTConstants.CORE_BUNDLE;
 import static org.nuxeo.ecm.core.CoreUTConstants.CORE_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.Access.DENY;
@@ -33,6 +25,17 @@ import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+
+import java.security.Principal;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.MockDocument;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
@@ -76,7 +79,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 userPrincipal, permission, permissions, null));
 
         // with lock
-        doc.setLock(user + ':');
+        doc.setLock(new Lock(user, new GregorianCalendar()));
         assertSame(DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
         assertSame(UNKNOWN, service.checkPermission(doc, null,

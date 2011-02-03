@@ -11,14 +11,16 @@
       <schema name="dublincore" />
       <facet name="HiddenInNavigation" />
     </doctype>
-    
+
     <doctype name="AdministrativeStatusContainer" extends="Folder">
       <schema name="dublincore" />
+      <facet name="HiddenInNavigation" />
     </doctype>
 
     <doctype name="AdministrativeStatus" extends="Document">
       <schema name="dublincore" />
       <schema name="status" />
+      <facet name="HiddenInNavigation" />
     </doctype>
   </extension>
 

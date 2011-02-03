@@ -43,7 +43,7 @@ public class TestFacetFilter extends NXRuntimeTestCase {
         facets.add("B");
         facets.add("C");
         DocumentModel model = new DocumentModelImpl("sid", "my type", "id",
-                null, "lock", null, null, null, facets, null, null);
+                null, null, null, null, null, facets, null, null);
 
         // One facet statements
         assertTrue(new FacetFilter("A", true).accept(model));

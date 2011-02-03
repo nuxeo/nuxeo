@@ -44,6 +44,13 @@ CREATE TABLE nxp_tagging (
   is_private INTEGER
 );
 
+# create old table locks
+
+CREATE TABLE locks (
+  id ${idType} NOT NULL,
+  `lock` VARCHAR(255)
+);
+
 
 ############################################################
 
@@ -130,3 +137,8 @@ INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype, majorversion
 #IF: testUpgradeVersions
 INSERT INTO versions (id, versionableid, created)
   VALUES ('11111111-0000-0000-3333-000000000001', '11111111-0000-0000-3333-000000000000', DATE '2010-01-03');
+
+# lock doc
+#IF: testUpgradeLocks
+INSERT INTO locks (id, `lock`)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011');

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Laurent Doguin
  */
 package org.nuxeo.ecm.core.versioning;
 
@@ -20,8 +21,10 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MAJOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +42,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
  * Implementation of the versioning service that follows standard checkout /
  * checkin semantics.
  */
-public class StandardVersioningService implements VersioningService {
+public class StandardVersioningService implements ExtendableVersioningService {
 
     private static final Log log = LogFactory.getLog(StandardVersioningService.class);
 
@@ -62,6 +65,10 @@ public class StandardVersioningService implements VersioningService {
 
     /** Key for minor version in Document API. */
     protected static final String MINOR_VERSION = "minor_version";
+
+    private Map<String, VersioningRuleDescriptor> versioningRules;
+
+    private DefaultVersioningRuleDescriptor defaultVersioningRule;
 
     @Override
     public String getVersionLabel(DocumentModel docModel) {
@@ -145,7 +152,8 @@ public class StandardVersioningService implements VersioningService {
     }
 
     @Override
-    public void doPostCreate(Document doc) throws DocumentException {
+    public void doPostCreate(Document doc, Map<String, Serializable> options)
+            throws DocumentException {
         if (doc.isVersion() || doc.isProxy()) {
             return;
         }
@@ -160,6 +168,22 @@ public class StandardVersioningService implements VersioningService {
      * Sets the initial version on a document. Can be overridden.
      */
     protected void setInitialVersion(Document doc) throws DocumentException {
+        InitialStateDescriptor initialState = null;
+        if (versioningRules != null) {
+            VersioningRuleDescriptor versionRule = versioningRules.get(doc.getType().getName());
+            if (versionRule != null) {
+                initialState = versionRule.getInitialState();
+            }
+        }
+        if (initialState == null && defaultVersioningRule != null) {
+            initialState = defaultVersioningRule.getInitialState();
+        }
+        if (initialState != null) {
+            int initialMajor = initialState.getMajor();
+            int initialMinor = initialState.getMinor();
+            setVersion(doc, initialMajor, initialMinor);
+            return;
+        }
         setVersion(doc, 0, 0);
     }
 
@@ -200,6 +224,19 @@ public class StandardVersioningService implements VersioningService {
         if (lifecycleState == null) {
             return Arrays.asList(NONE);
         }
+        SaveOptionsDescriptor option = null;
+        if (versioningRules != null) {
+            VersioningRuleDescriptor saveOption = versioningRules.get(type);
+            if (saveOption != null) {
+                option = saveOption.getOptions().get(lifecycleState);
+            }
+        }
+        if (option == null && defaultVersioningRule != null) {
+            option = defaultVersioningRule.getOptions().get(lifecycleState);
+        }
+        if (option != null) {
+            return option.getVersioningOptionList();
+        }
         if (PROJECT_STATE.equals(lifecycleState)
                 || APPROVED_STATE.equals(lifecycleState)
                 || OBSOLETE_STATE.equals(lifecycleState)) {
@@ -222,8 +259,8 @@ public class StandardVersioningService implements VersioningService {
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment)
-            throws DocumentException {
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
         if (!doc.isCheckedOut() && isDirty) {
             doc.checkOut();
@@ -248,7 +285,8 @@ public class StandardVersioningService implements VersioningService {
 
     @Override
     public void doPostSave(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
+            String checkinComment, Map<String, Serializable> options)
+            throws DocumentException {
         // option = validateOption(doc, option); // validated before
         boolean increment = option != NONE;
         if (doc.isCheckedOut() && increment) {
@@ -276,6 +314,23 @@ public class StandardVersioningService implements VersioningService {
         } catch (NoSuchPropertyException e) {
             // ignore
         }
+    }
+
+    @Override
+    public Map<String, VersioningRuleDescriptor> getVersioningRules() {
+        return versioningRules;
+    }
+
+    @Override
+    public void setVersioningRules(
+            Map<String, VersioningRuleDescriptor> versioningRules) {
+        this.versioningRules = versioningRules;
+
+    }
+
+    @Override
+    public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
+        this.defaultVersioningRule = defaultVersioningRule;
     }
 
 }

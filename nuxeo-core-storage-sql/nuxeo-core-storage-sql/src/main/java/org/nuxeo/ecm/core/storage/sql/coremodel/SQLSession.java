@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,10 +19,13 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -410,7 +414,27 @@ public class SQLSession implements Session {
                     properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
             props.put(Model.MISC_LIFECYCLE_STATE_PROP,
                     properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
-            props.put(Model.LOCK_PROP, properties.get(CoreSession.IMPORT_LOCK));
+            // compat with old lock import
+            String key = (String) properties.get(CoreSession.IMPORT_LOCK);
+            if (key != null) {
+                String[] values = key.split(":");
+                if (values.length == 2) {
+                    String owner = values[0];
+                    Calendar created = new GregorianCalendar();
+                    try {
+                        created.setTimeInMillis(DateFormat.getDateInstance(
+                                DateFormat.MEDIUM).parse(values[1]).getTime());
+                    } catch (ParseException e) {
+                        // use current date
+                    }
+                    props.put(Model.LOCK_OWNER_PROP, owner);
+                    props.put(Model.LOCK_CREATED_PROP, created);
+                }
+            }
+            props.put(Model.LOCK_OWNER_PROP,
+                    properties.get(CoreSession.IMPORT_LOCK_OWNER));
+            props.put(Model.LOCK_CREATED_PROP,
+                    properties.get(CoreSession.IMPORT_LOCK_CREATED));
             props.put(Model.MAIN_MAJOR_VERSION_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(Model.MAIN_MINOR_VERSION_PROP,
@@ -843,6 +867,30 @@ public class SQLSession implements Session {
     protected Node getNodeById(Serializable id) throws DocumentException {
         try {
             return session.getNodeById(id);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock getLock(Node node) throws DocumentException {
+        try {
+            return session.getLock(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock setLock(Node node, Lock lock) throws DocumentException {
+        try {
+            return session.setLock(node, lock);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Lock removeLock(Node node, String owner) throws DocumentException {
+        try {
+            return session.removeLock(node, owner);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,52 +12,44 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.Lock;
 
 /**
  * An object that can be locked.
  * <p>
- * A lock is identified by a lock key.
- * The key is used to store information about the lock owner.
- *
- * @author bstefanescu
+ * A lock holds a lock owner and lock creation time.
  */
 public interface Lockable {
 
     /**
      * Sets a lock on the current document.
-     * <p>
-     * The lock key cannot be null.
      *
-     * @param key the lock key
+     * @param lock the lock to set
+     * @return the existing lock if locking couldn't be done
      */
-    void setLock(String key) throws DocumentException;
+    Lock setLock(Lock lock) throws DocumentException;
 
     /**
-     * Tests if the current object is locked.
+     * Removes a lock on the current document.
      *
-     * @return true if locked false otherwise
+     * @param the owner to check, or {@code null} for no check
+     * @return {@code null} if there was no lock or if removal succeeded, or a
+     *         lock if it blocks removal due to owner mismatch
      */
-    boolean isLocked() throws DocumentException;
+    Lock removeLock(String owner) throws DocumentException;
 
     /**
      * Gets the lock key if a lock exists on the current object.
      *
-     * @return the lock key or null if no lock exists
+     * @return the lock or null if no lock exists
      */
-    String getLock() throws DocumentException;
-
-    /**
-     * Removes the lock on the object if any exists, otherwise do nothing.
-     *
-     * @return the key of the removed lock or null if the object was not locked
-     */
-    String unlock() throws DocumentException;
+    Lock getLock() throws DocumentException;
 
 }

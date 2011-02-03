@@ -200,8 +200,13 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
     public void testCheckInCheckOut() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "file#789", "File");
+        assertTrue(doc.isCheckedOut());
         doc = session.createDocument(doc);
+        assertTrue(session.isCheckedOut(doc.getRef()));
+        assertTrue(doc.isCheckedOut());
         session.save();
+        assertTrue(session.isCheckedOut(doc.getRef()));
+        assertTrue(doc.isCheckedOut());
 
         DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
         DocumentModel ver = session.getDocument(verRef);

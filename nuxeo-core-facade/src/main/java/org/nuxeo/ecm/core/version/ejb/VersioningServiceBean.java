@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.core.version.ejb;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -47,8 +49,9 @@ public class VersioningServiceBean implements VersioningServiceLocal {
     }
 
     @Override
-    public void doPostCreate(Document doc) throws DocumentException {
-        service.doPostCreate(doc);
+    public void doPostCreate(Document doc, Map<String, Serializable> options)
+            throws DocumentException {
+        service.doPostCreate(doc, options);
     }
 
     @Override
@@ -59,15 +62,16 @@ public class VersioningServiceBean implements VersioningServiceLocal {
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
-            VersioningOption option, String checkinComment)
-            throws DocumentException {
-        return service.doPreSave(doc, isDirty, option, checkinComment);
+            VersioningOption option, String checkinComment,
+            Map<String, Serializable> options) throws DocumentException {
+        return service.doPreSave(doc, isDirty, option, checkinComment, options);
     }
 
     @Override
     public void doPostSave(Document doc, VersioningOption option,
-            String checkinComment) throws DocumentException {
-        service.doPostSave(doc, option, checkinComment);
+            String checkinComment, Map<String, Serializable> options)
+            throws DocumentException {
+        service.doPostSave(doc, option, checkinComment, options);
     }
 
     @Override

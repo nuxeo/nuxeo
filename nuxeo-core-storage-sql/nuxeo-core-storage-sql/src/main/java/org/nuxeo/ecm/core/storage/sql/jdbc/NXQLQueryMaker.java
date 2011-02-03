@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -869,8 +869,22 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 return;
             }
-            if (NXQL.ECM_LOCK.equals(name)) {
-                props.add(model.LOCK_PROP);
+            if (NXQL.ECM_LOCK.equals(name) || NXQL.ECM_LOCK_OWNER.equals(name)) {
+                props.add(model.LOCK_OWNER_PROP);
+                if (inOrderBy) {
+                    orderKeys.add(name);
+                }
+                return;
+            }
+            if (NXQL.ECM_LOCK_CREATED.equals(name)) {
+                props.add(model.LOCK_CREATED_PROP);
+                if (inOrderBy) {
+                    orderKeys.add(name);
+                }
+                return;
+            }
+            if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                props.add(model.FULLTEXT_JOBID_PROP);
                 if (inOrderBy) {
                     orderKeys.add(name);
                 }
@@ -1088,6 +1102,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 return database.getTable(model.MISC_TABLE_NAME).getColumn(
                         model.MISC_LIFECYCLE_STATE_KEY);
             }
+            if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                return database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
+                        model.FULLTEXT_JOBID_KEY);
+            }
             if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " must be used as left-hand operand");
@@ -1096,9 +1114,13 @@ public class NXQLQueryMaker implements QueryMaker {
                 return database.getTable(model.VERSION_TABLE_NAME).getColumn(
                         model.VERSION_LABEL_KEY);
             }
-            if (NXQL.ECM_LOCK.equals(name)) {
+            if (NXQL.ECM_LOCK.equals(name) || NXQL.ECM_LOCK_OWNER.equals(name)) {
                 return database.getTable(model.LOCK_TABLE_NAME).getColumn(
-                        model.LOCK_KEY);
+                        model.LOCK_OWNER_KEY);
+            }
+            if (NXQL.ECM_LOCK_CREATED.equals(name)) {
+                return database.getTable(model.LOCK_TABLE_NAME).getColumn(
+                        model.LOCK_CREATED_KEY);
             }
             throw new QueryMakerException("Unknown field: " + name);
         }
@@ -1156,7 +1178,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsVersion(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
-            } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)) {
+            } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
+                    && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ
                     || op == Operator.IN || op == Operator.NOTIN

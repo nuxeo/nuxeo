@@ -179,7 +179,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     public void testComplexType() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        DocumentModel doc = new DocumentModelImpl("/", "complex-doc",
+                "ComplexDoc");
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
@@ -203,12 +204,20 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(attachedFile.get("vignettes"),
                 doc.getProperty("cmpf:attachedFile/vignettes").getValue());
 
+        // test fulltext indexing of complex property at level one
+        DocumentModelList results = session.query(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'some name'", 1);
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("complex-doc", results.get(0).getTitle());
+
         // test setting and reading a list of maps without a complex type in the
         // maps
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
         vignette.put("content", null);
+        vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
@@ -229,6 +238,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                         "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
+
+        // test fulltext indexing of complex property at level 3
+        results = session.query("SELECT * FROM Document"
+                + " WHERE ecm:fulltext = 'vignettelabel'", 1);
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("complex-doc", results.get(0).getTitle());
 
         // test setting and reading a list of maps with a blob inside the map
         byte[] binaryContent = "01AB".getBytes();
@@ -1795,7 +1811,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
         Set<String> baseFacets = new HashSet<String>(Arrays.asList(
                 FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
-                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE));
+                FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE,
+                FacetNames.HAS_RELATED_TEXT));
         assertEquals(baseFacets, doc.getFacets());
         try {
             doc.setPropertyValue("age:age", "123");
@@ -2408,27 +2425,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("file ##", fieldValuesBis[0]);
         assertEquals("folder #2", fieldValuesBis[1]);
         assertEquals("folder #1", fieldValuesBis[2]);
-    }
-
-    public void testLock() throws Exception {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
-                "folder1", "Folder");
-
-        folder1 = createChildDocument(folder1);
-        assertNull(folder1.getLock());
-        assertFalse(folder1.isLocked());
-        folder1.setLock("bstefanescu");
-        assertEquals("bstefanescu", folder1.getLock());
-        assertTrue(folder1.isLocked());
-
-        folder1 = session.getChild(root.getRef(), "folder1");
-        assertEquals("bstefanescu", folder1.getLock());
-        assertTrue(folder1.isLocked());
-
-        folder1.unlock();
-        assertNull(folder1.getLock());
-        assertFalse(folder1.isLocked());
     }
 
     // TODO: fix and reenable.
@@ -3210,7 +3206,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 new Path(name), null, null, parentRef, null, null, null, null);
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
-        doc.putContextData(CoreSession.IMPORT_LOCK, "somelock");
+        Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1,
+                5, 5, 5);
+        doc.putContextData(CoreSession.IMPORT_LOCK_OWNER, "bob");
+        doc.putContextData(CoreSession.IMPORT_LOCK_CREATED, lockCreated);
         doc.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
         doc.putContextData(CoreSession.IMPORT_BASE_VERSION_ID, vid);
         doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR, Long.valueOf(8));
@@ -3230,7 +3229,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Long.valueOf(8), doc.getProperty("uid", "major_version"));
         assertEquals(Long.valueOf(1), doc.getProperty("uid", "minor_version"));
         assertTrue(doc.isLocked());
-        assertEquals("somelock", doc.getLock());
+        assertEquals("bob", doc.getLockInfo().getOwner());
+        assertEquals(lockCreated, doc.getLockInfo().getCreated());
         assertFalse(doc.isVersion());
         assertFalse(doc.isProxy());
     }

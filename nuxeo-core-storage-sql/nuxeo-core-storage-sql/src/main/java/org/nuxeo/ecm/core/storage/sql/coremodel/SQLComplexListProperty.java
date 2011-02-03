@@ -49,7 +49,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
      */
     public SQLComplexListProperty(Node node, ListType type, String name,
             SQLSession session, boolean readonly) {
-        super(type, readonly);
+        super(type, name, readonly);
         this.node = node;
         this.name = name;
         this.session = session;

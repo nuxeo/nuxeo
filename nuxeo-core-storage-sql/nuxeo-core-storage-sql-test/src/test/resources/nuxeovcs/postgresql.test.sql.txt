@@ -45,6 +45,13 @@ CREATE TABLE nxp_tagging (
   is_private INTEGER
 );
 
+# create old table locks
+
+CREATE TABLE locks (
+  id ${idType} NOT NULL,
+  lock VARCHAR(255)
+);
+
 
 ############################################################
 
@@ -158,3 +165,8 @@ INSERT INTO dublincore (id, creator, title) VALUES ('12121212-dddd-dddd-dddd-000
 #IF: testUpgradeLastContributor
 INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 0, 'Administrator');
 INSERT INTO dc_contributors (id, pos, item) VALUES ('12121212-dddd-dddd-dddd-000000000001', 1, 'FakeOne');
+
+# lock doc
+#IF: testUpgradeLocks
+INSERT INTO locks (id, lock)
+  VALUES ('dddddddd-dddd-dddd-dddd-dddddddddddd', 'bob:Jan 26, 2011');

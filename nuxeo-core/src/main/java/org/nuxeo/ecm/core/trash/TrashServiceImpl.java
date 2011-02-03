@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -150,11 +151,12 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     protected static String getDocumentLocker(DocumentModel doc) {
-        String lock = doc.getLock();
-        if (lock == null) {
+        try {
+            Lock lock = doc.getLockInfo();
+            return lock == null ? null : lock.getOwner();
+        } catch (ClientException e) {
+            log.error(e, e);
             return null;
-        } else {
-            return lock.split(":")[0];
         }
     }
 

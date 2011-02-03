@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2007-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Arnaud Kervern
+ *     Florent Guillaume
+ */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.sql.SQLException;
@@ -9,27 +26,22 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
- * Helper to provide sql migration's call while adding a column.
+ * Helper to provide SQL migration calls while adding a column.
  *
- * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  * @since 5.4.1
  */
 public class TableUpgrader {
 
-    protected class TableUpgraderHolder {
-        private String tableKey;
-        private String columnName;
-        private String sqlProcedure;
-        private String testProp;
+    protected static class TableUpgrade {
+        public final String tableKey;
 
-        public TableUpgraderHolder(String tableKey, String columnName,
-                String sqlProcedure) {
-            this.tableKey = tableKey;
-            this.columnName = columnName;
-            this.sqlProcedure = sqlProcedure;
-        }
+        public final String columnName;
 
-        public TableUpgraderHolder(String tableKey, String columnName,
+        public final String sqlProcedure;
+
+        public final String testProp;
+
+        public TableUpgrade(String tableKey, String columnName,
                 String sqlProcedure, String testProp) {
             this.tableKey = tableKey;
             this.columnName = columnName;
@@ -38,7 +50,7 @@ public class TableUpgrader {
         }
     }
 
-    protected List<TableUpgraderHolder> tableUpgraders = new ArrayList<TableUpgraderHolder>();
+    protected List<TableUpgrade> tableUpgrades = new ArrayList<TableUpgrade>();
 
     private JDBCMapper mapper;
 
@@ -46,18 +58,6 @@ public class TableUpgrader {
 
     public TableUpgrader(JDBCMapper mapper) {
         this.mapper = mapper;
-    }
-
-    /**
-     * Add a couple table/column with a sql procedure to executes when column is added
-     *
-     * @param tableKey table name
-     * @param columnName desired added column
-     * @param sqlProcedure sql procedure name
-     */
-    public void add(String tableKey, String columnName,
-                String sqlProcedure) {
-        tableUpgraders.add(new TableUpgraderHolder(tableKey, columnName, sqlProcedure));
     }
 
     /**
@@ -69,15 +69,16 @@ public class TableUpgrader {
      * @param sqlProcedure sql procedure name
      * @param testProp test flag name
      */
-    public void add(String tableKey, String columnName,
-                String sqlProcedure, String testProp) {
-        tableUpgraders.add(new TableUpgraderHolder(tableKey, columnName, sqlProcedure, testProp));
+    public void add(String tableKey, String columnName, String sqlProcedure,
+            String testProp) {
+        tableUpgrades.add(new TableUpgrade(tableKey, columnName, sqlProcedure,
+                testProp));
     }
 
     /**
-     * Check if there is an added column that match with a upgrade process.
-     * If one exists, it executes the associated sql in the category.
-     * If not, nothing happend.
+     * Check if there is an added column that match with a upgrade process. If
+     * one exists, it executes the associated sql in the category. If not,
+     * nothing happend.
      *
      * @param tableKey table name
      * @param addedColumns list of added column
@@ -85,28 +86,28 @@ public class TableUpgrader {
      */
     public void upgrade(String tableKey, List<Column> addedColumns)
             throws SQLException {
-        for (TableUpgraderHolder holder : tableUpgraders) {
-            if (holder.tableKey.equals(tableKey)) {
-                boolean upgradeVersions;
-                if (addedColumns == null) {
-                    // table created
-                    upgradeVersions = mapper.testProps.containsKey(
-                            holder.testProp);
-                } else {
-                    // columns added
-                    upgradeVersions = false;
-                    for (Column col : addedColumns) {
-                        if (col.getKey().equals(holder.columnName)) {
-                            upgradeVersions = true;
-                            break;
-                        }
+        for (TableUpgrade upgrade : tableUpgrades) {
+            if (!upgrade.tableKey.equals(tableKey)) {
+                continue;
+            }
+            boolean doUpgrade;
+            if (addedColumns == null) {
+                // table created
+                doUpgrade = mapper.testProps.containsKey(upgrade.testProp);
+            } else {
+                // columns added
+                doUpgrade = false;
+                for (Column col : addedColumns) {
+                    if (col.getKey().equals(upgrade.columnName)) {
+                        doUpgrade = true;
+                        break;
                     }
                 }
-                if (upgradeVersions) {
-                    log.info("Upgrading table " + tableKey);
-                    mapper.sqlInfo.executeSQLStatements(holder.sqlProcedure,
-                            mapper);
-                }
+            }
+            if (doUpgrade) {
+                log.info("Upgrading table: " + tableKey);
+                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure,
+                        mapper);
             }
         }
     }

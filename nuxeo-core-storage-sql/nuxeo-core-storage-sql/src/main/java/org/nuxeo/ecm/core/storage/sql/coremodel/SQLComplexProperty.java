@@ -56,7 +56,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      */
     public SQLComplexProperty(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
-        super(type, readonly);
+        super(type, node == null ? null : node.getName(), readonly);
         this.node = node;
         this.session = session;
     }
@@ -119,7 +119,8 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     @Override
     public Property getProperty(String name) throws DocumentException {
-        return session.makeProperty(node, name, (ComplexType) type, null, readonly);
+        return session.makeProperty(node, name, (ComplexType) type, null,
+                readonly);
     }
 
     @Override

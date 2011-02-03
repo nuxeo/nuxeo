@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,11 +19,13 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
@@ -131,11 +134,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected DocumentRef parentRef;
 
-    /** state is lock, lifecycle, version stuff. */
+    /** state is lifecycle, version stuff. */
     protected boolean isStateLoaded;
-
-    // loaded if isStateLoaded
-    protected String lock;
 
     // loaded if isStateLoaded
     protected String currentLifeCycleState;
@@ -144,7 +144,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected String lifeCyclePolicy;
 
     // loaded if isStateLoaded
-    protected boolean isCheckedOut;
+    protected boolean isCheckedOut = true;
 
     // loaded if isStateLoaded
     protected String versionSeriesId;
@@ -253,11 +253,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     /**
      * Constructor.
+     * <p>
+     * The lock parameter is unused since 5.4.1.
      *
      * @param facets the per-instance facets
      */
     public DocumentModelImpl(String sid, String type, String id, Path path,
-            String lock, DocumentRef docRef, DocumentRef parentRef,
+            Lock lock, DocumentRef docRef, DocumentRef parentRef,
             String[] schemas, Set<String> facets, String sourceId,
             String repositoryName) {
         this(type);
@@ -279,7 +281,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             this.schemas = new HashSet<String>(Arrays.asList(schemas));
         }
         schemasOrig = new HashSet<String>(this.schemas);
-        this.lock = lock;
         this.repositoryName = repositoryName;
         this.sourceId = sourceId;
     }
@@ -725,39 +726,72 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         ref = new PathRef(parentPath, name);
     }
 
+    protected String oldLockKey(Lock lock) {
+        if (lock == null) {
+            return null;
+        }
+        // return deprecated format, like "someuser:Nov 29, 2010"
+        return lock.getOwner()
+                + ':'
+                + DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                        new Date(lock.getCreated().getTimeInMillis()));
+    }
+
     @Override
+    @Deprecated
     public String getLock() {
-        return lock;
+        try {
+            return oldLockKey(getLockInfo());
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
     public boolean isLocked() {
-        return lock != null;
+        try {
+            return getLockInfo() != null;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
-    public void setLock(final String key) throws ClientException {
-        new RunWithCoreSession<Object>() {
-            @Override
-            public Object run() throws ClientException {
-                session.setLock(ref, key);
-                return null;
-            }
-        }.execute();
-        lock = key;
+    @Deprecated
+    public void setLock(String key) throws ClientException {
+        setLock();
     }
 
     @Override
     public void unlock() throws ClientException {
-        String removedLock = new RunWithCoreSession<String>() {
+        removeLock();
+    }
+
+    @Override
+    public Lock setLock() throws ClientException {
+        return new RunWithCoreSession<Lock>() {
             @Override
-            public String run() throws ClientException {
-                return session.unlock(ref);
+            public Lock run() throws ClientException {
+                return session.setLock(ref);
             }
         }.execute();
-        if (removedLock != null) {
-            lock = null;
-        }
+    }
+
+    @Override
+    public Lock getLockInfo() throws ClientException {
+        // no lock if not tied to a session
+        CoreSession session = getCoreSession();
+        return session == null ? null : session.getLockInfo(ref);
+    }
+
+    @Override
+    public Lock removeLock() throws ClientException {
+        return new RunWithCoreSession<Lock>() {
+            @Override
+            public Lock run() throws ClientException {
+                return session.removeLock(ref);
+            }
+        }.execute();
     }
 
     @Override
@@ -1531,6 +1565,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void refresh(int refreshFlags, String[] schemas)
             throws ClientException {
+        if (id == null) {
+            // not yet saved
+            return;
+        }
         if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
             refreshFlags |= REFRESH_ACP;
             // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used
@@ -1550,7 +1588,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             prefetch = refresh.prefetch;
         }
         if ((refreshFlags & REFRESH_STATE) != 0) {
-            lock = refresh.lock;
             currentLifeCycleState = refresh.lifeCycleState;
             lifeCyclePolicy = refresh.lifeCyclePolicy;
             isCheckedOut = refresh.isCheckedOut;
@@ -1560,7 +1597,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isVersionSeriesCheckedOut = refresh.isVersionSeriesCheckedOut;
             versionSeriesId = refresh.versionSeriesId;
             checkinComment = refresh.checkinComment;
-
         }
         acp = null;
         isACPLoaded = false;

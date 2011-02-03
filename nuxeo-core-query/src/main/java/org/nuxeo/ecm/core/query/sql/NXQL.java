@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -54,6 +54,16 @@ public class NXQL {
 
     public static final String ECM_FULLTEXT = "ecm:fulltext";
 
+    public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
+
+    /** @deprecated since 5.4.1, use {@link #ECM_LOCK_OWNER} instead */
+    @Deprecated
     public static final String ECM_LOCK = "ecm:lock";
+
+    /** @since 5.4.1 */
+    public static final String ECM_LOCK_OWNER = "ecm:lockOwner";
+
+    /** @since 5.4.1 */
+    public static final String ECM_LOCK_CREATED = "ecm:lockCreated";
 
 }

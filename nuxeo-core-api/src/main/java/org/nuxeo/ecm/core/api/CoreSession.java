@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -82,7 +82,22 @@ public interface CoreSession {
 
     String IMPORT_LIFECYCLE_STATE = "ecm:lifeCycleState";
 
+    /**
+     * @deprecated since 5.4.1, use {@link #IMPORT_LOCK_OWNER} and
+     *             {@link #IMPORT_LOCK_CREATED} instead
+     */
+    @Deprecated
     String IMPORT_LOCK = "ecm:lock";
+
+    /** @since 5.4.1 */
+    String IMPORT_LOCK_OWNER = "ecm:lockOwner";
+
+    /**
+     * Lock creation time as a Calendar object.
+     *
+     * @since 5.4.1
+     */
+    String IMPORT_LOCK_CREATED = "ecm:lockCreated";
 
     String IMPORT_CHECKED_IN = "ecm:isCheckedIn";
 
@@ -1406,21 +1421,31 @@ public interface CoreSession {
     /**
      * Gets the lock key on the given document if a lock exists or null
      * otherwise.
+     * <p>
+     * A lock key has the form {@code someuser:Nov 29, 2010}.
      *
-     * @param doc the document
+     * @param doc the document reference
      * @return the lock key if the document is locked, null otherwise
      * @throws ClientException
+     *
+     * @deprecated since 5.4.1, use {@link #getLockInfo} instead
      */
+    @Deprecated
     String getLock(DocumentRef doc) throws ClientException;
 
     /**
      * Sets a lock on the given document using the given key.
+     * <p>
+     * A lock key must have the form {@code someuser:Nov 29, 2010}.
      *
      * @param doc the document reference
      * @param key the lock key
      * @throws ClientException if a lock is already set or other exception
      *             occurred
+     *
+     * @deprecated since 5.4.1, use {@link #setLock(DocumentRef)} instead
      */
+    @Deprecated
     void setLock(DocumentRef doc, String key) throws ClientException;
 
     /**
@@ -1429,13 +1454,58 @@ public interface CoreSession {
      * The caller principal should be the same as the one who set the lock or to
      * belongs to the administrator group, otherwise an exception will be throw.
      * <p>
-     * If the document was not locked do nothing
+     * If the document was not locked, does nothing.
      *
      * @param docRef the document to unlock
-     * @throws ClientException
      * @return the lock key that was removed
+     *
+     * @deprecated since 5.4.1, use {@link #removeLock} instead
      */
+    @Deprecated
     String unlock(DocumentRef docRef) throws ClientException;
+
+    /**
+     * Sets a lock on the given document.
+     *
+     * @param doc the document reference
+     * @return the lock info that was set
+     * @throws ClientException if a lock was already set
+     *
+     * @since 5.4.1
+     */
+    Lock setLock(DocumentRef docRef) throws ClientException;
+
+    /**
+     * Gets the lock info on the given document.
+     * <p>
+     * Lock info is never cached, and needs to use a separate transaction in a
+     * separate thread, so care should be taken to not call this method
+     * needlessly.
+     *
+     * @param doc the document reference
+     * @return the lock info if the document is locked, or {@code null}
+     *         otherwise
+     *
+     * @since 5.4.1
+     */
+    Lock getLockInfo(DocumentRef docRef) throws ClientException;
+
+    /**
+     * Removes the lock on the given document.
+     * <p>
+     * The caller principal should be the same as the one who set the lock or to
+     * belongs to the administrator group, otherwise an exception will be throw.
+     * <p>
+     * If the document was not locked, does nothing.
+     * <p>
+     * Returns the previous lock info.
+     *
+     * @param docRef the document to unlock
+     * @return the removed lock info, or {@code null} if there was no lock
+     *
+     * @since 5.4.1
+     */
+    Lock removeLock(DocumentRef docRef) throws ClientException;
 
     /**
      * Applies default Read permissions on root JCR Document for the given user

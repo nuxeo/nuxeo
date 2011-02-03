@@ -41,6 +41,7 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -1671,10 +1672,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertFalse(node.hasMixinType("Orderable"));
         assertEquals(0, node.getMixinTypes().length);
         session.save();
-        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(0, res.list.size());
-        res = session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'",
+        res = session.query(
+                "SELECT * FROM Document WHERE ecm:mixinType <> 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
 
@@ -1682,10 +1685,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
         assertTrue(node.hasMixinType("Aged"));
         assertEquals(1, node.getMixinTypes().length);
-        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
-        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(0, res.list.size());
 
@@ -1710,10 +1715,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertFalse(node.hasMixinType("Aged"));
         assertTrue(node.hasMixinType("Orderable"));
         assertEquals(1, node.getMixinTypes().length);
-        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:mixinType = 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(0, res.list.size());
-        res = session.query("SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
+        res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:mixinType <> 'Aged'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
 
@@ -1848,6 +1855,66 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "SELECT * FROM TestDoc WHERE age:age = 'barbar'",
                 QueryFilter.EMPTY, false);
         assertEquals(1, res.list.size());
+    }
+
+    public void testLocking() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
+        assertNull(session.getLock(node));
+        session.save();
+        Serializable nodeId = node.getId();
+
+        session.close();
+        session = repository.getConnection();
+        node = session.getNodeById(nodeId);
+
+        Lock lock = session.setLock(node, new Lock("bob", null));
+        assertNull(lock);
+        assertNotNull(session.getLock(node));
+
+        lock = session.setLock(node, new Lock("john", null));
+        assertEquals("bob", lock.getOwner());
+
+        lock = session.removeLock(node, "steve");
+        assertEquals("bob", lock.getOwner());
+        assertTrue(lock.getFailed());
+        assertNotNull(session.getLock(node));
+
+        lock = session.removeLock(node, null);
+        assertEquals("bob", lock.getOwner());
+        assertFalse(lock.getFailed());
+        assertNull(session.getLock(node));
+
+        lock = session.removeLock(node, null);
+        assertNull(lock);
+    }
+
+    public void testLocksUpgrade() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.TRUE);
+        try {
+            doTestLocksUpgrade();
+        } finally {
+            JDBCMapper.testProps.clear();
+        }
+    }
+
+    protected void doTestLocksUpgrade() throws Exception {
+        Session session = repository.getConnection();
+        Node doc = session.getNodeById("dddddddd-dddd-dddd-dddd-dddddddddddd");
+        // check lock has been upgraded from 'bob:Jan 26, 2011'
+        String owner = doc.getSimpleProperty(Model.LOCK_OWNER_PROP).getString();
+        assertEquals("bob", owner);
+        Calendar created = (Calendar) doc.getSimpleProperty(
+                Model.LOCK_CREATED_PROP).getValue();
+        Calendar expected = new GregorianCalendar(2011, Calendar.JANUARY, 26,
+                0, 0, 0);
+        assertEquals(expected, created);
     }
 
 }
