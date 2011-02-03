@@ -27,10 +27,12 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
@@ -115,8 +117,11 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     protected DocumentModel createDocumentRouteInstancesStructure(
             CoreSession session) throws ClientException {
+        FacetFilter facetFilter = new FacetFilter(
+                FacetNames.HIDDEN_IN_NAVIGATION, false);
         DocumentModel defaultDomain = session.getChildren(
-                session.getRootDocument().getRef()).get(0);
+                session.getRootDocument().getRef(), null, null, facetFilter,
+                null).get(0);
         DocumentModel root = session.createDocumentModel(
                 defaultDomain.getPathAsString(),
                 DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID,
