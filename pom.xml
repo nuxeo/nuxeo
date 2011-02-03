@@ -11,7 +11,7 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-fs-connector</artifactId>
+  <artifactId>nuxeo-filesystem-connectors</artifactId>
   <name>Nuxeo Filesystem Connectors</name>
   <packaging>pom</packaging>
 
