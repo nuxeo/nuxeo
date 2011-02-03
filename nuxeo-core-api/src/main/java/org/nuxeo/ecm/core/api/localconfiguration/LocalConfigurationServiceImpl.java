@@ -47,6 +47,10 @@ public class LocalConfigurationServiceImpl extends DefaultComponent implements
             CoreSession session = currentDoc.getCoreSession();
             T localConfiguration = session.adaptFirstMatchingDocumentWithFacet(
                     currentDoc.getRef(), configurationFacet, configurationClass);
+            if (localConfiguration == null) {
+                // no local configuration found
+                return null;
+            }
             while (localConfiguration.canMerge()) {
                 DocumentRef parentRef = session.getParentDocumentRef(localConfiguration.getDocumentRef());
                 T parentConfiguration = session.adaptFirstMatchingDocumentWithFacet(
