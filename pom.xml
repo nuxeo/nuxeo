@@ -80,6 +80,7 @@
     <module>nuxeo-platform-htmlsanitizer</module>
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-query-api</module>
+    <module>nuxeo-platform-oauth</module>
   </modules>
 
   <profiles>
@@ -670,6 +671,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-oauth</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
 

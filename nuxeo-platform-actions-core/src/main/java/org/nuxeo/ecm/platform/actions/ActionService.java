@@ -22,23 +22,22 @@ package org.nuxeo.ecm.platform.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.ReloadableComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ActionService extends DefaultComponent implements ActionManager {
+public class ActionService extends ReloadableComponent implements ActionManager {
 
     public static final ComponentName ID = new ComponentName(
             "org.nuxeo.ecm.platform.actions.ActionService");
@@ -62,6 +61,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         actionReg = null;
         filterReg = null;
     }
+
 
     public ActionRegistry getActionRegistry() {
         return actionReg;
@@ -162,124 +162,138 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public void registerExtension(Extension extension) {
-        String xp = extension.getExtensionPoint();
-        if (xp.equals("actions")) {
-            registerActionExtension(extension);
-        } else if (xp.equals("filters")) {
-            registerFilterExtension(extension);
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if ("actions".equals(extensionPoint)) {
+            registerActionExtension(contribution);
+        } else if ("filters".equals(extensionPoint)) {
+            registerFilterExtension(contribution);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) {
-        String xp = extension.getExtensionPoint();
-        if (xp.equals("actions")) {
-            unregisterActionExtension(extension);
-        } else if (xp.equals("filters")) {
-            unregisterFilterExtension(extension);
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if ("actions".equals(extensionPoint)) {
+            unregisterActionExtension(((Action)contribution).getId());
+        } else if ("filters".equals(extensionPoint)) {
+            unregisterFilterExtension(contribution);
         }
     }
 
-    public void registerFilterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            ActionFilter filter;
-            if (contrib.getClass() == FilterFactory.class) {
-                FilterFactory ff = (FilterFactory) contrib;
-                filterReg.removeFilter(ff.id);
-                try {
-                    filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(
-                            ff.className).newInstance();
-                    filter.setId(ff.id);
-                    filterReg.addFilter(filter);
-                } catch (Exception e) {
-                    log.error("Failed to create action filter", e);
-                }
-            } else {
-                filter = (ActionFilter) contrib;
-                if (filterReg.getFilter(filter.getId()) != null) {
-                    DefaultActionFilter newFilter = (DefaultActionFilter) filter;
-                    DefaultActionFilter oldFilter = (DefaultActionFilter) filterReg.getFilter(filter.getId());
+    public void registerFilterExtension(Object contrib) {
+        ActionFilter filter;
+        if (contrib.getClass() == FilterFactory.class) {
+            FilterFactory ff = (FilterFactory) contrib;
+            filterReg.removeFilter(ff.id);
+            try {
+                filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(
+                        ff.className).newInstance();
+                filter.setId(ff.id);
+                filterReg.addFilter(filter);
+            } catch (Exception e) {
+                log.error("Failed to create action filter", e);
+            }
+        } else {
+            filter = (ActionFilter) contrib;
+            if (filterReg.getFilter(filter.getId()) != null) {
+                DefaultActionFilter newFilter = (DefaultActionFilter) filter;
+                DefaultActionFilter oldFilter = (DefaultActionFilter) filterReg.getFilter(filter.getId());
 
-                    if (newFilter.getAppend()) {
-                        List<FilterRule> mergedRules = new ArrayList<FilterRule>();
+                if (newFilter.getAppend()) {
+                    List<FilterRule> mergedRules = new ArrayList<FilterRule>();
 
-                        mergedRules.addAll(Arrays.asList(oldFilter.getRules()));
-                        mergedRules.addAll(Arrays.asList(newFilter.getRules()));
-                        oldFilter.setRules(mergedRules.toArray(new FilterRule[mergedRules.size()]));
-                    } else {
-                        filterReg.removeFilter(filter.getId());
-                        filterReg.addFilter(filter);
-                    }
+                    mergedRules.addAll(Arrays.asList(oldFilter.getRules()));
+                    mergedRules.addAll(Arrays.asList(newFilter.getRules()));
+                    oldFilter.setRules(mergedRules.toArray(new FilterRule[mergedRules.size()]));
                 } else {
-                    filterReg.addFilter(filter);
-                }
-            }
-        }
-    }
-
-    public void unregisterFilterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            if (contrib.getClass() == FilterFactory.class) {
-                filterReg.removeFilter(((FilterFactory) contrib).id);
-            } else {
-                filterReg.removeFilter(((ActionFilter) contrib).getId());
-            }
-        }
-    }
-
-    public void registerActionExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            Action action = (Action) contrib;
-            String actionId = action.getId();
-            Action existingAction = actionReg.getAction(actionId);
-            if (existingAction != null) {
-                log.debug("Upgrading web action with id " + actionId);
-                action = mergeActions(existingAction, action);
-                actionReg.removeAction(actionId);
-            }
-
-            // Register action's filter ids.
-            List<String> filterIds = new ArrayList<String>();
-            ActionFilter[] filters = action.getFilters();
-            if (filters != null) {
-                // register filters and save corresponding filter ids
-                for (ActionFilter filter : filters) {
                     filterReg.removeFilter(filter.getId());
                     filterReg.addFilter(filter);
-                    filterIds.add(filter.getId());
                 }
-                // XXX: Remove filters from action as it was just temporary,
-                // filters are now in their own registry.
-                action.setFilters(null);
-            }
-
-            List<String> actionFilterIds = action.getFilterIds();
-            if (actionFilterIds == null) {
-                action.setFilterIds(filterIds);
             } else {
-                actionFilterIds.addAll(filterIds);
-                action.setFilterIds(actionFilterIds);
+                filterReg.addFilter(filter);
             }
-
-            if (action.getLabel() == null) {
-                action.setLabel(actionId);
-            }
-
-            actionReg.addAction(action);
         }
     }
 
-    public void unregisterActionExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            Action action = (Action) contrib;
-            actionReg.removeAction(action.getId());
+    public void unregisterFilterExtension(Object contrib) {
+        if (contrib.getClass() == FilterFactory.class) {
+            filterReg.removeFilter(((FilterFactory) contrib).id);
+        } else {
+            filterReg.removeFilter(((ActionFilter) contrib).getId());
         }
     }
+
+    protected List<Action> getContributedActionsById(String id) {
+        ArrayList<Action> actions = new ArrayList<Action>();
+        for (Extension xt : extensions) {
+            for (Object o : xt.getContributions()) {
+                if (o instanceof Action) {
+                    Action a = (Action)o;
+                    if (id.equals(a.getId())) {
+                        actions.add(a);
+                    }
+                }
+            }
+        }
+        return actions;
+    }
+
+    protected void unregisterActionExtension(String id) {
+        if (null != actionReg.removeAction(id)) {
+            List<Action> actions = getContributedActionsById(id);
+            for (Action action : actions) {
+                registerActionExtension(action);
+            }
+        }
+    }
+
+    public void registerActionExtension(Object contrib) {
+        Action action = (Action) contrib;
+        // store locally filters of new action since if action is
+        // merged we will lose these filters
+        ActionFilter[] filters = action.getFilters();
+        String actionId = action.getId();
+        Action existingAction = actionReg.getAction(actionId);
+        if (existingAction != null) {
+            log.debug("Upgrading web action with id " + actionId);
+            action = mergeActions(existingAction, action);
+            actionReg.removeAction(actionId);
+        }
+
+        // Register action's filter ids.
+        List<String> filterIds = new ArrayList<String>();
+        // now register embedded filters to filter registry and update the filterIds list
+        if (filters != null) {
+            // register filters and save corresponding filter ids
+            for (ActionFilter filter : filters) {
+                filterReg.removeFilter(filter.getId());
+                filterReg.addFilter(filter);
+                filterIds.add(filter.getId());
+            }
+            // XXX: Remove filters from action as it was just temporary,
+            // filters are now in their own registry.
+            // XXX: let the filters as is - required to be able to reload the component
+            //action.setFilters(null);
+        }
+
+        List<String> actionFilterIds = action.getFilterIds();
+        if (actionFilterIds == null) {
+            action.setFilterIds(filterIds);
+        } else {
+            actionFilterIds.addAll(filterIds);
+            action.setFilterIds(actionFilterIds);
+        }
+
+        if (action.getLabel() == null) {
+            action.setLabel(actionId);
+        }
+
+        actionReg.addAction(action);
+    }
+
 
     /**
      * Merges two actions. Used when registering an existing action to overload
@@ -294,70 +308,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
      * @return a merged Action
      */
     protected static Action mergeActions(Action existingOne, Action newOne) {
-        // Icon
-        String newIcon = newOne.getIcon();
-        if (newIcon != null && !newIcon.equals(existingOne.getIcon())) {
-            existingOne.setIcon(newIcon);
+        try {
+            // need to clone the action to avoid altering the one contributed to the extension point
+            // otherwise the component reload will not work correctly
+            Action clone = existingOne.clone();
+            clone.mergeWith(newOne);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            // cannot happen
+            throw new Error(e);
         }
-
-        // Enabled ?
-        if (newOne.isEnabled() != existingOne.isEnabled()) {
-            existingOne.setEnabled(newOne.isEnabled());
-        }
-
-        // Merge categories without duplicates
-        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(existingOne.getCategories()));
-        mergedCategories.addAll(new HashSet<String>(Arrays.asList(newOne.getCategories())));
-        existingOne.setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
-
-        // label
-        String newLabel = newOne.getLabel();
-        if (newLabel != null && !newLabel.equals(existingOne.getLabel())) {
-            existingOne.setLabel(newLabel);
-        }
-
-        // link
-        String newLink = newOne.getLink();
-        if (newLink != null && !newLink.equals(existingOne.getLink())) {
-            existingOne.setLink(newLink);
-        }
-
-        // confirm
-        String newConfirm = newOne.getConfirm();
-        if (newConfirm != null && !newConfirm.equals(existingOne.getConfirm())) {
-            existingOne.setConfirm(newConfirm);
-        }
-
-        // title (tooltip)
-        String tooltip = newOne.getHelp();
-        if (tooltip != null && !tooltip.equals(existingOne.getHelp())) {
-            existingOne.setHelp(tooltip);
-        }
-
-        // XXX AT: maybe update param types but it seems a bit critical to do it
-        // without control: a new action should be registered for this kind of
-        // uses cases.
-
-        // order
-        int newOrder = newOne.getOrder();
-        if (newOrder > 0 && newOrder != existingOne.getOrder()) {
-            existingOne.setOrder(newOrder);
-        }
-
-        // filter ids
-        List<String> newFilterIds = newOne.getFilterIds();
-        newFilterIds.addAll(existingOne.getFilterIds());
-        existingOne.setFilterIds(newFilterIds);
-
-        // filters
-        ActionFilter[] newFilters = newOne.getFilters();
-        if (newFilters != null) {
-            // XXX AT: no neded to merge: filters are not kept on the existing
-            // action as they have been transformed into filter ids.
-            existingOne.setFilters(newFilters);
-        }
-
-        return existingOne;
     }
 
     public void remove() {

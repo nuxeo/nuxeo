@@ -32,6 +32,8 @@ public class BuiltinWidgetModes {
 
     public static final String EDIT = BuiltinModes.EDIT;
 
+    public static final String PLAIN = BuiltinModes.PLAIN;
+
     public static final String HIDDEN = "hidden";
 
     private BuiltinWidgetModes() {

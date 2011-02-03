@@ -21,7 +21,10 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -33,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("action")
-public class Action implements Serializable, Comparable<Action> {
+public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     public static final String[] EMPTY_CATEGORIES = new String[0];
 
@@ -47,7 +50,7 @@ public class Action implements Serializable, Comparable<Action> {
 
     // XXX AT: param types still buggy, to fix eventually for optim
     @XNodeList(value = "link-params/param", type = Class[].class, componentType = Class.class)
-    private Class[] linkParams;
+    private Class<?>[] linkParams;
 
     @XNode("@enabled")
     private boolean enabled = true;
@@ -193,7 +196,7 @@ public class Action implements Serializable, Comparable<Action> {
         return linkParams;
     }
 
-    public void setLinkParams(Class[] linkParams) {
+    public void setLinkParams(Class<?>[] linkParams) {
         this.linkParams = linkParams;
     }
 
@@ -247,5 +250,80 @@ public class Action implements Serializable, Comparable<Action> {
     public void setHelp(String title) {
         help = title;
     }
+
+    @Override
+    public Action clone() throws CloneNotSupportedException {
+        Action clone = (Action)super.clone();
+
+        return clone;
+    }
+
+
+    public void mergeWith(Action newOne) {
+        // Icon
+        String newIcon = newOne.getIcon();
+        if (newIcon != null && !newIcon.equals(getIcon())) {
+            setIcon(newIcon);
+        }
+
+        // Enabled ?
+        if (newOne.isEnabled() != isEnabled()) {
+            setEnabled(newOne.isEnabled());
+        }
+
+        // Merge categories without duplicates
+        Set<String> mergedCategories = new HashSet<String>(Arrays.asList(getCategories()));
+        mergedCategories.addAll(Arrays.asList(newOne.getCategories()));
+        setCategories(mergedCategories.toArray(new String[mergedCategories.size()]));
+
+        // label
+        String newLabel = newOne.getLabel();
+        if (newLabel != null && !newLabel.equals(getLabel())) {
+            setLabel(newLabel);
+        }
+
+        // link
+        String newLink = newOne.getLink();
+        if (newLink != null && !newLink.equals(getLink())) {
+            setLink(newLink);
+        }
+
+        // confirm
+        String newConfirm = newOne.getConfirm();
+        if (newConfirm != null && !newConfirm.equals(getConfirm())) {
+            setConfirm(newConfirm);
+        }
+
+        // title (tooltip)
+        String tooltip = newOne.getHelp();
+        if (tooltip != null && !tooltip.equals(getHelp())) {
+            setHelp(tooltip);
+        }
+
+        // XXX AT: maybe update param types but it seems a bit critical to do it
+        // without control: a new action should be registered for this kind of
+        // uses cases.
+
+        // order
+        int newOrder = newOne.getOrder();
+        if (newOrder > 0 && newOrder != getOrder()) {
+            setOrder(newOrder);
+        }
+
+        // filter ids
+        HashSet<String> newFilterIds = new HashSet<String>();
+        if (getFilterIds() != null) {
+            newFilterIds.addAll(getFilterIds());
+        }
+        if (newOne.getFilterIds() != null) {
+            newFilterIds.addAll(newOne.getFilterIds());
+        }
+        setFilterIds(new ArrayList<String>(newFilterIds));
+
+        // filters
+        // we are not using filters on merged actions - filterIds were already merged - this is all we need.
+        setFilters(null);
+    }
+
 
 }

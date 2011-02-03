@@ -57,9 +57,11 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.login.TrustingLoginPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
+import org.nuxeo.ecm.platform.ui.web.auth.service.NuxeoAuthFilterChain;
 import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -222,7 +224,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
         } catch (LoginException e) {
-            log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
+            log.info("Login failed for "
+                    + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             return null;
         }
@@ -315,15 +318,20 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         doInitIfNeeded();
 
-        // NXP-5555: set encoding to UTF-8 in case this method is called before
-        // encoding is set to UTF-8 on the request
-        if (request.getCharacterEncoding() == null) {
-            try {
-                request.setCharacterEncoding("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e, e);
-            }
+        List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
+
+        if (preFilters == null) {
+            doFilterInternal(request, response, chain);
+        } else {
+            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
+                    preFilters, chain, this);
+            chainWithPreFilters.doFilter(request, response);
         }
+    }
+
+    public void doFilterInternal(ServletRequest request,
+            ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(NXAuthConstants.SWITCH_USER_PAGE)) {
@@ -555,11 +563,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         return anonymous;
     }
 
-
     protected void doInitIfNeeded() throws ServletException {
-        if (service==null && Framework.getRuntime()!=null) {
+        if (service == null && Framework.getRuntime() != null) {
             service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                     PluggableAuthenticationService.NAME);
+            // init preFilters
+            service.initPreFilters();
             if (service == null) {
                 log.error("Unable to get Service "
                         + PluggableAuthenticationService.NAME);

@@ -25,9 +25,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -39,6 +43,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="td@nuxeo.com">Thierry Delprat</a>
  */
 public class DublinCoreStorageService extends DefaultComponent {
+
+    public static Log log = LogFactory.getLog(DublinCoreStorageService.class);
 
     public static final String ID = "DublinCoreStorageService";
 
@@ -75,10 +81,18 @@ public class DublinCoreStorageService extends DefaultComponent {
         }
 
         String principalName = principal.getName();
+        if (principal instanceof NuxeoPrincipal) {
+            NuxeoPrincipal nxp = (NuxeoPrincipal) principal;
+            if (SecurityConstants.SYSTEM_USERNAME.equals(nxp.getName())
+                    && nxp.getOriginatingUser() != null) {
+                principalName = nxp.getOriginatingUser();
+            }
+        }
+
         String[] contributorsArray;
         try {
             contributorsArray = (String[]) doc.getProperty("dublincore",
-            "contributors");
+                    "contributors");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

@@ -42,6 +42,8 @@ public class BuiltinModes {
 
     public static final String SUMMARY = "summary";
 
+    public static final String PLAIN = "plain";
+
     private BuiltinModes() {
     }
 
@@ -51,12 +53,21 @@ public class BuiltinModes {
      */
     public static final boolean isBoundToEditMode(String layoutMode) {
         if (layoutMode != null
-                && (layoutMode.startsWith(BuiltinModes.CREATE)
-                        || layoutMode.startsWith(BuiltinModes.EDIT)
-                        || layoutMode.startsWith(BuiltinModes.SEARCH) || layoutMode.startsWith(BuiltinModes.BULK_EDIT))) {
+                && (layoutMode.startsWith(CREATE)
+                        || layoutMode.startsWith(EDIT)
+                        || layoutMode.startsWith(SEARCH) || layoutMode.startsWith(BULK_EDIT))) {
             return true;
         }
         return false;
+    }
+
+    public static final String getWidgetModeFromLayoutMode(String layoutMode) {
+        if (BuiltinModes.isBoundToEditMode(layoutMode)) {
+            return EDIT;
+        } else if (layoutMode != null && layoutMode.startsWith(PLAIN)) {
+            return PLAIN;
+        }
+        return VIEW;
     }
 
 }
