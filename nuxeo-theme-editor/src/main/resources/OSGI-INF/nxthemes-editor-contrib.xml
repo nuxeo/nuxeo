@@ -9,12 +9,12 @@
 
   <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.theme.webengine</require>
-  
+
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="request-configuration">
     <path value="/nxthemes-editor" stateful="true" autoTx="false" />
   </extension>
-  
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="shortcuts">
 
@@ -73,7 +73,7 @@
         nxthemes/editor/controllers/editor-perspectives.json
       </path>
     </resource>
-    
+
     <resource name="dashboard-perspectives.json">
       <path>
         nxthemes/editor/controllers/dashboard-perspectives.json
@@ -169,7 +169,7 @@
         nxthemes/editor/controllers/style-manager-actions.json
       </path>
     </resource>
-    
+
     <resource name="fragment-preview.json">
       <path>
         nxthemes/editor/views/fragment-preview.json
@@ -302,7 +302,7 @@
         nxthemes/editor/widgets/fm/theme-view-page-editor.xml
       </template>
     </view>
-        
+
     <view name="page frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>page</element-type>
@@ -436,7 +436,7 @@
       <resource>nxthemes-editor.css</resource>
       <resource>jscolor.js</resource>
     </view>
-    
+
     <view name="theme view" template-engine="jsf-facelets">
       <engine>page-editor</engine>
       <element-type>theme</element-type>
@@ -444,7 +444,7 @@
       <template>
         nxthemes/editor/widgets/jsf/theme-view-page-editor.xml
       </template>
-    </view>    
+    </view>
 
     <view name="page frame" template-engine="jsf-facelets">
       <engine>page-editor</engine>
@@ -483,7 +483,7 @@
         nxthemes/editor/widgets/jsf/section-frame.xml
       </template>
     </view>
-    
+
   </extension>
 
 
@@ -545,6 +545,7 @@
 
       <renderer element="fragment">
         <filter>add widget</filter>
+        <filter>set element name</filter>
         <filter>set style</filter>
         <filter>write fragment tag</filter>
         <filter>control fragment visibility</filter>
