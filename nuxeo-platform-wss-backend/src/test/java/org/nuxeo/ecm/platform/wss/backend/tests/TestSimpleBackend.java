@@ -201,15 +201,15 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe")));
 
-        item.checkOut("titi");
+        item.checkOut("system");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
         Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertEquals("titi", lock.getOwner());
+        assertEquals("system", lock.getOwner());
 
-        item.uncheckOut("titi");
+        item.uncheckOut("system");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
         lock = session.getLockInfo(new PathRef(
@@ -336,15 +336,15 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         assertTrue(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe")));
 
-        item.checkOut("titi");
+        item.checkOut("system");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
         Lock lock = session.getLockInfo(new PathRef(
                 "/default-domain/workspaces/ws1/testMe"));
         assertNotNull(lock);
-        assertEquals("titi", lock.getOwner());
+        assertEquals("system", lock.getOwner());
 
-        item.uncheckOut("titi");
+        item.uncheckOut("system");
         backend.saveChanges(false); // for cache invalidation
         session.save(); // for cache invalidation
         lock = session.getLockInfo(new PathRef(
