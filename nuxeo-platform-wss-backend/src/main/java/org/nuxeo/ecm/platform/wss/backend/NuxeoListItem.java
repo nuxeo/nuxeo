@@ -18,9 +18,6 @@
 package org.nuxeo.ecm.platform.wss.backend;
 
 import java.io.InputStream;
-import java.lang.System;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
@@ -64,23 +62,14 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
 
     @Override
     protected Date getCheckoutDate() {
-        String existingLock = null;
+        Lock lock = null;
         try {
-            existingLock = getSession().getLock(doc.getRef());
+            lock = getSession().getLockInfo(doc.getRef());
         } catch (ClientException e) {
             log.error("Unable to get lock", e);
         }
-        if (existingLock != null) {
-            String[] info = existingLock.split(":", 2);
-            if (info.length == 2) {
-                String dateStr = info[1];
-                try {
-                    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).parse(
-                            dateStr);
-                } catch (ParseException e) {
-                    log.error("Unable to parse date", e);
-                }
-            }
+        if (lock != null) {
+            return new Date(lock.getCreated().getTimeInMillis());
         }
         return Calendar.getInstance().getTime();
     }
@@ -121,13 +110,12 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
         return Calendar.getInstance().getTime();
     }
 
+        // TODO userName unused
     public void checkOut(String userName) throws WSSException {
         try {
-            String lock = getSession().getLock(doc.getRef());
+            Lock lock = getSession().getLockInfo(doc.getRef());
             if (lock == null) {
-                String lockDate = DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date());
-                String lockToken = userName + ":" + lockDate;
-                getSession().setLock(doc.getRef(), lockToken);
+                getSession().setLock(doc.getRef());
             } else {
                 if (!userName.equals(getCheckoutUser())) {
                     throw new WSSException("Document is already locked by another user");
@@ -139,16 +127,13 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     }
 
     public String getCheckoutUser() {
-
-        String existingLock = null;
         try {
-            existingLock = getSession().getLock(doc.getRef());
+            Lock lock = getSession().getLockInfo(doc.getRef());
+            if (lock != null) {
+                return lock.getOwner();
+            }
         } catch (ClientException e) {
-            log.error("Unable to lock", e);
-        }
-        if (existingLock != null) {
-            String[] info = existingLock.split(":");
-            return info[0];
+            log.error("Unable to get lock", e);
         }
         return null;
     }
@@ -305,10 +290,10 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
 
     public void uncheckOut(String userName) throws WSSException {
         try {
-            String lock = getSession().getLock(doc.getRef());
+            Lock lock = getSession().getLockInfo(doc.getRef());
             if (lock != null) {
-                if (userName.equals(getCheckoutUser())) {
-                    getSession().unlock(doc.getRef());
+                if (userName.equals(lock.getOwner())) {
+                    getSession().removeLock(doc.getRef());
                 } else {
                     throw new WSSException("Document is locked by another user");
                 }
