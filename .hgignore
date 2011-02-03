@@ -1,10 +1,11 @@
 syntax:glob
-.DS_Store
 .classpath
+.metadata
 .project
-.svn
+.settings
 bin
+build.properties
 target
 *~
-nxserver*
-nuxeo-webdav/data
+*.orig
+.DS_Store
