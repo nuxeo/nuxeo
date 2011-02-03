@@ -201,6 +201,24 @@
         <artifactId>nuxeo-platform-faceted-search-dm</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <!-- WSS -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-generic-wss-front</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-generic-wss-handler</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-wss-backend</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
