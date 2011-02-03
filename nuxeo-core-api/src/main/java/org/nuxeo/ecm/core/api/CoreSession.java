@@ -502,6 +502,18 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Returns the parent ref of the document referenced by {@code docRef} or
+     * {@code null} if this is the root document.
+     * <p>
+     * This method does not check the permissions on the parent document of this
+     * {@code CoreSession}'s {@code Principal}.
+     *
+     * @since 5.4.1
+     */
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException;
+
+    /**
      * Gets the parent document or null if this is the root document.
      *
      * @return the parent document or null if this is the root document
@@ -1752,5 +1764,23 @@ public interface CoreSession {
      * @throws ClientException
      */
     boolean supportsTags() throws ClientException;
+
+    /**
+     * Find the first parent with the given {@code facet} and adapt it on the
+     * {@code adapterClass}.
+     * <p>
+     * This method does not check the permissions on the document to be adapted of this
+     * {@code CoreSession}'s {@code Principal}, and so the adapter must not need
+     * other schemas from the {@code DocumentModel} except the schemas related
+     * to the given facet.
+     *
+     *
+     * @return the first parent with the given {@code facet} adapted, or
+     *         {@code null} if no parent found or the document does not support
+     *         the given {@code adapterClass}.
+     * @since 5.4.1
+     */
+    public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
+            Class<T> adapterClass) throws ClientException;
 
 }

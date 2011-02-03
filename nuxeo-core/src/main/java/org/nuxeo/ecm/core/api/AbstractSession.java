@@ -18,24 +18,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
@@ -66,6 +48,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -104,6 +87,8 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
@@ -111,6 +96,24 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 
 /**
  * Abstract implementation of the client interface.
@@ -1338,6 +1341,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (DocumentException e) {
             throw new ClientException("Failed to get folders "
                     + parent.toString(), e);
+        }
+    }
+
+    @Override
+    public DocumentRef getParentDocumentRef(DocumentRef docRef)
+            throws ClientException {
+        try {
+            final Document doc = resolveReference(docRef);
+            Document parentDoc = doc.getParent();
+            return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get parent document ref for: "
+                    + docRef, e);
         }
     }
 
@@ -3287,6 +3303,64 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     @Override
     public String[] getPermissionsToCheck(String permission) {
         return getSecurityService().getPermissionsToCheck(permission);
+    }
+
+    @Override
+    public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(
+            DocumentRef docRef, String facet, Class<T> adapterClass)
+            throws ClientException {
+        Document doc = getFirstParentDocumentWithFacet(docRef, facet);
+        if (doc != null) {
+            DocumentModel docModel = readModel(doc);
+            loadDataModelsForFacet(docModel, doc, facet);
+            // detach the DocumentModel
+            ((DocumentModelImpl) docModel).detach(false);
+            return docModel.getAdapter(adapterClass);
+        }
+        return null;
+    }
+
+    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc,
+            String facetName) throws ClientException {
+        // Load all the data related to facet's schemas
+        SchemaManager schemaManager = NXSchema.getSchemaManager();
+        CompositeType facet = schemaManager.getFacet(facetName);
+        if (facet == null) {
+            return;
+        }
+
+        String[] facetSchemas = facet.getSchemaNames();
+        for (String schema : facetSchemas) {
+            try {
+                DataModel dm = DocumentModelFactory.createDataModel(doc,
+                        schemaManager.getSchema(schema));
+                docModel.getDataModels().put(schema, dm);
+            } catch (DocumentException e) {
+                throw new ClientException(e);
+            }
+        }
+    }
+
+    /**
+     * Returns the first {@code Document} with the given {@code facet},
+     * recursively going up the parent hierarchy. Returns {@code null} if there
+     * is no more parent.
+     * <p>
+     * This method does not check security rights.
+     */
+    protected Document getFirstParentDocumentWithFacet(DocumentRef docRef,
+            String facet) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            if (doc.hasFacet(facet)) {
+                return doc;
+            }
+            Document parentDoc = doc.getParent();
+            return parentDoc != null ? getFirstParentDocumentWithFacet(
+                    new IdRef(parentDoc.getUUID()), facet) : null;
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
     }
 
 }
