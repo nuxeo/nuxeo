@@ -65,7 +65,7 @@ public class TypesTool implements Serializable {
 
     private static String DEFAULT_CATEGORY = "misc";
 
-    @In
+    @In(create = true)
     private transient TypeManager typeManager;
 
     private Map<String, List<List<Type>>> typesMap;
