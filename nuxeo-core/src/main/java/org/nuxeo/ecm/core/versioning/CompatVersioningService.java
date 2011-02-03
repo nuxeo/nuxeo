@@ -75,15 +75,16 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public void doPostSave(Document doc, VersioningOption option,
+    public Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException {
         if (!doc.isCheckedOut()) {
-            return;
+            return null;
         }
         // option = validateOption(doc, option);
         incrementByOption(doc, option);
         followTransitionByOption(doc, option);
+        return null;
     }
 
     @Override

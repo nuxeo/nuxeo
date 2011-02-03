@@ -101,14 +101,17 @@ public interface VersioningService {
             Map<String, Serializable> options) throws DocumentException;
 
     /**
-     * Applies versioning options after document save.
+     * Applies versioning options after document save. If a new version is
+     * checked in during the operation, the document for this version is
+     * returned to the caller.
      *
      * @param doc the document
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
      * @param context map event info
+     * @return checkedInDocument or null
      */
-    void doPostSave(Document doc, VersioningOption option,
+    Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException;
 

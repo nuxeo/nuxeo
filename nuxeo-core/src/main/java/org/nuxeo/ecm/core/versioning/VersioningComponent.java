@@ -205,15 +205,14 @@ public class VersioningComponent extends DefaultComponent implements
     public VersioningOption doPreSave(Document doc, boolean isDirty,
             VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
-        return getService().doPreSave(doc, isDirty, option, checkinComment,
-                options);
+        return getService().doPreSave(doc, isDirty, option, checkinComment, options);
     }
 
     @Override
-    public void doPostSave(Document doc, VersioningOption option,
+    public Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException {
-        getService().doPostSave(doc, option, checkinComment, options);
+        return getService().doPostSave(doc, option, checkinComment, options);
     }
 
     @Override

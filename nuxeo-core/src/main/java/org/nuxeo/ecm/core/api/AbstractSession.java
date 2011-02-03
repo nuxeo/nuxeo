@@ -18,6 +18,24 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
@@ -96,24 +114,6 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
-
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_VERSION;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE_CHILDREN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNLOCK;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_LIFE_CYCLE;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 
 /**
  * Abstract implementation of the client interface.
@@ -1881,15 +1881,22 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             // actual save
             docModel = writeModel(doc, docModel);
+            Document checkedInDoc = null;
 
             if (!docModel.isImmutable()) {
                 // post-save versioning
-                getVersioningService().doPostSave(doc, versioningOption,
-                        checkinComment, options);
+                checkedInDoc = getVersioningService().doPostSave(doc,
+                        versioningOption, checkinComment, options);
             }
 
-            // post-save event
+            // post-save events
             docModel = readModel(doc);
+            if (checkedInDoc != null) {
+                DocumentRef checkedInVersionRef = new IdRef(
+                        checkedInDoc.getUUID());
+                notifyCheckedInVersion(docModel, checkedInVersionRef, options,
+                        checkinComment);
+            }
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true, false);
 
@@ -2214,14 +2221,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     options, null, null, true, false);
 
             docModel = readModel(doc);
-            String label = getVersioningService().getVersionLabel(docModel);
-            options.put("versionLabel", label);
-            options.put("checkInComment", checkinComment);
-            String comment = checkinComment == null ? label : label + ' '
-                    + checkinComment;
-            options.put("comment", comment); // compat, used in audit
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel,
-                    options, null, null, true, false);
+            DocumentRef checkedInVersionRef = versionModel.getRef();
+            notifyCheckedInVersion(docModel, checkedInVersionRef, options,
+                    checkinComment);
             writeModel(doc, docModel);
 
             return versionModel.getRef();
@@ -2229,6 +2231,34 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException("Failed to check in document " + docRef,
                     e);
         }
+    }
+
+    /**
+     * Send a core event for the creation of a new check in version. The source
+     * document is the live document model used as the source for the checkin,
+     * not the archived version it-self.
+     *
+     * @param docModel work document that has been checked-in as a version
+     * @param checkedInVersionRef document ref of the new checked-in version
+     * @param options initial option map, or null
+     * @param checkinComment
+     * @throws ClientException
+     */
+    protected void notifyCheckedInVersion(DocumentModel docModel,
+            DocumentRef checkedInVersionRef, Map<String, Serializable> options,
+            String checkinComment) throws ClientException {
+        String label = getVersioningService().getVersionLabel(docModel);
+        if (options == null) {
+            options = new HashMap<String, Serializable>();
+        }
+        options.put("versionLabel", label);
+        options.put("checkInComment", checkinComment);
+        options.put("checkedInVersionRef", checkedInVersionRef);
+        String comment = checkinComment == null ? label : label + ' '
+                + checkinComment;
+        options.put("comment", comment); // compat, used in audit
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDIN, docModel, options,
+                null, null, true, false);
     }
 
     @Override

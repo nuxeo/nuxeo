@@ -68,10 +68,10 @@ public class VersioningServiceBean implements VersioningServiceLocal {
     }
 
     @Override
-    public void doPostSave(Document doc, VersioningOption option,
+    public Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException {
-        service.doPostSave(doc, option, checkinComment, options);
+        return service.doPostSave(doc, option, checkinComment, options);
     }
 
     @Override

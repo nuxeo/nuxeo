@@ -152,8 +152,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public void doPostCreate(Document doc, Map<String, Serializable> options)
-            throws DocumentException {
+    public void doPostCreate(Document doc, Map<String, Serializable> options) {
         if (doc.isVersion() || doc.isProxy()) {
             return;
         }
@@ -284,15 +283,16 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public void doPostSave(Document doc, VersioningOption option,
+    public Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException {
         // option = validateOption(doc, option); // validated before
         boolean increment = option != NONE;
         if (doc.isCheckedOut() && increment) {
             incrementByOption(doc, option);
-            doc.checkIn(null, checkinComment); // auto-label
+            return doc.checkIn(null, checkinComment); // auto-label
         }
+        return null;
     }
 
     @Override
@@ -325,11 +325,11 @@ public class StandardVersioningService implements ExtendableVersioningService {
     public void setVersioningRules(
             Map<String, VersioningRuleDescriptor> versioningRules) {
         this.versioningRules = versioningRules;
-
     }
 
     @Override
-    public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
+    public void setDefaultVersioningRule(
+            DefaultVersioningRuleDescriptor defaultVersioningRule) {
         this.defaultVersioningRule = defaultVersioningRule;
     }
 
