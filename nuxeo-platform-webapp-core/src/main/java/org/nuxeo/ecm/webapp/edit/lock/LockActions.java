@@ -38,7 +38,12 @@ public interface LockActions extends Serializable {
 
      String LOCKER = "document.locker";
 
+     /** @deprecated since 5.4.1, use {@link #LOCK_CREATED} instead */
+     @Deprecated
      String LOCK_TIME = "document.lock.time";
+
+     /** @since 5.4.1 */
+     String LOCK_CREATED = "document.lock.created";
 
     /**
      * Gets the lock of the current document.
@@ -136,7 +141,7 @@ public interface LockActions extends Serializable {
      *         map
      * @throws ClientException
      */
-    Map<String, String> getLockDetails(DocumentModel document)
+    Map<String, Serializable> getLockDetails(DocumentModel document)
             throws ClientException;
 
     /**
@@ -147,7 +152,7 @@ public interface LockActions extends Serializable {
      *         map
      * @throws ClientException
      */
-    Map<String, String> getCurrentDocLockDetails() throws ClientException;
+    Map<String, Serializable> getCurrentDocLockDetails() throws ClientException;
 
     /**
      * This method is used to test whether the live-edit link should appear on a

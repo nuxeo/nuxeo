@@ -17,7 +17,10 @@
       <span onmouseover="tooltip.show('#{currentDocumentLockDetails['document.locker']}', 150);" onmouseout="tooltip.hide();">
         <h:outputText value="#{messages['label.summary.by']} #{nxu:userFullName(currentDocumentLockDetails['document.locker'])}, "/>
       </span>
-      <h:outputText value="#{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.time']}"/>
+      <h:outputText value="#{messages['label.summary.the']} "/>
+        <h:outputText value="#{currentDocumentLockDetails['document.lock.created'].time}">
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" timeZone="#{timeZone}" />
+        </h:outputText>
     </div>
   </c:if>
 

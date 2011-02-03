@@ -23,6 +23,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,17 +46,19 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
  * This is the action listener that knows to decide if an user has the right to
@@ -95,7 +98,7 @@ public class LockActionsBean implements LockActions {
     protected transient CoreSession documentManager;
 
     // cache lock details states to reduce costly core session remote calls
-    private Map<String, String> lockDetails;
+    private Map<String, Serializable> lockDetails;
 
     private Boolean canLock;
 
@@ -114,8 +117,8 @@ public class LockActionsBean implements LockActions {
             } else {
                 try {
                     NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    String docLock = documentManager.getLock(document.getRef());
-                    canLock = docLock == null
+                    Lock lock = documentManager.getLockInfo(document.getRef());
+                    canLock = lock == null
                             && (userName.isAdministrator() || documentManager.hasPermission(
                                     document.getRef(), WRITE_PROPERTIES))
                             && !document.isVersion();
@@ -152,7 +155,7 @@ public class LockActionsBean implements LockActions {
             } else {
                 try {
                     NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    Map<String, String> lockDetails = getLockDetails(document);
+                    Map<String, Serializable> lockDetails = getLockDetails(document);
                     if (lockDetails.isEmpty() || document.isProxy()) {
                         canUnlock = false;
                     } else {
@@ -190,8 +193,8 @@ public class LockActionsBean implements LockActions {
         String message = "document.lock.failed";
         DocumentRef ref = document.getRef();
         if (documentManager.hasPermission(ref, WRITE_PROPERTIES)
-                && documentManager.getLock(ref) == null) {
-            documentManager.setLock(ref, getDocumentLockKey());
+                && documentManager.getLockInfo(ref) == null) {
+            documentManager.setLock(ref);
             documentManager.save();
             message = "document.lock";
         }
@@ -207,11 +210,11 @@ public class LockActionsBean implements LockActions {
     }
 
     // helper inner class to do the unrestricted unlock
-    protected class unrestrictedUnlocker extends UnrestrictedSessionRunner {
+    protected class UnrestrictedUnlocker extends UnrestrictedSessionRunner {
 
         private final DocumentRef docRefToUnlock;
 
-        protected unrestrictedUnlocker(DocumentRef docRef) {
+        protected UnrestrictedUnlocker(DocumentRef docRef) {
             super(documentManager);
             docRefToUnlock = docRef;
         }
@@ -221,7 +224,7 @@ public class LockActionsBean implements LockActions {
          */
         @Override
         public void run() throws ClientException {
-            session.unlock(docRefToUnlock);
+            session.removeLock(docRefToUnlock);
             session.save();
         }
     }
@@ -231,7 +234,7 @@ public class LockActionsBean implements LockActions {
         log.debug("Unlock a document ...");
         resetEventContext();
         String message;
-        Map<String, String> lockDetails = getLockDetails(document);
+        Map<String, Serializable> lockDetails = getLockDetails(document);
         if (lockDetails == null) {
             message = "document.unlock.done";
         } else {
@@ -249,7 +252,7 @@ public class LockActionsBean implements LockActions {
                         // we need to grant him this possibility even if it
                         // doesn't have the write permission.
 
-                        new unrestrictedUnlocker(document.getRef()).runUnrestricted();
+                        new UnrestrictedUnlocker(document.getRef()).runUnrestricted();
 
                         documentManager.save(); // process invalidations from unrestricted session
 
@@ -258,7 +261,7 @@ public class LockActionsBean implements LockActions {
                         throw new ClientException(e.getMessage());
                     }
                 } else {
-                    documentManager.unlock(document.getRef());
+                    documentManager.removeLock(document.getRef());
                     documentManager.save();
                     message = "document.unlock";
                 }
@@ -292,35 +295,31 @@ public class LockActionsBean implements LockActions {
     }
 
     @Factory(value="currentDocumentLockDetails", scope = ScopeType.EVENT)
-    public Map<String, String> getCurrentDocLockDetails()
+    public Map<String, Serializable> getCurrentDocLockDetails()
             throws ClientException {
-        Map<String, String> details = null;
+        Map<String, Serializable> details = null;
         if (navigationContext.getCurrentDocument() != null) {
             details = getLockDetails(navigationContext.getCurrentDocument());
         }
         return details;
     }
 
-    public Map<String, String> getLockDetails(DocumentModel document)
+    public Map<String, Serializable> getLockDetails(DocumentModel document)
             throws ClientException {
         if (lockDetails == null) {
-            lockDetails = new HashMap<String, String>();
-            String documentKey = documentManager.getLock(document.getRef());
-            if (documentKey == null) {
+            lockDetails = new HashMap<String, Serializable>();
+            Lock lock = documentManager.getLockInfo(document.getRef());
+            if (lock == null) {
                 return lockDetails;
             }
-            String[] values = documentKey.split(":");
-            lockDetails.put(LOCKER, values[0]);
-            lockDetails.put(LOCK_TIME, values[1]);
+            lockDetails.put(LOCKER, lock.getOwner());
+            lockDetails.put(LOCK_CREATED, lock.getCreated());
+            lockDetails.put(
+                    LOCK_TIME,
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(
+                            new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
-    }
-
-    protected String getDocumentLockKey() {
-        StringBuilder result = new StringBuilder();
-        result.append(documentManager.getPrincipal().getName()).append(':').append(
-                DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()));
-        return result.toString();
     }
 
     /**
@@ -332,8 +331,8 @@ public class LockActionsBean implements LockActions {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             try {
                 NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                String docLock = documentManager.getLock(currentDocument.getRef());
-                if (docLock == null) {
+                Lock lock = documentManager.getLockInfo(currentDocument.getRef());
+                if (lock == null) {
                     isLiveEditable = (userName.isAdministrator() || documentManager.hasPermission(
                             currentDocument.getRef(), WRITE_PROPERTIES))
                             && !currentDocument.isVersion();
