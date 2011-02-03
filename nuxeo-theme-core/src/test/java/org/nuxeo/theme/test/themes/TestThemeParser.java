@@ -24,6 +24,7 @@ import org.nuxeo.theme.elements.SectionElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
@@ -102,6 +103,9 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
         CellElement cell2 = (CellElement) section1.getChildren().get(1);
         assertEquals("right column", cell2.getName());
+
+        Fragment fragment1 = (Fragment) cell2.getChildren().get(0);
+        assertEquals("main", fragment1.getName());
     }
 
     public void testStyles() {
