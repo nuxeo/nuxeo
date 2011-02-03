@@ -1,0 +1,38 @@
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:e="http://jboss.com/products/seam/excel">
+
+<c:if test="false">
+  displays a content view using csv JSF library
+  default column width is 20*256=5120
+</c:if>
+
+  <nxu:set var="contentViewName" value="#{request.getParameter('contentViewName')}">
+  <nxu:set var="contentView"
+    value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, nxu:test(empty contentViewSortInfos, null, contentViewSortInfos), 0, -1)}"
+    cache="true">
+  <nxu:set var="selectedResultLayoutColumns"
+    value="#{nxu:test(selectedResultLayoutColumns == null, contentView.resultLayoutColumns, selectedResultLayoutColumns)}"
+    cache="true">
+  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+    cache="true">
+
+    <e:workbook>
+      <e:worksheet value="#{provider.currentSelectPage.rows}" var="row"
+        defaultColumnWidth="20">
+        <nxl:layout name="#{contentView.currentResultLayout.name}"
+          value="#{row}" mode="plain_csv"
+          selectedColumns="#{selectedResultLayoutColumns}" />
+      </e:worksheet>
+    </e:workbook>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+
+</html>

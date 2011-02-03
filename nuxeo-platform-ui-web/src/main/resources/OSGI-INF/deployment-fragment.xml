@@ -174,6 +174,40 @@
       <servlet-name>Nuxeo Restlet Servlet</servlet-name>
       <url-pattern>/restAPI/*</url-pattern>
     </servlet-mapping>
+
+    <!-- pdf/csv/excel JSF servlet -->
+    <servlet>
+      <servlet-name>Document Store Servlet</servlet-name>
+      <servlet-class>
+        org.jboss.seam.document.DocumentStoreServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Document Store Servlet</servlet-name>
+      <url-pattern>*.pdf</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>Document Store Servlet</servlet-name>
+      <url-pattern>*.csv</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>Document Store Servlet</servlet-name>
+      <url-pattern>*.xls</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <!-- register seam template so that excel generation plays
+      well with url service -->
+    <navigation-case>
+      <from-outcome>seam_docstore</from-outcome>
+      <to-view-id>/seam-docstore.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
   </extension>
 
   <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
@@ -203,7 +237,8 @@
       <param-value>
         /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
-        /WEB-INF/nxweb-ajax4jsf.taglib.xml;
+        /WEB-INF/nxweb-ajax4jsf.taglib.xml; /WEB-INF/nx-seam-excel.taglib.xml;
+        /WEB-INF/nx-seam-rss.taglib.xml;
       </param-value>
     </context-param>
 
@@ -468,6 +503,27 @@
         org.nuxeo.ecm.platform.ui.web.component.DisabledComponent
       </component-class>
     </component>
+
+    <!-- override of buggy seam libraries -->
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIFeed
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIFeed
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.seam.UIColumn
+      </component-class>
+    </component>
+    <!-- end of override of buggy seam libraries -->
+
   </extension>
 
   <extension target="faces-config#RENDERER">

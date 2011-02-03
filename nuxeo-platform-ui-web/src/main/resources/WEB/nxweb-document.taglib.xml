@@ -175,6 +175,7 @@
       java.lang.String, java.lang.String)
     </function-signature>
   </function>
+
   <function>
     <function-name>documentUrl</function-name>
     <function-class>
@@ -182,6 +183,18 @@
     </function-class>
     <function-signature>
       java.lang.String documentUrl(org.nuxeo.ecm.core.api.DocumentModel)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>complexDocumentUrl</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
+    </function-class>
+    <function-signature>
+      java.lang.String documentUrl(java.lang.String,
+      org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, java.util.Map,
+      boolean)
     </function-signature>
   </function>
 
@@ -268,7 +281,8 @@
       org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions
     </function-class>
     <function-signature>
-      java.util.List getAvailableLifeCycleTransitions(java.lang.String, java.lang.String)
+      java.util.List getAvailableLifeCycleTransitions(java.lang.String,
+      java.lang.String)
     </function-signature>
   </function>
 

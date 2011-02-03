@@ -62,7 +62,7 @@ public class TypesTool implements Serializable {
 
     private static final int COLUMN_SIZE = 4;
 
-    @In
+    @In(create = true)
     protected transient TypeManager typeManager;
 
     protected Map<String, List<List<Type>>> typesMap;

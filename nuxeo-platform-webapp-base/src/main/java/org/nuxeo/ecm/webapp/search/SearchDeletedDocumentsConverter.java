@@ -30,7 +30,9 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
  * states to filter on
  *
  * @author Anahide Tchertchian
+ * @deprecated this converter is not needed anymore, see NXP-6249
  */
+@Deprecated
 public class SearchDeletedDocumentsConverter implements Converter {
 
     // TODO: make states configurable through converter arguments

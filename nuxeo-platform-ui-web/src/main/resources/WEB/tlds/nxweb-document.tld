@@ -58,6 +58,10 @@
            String filenamePropertyPath, String filename): get the pretty-print description
            of a blob.</li>
       <li> documentUrl(DocumentModel): get the rest url for a document.</li>
+      <li> complexDocumentUrl(String, DocumentModel, String, Map<String, String>, boolean):
+           get the rest url for a document with parameters: the url pattern, the document,
+           the view id, url parameters, and a boolean stating if a new conversation should
+           be created. Available since 5.4.1.</li>
       <li> liveEditDefaultUrl(DocumentModel): get the nxedit:// URL to edit a document
            file attachement (default File-like types)</li>
       <li> liveEditUrl(DocumentModel, String, String, String): get the nxedit://

@@ -2,6 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:f="http://java.sun.com/jsf/core"
   test="#{contentView != null}">
 
@@ -38,6 +39,17 @@ Needed parameters:
             alt="#{messages['label.refresh']}"
             title="#{messages['label.refresh']}" />
         </h:commandLink>
+      </li>
+      <li>
+        <h:outputLink value="#{nxd:complexDocumentUrl('csv_export', currentDocument, 'content_view_csv', null, true)}"
+          target="_blank">
+          <f:param name="contentViewName" value="#{contentView.name}" />
+          <f:param name="currentConversationId"
+            value="#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}" />
+          <h:graphicImage value="/icons/csv_export.png"
+            alt="#{messages['label.search.export.excel']}"
+            title="#{messages['label.search.export.excel']}" />
+        </h:outputLink>
       </li>
     </ul>
     <nxu:set var="actions"

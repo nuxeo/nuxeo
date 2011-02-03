@@ -5,6 +5,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:h="http://java.sun.com/jsf/html">
+<c:if test="#{widget.mode == 'plain'}">#{nxd:titleOrId(field_0)}</c:if>
+<c:if test="#{widget.mode != 'plain'}">
 
   <div class="popupTarget" docRef="#{field_1}">
 
@@ -32,4 +34,5 @@
 
   </div>
 
+</c:if>
 </f:subview>

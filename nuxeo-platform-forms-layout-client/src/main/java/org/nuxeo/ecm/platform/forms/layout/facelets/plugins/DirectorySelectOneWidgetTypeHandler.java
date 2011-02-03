@@ -58,7 +58,13 @@ public class DirectorySelectOneWidgetTypeHandler extends
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+        TagAttributes attributes;
+        if (BuiltinWidgetModes.PLAIN.equals(mode)) {
+            // use attributes without id
+            attributes = helper.getTagAttributes(widget);
+        } else {
+            attributes = helper.getTagAttributes(widgetId, widget);
+        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(attributes,
                     leaf, SelectOneListboxComponent.COMPONENT_TYPE, null);

@@ -59,12 +59,12 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                     "keySeparator");
             String schema;
             try {
-                schema = DirectoryHelper.getDirectoryService().getDirectory(directoryName).getSchema();
+                schema = DirectoryHelper.getDirectoryService().getDirectorySchema(directoryName);
             } catch (DirectoryException de) {
                 log.error("Unable to get directory schema for " + directoryName, de);
                 schema = keySeparator != null ? "xvocabulary" : "vocabulary";
             }
-            if (keySeparator != null) {
+            if (keySeparator != null && entryId != null) {
                 entryId = entryId.substring(
                         entryId.lastIndexOf(keySeparator) + 1, entryId.length());
             }

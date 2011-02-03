@@ -81,10 +81,17 @@
       <redirect />
     </navigation-case>
 
+    <navigation-case>
+      <from-outcome>content_view_csv</from-outcome>
+      <to-view-id>/incl/content_view_csv.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
   </extension>
 
   <extension target="faces-config#CONVERTER">
 
+    <!-- This converter is now deprecated, see NXP-6249 -->
     <converter>
       <converter-id>org.nuxeo.SearchDeletedDocumentsConverter</converter-id>
       <converter-class>

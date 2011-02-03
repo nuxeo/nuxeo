@@ -1,0 +1,22 @@
+<div xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{widget.mode == 'view'}">
+    <h:outputText id="#{widget.id}" value="#{messages['label.no']}"
+      rendered="#{field == 'deleted'}" />
+    <h:outputText id="#{widget.id}" value="#{messages['label.yes']}"
+      rendered="#{field != 'deleted'}" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <h:selectOneMenu value="#{field}" id="#{widget.id}"
+      required="#{widget.required}">
+      <f:selectItem itemValue="deleted" itemLabel="#{messages['label.no']}" />
+      <f:selectItem itemValue=" " itemLabel="#{messages['label.yes']}" />
+    </h:selectOneMenu>
+    <h:message styleClass="errorMessage" for="#{widget.id}"
+      id="#{widget.id}_message" />
+  </c:if>
+
+</div>

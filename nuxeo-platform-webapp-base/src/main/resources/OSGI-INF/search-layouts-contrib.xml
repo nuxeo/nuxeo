@@ -281,17 +281,17 @@
       </properties>
     </widget>
 
-    <widget name="search_deleted_documents" type="checkbox">
+    <widget name="search_deleted_documents" type="template">
       <labels>
         <label mode="any">label.search.deleted.documents</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>search:currentLifeCycleStates</field>
+        <field>search:currentLifeCycleState</field>
       </fields>
       <properties mode="any">
-        <property name="converter">
-          org.nuxeo.SearchDeletedDocumentsConverter
+        <property name="template">
+          /widgets/search_deleted_documents_widget.xhtml
         </property>
       </properties>
       <widgetModes>

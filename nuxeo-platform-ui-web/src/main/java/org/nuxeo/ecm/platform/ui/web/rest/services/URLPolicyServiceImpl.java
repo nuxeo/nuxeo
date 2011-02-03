@@ -143,7 +143,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             return false;
         }
 
-        Object skipRedirect = httpRequest.getAttribute(DISABLE_REDIRECT_REQUEST_KEY);
+        Object skipRedirect = httpRequest.getAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY);
         if (skipRedirect instanceof Boolean && (Boolean) skipRedirect) {
             return false;
         }

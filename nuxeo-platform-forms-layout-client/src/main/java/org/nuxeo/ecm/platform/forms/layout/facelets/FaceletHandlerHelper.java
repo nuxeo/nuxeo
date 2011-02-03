@@ -263,9 +263,13 @@ public final class FaceletHandlerHelper {
      * exposed values).
      */
     public TagAttributes getTagAttributes(String id, Widget widget) {
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         // add id and value computed from fields
-        attrs.add(createAttribute("id", id));
+        TagAttributes widgetAttrs = getTagAttributes(widget);
+        return addTagAttribute(widgetAttrs, createAttribute("id", id));
+    }
+
+    public TagAttributes getTagAttributes(Widget widget) {
+        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 0) {
             FieldDefinition field = fields[0];
