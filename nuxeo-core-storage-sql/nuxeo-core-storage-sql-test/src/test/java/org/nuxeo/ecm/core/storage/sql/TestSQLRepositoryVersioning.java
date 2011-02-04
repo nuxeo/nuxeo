@@ -642,6 +642,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentRef verRef = doc.checkIn(VersioningOption.MINOR, "comment");
         session.save();
         DocumentModel ver = session.getDocument(verRef);
+        proxy.refresh();
 
         assertFalse(doc.isCheckedOut());
         assertFalse(doc.isVersion());
@@ -708,6 +709,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
          */
 
         doc.checkOut();
+        ver.refresh();
+        proxy.refresh();
 
         assertTrue(doc.isCheckedOut());
         assertFalse(doc.isVersion());
@@ -731,6 +734,9 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         DocumentRef majRef = doc.checkIn(VersioningOption.MAJOR, "yo");
         DocumentModel maj = session.getDocument(majRef);
+        ver.refresh();
+        proxy.refresh();
+
         assertTrue(maj.isMajorVersion());
         assertTrue(maj.isLatestVersion());
         assertTrue(maj.isLatestMajorVersion());
