@@ -31,8 +31,12 @@
           <widget>callbackURL</widget>
         </row>
         <row>
+          <widget>allowBypassVerifier</widget>
+        </row>
+        <row>
           <widget>enabled</widget>
         </row>
+
       </rows>
 
       <widget name="consumerKey" type="text">
@@ -63,7 +67,7 @@
           </property>
         </properties>
       </widget>
-      <widget name="publicKey" type="text">
+      <widget name="publicKey" type="textarea">
         <labels>
           <label mode="any">Consumer Public Key (RSA Signature) </label>
         </labels>
@@ -137,6 +141,23 @@
         <properties mode="any">
           <property name="help">
           label.oauth.help.callbackURL
+          </property>
+        </properties>
+      </widget>
+      <widget name="allowBypassVerifier" type="template">
+        <labels>
+          <label mode="any">Allow OAuth verifier check bypass</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthConsumer.allowBypassVerifier</field>
+        </fields>
+        <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+          <property name="help">
+          label.oauth.help.enabled
           </property>
         </properties>
       </widget>
