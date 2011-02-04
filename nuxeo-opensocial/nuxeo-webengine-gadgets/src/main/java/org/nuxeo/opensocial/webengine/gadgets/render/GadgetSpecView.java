@@ -181,6 +181,8 @@ public class GadgetSpecView{
             input.putAll(params);
         }
 
+        input.put("contextHelper", NuxeoContextHelper.getInstance());
+
         // allow override / addition via request parameters
         Enumeration<String> pNames = httpRequest.getParameterNames();
         while (pNames.hasMoreElements()) {

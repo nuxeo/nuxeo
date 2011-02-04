@@ -1,4 +1,4 @@
- <div id="nxDocumentList">
+ <div id="nxDocumentList" style="display:none">
         <div class="pageNavigationControls">
           <input type="image" id="navFirstPage" src="${clientSideBaseUrl}icons/action_page_rewind.gif"/>
           <input type="image" id="navPrevPage" src="${clientSideBaseUrl}icons/action_page_previous.gif"/>

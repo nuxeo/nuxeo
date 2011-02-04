@@ -60,6 +60,8 @@ function displayDocumentList(entries, nxParams) {
   htmlContent += tableEnd();
   _gel("nxDocumentListData").innerHTML = htmlContent + "<br/>";
 
+  _gel("nxDocumentList").style.display='block';
+
   gadgets.window.adjustHeight();
 }
 
@@ -153,5 +155,6 @@ function lastPage(nxParams) {
 }
 
 function refresh(nxParams) {
-  doAutomationRequest(nxParams);
+  nxParams.refreshCB(nxParams);
+  //doAutomationRequest(nxParams);
 }

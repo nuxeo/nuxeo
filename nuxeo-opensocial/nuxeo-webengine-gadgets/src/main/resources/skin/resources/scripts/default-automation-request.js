@@ -1,13 +1,17 @@
 var currentPage = 0;
 var maxPage = 0;
 
-      function showErrorMessage(message) {
+      function showErrorMessage(message,debug) {
         _gel("errorMessage").innerHTML=message;
-        _gel("errorMessage").style.display='block';
+        if (debug) {
+          _gel("debugInfo").innerHTML=debug;
+        }
+        _gel("errorDivMessage").style.display='block';
       }
-      function hideErrorMessage(message) {
+      function hideErrorMessage() {
         _gel("errorMessage").innerHTML="";
-        _gel("errorMessage").style.display='none';
+        _gel("debugInfo").innerHTML="";
+        _gel("errorDivMessage").style.display='none';
       }
       function showWaitMessage() {
         _gel("waitMessage").style.display='block';
@@ -37,11 +41,22 @@ var maxPage = 0;
         showWaitMessage();
         hideErrorMessage();
 
-        var ts = new Date().getTime() + "" + Math.random()*11
         var url = NXGadgetContext.serverSideBaseUrl + "site/automation/" + nxParams.operationId;
+
+        // add random TS to walkaround caching issues ...
+        var ts = new Date().getTime() + "" + Math.random()*11
         url += "?ts=" + ts;
 
+        // add target repository if needed
+        if (typeof(getTargetRepository)=='function') {
+          var repoName = getTargetRepository();
+          if (repoName!=null && repoName !='') {
+            url+= "&nxrepository=" + repoName;
+          }
+        }
+
         var rParams = {};
+        // select auth mode
         if (NXGadgetContext.insideNuxeo) {
           rParams[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
           rParams[gadgets.io.RequestParameters.OAUTH_SERVICE_NAME] = "nuxeo4shindig";
@@ -78,6 +93,10 @@ var maxPage = 0;
           if (nxParams.usePagination) {
             maxPage = response.data['pageCount'];
           }
+
+          // set callback
+          nxParams.refreshCB=doAutomationRequest;
+
           nxParams.displayMethod(response.data.entries,nxParams);
         }
         else {
@@ -96,7 +115,7 @@ var maxPage = 0;
             showOAuthPrompt(popup.createOpenerOnClick(), popup.createApprovedOnClick());
       }
       else {
-        showErrorMessage("No data received from server");
+        showErrorMessage("No data received from server", response);
       }
     }
 

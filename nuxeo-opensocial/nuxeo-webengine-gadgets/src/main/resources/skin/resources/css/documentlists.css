@@ -89,3 +89,11 @@ background:#F2F7FC none repeat scroll 0% 0%;
 .dataRowOdd {
 background:#ECF6FF none repeat scroll 0% 0%;
 }
+
+.contextPanel {
+background-color:#EEEEEE;
+border-color:#CCCCDD;
+border-width: 0px 0px 1px 1px;
+border-style:solid;
+padding:1px
+}

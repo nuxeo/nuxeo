@@ -33,7 +33,7 @@
 
     <internalGadget name="userworkspaces">
       <mountPoint>/userworkspaces</mountPoint>
-      <directory>documentlists</directory>
+      <directory>userworkspaces</directory>
       <entryPoint>userworkspaces.xml</entryPoint>
       <category>Nuxeo</category>
       <icon>workspace_64.png</icon>

@@ -93,5 +93,12 @@
       <icon>Nuxeo.png</icon>
     </internalGadget>
 
+    <internalGadget name="quicksearch" disabled="false">
+      <mountPoint>/quicksearch</mountPoint>
+      <entryPoint>quicksearch.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>Nuxeo.png</icon>
+    </internalGadget>
+
   </extension>
 </component>

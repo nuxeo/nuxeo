@@ -1,4 +1,4 @@
-  <div id="waitMessage">
+  <div id="waitMessage" style="display: none">
        <img src="${clientSideBaseUrl}img/standart_waiter.gif">
   </div>
 
@@ -18,5 +18,7 @@
     <a href="#" id="approvaldone">__MSG_action.nuxeo.oauth.refresh__</a>
   </div>
 
-  <div id="errorMessage">
+  <div id="errorDivMessage" style="display:none">
+     <div id="errorMessage"></div>
+     <div id="debugInfo"></div>
   </div>

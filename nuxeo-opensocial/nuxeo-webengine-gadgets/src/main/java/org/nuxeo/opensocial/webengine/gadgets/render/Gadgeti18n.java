@@ -121,7 +121,7 @@ public class Gadgeti18n {
 
     protected void generateDynamicTranslations(InternalGadgetDescriptor gadget, InputStream dynDescriptor) throws IOException {
 
-        PropertyResourceBundle descriptor = new PropertyResourceBundle(dynDescriptor);
+        PropertyResourceBundle descriptor = new HierarchicalResourceBundle(dynDescriptor);
 
         for (Locale locale : getSupportedLangs()) {
             ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
