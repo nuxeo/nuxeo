@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-ecm</artifactId>
+  <version>5.4.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo ECM Projects</name>
+  <description>Nuxeo ECM Platform and related components.</description>
+
+  <url>http://www.nuxeo.com/en/products/platform</url>
+  <organization>
+    <name>Nuxeo SAS</name>
+    <url>http://www.nuxeo.com/en</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
+      <url>http://www.gnu.org/copyleft/lesser.txt</url>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>Nuxeo ECM list</name>
+      <post>ecm@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</subscribe>
+      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm@lists.nuxeo.com/
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM checkins list</name>
+      <subscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.scm
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM developers list</name>
+      <post>nuxeo-dev@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.nuxeo.org/browse/NXP</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Hudson</system>
+    <url>http://qa.nuxeo.org/hudson/</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <address>ecm-qa@lists.nuxeo.com</address>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+
+  <modules>
+    <module>nuxeo-common/osgi</module>
+    <module>nuxeo-runtime/nuxeo-runtime/osgi</module>
+    <module>nuxeo-runtime/nuxeo-runtime-jtajca/osgi</module>
+    <module>nuxeo-runtime/nuxeo-runtime-jetty-adapter/osgi</module>
+    <module>nuxeo-runtime/nuxeo-runtime-start/osgi</module>
+    <module>nuxeo-core/nuxeo-core-schema/osgi</module>
+    <module>nuxeo-core/nuxeo-core-query/osgi</module>
+    <module>nuxeo-core/nuxeo-core-event/osgi</module>
+    <module>nuxeo-core/nuxeo-core-api/osgi</module>
+    <module>nuxeo-core/nuxeo-core-auth/osgi</module>
+    <module>nuxeo-core/nuxeo-core/osgi</module>
+    <module>nuxeo-core/nuxeo-core-convert-api/osgi</module>
+    <module>nuxeo-core/nuxeo-core-convert/osgi</module>
+    <module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql/osgi</module>
+	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-ra/osgi</module>
+	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-extensions/osgi</module>
+
+    <!-- H2 integration-->
+    <module>nuxeo-core/osgi-fragments/nuxeo-core-storage-h2/osgi</module>
+    <module>nuxeo-core/osgi-fragments/h2-extensions-fragment/osgi</module>
+
+    <!-- jax-rs integration -->
+	<module>nuxeo-webengine/nuxeo-webengine-jaxrs/osgi</module>
+
+
+    <!-- ================= optional bundles ================ -->
+    <module>nuxeo-core/nuxeo-core-io/osgi</module>
+    <!-- TODO: management should be optional - but I think it will not work if we remove it -->
+    <module>nuxeo-runtime/nuxeo-runtime-management/osgi</module>
+    <module>nuxeo-runtime/nuxeo-runtime-management-metrics/osgi</module>
+    <module>nuxeo-core/nuxeo-core-management/osgi</module>
+
+	<!-- used by jaxrs integration if you need ftl views support -->
+	<module>nuxeo-services/nuxeo-platform-rendering/osgi</module>
+
+  </modules>
+
+      <properties>
+        <tycho-version>0.10.0</tycho-version>
+      </properties>
+      <repositories>
+		<repository>
+			<id>helios</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/helios</url>
+		</repository>
+		<!--repository>
+			<id>test</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/eclipse/updates/3.6-JUnit-Tests/</url>
+		</repository-->
+		<repository>
+			<id>thirds</id>
+			<layout>p2</layout>
+			<url>http://marge.in.nuxeo.com/p2/third-parties/</url>
+		</repository>
+	</repositories>
+      <build>
+        <directory>${project.basedir}/target</directory>
+
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.tycho</groupId>
+            <artifactId>tycho-maven-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <extensions>true</extensions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+              <resolver>p2</resolver>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+  <developers>
+    <developer>
+      <id>Nuxeo</id>
+      <name>Nuxeo Developers Team</name>
+      <email>nuxeo-dev@lists.nuxeo.com</email>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/</url>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>public-releases</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>
