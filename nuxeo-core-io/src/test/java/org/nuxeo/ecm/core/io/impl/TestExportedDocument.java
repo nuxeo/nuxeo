@@ -43,7 +43,25 @@ public class TestExportedDocument extends NXRuntimeTestCase {
 
     public void testExportedDocument() throws Exception {
 
-        Mock documentModelMock = getMockDocModel();
+        Mock documentModelMock = mock(DocumentModel.class);
+        documentModelMock.expects(atLeastOnce()).method("getId").will(
+                returnValue("My id"));
+        documentModelMock.expects(atLeastOnce()).method("getType").will(
+                returnValue("My type"));
+        documentModelMock.expects(atLeastOnce()).method("getRef").will(
+                returnValue(new IdRef("My id")));
+        documentModelMock.expects(atLeastOnce()).method("getName").will(
+                returnValue(null));
+        documentModelMock.expects(atLeastOnce()).method(
+                "getCurrentLifeCycleState").will(returnValue(null));
+        documentModelMock.expects(atLeastOnce()).method("getLifeCyclePolicy").will(
+                returnValue(null));
+        documentModelMock.expects(atLeastOnce()).method("getACP").will(
+                returnValue(null));
+        documentModelMock.expects(atLeastOnce()).method("getSchemas").will(
+                returnValue(new String[0]));
+        documentModelMock.expects(atLeastOnce()).method("getRepositoryName").will(
+                returnValue(null));
         documentModelMock.expects(atLeastOnce()).method("getPath").will(
                 returnValue(new Path("my-path")));
         documentModelMock.expects(atLeastOnce()).method("getPathAsString").will(
@@ -79,54 +97,4 @@ public class TestExportedDocument extends NXRuntimeTestCase {
         assertEquals(exportedDoc.getType(), newExportedDoc.getType());
     }
 
-    public void testZipEntryEncoding() throws Exception {
-        Framework.getProperties().setProperty(
-                NuxeoArchiveWriter.ZIP_ENTRY_ENCODING_PROPERTY,
-                NuxeoArchiveWriter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.toString());
-        ;
-        Mock documentModelMock = getMockDocModel();
-        documentModelMock.expects(atLeastOnce()).method("getPath").will(
-                returnValue(new Path("my-path-éèà")));
-        documentModelMock.expects(atLeastOnce()).method("getPathAsString").will(
-                returnValue("/my/path/éèà"));
-
-        DocumentModel model = (DocumentModel) documentModelMock.proxy();
-        ExportedDocument exportedDoc = new ExportedDocumentImpl(model);
-        assertEquals("my-path-éèà", exportedDoc.getPath().toString());
-
-        // Check ZIP output.
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        NuxeoArchiveWriter archWriter = new NuxeoArchiveWriter(out);
-        archWriter.write(exportedDoc);
-
-        // Reimport exported stuff.
-        InputStream in = new ByteArrayInputStream(out.toByteArray());
-        NuxeoArchiveReader archReader = new NuxeoArchiveReader(in);
-        ExportedDocument newExportedDoc = archReader.read();
-        // check that accents have been removed
-        assertEquals(new Path("my-path-eea"), newExportedDoc.getPath());
-    }
-
-    public Mock getMockDocModel() {
-        Mock documentModelMock = mock(DocumentModel.class);
-        documentModelMock.expects(atLeastOnce()).method("getId").will(
-                returnValue("My id"));
-        documentModelMock.expects(atLeastOnce()).method("getType").will(
-                returnValue("My type"));
-        documentModelMock.expects(atLeastOnce()).method("getRef").will(
-                returnValue(new IdRef("My id")));
-        documentModelMock.expects(atLeastOnce()).method("getName").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method(
-                "getCurrentLifeCycleState").will(returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getLifeCyclePolicy").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getACP").will(
-                returnValue(null));
-        documentModelMock.expects(atLeastOnce()).method("getSchemas").will(
-                returnValue(new String[0]));
-        documentModelMock.expects(atLeastOnce()).method("getRepositoryName").will(
-                returnValue(null));
-        return documentModelMock;
-    }
 }
