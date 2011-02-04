@@ -97,7 +97,7 @@ public class Environment {
 
     public static final String BUNDLES = "nuxeo.osgi.bundles";
 
-    private static Environment DEFAULT;
+    private static volatile Environment DEFAULT;
 
     protected final File home;
 
@@ -134,13 +134,27 @@ public class Environment {
         this.properties.put(HOME_DIR, this.home.getAbsolutePath());
     }
 
-    public static void setDefault(Environment env) {
+    public static synchronized void setDefault(Environment env) {
         DEFAULT = env;
     }
 
     public static Environment getDefault() {
+    	if (DEFAULT == null) {
+    		tryInitEnvironment();
+    	}
         return DEFAULT;
     }
+    
+    private static synchronized void tryInitEnvironment() {
+    	String homeDir = System.getProperty("nuxeo.home");
+    	if (homeDir != null) {
+    		File home = new File(homeDir);
+    		if (home.isDirectory()) {
+    			DEFAULT = new Environment(home);
+    		}
+    	}
+    }
+
 
     public File getHome() {
         return home;
