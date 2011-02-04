@@ -15,4 +15,6 @@
 
   <xs:element name="enabled" type="xs:integer"/>
 
+  <xs:element name="allowBypassVerifier" type="xs:integer"/>
+
 </xs:schema>

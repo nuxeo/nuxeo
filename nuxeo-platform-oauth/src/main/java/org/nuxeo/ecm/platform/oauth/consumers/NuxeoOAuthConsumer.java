@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import net.oauth.OAuth;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthServiceProvider;
+import net.oauth.signature.RSA_SHA1;
+import net.oauth.signature.pem.PEMReader;
 
 /**
  * Represents a application that uses OAuth to consume a Web Service from Nuxeo.
@@ -55,6 +57,8 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
     protected boolean enabled = true;
 
+    protected boolean allowBypassVerifier = false;
+
     public static final String SCHEMA = "oauthConsumer";
 
     protected static final Log log = LogFactory.getLog(NuxeoOAuthConsumer.class);
@@ -67,15 +71,18 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
                 "consumerSecret");
         String rsaKey = (String) entry.getProperty(SCHEMA, "publicKey");
 
-        if (OAuth.RSA_SHA1.equals(keyType)) {
-            consumerSecret = rsaKey;
-        }
-
         NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(callbackURL, consumerKey, consumerSecret,null);
 
+        if (OAuth.RSA_SHA1.equals(keyType)) {
+            if (rsaKey!=null) {
+                if (rsaKey.contains(PEMReader.PUBLIC_X509_MARKER)) {
+                    consumer.setProperty(RSA_SHA1.PUBLIC_KEY, rsaKey);
+                } else {
+                    consumer.setProperty(RSA_SHA1.X509_CERTIFICATE, rsaKey);
+                }
+            }
+        }
         consumer.publicKey = rsaKey;
-
-
         consumer.description = (String) entry.getProperty(SCHEMA, "description");
         consumer.signedFetchSupport = (String) entry.getProperty(SCHEMA, "signedFetchSupport");
         consumer.dedicatedLogin = (String) entry.getProperty(SCHEMA, "dedicatedLogin");
@@ -83,6 +90,11 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         Long enabledFlag = (Long) entry.getProperty(SCHEMA, "enabled");
         if (enabledFlag==0) {
             consumer.enabled=false;
+        }
+
+        Long allowBypassVerifierFlag = (Long) entry.getProperty(SCHEMA, "allowBypassVerifier");
+        if (allowBypassVerifierFlag==1) {
+            consumer.allowBypassVerifier=true;
         }
 
         return consumer;
@@ -107,6 +119,11 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
             entry.setProperty(SCHEMA, "enabled", 1);
         } else {
             entry.setProperty(SCHEMA, "enabled", 0);
+        }
+        if (allowBypassVerifier) {
+            entry.setProperty(SCHEMA, "allowBypassVerifier", 1);
+        } else {
+            entry.setProperty(SCHEMA, "allowBypassVerifier", 0);
         }
         return entry;
     }
@@ -163,6 +180,10 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
             log.error("Unknonw type of key :" + type);
             return null;
         }
+    }
+
+    public boolean allowBypassVerifier() {
+        return allowBypassVerifier;
     }
 
 }

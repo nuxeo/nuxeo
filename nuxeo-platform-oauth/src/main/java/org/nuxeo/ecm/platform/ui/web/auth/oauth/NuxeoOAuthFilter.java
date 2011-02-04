@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.auth.oauth;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -208,7 +210,22 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     token, Long.parseLong(duration));
             rToken.setNuxeoLogin(nuxeo_login);
 
-            StringBuffer sb = new StringBuffer(rToken.getCallbackUrl());
+            String cbUrl = rToken.getCallbackUrl();
+            if (cbUrl==null) {
+                // get the callback url from the consumer ...
+                String consumerKey = rToken.getConsumerKey();
+                NuxeoOAuthConsumer consumer = getOAuthConsumerRegistry().getConsumer(consumerKey);
+                if (consumer!=null) {
+                    cbUrl = consumer.getCallbackURL();
+                }
+
+                if (cbUrl==null) {
+                    // fall back to default Google oauth callback ...
+                    cbUrl = "http://oauth.gmodules.com/gadgets/oauthcallback";
+                }
+            }
+
+            StringBuffer sb = new StringBuffer(cbUrl);
             sb.append("?");
             sb.append(OAuth.OAUTH_TOKEN);
             sb.append("=");
@@ -323,7 +340,20 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         log.info("OAuth verifier = " + verif);
 
-        if (rToken.getVerifier().equals(verif)) {
+        boolean allowByPassVerifier=false;
+
+        if (verif==null) {
+            // here we don't have the verifier in the request
+            // this is strictly prohibited in the spec
+            // => see http://tools.ietf.org/html/rfc5849 page 11
+            //
+            // Anyway since iGoogle does not seem to forward the verifier
+            // we allow it for designated consumers
+
+            allowByPassVerifier = consumer.allowBypassVerifier();
+        }
+
+        if (rToken.getVerifier().equals(verif) || allowByPassVerifier) {
 
             // Ok we can authenticate
             OAuthToken aToken = getOAuthTokenStore().createAccessTokenFromRequestToken(
@@ -346,6 +376,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             httpResponse.getWriter().write(sb.toString());
 
         } else {
+
             log.error("Verifier does not match : can not continue");
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                     "Verifier is not correct");
