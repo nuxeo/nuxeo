@@ -14,6 +14,7 @@
   <properties>                                                                                                    
     <nuxeo.core.version>5.4.0</nuxeo.core.version>                                                         
     <nuxeo.features.version>5.4.0</nuxeo.features.version>
+    <nuxeo.platform.signature.version>5.4.0</nuxeo.platform.signature.version>
   </properties>      
 
   <modules>
@@ -27,17 +28,17 @@
   <dependency>
    <groupId>org.nuxeo.ecm.platform</groupId>
    <artifactId>nuxeo-platform-signature-api</artifactId>
-    <version>${project.version}</version>
+    <version>${nuxeo.platform.signature.version}</version>
   </dependency>
   <dependency>
    <groupId>org.nuxeo.ecm.platform</groupId>
    <artifactId>nuxeo-platform-signature-core</artifactId>
-    <version>${project.version}</version>
+    <version>${nuxeo.platform.signature.version}</version>
   </dependency>
   <dependency>
    <groupId>org.nuxeo.ecm.platform</groupId>
    <artifactId>nuxeo-platform-signature-web</artifactId>
-    <version>${project.version}</version>
+    <version>${nuxeo.platform.signature.version}</version>
   </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
