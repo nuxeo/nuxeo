@@ -185,6 +185,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
 
     // ----- HtmlSanitizerService -----
 
+    @Override
     public void sanitizeDocument(DocumentModel doc) throws ClientException {
         if (policy == null) {
             log.error("Cannot sanitize, no policy registered");
@@ -205,7 +206,8 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                     } catch (PropertyNotFoundException e) {
                         continue;
                     }
-                    if (!field.getFilterValue().equals(filterProp.getValue().toString())) {
+                    if (field.getFilterValue().equals(
+                            filterProp.getValue().toString()) != field.doSanitize()) {
                         continue;
                     }
                 }
@@ -233,6 +235,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public String sanitizeString(String string, String info) {
         if (policy == null) {
             log.error("Cannot sanitize, no policy registered");

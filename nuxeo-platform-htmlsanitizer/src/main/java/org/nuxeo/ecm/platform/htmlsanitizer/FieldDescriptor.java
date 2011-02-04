@@ -33,6 +33,9 @@ public class FieldDescriptor {
     @XNode("@filterValue")
     private String filterValue;
 
+    @XNode("@sanitize")
+    private boolean sanitize = true;
+
     public String getContentField() {
         if (contentField != null) {
             String result = contentField.trim();
@@ -48,6 +51,10 @@ public class FieldDescriptor {
 
     public String getFilterValue() {
         return filterValue;
+    }
+
+    public boolean doSanitize() {
+        return sanitize;
     }
 
     @Override

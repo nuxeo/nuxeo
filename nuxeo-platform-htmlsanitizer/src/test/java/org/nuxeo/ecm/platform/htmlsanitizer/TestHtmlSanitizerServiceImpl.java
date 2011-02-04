@@ -41,6 +41,12 @@ public class TestHtmlSanitizerServiceImpl {
 
     public static final String SANITIZED_HTML = "<b>foo</b>";
 
+    public static final String BAD_XML = "<b>caf\u00e9</b>";
+
+    public static final String SANITIZED_XML = "<b>caf&eacute;</b>";
+
+    public static final String NORMAL_TEXT = "Caf\u00e9 < Tea";
+
     // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
@@ -48,17 +54,49 @@ public class TestHtmlSanitizerServiceImpl {
     CoreSession session;
 
     @Test
-    public void sanitizeNote() throws Exception {
+    public void sanitizeNoteHtml() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "n", "Note");
-        doc.setProperty("note", "note", BAD_HTML);
+        doc.setPropertyValue("note", BAD_HTML);
+        doc.setPropertyValue("mime_type", "text/html");
         doc = session.createDocument(doc);
-        String note = (String) doc.getProperty("note", "note");
+        String note = (String) doc.getPropertyValue("note");
         assertEquals(SANITIZED_HTML, note);
         session.save();
-        doc.setProperty("note", "note", BAD_HTML);
+        doc.setPropertyValue("note", BAD_HTML);
         doc = session.saveDocument(doc);
-        note = (String) doc.getProperty("note", "note");
+        note = (String) doc.getPropertyValue("note");
         assertEquals(SANITIZED_HTML, note);
+    }
+
+    @Test
+    public void sanitizeNoteXml() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "n", "Note");
+        doc.setPropertyValue("note", BAD_XML);
+        doc.setPropertyValue("mime_type", "text/xml");
+        doc = session.createDocument(doc);
+        String note = (String) doc.getPropertyValue("note");
+        assertEquals(SANITIZED_XML, note);
+        session.save();
+        doc.setPropertyValue("note", BAD_XML);
+        doc = session.saveDocument(doc);
+        note = (String) doc.getPropertyValue("note");
+        assertEquals(SANITIZED_XML, note);
+    }
+
+    @Test
+    // but text/plain notes must not be sanitized
+    public void sanitizeNoteText() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "n", "Note");
+        doc.setPropertyValue("note", NORMAL_TEXT);
+        doc.setPropertyValue("mime_type", "text/plain");
+        doc = session.createDocument(doc);
+        String note = (String) doc.getPropertyValue("note");
+        assertEquals(NORMAL_TEXT, note);
+        session.save();
+        doc.setPropertyValue("note", NORMAL_TEXT);
+        doc = session.saveDocument(doc);
+        note = (String) doc.getPropertyValue("note");
+        assertEquals(NORMAL_TEXT, note);
     }
 
     @Test

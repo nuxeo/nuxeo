@@ -60,6 +60,14 @@
      In this example the field webp:content will be sanitized only when
      the String representation of the webp:isRichtext is "true".
 
+     If you want to <em>not</em> sanitize when a given value is present, use:
+
+     <code>
+       <sanitizer name="foo">
+         <field filter="mime_type" filterValue="text/plain" sanitize="false">note</field>
+       </sanitizer>
+     </code>
+
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerDescriptor" />
