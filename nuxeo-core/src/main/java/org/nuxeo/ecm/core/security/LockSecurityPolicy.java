@@ -46,14 +46,17 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
+        // policy only applies on WRITE
+        if (resolvedPermissions == null
+                || !Arrays.asList(resolvedPermissions).contains(
+                        SecurityConstants.WRITE)) {
+            return access;
+        }
+        // check the lock
         try {
             String username = principal.getName();
             Lock lock = doc.getLock();
-            if (lock != null
-                    && !username.equals(lock.getOwner())
-                    && resolvedPermissions != null
-                    && Arrays.asList(resolvedPermissions).contains(
-                            SecurityConstants.WRITE)) {
+            if (lock != null && !username.equals(lock.getOwner())) {
                 // locked by another user => deny
                 access = Access.DENY;
             }
