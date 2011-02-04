@@ -5,32 +5,17 @@ Manifest-Version: 1.0
 Bundle-Name: org.nuxeo.ecm.core.auth
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: org.osgi.framework,
- javax.servlet,
- javax.servlet.http,
  javax.security.auth.login,
  javax.security.auth.callback,
  javax.security.auth.spi,
  javax.security.auth,
- org.apache.commons.logging,
  org.nuxeo.common,
- org.nuxeo.common.collections,
- org.nuxeo.common.jndi,
  org.nuxeo.common.utils,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split,
- org.nuxeo.ecm.core.api;api=split,
- org.nuxeo.ecm.core.api.impl,
- org.nuxeo.ecm.core.api.impl.blob,
- org.nuxeo.ecm.core.api.repository,
- org.nuxeo.ecm.core.api.security,
- org.nuxeo.ecm.core.api.security.impl,
- org.nuxeo.ecm.core.api.local,
- org.nuxeo.ecm.core.schema,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.transaction
+ org.nuxeo.ecm.core.api;api=split
 Bundle-SymbolicName: org.nuxeo.ecm.core.auth
 Bundle-Activator: org.nuxeo.ecm.core.auth.Activator

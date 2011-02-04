@@ -11,7 +11,7 @@ Bundle-Name: nuxeo core management
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Eclipse-BuddyPolicy: dependent
 Nuxeo-Component: OSGI-INF/core-management-types-contrib.xml,
@@ -33,7 +33,6 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.repository,
  org.nuxeo.runtime,
  org.nuxeo.runtime.api,
- org.nuxeo.runtime.binding,
  org.nuxeo.runtime.management,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.event,

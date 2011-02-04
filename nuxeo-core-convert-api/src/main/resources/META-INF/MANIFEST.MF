@@ -7,7 +7,7 @@ Bundle-Name: NXCore Covert API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core;api=split,

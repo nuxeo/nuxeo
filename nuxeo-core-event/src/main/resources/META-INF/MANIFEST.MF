@@ -10,7 +10,7 @@ Manifest-Version: 1.0
 Bundle-Name: org.nuxeo.ecm.core.event
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/EventService.xml,
   OSGI-INF/management-contrib.xml
