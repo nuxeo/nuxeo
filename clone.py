@@ -13,6 +13,7 @@ def system(cmd):
     print cmd
     os.system(cmd)
 
+system("hg pull; hg up %s" % branch)
 for line in os.popen("mvn -N help:effective-pom"):
     line = line.strip()
     m = re.match("<module>(.*?)</module>", line)
@@ -22,6 +23,7 @@ for line in os.popen("mvn -N help:effective-pom"):
 
     if os.path.isdir(addon):
         print "Updating " + addon
+        system("hg pull -R %s" % addon)
     else:
         print "Cloning " + addon
         system("hg clone https://hg.nuxeo.org/addons/%s" % addon)
