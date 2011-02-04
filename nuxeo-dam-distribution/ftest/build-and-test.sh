@@ -5,6 +5,7 @@ ant -f ft-build.xml make-distribution -Dmvn.profiles=$MAVEN_PROFILES,http-import
 
 # Start JBoss
 (cd ../target && unzip nuxeo-dam-distribution-*-jboss-importer.zip && mv nuxeo-dam-*-jboss jboss) || exit 1
+sed -i "s/-Xmx1024m/-Xmx2g/" jboss/bin/nuxeo.conf || exit 1
 ant -f ft-build.xml start-jboss || exit 1
 
 # Unzip assets to import
