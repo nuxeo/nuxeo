@@ -1,0 +1,135 @@
+/*
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bstefanescu
+ */
+package org.nuxeo.ecm.webengine.jaxrs.login;
+
+import java.io.IOException;
+
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.nuxeo.common.utils.Base64;
+import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.runtime.api.Framework;
+
+/**
+ * Filter using the {@link SimpleLoginModule} to authenticate a request.
+ *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class AuthenticationFilter implements Filter {
+
+    public final static String DEFAULT_SECURITY_DOMAIN = "nuxeo-client-login";
+
+    protected String domain = DEFAULT_SECURITY_DOMAIN;
+
+    protected boolean autoPrompt = true;
+    protected String realmName = "Nuxeo";
+
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String v = filterConfig.getInitParameter("securityDomain");
+        if (v != null) {
+            domain = v;
+        }
+        v = filterConfig.getInitParameter("realmName");
+        if (v != null) {
+            realmName = v;
+        }
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+
+        HttpServletRequest req = (HttpServletRequest)request;
+        HttpServletResponse resp = (HttpServletResponse)response;
+
+        LoginContext lc = null;
+        if (req.getUserPrincipal() == null) {
+            try {
+                lc = doLogin(req, resp);
+            } catch (LoginException e) {
+                // login failed
+                handleLoginFailure(req, resp, e);
+                return;
+            }
+        }
+
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            ClientLoginModule.getThreadLocalLogin().clear();
+            if (lc != null) {
+                // a null lc may indicate an anonymous login
+                try { lc.logout(); } catch (Exception e) {}
+            }
+        }
+    }
+
+
+    @Override
+    public void destroy() {
+    }
+
+
+
+    protected String[] retrieveBasicLogin(HttpServletRequest httpRequest) {
+        String auth = httpRequest.getHeader("authorization");
+        if (auth != null && auth.toLowerCase().startsWith("basic")) {
+            int idx = auth.indexOf(' ');
+            String b64userpassword = auth.substring(idx + 1);
+            byte[] clearUp = Base64.decode(b64userpassword);
+            String userpassword = new String(clearUp);
+            String[] up = StringUtils.split(userpassword, ':', false);
+            if (up.length != 2) {
+                return null;
+            }
+            return up;
+        }
+        return null;
+    }
+
+    protected LoginContext doLogin(HttpServletRequest request, HttpServletResponse response) throws LoginException {
+        String[] login = retrieveBasicLogin(request);
+        if (login != null) {
+            return Framework.login(login[0], login[1]);
+        }
+        // TODO no login provided - use anonymous ?
+        // for now no anonymous user supported - we require a login
+        throw new LoginException("User must login");
+        //return null;
+    }
+
+    protected void handleLoginFailure(HttpServletRequest request, HttpServletResponse response, LoginException e) {
+        String s = "Basic realm=\""+realmName+"\"";
+        response.setHeader("WWW-Authenticate", s);
+        response.setStatus(401);
+    }
+
+
+}

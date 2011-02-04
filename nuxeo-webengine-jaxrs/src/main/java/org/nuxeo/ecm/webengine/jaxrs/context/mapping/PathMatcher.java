@@ -1,0 +1,184 @@
+/*
+ * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bstefanescu
+ */
+package org.nuxeo.ecm.webengine.jaxrs.context.mapping;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public class PathMatcher {
+
+    protected SegmentMatcher[] matchers;
+
+    public PathMatcher(SegmentMatcher... matchers) {
+        this.matchers = matchers;
+    }
+
+    public boolean matches(String path) {
+        return matches(Path.parse(path));
+    }
+
+    public boolean matches(Path path) {
+        // if (path.hasTrailingSpace()) {
+        // path.append("**");
+        // }
+        if (matchers.length == 0) {
+            return true;
+        }
+        return matches(path.segments, 0, 0);
+    }
+
+    /**
+     * @param segments
+     * @param soff
+     * @param matchers
+     * @param moff
+     * @return
+     */
+    public boolean matches(String[] segments, int soff, int moff) {
+        if (soff == segments.length) {
+            // segments consumed
+            if (moff == matchers.length) {
+                // no more matchers => matched
+                return true;
+            }
+            if (moff == matchers.length - 1
+                    && matchers[moff] == SegmentMatcher.ANY) {
+                // it remains one matcher which is any path => matched
+                return true;
+            }
+            return false;
+        }
+        if (moff == matchers.length) {
+            // no more matchers but segments not consumed
+            if (matchers[moff - 1] == SegmentMatcher.ANY) {
+                // last matcher is any path
+                return true;
+            }
+            return false;
+        }
+        SegmentMatcher m = matchers[moff];
+
+        if (m == SegmentMatcher.ANY) {
+            // if current matcher is any path try all sub-paths until a match is
+            // found
+            for (int i = soff; i < segments.length; i++) {
+                if (matches(segments, i, moff + 1)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // test is the current segment is matching
+        if (!m.matches(segments[soff])) {
+            return false; // not matching
+        }
+
+        // continue iteration on segments and matchers
+        return matches(segments, soff + 1, moff + 1);
+    }
+
+    public static PathMatcher compile(String path) {
+        return compile(Path.parse(path));
+    }
+
+    public static PathMatcher compile(Path path) {
+        //TODO handle / case
+        ArrayList<SegmentMatcher> matchers = new ArrayList<SegmentMatcher>();
+        for (String segment : path.segments) {
+            if (segment.length() == 0) {
+                continue;
+            }
+            if ("**".equals(segment)) {
+                addAnyMatcher(matchers, SegmentMatcher.ANY);
+            } else if ("*".equals(segment)) {
+                addAnyMatcher(matchers, SegmentMatcher.ANY_SEGMENT);
+            } else if (segment.charAt(0) == '('
+                    && segment.charAt(segment.length() - 1) == ')') {
+                matchers.add(new RegexSegmentMatcher(segment.substring(1,
+                        segment.length() - 1)));
+            } else {
+                matchers.add(createSegmentMatcher(segment));
+            }
+        }
+        return new PathMatcher(
+                matchers.toArray(new SegmentMatcher[matchers.size()]));
+    }
+
+    private static void addAnyMatcher(List<SegmentMatcher> matchers, SegmentMatcher matcher) {
+        if (!matchers.isEmpty() && matchers.get(matchers.size()-1) == matcher) {
+            return;
+        }
+        matchers.add(matcher);
+    }
+
+    private static SegmentMatcher createSegmentMatcher(String segment) {
+        if (segment.indexOf('*') == -1 && segment.indexOf('?') == -1) {
+            return new ExactSegmentMatcher(segment);
+        }
+        return new WildcardSegmentMatcher(segment);
+    }
+
+
+    public static void main(String[] args) {
+
+
+
+
+        PathMatcher m = PathMatcher.compile("**/a");
+        System.out.println(m.matches("b/a"));
+        System.out.println(m.matches("b/c/a"));
+        System.out.println(m.matches("b/c/a/d"));
+        System.out.println("-----");
+        m = PathMatcher.compile("**/a/**/d");
+        System.out.println(m.matches("b/a"));
+        System.out.println(m.matches("b/c/a"));
+        System.out.println(m.matches("b/c/a/d"));
+        System.out.println(m.matches("b/c/a/b/d"));
+        System.out.println(m.matches("b/c/a/b/d/e/d"));
+        System.out.println(m.matches("b/c/a/b/d/e/d/w"));
+        System.out.println("-----");
+        m = PathMatcher.compile("/nuxeo/site/**");
+        System.out.println(m.matches("/nuxeo/site"));
+        System.out.println(m.matches("/nuxeo/site/automation"));
+        System.out.println("-----");
+        m = PathMatcher.compile("/nuxeo/site/**/skin/**");
+        System.out.println(m.matches("/nuxeo/site/skin"));
+        System.out.println(m.matches("/nuxeo/site/skin/test"));
+        System.out.println(m.matches("/nuxeo/site/test/skin"));
+        System.out.println(m.matches("/nuxeo/site/test/skin/images"));
+
+
+        PathMatcher m1 = PathMatcher.compile("/nuxeo/site/**");
+        PathMatcher m2 = PathMatcher.compile("/nuxeo/site/**/skin/**");
+
+        double s = System.currentTimeMillis();
+        for (int k=0; k<1000; k++) {
+        Path p = Path.parse("/nuxeo/site/test/skin/images");
+        for (int i=0; i<1000; i++) {
+            m1.matches(p);
+            m2.matches(p);
+        }
+        }
+        System.out.println(">> "+(System.currentTimeMillis()-s)/1000);
+
+    }
+}
