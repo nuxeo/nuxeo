@@ -266,6 +266,7 @@ public final class Utils {
             // FIXME
             if (strValue != null) {
                 strValue = strValue.replaceAll("attr\\((.*?)\\)", "$1");
+                strValue = strValue.replaceAll("uri\\((.*?)\\)", "url\\($1\\)");
                 strValue = strValue.replaceAll("color\\((.*?)\\)",
                         "rgb\\($1\\)");
             }

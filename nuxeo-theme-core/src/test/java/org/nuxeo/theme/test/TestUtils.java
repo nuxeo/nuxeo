@@ -29,7 +29,7 @@ public class TestUtils extends TestCase {
 
     public void testCssToStyle() {
         String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .input{color: #ffffff;}"
-                + "ul a {color: #FFFFFF;} ul {}";
+                + "ul a {color: #FFFFFF;background-image:url(image.png)} ul {}";
         StyleFormat style = new StyleFormat();
 
         String viewName = "vertical menu";
@@ -53,6 +53,7 @@ public class TestUtils extends TestCase {
 
         Properties props3 = style.getPropertiesFor(viewName, "ul a");
         assertEquals("rgb(255 , 255 , 255)", props3.getProperty("color"));
+        assertEquals("url(image.png)", props3.getProperty("background-image"));
 
         Properties props4 = style.getPropertiesFor(viewName, "ul");
         assertNull(props4);
