@@ -102,8 +102,8 @@
 	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-extensions/osgi</module>
 
     <!-- H2 integration-->
-    <module>nuxeo-core/osgi-fragments/nuxeo-core-storage-h2/osgi</module>
-    <module>nuxeo-core/osgi-fragments/h2-extensions-fragment/osgi</module>
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/nuxeo-core-storage-h2/osgi</module>
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/h2-extensions-fragment/osgi</module>
 
     <!-- jax-rs integration -->
 	<module>nuxeo-webengine/nuxeo-webengine-jaxrs/osgi</module>
