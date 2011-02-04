@@ -420,9 +420,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     public void fireApplicationStarted() {
-        if (appStarted) {
-            return;
-        }
+    	synchronized (this) {
+    		if (appStarted) {        	
+    			return;
+    		}
+    		appStarted = true;			
+		}
         try {
             persistence.loadPersistedComponents();
         } catch (Exception e) {
@@ -440,7 +443,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
         // print the startup message
         printStatusMessage();
-        appStarted = true;
     }
 
     /* --------------- FrameworkListener API ------------------ */

@@ -36,7 +36,7 @@ public class StartApplication implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         NamingContextFactory.install();
         NuxeoContainer.install();
-        ((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
+        //((OSGiRuntimeService)Framework.getRuntime()).fireApplicationStarted();
     }
 
     public void stop(BundleContext context) throws Exception {

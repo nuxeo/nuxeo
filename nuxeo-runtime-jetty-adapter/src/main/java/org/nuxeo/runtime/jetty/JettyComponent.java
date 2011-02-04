@@ -36,7 +36,6 @@ import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -185,14 +184,15 @@ public class JettyComponent extends DefaultComponent {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication) contribution;
-
-            if (app.needsWarPreprocessing()) {
-                logger.info("Starting deployment preprocessing");
-                DeploymentPreprocessor dp = new DeploymentPreprocessor(home);
-                dp.init();
-                dp.predeploy();
-                logger.info("Deployment preprocessing terminated");
-            }
+            // TODO preprocessing was removed from this component - preprocessing should be done in another bundle
+            // if still required (on equinox distribution)
+//            if (app.needsWarPreprocessing()) {
+//                logger.info("Starting deployment preprocessing");
+//                DeploymentPreprocessor dp = new DeploymentPreprocessor(home);
+//                dp.init();
+//                dp.predeploy();
+//                logger.info("Deployment preprocessing terminated");
+//            }
 
             WebAppContext ctx = new WebAppContext();
             ctx.setContextPath(app.getContextPath());

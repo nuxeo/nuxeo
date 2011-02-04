@@ -30,6 +30,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("servlet")
 public class ServletDescriptor {
 
+    // the filter name if any
+    @XNode("@name")
+    protected String name;
+
     @XNode("@class")
     protected Class<?> clazz;
 
@@ -41,6 +45,11 @@ public class ServletDescriptor {
 
     @XNodeMap(value="init-params/param", key="@name", type=HashMap.class, componentType=String.class, trim=true, nullByDefault=true)
     protected Map<String, String> initParams;
+
+    // the description if any
+    @XNode("description")
+    protected String description;
+
 
     public ServletDescriptor() {
     }
@@ -64,4 +73,21 @@ public class ServletDescriptor {
     public void setInitParams(Map<String, String> initParams) {
         this.initParams = initParams;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 }

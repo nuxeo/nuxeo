@@ -1,7 +1,6 @@
 Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.api.login,
- org.nuxeo.runtime.binding,
  org.nuxeo.runtime.config,
  org.nuxeo.runtime.config.v1,
  org.nuxeo.runtime.deploy,
@@ -32,7 +31,7 @@ Bundle-Category: runtime
 Bundle-Name: Nuxeo Eclipse Runtime
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Eclipse-BuddyPolicy: registered
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/ResourceService.xml,

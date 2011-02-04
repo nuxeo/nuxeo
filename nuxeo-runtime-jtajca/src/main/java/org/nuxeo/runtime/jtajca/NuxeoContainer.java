@@ -61,6 +61,8 @@ public class NuxeoContainer {
 
     private static ConnectionManagerWrapper connectionManager;
 
+    private static boolean isInstalled = false;
+
     private NuxeoContainer() {
     }
 
@@ -82,11 +84,35 @@ public class NuxeoContainer {
      *
      * @since 5.4.1
      */
-    public static void install(TransactionManagerConfiguration txconfig,
+    public synchronized static void install(TransactionManagerConfiguration txconfig,
             ConnectionManagerConfiguration cmconfig) throws NamingException {
         initTransactionManager(txconfig);
         initConnectionManager(cmconfig);
         jndiBind();
+        isInstalled = true;
+    }
+
+    public synchronized static boolean isInstalled() {
+        return isInstalled;
+    }
+
+    public synchronized static void uninstall() {
+        if (!isInstalled) {
+            return;
+        }
+        isInstalled = false;
+        try {
+            InitialContext context = new InitialContext();
+            context.unbind(JNDI_TRANSACTION_MANAGER);
+            context.unbind(JNDI_USER_TRANSACTION);
+            context.unbind(JNDI_NUXEO_CONNECTION_MANAGER);
+        } catch (Exception e) {
+            // do nothing
+        } finally {
+            transactionManager = null;
+            userTransaction = null;
+            connectionManager = null;
+        }
     }
 
     protected static void jndiBind() throws NamingException {

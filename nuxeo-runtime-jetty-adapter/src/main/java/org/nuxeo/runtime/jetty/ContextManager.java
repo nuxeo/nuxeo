@@ -50,6 +50,14 @@ public class ContextManager {
             contexts.put(path, ctx);
         }
         FilterHolder holder = new FilterHolder(descriptor.getClazz());
+        String name = descriptor.getName();
+        if (name != null) {
+            holder.setName(name);
+        }
+        String desc = descriptor.getDescription();
+        if (desc != null) {
+            holder.setDisplayName(desc);
+        }
         Map<String,String> params = descriptor.getInitParams();
         if (params != null) {
             holder.setInitParameters(params);
@@ -65,6 +73,14 @@ public class ContextManager {
             contexts.put(path, ctx);
         }
         ServletHolder holder = new ServletHolder(descriptor.getClazz());
+        String name = descriptor.getName();
+        if (name != null) {
+            holder.setName(name);
+        }
+        String desc = descriptor.getDescription();
+        if (desc != null) {
+            holder.setDisplayName(desc);
+        }
         Map<String,String> params = descriptor.getInitParams();
         if (params != null) {
             holder.setInitParameters(params);

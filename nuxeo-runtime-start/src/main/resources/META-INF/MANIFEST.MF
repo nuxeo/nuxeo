@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
+Bundle-Version: 5.4.1.qualifier
 Bundle-Name: Nuxeo Runtime Start
 Bundle-SymbolicName: org.nuxeo.runtime.start;singleton:=true
 Bundle-Vendor: Nuxeo
