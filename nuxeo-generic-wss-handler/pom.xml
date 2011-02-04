@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-filesystem-connectors</artifactId>
     <version>5.4.1-SNAPSHOT</version>
   </parent>
 
@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-generic-wss-front</artifactId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-generic-wss-front</artifactId>
     </dependency>
 
     <dependency>
