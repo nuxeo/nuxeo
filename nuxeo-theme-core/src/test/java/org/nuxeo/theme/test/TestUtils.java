@@ -28,7 +28,7 @@ public class TestUtils extends TestCase {
     }
 
     public void testCssToStyle() {
-        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .input{color: #ffffff;}"
+        String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .action .input{color: #ffffff;}"
                 + "ul a {color: #FFFFFF;background-image:url(image.png)} ul {}";
         StyleFormat style = new StyleFormat();
 
@@ -38,10 +38,10 @@ public class TestUtils extends TestCase {
         Object[] paths = style.getPathsForView(viewName).toArray();
         assertEquals("div", paths[0]);
         assertEquals("li a", paths[1]);
-        assertEquals(".input", paths[2]);
+        assertEquals(".action .input", paths[2]);
         assertEquals("ul a", paths[3]);
 
-        Properties props0 = style.getPropertiesFor(viewName, ".input");
+        Properties props0 = style.getPropertiesFor(viewName, ".action .input");
         assertNotNull(props0);
 
         Properties props1 = style.getPropertiesFor(viewName, "div");

@@ -251,9 +251,7 @@ public final class Utils {
             /* CSS selector */
             Selector selector = rule.getSelector();
             String selectorStr = selector.toString();
-            if (selectorStr.startsWith("*.")) {
-                selectorStr = selectorStr.substring(1);
-            }
+            selectorStr = selectorStr.replaceAll("\\*\\.", ".");
             if (selectorStr.equals(EMPTY_CSS_SELECTOR)) {
                 selectorStr = "";
             }
