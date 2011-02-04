@@ -320,9 +320,8 @@ public interface DocumentModel extends Serializable {
     /**
      * Gets the lock key if the document is locked.
      * <p>
-     * Lock info is never cached, and needs to use a separate transaction in a
-     * separate thread, so care should be taken to not call this method
-     * needlessly.
+     * Lock info is cached on the document for performance. Use
+     * {@link CoreSession#getLockInfo} to get the non-cached status.
      *
      * @return the lock key if the document is locked or null otherwise
      *
@@ -334,9 +333,8 @@ public interface DocumentModel extends Serializable {
     /**
      * Tests if the document is locked.
      * <p>
-     * Lock info is never cached, and needs to use a separate transaction in a
-     * separate thread, so care should be taken to not call this method
-     * needlessly.
+     * Lock info is cached on the document for performance. Use
+     * {@link CoreSession#getLockInfo} to get the non-cached status.
      *
      * @return the lock key if the document is locked or null otherwise
      */
@@ -380,9 +378,8 @@ public interface DocumentModel extends Serializable {
     /**
      * Gets the lock info on the document.
      * <p>
-     * Lock info is never cached, and needs to use a separate transaction in a
-     * separate thread, so care should be taken to not call this method
-     * needlessly.
+     * Lock info is cached on the document for performance. Use
+     * {@link CoreSession#getLockInfo} to get the non-cached status.
      *
      * @return the lock info if the document is locked, or {@code null}
      *         otherwise

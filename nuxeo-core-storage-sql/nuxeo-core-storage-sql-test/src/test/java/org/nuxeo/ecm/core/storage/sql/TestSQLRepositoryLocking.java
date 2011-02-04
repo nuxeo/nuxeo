@@ -20,7 +20,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -127,29 +126,6 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
 
         doc = session.getChild(root.getRef(), "doc");
         assertTrue(doc.isLocked());
-    }
-
-    public void testLockingTwoDocs() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-
-        DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
-        doc = session.createDocument(doc);
-        doc.setLock();
-        session.save();
-
-        nextTX();
-
-        DocumentModel doc1 = session.getChild(root.getRef(), "doc");
-        DocumentModel doc2 = session.getChild(root.getRef(), "doc");
-        assertTrue(doc1.isLocked());
-        assertTrue(doc2.isLocked());
-
-        doc1.removeLock();
-        // immediately seen by other doc
-        assertFalse(doc2.isLocked());
     }
 
     protected CountDownLatch threadStartLatch;

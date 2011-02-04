@@ -134,6 +134,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected DocumentRef parentRef;
 
+    protected static final Lock LOCK_UNKNOWN = new Lock(null, null);
+
+    protected Lock lock = LOCK_UNKNOWN;
+
     /** state is lifecycle, version stuff. */
     protected boolean isStateLoaded;
 
@@ -769,29 +773,40 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Lock setLock() throws ClientException {
-        return new RunWithCoreSession<Lock>() {
+        Lock newLock = new RunWithCoreSession<Lock>() {
             @Override
             public Lock run() throws ClientException {
                 return session.setLock(ref);
             }
         }.execute();
+        lock = newLock;
+        return lock;
     }
 
     @Override
     public Lock getLockInfo() throws ClientException {
+        if (lock != LOCK_UNKNOWN) {
+            return lock;
+        }
         // no lock if not tied to a session
         CoreSession session = getCoreSession();
-        return session == null ? null : session.getLockInfo(ref);
+        if (session == null) {
+            return null;
+        }
+        lock = session.getLockInfo(ref);
+        return lock;
     }
 
     @Override
     public Lock removeLock() throws ClientException {
-        return new RunWithCoreSession<Lock>() {
+        Lock oldLock = new RunWithCoreSession<Lock>() {
             @Override
             public Lock run() throws ClientException {
                 return session.removeLock(ref);
             }
         }.execute();
+        lock = null;
+        return oldLock;
     }
 
     @Override
@@ -1597,6 +1612,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isVersionSeriesCheckedOut = refresh.isVersionSeriesCheckedOut;
             versionSeriesId = refresh.versionSeriesId;
             checkinComment = refresh.checkinComment;
+            isStateLoaded = true;
         }
         acp = null;
         isACPLoaded = false;
