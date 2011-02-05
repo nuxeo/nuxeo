@@ -312,7 +312,7 @@
       </template>
     </view>
 
-    <view name="page frame" template-engine="freemarker,jsf-facelets">
+    <view name="page frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>area-styles-page</mode>
       <element-type>page</element-type>
@@ -349,13 +349,14 @@
       </template>
     </view>
 
-    <view name="section frame" template-engine="freemarker,jsf-facelets">
+    <view name="section frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>area-styles-section</mode>
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <class>org.nuxeo.theme.editor.views.SectionFrameAreaStyle</class>
     </view>
+
 
     <view name="section frame" template-engine="freemarker">
       <engine>page-editor</engine>
@@ -367,7 +368,7 @@
       </template>
     </view>
 
-    <view template-engine="freemarker,jsf-facelets">
+    <view template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <element-type>section</element-type>
@@ -377,8 +378,7 @@
       </class>
     </view>
 
-    <!-- cell -->
-    <view name="cell frame" template-engine="freemarker,jsf-facelets">
+    <view name="cell frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>cell</element-type>
       <format-type>widget</format-type>
@@ -387,7 +387,8 @@
       </class>
     </view>
 
-    <view name="cell frame" template-engine="freemarker,jsf-facelets">
+
+    <view name="cell frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>area-styles-cell</mode>
       <element-type>cell</element-type>
@@ -395,7 +396,8 @@
       <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
     </view>
 
-    <view template-engine="freemarker,jsf-facelets">
+
+    <view template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <element-type>cell</element-type>
@@ -403,8 +405,9 @@
       <class>org.nuxeo.theme.editor.views.CellLayout</class>
     </view>
 
+
     <!-- Override the default style view in layout mode-->
-    <view template-engine="freemarker,jsf-facelets">
+    <view template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>layout</mode>
       <format-type>style</format-type>
@@ -412,7 +415,7 @@
     </view>
 
     <!-- Default view when no widget is available -->
-    <view template-engine="freemarker,jsf-facelets">
+    <view template-engine="freemarker">
       <engine>page-editor</engine>
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
@@ -475,6 +478,14 @@
       </template>
     </view>
 
+    <view name="page frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>area-styles-page</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.PageFrameAreaStyle</class>
+    </view>
+
     <view name="section frame" template-engine="jsf-facelets">
       <engine>page-editor</engine>
       <element-type>section</element-type>
@@ -483,6 +494,65 @@
         nxthemes/editor/widgets/jsf/section-frame.xml
       </template>
     </view>
+
+    <view name="section frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>area-styles-section</mode>
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.SectionFrameAreaStyle</class>
+    </view>
+
+    <view name="cell frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>area-styles-cell</mode>
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
+    </view>
+
+    <view name="cell frame" template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <class>
+        org.nuxeo.theme.editor.views.CellFrameWidget
+      </class>
+    </view>
+
+    <view template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>layout</mode>
+      <element-type>section</element-type>
+      <format-type>layout</format-type>
+      <class>
+        org.nuxeo.theme.editor.views.SectionLayout
+      </class>
+    </view>
+
+    <view template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>layout</mode>
+      <element-type>cell</element-type>
+      <format-type>layout</format-type>
+      <class>org.nuxeo.theme.editor.views.CellLayout</class>
+    </view>
+
+    <view template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <mode>layout</mode>
+      <format-type>style</format-type>
+      <class>org.nuxeo.theme.html.filters.BypassView</class>
+    </view>
+
+
+    <view template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
+    </view>
+
 
   </extension>
 
