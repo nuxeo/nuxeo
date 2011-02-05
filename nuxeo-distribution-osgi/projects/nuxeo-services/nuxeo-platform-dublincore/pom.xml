@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-osgi-projects</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-dublincore</artifactId>
+  <version>5.4.1-SNAPSHOT</version>
+  <name>Nuxeo Dublin Core Support</name>
+  <description>Nuxeo Enterprise Platform: simple implementation of the
+    DublinCore's restricted metadata set for Nuxeo EP. It automatically updates
+    content metadata when an action performed requires it (ex: update the
+    modification date when the document is modified).</description>
+  <url>http://www.nuxeo.org/</url>
+  <packaging>eclipse-plugin</packaging>
+
+</project>
