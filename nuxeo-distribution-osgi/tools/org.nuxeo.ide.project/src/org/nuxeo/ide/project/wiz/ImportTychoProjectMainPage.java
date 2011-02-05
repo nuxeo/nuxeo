@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -47,7 +46,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.nuxeo.ide.project.PomLoader;
-import org.nuxeo.ide.project.ProjectGenerator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -217,6 +215,7 @@ public class ImportTychoProjectMainPage extends WizardPage {
         Dialog.applyDialogFont(deselectAll);
         setButtonLayoutData(deselectAll);
 
+        /* Not more needed for now
         Button refresh = new Button(buttonsComposite, SWT.PUSH);
         refresh.setText("Generate");
         refresh.addSelectionListener(new SelectionAdapter() {
@@ -258,6 +257,7 @@ public class ImportTychoProjectMainPage extends WizardPage {
 
         Dialog.applyDialogFont(rebuild);
         setButtonLayoutData(rebuild);
+        */
     }
 
     public void createProjectsList(Composite workArea) {

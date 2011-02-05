@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.nuxeo.ide.project.feature_1.0.0.201102052050.jar" id="org.nuxeo.ide.project.feature" version="1.0.0.201102052050"/>
+</site>

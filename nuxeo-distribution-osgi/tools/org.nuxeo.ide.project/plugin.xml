@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
+   <!--extension
          point="org.eclipse.ui.importWizards">
       <wizard
             category="org.nuxeo"
@@ -22,9 +22,6 @@
             objectClass="org.eclipse.core.resources.IProject"
             nameFilter="*"
             id="org.nuxeo.ide.project.syncManifest">
-         <!--visibility>
-             <objectState name="projectNature" value="org.nuxeo.dev.ide.NuxeoNature"/>
-         </visibility-->            
          <action
                label="Synchronize Nuxeo Manifest"
                class="org.nuxeo.ide.project.SyncManifestAction"
@@ -33,7 +30,7 @@
                id="org.nuxeo.ide.project.syncManifest">
          </action>         
       </objectContribution>
-   </extension>
+   </extension-->
    
    <!-- customized launching -->
    <extension

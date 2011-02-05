@@ -173,7 +173,6 @@ public class ProjectGenerator {
         copyManifest(getSourceManifest(), getManifest(), version);
     }
 
-
     protected static void copyTemplate(File dir, String path, String filePath, Map<String,String> vars) throws IOException {
         URL url = ProjectGenerator.class.getResource(path);
         if (url == null) {
@@ -218,6 +217,7 @@ public class ProjectGenerator {
         vars.put("parentArtifactId", loader.getArtifactId());
         vars.put("parentGroupId", loader.getGroupId());
         for (File root : loader.getModuleFiles()) {
+            System.out.println("Generating " + root);
             new ProjectGenerator(nuxeoRoot, pom, osgiRoot, root).generate(vars, clean);
         }
     }
@@ -248,17 +248,5 @@ public class ProjectGenerator {
 
         generate(new File(nuxeoRoot), new File(pom), new File(osgiRoot), clean);
     }
-
-//    public static void main2(String[] args) throws Exception {
-//        File nuxeoRoot = new File("/Users/bstefanescu/work/nuxeo");
-//        File parentPom = new File("/Users/bstefanescu/work/nuxeo/nuxeo-distribution/nuxeo-distribution-osgi/pom.xml");
-//        File osgiRoot = new File("/Users/bstefanescu/work/nuxeo/nuxeo-distribution/nuxeo-distribution-osgi/projects");
-//        File root = new File("/Users/bstefanescu/work/nuxeo/nuxeo-distribution/nuxeo-distribution-osgi/projects/nuxeo-runtime/nuxeo-runtime");
-//        ProjectEntry p = new ProjectEntry(nuxeoRoot, parentPom, osgiRoot, root);
-//        System.out.println(p.pathToParentPom + " => "+new File(root, p.pathToParentPom).getCanonicalFile());
-//        System.out.println(p.pathToSrcFile("src", "main", "java") + " => "+new File(root, p.pathToSrcFile("src", "main", "java")).getCanonicalFile());
-//        System.out.println(p.getSourceManifest());
-//        System.out.println(p.getManifest());
-//    }
 
 }

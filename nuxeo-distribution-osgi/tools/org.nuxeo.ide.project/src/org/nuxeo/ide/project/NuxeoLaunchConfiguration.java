@@ -36,6 +36,35 @@ import org.nuxeo.ide.project.utils.StringUtils;
  */
 public class NuxeoLaunchConfiguration extends EquinoxLaunchConfiguration {
 
+
+    /**
+     * intercept VM args and remove h2 lucene lock if any is present
+     */
+    @Override
+    public String[] getVMArguments(ILaunchConfiguration configuration)
+            throws CoreException {
+        String[] args = super.getVMArguments(configuration);
+        String lock = null;
+        String nuxeoHome = null;
+        for (int i=0; i<args.length; i++) {
+            if (args[i].startsWith("-Dnuxeo.home=")) {
+                nuxeoHome = args[i].substring("-Dnuxeo.home=".length());
+            } else if (args[i].startsWith("-Dh2.baseDir=")) {
+                lock = args[i].substring("-Dh2.baseDir=".length());
+            }
+        }
+        if (lock != null) {
+            lock = lock+File.separator+"nuxeo.lucene"+File.separator+"write.lock";
+        } else if (nuxeoHome != null) {
+            lock = nuxeoHome+File.separator+"data"+File.separator+"h2"
+                +File.separator+"nuxeo.lucene"+File.separator+"write.lock";
+        }
+        if (lock != null) {
+            new File(lock).delete();
+        }
+        return args;
+    }
+
     /**
      * Fix config.ini to point to /bin directories and not to project roots.
      * Also dev.properties can be removed since pointing to bin will include classes in the bundle
