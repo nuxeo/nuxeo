@@ -459,11 +459,11 @@ public final class FileUtils {
     }
 
     public static File getFile(File base, String ... args) {
-        return new File(base, StringUtils.join(args, File.pathSeparatorChar));
+        return new File(base, StringUtils.join(args, File.separatorChar));
     }
 
     public static File getFile(String ... args) {
-        return new File(StringUtils.join(args, File.pathSeparatorChar));
+        return new File(StringUtils.join(args, File.separatorChar));
     }
 
 }

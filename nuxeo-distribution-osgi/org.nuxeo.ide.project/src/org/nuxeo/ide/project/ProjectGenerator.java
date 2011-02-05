@@ -191,4 +191,11 @@ public class ProjectGenerator {
         }
     }
 
+    public static void main(String[] args) throws Exception {
+        if (args.length < 1 && args.length > 2) {
+            System.err.println("Usage: ProjectGenerator path_to_parent_pom.");
+        }
+        new ProjectGenerator(new File(args[0]), true).run();
+    }
+
 }
