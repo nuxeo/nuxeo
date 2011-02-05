@@ -101,13 +101,16 @@
 	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-ra/osgi</module>
 	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-extensions/osgi</module>
 
-    <!-- H2 integration-->
-    <module>nuxeo-distribution/nuxeo-distribution-osgi/nuxeo-core-storage-h2/osgi</module>
-    <module>nuxeo-distribution/nuxeo-distribution-osgi/h2-extensions-fragment/osgi</module>
-
     <!-- jax-rs integration -->
 	<module>nuxeo-webengine/nuxeo-webengine-jaxrs/osgi</module>
 
+    <!-- H2 integration-->
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/org.nuxeo.ecm.core.h2</module>
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/org.nuxeo.ecm.core.h2.extensions</module>
+
+    <!-- runtime configuration -->
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/org.log4j.config</module>
+    <module>nuxeo-distribution/nuxeo-distribution-osgi/org.nuxeo.runtime.config</module>
 
     <!-- ================= optional bundles ================ -->
     <module>nuxeo-core/nuxeo-core-io/osgi</module>
