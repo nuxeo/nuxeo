@@ -64,6 +64,15 @@ public class CssStringWriter extends StringWriter {
         }
     }
 
+    private void writeHex(LexicalUnit lu) {
+        write("#");
+        for (LexicalUnit current = lu; current != null; current = current.getNextLexicalUnit()) {
+            if (current.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
+                write(Integer.toHexString(current.getIntegerValue()));
+            }
+        }
+    }
+
     void write(LexicalUnit lu) {
         short type = lu.getLexicalUnitType();
         switch (type) {
@@ -117,9 +126,8 @@ public class CssStringWriter extends StringWriter {
             write(")");
             break;
         case LexicalUnit.SAC_RGBCOLOR:
-            write("rgb(");
-            write(lu.getParameters(), "");
-            write(")");
+            // Use hexadecimal notation instead
+            writeHex(lu.getParameters());
             break;
         case LexicalUnit.SAC_OPERATOR_COMMA:
             write(",");

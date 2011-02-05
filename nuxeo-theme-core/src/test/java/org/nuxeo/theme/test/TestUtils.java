@@ -52,7 +52,7 @@ public class TestUtils extends TestCase {
         assertEquals("none", props2.getProperty("text-decoration"));
 
         Properties props3 = style.getPropertiesFor(viewName, "ul a");
-        assertEquals("rgb(255,255,255)", props3.getProperty("color"));
+        assertEquals("#ffffff", props3.getProperty("color"));
         assertEquals("url(image.png)", props3.getProperty("background-image"));
 
         Properties props4 = style.getPropertiesFor(viewName, "ul");
