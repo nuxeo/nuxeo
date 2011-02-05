@@ -256,6 +256,10 @@ public class CssStringWriter extends StringWriter {
         }
     }
 
+    private void write(char c) {
+        write(Character.toString(c));
+    }
+
     @Override
     public void write(int i) {
         write(Integer.toString(i));

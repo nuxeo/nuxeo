@@ -29,17 +29,18 @@ public class TestUtils extends TestCase {
 
     public void testCssToStyle() {
         String cssSource = "div {color: red; font: 12px Arial;} li a {text-decoration: none;} .action .input{color: #ffffff;}"
-                + "ul a {color: #FFFFFF;background-image:url(image.png)} ul {}";
+                + "ul a {color: #FFFFFF;background-image:url(image.png)} a > b {color: \"green (nuxeo DM color)\"} ul {}";
         StyleFormat style = new StyleFormat();
 
         String viewName = "vertical menu";
-        org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
+        Utils.loadCss(style, cssSource, viewName);
 
         Object[] paths = style.getPathsForView(viewName).toArray();
         assertEquals("div", paths[0]);
         assertEquals("li a", paths[1]);
         assertEquals(".action .input", paths[2]);
         assertEquals("ul a", paths[3]);
+        assertEquals("a>b", paths[4]);
 
         Properties props0 = style.getPropertiesFor(viewName, ".action .input");
         assertNotNull(props0);
@@ -55,23 +56,26 @@ public class TestUtils extends TestCase {
         assertEquals("#ffffff", props3.getProperty("color"));
         assertEquals("url(image.png)", props3.getProperty("background-image"));
 
-        Properties props4 = style.getPropertiesFor(viewName, "ul");
-        assertNull(props4);
+        Properties props4 = style.getPropertiesFor(viewName, "a>b");
+        assertEquals("\"green (nuxeo DM color)\"", props4.getProperty("color"));
+
+        Properties props5 = style.getPropertiesFor(viewName, "ul");
+        assertNull(props5);
 
         // make sure that old properties are removed
         cssSource = "a {color: blue;}";
-        org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
-        Properties props5 = style.getPropertiesFor(viewName, "a");
-        assertEquals("blue", props5.getProperty("color"));
+        Utils.loadCss(style, cssSource, viewName);
+        Properties props6 = style.getPropertiesFor(viewName, "a");
+        assertEquals("blue", props6.getProperty("color"));
 
         assertNull(style.getPropertiesFor(viewName, "div"));
         assertNull(style.getPropertiesFor(viewName, "li a"));
 
         // parse empty selectors
         cssSource = " {color: violet;} li a {text-decoration: none;} {font-size: 12px;}";
-        org.nuxeo.theme.Utils.loadCss(style, cssSource, viewName);
-        Properties props6 = style.getPropertiesFor(viewName, "");
-        assertEquals("violet", props6.getProperty("color"));
+        Utils.loadCss(style, cssSource, viewName);
+        Properties props7 = style.getPropertiesFor(viewName, "");
+        assertEquals("violet", props7.getProperty("color"));
     }
 
 }
