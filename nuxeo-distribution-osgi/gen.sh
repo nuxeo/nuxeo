@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 GEN_DIR=tools/nuxeo-project-generator
 JAR=${GEN_DIR}/target/nuxeo-project-gen-1.0.jar
