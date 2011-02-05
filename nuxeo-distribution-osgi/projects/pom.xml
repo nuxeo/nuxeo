@@ -33,6 +33,8 @@
 	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-ra</module>
 	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-extensions</module>
 
+	<module>nuxeo-services/nuxeo-platform-dublincore</module>
+
     <!-- jax-rs integration -->
 	<module>nuxeo-webengine/nuxeo-webengine-jaxrs</module>
 
