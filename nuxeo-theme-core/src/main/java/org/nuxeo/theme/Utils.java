@@ -242,6 +242,8 @@ public final class Utils {
         // remove existing properties
         style.clearPropertiesFor(viewName);
 
+        CssStringWriter cssWriter = new CssStringWriter();
+
         Iterator<CSSRule> rules = styleSheet.getRules().iterator();
         while (rules.hasNext()) {
             CSSRule rule = rules.next();
@@ -250,8 +252,9 @@ public final class Utils {
 
             /* CSS selector */
             Selector selector = rule.getSelector();
-            String selectorStr = selector.toString();
-            selectorStr = selectorStr.replaceAll("\\*\\.", ".");
+            cssWriter.write(selector);
+            String selectorStr = cssWriter.toText();
+
             if (selectorStr.equals(EMPTY_CSS_SELECTOR)) {
                 selectorStr = "";
             }
@@ -259,15 +262,8 @@ public final class Utils {
             /* CSS properties */
             CSSProperty property = rule.getProperty();
             LexicalUnit value = property.getValue();
-
-            String strValue = value.toString();
-            // FIXME
-            if (strValue != null) {
-                strValue = strValue.replaceAll("attr\\((.*?)\\)", "$1");
-                strValue = strValue.replaceAll("uri\\((.*?)\\)", "url\\($1\\)");
-                strValue = strValue.replaceAll("color\\((.*?)\\)",
-                        "rgb\\($1\\)");
-            }
+            cssWriter.write(value, " ");
+            String strValue = cssWriter.toText();
 
             if (property == null) {
                 styleProperties.setProperty("", "");
