@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.defaultPolicies">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+
+    <documentation>
+      The lock security policy checks if a lock is set on the document, in case
+      it denies write access to everyone except to the user who locked it.
+    </documentation>
+    <policy name="lock" class="org.nuxeo.ecm.core.security.LockSecurityPolicy"
+      order="10" />
+
+  </extension>
+
+  <!--
+  Policy disabled by default given that with auto-checkout
+  it looks like write access to checked in documents is allowed.
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+    <documentation>
+      The checkin security policy denies write access on a live document when
+      it is in the checked-in state. The document must be checked out before
+      modification is allowed.
+      @since 5.4
+    </documentation>
+    <policy name="checkin" class="org.nuxeo.ecm.core.security.CheckInSecurityPolicy"
+      order="15" />
+  </extension>
+  -->
+
+</component>

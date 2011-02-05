@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-osgi-projects</artifactId>
+  <version>5.4.1-SNAPSHOT</version>
+  <name>Nuxeo OSGi Projects</name>
+  <description>Nuxeo OSGi generated projects.</description>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-common</module>
+    <module>nuxeo-runtime/nuxeo-runtime</module>
+    <module>nuxeo-runtime/nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime/nuxeo-runtime-jetty-adapter</module>
+    <module>nuxeo-runtime/nuxeo-runtime-start</module>
+    <module>nuxeo-core/nuxeo-core-schema</module>
+    <module>nuxeo-core/nuxeo-core-query</module>
+    <module>nuxeo-core/nuxeo-core-event</module>
+    <module>nuxeo-core/nuxeo-core-api</module>
+    <module>nuxeo-core/nuxeo-core-auth</module>
+    <module>nuxeo-core/nuxeo-core</module>
+    <module>nuxeo-core/nuxeo-core-convert-api</module>
+    <module>nuxeo-core/nuxeo-core-convert</module>
+    <module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql</module>
+	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-ra</module>
+	<module>nuxeo-core/nuxeo-core-storage-sql/nuxeo-core-storage-sql-extensions</module>
+
+    <!-- jax-rs integration -->
+	<module>nuxeo-webengine/nuxeo-webengine-jaxrs</module>
+
+    <!-- ================= optional bundles ================ -->
+    <module>nuxeo-core/nuxeo-core-io</module>
+    <!-- TODO: management should be optional - but I think it will not work if we remove it -->
+    <module>nuxeo-runtime/nuxeo-runtime-management</module>
+    <module>nuxeo-runtime/nuxeo-runtime-management-metrics</module>
+    <module>nuxeo-core/nuxeo-core-management</module>
+
+	<!-- used by jaxrs integration if you need ftl views support -->
+	<module>nuxeo-services/nuxeo-platform-rendering</module>
+
+  </modules>
+
+</project>

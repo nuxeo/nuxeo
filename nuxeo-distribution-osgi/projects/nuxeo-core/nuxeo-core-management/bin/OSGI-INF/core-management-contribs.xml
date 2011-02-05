@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.contribs">
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="serviceDefinition">
+
+    <administrableService id="org.nuxeo.ecm.instance.availability"
+      name="nuxeoInstance">
+      <label>Nuxeo Instance</label>
+      <description>
+        Indicates if the Nuxeo Instance is available or not.
+      </description>
+    </administrableService>
+
+    <administrableService id="org.nuxeo.ecm.administrator.message"
+      name="adminMessage">
+      <label>Administrator message</label>
+      <description>
+        Displays a message from administrator on all pages
+      </description>
+      <initialState>passive</initialState>
+    </administrableService>
+
+    <administrableService id="org.nuxeo.ecm.smtp" name="smtpService">
+      <label>SMTP services</label>
+      <description>
+        Indicates if the Nuxeo instance can send e-mails
+      </description>
+    </administrableService>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="probes">
+
+    <probe name="administrativeStatus"
+      class="org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe">
+      <label>Local Instance availability</label>
+      <description>Test if local Nuxeo Instance is available</description>
+    </probe>
+  </extension>
+
+</component>

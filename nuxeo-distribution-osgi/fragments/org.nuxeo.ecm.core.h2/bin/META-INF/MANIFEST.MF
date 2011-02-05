@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SQL Storage H2 Database
+Bundle-SymbolicName: org.nuxeo.ecm.core.h2;singleton:=true
+Bundle-Version: 5.4.1.qualifier
+Bundler-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.com.h2database.h2
+Import-Package: org.apache.geronimo.transaction.manager
+Fragment-Host: org.nuxeo.ecm.core.storage.sql.ra

@@ -1,0 +1,126 @@
+# (C) Copyright 2008-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Lesser General Public License
+# (LGPL) version 2.1 which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/lgpl.html
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# Contributors:
+#     Florent Guillaume
+
+# Variables used:
+# ${idType} VARCHAR(36)
+# ${derbyFunctions} org.nuxeo.ecm.core.storage.sql.db.DerbyFunctions
+
+# Conditions used:
+# fulltextEnabled
+
+############################################################
+
+
+#CATEGORY: beforeTableCreation
+
+
+#TEST:
+SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = 'NX_IN_TREE' AND ALIASTYPE = 'F';
+
+#IF: ! emptyResult
+DROP FUNCTION NX_IN_TREE;
+
+CREATE FUNCTION NX_IN_TREE(ID ${idType}, BASEID ${idType})
+RETURNS SMALLINT
+LANGUAGE JAVA PARAMETER STYLE JAVA
+EXTERNAL NAME '${derbyFunctions}.isInTreeString'
+READS SQL DATA;
+
+
+#TEST:
+SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = 'NX_ACCESS_ALLOWED' AND ALIASTYPE = 'F';
+
+#IF: ! emptyResult
+DROP FUNCTION NX_ACCESS_ALLOWED;
+
+CREATE FUNCTION NX_ACCESS_ALLOWED(ID ${idType}, PRINCIPALS VARCHAR(10000), PERMISSIONS VARCHAR(10000))
+RETURNS SMALLINT
+LANGUAGE JAVA PARAMETER STYLE JAVA
+EXTERNAL NAME '${derbyFunctions}.isAccessAllowedString'
+READS SQL DATA;
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = 'NX_PARSE_FULLTEXT' AND ALIASTYPE = 'F';
+
+#IF: fulltextEnabled
+#IF: ! emptyResult
+DROP FUNCTION NX_PARSE_FULLTEXT;
+
+#IF: fulltextEnabled
+CREATE FUNCTION NX_PARSE_FULLTEXT(S1 VARCHAR(10000), S2 VARCHAR(10000))
+RETURNS VARCHAR(10000)
+LANGUAGE JAVA PARAMETER STYLE JAVA
+EXTERNAL NAME '${derbyFunctions}.parseFullText';
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT ALIAS FROM SYS.SYSALIASES WHERE ALIAS = 'NX_CONTAINS' AND ALIASTYPE = 'F';
+
+#IF: fulltextEnabled
+#IF: ! emptyResult
+DROP FUNCTION NX_CONTAINS;
+
+#IF: fulltextEnabled
+CREATE FUNCTION NX_CONTAINS(FT VARCHAR(10000), QUERY VARCHAR(10000))
+RETURNS SMALLINT
+LANGUAGE JAVA PARAMETER STYLE JAVA
+EXTERNAL NAME '${derbyFunctions}.matchesFullTextDerby';
+
+
+
+
+############################################################
+
+
+#CATEGORY: afterTableCreation
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = 'NX_TRIG_FT_INSERT';
+
+#IF: fulltextEnabled
+#IF: ! emptyResult
+DROP TRIGGER NX_TRIG_FT_INSERT;
+
+#IF: fulltextEnabled
+CREATE TRIGGER NX_TRIG_FT_INSERT
+  AFTER INSERT ON FULLTEXT
+  REFERENCING NEW AS NEW FOR EACH ROW
+  UPDATE FULLTEXT
+    SET FULLTEXT = NX_PARSE_FULLTEXT(CAST(SIMPLETEXT AS VARCHAR(10000)), CAST(BINARYTEXT AS VARCHAR(10000)))
+    WHERE ID = NEW.ID;
+
+
+
+#IF: fulltextEnabled
+#TEST:
+SELECT TRIGGERNAME FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = 'NX_TRIG_FT_UPDATE';
+
+#IF: fulltextEnabled
+#IF: ! emptyResult
+DROP TRIGGER NX_TRIG_FT_UPDATE;
+
+#IF: fulltextEnabled
+CREATE TRIGGER NX_TRIG_FT_UPDATE
+  AFTER UPDATE OF SIMPLETEXT, BINARYTEXT ON FULLTEXT
+  REFERENCING NEW AS NEW FOR EACH ROW
+  UPDATE FULLTEXT
+    SET FULLTEXT = NX_PARSE_FULLTEXT(CAST(SIMPLETEXT AS VARCHAR(10000)), CAST(BINARYTEXT AS VARCHAR(10000)))
+    WHERE ID = NEW.ID;
+

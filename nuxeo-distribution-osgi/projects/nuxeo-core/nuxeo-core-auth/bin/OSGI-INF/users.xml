@@ -1,0 +1,13 @@
+<users>
+
+  <user name="Administrator" password="Administrator">
+    <isAdministrator>true</isAdministrator>
+    <groups>administrators</groups>
+  </user>
+
+  <user name="Bogdan" password="Bogdan">
+    <isAdministrator>false</isAdministrator>
+    <groups>members</groups>
+  </user>
+
+</users>

@@ -1,0 +1,12 @@
+Parser:
+1. add group by and having support
+2. builtin functions (at which level should functions be resolved?
+(parser level or execution level?)
+
+Execution:
+1. create a QueryResult class to hold the query result
+2. implement query execution for simple queries in NXJCRConnector
+
+API:
+1. link IRepository/IWorkspace with the query module
+(add a public QueryResult executeQuery(Query query) method in IRepository or IWorkspace)
