@@ -11,7 +11,7 @@ Manifest-Version: 1.0
 Bundle-Name: Nuxeo ECM Platform Site Add On
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/freemarker-engine.xml
 Provide-Package: org.nuxeo.ecm.platform.rendering.api,
@@ -39,7 +39,6 @@ Import-Package: freemarker.cache,
  org.nuxeo.ecm.core.schema,
  org.nuxeo.ecm.core.schema.types,
  org.nuxeo.ecm.core.schema.types.primitives,
- org.nuxeo.ecm.directory;api=split,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.services.streaming,
