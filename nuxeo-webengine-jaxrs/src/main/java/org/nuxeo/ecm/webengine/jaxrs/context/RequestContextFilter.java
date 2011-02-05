@@ -18,14 +18,13 @@ package org.nuxeo.ecm.webengine.jaxrs.context;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
 
 /**
  * Manage the context of the current HTTP request and made it available through a thread local variable
@@ -34,16 +33,16 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RequestContextFilter implements Filter {
+public class RequestContextFilter extends AbstractFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
+    public void run(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        RequestContext ctx = new RequestContext((HttpServletRequest)request, (HttpServletResponse)response);
+        RequestContext ctx = new RequestContext(request, response);
         try {
             chain.doFilter(request, response);
         } finally {

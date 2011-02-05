@@ -20,18 +20,16 @@ import java.io.IOException;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -40,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AuthenticationFilter implements Filter {
+public class AuthenticationFilter extends AbstractFilter {
 
     public final static String DEFAULT_SECURITY_DOMAIN = "nuxeo-client-login";
 
@@ -63,19 +61,16 @@ public class AuthenticationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
+    public void run(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        HttpServletRequest req = (HttpServletRequest)request;
-        HttpServletResponse resp = (HttpServletResponse)response;
-
         LoginContext lc = null;
-        if (req.getUserPrincipal() == null) {
+        if (request.getUserPrincipal() == null) {
             try {
-                lc = doLogin(req, resp);
+                lc = doLogin(request, response);
             } catch (LoginException e) {
                 // login failed
-                handleLoginFailure(req, resp, e);
+                handleLoginFailure(request, response, e);
                 return;
             }
         }

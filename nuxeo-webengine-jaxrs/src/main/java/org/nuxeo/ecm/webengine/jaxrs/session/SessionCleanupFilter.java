@@ -18,22 +18,20 @@ package org.nuxeo.ecm.webengine.jaxrs.session;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.webengine.jaxrs.context.CompositeFilter;
+import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
 import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerSessionCoreProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SessionCleanupFilter implements Filter {
+public class SessionCleanupFilter extends AbstractFilter {
 
     public final String STATEFUL_KEY = SessionCleanupFilter.class.getName() + ".stateful";
 
@@ -43,16 +41,15 @@ public class SessionCleanupFilter implements Filter {
 
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
+    public void run(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest)request;
-        if (CompositeFilter.getBoolean(request, STATEFUL_KEY)) {
-            PerSessionCoreProvider.install(req);
+        if (getBoolean(request, STATEFUL_KEY)) {
+            PerSessionCoreProvider.install(request);
         }
         try {
             chain.doFilter(request, response);
         } finally {
-            SessionFactory.dispose(req);
+            SessionFactory.dispose(request);
         }
     }
 

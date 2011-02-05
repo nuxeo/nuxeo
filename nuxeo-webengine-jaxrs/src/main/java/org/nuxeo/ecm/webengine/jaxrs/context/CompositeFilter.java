@@ -147,14 +147,6 @@ public class CompositeFilter implements Filter {
     }
 
 
-    public static final boolean getBoolean(ServletRequest request, String key) {
-        return Boolean.parseBoolean((String)request.getAttribute(key));
-    }
-
-    public static final boolean isEnabled(ServletRequest request, Filter filter) {
-        return !getBoolean(request, filter.getClass().getName().concat(".disabled"));
-    }
-
 
     static class SubFilterChain implements FilterChain {
 
@@ -178,9 +170,7 @@ public class CompositeFilter implements Filter {
                 throws IOException, ServletException {
             if (filterIndex < filters.length) {
                 Filter filter = filters[filterIndex];
-                if (CompositeFilter.isEnabled(request, filter)) {
-                    filter.doFilter(request, response, this);
-                }
+                filter.doFilter(request, response, this);
                 filterIndex++;
             } else {
                 chain.doFilter(request, response);

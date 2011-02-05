@@ -18,13 +18,13 @@ package org.nuxeo.ecm.webengine.jaxrs.tx;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.webengine.jaxrs.AbstractFilter;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -33,14 +33,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TransactionFilter implements Filter {
+public class TransactionFilter extends AbstractFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
+    public void run(HttpServletRequest request, HttpServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         boolean txStarted = false;
         if (!TransactionHelper.isTransactionActive())  {
