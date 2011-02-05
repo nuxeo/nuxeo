@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SQL Extensions in H2
-Bundle-SymbolicName: org.nuxeo.ecm.core.sql.h2.extensions
+Bundle-Name: SQL Extensions for H2
+Bundle-SymbolicName: org.nuxeo.ecm.core.h2.extensions
 Bundle-Version: 5.4.1.qualifier
 Bundle-Vendor: Nuxeo SA
 Fragment-Host: org.nuxeo.com.h2database.h2
