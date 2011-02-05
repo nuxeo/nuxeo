@@ -134,7 +134,7 @@ public class PomLoader {
 
     public String getProjectDescription() {
         Element el = getFirstElement(doc.getDocumentElement(), "description");
-        return el != null ? el.getTextContent().trim() : null;
+        return el != null ? el.getTextContent().trim() : "";
     }
 
     public Element getModules() {
