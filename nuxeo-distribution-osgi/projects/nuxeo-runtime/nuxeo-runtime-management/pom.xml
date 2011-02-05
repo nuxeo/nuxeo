@@ -13,7 +13,7 @@
   <artifactId>nuxeo-runtime-management</artifactId>
   <version>5.4.1-SNAPSHOT</version>
   <name>Nuxeo Runtime Management</name>
-  <description>${description}</description>
+  <description></description>
   <url>http://www.nuxeo.org/</url>
   <packaging>eclipse-plugin</packaging>
 

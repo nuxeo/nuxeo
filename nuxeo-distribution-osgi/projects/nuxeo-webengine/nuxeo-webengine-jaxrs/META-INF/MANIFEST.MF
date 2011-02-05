@@ -41,3 +41,4 @@ Import-Package: com.sun.jersey.core.spi.component,
 Eclipse-BuddyPolicy: dependent
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.jaxrs;singleton:=true
 Bundle-Activator: org.nuxeo.ecm.webengine.jaxrs.Activator
+Require-Bundle: org.nuxeo.ecm.core;bundle-version="5.4.1"

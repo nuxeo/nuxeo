@@ -103,9 +103,9 @@
 			<url>http://download.eclipse.org/eclipse/updates/3.6-JUnit-Tests/</url>
 		</repository-->
 		<repository>
-			<id>thirds</id>
+			<id>third-parties</id>
 			<layout>p2</layout>
-			<url>http://marge.in.nuxeo.com/p2/third-parties/</url>
+			<url>http://osgi.nuxeo.org/repository/third-parties/</url>
 		</repository>
 	</repositories>
       <build>
