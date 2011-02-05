@@ -357,15 +357,21 @@
       <class>org.nuxeo.theme.editor.views.SectionFrameAreaStyle</class>
     </view>
 
+    <view name="cell frame" template-engine="freemarker">
+      <engine>page-editor</engine>
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <class>
+        org.nuxeo.theme.editor.views.CellFrameWidget
+      </class>
+    </view>
 
-    <view name="section frame" template-engine="freemarker">
+    <view name="cell frame" template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>area-styles-cell</mode>
-      <element-type>section</element-type>
+      <element-type>cell</element-type>
       <format-type>widget</format-type>
-      <template>
-        nxthemes/editor/widgets/fm/section-frame.xml
-      </template>
+      <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
     </view>
 
     <view template-engine="freemarker">
@@ -378,25 +384,6 @@
       </class>
     </view>
 
-    <view name="cell frame" template-engine="freemarker">
-      <engine>page-editor</engine>
-      <element-type>cell</element-type>
-      <format-type>widget</format-type>
-      <class>
-        org.nuxeo.theme.editor.views.CellFrameWidget
-      </class>
-    </view>
-
-
-    <view name="cell frame" template-engine="freemarker">
-      <engine>page-editor</engine>
-      <mode>area-styles-cell</mode>
-      <element-type>cell</element-type>
-      <format-type>widget</format-type>
-      <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
-    </view>
-
-
     <view template-engine="freemarker">
       <engine>page-editor</engine>
       <mode>layout</mode>
@@ -404,7 +391,6 @@
       <format-type>layout</format-type>
       <class>org.nuxeo.theme.editor.views.CellLayout</class>
     </view>
-
 
     <!-- Override the default style view in layout mode-->
     <view template-engine="freemarker">
@@ -421,6 +407,7 @@
       <format-type>widget</format-type>
       <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
     </view>
+
 
 
     <!--  JSF/Facelets views -->
