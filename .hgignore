@@ -29,3 +29,5 @@ nuxeo-distribution-[^/]*/bin
 nuxeo-platform-ear/bin
 nuxeo-embedded-launcher/bin
 nuxeo-launcher/bin
+nuxeo-distribution-osgi/.*/bin
+nuxeo-distribution-osgi/.metadata
