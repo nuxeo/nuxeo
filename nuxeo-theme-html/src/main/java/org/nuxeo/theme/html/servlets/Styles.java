@@ -104,11 +104,13 @@ public final class Styles extends HttpServlet implements Serializable {
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("/* CSS styles for theme '%s' (%s) */\n\n",
                     themeName, new Date()));
-            for (Style style : themeManager.getNamedStyles(themeName)) {
-                sb.append(CSSUtils.styleToCss(style,
+            // Named styles sorted to preserve dependencies in CSS
+            for (Style style : themeManager.getSortedNamedStyles(themeName)) {
+                sb.insert(0, CSSUtils.styleToCss(style,
                         style.getSelectorViewNames(), IGNORE_VIEW_NAME,
                         IGNORE_CLASSNAME, INDENT));
             }
+            // Local theme styles
             for (Style style : themeManager.getStyles(themeName)) {
                 sb.append(CSSUtils.styleToCss(style,
                         style.getSelectorViewNames(), IGNORE_VIEW_NAME,
