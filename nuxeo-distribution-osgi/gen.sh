@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GEN_DIR=tools/nuxeo-project-generator
-JAR=${GEN_DIR}/target/nuxeo-project-gen-1.0.jar
+JAR=${GEN_DIR}/target/nuxeo-project-generator-*.jar
 
 #JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
 

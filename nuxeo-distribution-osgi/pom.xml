@@ -46,6 +46,32 @@
   <build>
     <directory>${project.basedir}/target</directory>
 
+    <pluginManagement>
+      <plugins>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+          <artifactId>tycho-maven-plugin</artifactId>
+          <version>${tycho-version}</version>
+          <extensions>true</extensions>
+	</plugin>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+          <artifactId>target-platform-configuration</artifactId>
+          <version>${tycho-version}</version>
+	</plugin>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+	  <artifactId>tycho-p2-publisher-plugin</artifactId>
+          <version>${tycho-version}</version>
+	</plugin>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+	  <artifactId>tycho-p2-director-plugin</artifactId>
+          <version>${tycho-version}</version>
+	</plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.sonatype.tycho</groupId>
@@ -62,6 +88,7 @@
         </configuration>
       </plugin>
     </plugins>
+    
   </build>
 
 
