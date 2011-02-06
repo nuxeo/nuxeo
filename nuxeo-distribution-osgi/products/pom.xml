@@ -16,7 +16,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>nuxeo-core-equinox-product</module>
+    <module>nuxeo-core-equinox-server-product</module>
   </modules>
 
 </project>
