@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <!--extension
+   <extension
          point="org.eclipse.ui.importWizards">
       <wizard
             category="org.nuxeo"
-            class="org.nuxeo.ide.project.wiz.ImportTychoProject"
+            class="org.nuxeo.ide.project.wiz.ImportPomProjects"
             icon="icons/import_wiz.gif"
             id="org.nuxeo.ide.project.importWizard"
-            name="Import Tycho Projects">
+            name="Import Projects From POM">
       </wizard>
       <category
             id="org.nuxeo"
             name="Nuxeo">
       </category>
    </extension>  
-   <extension
+   <!--extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"

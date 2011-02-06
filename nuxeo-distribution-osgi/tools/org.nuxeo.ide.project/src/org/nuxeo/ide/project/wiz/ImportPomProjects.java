@@ -45,12 +45,12 @@ import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ImportTychoProject extends Wizard implements IImportWizard {
+public class ImportPomProjects extends Wizard implements IImportWizard {
 
     protected IWorkbench workbench;
     protected IStructuredSelection selection;
 
-    protected ImportTychoProjectMainPage mainPage;
+    protected ImportPomProjectsMainPage mainPage;
 
     @Override
     public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -61,7 +61,7 @@ public class ImportTychoProject extends Wizard implements IImportWizard {
     @Override
     public void addPages() {
         super.addPages();
-        mainPage = new ImportTychoProjectMainPage(selection);
+        mainPage = new ImportPomProjectsMainPage(selection);
         addPage(mainPage);
     }
 
@@ -92,7 +92,7 @@ public class ImportTychoProject extends Wizard implements IImportWizard {
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor)
                     throws CoreException {
-                monitor.beginTask("Importing projects", entries.length*2); //$NON-NLS-1$
+                monitor.beginTask("Importing projects", entries.length*3); //$NON-NLS-1$
                 for (ProjectEntry entry : entries) {
                     IProject project = workspace.getRoot().getProject(entry.getDescription().getName());
                     project.create(entry.getDescription(), new SubProgressMonitor(monitor,

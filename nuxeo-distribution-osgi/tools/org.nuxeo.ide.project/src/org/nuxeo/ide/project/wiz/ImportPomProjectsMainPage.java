@@ -51,7 +51,7 @@ import org.nuxeo.ide.project.PomLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ImportTychoProjectMainPage extends WizardPage {
+public class ImportPomProjectsMainPage extends WizardPage {
 
     protected WorkingSetGroup workingSetGroup;
     protected IStructuredSelection currentSelection;
@@ -60,7 +60,7 @@ public class ImportTychoProjectMainPage extends WizardPage {
 
     protected Text pomField;
 
-    protected ImportTychoProjectMainPage(IStructuredSelection selection) {
+    protected ImportPomProjectsMainPage(IStructuredSelection selection) {
         super("importTychoProjectMainPage");
         setTitle("Import Existing Tycho Projects");
         setDescription("You can also generate tycho projects for existing Nuxeo projects");
@@ -174,6 +174,7 @@ public class ImportTychoProjectMainPage extends WizardPage {
                 return getImportableProjectEntries(path);
             }
         } catch (Throwable e) {
+            e.printStackTrace();
         }
         return new ProjectEntry[0];
     }
@@ -197,7 +198,7 @@ public class ImportTychoProjectMainPage extends WizardPage {
         selectAll.setText("Select All");
         selectAll.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                projectsList.setSubtreeChecked(ImportTychoProjectMainPage.this, true);
+                projectsList.setSubtreeChecked(ImportPomProjectsMainPage.this, true);
                 setPageComplete(projectsList.getCheckedElements().length > 0);
             }
         });
@@ -347,14 +348,9 @@ public class ImportTychoProjectMainPage extends WizardPage {
     }
 
     protected ProjectEntry[] getProjectEntries(String pomPath) throws Exception {
-        List<File> modules = new PomLoader(new File(pomPath)).getModuleFiles();
-        if (modules == null) {
-            return new ProjectEntry[0];
-        }
+        File pom = new File(pomPath);
         ArrayList<ProjectEntry> entries = new ArrayList<ProjectEntry>();
-        for (File file : modules) {
-            entries.add(new ProjectEntry(file));
-        }
+        collectProjects(pom.getParentFile(), pom, entries);
         Collections.sort(entries, new Comparator<ProjectEntry>() {
             @Override
             public int compare(ProjectEntry o1, ProjectEntry o2) {
@@ -365,6 +361,21 @@ public class ImportTychoProjectMainPage extends WizardPage {
             }
         });
         return entries.toArray(new ProjectEntry[entries.size()]);
+    }
+
+    protected void collectProjects(File root, File pom, List<ProjectEntry> entries) throws Exception {
+        PomLoader loader = new PomLoader(pom);
+        if ("pom".equals(loader.getPackaging())) {
+            for (File file : loader.getModuleFiles()) {
+                collectProjects(file, new File(file, "pom.xml"), entries);
+            }
+        } else {
+            try {
+                entries.add(new ProjectEntry(root));
+            } catch (Throwable t) {
+                System.err.println("Invalid Eclipse project: "+root);
+            }
+        }
     }
 
 }
