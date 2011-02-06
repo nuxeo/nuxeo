@@ -9,6 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-osgi-fragments</artifactId>
   <name>Nuxeo OSGi Fragments</name>
   <description>Nuxeo OSGi fragments usd to configure the product.</description>
