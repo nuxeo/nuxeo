@@ -103,9 +103,19 @@
 			<url>http://download.eclipse.org/eclipse/updates/3.6-JUnit-Tests/</url>
 		</repository-->
 		<repository>
-			<id>third-parties</id>
+			<id>third-parties-core</id>
 			<layout>p2</layout>
-			<url>http://osgi.nuxeo.org/repository/third-parties/</url>
+			<url>http://osgi.nuxeo.org/repository/third-parties/core</url>
+		</repository>
+		<repository>
+			<id>third-parties-equinox</id>
+			<layout>p2</layout>
+			<url>http://osgi.nuxeo.org/repository/third-parties/equinox</url>
+		</repository>
+		<repository>
+			<id>third-parties-others</id>
+			<layout>p2</layout>
+			<url>http://osgi.nuxeo.org/repository/third-parties/others</url>
 		</repository>
 	</repositories>
       <build>

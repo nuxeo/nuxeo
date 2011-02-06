@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Runtime Configuration
-Bundle-SymbolicName: org.nuxeo.runtime.config
-Bundle-Version: 5.4.1.qualifier
-Fragment-Host: org.nuxeo.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
