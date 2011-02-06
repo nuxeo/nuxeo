@@ -23,6 +23,7 @@
   <modules>
     <module>nuxeo-jboss-deployer</module>
     <module>nuxeo-runtime</module>
+    <module>nuxeo-runtime-remoting</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-osgi</module>
@@ -42,7 +43,7 @@
 
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
       <modules> <module>nuxeo-runtime-test</module> </modules> </profile> -->
   </profiles>
 
@@ -56,6 +57,11 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-remoting</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
@@ -144,7 +150,7 @@
       </roles>
     </developer>
   </developers>
-  
+
   <repositories>
     <repository>
       <id>public</id>

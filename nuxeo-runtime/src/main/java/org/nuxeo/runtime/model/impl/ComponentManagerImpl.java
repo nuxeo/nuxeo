@@ -27,8 +27,8 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +42,6 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.remoting.RemoteContext;
 
 /**
  * @author Bogdan Stefanescu
@@ -420,12 +419,8 @@ public class ComponentManagerImpl implements ComponentManager {
             }
             loadContributions(ri, extension);
             ri.component.registerExtension(extension);
-            if (!(extension.getContext() instanceof RemoteContext)) {
-                // TODO avoid resending events when remoting extensions are registered
-                // - temporary hack - find something better
-                sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
-                        ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
-            }
+            sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
+                    ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         } else { // put the extension in the pending queue
             if (log.isDebugEnabled()) {
                 log.debug("Enqueue contributed extension to pending queue: " + extension);
@@ -436,12 +431,8 @@ public class ComponentManagerImpl implements ComponentManager {
                 pendingExtensions.put(name, extensions);
             }
             extensions.add(extension);
-            if (!(extension.getContext() instanceof RemoteContext)) {
-                // TODO avoid resending events when remoting extensions are registered
-                // - temporary hack - find something better
-                sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
-                        ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
-            }
+            sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
+                    ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
         }
     }
 
@@ -466,13 +457,9 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
         }
-        if (!(extension.getContext() instanceof RemoteContext)) {
-            // TODO avoid resending events when remoting extensions are
-            // registered - temporary hack - find something better
-            sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_UNREGISTERED,
-                    ((ComponentInstanceImpl) extension.getComponent()).ri,
-                    extension));
-        }
+        sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_UNREGISTERED,
+                ((ComponentInstanceImpl) extension.getComponent()).ri,
+                extension));
     }
 
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
