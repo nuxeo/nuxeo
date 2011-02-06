@@ -35,17 +35,12 @@
     <repository>
       <id>third-parties-core</id>
       <layout>p2</layout>
-      <url>http://osgi.nuxeo.org/repository/third-parties/core</url>
+      <url>http://osgi.nuxeo.org/repository/third-parties/core/</url>
     </repository>
     <repository>
-      <id>third-parties-equinox</id>
+      <id>third-parties-log</id>
       <layout>p2</layout>
-      <url>http://osgi.nuxeo.org/repository/third-parties/equinox</url>
-    </repository>
-    <repository>
-      <id>third-parties-others</id>
-      <layout>p2</layout>
-      <url>http://osgi.nuxeo.org/repository/third-parties/others</url>
+      <url>http://osgi.nuxeo.org/repository/third-parties/log/</url>
     </repository>
   </repositories>
   <build>
