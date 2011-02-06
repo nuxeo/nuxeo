@@ -14,6 +14,6 @@ fi
 
 echo "Generating projects ..."
 
-java $JAVA_OPTS -cp ${JAR} org.nuxeo.build.osgi.gen.ProjectGenerator "-clean" "../../" "projects/pom.xml" "projects"
+java $JAVA_OPTS -cp ${JAR} org.nuxeo.build.osgi.gen.ProjectGenerator "-clean" "../../" "projects/pom.xml" "plugins"
 
 echo "Done."

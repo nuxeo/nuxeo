@@ -12,6 +12,6 @@ fi
 
 echo "Synchornizing manifests ..."
 
-java -cp ${JAR} org.nuxeo.build.osgi.gen.SyncManifest "../../" "projects/pom.xml" "projects"
+java -cp ${JAR} org.nuxeo.build.osgi.gen.SyncManifest "../../" "plugins/pom.xml" "plugins"
 
 echo "Done."
