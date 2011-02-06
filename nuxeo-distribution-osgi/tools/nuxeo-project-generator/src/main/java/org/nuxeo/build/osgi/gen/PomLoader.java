@@ -119,6 +119,12 @@ public class PomLoader {
 
     public String getVersion() {
         Element el = getFirstElement(doc.getDocumentElement(), "version");
+        if (el == null) {
+            el = getParentElement();
+            if (el != null) {
+                el = getFirstElement(el, "version");
+            }
+        }
         return el != null ? el.getTextContent().trim() : null;
     }
 

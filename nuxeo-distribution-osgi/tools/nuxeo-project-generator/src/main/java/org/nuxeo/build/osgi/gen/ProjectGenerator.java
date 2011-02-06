@@ -123,11 +123,16 @@ public class ProjectGenerator {
         return new File(root, "META-INF"+File.separator+"MANIFEST.MF").getCanonicalFile();
     }
 
-    public void generate(Map<String,String> parentVars, boolean clean) throws Exception {
-        if (clean && root.isDirectory()) {
-            FileUtils.deleteTree(root);
+    public void generate(Map<String,String> parentVars, boolean clean) {
+        try {
+            if (clean && root.isDirectory()) {
+                FileUtils.deleteTree(root);
+            }
+            doGenerate(parentVars);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            System.out.println("Failed to generate project: "+root);
         }
-        doGenerate(parentVars);
     }
 
     public void doGenerate(Map<String,String> parentVars) throws Exception {

@@ -3,6 +3,8 @@
 GEN_DIR=tools/nuxeo-project-generator
 JAR=${GEN_DIR}/target/nuxeo-project-gen-1.0.jar
 
+#JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
+
 if [ ! -f $JAR ]; then
     echo "Building project generator";
     pushd $GEN_DIR;
@@ -12,6 +14,6 @@ fi
 
 echo "Generating projects ..."
 
-java -cp ${JAR} org.nuxeo.build.osgi.gen.ProjectGenerator "-clean" "../../" "projects/pom.xml" "projects"
+java $JAVA_OPTS -cp ${JAR} org.nuxeo.build.osgi.gen.ProjectGenerator "-clean" "../../" "projects/pom.xml" "projects"
 
 echo "Done."
