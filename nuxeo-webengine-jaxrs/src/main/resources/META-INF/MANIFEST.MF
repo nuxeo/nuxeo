@@ -9,6 +9,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.1.qualifier
 Bundle-ManifestVersion: 2
+Require-Bundle: org.nuxeo.ecm.core
 Import-Package: com.sun.jersey.core.spi.component,
  com.sun.jersey.spi.container.servlet,
  com.sun.jersey.spi.inject,
