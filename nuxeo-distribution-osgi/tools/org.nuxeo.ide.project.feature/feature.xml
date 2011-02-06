@@ -2,7 +2,7 @@
 <feature
       id="org.nuxeo.ide.project.feature"
       label="Nuxeo OSGi Launcher Feature"
-      version="1.0.0.qualifier">
+      version="5.4.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

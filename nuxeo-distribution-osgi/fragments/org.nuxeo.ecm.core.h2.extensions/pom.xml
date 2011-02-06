@@ -4,15 +4,13 @@
 
   <parent>
     <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
+    <artifactId>nuxeo-osgi-fragments</artifactId>
     <version>5.4.1-SNAPSHOT</version>
-    <relativePath>../../../../pom-osgi.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>${groupId}</groupId>
   <artifactId>h2-extensions-fragment</artifactId>
-  <version>5.4.1-SNAPSHOT</version>
-  <name>H2 Extensions</name>
+  <name>Nuxeo H2 Database Extensions Fragment</name>
   <description>OSGi fragment to add extensions to H2 bundle</description>
   <url>http://www.nuxeo.org/</url>
   <packaging>eclipse-plugin</packaging>

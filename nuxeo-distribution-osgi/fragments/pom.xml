@@ -3,14 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-ecm</artifactId>
+    <groupId>org.nuxeo.distribution</groupId>
+    <artifactId>nuxeo-distribution-osgi</artifactId>
     <version>5.4.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-osgi-fragments</artifactId>
-  <version>5.4.1-SNAPSHOT</version>
   <name>Nuxeo OSGi Fragments</name>
   <description>Nuxeo OSGi fragments usd to configure the product.</description>
   <packaging>pom</packaging>
