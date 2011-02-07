@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 
@@ -45,10 +46,11 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     @Override
     public boolean isLockedByCurrentUser(CoreSession session)
             throws ClientException {
-        if (!isLocked(session)) {
+        Lock lockInfo = session.getLockInfo(doc.getRef());
+        if (lockInfo == null) {
             return false;
         }
-        String lockOwner = session.getLockInfo(doc.getRef()).getOwner();
+        String lockOwner = lockInfo.getOwner();
         NuxeoPrincipal userName = (NuxeoPrincipal) session.getPrincipal();
         return userName.getName().equals(lockOwner);
     }
