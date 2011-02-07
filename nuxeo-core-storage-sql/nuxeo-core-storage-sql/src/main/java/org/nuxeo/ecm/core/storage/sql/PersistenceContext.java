@@ -270,6 +270,15 @@ public class PersistenceContext {
                     }
                 }
                 break;
+            case DELETED:
+                docId = getContainingDocument(fragment.getId());
+                if (!isDeleted(docId)) {
+                    // this is a deleted fragment of a complex property from a
+                    // document that has not been completely deleted
+                    dirtyStrings.add(docId);
+                    dirtyBinaries.add(docId);
+                }
+                break;
             default:
             }
         }
@@ -346,7 +355,8 @@ public class PersistenceContext {
         session.sendInvalidationEvent(invals);
     }
 
-    protected void processCacheInvalidations(Invalidations invalidations) throws StorageException {
+    protected void processCacheInvalidations(Invalidations invalidations)
+            throws StorageException {
         if (invalidations == null) {
             return;
         }

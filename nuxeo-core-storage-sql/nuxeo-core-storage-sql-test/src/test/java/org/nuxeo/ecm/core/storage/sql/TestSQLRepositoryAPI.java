@@ -64,9 +64,12 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
@@ -179,6 +182,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     public void testComplexType() throws Exception {
+        // boiler plate to handle the asynchronous full-text indexing of blob
+        // content in a deterministic way
+        EventServiceImpl eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
+
         DocumentModel doc = new DocumentModelImpl("/", "complex-doc",
                 "ComplexDoc");
         doc = session.createDocument(doc);
@@ -197,6 +206,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(doc);
         session.save();
         closeSession();
+        eventService.waitForAsyncCompletion();
         openSession();
         doc = session.getDocument(docRef);
         assertEquals(attachedFile,
@@ -216,7 +226,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Map<String, Object> vignette = new HashMap<String, Object>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
-        vignette.put("content", null);
+        vignette.put(
+                "content",
+                StreamingBlob.createFromString("textblob content", "text/plain"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -225,23 +237,28 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(docRef);
-        assertEquals(attachedFile,
-                doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"),
-                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
         assertEquals(
-                vignette,
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]").getValue());
+                "text/plain",
+                doc.getProperty(
+                        "cmpf:attachedFile/vignettes/vignette[0]/content/mime-type").getValue());
         assertEquals(
                 Long.valueOf(0),
                 doc.getProperty(
                         "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
-        assertEquals(attachedFile,
-                doc.getProperty("cmpf:attachedFile").getValue());
+        assertEquals(
+                "vignettelabel",
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
         // test fulltext indexing of complex property at level 3
         results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'vignettelabel'", 1);
+                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("complex-doc", results.get(0).getTitle());
+
+        // test fulltext indexing of complex property at level 3 in blob
+        results = session.query("SELECT * FROM Document"
+                + " WHERE ecm:fulltext = 'textblob content'", 2);
         assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("complex-doc", results.get(0).getTitle());
@@ -255,20 +272,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
-
         closeSession();
+        eventService.waitForAsyncCompletion();
         openSession();
-        assertEquals(attachedFile,
-                doc.getProperty("cmpf:attachedFile").getValue());
-        assertEquals(attachedFile.get("vignettes"),
-                doc.getProperty("cmpf:attachedFile/vignettes").getValue());
-        assertEquals(
-                vignette,
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]").getValue());
+
         assertEquals(
                 Long.valueOf(0),
                 doc.getProperty(
                         "cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
+        assertEquals(
+                "vignettelabel",
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
+
         // this doesn't work due to core restrictions (BlobProperty):
         // assertEquals(blob.getFilename(), doc.getProperty(
         // "cmpf:attachedFile/vignettes/vignette[0]/content/name").getValue());
@@ -276,6 +291,23 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
         assertEquals("file.bin", b.getFilename());
 
+        // test deleting the list of vignette and ensure that the fulltext index
+        // has been properly updated (regression test for NXP-6315)
+        doc.setPropertyValue("cmpf:attachedFile/vignettes",
+                new ArrayList<Map<String, Object>>());
+        session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+        results = session.query("SELECT * FROM Document"
+                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
+        assertNotNull(results);
+        assertEquals(0, results.size());
+
+        results = session.query("SELECT * FROM Document"
+                + " WHERE ecm:fulltext = 'textblob content'", 2);
+        assertNotNull(results);
+        assertEquals(0, results.size());
     }
 
     public void testComplexTypeOrdering() throws Exception {
