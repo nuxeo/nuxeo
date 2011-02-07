@@ -1,6 +1,14 @@
 #!/bin/bash
 ###
 # Nuxeo monitoring script
+warn() {
+  echo "WARNING: $*"
+}
+
+die() {
+  echo "ERROR: $*"
+  exit 1
+}
 
 help() {
     cat <<EOF
@@ -61,13 +69,90 @@ EOF
 }
 
 
-# Load nuxeo conf
-HERE=$(cd $(dirname $0); pwd -P)
-. $HERE/nuxeoctl status > /dev/null || exit 1
+cygwin=false
+darwin=false
+linux=false
+
+case "`uname`" in
+  CYGWIN*) cygwin=true;;
+  Darwin*) darwin=true;;
+  Linux) linux=true;;
+esac
 
 if [ "$linux" != "true" ]; then
     die "Sorry, $0 works only on Linux."
 fi
+
+HERE=$(cd $(dirname $0); pwd -P)
+if [ "x$NUXEO_CONF" = "x" ]; then
+  NUXEO_CONF="$HERE/nuxeo.conf"
+fi
+
+# Load nuxeo conf
+if [ -r "$NUXEO_CONF" ]; then
+  while read confline
+  do
+    if [ "x$confline" = "x" ]; then
+      continue
+    fi
+    if [[ "$confline" == \#* ]]; then
+      continue
+    fi
+    key="$(echo $confline | cut -d= -f1)"
+    value="$(echo $confline | cut -d= -f2-)"
+    if [[ "$key" == "nuxeo.log.dir" ]]; then
+      read -r LOG_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.pid.dir" ]]; then
+      read -r PID_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.data.dir" ]]; then
+      read -r DATA_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.tmp.dir" ]]; then
+      read -r TMP_DIR <<< $value
+    fi
+    if [[ "$key" == "nuxeo.bind.address" ]]; then
+      read -r BIND_ADDRESS <<< $value
+    fi
+    if [[ "$key" == *.* ]]; then
+      continue
+    fi
+    eval "$key=\"$value\""
+  done < $NUXEO_CONF
+fi
+# Setup NUXEO_HOME
+if [ -z "$NUXEO_HOME" ]; then
+  if [ -n "$JBOSS_HOME" ]; then NUXEO_HOME="$JBOSS_HOME"
+  elif [ -n "$CATALINA_HOME" ]; then NUXEO_HOME="$CATALINA_HOME"
+  elif [ -n "$JETTY_HOME" ]; then NUXEO_HOME="$JETTY_HOME"
+  else NUXEO_HOME=`cd "$HERE"/..; pwd`
+  fi
+fi
+
+
+# Layout setup
+# LOG_DIR
+
+if [ -z "$LOG_DIR" ]; then
+  LOG_DIR="$NUXEO_HOME/log"
+elif [[ "$LOG_DIR" != /* ]]; then
+  LOG_DIR="$NUXEO_HOME/$LOG_DIR"
+fi
+LOG="$LOG_DIR/console.log"
+
+DATA_DIR=${DATA_DIR:-server/default/data/NXRuntime/data}
+
+# PID_DIR
+
+if [ -z "$PID_DIR" ]; then
+  PID_DIR="$LOG_DIR"
+elif [[ "$PID_DIR" != /* ]]; then
+  PID_DIR="$NUXEO_HOME/$PID_DIR"
+fi
+PID="$PID_DIR/nuxeo.pid"
+
+
 
 ### 
 # Systat sar
@@ -100,12 +185,31 @@ if [ ! -z $LOGTAIL ]; then
     fi
 fi
 
+
+
+
+# Layout setup
+
+
 # JAR PATH of JMXSH http://code.google.com/p/jmxsh/
 # you need to enable JMX on the server on port 1089
 JMXSH=${JMXSH:-/usr/local/jmxsh/jmxsh-R5.jar}
 if [ ! -r $JMXSH ]; then
   unset JMXSH
 fi
+
+checkalive() {
+  if [ ! -r "$PID" ]; then
+    return 1
+  fi
+  MYPID=`cat "$PID"`
+  JPS=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" " | grep $MYPID`
+  if [ "x$JPS" = "x" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
 
 moncheckalive() {
     if [ ! -r "$SAR_PID" ]; then
