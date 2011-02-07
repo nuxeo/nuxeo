@@ -23,6 +23,18 @@
 : ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
 : ${NUXEO_CONF:="$NUXEO_HOME"/bin/nuxeo.conf}
 
+
+## Helper functions
+warn() {
+  echo "WARNING: $*"
+}
+
+die() {
+  echo "ERROR: $*"
+  exit 1
+}
+
+
 ## OS detection
 cygwin=false
 darwin=false
@@ -32,6 +44,7 @@ case "`uname`" in
   Darwin*) darwin=true;;
   #Linux) linux=true;;
 esac
+
 
 ## Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
 while read line; do
