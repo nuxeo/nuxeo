@@ -14,7 +14,7 @@
 
   <modules>
     <module>tools</module>
-    <module>projects</module>
+    <module>plugins</module>
     <module>fragments</module>
   </modules>
 
