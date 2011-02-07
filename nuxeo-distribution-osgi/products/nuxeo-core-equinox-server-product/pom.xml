@@ -44,7 +44,7 @@
 	<configuration>
 	  <products>
 	    <product>
-	      <id>example.product.id</id>
+	      <id>org.nuxeo.core.equinox.server</id>
 	    </product>
 	  </products>
 	</configuration>
