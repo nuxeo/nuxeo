@@ -53,18 +53,19 @@
     <module>nuxeo-features-test</module>
     <module>nuxeo-admin-center</module>
     <module>nuxeo-platform-forms-layout-export</module>
+    <module>nuxeo-platform-localconfiguration-web</module>
   </modules>
 
   <profiles>
-    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id> 
-      <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-platform-annotations</module> 
-      <module>nuxeo-platform-imaging-tiling</module> <module>nuxeo-platform-syndication</module> 
-      <module>nuxeo-platform-jbpm</module> <module>nuxeo-platform-lang</module> <module>nuxeo-platform-mail</module> 
-      <module>nuxeo-platform-notification</module> <module>nuxeo-platform-preview</module> 
-      <module>nuxeo-platform-publisher</module> <module>nuxeo-platform-forum</module> <module>nuxeo-theme-editor</module> 
-      <module>nuxeo-platform-webwidgets</module> <module>nuxeo-platform-userworkspace</module> 
-      <module>nuxeo-platform-virtualnavigation</module> <module>nuxeo-opensocial</module> 
-      <module>nuxeo-automation</module> <module>nuxeo-features-test</module> <module>nuxeo-admin-center</module> 
+    <!-- NXP-5660 - temporary rollback because of Hudson issue <profile> <id>no-osgi</id>
+      <activation> <file><exists>pom.xml</exists></file> </activation> <modules> <module>nuxeo-platform-annotations</module>
+      <module>nuxeo-platform-imaging-tiling</module> <module>nuxeo-platform-syndication</module>
+      <module>nuxeo-platform-jbpm</module> <module>nuxeo-platform-lang</module> <module>nuxeo-platform-mail</module>
+      <module>nuxeo-platform-notification</module> <module>nuxeo-platform-preview</module>
+      <module>nuxeo-platform-publisher</module> <module>nuxeo-platform-forum</module> <module>nuxeo-theme-editor</module>
+      <module>nuxeo-platform-webwidgets</module> <module>nuxeo-platform-userworkspace</module>
+      <module>nuxeo-platform-virtualnavigation</module> <module>nuxeo-opensocial</module>
+      <module>nuxeo-automation</module> <module>nuxeo-features-test</module> <module>nuxeo-admin-center</module>
       </modules> </profile> -->
   </profiles>
 
@@ -513,7 +514,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-types-web</artifactId>
+        <artifactId>nuxeo-platform-localconfiguration-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -1011,7 +1012,7 @@
         <artifactId>nuxeo-opensocial-features</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-      <!-- <dependency> <groupId>org.nuxeo.ecm.opensocial</groupId> <artifactId>nuxeo-platform-login-oauth</artifactId> 
+      <!-- <dependency> <groupId>org.nuxeo.ecm.opensocial</groupId> <artifactId>nuxeo-platform-login-oauth</artifactId>
         <version>${nuxeo.features.version}</version> </dependency> -->
       <dependency>
         <groupId>org.nuxeo.ecm.opensocial</groupId>
