@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -i
 
 GEN_DIR=tools/nuxeo-project-generator
 JAR=${GEN_DIR}/target/nuxeo-project-generator-*.jar
@@ -8,7 +8,7 @@ JAR=${GEN_DIR}/target/nuxeo-project-generator-*.jar
 if [ ! -f $JAR ]; then
     echo "Building project generator";
     pushd $GEN_DIR;
-    mvn install;
+    mvn3 install;
     popd;
 fi
 

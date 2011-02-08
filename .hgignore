@@ -1,6 +1,6 @@
 syntax:glob
-.classpath
-.project
+#.classpath
+#.project
 .settings
 nuxeo-distribution-*/bin
 target
@@ -31,3 +31,7 @@ nuxeo-embedded-launcher/bin
 nuxeo-launcher/bin
 nuxeo-distribution-osgi/.*/bin
 nuxeo-distribution-osgi/.metadata
+((?!nuxeo-distribution-osgi)).*/.project
+((?!nuxeo-distribution-osgi)).*/.classpath
+^\.project$
+^\.classpath$

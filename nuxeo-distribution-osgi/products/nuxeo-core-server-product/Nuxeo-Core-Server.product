@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product uid="org.nuxeo.core.equinox" id="example-bundle.product" application="nuxeo.application" version="5.4.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product uid="org.nuxeo.core.server" id="nuxeo-core-server-application.NuxeoProduct" application="nuxeo-core-server-application.NuxeoApp" version="5.4.1.qualifier" useFeatures="false" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -24,7 +24,7 @@
 
    <plugins>
       <plugin id="joda-time"/>
-      <plugin id="nuxeo-core-equinox-server"/>
+      <plugin id="nuxeo-core-server-application"/>
       <plugin id="org.nuxeo.com.h2database.h2"/>
       <plugin id="org.nuxeo.com.sun.jersey.core"/>
       <plugin id="org.nuxeo.com.sun.jersey.server"/>
@@ -81,7 +81,6 @@
       <plugin id="org.nuxeo.org.mortbay.jetty.servlet-api-2.5"/>
       <plugin id="org.nuxeo.org.mortbay.jetty.util"/>
       <plugin id="org.nuxeo.org.mvel.2"/>
-      <plugin id="org.nuxeo.org.osgi.core"/>
       <plugin id="org.nuxeo.org.slf4j.api"/>
       <plugin id="org.nuxeo.org.slf4j.log4j12" fragment="true"/>
       <plugin id="org.nuxeo.org.wikimodel.wem"/>
