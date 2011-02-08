@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo IDE Project Generator
-Bundle-SymbolicName: org.nuxeo.ide.project.generator;singleton:=true
+Bundle-SymbolicName: org.nuxeo.osgi.ide.project.generator;singleton:=true
 Bundle-Version: 5.4.1.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

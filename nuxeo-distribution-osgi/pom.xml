@@ -12,84 +12,15 @@
   <name>Nuxeo OSGI Distribution</name>
   <description>Nuxeo OSGI Core Distribution and related components.</description>
 
+
   <modules>
+    <module>nuxeo-osgi-parent</module>
+    <module>targets</module>
     <module>tools</module>
     <module>plugins</module>
     <module>fragments</module>
+    <module>products</module>
   </modules>
-
-  <properties>
-    <tycho-version>0.10.0</tycho-version>
-  </properties>
-  <repositories>
-    <repository>
-      <id>helios</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/helios</url>
-    </repository>
-    <!--repository>
-    <id>test</id>
-    <layout>p2</layout>
-    <url>http://download.eclipse.org/eclipse/updates/3.6-JUnit-Tests/</url>
-    </repository-->
-    <repository>
-      <id>third-parties-core</id>
-      <layout>p2</layout>
-      <url>http://osgi.nuxeo.org/repository/third-parties/core/</url>
-    </repository>
-    <repository>
-      <id>third-parties-log</id>
-      <layout>p2</layout>
-      <url>http://osgi.nuxeo.org/repository/third-parties/log/</url>
-    </repository>
-  </repositories>
-  <build>
-    <directory>${project.basedir}/target</directory>
-
-    <pluginManagement>
-      <plugins>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-          <artifactId>tycho-maven-plugin</artifactId>
-          <version>${tycho-version}</version>
-          <extensions>true</extensions>
-	</plugin>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-          <artifactId>target-platform-configuration</artifactId>
-          <version>${tycho-version}</version>
-	</plugin>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-	  <artifactId>tycho-p2-publisher-plugin</artifactId>
-          <version>${tycho-version}</version>
-	</plugin>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-	  <artifactId>tycho-p2-director-plugin</artifactId>
-          <version>${tycho-version}</version>
-	</plugin>
-      </plugins>
-    </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.sonatype.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <resolver>p2</resolver>
-        </configuration>
-      </plugin>
-    </plugins>
-    
-  </build>
 
 
 </project>

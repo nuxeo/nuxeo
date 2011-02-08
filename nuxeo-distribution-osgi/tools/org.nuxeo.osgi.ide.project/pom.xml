@@ -3,19 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
 
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-rendering</artifactId>
-  <version>5.4.1-SNAPSHOT</version>
-  <name>Nuxeo Rendering Service</name>
-  <description>Rendering service based on freemarker to render content form Nuxeo Core into any format.</description>
-  <url>http://www.nuxeo.org/</url>
+  <artifactId>nuxeo-osgi-ide-project</artifactId>
+  <name>Nuxeo OSGI IDE Project</name>
+  <description>TBD</description>
   <packaging>eclipse-plugin</packaging>
 
   <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-osgi-projects</artifactId>
+    <groupId>org.nuxeo.osgi</groupId>
+    <artifactId>nuxeo-osgi-parent</artifactId>
     <version>5.4.1-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../../nuxeo-osgi-parent/pom.xml</relativePath>
   </parent>
 
   <build>

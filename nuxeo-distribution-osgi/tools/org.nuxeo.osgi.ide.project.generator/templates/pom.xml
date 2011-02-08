@@ -2,13 +2,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>${parentGroupId}</groupId>
-    <artifactId>${parentArtifactId}</artifactId>
-    <version>${parentVersion}</version>
-    <relativePath>${pathToParentPom}</relativePath>
-  </parent>
-
   <groupId>${groupId}</groupId>
   <artifactId>${artifactId}</artifactId>
   <version>${version}</version>
@@ -16,5 +9,12 @@
   <description>${description}</description>
   <url>http://www.nuxeo.org/</url>
   <packaging>eclipse-plugin</packaging>
+
+  <parent>
+    <groupId>${parentGroupId}</groupId>
+    <artifactId>${parentArtifactId}</artifactId>
+    <version>${parentVersion}</version>
+    <relativePath>${pathToParentPom}</relativePath>
+  </parent>
 
 </project>

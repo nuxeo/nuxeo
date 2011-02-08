@@ -2,17 +2,30 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-osgi-fragments</artifactId>
-    <version>5.4.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
-
   <artifactId>nuxeo-runtime-config-fragment</artifactId>
   <name>Nuxeo Runtime Configuration Fragment</name>
   <description>OSGi fragment to configure runtime</description>
   <url>http://www.nuxeo.org/</url>
   <packaging>eclipse-plugin</packaging>
+
+  <parent>
+    <groupId>org.nuxeo.osgi</groupId>
+    <artifactId>nuxeo-osgi-parent</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+    <relativePath>../../nuxeo-osgi-parent/pom.xml</relativePath>
+  </parent>
+
+  <build>
+    <plugins>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+          <artifactId>tycho-maven-plugin</artifactId>
+	</plugin>
+	<plugin>
+          <groupId>org.sonatype.tycho</groupId>
+          <artifactId>target-platform-configuration</artifactId>
+	</plugin>
+    </plugins>
+  </build>
 
 </project>

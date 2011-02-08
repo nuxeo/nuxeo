@@ -2,22 +2,22 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.nuxeo.distribution</groupId>
-    <artifactId>nuxeo-distribution-osgi</artifactId>
-    <version>5.4.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
 
-  <groupId>org.nuxeo.distribution.osgi.products</groupId>
   <artifactId>nuxeo-osgi-products</artifactId>
   <name>Nuxeo OSGi Products</name>
   <description>Nuxeo OSGi products.</description>
   <packaging>pom</packaging>
 
+  <parent>
+    <groupId>org.nuxeo.osgi</groupId>
+    <artifactId>nuxeo-osgi-parent</artifactId>
+    <version>5.4.1-SNAPSHOT</version>
+    <relativePath>../nuxeo-osgi-parent/pom.xml</relativePath>
+  </parent>
+
   <modules>
     <module>nuxeo-core-server-application</module>
-    <module>nuxeo-core-server-product</module>
+    <!--module>nuxeo-core-server-product</module-->
   </modules>
 
 </project>
