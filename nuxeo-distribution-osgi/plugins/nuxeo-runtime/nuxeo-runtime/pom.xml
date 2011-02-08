@@ -2,7 +2,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime</artifactId>
   <version>5.4.1-SNAPSHOT</version>
@@ -17,18 +16,5 @@
     <version>5.4.1-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-
-  <build>
-    <plugins>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-          <artifactId>tycho-maven-plugin</artifactId>
-	</plugin>
-	<plugin>
-          <groupId>org.sonatype.tycho</groupId>
-          <artifactId>target-platform-configuration</artifactId>
-	</plugin>
-    </plugins>
-  </build>
 
 </project>
