@@ -6,7 +6,7 @@
     <listener name="annotationsVersionEventListener" async="true"
               postCommit="true"
               class="org.nuxeo.ecm.platform.annotations.repository.service.VersionEventListener">
-      <event>documentCreated</event>
+      <event>documentCheckedIn</event>
       <event>documentRemoved</event>
       <event>versionRemoved</event>
       <event>documentRestored</event>
@@ -17,6 +17,7 @@
       <event>annotationCreated</event>
       <event>annotationUpdated</event>
       <event>annotationDeleted</event>
+      <event>documentCheckedIn</event>
     </listener>
 
   </extension>

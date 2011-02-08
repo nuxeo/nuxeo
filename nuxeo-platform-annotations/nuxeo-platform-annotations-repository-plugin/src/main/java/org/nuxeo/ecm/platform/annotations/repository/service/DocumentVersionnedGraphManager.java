@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
@@ -62,7 +63,7 @@ public class DocumentVersionnedGraphManager implements
         NuxeoPrincipal user = null;
         Principal principal = context.getPrincipal();
         if (principal instanceof NuxeoPrincipal) {
-             user= (NuxeoPrincipal) principal;
+            user = (NuxeoPrincipal) principal;
         } else {
             log.debug("Discading event on a non NuxeoPrincipal user");
             return;
@@ -72,11 +73,9 @@ public class DocumentVersionnedGraphManager implements
         String docId = docModel.getId();
         String repo = docModel.getRepositoryName();
 
-        if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
-            if (docModel.isVersion()) {
-                String sourceId = docModel.getSourceId();
-                copyGraphFor(repo, sourceId, docId, user);
-            }
+        if (DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName())) {
+            DocumentRef versionRef = (DocumentRef) context.getProperty("checkedInVersionRef");
+            copyGraphFor(repo, docId, versionRef.toString(), user);
         } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(event.getName())
                 || DocumentEventTypes.VERSION_REMOVED.equals(event.getName())) {
             removeGraphFor(repo, docId, user);
