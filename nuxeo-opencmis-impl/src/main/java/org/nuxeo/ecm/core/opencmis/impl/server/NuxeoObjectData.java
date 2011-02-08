@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 
 /**
  * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
@@ -90,6 +91,8 @@ public class NuxeoObjectData implements ObjectData {
     private TypeDefinition type;
 
     private static final int CACHE_MAX_SIZE = 10;
+
+    private static final int DEFAULT_MAX_RENDITIONS = 20;
 
     /** Cache for Properties objects, which are expensive to create. */
     private Map<String, Properties> propertiesCache = new HashMap<String, Properties>();
@@ -288,11 +291,11 @@ public class NuxeoObjectData implements ObjectData {
             return null;
         }
         // TODO parse rendition filter; for now returns them all
-        return getRenditions(doc, callContext);
+        return getRenditions(doc, null, null, callContext);
     }
 
     public static List<RenditionData> getRenditions(DocumentModel doc,
-            CallContext callContext) {
+            BigInteger maxItems, BigInteger skipCount, CallContext callContext) {
         try {
             List<RenditionData> list = new ArrayList<RenditionData>();
             // first rendition is icon
@@ -321,7 +324,7 @@ public class NuxeoObjectData implements ObjectData {
             }
 
             // TODO other renditions from blob holder secondary blobs
-
+            list = ListUtils.batchList(list, maxItems, skipCount, DEFAULT_MAX_RENDITIONS);
             return list;
         } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);

@@ -276,7 +276,7 @@ public abstract class NuxeoObject implements CmisObject {
     public List<Rendition> getRenditions() {
         // we don't call data.getRenditions as renditionFilter may be incomplete
         List<RenditionData> renditions = NuxeoObjectData.getRenditions(
-                data.doc, service.getCallContext());
+                data.doc, null, null, service.getCallContext());
         List<Rendition> res = new ArrayList<Rendition>(renditions.size());
         for (RenditionData ren : renditions) {
             long length = ren.getBigLength() == null ? -1

@@ -124,6 +124,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
+import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -141,6 +143,10 @@ public class NuxeoCmisService extends AbstractCmisService {
     public static final int DEFAULT_FOLDER_LEVELS = 2;
 
     public static final int DEFAULT_CHANGE_LOG_SIZE = 100;
+
+    public static final int DEFAULT_QUERY_SIZE = 100;
+
+    public static final int DEFAULT_MAX_CHILDREN = 100;
 
     public static final String NUXEO_WAR = "nuxeo.war";
 
@@ -750,7 +756,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             String objectId, String renditionFilter, BigInteger maxItems,
             BigInteger skipCount, ExtensionsData extension) {
         DocumentModel doc = getDocumentModel(objectId);
-        return NuxeoObjectData.getRenditions(doc, callContext);
+        return NuxeoObjectData.getRenditions(doc, maxItems, skipCount,
+                callContext);
     }
 
     @Override
@@ -1133,6 +1140,15 @@ public class NuxeoCmisService extends AbstractCmisService {
             Boolean searchAllVersions, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
+        long skip = skipCount == null ? 0 : skipCount.longValue();
+        if (skip < 0) {
+            skip = 0;
+        }
+        long max = maxItems == null ? -1 : maxItems.longValue();
+        if (max <= 0) {
+            max = DEFAULT_QUERY_SIZE;
+        }
+        long numItems;
         List<ObjectData> list;
         IterableQueryResult res = null;
         try {
@@ -1142,6 +1158,9 @@ public class NuxeoCmisService extends AbstractCmisService {
 
             // convert from Nuxeo to CMIS format
             list = new ArrayList<ObjectData>();
+            if (skip > 0) {
+                res.skipTo(skip);
+            }
             for (Map<String, Serializable> map : res) {
                 ObjectDataImpl od = new ObjectDataImpl();
 
@@ -1173,7 +1192,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                 }
 
                 list.add(od);
+                if (list.size() >= max) {
+                    break;
+                }
             }
+            numItems = res.size();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.getMessage(), e);
         } finally {
@@ -1183,8 +1206,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         ObjectListImpl objList = new ObjectListImpl();
         objList.setObjects(list);
-        objList.setNumItems(BigInteger.valueOf(list.size())); // TODO-batching
-        objList.setHasMoreItems(Boolean.FALSE);
+        objList.setNumItems(BigInteger.valueOf(numItems));
+        objList.setHasMoreItems(Boolean.valueOf(numItems > skip + list.size()));
         return objList;
     }
 
@@ -1304,17 +1327,15 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         return getChildrenInternal(repositoryId, folderId, filter, orderBy,
                 includeAllowableActions, includeRelationships, renditionFilter,
-                includePathSegment,
-                maxItems == null ? -1 : maxItems.intValue(),
-                skipCount == null ? -1 : skipCount.intValue(), false);
+                includePathSegment, maxItems, skipCount, false);
     }
 
     protected ObjectInFolderList getChildrenInternal(String repositoryId,
             String folderId, String filter, String orderBy,
             Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter,
-            Boolean includePathSegment, int maxItems, int skipCount,
-            boolean folderOnly) {
+            Boolean includePathSegment, BigInteger maxItems,
+            BigInteger skipCount, boolean folderOnly) {
         ObjectInFolderListImpl result = new ObjectInFolderListImpl();
         List<ObjectInFolderData> list = new ArrayList<ObjectInFolderData>();
         DocumentModel folder = getDocumentModel(folderId);
@@ -1345,11 +1366,12 @@ public class NuxeoCmisService extends AbstractCmisService {
             list.add(oifd);
             collectObjectInfo(repositoryId, data);
         }
-        result.setObjects(list);
         // TODO orderBy
-        // TODO maxItems, skipCount
-        result.setHasMoreItems(Boolean.FALSE);
-        result.setNumItems(BigInteger.valueOf(list.size()));
+        BatchedList<ObjectInFolderData> batch = ListUtils.getBatchedList(list,
+                maxItems, skipCount, DEFAULT_MAX_CHILDREN);
+        result.setObjects(batch.getList());
+        result.setHasMoreItems(batch.getHasMoreItems());
+        result.setNumItems(batch.getNumItems());
         collectObjectInfo(repositoryId, folderId);
         return result;
     }
@@ -1401,8 +1423,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         ObjectInFolderList children = getChildrenInternal(repositoryId,
                 folderId, filter, null, includeAllowableActions,
-                includeRelationships, renditionFilter, includePathSegments, -1,
-                0, folderOnly);
+                includeRelationships, renditionFilter, includePathSegments,
+                null, null, folderOnly);
         if (children == null) {
             return Collections.emptyList();
         }

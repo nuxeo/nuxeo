@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.opencmis.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -300,20 +301,48 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertTrue(type.getPropertyDefinitions().containsKey("note"));
     }
 
+    public List<String> getIds(TypeDefinitionList types) {
+        List<String> ids = new ArrayList<String>();
+        for (TypeDefinition type : types.getList()) {
+            ids.add(type.getId());
+        }
+        return ids;
+    }
+
     @Test
     public void testGetTypeChildren() {
         TypeDefinitionList types = repoService.getTypeChildren(repositoryId,
                 "cmis:folder", Boolean.FALSE, null, null, null);
-        List<String> ids = new LinkedList<String>();
         for (TypeDefinition type : types.getList()) {
             assertNull(type.getPropertyDefinitions());
-            ids.add(type.getId());
         }
+        List<String> ids = getIds(types);
         assertTrue(ids.contains("Folder"));
         assertTrue(ids.contains("Root"));
         assertTrue(ids.contains("Domain"));
         assertTrue(ids.contains("OrderedFolder"));
         assertTrue(ids.contains("Workspace"));
+        assertTrue(ids.contains("Section"));
+
+        // batching
+        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
+                Boolean.FALSE, BigInteger.valueOf(4), BigInteger.valueOf(2),
+                null);
+        List<String> ids2 = getIds(types);
+        assertEquals(4, ids2.size());
+        assertFalse(ids2.contains(ids.get(0)));
+        assertFalse(ids2.contains(ids.get(1)));
+        // batching beyond max size
+        types = repoService.getTypeChildren(repositoryId, "cmis:folder",
+                Boolean.FALSE, BigInteger.valueOf(12), BigInteger.valueOf(5),
+                null);
+        List<String> ids3 = getIds(types);
+        assertEquals(ids.size() - 5, ids3.size());
+        assertFalse(ids3.contains(ids.get(0)));
+        assertFalse(ids3.contains(ids.get(1)));
+        assertFalse(ids3.contains(ids.get(2)));
+        assertFalse(ids3.contains(ids.get(3)));
+        assertFalse(ids3.contains(ids.get(4)));
 
         // check property definition inclusion
         types = repoService.getTypeChildren(repositoryId,
@@ -328,14 +357,13 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         types = repoService.getTypeChildren(repositoryId,
                 BaseTypeId.CMIS_DOCUMENT.value(), Boolean.TRUE, null, null,
                 null);
-        ids = new LinkedList<String>();
         for (TypeDefinition type : types.getList()) {
             Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
             assertNotNull(pd);
-            ids.add(type.getId());
             // dublincore in all types
             assertTrue(pd.keySet().contains("dc:title"));
         }
+        ids = getIds(types);
         assertTrue(ids.contains("File"));
         assertTrue(ids.contains("Note"));
         assertTrue(ids.contains("MyDocType"));
@@ -1457,6 +1485,39 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             assertTrue(e.getMessage().contains(
                     "foo is not a property query name in any of the types"));
         }
+    }
+
+    @Test
+    public void testQueryBatching() throws Exception {
+        int NUM = 20;
+        for (int i = 0; i < NUM; i++) {
+            String name = String.format("somedoc%03d", Integer.valueOf(i));
+            objService.createDocument(repositoryId,
+                    createBaseDocumentProperties(name, "cmis:document"),
+                    rootFolderId, null, VersioningState.CHECKEDOUT, null, null,
+                    null, null);
+        }
+        ObjectList res;
+        List<ObjectData> objects;
+        String statement = "SELECT cmis:name FROM cmis:document"
+                + " WHERE cmis:name LIKE 'somedoc%' ORDER BY cmis:name";
+        res = discService.query(repositoryId, statement, null, null, null,
+                null, null, null, null);
+        assertEquals(NUM, res.getNumItems().intValue());
+        objects = res.getObjects();
+        assertEquals(NUM, objects.size());
+        assertEquals("somedoc000", getString(objects.get(0), PropertyIds.NAME));
+        assertEquals("somedoc019",
+                getString(objects.get(objects.size() - 1), PropertyIds.NAME));
+        // batch
+        res = discService.query(repositoryId, statement, null, null, null,
+                null, BigInteger.valueOf(10), BigInteger.valueOf(5), null);
+        assertEquals(NUM, res.getNumItems().intValue());
+        objects = res.getObjects();
+        assertEquals(10, objects.size());
+        assertEquals("somedoc005", getString(objects.get(0), PropertyIds.NAME));
+        assertEquals("somedoc014",
+                getString(objects.get(objects.size() - 1), PropertyIds.NAME));
     }
 
     @Test

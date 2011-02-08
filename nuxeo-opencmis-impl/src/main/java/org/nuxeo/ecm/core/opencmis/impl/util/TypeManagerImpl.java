@@ -53,6 +53,8 @@ import org.apache.chemistry.opencmis.server.support.TypeManager;
  */
 public class TypeManagerImpl implements TypeManager {
 
+    public static final int DEFAULT_MAX_TYPE_CHILDREN = 100;
+
     protected Map<String, TypeDefinitionContainer> typesMap = new HashMap<String, TypeDefinitionContainer>();
 
     @Override
@@ -73,7 +75,6 @@ public class TypeManagerImpl implements TypeManager {
     public TypeDefinitionList getTypeChildren(String typeId,
             Boolean includePropertyDefinitions, BigInteger maxItems,
             BigInteger skipCount) {
-        // TODO maxItems, skipCount
         TypeDefinitionContainer typec;
         if (typeId == null) {
             // return root types
@@ -107,6 +108,8 @@ public class TypeManagerImpl implements TypeManager {
             }
             list.add(type);
         }
+        list = ListUtils.batchList(list, maxItems, skipCount,
+                DEFAULT_MAX_TYPE_CHILDREN);
         return new TypeDefinitionListImpl(list);
     }
 
