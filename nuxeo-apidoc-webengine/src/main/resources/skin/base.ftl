@@ -37,7 +37,7 @@
     <td class="pageheader">
       <@block name="header">
         <div class="logo">
-          <a href="${Root.path}"><img src="${skinPath}/images/logo_nxplorer_white.png" height="28px" border="0"/></a>
+          <a href="${Root.path}"><img src="${skinPath}/images/nuxeo_white_logo.png" width="89" height="25px" border="0"/></a><span>Showcase - Layout Service (form and views)</span>
         </div>
         <div class="login">
            <#include "nxlogin.ftl">

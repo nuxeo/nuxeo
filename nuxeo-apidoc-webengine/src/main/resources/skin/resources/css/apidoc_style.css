@@ -84,16 +84,29 @@ outline-style:none;
 /* Header style */
 
 .pageheader {
-background:black url(../images/small_gray_bar.png) repeat-x scroll left top;
-padding:5px 5px 5px 20px;
+ background: #000000 url("../images/header_nuxeo.png") no-repeat right bottom ;
+ border-bottom: 1px solid #BBBBBB;
+ padding:5px 5px 5px 20px;
+ text-shadow: 2px 2px 2px #000;
+ -moz-box-shadow:  0 0 3px #555555;
+ -webkit-box-shadow:  0 0 3px #555555;
+ box-shadow:  0 0 3px #555555;
 }
 
 .logo {
-float:left;
+  float:left;
+  padding: 10px 0 5px 10px; 
+}
+
+.logo span {
+    color: #FFFFFF;
+    font: 18px/1.25em 'Lucida Grande',Verdana,Arial,sans-serif;
+    padding: 0 30px;
+    vertical-align: top;
 }
 
 .login {
-float:right;
+  float:right;
 }
 
 .login input{
