@@ -604,6 +604,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             if (viewId == null) {
                 viewId = getDefaultView(doc);
             }
+            parameters = parameters == null ? new HashMap<String, String>()
+                    : parameters;
 
             if (doc.isVersion()) {
                 parameters.put("version", "true");
