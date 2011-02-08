@@ -5,11 +5,13 @@
          id="NuxeoProduct"
          point="org.eclipse.core.runtime.products">
       <product
+            name="Nuxeo Core Server"
             application="nuxeo-core-server-application.NuxeoApp"
-            name="Nuxeo Core Server">
+            >
          <property
                name="appName"
-               value="Nuxeo Core Server">
+               value="Nuxeo Core Server"
+               >
          </property>
       </product>
    </extension>

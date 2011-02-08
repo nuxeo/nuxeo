@@ -12,6 +12,7 @@
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
+
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -25,6 +26,8 @@
    <plugins>
       <plugin id="joda-time"/>
       <plugin id="nuxeo-core-server-application"/>
+      <plugin id="org.eclipse.equinox.launcher"/>
+      <plugin id="org.log4j.config" fragment="true"/>
       <plugin id="org.nuxeo.com.h2database.h2"/>
       <plugin id="org.nuxeo.com.sun.jersey.core"/>
       <plugin id="org.nuxeo.com.sun.jersey.server"/>
@@ -90,9 +93,14 @@
       <plugin id="org.nuxeo.runtime.jtajca"/>
       <plugin id="org.nuxeo.runtime.management"/>
       <plugin id="org.nuxeo.runtime.management.metrics"/>
+      <plugin id="org.nuxeo.runtime.start"/>
       <plugin id="org.nuxeo.xerces.Impl"/>
       <plugin id="org.nuxeo.xml-apis"/>
    </plugins>
 
+   <configurations>
+      <plugin id="org.nuxeo.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.nuxeo.runtime.start" autoStart="true" startLevel="5" />
+   </configurations>
 
 </product>
