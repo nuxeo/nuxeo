@@ -174,12 +174,12 @@ org.nuxeo.distribution.date=${org.nuxeo.distribution.date}
   </target>
 
   <target name="copy-resources">
-    <concat destfile="${tomcatdir}/templates/default/nxserver/config/nuxeo.properties"
+    <concat destfile="${tomcatdir}/templates/common/config/nuxeo.properties"
             append="true">
       <filelist dir="src/main/resources-tomcat/config"
                 files="nuxeo.properties" />
     </concat>
-    <concat destfile="${tomcatdir}/templates/default/nuxeo.defaults"
+    <concat destfile="${tomcatdir}/templates/common/nuxeo.defaults"
             append="true">
       <filelist dir="src/main/resources-tomcat/config"
                 files="nuxeo.defaults" />
