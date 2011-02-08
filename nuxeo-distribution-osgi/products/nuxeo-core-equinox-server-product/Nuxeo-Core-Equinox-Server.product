@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Nuxeo Core Equinox Server" uid="org.nuxeo.core.equinox.server" id="nuxeo-core-equinox-product.product" application="org.eclipse.ant.core.antRunner" version="5.4.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product uid="org.nuxeo.core.equinox" id="example-bundle.product" application="nuxeo.application" version="5.4.1.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -23,20 +23,8 @@
    </vm>
 
    <plugins>
-      <plugin id="javax.annotation"/>
-      <plugin id="javax.transaction" fragment="true"/>
       <plugin id="joda-time"/>
-      <plugin id="nuxeo-core-equinox-server-product"/>
-      <plugin id="org.apache.commons.collections"/>
-      <plugin id="org.apache.commons.httpclient"/>
-      <plugin id="org.apache.commons.io"/>
-      <plugin id="org.apache.commons.lang"/>
-      <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
-      <plugin id="org.eclipse.osgi"/>
-      <plugin id="org.h2"/>
-      <plugin id="org.log4j.config" fragment="true"/>
-      <plugin id="org.mortbay.jetty.server"/>
-      <plugin id="org.mortbay.jetty.util"/>
+      <plugin id="nuxeo-core-equinox-server"/>
       <plugin id="org.nuxeo.com.h2database.h2"/>
       <plugin id="org.nuxeo.com.sun.jersey.core"/>
       <plugin id="org.nuxeo.com.sun.jersey.server"/>
@@ -45,7 +33,6 @@
       <plugin id="org.nuxeo.com.thoughtworks.xstream"/>
       <plugin id="org.nuxeo.common"/>
       <plugin id="org.nuxeo.commons-beanutils.core"/>
-      <plugin id="org.nuxeo.commons-codec" fragment=""/>
       <plugin id="org.nuxeo.commons-collections"/>
       <plugin id="org.nuxeo.commons-httpclient"/>
       <plugin id="org.nuxeo.commons-io"/>
@@ -72,8 +59,11 @@
       <plugin id="org.nuxeo.ecm.platform.dublincore"/>
       <plugin id="org.nuxeo.ecm.platform.rendering"/>
       <plugin id="org.nuxeo.ecm.webengine.jaxrs"/>
+      <plugin id="org.nuxeo.javax.mail"/>
       <plugin id="org.nuxeo.javax.ws.rs.jsr311-api"/>
       <plugin id="org.nuxeo.log4j"/>
+      <plugin id="org.nuxeo.net.sf.ezmorph"/>
+      <plugin id="org.nuxeo.net.sf.json-lib"/>
       <plugin id="org.nuxeo.org.apache.geronimo.components.geronimo-connector"/>
       <plugin id="org.nuxeo.org.apache.geronimo.components.geronimo-transaction"/>
       <plugin id="org.nuxeo.org.apache.geronimo.specs.geronimo-annotation_1.0_spec"/>
@@ -90,8 +80,9 @@
       <plugin id="org.nuxeo.org.mortbay.jetty"/>
       <plugin id="org.nuxeo.org.mortbay.jetty.servlet-api-2.5"/>
       <plugin id="org.nuxeo.org.mortbay.jetty.util"/>
+      <plugin id="org.nuxeo.org.mvel.2"/>
+      <plugin id="org.nuxeo.org.osgi.core"/>
       <plugin id="org.nuxeo.org.slf4j.api"/>
-      <plugin id="org.nuxeo.org.slf4j.jcl-over-slf4j" fragment=""/>
       <plugin id="org.nuxeo.org.slf4j.log4j12" fragment="true"/>
       <plugin id="org.nuxeo.org.wikimodel.wem"/>
       <plugin id="org.nuxeo.runtime"/>
@@ -100,38 +91,9 @@
       <plugin id="org.nuxeo.runtime.jtajca"/>
       <plugin id="org.nuxeo.runtime.management"/>
       <plugin id="org.nuxeo.runtime.management.metrics"/>
-      <plugin id="org.nuxeo.runtime.start"/>
-      <plugin id="org.nuxeo.xalan"/>
       <plugin id="org.nuxeo.xerces.Impl"/>
       <plugin id="org.nuxeo.xml-apis"/>
    </plugins>
 
-   <configurations>
-      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
-      <plugin id="org.nuxeo.common" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.commons-io" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.api" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.auth" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.convert" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.convert.api" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.event" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.io" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.management" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.query" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.schema" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.storage.sql" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.storage.sql.extensions" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.core.storage.sql.ra" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.platform.dublincore" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.platform.rendering" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.ecm.webengine.jaxrs" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime.jetty" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime.jtajca" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime.management" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime.management.metrics" autoStart="true" startLevel="0" />
-      <plugin id="org.nuxeo.runtime.start" autoStart="true" startLevel="5" />
-   </configurations>
 
 </product>
