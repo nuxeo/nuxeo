@@ -95,6 +95,14 @@ public class UserManagerImpl implements UserManager {
 
     protected final DirectoryService dirService;
 
+    /**
+     * A structure used to inject field name configuration of users schema
+     * into a NuxeoPrincipalImpl instance.
+     * TODO not all fields inside are configurable for now -
+     * they will use default values
+     */
+    protected UserConfig userConfig;
+
     protected String userDirectoryName;
 
     protected String userSchemaName;
@@ -142,6 +150,7 @@ public class UserManagerImpl implements UserManager {
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
         virtualUsers = new HashMap<String, VirtualUserDescriptor>();
+        userConfig = new UserConfig();
     }
 
     public void setConfiguration(UserManagerDescriptor descriptor) {
@@ -177,6 +186,11 @@ public class UserManagerImpl implements UserManager {
         setUserDirectoryName(descriptor.userDirectoryName);
         setGroupDirectoryName(descriptor.groupDirectoryName);
         setVirtualUsers(descriptor.virtualUsers);
+
+        userConfig = new UserConfig();
+        userConfig.emailKey = userEmailField;
+        userConfig.schemaName = userSchemaName;
+        userConfig.nameKey = userIdField;
     }
 
     protected void setUserDirectoryName(String userDirectoryName) {
@@ -406,6 +420,7 @@ public class UserManagerImpl implements UserManager {
 
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(username,
                 anonymous, admin, false);
+        principal.setConfig(userConfig);
 
         principal.setModel(userEntry, false);
         principal.setVirtualGroups(virtualGroups, true);

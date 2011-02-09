@@ -47,61 +47,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
-    // TODO: this should be moved to an extension point of the usermanager
-    // service, and some of them already are (email, username e.g id) so
-    // configuration may differ
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String USERNAME_COLUMN = "username";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String FIRSTNAME_COLUMN = "firstName";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String LASTNAME_COLUMN = "lastName";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String COMPANY_COLUMN = "company";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String PASSWORD_COLUMN = "password";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String EMAIL_COLUMN = "email";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    public static final String GROUPS_COLUMN = "groups";
-
-    /**
-     * @deprecated: harcoded
-     */
-    @Deprecated
-    private static final String SCHEMA_NAME = "user";
 
     private static final long serialVersionUID = 1791676740406045594L;
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
+
+    protected UserConfig config = UserConfig.DEFAULT;
 
     public final List<String> roles = new LinkedList<String>();
 
@@ -151,21 +102,29 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     public NuxeoPrincipalImpl(String name, boolean isAnonymous,
             boolean isAdministrator, boolean updateAllGroups)
             throws ClientException {
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl(SCHEMA_NAME);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username
-        documentModelImpl.addDataModel(new DataModelImpl(SCHEMA_NAME,
+        documentModelImpl.addDataModel(new DataModelImpl(config.schemaName,
                 new HashMap<String, Object>()));
         setModel(documentModelImpl, updateAllGroups);
-        dataModel.setData(USERNAME_COLUMN, name);
+        dataModel.setData(config.nameKey, name);
         this.isAnonymous = isAnonymous;
         this.isAdministrator = isAdministrator;
     }
 
+    public void setConfig(UserConfig config) {
+        this.config = config;
+    }
+
+    public UserConfig getConfig() {
+        return config;
+    }
+
     public String getCompany() {
         try {
-            return (String) dataModel.getData(COMPANY_COLUMN);
+            return (String) dataModel.getData(config.companyKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -173,7 +132,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public void setCompany(String company) {
         try {
-            dataModel.setData(COMPANY_COLUMN, company);
+            dataModel.setData(config.companyKey, company);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -181,7 +140,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public String getFirstName() {
         try {
-            return (String) dataModel.getData(FIRSTNAME_COLUMN);
+            return (String) dataModel.getData(config.firstNameKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -189,7 +148,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public void setFirstName(String firstName) {
         try {
-            dataModel.setData(FIRSTNAME_COLUMN, firstName);
+            dataModel.setData(config.firstNameKey, firstName);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -197,7 +156,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public String getLastName() {
         try {
-            return (String) dataModel.getData(LASTNAME_COLUMN);
+            return (String) dataModel.getData(config.lastNameKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -205,7 +164,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public void setLastName(String lastName) {
         try {
-            dataModel.setData(LASTNAME_COLUMN, lastName);
+            dataModel.setData(config.lastNameKey, lastName);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -214,7 +173,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     // impossible to modify the name - it is PK
     public void setName(String name) {
         try {
-            dataModel.setData(USERNAME_COLUMN, name);
+            dataModel.setData(config.nameKey, name);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -234,13 +193,13 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                 }
             }
             try {
-                dataModel.setData(GROUPS_COLUMN, groupsToWrite);
+                dataModel.setData(config.groupsKey, groupsToWrite);
             } catch (PropertyException e) {
                 throw new ClientRuntimeException(e);
             }
         } else {
             try {
-                dataModel.setData(GROUPS_COLUMN, groups);
+                dataModel.setData(config.groupsKey, groups);
             } catch (PropertyException e) {
                 throw new ClientRuntimeException(e);
             }
@@ -249,7 +208,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public String getName() {
         try {
-            return (String) dataModel.getData(USERNAME_COLUMN);
+            return (String) dataModel.getData(config.nameKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -257,10 +216,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @SuppressWarnings("unchecked")
     public List<String> getGroups() {
-        List<String> groups = new LinkedList();
+        List<String> groups = new LinkedList<String>();
         List<String> storedGroups;
         try {
-            storedGroups = (List<String>) dataModel.getData(GROUPS_COLUMN);
+            storedGroups = (List<String>) dataModel.getData(config.groupsKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -278,7 +237,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public void setPassword(String password) {
         try {
-            dataModel.setData(PASSWORD_COLUMN, password);
+            dataModel.setData(config.passwordKey, password);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -294,7 +253,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     @Override
     public String toString() {
         try {
-            return (String) dataModel.getData(USERNAME_COLUMN);
+            return (String) dataModel.getData(config.nameKey);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }
@@ -310,7 +269,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public String getEmail() {
         try {
-            return (String) dataModel.getData(EMAIL_COLUMN);
+            return (String) dataModel.getData(config.emailKey);
         } catch (PropertyException e) {
             return null;
         }
@@ -318,7 +277,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public void setEmail(String email) {
         try {
-            dataModel.setData(EMAIL_COLUMN, email);
+            dataModel.setData(config.emailKey, email);
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         }

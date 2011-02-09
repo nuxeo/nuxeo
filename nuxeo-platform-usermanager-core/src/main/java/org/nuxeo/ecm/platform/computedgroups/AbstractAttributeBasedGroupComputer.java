@@ -23,6 +23,7 @@ import java.util.*;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
 
 /**
  * Base class for {@link GroupComputer} implementation that uses User attribute
@@ -43,7 +44,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
             if (doc != null) {
                 String companyName = (String) doc.getProperty(
                         getUM().getUserSchemaName(),
-                        NuxeoPrincipalImpl.COMPANY_COLUMN);
+                        UserConfig.COMPANY_COLUMN);
                 if (!companies.contains(companyName)) {
                     companies.add(companyName);
                 }
