@@ -97,10 +97,10 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     @GET
     @Override
     public Object doGet() {
-        if (doc == null) {
+        if (doc == null && !forceRedirectToLogout) {
             return getTemplate(getErrorTemplateName()).args(getErrorArguments());
         }
-        if (doc != null && forceRedirectToLogout) {
+        if (doc == null && forceRedirectToLogout) {
             return handleAnonymousRedirectToLogout(ctx.getRequest());
         }
         try {

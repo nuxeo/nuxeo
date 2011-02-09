@@ -51,10 +51,10 @@ public class SiteQueriesCollection {
     }
 
     /**
-     * Queries sites unrestricted by URL and document type. It should be exactly one
-     * returned.
+     * Queries sites unrestricted by URL and document type. It should be exactly
+     * one returned.
      */
-    public static DocumentModelList queryUnrestrictedSitesByUrlAndDocType(
+    public static boolean checkUnrestrictedSiteExsistanceByUrlAndDocType(
             CoreSession session, String url, String documentType)
             throws ClientException {
         String queryString = String.format("SELECT * FROM %s WHERE "
@@ -65,7 +65,7 @@ public class SiteQueriesCollection {
         UnrestrictedQueryRunner runner = new UnrestrictedQueryRunner(session,
                 queryString);
         runner.runUnrestricted();
-        return runner.getResults();
+        return runner.getResultsSize() >= 1;
     }
 
     /**
@@ -149,6 +149,7 @@ public class SiteQueriesCollection {
     static class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
 
         DocumentModelList results;
+
         String queryString;
 
         public UnrestrictedQueryRunner(CoreSession session, String queryString) {
@@ -161,8 +162,8 @@ public class SiteQueriesCollection {
             results = session.query(queryString);
         }
 
-        public DocumentModelList getResults() {
-            return results;
+        public int getResultsSize() {
+            return results.size();
         }
     }
 

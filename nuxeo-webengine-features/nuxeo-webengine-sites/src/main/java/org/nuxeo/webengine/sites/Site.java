@@ -88,15 +88,15 @@ public class Site extends AbstractSiteDocumentObject {
         try {
             DocumentModelList list = SiteQueriesCollection.querySitesByUrlAndDocType(
                     session, url, getWebSiteDocumentType());
-            if (((NuxeoPrincipal) session.getPrincipal()).isAnonymous()) {
-                list = SiteQueriesCollection.queryUnrestrictedSitesByUrlAndDocType(
-                        session, url, getWebSiteDocumentType());
-                if (!list.isEmpty()) {
-                    setForceRedirectToLogout(true);
-                }
-            }
             if (!list.isEmpty()) {
                 return list.get(0);
+            }
+            if (((NuxeoPrincipal) session.getPrincipal()).isAnonymous()) {
+                Boolean siteExists = SiteQueriesCollection.checkUnrestrictedSiteExsistanceByUrlAndDocType(
+                        session, url, getWebSiteDocumentType());
+                if (siteExists) {
+                    setForceRedirectToLogout(true);
+                }
             }
         } catch (ClientException e) {
             log.error("Unable to retrieve the webcontainer ", e);
