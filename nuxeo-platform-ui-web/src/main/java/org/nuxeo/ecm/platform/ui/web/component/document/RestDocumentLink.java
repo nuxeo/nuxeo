@@ -19,12 +19,15 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.document;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIParameter;
 import javax.faces.component.html.HtmlOutputLink;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,6 +36,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
+import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
+
 /**
  * Component that gives generates a Restful link given a document.
  *
@@ -40,9 +45,13 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
  */
 public class RestDocumentLink extends HtmlOutputLink {
 
+    public static final String COMPONENT_TYPE = RestDocumentLink.class.getName();
+
     public static final String COMPONENT_FAMILY = RestDocumentLink.class.getName();
 
     public static final String DEFAULT_VIEW_ID = "view_documents";
+
+    protected static final Param[] EMPTY_PARAMS = new Param[0];
 
     protected DocumentModel document;
 
@@ -54,9 +63,16 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     protected String subTab;
 
+    protected Boolean addTabInfo;
+
     protected String pattern;
 
     protected Boolean newConversation;
+
+    @Override
+    public String getFamily() {
+        return COMPONENT_FAMILY;
+    }
 
     /**
      * Override to build the URL thanks to other tag attributes information.
@@ -74,7 +90,7 @@ public class RestDocumentLink extends HtmlOutputLink {
 
         String viewId = getView();
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new LinkedHashMap<String, String>();
         String tabValue = getTab();
         String subTabValue = getSubTab();
         if (tabValue != null) {
@@ -83,15 +99,47 @@ public class RestDocumentLink extends HtmlOutputLink {
                 params.put("subTabId", subTabValue);
             }
         } else {
-            // reset tab info, resetting the tab will reset the sub tab
-            params.put("tabId", WebActions.NULL_TAB_ID);
+            if (Boolean.TRUE.equals(getAddTabInfo())) {
+                // reset tab info, resetting the tab will reset the sub tab
+                params.put("tabId", WebActions.NULL_TAB_ID);
+            }
+        }
+        // add parameters from f:param sub tags
+        Param[] paramTags = getParamList();
+        for (Param param : paramTags) {
+            String pn = param.name;
+            if (pn != null && pn.length() != 0) {
+                String pv = param.value;
+                if (pv != null && pv.length() != 0) {
+                    params.put(pn, pv);
+                }
+            }
         }
 
         String pattern = getPattern();
         Boolean nc = getNewConversation();
 
-        return DocumentModelFunctions.documentUrl(pattern, doc, viewId,
-                params, nc != null ? nc : false);
+        return DocumentModelFunctions.documentUrl(pattern, doc, viewId, params,
+                nc != null ? nc : false);
+    }
+
+    protected Param[] getParamList() {
+        if (getChildCount() > 0) {
+            ArrayList<Param> parameterList = new ArrayList<Param>();
+            for (UIComponent kid : getChildren()) {
+                if (kid instanceof UIParameter) {
+                    UIParameter uiParam = (UIParameter) kid;
+                    Object value = uiParam.getValue();
+                    Param param = new Param(uiParam.getName(),
+                            (value == null ? null : value.toString()));
+                    parameterList.add(param);
+                }
+            }
+            return parameterList.toArray(new Param[parameterList.size()]);
+        } else {
+            return EMPTY_PARAMS;
+        }
+
     }
 
     // setters and getters for tag attributes
@@ -180,7 +228,7 @@ public class RestDocumentLink extends HtmlOutputLink {
             }
         } else {
             // default value
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -246,6 +294,27 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     public void setView(String view) {
         this.view = view;
+    }
+
+    public Boolean getAddTabInfo() {
+        if (addTabInfo != null) {
+            return addTabInfo;
+        }
+        ValueExpression ve = getValueExpression("addTabInfo");
+        if (ve != null) {
+            try {
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            return Boolean.TRUE;
+        }
+    }
+
+    public void setAddTabInfo(Boolean addTabInfo) {
+        this.addTabInfo = addTabInfo;
     }
 
 }

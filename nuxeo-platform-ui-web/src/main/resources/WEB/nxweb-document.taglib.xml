@@ -302,7 +302,9 @@
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
       </component-type>
-      <renderer-type>javax.faces.Link</renderer-type>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </renderer-type>
     </component>
   </tag>
   <tag>

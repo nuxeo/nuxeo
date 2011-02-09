@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-
+  
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-
+  
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -137,12 +137,14 @@
         component and renderer.
       </p>
       <p>
-        The main purpose of this tag is to provide restful (bookmarkable) navigation
-        inside documents.
+        The main purpose of this tag is to provide restful (bookmarkable)
+        navigation inside documents.
       </p>
       <p>
-        All usual output link attributes are accepted except value.
-        Value is replaced a method binding that generates the correct rest URL.
+        All usual output link attributes are accepted except value. Sub tags
+        "f:param" are taken into account to build the corresponding DocumentView
+        and URL. Value is replaced a method binding that generates the correct
+        rest URL.
       </p>
       ]]>
     </description>
@@ -185,6 +187,26 @@
       <description>
         The pattern name to use to generate the url (according to the url
         service configuration).
+      </description>
+    </attribute>
+    <attribute>
+      <name>newConversation</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean stating if page should be opened in a new conversation. If set
+        to, no conversation information will be added to the URL so that a new
+        conversation is created. Defaults to false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>addTabInFo</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean stating if the default tab information should be added to the
+        generated URL. Default tab information is used to reset current tab
+        value.
       </description>
     </attribute>
   </tag>

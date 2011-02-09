@@ -137,7 +137,7 @@
       </p>
       <p>
       This is very close to the c:set tag, but allows caching, and the variable
-      is only exposed inside the tag. Note that this tga will not work as
+      is only exposed inside the tag. Note that this tag will not work as
       expected when used with iteration variables inside a standard table, for
       instance.
       </p>
