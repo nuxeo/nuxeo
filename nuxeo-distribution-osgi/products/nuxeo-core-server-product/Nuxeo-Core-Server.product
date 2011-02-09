@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product uid="org.nuxeo.core.server" id="nuxeo-core-server-application.NuxeoProduct" application="nuxeo-core-server-application.NuxeoApp" version="5.4.1.qualifier" useFeatures="false" includeLaunchers="false">
+<product uid="nuxeo-core-server-application" id="nuxeo-core-server-application.NuxeoProduct" application="nuxeo-core-server-application.NuxeoApp" version="5.4.1.qualifier" useFeatures="true" includeLaunchers="false">
 
    <configIni use="default">
    </configIni>
@@ -11,7 +11,6 @@
       <vmArgs>-Declipse.ignoreApp=true -Dosgi.noShutdown=true -Dnuxeo.home=${env_var:HOME}/.nxserver-osgi -Dh2.baseDir=/${env_var:HOME}/.nxserver-osgi/data/h2 -Djetty.logs=${env_var:HOME}/.nxserver-osgi/log</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
-
 
    <launcher>
       <solaris/>
@@ -97,6 +96,10 @@
       <plugin id="org.nuxeo.xerces.Impl"/>
       <plugin id="org.nuxeo.xml-apis"/>
    </plugins>
+
+   <features>
+      <feature id="org.nuxeo.osgi.core.server.feature" version="5.4.1.qualifier"/>
+   </features>
 
    <configurations>
       <plugin id="org.nuxeo.runtime" autoStart="true" startLevel="0" />

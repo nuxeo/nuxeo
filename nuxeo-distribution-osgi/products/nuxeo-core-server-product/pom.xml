@@ -20,6 +20,7 @@
       <plugin>
         <groupId>org.sonatype.tycho</groupId>
 	<artifactId>tycho-p2-publisher-plugin</artifactId>
+	<version>${tycho-version}</version>
 	<configuration>
 	  <publishArtifacts>true</publishArtifacts>
 	</configuration>
@@ -27,6 +28,7 @@
       <plugin>
         <groupId>org.sonatype.tycho</groupId>
 	<artifactId>tycho-p2-director-plugin</artifactId>
+	<version>${tycho-version}</version>
 	<executions>
 	  <execution>
 	    <id>materialize-products</id>
@@ -44,14 +46,10 @@
 	<configuration>
 	  <products>
 	    <product>
-	      <id>org.nuxeo.core.server</id>
+	      <id>nuxeo-core-server-application.id</id>
 	    </product>
 	  </products>
 	</configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
       </plugin>
     </plugins>
   </build>

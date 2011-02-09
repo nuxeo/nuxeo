@@ -54,12 +54,6 @@
 <repository location="http://download.eclipse.org/releases/helios"/>
 </location>
 </locations>
-<environment>
-<os>linux</os>
-<ws>gtk</ws>
-<arch>x86</arch>
-<nl>en_US</nl>
-</environment>
 <launcherArgs>
 <vmArgs>-Dosgi.requiredJavaVersion=1.6 -XX:MaxPermSize=256m -Xms40m -Xmx512m</vmArgs>
 </launcherArgs>
