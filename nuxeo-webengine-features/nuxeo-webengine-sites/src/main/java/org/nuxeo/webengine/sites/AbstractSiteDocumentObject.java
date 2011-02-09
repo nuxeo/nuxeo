@@ -40,6 +40,7 @@ import static org.nuxeo.webengine.sites.utils.SiteConstants.WEBSITE;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -60,6 +61,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -85,6 +89,8 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
 
     public static final int FLASH_WELCOME_MEDIA = 1;
 
+    private boolean forceRedirectToLogout = false;
+
     /**
      * Executes the GET requests on the current web object
      */
@@ -93,6 +99,9 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     public Object doGet() {
         if (doc == null) {
             return getTemplate(getErrorTemplateName()).args(getErrorArguments());
+        }
+        if (doc != null && forceRedirectToLogout) {
+            return handleAnonymousRedirectToLogout(ctx.getRequest());
         }
         try {
             if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
@@ -196,8 +205,8 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
     }
 
     /**
-     * JAX-RS specs doesn't allow  multiple REST designator on a single method
-     * so we need to use another method to do a POST.
+     * JAX-RS specs doesn't allow multiple REST designator on a single method so
+     * we need to use another method to do a POST.
      */
     @POST
     @Path("search")
@@ -265,12 +274,12 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
             StringBuilder path = new StringBuilder(
                     SiteUtils.getWebContainersPath()).append("/");
             path.append(SiteUtils.getString(parentWebSite, WEBCONTAINER_URL));
-            return redirect(URIUtils.quoteURIPathComponent(path.toString(), false));
+            return redirect(URIUtils.quoteURIPathComponent(path.toString(),
+                    false));
         } catch (Exception e) {
             throw WebException.wrap(e);
         }
     }
-
 
     /**
      * Method used to delete pages in the current container
@@ -436,4 +445,46 @@ public abstract class AbstractSiteDocumentObject extends DocumentObject {
      */
     protected abstract Map<String, Object> getErrorArguments();
 
+    protected Response handleAnonymousRedirectToLogout(
+            HttpServletRequest request) {
+        Map<String, String> urlParameters = new HashMap<String, String>();
+        urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
+        urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
+        if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
+            urlParameters.put(
+                    NXAuthConstants.REQUESTED_URL,
+                    (String) request.getAttribute(NXAuthConstants.REQUESTED_URL));
+        } else {
+            urlParameters.put(NXAuthConstants.REQUESTED_URL,
+                    NuxeoAuthenticationFilter.getRequestedUrl(request));
+        }
+        String baseURL = "";
+        try {
+            baseURL = initAuthenticationService().getBaseURL(request)
+                    + NXAuthConstants.LOGOUT_PAGE;
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
+        baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
+        setForceRedirectToLogout(false);
+        return redirect(baseURL);
+    }
+
+    protected void setForceRedirectToLogout(boolean redirectToLogout) {
+        this.forceRedirectToLogout = redirectToLogout;
+    }
+
+    protected PluggableAuthenticationService initAuthenticationService()
+            throws ClientException {
+        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                PluggableAuthenticationService.NAME);
+        if (service == null) {
+            log.error("Unable to get Service "
+                    + PluggableAuthenticationService.NAME);
+            throw new ClientException(
+                    "Can't initialize Nuxeo Pluggable Authentication Service");
+        }
+        return service;
+    }
 }
