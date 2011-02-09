@@ -15,12 +15,15 @@
 package org.nuxeo.theme.test.webwidgets;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.webwidgets.ProviderException;
 import org.nuxeo.theme.webwidgets.Widget;
@@ -41,9 +44,7 @@ public class TestPersistentProviderPerUser extends NXRuntimeTestCase {
         Principal currentNuxeoPrincipal;
 
         public MockPersistentProvider(String name, boolean anonymous) {
-            FakeNuxeoPrincipal currentNuxeoPrincipal = new FakeNuxeoPrincipal();
-            currentNuxeoPrincipal.setName(name);
-            currentNuxeoPrincipal.setAnonymous(anonymous);
+            NuxeoPrincipal currentNuxeoPrincipal = new UserPrincipal(name, new ArrayList<String>(), anonymous, false);
             this.currentNuxeoPrincipal = currentNuxeoPrincipal;
         }
 
