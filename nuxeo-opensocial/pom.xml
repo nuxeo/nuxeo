@@ -20,16 +20,14 @@
     <!--
     <module>nuxeo-platform-login-oauth</module>
     -->
-    <module>nuxeo-spaces-api</module>
-    <module>nuxeo-spaces-core</module>
-    <module>nuxeo-spaces-web</module>
+    <module>nuxeo-opensocial-spaces</module>
     <module>nuxeo-opensocial-gadgets-core</module>
     <module>nuxeo-opensocial-gadgets</module>
-    <module>nuxeo-webengine-spaces</module>
     <module>nuxeo-webengine-gadgets</module>
-    <module>nuxeo-opensocial-container-space-config</module>
+    <module>nuxeo-opensocial-container</module>
+    <module>nuxeo-richtexteditor-gadget</module>
+    <module>nuxeo-opensocial-container-webapp</module>
     <module>nuxeo-opensocial-dashboard</module>
-    <module>nuxeo-opensocial-mydocs-gadget</module>
   </modules>
 
   <developers>

@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <fragment version="1">
-  <!-- I am not sure this is needed -->
-  <require>org.nuxeo.opensocial.spaces.web</require>
-  <require>org.nuxeo.ecm.directory.web</require>
 
   <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">
@@ -14,7 +11,7 @@
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>opensocial_dashboard</from-outcome>
-      <to-view-id>/opensocial-dashboard.xhtml</to-view-id>
+      <to-view-id>/opensocial_dashboard.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 

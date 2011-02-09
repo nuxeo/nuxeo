@@ -1,10 +1,5 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: opensocial-container
-Bundle-SymbolicName: org.nuxeo.opensocial.container
-Bundle-Version: 1.0.0
-Bundle-Vendor: Leroy Merlin
-Provide-Package: org.nuxeo.opensocial.container
-Nuxeo-Component: OSGI-INF/opensocial-factory-component.xml,
- OSGI-INF/querymodel-contrib.xml
-Require-Bundle: org.nuxeo.ecm.spaces.api
+Bundle-Name: Nuxeo OpenSocial Container
+Bundle-SymbolicName: org.nuxeo.ecm.opensocial.gwt.container;singleton:=true
+Bundle-Activator: org.nuxeo.ecm.webengine.gwt.GwtBundleActivator

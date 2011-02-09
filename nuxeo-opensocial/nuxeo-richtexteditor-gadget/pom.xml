@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>nuxeo-opensocial-parent</artifactId>
+		<groupId>org.nuxeo.ecm.opensocial</groupId>
+		<version>5.4.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>nuxeo-richtexteditor-gadget</artifactId>
+	<name>GWT2 RichTextEditor</name>
+	<description>GWT2 RichTextEditor</description>
+
+	<properties>
+		<gwtVersion>2.0.4</gwtVersion>
+		<gwt.module>org.nuxeo.opensocial.wysiwyg.RichTextEditor</gwt.module>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${gwtVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
+			<version>${gwtVersion}</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+	</build>
+</project>

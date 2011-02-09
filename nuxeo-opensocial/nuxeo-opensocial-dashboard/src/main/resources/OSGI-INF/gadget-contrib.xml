@@ -48,7 +48,7 @@
     </internalGadget>
 
     <internalGadget name="usersites">
-      <mountPoint>/usersites</mountPoint>
+      <mountPoint>/userdocuments</mountPoint>
       <directory>documentlists</directory>
       <entryPoint>usersites.xml</entryPoint>
       <category>Nuxeo</category>

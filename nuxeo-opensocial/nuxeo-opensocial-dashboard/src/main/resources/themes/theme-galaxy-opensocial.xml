@@ -24,14 +24,16 @@
         </cell>
       </section>
       <section>
+        <!--
         <cell>
           <fragment type="dashboardLayoutManager" />
           <fragment type="dashboardGadgetManager" />
         </cell>
+        -->
       </section>
       <section>
         <cell>
-          <fragment type="dashboardMainContent" />
+          <fragment type="generic fragment" />
         </cell>
       </section>
       <!-- what's this for? -->
@@ -41,7 +43,7 @@
       <section>
         <!-- before this was the nuxeo includes, but that broke the JS world
           <cell>
-          
+
           <fragment type="generic fragment"/>
           </cell> -->
         <cell />
@@ -145,10 +147,10 @@
       <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
-      <view>module layout manager</view>
+      <view>cell frame</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[2]">
-      <view>module gadget manager</view>
+      <view>cell frame</view>
     </widget>
     <!-- widget compatibility with the rest of nuxeo5 -->
     <widget element="">

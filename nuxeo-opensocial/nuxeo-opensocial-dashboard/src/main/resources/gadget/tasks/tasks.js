@@ -13,7 +13,7 @@ function requestTasks() {
     //var cookie = readCookie('JSESSIONID');
     //console.log("we are using cookie:"+cookie);
 
-    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.SIGNED;
+    params[gadgets.io.RequestParameters.AUTHORIZATION] = gadgets.io.AuthorizationType.NONE;
     params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
 
     var now = new Date().toUTCString();
@@ -22,7 +22,7 @@ function requestTasks() {
     headers["Expires", "Fri, 01 Jan 1990 00:00:00 GMT"];
     headers["Pragma", "no-cache"];
     headers["Cache-control"] = "no-cache, must-revalidate";
-    //headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
+    headers["X-NUXEO-INTEGRATED-AUTH"] = readCookie("JSESSIONID");
 
     params[gadgets.io.RequestParameters.HEADERS] = headers
     params[gadgets.io.RequestParameters.REFRESH_INTERVAL] = 0;
@@ -34,7 +34,7 @@ function requestTasks() {
 // insert the whole table, as stupid IE can't do a tbody.innerHtml
 function tableStart(jsonObject) {
     var name = "Name";
-    var title = "Title";
+    var title = "Title";    
     var directive = "Directive";
     var comment = "Comment";
     var duedate = "Due Date";
@@ -215,13 +215,12 @@ function getWebappName() {
 }
 
 function getRestletUrl() {
-    var url ; //= getNuxeoServerSideUrl();
+    var url = getNuxeoServerSideUrl();
     if (testMode) {
-        url = 'http://localhost:8080/nuxeo/';
-    } else {
-        url = requestBaseUrl;
+        url = 'http://localhost:8080/';
     }
-    url += "restAPI/workflowTasks/default?mytasks=true&format=JSON";
+    url += getWebappName();
+    url += "/restAPI/workflowTasks/default?mytasks=true&format=JSON";
     var ts = new Date().getTime() + "" + Math.random() * 11
     url += "&ts=" + ts;
 
@@ -245,7 +244,7 @@ function getRestletUrl() {
     url += "label.title,";
     url += "label.review.user.comment,";
     url += "label.workflow.task.startdate";
-
+    
     return url;
 }
 
