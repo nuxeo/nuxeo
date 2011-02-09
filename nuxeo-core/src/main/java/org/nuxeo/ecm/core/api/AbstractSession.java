@@ -1709,7 +1709,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 working = null;
             }
             if (working != null) {
-                return hasPermission(working, REMOVE);
+                return hasPermission(working, WRITE_VERSION);
             } else {
                 // no working document, only admins can remove
                 return false;
@@ -2112,7 +2112,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             boolean skipSnapshotCreation, boolean skipCheckout)
             throws ClientException {
         try {
-            checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
 
             DocumentModel docModel = readModel(doc);
@@ -2204,7 +2203,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             String checkinComment) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_PROPERTIES);
             checkPermission(doc, WRITE_VERSION);
             DocumentModel docModel = readModel(doc);
 
