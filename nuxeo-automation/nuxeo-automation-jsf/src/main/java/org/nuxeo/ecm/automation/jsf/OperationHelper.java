@@ -16,10 +16,10 @@
 package org.nuxeo.ecm.automation.jsf;
 
 import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
-import org.nuxeo.ecm.webapp.contentbrowser.ContentViewActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
