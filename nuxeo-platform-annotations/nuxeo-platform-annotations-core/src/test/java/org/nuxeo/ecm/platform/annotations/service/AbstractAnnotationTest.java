@@ -27,8 +27,8 @@ import javax.naming.InitialContext;
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.common.jndi.NamingContextFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.annotations.FakeNuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
@@ -46,7 +46,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     protected Annotation annotation1;
 
-    protected final NuxeoPrincipal user = new FakeNuxeoPrincipal("bob");
+    protected final NuxeoPrincipal user = new UserPrincipal("bob");
 
     protected final AnnotationManager manager = new AnnotationManager();
 
