@@ -15,6 +15,7 @@ Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.services.adapter.extension,
  org.nuxeo.runtime.services.deployment,
  org.nuxeo.runtime.services.event,
+ org.nuxeo.runtime.services.resource,
  org.nuxeo.runtime.services.streaming,
  org.nuxeo.runtime.transaction,
  org.nuxeo.runtime.util
