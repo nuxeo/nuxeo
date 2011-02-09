@@ -46,6 +46,8 @@ public class SimpleNuxeoPrincipal implements NuxeoPrincipal {
     protected String lname;
     @XNode("company")
     protected String company;
+    @XNode("email")
+    protected String email;
     @XNode("isAdministrator")
     protected boolean isAdministrator;
     @XNode("isAnonymous")
@@ -95,6 +97,16 @@ public class SimpleNuxeoPrincipal implements NuxeoPrincipal {
     @Override
     public String getCompany() {
         return company;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

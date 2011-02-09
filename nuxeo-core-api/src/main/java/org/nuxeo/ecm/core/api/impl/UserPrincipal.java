@@ -67,6 +67,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     /**
      * Useful for test cases.
+     * @deprecated Only for tests - should not be used in the platform
      */
     public UserPrincipal(String username) {
         this(username, new ArrayList<String>(), false, false);
@@ -74,6 +75,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     /**
      * Useful for test cases.
+     * @deprecated Only for tests - should not be used in the platform
      */
     public UserPrincipal(String username, List<String> groups) {
         // BBB: members of group 'administrators' are considered administrators
