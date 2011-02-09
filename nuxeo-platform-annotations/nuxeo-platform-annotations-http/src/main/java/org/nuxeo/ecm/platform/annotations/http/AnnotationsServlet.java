@@ -74,7 +74,7 @@ public class AnnotationsServlet extends HttpServlet {
             } catch (AnnotationException e) {
                 throw new ServletException(e);
             }
-        } else if (w3c_annotates != null) {
+        } else if (w3c_annotates != null && !w3c_annotates.isEmpty()) {
             try {
                 facade.query(w3c_annotates, resp.getOutputStream(),
                         (NuxeoPrincipal) req.getUserPrincipal());
