@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +99,7 @@ public final class URIUtils {
             try {
                 String[] items = uriQuery.split("&");
                 if (items != null && items.length > 0) {
-                    parameters = new HashMap<String, String>();
+                    parameters = new LinkedHashMap<String, String>();
                     for (String item : items) {
                         String[] param = item.split("=");
                         if (param != null) {
@@ -130,7 +130,7 @@ public final class URIUtils {
             String query = uri.getQuery();
             Map<String, String> existingParams = getRequestParameters(query);
             if (existingParams == null) {
-                existingParams = new HashMap<String, String>();
+                existingParams = new LinkedHashMap<String, String>();
             }
             existingParams.putAll(parameters);
             if (!existingParams.isEmpty()) {
