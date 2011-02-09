@@ -31,6 +31,10 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 /**
  * NuxeoPrincipal stub implementation.
  *
+ * TODO this should replace the DetachedNuxeoPrincipal from user manager to minimize
+ * principal implementations.
+ *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class UserPrincipal implements NuxeoPrincipal, Serializable {
@@ -51,6 +55,8 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     protected String lastName;
 
+    protected String email;
+
     protected String company;
 
     protected String password;
@@ -60,17 +66,15 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
     protected String originatingUser;
 
     /**
-     * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
+     * Useful for test cases.
      */
-    @Deprecated
     public UserPrincipal(String username) {
         this(username, new ArrayList<String>(), false, false);
     }
 
     /**
-     * @deprecated use {{@link #UserPrincipal(String, List, boolean, boolean)}}
+     * Useful for test cases.
      */
-    @Deprecated
     public UserPrincipal(String username, List<String> groups) {
         // BBB: members of group 'administrators' are considered administrators
         this(username, groups, false, groups != null
@@ -84,6 +88,16 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         this.groups = groups == null ? emptyGroups : groups;
         this.anonymous = anonymous;
         this.administrator = administrator;
+    }
+
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
