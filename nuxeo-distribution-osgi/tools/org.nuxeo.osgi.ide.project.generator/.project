@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>nuxeo-project-generator</name>
+	<name>org.nuxeo.osgi.ide.project.generator</name>
 	<comment>Generate PDE project structures for Nuxeo projects.</comment>
 	<projects>
 	</projects>

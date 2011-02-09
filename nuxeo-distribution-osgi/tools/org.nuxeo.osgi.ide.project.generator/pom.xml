@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>nuxeo-osgi-project-generator</artifactId>
+  <artifactId>org.nuxeo.osgi.ide.project.generator</artifactId>
   <name>Nuxeo OSGi Project Generator</name>
   <description>Generate OSGI project structures for Nuxeo projects.</description>
   <packaging>eclipse-plugin</packaging>

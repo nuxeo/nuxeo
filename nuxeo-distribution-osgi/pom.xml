@@ -14,8 +14,8 @@
 
 
   <modules>
+    <module>nuxeo-osgi-target</module>
     <module>nuxeo-osgi-parent</module>
-    <module>targets</module>
     <module>tools</module>
     <module>plugins</module>
     <module>fragments</module>

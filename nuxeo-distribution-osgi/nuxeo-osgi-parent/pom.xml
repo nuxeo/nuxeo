@@ -41,7 +41,7 @@
 	    <target>
 	      <artifact>
 		<groupId>org.nuxeo.osgi</groupId>
-		<artifactId>nuxeo-osgi-targets</artifactId>
+		<artifactId>nuxeo-osgi-target</artifactId>
 		<version>${project.version}</version>
 		<type>target</type>
 		<classifier>core</classifier>

@@ -1,7 +1,8 @@
 #!/bin/bash -i
 
-GEN_DIR=tools/org.nuxeo.osgi.ide.project.generator
-JAR=${GEN_DIR}/target/nuxeo-osgi-project-generator-*.jar
+GEN_NAME=org.nuxeo.osgi.ide.project.generator
+GEN_DIR=tools/${GEN_NAME}
+JAR=${GEN_DIR}/target/${GEN_NAME}-*.jar
 
 #JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
 

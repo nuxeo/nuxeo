@@ -22,6 +22,7 @@ nuxeo-distribution-dm/ftest/selenium/selenium-server.jar
 nuxeo-distribution-windows/**/obj
 nuxeo-distribution-windows/**/bin
 .DS_Store
+nuxeo-distribution-osgi/plugins/addons/**/*
 
 # we are trying not to ignore: nuxeo-distribution-jboss/src/main/resources/jboss/bin/
 syntax: regexp
