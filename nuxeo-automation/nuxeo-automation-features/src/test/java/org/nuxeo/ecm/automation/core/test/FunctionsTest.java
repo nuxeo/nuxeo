@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,10 +24,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.scripting.Functions;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,9 +42,9 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.automation.core")
-public class ScriptingTest {
+@Features({PlatformFeature.class})
+@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features"})
+public class FunctionsTest {
 
     protected DocumentModel src;
 
@@ -51,6 +55,7 @@ public class ScriptingTest {
     CoreSession session;
 
     OperationContext ctx;
+
 
     @Before
     public void initRepo() throws Exception {
@@ -70,7 +75,26 @@ public class ScriptingTest {
 
     @Test
     public void testPrincipalWrapper() throws Exception {
-        assertNotNull(Scripting.newExpression("CurrentUser.name").eval(ctx));
+        assertEquals(Functions.getInstance(), Scripting.newExpression("Fn").eval(ctx));
+        assertEquals(Functions.getInstance().getClass(), PlatformFunctions.class);
+        NuxeoPrincipal np = (NuxeoPrincipal)((PlatformFunctions)Functions.getInstance()).getPrincipal("Administrator");
+        assertEquals("Administrator", np.getName());
+        assertEquals("Administrator",
+                ((NuxeoPrincipalImpl)Scripting.newExpression("Fn.getPrincipal(\"Administrator\")").eval(ctx)).getName());
+
     }
+
+    public void testPrincipalProperties() throws Exception {
+        NuxeoPrincipalImpl np = new NuxeoPrincipalImpl("test");
+        np.setFirstName("Bob");
+        assertEquals("test",
+                (String) Scripting.newExpression("CurrentUser.name").eval(ctx));
+        assertEquals(
+                "Bob",
+                (String) Scripting.newExpression("CurrentUser.firstName").eval(
+                        ctx));
+    }
+
+
 
 }
