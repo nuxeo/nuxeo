@@ -10,7 +10,10 @@ nuxeo.templates=default
 # Default IP address binding
 nuxeo.bind.address=0.0.0.0
 
+# publicly visible URL
 nuxeo.url=http://localhost:8080/nuxeo
+# internally visible URL (server-to-server)
+nuxeo.loopback.url=http://localhost:8080/nuxeo
 
 # Not customizable with Tomcat
 org.nuxeo.ecm.contextPath=/nuxeo
